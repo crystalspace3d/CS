@@ -1,0 +1,116 @@
+@node csUtil, SCF, csSys, Libraries
+@section Utility Library (@code{csUtil})
+@cindex csUtil
+@cindex Libraries,csUtil
+@cindex Utility Library
+
+The utility library consists of many smaller modules that are too small to
+live as a separate library. The biggest part of it is the @sc{scf} library.
+@xref{SCF}.
+
+Then there are a series of classes implementing arrays of some sort.
+There are currently five types of arrays in CS. All are templated and
+type-safe: @code{csRefArray<T>}, @code{csRefArrayObject<T>},
+@code{csPArray<T>}, @code{csPDelArray<T>},
+and @code{csGrowingArray<T>}. See later sections for more information.
+
+Also in csutil are the @file{.cfg} file reader and the random
+number generator.
+
+The other classes might or might not be useful, so if you need some very
+common functionality in your application, you should look in the @sc{api}
+reference to see if it is already implemented. The usage of these classes
+will not be explained further, as most functions are self-explanatory. The
+comments in the @sc{api} reference and the header files should also help.
+
+Exceptions should be made here for the @code{csObject} class and for typed
+vectors. They will be explained in the next sections.
+
+@menu
+* csObject:: @code{csObject}
+* Typed Vectors:: @code{Typed Vectors}
+@end menu
+
+@node csObject, Typed Vectors, csUtil, csUtil
+@subsection @code{csObject}
+@cindex @code{csObject}
+
+The @code{csObject} class can be used to build object hierarchies. It supports
+building a simple tree structure. To use this functionality, you should derive
+your classes from @code{csObject}. @code{csObject} implements the
+@code{iObject} interface and can store any number of @code{iObject} children.
+Furthermore, every @code{csObject} has a name.
+
+All child objects are @code{IncRef}'ed when added and @code{DecRef}'ed when
+removed. An object also stores a pointer to its parent (which is not
+reference-counted to avoid circular references). Note that this pointer will
+always point to the last parent if the object is added to more than one
+parent. When the object is removed from a parent, the pointer is set to
+@code{NULL}, even if the object is still a child of another parent!
+
+Although the children of an object are only available as @code{iObject}'s,
+you can use @code{SCF_QUERY_INTERFACE} to query other interfaces from them.
+Some convenience macros are also available:
+@table @code
+@item CS_GET_CHILD_OBJECT(object,Interface)
+Get the first child object that implements the given interface.
+
+@item CS_GET_NAMED_CHILD_OBJECT(object,Interface,name)
+Get the first child object with the given name that implements the given
+interface. This will continue to search through the objects if an object
+with the right name but not the right interface was found, i.e. it handles
+multiple objects with the same name correctly.
+
+@item CS_GET_FIRST_NAMED_CHILD_OBJECT(object,Interface,name)
+Same as the above but stops at the first object with the given name, even if
+it does not implement the requested interface (in that case, @code{NULL} is
+returned). This is slightly faster.
+@end table
+Note that all these macros increase the reference count of the returned
+object by 1.
+
+@node Typed Vectors, , csObject, csUtil
+@subsection @code{Typed Vectors}
+@cindex @code{Typed Vectors}
+
+Crystal Space currently has five types of typed vectors. These four types
+all provide automatical growing when the array size is too small.
+
+@itemize
+@item
+@code{csRefArray<T>}: this is the prefered way to store references if you want
+to keep a reference to the objects in the array. i.e. when you add elements
+to this array it will increase the reference count and it will also decrease
+the reference count when the element is deleted again. This class can contain
+objects that implement the @code{IncRef()} and @code{DecRef()} functions
+(both @code{iBase} and @code{csRefCount} do that).
+Include file is @file{include/csutil/refarr.h}.
+@item
+@code{csRefArrayObject<T>}: this is a variant of @code{csRefArray<T>} that
+can hold objects that have a method @code{QueryObject()} which returns
+something from which you can call @code{GetName()}. In practice it means
+this is useful for all Crystal Space objects that implement @code{iObject}.
+In addition to the features of @code{csRefArray<T>} this class adds the
+ability to find elements by name.
+Include file is @file{include/csutil/nobjvec.h}.
+@item
+@code{csPArray<T>}: this is similar to @code{csRefArray<T>} but no reference
+counts are maintained. This class also doesn't initialize new items (when you
+do @code{SetLength()} for example) and you are fully responsible for cleaning
+up the items in this array.
+Include file is @file{include/csutil/ptrarr.h}.
+@item
+@code{csPDelArray<T>}: this is similar to @code{csPArray<T>} but the elements
+are deleted (using @code{delete}) when removed from the array. This array
+takes care of initializating everything correctly (so that no double deletes
+can occur).
+Include file is @file{include/csutil/ptrarr.h}.
+@item
+@code{csGrowingArray<T>}: this is the only array class that can handle
+objects that are not pointers. It is best to avoid using this class for pointers
+as the three other array types above already provide support for that.
+Also note that you should not use this class for objects that require a
+constructor as this class doesn't do any initialization at all.
+Include file is @file{include/csutil/garray.h}.
+@end itemize
+

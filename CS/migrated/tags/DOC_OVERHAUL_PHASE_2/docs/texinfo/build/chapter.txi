@@ -1,0 +1,19 @@
+@c -*-texinfo-*-
+@node Building
+@chapter Configure, Build, and Install
+@cindex Configuration
+@cindex Building
+@cindex Installtion
+
+This chapter describes how to configure, build, and install Crystal Space.
+It begins by describing the resources you need to utilize Crystal Space
+and ends with detailed instructions for each supported platform.
+
+If you are eager to try out the package after building it successfully, then
+read the Quick Start section.  @xref{Quick Start}.
+
+@imports{build,sysreq.txi}
+@imports{build,extlibs.txi}
+@imports{build,platform.txi}
+@imports{build,problems.txi}
+@imports{build,rundemo.txi}

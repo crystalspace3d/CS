@@ -1,0 +1,11 @@
+@c -*-texinfo-*-
+@node Tutorials
+@chapter Tutorials
+@cindex Tutorials
+
+This chapter contains various tutorial to help you quickly familiarize
+yourself with the various aspects of the Crystal Space development
+environment.
+
+@imports{tutorial,intro.txi}
+@imports{tutorial,simple.txi}

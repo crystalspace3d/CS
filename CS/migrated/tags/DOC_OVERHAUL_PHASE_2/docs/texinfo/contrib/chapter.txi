@@ -1,0 +1,10 @@
+@c -*-texinfo-*-
+@node Contributing
+@chapter Contributing to Crystal Space
+
+@imports{contrib,intro.txi}
+@imports{contrib,document.txi}
+@imports{contrib,coding.txi}
+@imports{contrib,cvs.txi}
+@imports{contrib,porting.txi}
+@imports{contrib,todo.txi}

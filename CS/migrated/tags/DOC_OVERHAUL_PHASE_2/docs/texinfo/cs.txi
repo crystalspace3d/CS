@@ -1,0 +1,37 @@
+@c -*-texinfo-*-
+@setfilename cs
+@settitle Crystal Space
+
+@node Top, , (dir), (dir)
+
+@center @strong{Crystal Space}
+
+This is the Crystal Space Manual.
+
+@emph{FIXME}: Create a proper title page.
+
+@html
+For a list of available topics, see the
+<a href="cs_ovr.htm">quick overview</a>, or the full
+<a href="cs_toc.htm">table of contents</a>.
+@end html
+
+@quotation
+@anchor{FAQ}
+@anchor{History}
+@emph{Missing}: This paragraph acts as an anchor for missing cross-references
+to documentation which has not yet been written.  Please ignore this text.
+@end quotation
+
+@shortcontents
+@contents
+
+@imports{intro,chapter.txi}
+@imports{build,chapter.txi}
+@imports{options,chapter.txi}
+@imports{apps,chapter.txi}
+@imports{tutorial,chapter.txi}
+@imports{concepts,chapter.txi}
+@imports{anatomy,chapter.txi}
+@imports{plugins,chapter.txi}
+@imports{contrib,chapter.txi}

@@ -1,0 +1,2 @@
+    SetupWGLextStr (hDC);
+    CS_%Name% = (strstr (extstrWGL, ext) != 0);

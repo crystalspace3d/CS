@@ -1,0 +1,9 @@
+SubDir TOP plugins video format codecs opendivx ;
+
+if $(OPENDIVX.AVAILABLE) = "yes"
+{
+Description odivx : "OpenDivX codec" ;
+Plugin odivx : [ Wildcard *.cpp *.h ] ;
+LinkWith odivx : csutil ;
+ExternalLibs odivx : OPENDIVX ;
+}

@@ -1,0 +1,4 @@
+@c -*-texinfo-*-
+@set UPDATED 7 Jul 2004
+@set EDITION 98.2.0
+@set VERSION 98.2

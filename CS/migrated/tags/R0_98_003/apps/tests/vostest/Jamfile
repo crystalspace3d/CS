@@ -1,0 +1,11 @@
+SubDir TOP apps tests vostest ;
+
+if $(VOS.AVAILABLE) = "yes"
+{
+Description vostest : "VOS support test" ;
+Application vostest : [ Wildcard *.cpp *.h ] : noinstall ;
+CFlags vostest :
+  [ FDefines _REENTRANT ] $(COMPILER.C++FLAGS.EXCEPTIONS.ENABLE) ;
+LinkWith vostest : csgeom csgfx cstool csutil ;
+ExternalLibs vostest : VOS  ;
+}

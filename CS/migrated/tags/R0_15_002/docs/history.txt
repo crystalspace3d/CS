@@ -1,0 +1,1004 @@
+The history order has been reversed so that new features are at the top.
+
+Short-term cleanups that need to be done:
+	- Resolve config/console/commandline mess.  Several things are broken
+	  currently: gamma, dmipmap1, ...
+	- Add to API: absolute versions of Rotate and RotateWorld for csCamera.
+	- Resolve confusion with SetTexture() and SetTextureHandle().  We need
+	  to be consequent.
+	- Consider flattening many of the routines that are now structured to
+	  go through all the recursive object layers (csWorld, csSector,
+	  csThing, ...)
+	- Check the dependencies of libraries/COM objects and try to find
+	  includes that don't belong there (like from csengine).
+
+23-Feb-2000
+	- Michael Dale Long did the following changes to Crystal Clear:
+	    - More csConsole bugfixes.
+	    - Added following new methods to csString:
+		LTrim() - Trims all whitespace from left side of string.
+		RTrim() - Trims all whitespace from right side of string.
+		Trim() - Does both LTrim() and RTrim().
+		Collapse() - Does Trim(), then collapses any interior
+		whitespace to a single space.
+		Also added a Format() function to provide printf capabilities,
+		but it is disabled because the function needed to do the
+		operation safely (vsnprintf) is not available on all the
+		platforms CS supports.
+	    - Used new csString functionality to enhance cctest's console.
+	    - Fixed a minor compile bug in cspython that cropped up a while
+	      back.
+	- Gary Haussmann removed extraneous include of ext_w32.h in OpenGL.
+	- Eric Sunshine eliminated several compilation warnings from
+	  ogl_halo.cpp.
+	- Eric Sunshine added the line renderer to the default list of 3D
+	  renderers built on BeOS.
+	- Eric Sunshine fixed bug in parsing of submenu from next.cfg which
+	  prevented application menu from displaying on MacOS/X Server.
+22-Feb-2000
+	- Gary Haussmann fixed another mipmap bug in the OpenGL rasterizer.
+	  The problem was that the maximum mipmap level required is actually
+	  MAX(log2(width),log2(height)), whereas he thought it was
+	  MIN(...,...) instead.
+	- Eric Sunshine began untangling the amazing interdependencies between
+	  csPhyziks header files in order to allow articula.cpp to compile.
+	- Eric Sunshine made further tweaks to csPhyziks to allow the
+	  templated linked-list to build on OpenStep.  Mostly this involved
+	  moving instance variables to the top of class declarations so that
+	  the compiler has seen them before inline methods refer to them.
+	- Eric Sunshine fixed a bug in the software texture manager which was
+	  introduced several weeks ago and which afflicted 32-bit color mode.
+	  The problem was that creation of mipmap level 0 did not respect the
+	  csPixelFormat properties of the target system, thus resulting in
+	  corrupted colors on some platforms.
+	- Simplified the BSP splitter and also added a criterium that should
+	  create a tree which is both more balanced and minimizes splits.
+	  Unfortunatelly the tree does not seem to be as good with this new
+	  splitter in comparison to just minimzing splits.
+	- Removed the old and obsolete support for dynamic polygons in polygon
+	  trees. This is now supported through other means.
+	- Martin Geisse submitted updates to some of the Texinfo documents
+	  which improve formatting.
+	- Thomas Hieber worked around a workaround from Eric Sunshine in MazeD.
+	- Some changes to physics library from Michael Ewert.
+	- Daniel Fannar Gudbjartsson did a few small changes to the physics
+	  library. He fixed several bugs.
+	- Robert Bate updated the Macintosh project files.
+21-Feb-2000
+	- Martin Geisse submitted more Texinfo conversions of the LaTeX files
+	  from newdoc.  These files still need a lot of work, but it is a
+	  start.
+	- Further sprites changes from Seth Galbraith. He changed
+	  3 pointers in csFrame into 2 ints.
+	- Eric Sunshine slightly reworked ImagePngFile::Load() load for the
+	  following reasons:
+	    - Eliminated compilation warnings about variables potentially
+	      clobbered by longjmp().
+	    - Eliminated a memory leak.  Was leaking a PNG info structure.
+	    - No longer unnecessarily maintains, within the instance,
+	      transitory information which is only needed during Load() time.
+	- Fixed bug in csPoly2DPool and lightpatch pool which could cause
+	  crashes in some cases.
+	- Some small cleanup/changes to csTerrain and terrain engine.
+	- WalkTest now deletes csView at exit.
+	- Eric Sunshine made several improvements to the introduction to the
+	  tutorial (though it still needs more work and clean up):
+	    - Added a lot of missing mark-up.
+	    - Improved formatting.
+	    - Corrected errors.
+	    - Eliminated obsolete references to COM.
+	- Justin Miller <dyad@fuse.net> submitted a first stab at an update to
+	  the tutorial to reflect the current state of Simple and CS.  Code
+	  is now up to date, but discussion is still lagging behind and
+	  inaccurate.  Needs more work.
+	- Eric Sunshine performed a very quick conversion from LaTeX to
+	  Texinfo on the tutorial update which Justin submitted, but much
+	  mark-up is still missing and formatting needs work.
+	- Fixed bug with adding of dynamic objects to octree. Now sprites
+	  should work well in levels containing STATBSP statement. They
+	  were broken for some time.
+	- Added extra light to Blocks game screen to avoid the dark
+	  side :-)
+	- Added 'Start Game' menu entry (suggestion from Eric Sunshine).
+	- Fixed rotation of shapes in Blocks so that rotation is relative
+	  to camera position. i.e. the Blocks will always rotate the same
+	  way no matter where the camera is.
+	- Eric Sunshine fixed csGraphics3DSoftware so that it once again
+	  compiles under NextStep.
+	- Eric Sunshine hacked around a NextStep compiler bug which generated
+	  "overflow in implicit constant conversion" warnings from many files
+	  in apps/mazed.  This was the one remaining compilation warning which
+	  had never been eliminated from the NextStep port, so this is the
+	  very first time that the NextStep port compiles entirely warning-
+	  free.
+	- Eric Sunshine updated his CVS snapshot script so that it is possible
+	  to specify distinct values for the number of archive packages, diffs,
+	  and logs to keep (rather than using the same value for all three).
+	  Dropped number of kept snapshots down to two from three (in order to
+	  make more efficient use of limited disk space at Source Forge), and
+	  bumped kept diffs and logs up to seven.
+	- Eric Sunshine fixed a nasty bug in the PNG loader which caused the
+	  image loader to access memory far beyond the allocated palette.
+	  This bug was responsible for the crasher which afflicted Windows
+	  users when trying to launch MazeD.
+	- Eric Sunshine templatized the linked-list class, ctLinkList.  Shhh!
+	  Don't tell anybody that I did this.  Now Michael Ewert need not
+	  consider the CS guys bullies any longer. :-)  As a happy side-effect,
+	  the linked-lists no longer generate a bogus compilation warning from
+	  the NextStep compiler.
+20-Feb-2000
+	- csPolygonSet now also holds a pointer to the parent container and
+	  checks if the parent is NULL before being added to a parent. This
+	  makes it safe (for example) to add a thing more than once to some
+	  sector.
+	- Added left/right arrow to menu items in Blocks where you can move
+	  the menu item left or right.
+	- Michael Ewert fixed a nasty bug in the physiks library. Angular
+	  and linear velocity were being used in wrong frame of reference
+	  a number of times in various files.
+	- Eric Sunshine changed the NeXT 2D driver so that it understands
+	  --simdepth=16 (in addition to 15 and 32 which it already understood).
+	- Michael Dale Long did some updates and bugfixes to csConsole.
+	  Now does input history.
+19-Feb-2000
+	- Changed novice/average/expert menu in Blocks so that it is now
+	  one menu which you can rotate horizontally with arrow left/right
+	  (instead of up/down).
+	- The seperate boardsize menu has also been replaced with a horizontal
+	  one.
+	- Eric Sunshine enhanced csStrVector so that it can perform both
+	  case-sensitive and case-insensitive sorting and comparison.
+	- Eric Sunshine fixed cspFileDialog so that it sorts the directory
+	  and file lists.
+	- Seth Galbraith implemented MergeTexels for sprites.
+	- Norman Kramer moved screenshot functionality in Glide driver and
+	  also enabled the new DrawTriangleMesh.
+	- Thomas Hieber did some more documentation and cleanup of the
+	  collision detection code.
+	- Thomas also added some fixed to Win32 networking by Eric Wigforss
+	  <ewigforss@novametrix.com>.
+18-Feb-2000
+	- Fixed Z-buffering for sprites. Was broken after the
+	  DrawTriangleMesh changes.
+	- Added large comment before csSector::Draw() explaining a plan
+	  for a new rendering loop.
+	- The highscore screen in Blocks shows for what level/play size
+	  the highscores are.
+	- Michael Ewert fixed a bad bug in articulated body solver.
+	- Noah L. Gibbs fixed a set_R bug reported by Thomas Hieber.
+17-Feb-2000
+	- Seth did some fixes to sprite code again.
+	- Added the first versions of the TeXInfo converted docs from
+	  Martin Geisse. The new txidocs directory is temporary until
+	  the documents are fully converted.
+	- Optimized the sprite changes from Seth a bit. Avoided allocation
+	  of arrays every frame. The copy of vertices is still there
+	  however.
+	- Improved both the speed of sprite lighting and also reduced
+	  memory usage for every sprite by removing the object_vertices
+	  array that could get allocated for every single sprite
+	  instance.
+	- Samuel <samuel@metalang.softnet.co.uk> contributed a patch
+	  to the software and X 2D drivers so that they allow resizing
+	  of the window. In principle the same thing can now be done
+	  for the other 2D/3D combinations too.
+	  The engine will adapt automatically to the new size.
+	- Changed score counting in Blocks (based on a suggestion from
+	  Andrew) so that score increases as speed increases. At lowest
+	  speed the bonus factor is 1 for every score point. At hightest
+	  speed the bonus factor is 3.
+16-Feb-2000
+	- Some fixes to csPhyzik from Michael Ewert.
+	- Seth Galbraith managed to almost fix sprites by disabling LOD
+	  for now. Skeletal sprites still don't work correctly though.
+	- Moved csColor to csutil and csTriangle to igraph3d.h.
+	- Started work on DrawTriangleMesh function in iGraphics3D.
+	  Not finished right now. The new code is not used right
+	  now so it should not hurt anything. I made sure that the
+	  non-software drivers still compile (only tested Line3D and
+	  OpenGL).
+	- Eric Sunshine updated a number of documentation files to reflect
+	  the fact that platform-specific makefiles now reside within the
+	  CS/libs/cssys tree rather than CS/mk/system.
+	- Nearly completed support for DrawTriangleMesh. Sprites now use
+	  it (you can still get the old behaviour back if you change
+	  the right #if 1 to #if 0 :-)
+	- OpenGL and Software now support the generic (unoptimized)
+	  DrawTriangleMesh. All other renderers are currently broken for
+	  sprites since they don't have a working DrawTriangleMesh
+	  implementation (sprites will not show). Check out OpenGL to
+	  see how it must be implemented.
+	- Note: OpenGL sprites using DrawTriangleMesh don't seem to be
+	  textured. I'm not sure why this is yet.
+	- A nice consequence of the new DrawTriangleMesh is that vertex
+	  fog should be a LOT faster.
+	- Eric Sunshine fixed a number of "variable may be used uninitialized"
+	  compilation warnings.
+	- Thomas Hieber added support for DrawTriangleMesh to D3D 5 and 6.1.
+15-Feb-2000
+	- Eric Sunshine worked around an OpenStep compiler bug which was
+	  triggeredy by ctLinkList.  The compiler generates unlinkable code
+	  when an inline method calls a second inline method before the
+	  compiler has seen the second method.  A simple textual
+	  reorganization of the file solves the problem.
+	- Changed the way Blocks counts score:
+	    - 10 points for every cube of a shape that falls down.
+	    - 1 point for every z-unit that is traversed in high speed
+	        (space bar down).
+	    - PlaneSurface*10*NumPlanes*NumPlanes for every NumPlanes
+	      removed at the same time. PlaneSurface is the number of
+	      cubes on a plane (i.e. 9 for 3x3).
+	    - 800 points if you manage to completely remove all cubes
+	      in the play area.
+	  In addition to that speed now increases with time and not
+	  with the number of removed planes.
+	- Changed description of rotation keys in Blocks keyconfig to yaw,
+	  roll, pitch.
+	- Fixed serious bugs with sprites by using csPoly3D and csPoly2D
+	  instead of the csVector subclasses.  Now sprites don't crash but
+	  they are still displayed the wrong way.
+	- Eric Sunshine eliminated more compilation warnings from the Irix
+	  compiler.
+	- Robert Bate updated Mac projects.
+	- Thomas Hieber updated VC projects.
+14-Feb-2000
+	- Fixed a bug in highscore handling of Blocks.
+	- Fixed rotation center of a few shapes in Blocks.
+	- Added highscore GUI for Blocks.
+	- Current level is remembered in blocks.cfg.
+	- Pause removes view temporarily.
+	- Based color of lines in 3D line driver on mean texture color.
+	- Eric Sunshine improved integration of the Terrain engine with VFS.
+	  Height map files specified via the HEIGHTMAP() keyword in the world
+	  file are now loaded via VFS.  He also temporarily added height.ter
+	  to terrain.zip since automatic height map generation is currently
+	  broken (thus a pre-existing height map is required).
+	- Eric Sunshine added documentation to "worldfmt" for new csLoader
+	  keywords MERGE_TEXELS, MERGE_VERTICES, and MERGE_NORMALS which Seth
+	  Galbraith added.
+	- Eric Sunshine fixed the reference to IRC in resources.tex to point
+	  at irc.linux.com rather than irc.icq.com.
+	- Eric Sunshine performed a fairly major overhaul of mdl2spr, the
+	  Quake model conversion tool.  Details are as follows:
+	    - Combined the programs mdl2spr (for MDL models) and md22spr (for
+	      MD2 models) into a single application.
+	    - No longer requires an external "palette.lmp" resource for
+	      extracting skins from MDL files, thus simplifying usage.
+	    - Cleaned up and organized the project.  Cleaned up the code
+	      considerably (though it can still use more cleaning).  Folded
+	      out redundant code.
+	    - Skins extracted from Quake 1 MDL files are now written as PNG
+	      files rather than PCX files, and are thus immediately usable by
+	      CS (unlike PCX images which CS can not deal with).  Eliminated
+	      the old PCX code.
+	    - Added a CS makefile so that it can be built easily on all
+	      platforms which are supported by CS.
+	    - Improved the documentation and moved it to the standard 'docs'
+	      directory.
+	- Eric Sunshine fixed warnings on Irix related to extra semi-colons
+	  following CSOBJTYPE.
+	- Eric Sunshine fixed a couple problems with usage of the 'which'
+	  command in unixconf.sh which afflicted the Irix platform.
+	- Seth Galbraith changed the arrays of vertices, normals, and vertices
+	  in each frame into vectors.
+	- Gary Haussmann added halo code written by FragDance.
+	- Gary also added extension detection code written by FragDance, with
+	  some modifications to support different platforms.
+	- Gary also fixed indentation a little and tried to fix some mipmap
+	  problems.
+	- Norman Kramer did some optimization of the ClipToPlane method.
+	- Norman also did an optimization of csMatrix3*=.
+	- Eric Sunshine rewrote an optimization which Norman Kramer made to
+	  csMatrix3::operator*=() such that it is robust and safe rather than
+	  fragile and potentially unsafe (in a multi-threaded environment).
+	- Michael Ewert did some changes to csPhyzik:
+	    - Catastrophe support added.
+	    - Evolve loop moved into ctworld.
+	    - Collision detection/response handled by callbacks of the
+	      catastrophe system.
+	    - Added CD catastrophe manager at init.
+	    - Daniel Gudbjartsson pointed out an error in ctMatrix3::cofactor.
+	    - No longer multiplying return value by (i,j).
+	- Thomas Hieber did further documentation and cleanup of CD code.
+	- Thomas also did some small changes to VC project files.
+	- Robert Bate made a small fix to csIniFile to compile on Macintosh.
+	- Robert also did some other changes.
+13-Feb-2000
+	- Eric Sunshine performed a fairly extensive overhaul of csIniFile.
+	  Except for the lowest level I/O functionality, most methods have
+	  undergone radical simplification.  Details are as follows:
+	    - Enumeration methods now return convenient iteration objects
+	      instead of working through inconvenient call-back functions.
+	    - Reimplemented most functionality of csIniFile, itself, in terms
+	      of iterators, thus significantly simplifying the implementation
+	      by eliminating a tremendous amount of nearly identical
+	      copy/paste code.
+	    - Modified clients of csIniFile to work through the new iterator
+	      objects.
+	    - Added missing 'const' qualifiers to several methods.
+	- Eric Sunshine re-engineered the way the Apple/NeXT ports generation
+	  the application's main menu.  Details are as follows:
+	    - Moved the main menu configuration information for all Apple/NeXT
+	      platforms to the new configuration file "next.cfg" which is
+	      loaded at run-time.  Removed the NeXTMenu.cfg files which
+	      hard-coded menu configuration into the application at compile
+	      time.
+	    - Rewrote NeXTMenu.cpp to load menu configuration from the new
+	      configuration file.  Menu related keywords in configuration are
+	      now lower-case rather than upper-case as they were in
+	      NeXTMenu.cfg.
+	- Eric Sunshine added several hundred (or more) missing 'const'
+	  qualifiers throughout the project.
+	- Eric Sunshine fixed a bug in his CVS snapshot script (snapshot.py).
+	  It failed to close the time stamp file after reading it.
+	- Eric Sunshine eliminated the monolithic and inflexible organization
+	  of the platform-specific system makefiles by removing them from the
+	  global CS/mk/system directory and placing them in the proper and
+	  respective subdirectories of CS/libs/cssys, thus achieving a more
+	  modular configuration.
+	- Norman Kramer added code to the clippers to find out wether or
+	  not a polygon was actually clipped.
+	- Norman also added code to better support hardware renderers. He
+	  added code to precalculate u,v coordinates for all polygon
+	  vertices. Currently this code is optional (enclosed in defines).
+	- Thomas Hieber started documenting the collision detection stuff.
+	  This also includes renaming of various member function and
+	  attributes.
+	- Thomas also removed some dependencies between Crystal Shooter
+	  and csgame (csgame contained Crystal Shooter specific code).
+	- Thomas also adjusted the license of csgame to LGPL (instead of GPL).
+	- Thomas moved a test routine for triangle intersection from walktest
+	  to csMath3 (I think this routine is of general interest).
+	- Thomas also did a small cleanup of the VC project files.
+	- Simon Boily re-enabled multitexturing and fixed some problem with
+	  fog.
+12-Feb-2000
+	- Key config menu scrolls so that it works in low resolution too.
+	- Dimension of play area in Blocks is saved in config too.
+	- Depending on the height of a block it will change color. This
+	  helps for seeing the difference in height if you're looking
+	  from top to down.
+	- Added first primitive highscore handling to Blocks. Highscore
+	  information is also saved to 'blocks.cfg'. There is no GUI
+	  yet to view the highscores.
+	- Thomas Hieber did some changes to DX5 renderer to make
+	  DrawPolygonFX work again (part of the fix was to disable
+	  multitexturing, because the renderer does not completely switch
+	  back to singletexturing).
+11-Feb-2000
+	- Made keys in Blocks configurable through blocks.cfg.
+	  However, there is still no GUI to change them.
+	  Also changed the default keys (qweasd to rotate shape,
+	  cursor keys to move shape, del/home/end/pgdn/ins/pgup to
+	  manipulate camera, space to drop shape, p to pause, esc
+	  to return to menu).
+	- Started work on GUI to change keys. Not functional yet.
+	- Bad bug fixed in Blocks. When multiple planes were removed
+	  at the same time the behaviour of the blocks above was not
+	  right.
+	- Keys can now be configured at run-time in Blocks.
+	- Eric Sunshine eliminated several compilation warnings in csPhyziks.
+	- Eric Sunshine eliminated some unsigned versus signed warnings in
+	  csClear.
+10-Feb-2000
+	- Michael Ewert did some fixes in csPhyziks code.
+	- Fix to sprite modifications from Seth Galbraith.
+	- Fixed sprites so that they at least load again.
+	  But they are still completely wrong.
+	- Some improvements on Blocks. Added a 3D menu for starting.
+	- Made a fix in the rotating menu.
+	- Increased speed of falling blocks if score increases.
+	- Allowed to both move a falling block horizontally while
+	  rotating it. Previously Blocks could only handle one type
+	  of movement at the same time.
+	- Added one-level queue of keys in Blocks.
+	- Increased speed of rotation and movement of blocks a bit.
+	- Added a menu in Blocks to change play size to either 3x3,
+	  4x4, 5x5, or 6x6 (default).
+	- Some general cleanup to D3D code from Thomas Hieber.
+	- Thomas also fixed software renderer so that DrawPolygonFX
+	  supports all blending modes.
+	- Some changes to Glide StartPolygonFX from Norman Kramer.
+9-Feb-2000
+	- Andrew Zabolotny did some changes:
+	    - Renamed DEBUG to CS_DEBUG. On various systems many
+	      system-dependent files use the DEBUG macro to do weird things.
+	    - Serious fix to SCF. The refcount on factories was going nuts
+	      since the last change to refcounts being initialized to zero
+	      rather than to one.  Now the warnings on unreleased object
+	      instances during application shutdown is indeed meaningful.
+	    - Fix to scftutor. The Worm was incorrectly split into two
+	      (well, it was correct at the time refcount was initialized to
+	      zero).
+8-Feb-2000
+	- Seth Galbraith contributed big changes to sprite format.
+	- Norman Kramer added screenshot support to Glide rasterizer.
+	- Michael Dale Long added all the HTML files generated from the
+	  LaTeX documentation.
+	- Added 'boring' level to Blocks to test out some things.
+	- Implemented proper rotation of the blocks. Most of the shapes
+	  now rotate around their center.
+	- Added top-view to blocks.
+	- Added 'Game Over' test to Blocks. So now the game actually
+	  ends if you get too high (and you don't need Crack to get high
+	  with Blocks :-).
+7-Feb-2000
+	- Michael Ewert modified phyztest to use new ctVector3 modifications.
+	- Fixed bug with Blocks. The rotation check for 'x' was wrong.
+	- Michael Dale Long fixed the EntityManager interface to use
+	  ULongVector instead of csIntVector for lists of Entity classes,
+	  since they are declared ULong.
+	- Robert Bate updated the Macintosh project files.
+6-Feb-2000
+	- Michael Dale Long stomped some minor bugs in csConsole. Added
+	  support for left/right arrow key movements.
+	- Michael also fixed a bug in csString with the Insert() calls.
+	  Was using memcpy() when the source and destination overlapped.
+	  Now uses memmove().
+	- Seth Galbraith did some modifications to the documentation.
+	- Thomas Hieber fixed csclear by making the typed for ccUID
+	  consistent. (Was a mix of signed and unsigned, which caused
+	  compiler warnings on MSVC).
+	- Norman Kramer made some changes to the Glide drivers so that
+	  the compile and load again.
+	- Norman Kramer added support for defining planes in libraries.
+5-Feb-2000
+	- Fixed bug with clipping portals (i.e. portals that clip geometry
+	  in 3D; only room.zip has such portals on the spinning cube). They
+	  could cause severe crashes.
+4-Feb-2000
+	- Michael Ewert added new csDVector3 and csDMatrix3 to csgeom.  These
+	  are equivalen tto csVector3 and csMatrix3 but they use 'double'
+	  instead of 'float'.
+	- Eric Sunshine eliminated several compilations warnings and errors
+	  from Andrew's changes which manifested on OpenStep.
+	- Eric Sunshine worked around OpenStep compiler bugs triggered by
+	  several changes to the terrain library.
+	- Eric Sunshine eliminated the very lengthy pause and disk thrashing
+	  which occurred between the time "make" was typed and the time
+	  anything actually began to build.  The problem was caused by several
+	  unnecessary extensive scans of the CS directory tree for files which
+	  are only needed when building documentation.
+	- Eric Sunshine removed all of the documentation building targets and
+	  configuration information from the global makefiles (where it did
+	  not belong) and moved it into a new makefile "doc.mak".  The
+	  existing "doc" and "api" targets should continue to work correctly.
+	  However, the other documentation targets which Brandon added almost
+	  certainly do not work anymore and will probably require some
+	  tweaking by someone who actually has access to the required tools.
+	- Eric Sunshine moved the binary packaging script for NeXT from
+	  CS/libs/cssys/next to CS/bin.
+	- Thomthee Besset" <Besset@sugar-land.dowell.slb.com> submitted a
+	  patch for several MSVC project files which remove obsolete COM junk
+	  from Release mode.
+	- Andrew Zabolotny added some header files mumbo-jumbo to avoid
+	  repeated #defines of M_PI on OS/2.
+	- Seth Galbraith added MERGE_TEXELS, MERGE_VERTICES and MERGE_NORMALS
+	  world format tokens. Began implementation of vertex and normal
+	  merging (currently only counts unique vertices). Added LoadFrame
+	  method to csLoader (gets csFrame* from a frame number).
+	- Michael Ewert made some code format changes.
+	- Michael also switched csphyzik library to using csVector3 or
+	  csDVector3. It is still aliased as ctVector3.
+3-Feb-2000
+	- Seth Galbraith changed sprite loading in csParser so that
+	  csSpriteTemplate::MergeTexels is now called to eliminate duplicate
+	  texel maps.
+	- Eric Sunshine temporarily removed Seth Galbraith's new call to
+	  csSpriteTemplate::MergeTexels() from csLoader since MergeTexels() is
+	  buggy and results in deferred memory corruption at termination time.
+	  The problem is that MergeTexels() causes the merged texels[] arrays
+	  to be deleted multiple times.
+	- Eric Sunshine rewrote several bit-sets used by the terrain engine so
+	  that they are now implemented via safe and portable bit masks rather
+	  than unsafe and unportable unions.  This fixes the known problems
+	  with big-endian machines without resorting to special-case hackery.
+	- Andrew Zabolotny did a huge update again:
+	    - Re-written csgfxldr library:
+		- Renamed iImageFile to iImage.  An iImage not always
+		  originates from a file.
+		- Added paletted images support.  On a call to
+		  csImageLoader::Load you can tell loader whenever you want
+		  CS_IMGFMT_PALETTED8 format or CS_IMGFMT_TRUECOLOR (see
+		  iimage.h).
+		- Added alpha channel support.  There is a bit called
+		  CS_IMGFMT_ALPHA that can be combined with above to load RGBA
+		  images or paletted + alpha channel separately.  Also there
+		  is another "image format" called CS_IMGFMT_NONE that can be
+		  combined with CS_IMGFMT_ALPHA to load just alpha channel.
+		- Added Heckbert quantization routine.  This is a very fast
+		  algorithm for converting truecolor images into paletted ones
+		  (by the way, my routine converts about 3.200.000 pixels/sec
+		  on my good old P5/166).  The routine is useable even
+		  separately from CS (its not CS-related at all).  No wonder
+		  mpeg players are able to compute palette for MPEG videos in
+		  each frame.
+		- Improved SGI image loader support.  Now loads encoding-type
+		  3 images too.
+		- Improved most other image loaders.  JPEG loader now converts
+		  to 8-bit paletted images internally if required.
+		- Removed PCX write support. Anybody cries? :-)
+		- Added PNG write support.  You can write truecolor and
+		  paletted PNG files, just pass an iImage pointer.
+		- FAST! mipmap computation.  Removed Blend() method.  Only one
+		  MipMap() (of two) method remains.  Mipmap step 0 is the
+		  blended image, mipmap step 1 is a 2x2 scaled texture, 2 -
+		  4x4, 3 - 8x8.  When mipmaps are scaled down, the average of
+		  2x2, 4x4, 8x8 blocks of pixels is taken.  The speed seems
+		  about 42 256x256 RGB blended mipmaps (level 0) per second.
+		  Level 1,2,3 mipmaps are created much faster naturally (~150,
+		  ~200, ~400 per second).
+	    - Modified the 3D renderers.  Just two mipmap modes are supported:
+	      MIPMAP_NICE and MIPMAP_VERYNICE.  UGLY and DEFAULT are gone.
+	      Made required modifications to let them work with the new iImage
+	      interface.  Added ScreenShot () method to iGraphics3D interface.
+	      Only software renderer implements it though.
+	    - Changed walktest.  Now it does PNG snapshots at any bit depth
+	      (with software renderer only).  The OpenGL driver could possibly
+	      use glGetPixels() for this.
+	    - Changed csparser.  Removed lots of csWorld * passed all over the
+	      place.  Made one global static csWorld * variable instead.
+	      Moved all private methods under "private:", just three methods
+	      are left to be public.
+	- Eric Sunshine fixed several problems which were introduced with
+	  Andrew's changes and which prevented compilation on NextStep and
+	  OpenStep.
+	- Eric Sunshine fixed up the NeXT ports so that they can now use GNU
+	  getopt_long() and consequently removed the CS_NO_GETOPT_LONG flag
+	  from scfreg.cpp.
+	- Thomas Hieber fixed several of the apps after Andrew's big changes.
+	- Andrew implemented a cool Ascii-Art {R} {tm} display.  -d or
+	  --display options.  Default size 79x24, you can enlarge for more
+	  pleasant results if you use a larger console (with -d79,40 for
+	  example).
+	- Eric Sunshine added the 3D line driver to the default list of
+	  drivers built on the NeXT platforms.
+2-Feb-2000
+	- Large update to terrain engine from Alex Pfaffe.
+	    - Now renders 3000 triangles instead of only about 1000.
+	    - Large speed increase (from 6 FPS to about 17 FPS in software).
+	- Added conveniance functions SetFog and DisableFog to csPolygonSet.
+	- Blocks screen fades from black.
+	- Eric Sunshine fixed several compilation warnings regarding unused
+	  variables and assignments of float or double to integer in the new
+	  terrain code.  He also fixed a problem where a comparison against a
+	  single-bit 'bool' field failed to work correctly on platforms which
+	  do not define a native 'bool' type.
+1-Feb-2000
+	- Improved demo screen for Blocks again.
+	- First block in demo is now actually random.
+	- Changed 'ESC' key in Blocks so that it now goes to the
+	  startup screen.
+	- Camera is put at the correct position after starting.
+	- When a dynamic light is deleted (with 'delete') it will now
+	  remove itself from the world.
+	- Eric Sunshine fixed several compilation warnings and errors in
+	  simpcons.h and cssprite.cpp which afflicted MSVC++.
+	- Made the colors for Blocks a little nicer.
+	- Fixed bug with camera position in Blocks. Uninitialized variable.
+	- Dynamic light for Blocks startup screen works again.
+	- Blocks writes out score now.
+	- Blocks unpauses correctly when you restart game while paused.
+	- Added visible raster to Blocks to help see where a shape
+	  will fall.
+	- Eric Sunshine fixed a couple problems with handling of key input
+	  in the Win32 driver in the absence of DirectInput.  The ESC key
+	  was generating multiple key-down events, and the Return key was
+	  generating two key-down events with distinct key codes.
+	- Blocks uses correct FindRGB to look for colors.
+	- Fixed bug in Blocks so that shapes cannot be stranded partially.
+	- Michael Dale Long added MSVC project files for cscon, csclear,
+	  and cctest. Fixed some various problems with the previous three
+	  for compiling under MSVC. Important fixes for Simple and
+	  csConsole for running on some platforms. Added a new csutil
+	  file to cspace so PhyzTest will compile under MSVC.
+31-Jan-2000
+	- Eric Sunshine fixed unixconf.sh so that it correctly captures
+	  and interprets output of 'which' command.
+	- Received new version of Blocks from Void <glitia@texnet.ro>.
+	  This version works almost correctly. Planes disappear when filled
+	  up and there is a score. Many bugs have been fixed.
+	- Cleaned up the Blocks code.
+	- Added a lot of new shapes sorted by difficulty.
+	- Added difficulty setting to Blocks.
+	- Added animated demo screen.
+	- Fixed a few small other bugs in Blocks (camera is now
+	  properly initialized when a new game starts).
+	- Eric Sunshine fixed the makefile for the csPython plug-in so that
+	  it correctly locates the Python library within PYTHON_LIB and
+	  also eliminated its reliance on the hard-coded 1.5 library name.
+30-Jan-2000
+	- Michael Dale Long made some fixes for the new console,
+	  particularly in page/up page down scrolling support. Fixed
+	  problem with console not properly handling 2D drivers that
+	  disregard the update rectangle passed to Print().
+	- Michael also modified the declaration of ccUIDs to be more
+	  NeXT-friendly.
+	- Michael updated the GGI driver keyboard handler.
+	- Seth Galbraith started big changes to csSprite3D class. He
+	  seperated 3D coordinates from normals and texture coordinates
+	  for faster and more flexible sprites. csFrame and csSpriteTemplate
+	  are affected.
+	- Eric Sunshine fixed support for testing CS_BIG/LITTLE_ENDIAN
+	  on BeOS.
+	- Noah L. Gibbs fixed a Precalculate() bug in csPhyzik. Rigid bodies
+	  should now spin properly even if queried by rotation matrix
+	  instead of quaternion rotation.
+29-Jan-2000
+	- Fixed remaining memory leak in dynamic object/polygon tree
+	  structure.
+	- Added statistics printing after building polygon tree.
+	- Fixed bug in statistics calculation of octree/bsp trees.
+	- Experimented with bsp tree building. It appears that the
+	  bsp tree builder in CS isn't that good. We need a better one.
+	  Tried to add detection for convex sets of polygons but this
+	  doesn't seem to work very well right now.
+	- Norman Kramer added copy constructor in csVector3 and changed
+	  "real" to "double" in csQuaternion.Normalize().
+	- Noah L. Gibbs added state_alloc and state_free features to
+	  ctWorld and to ctEntity.
+28-Jan-2000
+	- Michael Dale Long did a major update to the CrystalClear input
+	  system. Added a lot of support for the new csConsole plugin.
+	  cctest now sports a simple but interactive console. More
+	  bugfixes in the csConsole backspace handling code, as well.
+	  Support for prompts that shouldn't be deleted by backspacing.
+	- Michael also fixed fixed scftutor.mak (didn't include libraries
+	  in the proper order).
+	- Did some fixes to the dynamic objects in polygon trees.
+	  Now it appears to work correctly (i.e. not crash) but I think
+	  there are still a few memory leaks. Still investigating.
+	- Noah L. Gibbs added AddCurrentItem() method to csDLinkList to
+	  allow insertion at the current location rather than only at the
+	  list beginning.
+	- Robert Bate fixed Mac port again and updated the project files.
+27-Jan-2000
+	- Update to some docs from Wyatt Miler.
+	- Andrew Zabolotny improved the test for endianess.
+	- Added 'delsprite' console command to delete a sprite.
+	- Improved new Line3D renderer a bit (double buffering and
+	  faster key handling). Also cleaned up all unneeded stuff.
+	- Eric Sunshine eliminated a few warnings in Map2CS and MazeD.
+	- Add more debugging info for dynamic objects in polygon trees.
+	  Still hunting a bug.
+26-Jan-2000
+	- Michael Dale Long added DeleteAt() to csString to delete a range
+	  of characters within a csString.
+	- Michael also updated csConsole backspace handling to use
+	  DeleteAt().
+	- Update to api.tex from Wyatt Miler.
+	- Fixed 'default' mipmapping setting.
+	- Made a new 'line3d' 3D renderer and a linex2d 2D driver. This
+	  is for wireframe rendering.
+	- Simon Boily restored multipass support in the Direct3D 6.1
+	  renderer (more efficient, faster). He also implemented vertex
+	  caching/batching in PolygonFX (roughly 30% speed increase)
+	  it could be tweaked for better performance. He fixed PolygonFX
+	  so that it can do flat/gouraud polygons and he added more
+	  hardware caps checking.
+25-Jan-2000
+	- Major update to the csConsole plugin from Michael Dale Long.
+	  He added csConsoleInput, cursor functionality, implemented
+	  proper redraw rectangle support and support for testing most
+	  console functions is integrated into cctest.
+	- Did some extra cleaning up of the new dynamic object code
+	  (for polygon trees). Seems to be working properly now.
+	- Added view frustrum to csRenderView. Use this for quickly culling
+	  octree nodes. This should speed up rendering a bit.
+	- Brett Hall <swizin@rain.org> fixed OpenGL and software 2D
+	  drivers for X Windows so that they don't crash when the windows
+	  are closed by the window manager.
+	- Thomas Hieber did an update of the VC project files.
+24-Jan-2000
+	- Noah L. Gibbs fixed Normalize() method in csQuaternion.
+	- Noah also got rigid bodies pretty much working in his demo code,
+	  checking in new fixes and features.
+	- Fixed several bugs in new system to add dynamic objects to
+	  polygon trees. It is nearly working correctly for sprites now.
+	- Andrew Zabolotny commited some changes:
+	   - Improvements to MazeD:
+		- added texture library dialog (Ctrl+L)
+		- "Window" menu has been split into "View" and "Window".
+	   - Improvements to software 3D renderer:
+		- mixmode is now history (always true_rgb) for compatibility
+		  with hardware renderers (also less dead code).
+		- improved much palette computation algorithm for 8-bit
+		  modes (even maze.zip doesnt look THAT bad anymore :-)
+		- todo: fix texture cache problem, fix truecolor modes
+		  to not depend on the 256-color palette, switch truecolor
+		  modes to "one palette per texture" mode (i.e. "private").
+	- Andrew also added a 'palette on/off' command to the console.
+	- Update to VC project files from Thomas Hieber.
+22-Jan-2000
+	- Gary Haussmann checked in a fix from Thomas Skoldenborg to
+	  prevent 3Dfx/Mesa drivers from dying horribly upon exiting the
+	  program. The problem was that glXDestroyContext was not being
+	  called.
+21-Jan-2000
+	- Michael Day continued his work on the autoconf system
+	  in CS.
+	- Andrew Zabolotny updated inline assembly in software renderer
+	  so that it is gcc 2.95 compatible.
+	- Andrew also fixed the makefiles so that the define NO_ASSEMBLER
+	  when compiling with MODE != optimize.
+	- Thomas Hieber added some changes to the Direct3D port contribued
+	  by Simon Boily <simonb@telisphere.com>. He added multitexturing
+	  support and render state caching (more efficient render state
+	  changes). The multipass code has been removed. This will be
+	  rewritten later. So lightmaps will currently not appear on
+	  hardware without multitexturing.
+	- simonb@telisphere.com also fixed the detection code for windowed
+	  mode.
+	- Thomas Hieber adjusted project files for network demo provided
+	  by Eric Wigforss <ewigforss@novametrix.com>, I did some
+	  adjustments too, to make debug and release mode consistent.
+20-Jan-2000
+	- Michael Day started adding an 'autoconf' system to CS. He
+	  started his work with the csgeom library.
+	- Thomas Hieber updated Windows documentation.
+	- Changes to csphyzik from Noah L. Gibbs.
+19-Jan-2000
+	- Noah L. Gibbs added Normalize() method to csQuaternion.
+	- Continued work on adding objects in polygon trees. Started
+	  converting the old dynamic polygon concept for sprites to
+	  the new way.
+	- Thomas Hieber fixed Map2CS so that curves are now the right
+	  format.
+	- Michael Ewert fixed a problem in the csphyzik library.
+	- Robert Bate made a change to the Mac port so that the mac event
+	  is dispatched to the right code if it is not handled by the 2d
+	  driver. The Mac projects are also brought up-to-date again.
+18-Jan-2000
+	- Further work on objects in polygon trees.
+	- Michael Dale Long did a major update to the csconsole plugin.
+	  iConsole and csConsole are finished for the time being. Updated
+	  csSimpleConsole to be compatible with the new interface. Added
+	  some test cases to cctest for testing the new console code.
+	  Added start of iConsoleInput interface.
+	- Gary Haussmann added change by Fragdance Galore for
+	  transparent-enabled text characters.
+	- Gary also fixed/enabled code for mipmapping in hardware.
+	  There were some problems since CS may not generate enough
+	  mipmaps to "fully populated" the mipmaps, from an OpenGL point
+	  of view.
+	- Further work on Map2CS by Thomas Hieber. He removed WriteKeys
+	  from CIWorld and moved it to CCSWorld. This method is indeed
+	  specific and should not need to be overridden in other export
+	  formats.
+	- Thomas also added 'phyztest' to the VC project files and made
+	  some adjustments to it.
+	- Robert Bate did some adjustments to the Mac project files.
+17-Jan-2000
+	- Eric Sunshine fixed a couple termination-time crashers in the BeOS
+	  2D drivers which resulted from invalid calls to virtual functions
+	  from within the destructor.
+	- Thomas Hieber added support for different output formats to
+	  Map2CS. The first one is an XML output format created by Petr
+	  Kocmid <pkocmid@atlas.cz>.
+	- Jorrit cleaned up the new quaternion class a bit.
+	- Norman Kramer corrected the cleanup of the quaternion class.
+	- Noah L. Gibbs fixed another serious bug in csPhyzik. Found out
+	  why velocities weren't working on ctPointMass -- fixed it?
+	  Serious error in the way Newtonian points were calculating
+	  derivative. Still looking for that bug in my test-case, though,
+	  so this may still have serious defects.
+16-Jan-2000
+	- Norman Kramer added a new quaternion class to csgeom.
+	- Noah L. Gibbs did some further work on the csPhyzik library.
+15-Jan-2000
+	- Fundamental change to the polygon tree class structure (i.e.
+	  BSP and octrees). csPolygonParentInt no longer exists. Instead
+	  a csSector is always assumed to be the parent container for
+	  the polygon tree. This makes the code easier to understand and
+	  also somewhat more efficient (less virtual functions needed).
+	  The disadvantage? BSP and octrees are now tied to sectors.
+	- I also dropped support for the old BSP keyword (now only
+	  STATBSP is supported). This breaks the mirror.zip level (but
+	  it is easy to fix). The loader will print out an error message
+	  if BSP is still used.
+	- Removed debugging code which was accidently left in the
+	  c-buffer/coverage mask tree culling. This could cause a significant
+	  drop in performance.
+	- Thomas Hieber did some fixes on csgame. He reenabled proper
+	  keyboard handling.
+14-Jan-2000
+	- Noah L. Gibbs (angelbob) modified and test phyztest to work with
+	  his changes of the csPhyzik inheritance hierarchy.
+	- Noah added linked list for ctEntity class.
+	- Noah changed ctPhysicalEntity to have ctEntity as a parent class.
+	- Michael Ewert did some other changes to csphyzik.
+	- Samuel <samuel@metalang.softnet.co.uk> fixed interpolation for
+	  triangles so that there are no more unexpected crashes (in
+	  some cases viewing sydney.zip could crash CS).
+	- Samuel also made some changes to the skeleton sprites so that
+	  the skeletal animation system is now completely seperate from
+	  csSprite3D.
+	- Further work on dynamic objects in polygon trees.
+	- Andrew Zabolotny updated his memory debugger so that it now works
+	  on Linux/ELF, DJGPP, and any other platform with GCC >= 2.8.0.
+	- Eric Sunshine upgraded documentation for the snapshot.py script.
+13-Jan-2000
+	- Some further work on dynamic objects in polygon trees.
+	- Eric Sunshine made a fairly major change to the CVS snapshot
+	  generation script.  It now generates packages based on a
+	  configurable list of archivers.  The current list now includes bzip2
+	  and zip in addition to the original gzip.  The 'diff' is no longer
+	  generated from an older existing package (since it is now difficult
+	  more to decide which older package to choose).  Instead the diff is
+	  performed based upon time-stamp of the last run, and the timestamp
+	  is stored in a file in the log directory.
+	- Thomas Hieber fixed the DirectX 6.1 renderer to make it work again.
+12-Jan-2000
+	- Added double linked list code from David Durant to csutil.
+	- Did first work on new system to add dynamic objects to
+	  polygon trees.
+	- Andrew Zabolotny added documentation for his memory debugger.
+	- Michael Ewert did a few changes to the phyzik library. He added
+	  an NxN matrix class (ctMatrixN).
+11-Jan-2000
+	- Changes from David Durant to implement a new callback for sprites
+	  which is called when the sprite is REALLY drawn. He also added
+	  an actor pointer (csObject) to csSprite3D.
+	- Andrew Zabolotny added -f option to awk debug script so that it
+	  can be invoked manually.
+	- Eric Sunshine made minor VFS-related corrections to INSTALL.Win.
+	- Norman Kramer fixed rle8 encoding and added little/big endian
+	  support in bmp loader class.
+10-Jan-2000
+	- Andrew Zabolotny has CVS write access again! :-)
+	- He also fixed the change that Jorrit made with regards
+	  to SetName in csObject.
+	- Norman Kramer removed the test for important colors in 256-color
+	  bitmaps (BMP loading).
+	- More updates to Map2CS from Thomas Hieber.
+          The default sector is now generated using black flatshading
+	  instead of using an randomly selected texture. (this will
+	  also help a little bit with performance).
+	- Thomas also updated the Win VC project files to reflect Jorrits
+	  latest move of files.
+	- Eric Sunshine made a few minor VFS-related corrections to
+	  docs/INSTALL.NeXT-Binary.
+	- Norman Kramer added support for RLE8 encoded BMP-files.
+8-Jan-2000
+	- Michael Dale Long added support for configurable colors using
+	  the iTextureManager to iConsole.  He also removed all dependencies
+	  on the 3D graphics driver from the csConsole plugin.
+	- Eric Sunshine changed the CVS snapshot script so that it also
+	  creates a symbolic link to the most recent 'diff' file in addition
+	  to creating a link to the most recent package.  (This feature was
+	  requested by a user.)
+	- Fixed bug in the destructor of csPolygon3D. After freeing some
+	  of the internal resources functions were called that still dependent
+	  on those resources. Solved this by setting the pointer to the
+	  resources to NULL so that those functions can detect that case.
+	  This fixes the bug when CS is exited while a dynamic light
+	  is active.
+	- Moved all 2D cullers to libs/csengine/culler (coverage mask
+	  tree, quadtree, and c-buffer).
+	- Also moved quadtree.cpp from csgeom to csengine/culler.
+	- Created new csengine/polytree and moved BSP and octree stuff
+	  from csgeom to csengine.
+	- Thomas Hieber did some changes to Map2CS. Polygons are
+	  only added to sector walls that are part of 'worldspawn'.
+	  Some other additional fixes and changes.
+	- Thomas also added documentation for map2cs.
+	- Thomas also fixed a crash on exit related to the console.
+	- Michael Ewert did some changes to csphyzik. He added body_a
+	  and a 'work in progress' class.
+	  Also added get_I_inv and get_angular_P.
+7-Jan-2000
+	- Fixed colored static lighting for OpenGL and Direct3D.
+	- Some fixes on lightmap deallocation. Now use DecRef()
+	  consistently. Unfortunatelly this still doesn't seem to fix
+	  the 'pure virtual method call' at exit.
+	- Michael Dale Long created the new iConsole interface and cscon
+	  plugin.  Modified csSimpleConsole and other code that used it
+	  (walktest, csgame) to use it instead of the old csConsole.
+	  The new cscon still needs a lot of work, so csSimpleConsole
+	  will continue to work as before.
+	- Eric Sunshine fixed several minor problems which cropped up with
+	  the introduction of the new iConsole and cscon.
+	- Robert Bate updated the Macintosh project.
+	- Norman Kramer updated documentation for the new world file
+	  features he added (TEX_SET, TEX_SET_SELECT).
+	- Small fix to new console from Seth Galbraith.
+6-Jan-2000
+	- Thomas Hieber added iterators for nodes and keys.
+	  Added simplified access to keys and node by name and classname.
+	  Added "FindName", Added methods with more intuitive names (in
+	  csobject library). (The old ones are still there...)
+	- Eric Sunshine added Append(char) to csString.  He also added a
+	  constructor which accepts a (char).
+	- Michael Dale Long fixed several bugs in makefile.py.
+5-Jan-2000
+	- Some further changes on support for curves in visibility system
+	  (unfinished).
+	- Eric Sunshine updated some out-of-date information in people.tex
+	  and added missing information.
+	- Eric Sunshine elmiminated some compilation warnings in world.cpp.
+	- Eric Sunshine worked around an OpenStep compiler bug which was
+	  triggered by the new csengine/planeclp.h file.  The compiler
+	  generates unlinkable code when an inline method calls another inline
+	  method which the compiler has not seen yet.  A simple textual
+	  reorganization of the file fixed the problem.
+	- Eric Sunshine eliminated signed vs. unsigned comparision compilation
+	  warnings in map2cs.
+	- Thomas Hieber added support for game sepcific data in the world
+	  file (KEY and NODE).
+	- Thomas also did a few further changes on Map2CS.
+4-Jan-2000
+	- Improved style a bit in new planeclp.h.
+	- Started work on including curved surfaces to the visibility
+	  algorithms.  This initially means that csThing::Merge() now actually
+	  also merges curved surfaces.
+	- Changed STATBSP() option so that it ignores things that contains
+	  curves and doesn't try to add them to the static bsp.  This means
+	  that curved surfaces will now appear correctly even if you use
+	  STATBSP() but they will still not use the visibility algorithm (i.e.
+	  they will be slow).
+	- Thomas Hieber removed setting for manual sectoring in map2cs.  It is
+	  now always on.  Textures are also exported with different name and
+	  filename.
+	- Thomas also fixed the release mode name for the Windows OpenGL 2D
+	  driver.
+	- Eric Sunshine modified the CVS snapshot-generation script to patch
+	  the CVS/Root files ("cvs1" --> "cvs.crystal.sourceforge.net") such
+	  that the resulting snapshot can be used later for an anonymous cvs
+	  update.
+	- Eric Sunshine fixed DECLARE_GROWING_ARRAY() so that it is compilable
+	  on all platforms.  Recent changes to appease MSVC (the addition of a
+	  floating semi-colon) were not grok'd by the NextStep compiler, so the
+	  issue was resolved by eliminating the problem altogether. :-)
+	- Eric Sunshine applied a patch to blocks.cpp from Artur Biesiadowski
+	  <abies@pg.gda.pl> to correct a bug where the orientation of a piece
+	  was different on-screen versus in-memory.
+	- Eric Sunshine fixed several compilation errors in map2cs.  He also
+	  eliminated some compilation warnings.
+	- Eric Sunshine removed all of the remaining, obsolete references to
+	  csregsvr from the documentation.
+	- Eric Sunshine fixed the makefile for scftutor so that it once again
+	  generates plug-in modules usable by NeXT.
+	- Eric Sunshine patched up linking of the CrystalClear plug-in so that
+	  it is once again usable on NeXT.
+	- Eric Sunshine fixed a bug in cctest where it was corrupting the path
+	  to the level file (as in "/lev/largelarge").
+	- Eric Sunshine fixed a bug in the CrystalClear plug-in where it failed
+	  to initialize its embedded physics configuration member.
+3-Jan-2000
+	- Thomas Hieber fixed a few things to make CS compilable again with
+	  MSVC.
+	- Norman Kramer added new keywords to world format TEX_SET and
+	  TEX_SET_SELECT.  Using these new keywords it is possible to use
+	  different texture sets for different instantiations of a thing
+	  template.
+2-Jan-2000
+	- Removed another 16 bytes from csLightMap.  This change also makes
+	  dynamic lighting more efficient (slightly).
+	- Started cleaning up csPolyTexture.
+	- Optimization in the software renderer (CreateDirtyMatrix).
+	- VERY significant memory optimization.  Instead of storing four
+	  lightmap structures (and lightmaps) for every polygon we now only
+	  store one.  The four lightmaps were the same anyway.  I don't know
+	  why there should be four.  This is left-over from a long time ago.
+	  This optimization means we save 4800 bytes for every lightmapped
+	  polygon with a 16x16 lightmap.
+	- Changes to Map2CS from Thomas Hieber (new lightscale option).
+	- Norman Kramer added a farplane to csCamera object such that
+	  everything is clipped to that plane.  Default is no clipping.
+	- Eric Sunshine wrote a script (bin/snapshot.py) which generates
+	  snapshots and diffs of the CVS repository.  The script currently
+	  runs daily and deposits the snapshots at:
+	  ftp://crystal.sourceforge.net/pub/crystal/cvs-snapshots.
+1-Jan-2000
+	- My computer is still working :-)  And so is Crystal Space.
+	- Removed 16 bytes from every csLightMap.  This means a saving of 64
+	  bytes for every lightmapped polygon since there are four lightmaps
+	  for the four mipmap levels.
+	- Removed another 12 bytes from csLightMap.
+	- Small optimization in coverage mask tree.
+	- Seth Galbraith did some changes on map2cs so that textures with no
+	  data are not saved.  If no texture is found then a new texture is
+	  created (with no data) with the name from the map file.
+	- Seth also updated DJGPP help system with some correct links.
+
+Please see "history.old" for less recent historical entries.

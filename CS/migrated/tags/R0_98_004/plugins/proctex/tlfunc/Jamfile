@@ -1,0 +1,8 @@
+SubDir TOP plugins proctex tlfunc ;
+
+Description tlfunc : "Function texture loader" ;
+
+Plugin tlfunc
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith tlfunc : cstool csgfx csgeom csutil ;

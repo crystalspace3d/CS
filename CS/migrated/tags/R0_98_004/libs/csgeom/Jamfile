@@ -1,0 +1,7 @@
+SubDir TOP libs csgeom ;
+
+Description csgeom : "geometry library" ;
+Library csgeom :
+  [ Wildcard *.cpp *.h ]
+  [ Wildcard [ ConcatDirs $(DOTDOT) $(DOTDOT) include csgeom ] : *.h ] ;
+LibDepends csgeom : csutil ;

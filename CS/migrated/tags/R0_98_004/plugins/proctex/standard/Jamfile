@@ -1,0 +1,10 @@
+SubDir TOP plugins proctex standard ;
+
+Description stdpt : "standard procedural textures" ;
+
+Plugin stdpt
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith stdpt : cstool csgfx csgeom csutil ;
+
+CompileGroups stdpt : proctexes ;

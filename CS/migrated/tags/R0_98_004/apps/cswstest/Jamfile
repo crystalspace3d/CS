@@ -1,0 +1,5 @@
+SubDir TOP apps cswstest ;
+
+Description cswstest : "Windowing System test" ;
+Application cswstest : [ Wildcard *.cpp *.h ] : noinstall ;
+LinkWith cswstest : csgeom csgfx cstool csutil csws ;

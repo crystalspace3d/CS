@@ -1,0 +1,8 @@
+SubDir TOP plugins video loader dds ;
+
+Description csddsimg : "dds image loader" ;
+
+Plugin csddsimg
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith csddsimg : csgfx csutil ;

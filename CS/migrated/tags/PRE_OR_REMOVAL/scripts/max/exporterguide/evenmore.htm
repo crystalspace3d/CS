@@ -1,0 +1,46 @@
+<html>
+<p><br>
+  Well, you asked for it and you ll get it. If you have read this guide you might 
+  have understood than the exporter exports into a format who is not only used 
+  by PlaneShift, but by the graphic engine who use it, so here are a few links 
+  to things that you might find interesting, they point to the crystalspace documentation. 
+  In reality I didn't try those features by myself, but they are more likely going 
+  to works, as anything than who works with crystalspace in general should works 
+  with PlaneShift.<br>
+  <br>
+  Please notice than all these features require than you edit the world file by 
+  yourself, if you know what XML is it's better as the world file use an xml-like 
+  grammar, if you don't know you should be smart enough to undertand how it works 
+  by looking at the examples.<br>
+  <br>
+  For details, see the the "Format of a Map File" section of the Crsystal Space <a href="http://www.crystalspace3d.org/docs/online/manual/">manual</a>.
+  It's easier to edit something when you know how it works, isn't it ? <br>
+  Your map isn t rendering fast enough ? See the LOD discussion also in the
+  Crystal Space manual.<br>
+  You might find very difficult to add particles systems, because for meshes you 
+  can use your favorite modeler, then import the mesh into PS, but for particles, 
+  you can only guess how it will looks like depending on the values you used this 
+  is why there is an app named partedit than you should find at the root of the 
+  "CS" directory.</p>
+<p>&nbsp;</p>
+<h2><a name="priority">Rendering Priorities</a></h2>
+<p>Just as s reference.</p>
+<p>In Crystal Space you can define rendering priorities for objects. Currently 
+  we assign priorities with these rules:</p>
+<ul>
+  <li>all "_t_" objects have "alpha" priority</li>
+  <li>all "_sky_" objects have "sky" priority</li>
+  <li>all "_p_" objects have "wall" priority</li>
+  <li>all "_s_" objects have "object" priority</li>
+  <li>all others objects have "object" priority</li>
+</ul>
+<p>CS renders objects in this sequence:</p>
+<ol>
+  <li>sky</li>
+  <li>wall</li>
+  <li>object</li>
+  <li>alpha</li>
+</ol>
+<p></p>
+<p>&nbsp; </p>
+</html>

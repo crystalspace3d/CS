@@ -1,0 +1,165 @@
+SubDir TOP plugins cscript cspython ;
+
+if $(PYTHON.AVAILABLE) = "yes"
+{
+  #--------
+  # Swig-generated files.
+  #--------
+  local common = cs_pyth.cpp ;
+  local cspacepy = [ DoSourceGrist cspace.py ] ;
+  MakeLocate $(cspacepy) : $(LOCATE.TARGETS) ;
+
+  if ! [ Property build : projgen ]
+  {
+    common = [ DoSourceGrist $(common) ] ;
+
+    if $(CMD.SWIG)
+    {
+      Swig $(common) $(cspacepy) :
+        [ DoSourceGrist cspace.i ] :
+        python :
+	-c++ -shadow :
+	[ ConcatDirs $(TOP) include ] :
+	[ ConcatDirs $(TOP) include ivaria ] :
+	$(SEARCH_SOURCE) [ ConcatDirs $(TOP) scripts python ] :
+	:
+	[ on $(cspacepy) GetVar LOCATE ] ;
+      Depends cspythonclean : pythonswigclean ;
+    }
+    else
+    {
+      SEARCH on $(common) = $(SEARCH_SOURCE) ;
+      local frozenpy = $(cspacepy:G=frozencspacepy) ;
+      SEARCH on $(frozenpy) = [ ConcatDirs $(TOP) scripts python ] ;
+      Copy $(cspacepy) : $(frozenpy) ;
+      Depends $(cspacepy) : $(frozenpy) ;
+    }
+  }
+  Clean cspythonclean : $(cspacepy) ;
+
+  rule InstallCSPythonPY
+  {
+    # Temporary SUBDIR override for InstallData.
+    local SUBDIR = [ on $(<) GetVar LOCATE ] ;
+    InstallData $(<) : $(>) ;
+  }
+  InstallCSPythonPY $(cspacepy) : bindings python ;
+
+  Library cspycommon : $(common) : noinstall shared ;
+  LibDepends cspycommon : cstool csgfx csgeom csutil ;
+  ExternalLibs cspycommon : PYTHON ;
+  CFlags cspycommon :
+    [ FDefines SWIG_GLOBAL ]
+    $(COMPILER.C++FLAGS.WARNING.NO_UNUSED) 
+    $(COMPILER.C++FLAGS.WARNING.NO_UNINITIALIZED) ;
+
+  #--------
+  # cspython -- Crystal Space plugin
+  #--------
+  Description cspython : "Python plugin" ;
+  Plugin cspython : cspython.h cspython.cpp pytocs.h pytocs.cpp ;
+  LinkWith cspython : cspycommon cstool csgfx csgeom csutil ;
+  ExternalLibs cspython : PYTHON ;
+  CFlags cspython :
+    [ FDefines SWIG_GLOBAL ]
+    $(COMPILER.C++FLAGS.WARNING.NO_UNUSED) 
+    $(COMPILER.C++FLAGS.WARNING.NO_UNINITIALIZED) ;
+  Depends cspython : $(cspacepy) ;
+
+
+  #--------
+  # pythmod -- Pure Python module
+  #--------
+  local desc = "pure Python module" ;
+  Description pythmod : $(desc) ;
+  Help pythmod : "Build the $(desc)" ;
+
+  # Plugin rule above already invokes CompileObject for $(common). We do not
+  # invoking it again because we want to avoid compiling the same (large) file
+  # twice. Intead, we just get a reference to the object file.
+  local commonobj = [ DoObjectGrist $(common:S=$(SUFOBJ)) ] ;
+
+  local pythmodsrc = [ DoSourceGrist pythmod.cpp ] ;
+  #local pythmodobj = $(commonobj) [ CompileObjects $(pythmodsrc) ] ;
+  local pythmodobj = [ CompileObjects $(pythmodsrc) ] ;
+
+  local pythmod = _cspace ;
+  if $(PYTHON.MODULE_EXT)
+  {
+    pythmod = $(pythmod:S=$(PYTHON.MODULE_EXT)) ;
+  }
+  else
+  {
+    pythmod = [ ConstructPluginTarget $(pythmod) ] ;
+  }
+
+  pythmod_TARGET = $(pythmod) ;
+  pythmod_SOURCES = $(pythmodsrc) ;
+  pythmod_OBJECTS = $(pythmodobj) ;
+  LinkWith pythmod : cspycommon cstool csgfx csgeom csutil ;
+  ExternalLibs pythmod : PYTHON ;
+  CFlags pythmod : $(PLUGIN.CFLAGS) ;
+  LFlags pythmod : $(PLUGIN.LFLAGS) $(LINKLIBS) ;
+  NotFile pythmod ;
+  Depends pythmod : $(cspacepy) ;
+  Depends pythmod : $(pythmod) ;
+  Depends plugins : pythmod ;
+  MakeLocate $(pythmod) : $(LOCATE.TARGETS) ;
+  Depends $(pythmod) : $(pythmodobj) ;
+  LinkPlugin $(pythmod) : $(pythmodobj) ;
+
+  rule InstallPythmod
+  {
+    local plugindir = $(appdatadir) ; # Temporary override of global plugindir.
+    SystemInstallPlugin $(1) : $(2) ;
+  }
+  InstallPythmod $(pythmod) : bindings python ;
+
+  Always pythmodclean ;
+  NotFile pythmodclean ;
+  Clean pythmodclean : $(pythmod) $(pythmodobj) ;
+  Depends clean : pythmodclean ;
+
+
+  #--------
+  # python.cex -- cs-config extension
+  #--------
+  # Note that '__EOF__' is purposely quoted to prevent shell from intrepreting
+  # dollar signs in quoted block.
+  actions PythonCex
+  {
+    cat > $(<) << '__EOF__'
+#! /bin/sh
+# This file is generated automatically by cspython/Jamfile
+PYTH_LIBS="$(PYTHON.LFLAGS[1]) $(CSPYTHON.PLATFORM_LIBS[1])"
+PYTH_CFLAGS="$(PYTHON.CFLAGS[1])"
+PYTH_CXXFLAGS="$(PYTHON.CFLAGS[1])"
+PYTH_DEPS=""
+
+if test -z "$1"; then
+    echo "Do not invoke this sub-component of cs-config directly."
+    exit 1
+fi
+
+case $1 in
+    --libs) echo "$PYTH_LIBS" ;;
+    --deps) echo "$PYTH_DEPS" ;;
+    --cflags) echo "$PYTH_CFLAGS" ;;
+    --cxxflags) echo "$PYTH_CXXFLAGS" ;;
+    *) echo "Unknown option"; exit 1 ;;
+esac
+__EOF__
+  }
+
+  local cexfile = python.cex ;
+  local extralibs ;
+  switch $(TARGET.OS)
+  {
+    case WIN32 : extralibs = "gdi32 shell32" ;
+    case * : extralibs = "" ;
+  }
+  CSPYTHON.PLATFORM_LIBS on $(cexfile) = $(extralibs) ;
+  ShellScript $(cexfile) : PythonCex ;
+  Depends cspython : $(cexfile) ;
+  Depends cspythonclean : $(cexfile)clean ;
+}

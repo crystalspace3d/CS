@@ -1,0 +1,12 @@
+SubDir TOP plugins video canvas openglwin ;
+
+if $(GL.AVAILABLE) = "yes" && $(TARGET.OS) = "WIN32"
+{
+Description glwin32 : "GL/Win32 2D driver" ;
+Plugin glwin32 : [ Wildcard *.cpp *.h ] ;
+LinkWith glwin32 : win32canvascommon openglcommon canvascommon csgeom csutil ;
+MsvcExternalLibrary glwin32 : "version.lib" ;
+LFlags glwin32 : "-lversion" ;
+ExternalLibs glwin32 : GL ;
+CompileGroups glwin32 : canvases  openglcanvas ;
+}

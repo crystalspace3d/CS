@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+    How the GL driver database works:
+    
+    First, a set of configurations is specified in the <configs> section.
+    Each configuration has an associated name.
+    
+    Then, some rules are declared in the <rules> section. Rules consist of
+    severeral <conditions>, which can be:
+    - <regexp>: Match one of the GL strings against a regular expression.
+    - <comparever>: Compare the a version against a prefined value.
+    - <negate>: True if the contained rule(s) are false.
+    - <match>: True if the contained rule(s) are true.
+    <conditions> as well as <negate> and <match> are containers for conditions;
+    by default, they are true if all contained conditions are true. This 
+    behaviour can be changed by specifying the 'fulfill="one"' attribute. 
+    (You can also specify 'fulfill="all"', but that's just like the default.)
+    
+    If the <conditions> section evaluates to 'true', all the configurations 
+    from the <configs> section specified in the <applicable> sections (in 
+    <usecfg>...</usecfg> tags) are added to the global config tree; otherwise, 
+    the configurations specified in <notapplicable> are added.
+    
+    The rules are evaluated in the order they appear in the database.
+  -->
+<gldriverdb>
+  <configs>
+    <config name="brokenstencil">
+      <Video>
+	<OpenGL>
+	  <BrokenStencil>true</BrokenStencil>
+	</OpenGL>
+      </Video>
+    </config>
+    <config name="novbo">
+      <Video>
+	<OpenGL>
+	  <UseExtension>
+	    <GL_ARB_vertex_buffer_object>no</GL_ARB_vertex_buffer_object>
+	  </UseExtension>
+	</OpenGL>
+      </Video>
+    </config>
+    <config name="noavp">
+      <Video>
+	<OpenGL>
+	  <UseExtension>
+	    <GL_ARB_vertex_program>no</GL_ARB_vertex_program>
+	  </UseExtension>
+	</OpenGL>
+      </Video>
+    </config>
+    <config name="noaps">
+      <Video>
+	<OpenGL>
+	  <UseExtension>
+	    <GL_ARB_point_sprite>no</GL_ARB_point_sprite>
+	  </UseExtension>
+	</OpenGL>
+      </Video>
+    </config>
+    <config name="3dfxhacks">
+      <Video>
+	<OpenGL>
+	  <UseExtension>
+	    <GL_ARB_multitexture>no</GL_ARB_multitexture>
+	  </UseExtension>
+	  <Win32>
+	    <DisableConsoleWindow>yes</DisableConsoleWindow>
+	  </Win32>
+	</OpenGL>
+      </Video>
+    </config>
+    <config name="texturecompression">
+      <Video>
+	<OpenGL>
+	  <TargetFormat>
+	    <GL_RGB>compressed</GL_RGB>
+	    <GL_RGBA>compressed</GL_RGBA>
+	    <GL_RGB5_A1>compressed</GL_RGB5_A1>
+	    <GL_RGBA8>compressed</GL_RGBA8>
+	  </TargetFormat>
+	</OpenGL>
+      </Video>
+    </config>
+    <config name="softgl">
+      <Video>
+	<OpenGL>
+	  <TextureFilter>none</TextureFilter>
+	</OpenGL>
+      </Video>
+    </config>
+    <config name="nostencil">
+      <Video>
+	<OpenGL>
+	  <Caps>
+	    <Stencil>no</Stencil>
+	  </Caps>
+	</OpenGL>
+      </Video>
+    </config>
+    <config name="noinvertedfog">
+      <Video>
+	<ShaderManager>
+	  <Tags>
+	    <inverted_fog>
+	      <Presence>forbidden</Presence>
+	    </inverted_fog>
+	  </Tags>
+	</ShaderManager>
+      </Video>
+    </config>
+    <config name="pixelformatbroken">
+      <Video>
+	<OpenGL>
+	  <UseExtension>
+	    <WGL_ARB_pixel_format>no</WGL_ARB_pixel_format>
+	  </UseExtension>
+	</OpenGL>
+      </Video>
+    </config>
+  </configs>
+  <rules>
+    <!-- rule description="Some more examples">
+      <conditions>
+	<comparever version="gl" relation="ge 1.1" />
+	<comparever version="win32_driver" relation="lt 6.34" />
+      </conditions>
+      <applicable>
+      </applicable>
+      <notapplicable>
+      </notapplicable>
+    </rule -->
+    <rule description="Broken stencil support">
+      <conditions fulfill="all">
+	<regexp string="platform" pattern="Unix" />
+	<regexp string="renderer" pattern="Rage *128" />
+	<regexp string="glversion" pattern="1.2" />
+      </conditions>
+      <applicable>
+	<usecfg>brokenstencil</usecfg>
+      </applicable>
+    </rule>
+    <rule description="Disable VBO for Linux ATI drivers 3.2.8">
+      <conditions fulfill="all">
+	<regexp string="platform" pattern="Unix" />
+	<regexp string="vendor" pattern="^ATI" />
+	<regexp string="glversion" pattern="X4.3.0-3.2.8" />
+      </conditions>
+      <applicable>
+	<usecfg>novbo</usecfg>
+      </applicable>
+    </rule>
+    <rule description="Work around broken ATI point sprites">
+      <conditions>
+	<!-- Point sprite activation messes up all other geometry -->
+	<regexp string="vendor" pattern="^ATI" />
+      </conditions>
+      <applicable>
+	<usecfg>noaps</usecfg>
+      </applicable>
+    </rule>
+    <rule description="Work around 3dfx Voodoo shortcomings">
+      <conditions>
+	<regexp string="vendor" pattern="^3dfx" />
+      </conditions>
+      <applicable>
+	<usecfg>3dfxhacks</usecfg>
+      </applicable>
+    </rule>
+    <rule description="GeForce setting: Texture Compression">
+      <conditions>
+	<regexp string="renderer" pattern="^GeForce" />
+      </conditions>
+      <applicable>
+	<usecfg>texturecompression</usecfg>
+      </applicable>
+    </rule>
+    <rule description="ATI r300+ setting: Texture Compression">
+      <conditions>
+	<regexp string="renderer" pattern="^R\(ADEON\|adeon\) 9\(5\|6\|7\|8\)00" />
+      </conditions>
+      <applicable>
+	<usecfg>texturecompression</usecfg>
+      </applicable>
+    </rule>
+    <rule description="GeForce FX 5xxxXT: Slow VBO">
+      <conditions>
+	<regexp string="renderer" pattern="^GeForce FX 5...XT" />
+	<!-- @@@ Add some version check ? -->
+      </conditions>
+      <applicable>
+	<usecfg>novbo</usecfg>
+      </applicable>
+    </rule>
+    <rule description="GeForce FX 5xxxXT: Broken 'Inverted fog'">
+      <conditions>
+	<regexp string="renderer" pattern="^GeForce FX 5...XT" />
+	<!-- @@@ Add some version check ? -->
+      </conditions>
+      <applicable>
+	<usecfg>noinvertedfog</usecfg>
+      </applicable>
+    </rule>
+    <rule description="NVidia: borked WGL_ARB_pixel_format" phase="preinit">
+      <!-- 
+        'phase="preinit"' means this rule is only considered during 
+	"pre-initialization". On Win32 this is the time a pixel format is 
+	picked.
+      -->
+      <conditions fulfill="all">
+	<regexp	string="win32_driver" pattern="^nvogl" />
+	<comparever version="win32_driver" relation="le 6.13.10.2846" />
+      </conditions>
+      <applicable>
+	<usecfg>pixelformatbroken</usecfg>
+      </applicable>
+    </rule>
+    <!--
+    <rule description="Software GL tweaks">
+      <conditions fulfill="one">
+	<regexp string="renderer" pattern="^Mesa" />
+	<regexp string="renderer" pattern="^GDI" />
+      </conditions>
+      <applicable>
+	<usecfg>softgl</usecfg>
+      </applicable>
+    </rule>
+    -->
+    <!--
+    <rule description="GeForce MX/Go class HW">
+      <conditions fulfill="one">
+	<regexp	string="renderer" pattern="^GeForce.*MX" />
+	<regexp	string="renderer" pattern="^GeForce.*Go" />
+      </conditions>
+      <applicable>
+	<usecfg>noavp</usecfg>
+      </applicable>
+    </rule>
+    -->
+  </rules>
+</gldriverdb>

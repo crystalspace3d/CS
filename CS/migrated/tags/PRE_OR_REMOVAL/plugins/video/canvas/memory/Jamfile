@@ -1,0 +1,11 @@
+SubDir TOP plugins video canvas memory ;
+
+Description memory : "memory 2D driver" ;
+
+Plugin memory
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith memory : canvascommon csutil ;
+
+CompileGroups memory :  canvases ;
+

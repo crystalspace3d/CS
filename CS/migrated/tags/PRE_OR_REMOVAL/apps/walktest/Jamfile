@@ -1,0 +1,73 @@
+SubDir TOP apps walktest ;
+
+Description walktest : "WalkTest demo" ;
+Application walktest : [ Wildcard *.cpp *.h ] ;
+LinkWith walktest : csgeom csgfx cstool csutil ;
+
+CompileGroups bugplug    : walkall ;
+CompileGroups csconin    : walkall ;
+CompileGroups csfont     : walkall ;
+CompileGroups csgifimg   : walkall ;
+if $(JPEG.AVAILABLE) = "yes"
+{
+  CompileGroups csjpgimg : walkall ;
+}
+CompileGroups csddsimg   : walkall ;
+CompileGroups csparser   : walkall ;
+if $(PNG.AVAILABLE) = "yes"
+{
+  CompileGroups cspngimg : walkall ;
+}
+CompileGroups cssynldr   : walkall ; 
+CompileGroups dynavis    : walkall ;
+CompileGroups engine     : walkall ;
+CompileGroups engseq     : walkall ;
+CompileGroups frustvis   : walkall ;
+CompileGroups imgplex    : walkall ; 
+CompileGroups meshes     : walkall ; 
+CompileGroups ptanimimg  : walkall ;
+CompileGroups opcode     : walkall ;
+CompileGroups reporter   : walkall ;
+CompileGroups sequence   : walkall ;
+CompileGroups simpcon    : walkall ;
+CompileGroups softcanvas : walkall ;
+CompileGroups stdpt      : walkall ;
+CompileGroups stdrep     : walkall ;
+if $(ZLIB.AVAILABLE) = "yes"
+{
+  CompileGroups vfs      : walkall ;
+}
+CompileGroups walktest   : walkall ;
+CompileGroups xmlread    : walkall ;
+if $(GL.AVAILABLE) = "yes"
+{
+  CompileGroups openglcanvas : walkall ;
+  CompileGroups softcanvas : walkall ;
+}
+if ! [ Property build : oldrenderer ] || [ Property build : projgen ]
+{
+  CompileGroups nrall : walkall ;
+  CompileGroups softrender3d : walkall ;
+  CompileGroups softshader : walkall ;
+}
+if [ Property build : oldrenderer ] || [ Property build : projgen ]
+{
+  CompileGroups soft3d : walkall ;
+  if $(GL.AVAILABLE) = "yes"
+  {
+    CompileGroups gl3d : walkall ;
+  }
+}
+CompileGroups walktest : nrall ;
+
+if ! [ Property build : projgen ]
+{
+Description walktest_static : "WalkTest demo (static build)" ;
+
+SubVariant static ;
+Application walktest_static : [ Wildcard *.cpp *.h ] :
+  independent noinstall nohelp ;
+LinkWith walktest_static : csgeom csgfx cstool csutil ;
+LinkStaticPlugins walktest_static : $(STATIC.PLUGINLIST) ;
+SubVariant ;
+}

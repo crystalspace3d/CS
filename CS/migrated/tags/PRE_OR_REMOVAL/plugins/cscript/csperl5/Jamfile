@@ -1,0 +1,195 @@
+SubDir TOP plugins cscript csperl5 ;
+
+if $(PERL5.AVAILABLE) = "yes" && ! [ Property build : projgen ]
+{
+  # @@@ FIXME: This scheme of creating a file which includes
+  # csperlxs_fallback.inc fails when it comes to project file creation, since
+  # the project file needs to reference an existing file.  To fix, the fallback
+  # file should exist at all times, but should be utilized only when needed,
+  # such as when ExtUtils is unavailable or when creating a project file.
+
+  #--------
+  # Perl XS glue file.
+  #--------
+  rule PerlEmbedGlueFile
+  {
+    MakeLocate $(<) : $(LOCATE_TARGET) ;
+    Clean csperl5clean : $(<) ;
+  }
+
+  if $(PERL5.EXTUTILS.EMBED.AVAILABLE) = "yes"
+  {
+    if $(PERL5.DYNALOADER.AVAILABLE) = "yes"
+    {
+      actions PerlEmbedGlueFile
+      {
+        $(CMD.PERL5) -MExtUtils::Embed -e xsinit -- \
+        -o $(<) -std DynaLoader cspace
+      }
+    }
+    else
+    {
+      actions PerlEmbedGlueFile
+      {
+        $(CMD.PERL5) -MExtUtils::Embed -e xsinit -- -o $(<) -std cspace
+      }
+    }
+  }
+  else
+  {
+    actions PerlEmbedGlueFile
+    {
+      echo '#include "csutil/csperlxs_fallback.inc"' > $(<)
+    }
+  }
+
+  local perlxs = [ FGristFiles csperlxs.c ] ;
+  PerlEmbedGlueFile $(perlxs) ;
+  
+
+  #--------
+  # Swig-generated files.
+  #--------
+  local targetdir ;
+  local target = [ FGristFiles cswigpl5.inc ] ;
+  local pmfile = [ FGristFiles cspace.pm ] ;
+  MakeLocate $(pmfile) : $(LOCATE.TARGETS) ;
+
+  if $(CMD.SWIG)
+  {
+    Swig $(target) $(pmfile) :
+      [ FGristFiles cspace.i ] :
+      perl5 :
+      -c++ -shadow -const -module cspace :
+      [ ConcatDirs $(TOP) include ] :
+      [ ConcatDirs $(TOP) include ivaria ] :
+      [ ConcatDirs $(TOP) scripts perl5 ] :
+      :
+      [ on $(pmfile) GetVar LOCATE ] ;
+    Depends csperl5clean : perl5swigclean ;
+    targetdir = $(LOCATE_TARGET) ;
+  }
+  else
+  {
+    targetdir = [ ConcatDirs $(TOP) scripts perl5 ] ;
+    SEARCH on $(target) = $(targetdir) ;
+    local frozenpm = $(pmfile:G=frozenpm) ;
+    SEARCH on $(frozenpm) = $(targetdir) ;
+    Copy $(pmfile) : $(frozenpm) ;
+    Depends $(pmfile) : $(frozenpm) ;
+  }
+  Clean csperl5clean : $(pmfile) ;
+
+  rule InstallCSPerl5PM
+  {
+    # Temporary SUBDIR override for InstallData.
+    local SUBDIR = [ on $(<) GetVar LOCATE ] ;
+    InstallData $(<) : $(>) ;
+  }
+  InstallCSPerl5PM $(pmfile) : bindings perl5 ;
+
+
+  #--------
+  # csperl5 -- Crystal Space plugin
+  #--------
+  local common = [ DoSourceGrist cswigpl5.cpp ] ;
+  Description csperl5 : "Perl5 plugin" ;
+  Includes $(common) : $(target) ;
+  Plugin csperl5 : $(common) $(perlxs) csperl5.cpp csperl5.h ;
+  LinkWith csperl5 : cstool csgfx csgeom csutil ;
+  ExternalLibs csperl5 : PERL5 ;
+  CFlags csperl5 :
+    [ FIncludes $(targetdir) ]
+    $(COMPILER.C++FLAGS.WARNING.NO_UNUSED)
+    $(COMPILER.C++FLAGS.WARNING.NO_UNINITIALIZED) ;
+  Depends csperl5 : $(pmfile) ;
+
+
+  #--------
+  # perl5mod -- Pure Perl module
+  #--------
+  local desc = "pure Perl5 module" ;
+  Description perl5mod : $(desc) ;
+  Help perl5mod : "Build the $(desc)" ;
+
+  # Plugin rule above already invokes CompileObject for $(common). We do not
+  # invoking it again because we want to avoid compiling the same (large) file
+  # twice. Intead, we just get a reference to the object file.
+  local commonobj = [ DoObjectGrist $(common:S=$(SUFOBJ)) ] ;
+
+  local perl5modsrc = [ DoSourceGrist perl5mod.cpp ] ;
+  local perl5modobj = $(commonobj) [ CompileObjects $(perl5modsrc) ] ;
+
+  local perl5mod = cspace ;
+  if $(PERL5.MODULE_EXT)
+  {
+    perl5mod = $(perl5mod:S=$(PERL5.MODULE_EXT)) ;
+  }
+  else
+  {
+    perl5mod = [ ConstructPluginTarget $(perl5mod) ] ;
+  }
+
+  perl5mod_TARGET = $(perl5mod) ;
+  perl5mod_SOURCES = $(perl5modsrc) ;
+  perl5mod_OBJECTS = $(perl5modobj) ;
+  LinkWith perl5mod : cstool csgfx csgeom csutil ;
+  ExternalLibs perl5mod : PERL5 ;
+  CFlags perl5mod : $(PLUGIN.CFLAGS) ;
+  LFlags perl5mod : $(PLUGIN.LFLAGS) $(LINKLIBS) ;
+  NotFile perl5mod ;
+  Depends perl5mod : $(pmfile) ;
+  Depends perl5mod : $(perl5mod) ;
+  Depends plugins : perl5mod ;
+  MakeLocate $(perl5mod) : $(LOCATE.TARGETS) ;
+  Depends $(perl5mod) : $(perl5modobj) ;
+  LinkPlugin $(perl5mod) : $(perl5modobj) ;
+
+  rule InstallPerl5mod
+  {
+    local plugindir = $(appdatadir) ; # Temporary override of global plugindir.
+    SystemInstallPlugin $(1) : $(2) ;
+  }
+  InstallPerl5mod $(perl5mod) : bindings perl5 ;
+
+  Always perl5modclean ;
+  NotFile perl5modclean ;
+  Clean perl5modclean : $(perl5mod) $(perl5modobj) ;
+  Depends clean : perl5modclean ;
+
+
+  #--------
+  # perl5.cex -- cs-config extension
+  #--------
+  # Note that '__EOF__' is purposely quoted to prevent shell from intrepreting
+  # dollar signs in quoted block.
+  actions Perl5Cex
+  {
+    cat > $(<) << '__EOF__'
+#! /bin/sh
+# This file is generated automatically by csperl5/Jamfile
+PERL5_LIBS="$(PERL5.LFLAGS[1])"
+PERL5_CFLAGS="$(PERL5.CFLAGS[1])"
+PERL5_CXXFLAGS="$(PERL5.CFLAGS[1])"
+PERL5_DEPS=""
+
+if test -z "$1"; then
+    echo "Do not invoke this sub-component of cs-config directly."
+    exit 1
+fi
+
+case $1 in
+    --libs) echo "$PERL5_LIBS" ;;
+    --deps) echo "$PERL5_DEPS" ;;
+    --cflags) echo "$PERL5_CFLAGS" ;;
+    --cxxflags) echo "$PERL5_CXXFLAGS" ;;
+    *) echo "Unknown option"; exit 1 ;;
+esac
+__EOF__
+  }
+
+  local cexfile = perl5.cex ;
+  ShellScript $(cexfile) : Perl5Cex ;
+  Depends csperl5 : $(cexfile) ;
+  Depends csperl5clean : $(cexfile)clean ;
+}

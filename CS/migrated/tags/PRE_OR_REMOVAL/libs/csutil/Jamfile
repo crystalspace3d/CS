@@ -1,0 +1,79 @@
+SubDir TOP libs csutil ;
+
+Description csutil : "utility library" ;
+
+CSSYS_SRC = ;
+
+switch $(TARGET.OS)
+{
+case WIN32 :					# Windows 
+  CSSYS_SRC += [ Wildcard win32 : *.cpp *.cc *.c *.h ]
+		[ ConcatDirs generic appdir.cpp ]
+		[ ConcatDirs generic csprocessorcap.cpp ]
+		[ ConcatDirs generic findlib.cpp ]
+		[ ConcatDirs generic getopt.cpp ]
+		[ ConcatDirs generic pluginpaths.cpp ]
+		[ ConcatDirs generic resdir.cpp ]
+		[ ConcatDirs generic runloop.cpp ] ;
+case MACOS_X :					# MacOS/X
+  CSSYS_SRC += [ Wildcard macosx : *.cpp *.cc *.c *.m *.M *.mm *.h ]
+		[ ConcatDirs generic apppath.cpp ]
+		[ ConcatDirs generic csprocessorcap.cpp ]
+		[ ConcatDirs generic cspthrd.cpp ] 
+		[ ConcatDirs generic cspthrd.h ]
+		[ ConcatDirs generic dummycallstack.cpp ]
+		[ ConcatDirs generic findlib.cpp ]
+		[ ConcatDirs generic getopt.cpp ]
+		[ ConcatDirs generic mmap.cpp ]
+		[ ConcatDirs generic pathutil.cpp ] 
+		[ ConcatDirs generic pluginpaths.cpp ]
+		[ ConcatDirs generic printf.cpp ]
+		[ ConcatDirs generic scanplugins.cpp ]
+		[ ConcatDirs generic sysroot.cpp ] ;
+case * :					# Posix, Unix, Linux, etc.
+  CSSYS_SRC += [ Filter [ Wildcard unix : *.cpp *.cc *.c *.h ] :
+			unix/bfdplugins.cpp ]
+		[ ConcatDirs generic appdir.cpp ]
+		[ ConcatDirs generic apppath.cpp ]
+		[ ConcatDirs generic csprocessorcap.cpp ]
+		[ ConcatDirs generic cspthrd.cpp ]
+		[ ConcatDirs generic cspthrd.h ]
+		[ ConcatDirs generic dummycallstack.cpp ]
+		[ ConcatDirs generic findlib.cpp ]
+		[ ConcatDirs generic getopt.cpp ]
+		[ ConcatDirs generic mmap.cpp ]
+		[ ConcatDirs generic pathutil.cpp ]
+		[ ConcatDirs generic platformconfig.cpp ] 
+		[ ConcatDirs generic platformconfigpath.cpp ]
+		[ ConcatDirs generic printf.cpp ]
+		[ ConcatDirs generic resdir.cpp ]
+		[ ConcatDirs generic runloop.cpp ] 
+		[ ConcatDirs generic sysroot.cpp ] ;
+  if $(EMBED_META) = "yes" && $(LIBBFD.AVAILABLE) = "yes"
+  {
+    CSSYS_SRC += [ ConcatDirs unix bfdplugins.cpp ] ;
+  }
+  else
+  {
+    CSSYS_SRC += [ ConcatDirs generic scanplugins.cpp ] ;
+  }
+}
+
+if $(REGEX.AVAILABLE) != "yes"
+{
+  CSSYS_SRC += [ ConcatDirs generic regex.c ] ;
+}
+
+Library csutil :
+  [ Wildcard *.cpp *.cc *.c *.h ] $(CSSYS_SRC)
+  [ Wildcard [ ConcatDirs $(DOTDOT) $(DOTDOT) include csutil        ] : *.h ]
+  [ Wildcard [ ConcatDirs $(DOTDOT) $(DOTDOT) include csutil macosx ] : *.h ]
+  [ Wildcard [ ConcatDirs $(DOTDOT) $(DOTDOT) include csutil unix   ] : *.h ]
+  [ Wildcard [ ConcatDirs $(DOTDOT) $(DOTDOT) include csutil win32  ] : *.h ] :
+  shared ;
+
+CFlags csutil :
+  [ FDefines CS_CONFIGDIR='\"$(appconfdir)\"' ]
+  [ FDefines CS_PLUGINDIR='\"$(plugindir)\"'  ] ;
+ExternalLibs csutil : PTHREAD ZLIB ;
+MsvcDefine csutil : CS_CSUTIL_LIB ;

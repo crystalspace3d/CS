@@ -1,0 +1,228 @@
+#include "cssysdef.h"
+#include "iutil/eventh.h"
+#include "iutil/comp.h"
+#include "iutil/vfs.h"
+#include "iutil/plugin.h"
+#include "ivaria/reporter.h"
+#include "igraphic/imageio.h"
+#include "igraphic/image.h"
+#include "ivideo/txtmgr.h"
+#include "ivideo/texture.h"
+#include "awstex.h"
+#include "awsadler.h"
+#include <string.h>
+#include <stdio.h>
+
+const bool DEBUG_GETTEX = false;
+
+static unsigned long NameToId (const char *txt)
+{
+  return aws_adler32 (
+      aws_adler32 (0, NULL, 0),
+      (unsigned char *)txt,
+      strlen (txt));
+}
+
+awsTextureManager::awsTexture::~awsTexture ()
+{
+}
+
+awsTextureManager::awsTextureManager () : object_reg(NULL)
+{
+  // empty
+}
+
+awsTextureManager::~awsTextureManager ()
+{
+  for (int i = 0; i < textures.Length (); i++)
+    delete (awsTexture *)textures.Get (i);
+}
+
+void awsTextureManager::Initialize (iObjectRegistry *obj_reg)
+{
+  object_reg = obj_reg;
+
+  if (!obj_reg) printf ("aws-debug:  bad obj_reg (%s)\n", __FILE__);
+  if (!object_reg) printf ("aws-debug:  bad object_reg (%s)\n", __FILE__);
+
+  loader = CS_QUERY_REGISTRY (object_reg, iImageIO);
+  vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
+
+  if (!loader)
+  {
+    csReport (
+      object_reg,
+      CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.awsprefs",
+      "could not load the image loader plugin. This is a fatal error.");
+  }
+
+  if (!vfs)
+  {
+    csReport (
+      object_reg,
+      CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.awsprefs",
+      "could not load the VFS plugin. This is a fatal error.");
+  }
+
+  if (!vfs->Mount ("/aws", "./data/awsdef.zip"))
+  {
+    csReport (
+      object_reg,
+      CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.awsprefs",
+      "could not mount the default aws skin (awsdef.zip)aws.");
+  }
+}
+
+iTextureHandle *awsTextureManager::GetTexture (
+  const char *name,
+  const char *filename,
+  bool replace,
+  unsigned char key_r,
+  unsigned char key_g,
+  unsigned char key_b
+  )
+{
+  unsigned long id = NameToId (name);
+  return GetTexturebyID (id, filename, replace, key_r, key_g, key_b);
+}
+
+iTextureHandle *awsTextureManager::GetTexturebyID (
+  unsigned long id,
+  const char *filename,
+  bool replace,
+  unsigned char key_r,
+  unsigned char key_g,
+  unsigned char key_b
+  )
+{
+  awsTexture *awstxt = NULL;
+  bool txtfound = false;
+
+  /*  Perform a lookup on the texture list.  We may consider doing this a little more
+  * optimally in the future, like subclassing csVector and overriding CompareKey for
+  * the QuickSort algorithm */
+  if (DEBUG_GETTEX)
+    printf (
+      "aws-debug: (%s) texture count is: %d\n",
+      __FILE__,
+      textures.Length ());
+
+  int i;
+  for (i = 0; i < textures.Length () && txtfound == false; ++i)
+  {
+    awsTexture *awstxt = (awsTexture *)textures[i];
+
+    if (DEBUG_GETTEX)
+      printf ("aws-debug: (%s) texture is: %p\n", __FILE__,
+      	(iTextureHandle*)(awstxt->tex));
+
+    if (awstxt && id == awstxt->id)
+    {
+      if (replace && filename != NULL)
+        txtfound = true;
+      else
+        return awstxt->tex;
+    }
+  }
+
+  if (!txtfound && filename == NULL) return NULL;
+  if (!txtfound) awstxt = NULL;
+
+  /*  If we have arrived here, then we know that the texture does not exist in the cache.
+  * Therefore, we will now attempt to load it from the disk, register it, and pass back a handle.
+  * If this fails, we'll return NULL.
+  */
+  if (DEBUG_GETTEX)
+  {
+    if (txtmgr == NULL)
+      printf (
+        "aws-debug: GetTexturebyID (%s) no texture manager.\n",
+        __FILE__);
+    if (vfs == NULL)
+      printf ("aws-debug: GetTexturebyID (%s) no vfs.\n", __FILE__);
+    if (loader == NULL)
+      printf ("aws-debug: GetTexturebyID (%s) no loader.\n", __FILE__);
+
+    if (!txtmgr || !vfs || !loader) return NULL;
+  }
+
+  int Format = txtmgr->GetTextureFormat ();
+
+  csRef<iImage> ifile;
+  csRef<iDataBuffer> buf (vfs->ReadFile (filename));
+
+  if (buf == NULL || buf->GetSize () == 0)
+  {
+    csReport (
+      object_reg,
+      CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.awsprefs",
+      "Could not open image file '%s' on VFS!",
+      filename);
+
+    return NULL;
+  }
+
+  ifile = loader->Load (buf->GetUint8 (), buf->GetSize (), Format);
+
+  if (!ifile)
+  {
+    csReport (
+      object_reg,
+      CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.awsprefs",
+      "Could not load image '%s'. Unknown format or wrong extension!",
+      filename);
+
+    return NULL;
+  }
+
+  /*  At this point, we have loaded the file from the disk, and all we're doing now is creating
+  * a texture handle to the image.  The texture handle is necessary to draw a pixmap with
+  * iGraphics3D::DrawPixmap()
+  */
+  if (awstxt == NULL)
+  {
+    awstxt = new awsTexture;
+    memset (awstxt, 0, sizeof (awsTexture));
+  }
+
+  awstxt->img = ifile;
+  awstxt->tex = txtmgr->RegisterTexture (
+      ifile,
+      CS_TEXTURE_2D | CS_TEXTURE_3D | CS_TEXTURE_NOMIPMAPS);
+  awstxt->id = id;
+
+  // Post load work...
+  awstxt->tex->SetKeyColor (key_r, key_g, key_b);
+  awstxt->tex->Prepare ();
+
+  textures.Push (awstxt);
+
+  return awstxt->tex;
+}
+
+void awsTextureManager::SetTextureManager (iTextureManager *newtxtmgr)
+{
+  if (txtmgr && newtxtmgr)
+  {
+    UnregisterTextures ();
+  }
+
+  if (newtxtmgr)
+  {
+    txtmgr = newtxtmgr;
+    RegisterTextures ();
+  }
+}
+
+void awsTextureManager::RegisterTextures ()
+{
+}
+
+void awsTextureManager::UnregisterTextures ()
+{
+}

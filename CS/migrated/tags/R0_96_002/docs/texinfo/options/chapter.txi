@@ -1,0 +1,18 @@
+@c -*-texinfo-*-
+@node Options, Applications, Building, Top
+@chapter Configuring Crystal Space
+@cindex Options
+
+Crystal Space is a large project containing many applications and support
+modules.  Many of these facilities can be configured, adjusted, and
+manipulated in various ways to tailor their behavior.  This chapter discusses
+the various options available to you for tailoring Crystal Space's
+configuration.
+
+@menu
+* Common Command Line Options::
+* Configuration File::
+@end menu
+
+@imports{options,cmdline.txi}
+@imports{options,config.txi}

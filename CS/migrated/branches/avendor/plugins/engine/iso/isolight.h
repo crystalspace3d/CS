@@ -1,16 +1,16 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -51,7 +51,7 @@ private:
   csIsoFakeLight *fakelight;
 
 public:
-  DECLARE_IBASE;
+  SCF_DECLARE_IBASE;
 
   ///
   csIsoLight (iBase *iParent);
@@ -62,7 +62,7 @@ public:
   float GetAttenuation(float distance);
   /// precalc the visible and shadowed portions of the grid.
   void CalcVis();
-  /// set visibility value 
+  /// set visibility value
   void SetVis(int x, int y, float val);
   /// get the maximum radius when this light still has effect
   float MaxRadius() const;
@@ -92,20 +92,21 @@ class csIsoFakeLight : public iLight {
   csIsoLight *isolight;
 
 public:
-  DECLARE_IBASE;
+  SCF_DECLARE_IBASE;
 
   csIsoFakeLight(csIsoLight *par) {isolight = par;}
   virtual ~csIsoFakeLight() {}
 
   //------------ iLight ------------------------------------------
   virtual csLight* GetPrivateObject () {return 0;}
+  virtual unsigned long GetLightID () { return 0; }
   virtual iObject *QueryObject() {return 0;}
   virtual const csVector3& GetCenter () {return isolight->GetPosition();}
   virtual void SetCenter (const csVector3& pos) {isolight->SetPosition(pos);}
   virtual iSector *GetSector () {return 0;}
   virtual void SetSector (iSector* ) {}
   virtual float GetRadius () {return isolight->GetRadius();}
-  virtual float GetSquaredRadius () 
+  virtual float GetSquaredRadius ()
   //{ return isolight->GetRadius()*isolight->GetRadius(); }
   // for use with checking if lighting needs to be done
   { return isolight->MaxRadius()*isolight->MaxRadius(); }

@@ -1,79 +1,129 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "cssysdef.h"
+#include "cssys/sysfunc.h"
+#include "csutil/util.h"
+#include "igraphic/imageio.h"
+#include "igraphic/image.h"
+#include "imesh/object.h"
 #include "isoengin.h"
-#include "isoworld.h"
-#include "isoview.h"
-#include "isospr.h"
-#include "isomesh.h"
 #include "isolight.h"
+#include "isomesh.h"
+#include "isospr.h"
+#include "isoview.h"
+#include "isoworld.h"
+#include "iutil/eventh.h"
+#include "iutil/comp.h"
+#include "iutil/plugin.h"
+#include "iutil/vfs.h"
+#include "iutil/cfgmgr.h"
+#include "iutil/evdefs.h"
+#include "iutil/event.h"
+#include "iutil/eventq.h"
+#include "iutil/object.h"
+#include "iutil/objreg.h"
+#include "ivaria/reporter.h"
 #include "ivideo/graph2d.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/txtmgr.h"
-#include "isys/evdefs.h"
-#include "isys/event.h"
-#include "isys/system.h"
-#include "isys/vfs.h"
-#include "iutil/cfgmgr.h"
-#include "csutil/util.h"
-#include "iutil/object.h"
-#include "igraphic/imageio.h"
-#include "imesh/object.h"
 
+CS_IMPLEMENT_PLUGIN
 
-IMPLEMENT_IBASE (csIsoEngine)
-  IMPLEMENTS_INTERFACE (iIsoEngine)
-  IMPLEMENTS_INTERFACE (iPlugIn)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoEngine)
+  SCF_IMPLEMENTS_INTERFACE (iIsoEngine)
+  SCF_IMPLEMENTS_EMBEDDED_INTERFACE (iComponent)
+SCF_IMPLEMENT_IBASE_END
 
-IMPLEMENT_FACTORY (csIsoEngine)
+SCF_IMPLEMENT_FACTORY (csIsoEngine)
 
-EXPORT_CLASS_TABLE (iso)
-  EXPORT_CLASS_DEP (csIsoEngine, "crystalspace.engine.iso",
+SCF_IMPLEMENT_EMBEDDED_IBASE (csIsoEngine::eiComponent)
+  SCF_IMPLEMENTS_INTERFACE (iComponent)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+SCF_IMPLEMENT_IBASE (csIsoEngine::EventHandler)
+  SCF_IMPLEMENTS_INTERFACE (iEventHandler)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_EXPORT_CLASS_TABLE (iso)
+  SCF_EXPORT_CLASS_DEP (csIsoEngine, "crystalspace.engine.iso",
     "Crystal Space Isometric Engine",
     "crystalspace.kernel., crystalspace.graphics3d., crystalspace.graphics2d.")
-EXPORT_CLASS_TABLE_END
+SCF_EXPORT_CLASS_TABLE_END
+
+void csIsoEngine::Report (int severity, const char* msg, ...)
+{
+  va_list arg;
+  va_start (arg, msg);
+  iReporter* rep = CS_QUERY_REGISTRY (object_reg, iReporter);
+  if (rep)
+  {
+    rep->ReportV (severity, "crystalspace.engine.iso", msg, arg);
+    rep->DecRef ();
+  }
+  else
+  {
+    csPrintfV (msg, arg);
+    csPrintf ("\n");
+  }
+  va_end (arg);
+}
 
 csIsoEngine::csIsoEngine (iBase *iParent)
 {
-  CONSTRUCT_IBASE (iParent);
-  system = NULL;
+  SCF_CONSTRUCT_IBASE (iParent);
+  SCF_CONSTRUCT_EMBEDDED_IBASE(scfiComponent);
+  scfiEventHandler = NULL;
+  object_reg = NULL;
   g2d = NULL;
   g3d = NULL;
   txtmgr = NULL;
-
   world = NULL;
 }
 
 csIsoEngine::~csIsoEngine ()
 {
-  for(int i=0; i<materials.Length(); i++)
-    RemoveMaterial(i);
-  if(g3d) g3d->DecRef();
+  if (scfiEventHandler)
+  {
+    iEventQueue* q = CS_QUERY_REGISTRY(object_reg, iEventQueue);
+    if (q != 0)
+    {
+      q->RemoveListener (scfiEventHandler);
+      q->DecRef ();
+    }
+    scfiEventHandler->DecRef ();
+  }
+  materials.scfiMaterialList.RemoveAll ();
+  if (g3d) g3d->DecRef();
 }
 
-bool csIsoEngine::Initialize (iSystem* p)
+bool csIsoEngine::Initialize (iObjectRegistry* p)
 {
-  system = p;
+  object_reg = p;
   // Tell system driver that we want to handle broadcast events
-  if (!system->CallOnEvents (this, CSMASK_Broadcast))
-    return false;
+  if (!scfiEventHandler)
+    scfiEventHandler = new EventHandler (this);
+  iEventQueue* q = CS_QUERY_REGISTRY(object_reg, iEventQueue);
+  if (q != 0)
+  {
+    q->RegisterListener (scfiEventHandler, CSMASK_Broadcast);
+    q->DecRef ();
+  }
   return true;
 }
 
@@ -86,23 +136,23 @@ bool csIsoEngine::HandleEvent (iEvent& Event)
       case cscmdSystemOpen:
       {
         // system is open we can get ptrs now
-        g3d = QUERY_PLUGIN_ID (system, CS_FUNCID_VIDEO, iGraphics3D);
+        g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
         if (!g3d)
         {
-          system->Printf(MSG_INTERNAL_ERROR, "IsoEngine: could not get G3D.\n");
+          Report (CS_REPORTER_SEVERITY_ERROR, "IsoEngine: could not get G3D.");
           return false;
         }
         g2d = g3d->GetDriver2D ();
-        if (!g2d) 
+        if (!g2d)
         {
-          system->Printf(MSG_INTERNAL_ERROR, "IsoEngine: could not get G2D.\n");
+          Report (CS_REPORTER_SEVERITY_ERROR, "IsoEngine: could not get G2D.");
           return false;
         }
         txtmgr = g3d->GetTextureManager();
-        if (!txtmgr) 
+        if (!txtmgr)
         {
-          system->Printf(MSG_INTERNAL_ERROR, 
-            "IsoEngine: could not get TextureManager.\n");
+          Report (CS_REPORTER_SEVERITY_ERROR,
+            "IsoEngine: could not get TextureManager.");
           return false;
         }
         return true;
@@ -112,8 +162,7 @@ bool csIsoEngine::HandleEvent (iEvent& Event)
         // We must free all material and texture handles since after
         // G3D->Close() they all become invalid, no matter whenever
         // we did or didn't an IncRef on them.
-	for(int i=0; i<materials.Length(); i++)
-	  RemoveMaterial(i);
+	materials.scfiMaterialList.RemoveAll ();
         return true;
       }
       case cscmdContextResize:
@@ -154,7 +203,7 @@ int csIsoEngine::GetBeginDrawFlags () const
   return CSDRAW_CLEARZBUFFER;
 }
 
-iIsoSprite* csIsoEngine::CreateFloorSprite(const csVector3& pos, float w, 
+iIsoSprite* csIsoEngine::CreateFloorSprite(const csVector3& pos, float w,
       float h)
 {
   iIsoSprite *spr = new csIsoSprite(this);
@@ -166,7 +215,7 @@ iIsoSprite* csIsoEngine::CreateFloorSprite(const csVector3& pos, float w,
   return spr;
 }
 
-iIsoSprite* csIsoEngine::CreateFrontSprite(const csVector3& pos, float w, 
+iIsoSprite* csIsoEngine::CreateFrontSprite(const csVector3& pos, float w,
       float h)
 {
   iIsoSprite *spr = new csIsoSprite(this);
@@ -208,161 +257,125 @@ iIsoLight* csIsoEngine::CreateLight()
   return new csIsoLight(this);
 }
 
-iMaterialWrapper *csIsoEngine::CreateMaterialWrapper(iMaterial *material,
-      const char *name)
-{
-  iMaterialWrapper* wrap = QUERY_INTERFACE(materials.NewMaterial(material),
-    iMaterialWrapper);
-  iObject *object = QUERY_INTERFACE(wrap, iObject);
-  object->SetName(name);
-  object->DecRef();
-  return wrap;
-}
-
-iMaterialWrapper *csIsoEngine::CreateMaterialWrapper(iMaterialHandle *handle,
-	    const char *name)
-{
-  iMaterialWrapper* wrap = QUERY_INTERFACE(materials.NewMaterial(handle),
-    iMaterialWrapper);
-  iObject *object = QUERY_INTERFACE(wrap, iObject);
-  object->SetName(name);
-  object->DecRef();
-  //printf("name %s = %d \n", name, materials.FindByName(name)->GetIndex());
-  return wrap;
-}
-
 iMaterialWrapper *csIsoEngine::CreateMaterialWrapper(const char *vfsfilename,
 	          const char *materialname)
 {
-  iImageIO *imgloader = QUERY_PLUGIN(system, iImageIO);
+  iImageIO *imgloader = NULL;
+  iVFS *VFS = NULL;
+  iDataBuffer *buf = NULL;
+  iImage *image = NULL;
+  iTextureHandle *handle = NULL;
+  csIsoMaterial *material = NULL;
+  iMaterialHandle *math = NULL;
+  iMaterialWrapper *mat_wrap = NULL;
+
+  imgloader = CS_QUERY_REGISTRY (object_reg, iImageIO);
   if(imgloader==NULL)
   {
-    system->Printf(MSG_INTERNAL_ERROR, "Could not get image loader plugin.\n");
-    system->Printf(MSG_INTERNAL_ERROR, "Failed to load file %s.\n", 
-      vfsfilename);
-    return NULL;
+    Report (CS_REPORTER_SEVERITY_ERROR, "Could not get image loader plugin. "
+    	"Failed to load file %s.", vfsfilename);
+    goto create_out;
   }
-  iVFS *VFS = QUERY_PLUGIN(system, iVFS);
+
+  VFS = CS_QUERY_REGISTRY (object_reg, iVFS);
   if(VFS==NULL)
   {
-    system->Printf(MSG_INTERNAL_ERROR, "Could not get VFS plugin.\n");
-    system->Printf(MSG_INTERNAL_ERROR, "Failed to load file %s.\n", 
+    Report (CS_REPORTER_SEVERITY_ERROR, "Could not get VFS plugin. "
+    	"Failed to load file %s.", vfsfilename);
+    goto create_out;
+  }
+
+  buf = VFS->ReadFile (vfsfilename);
+  if(!buf)
+  {
+    Report (CS_REPORTER_SEVERITY_ERROR, "Could not read vfs file %s\n",
       vfsfilename);
-    return NULL;
+    goto create_out;
   }
 
-  iDataBuffer *buf = VFS->ReadFile (vfsfilename);
-  if(!buf) 
+  image = imgloader->Load(buf->GetUint8 (), buf->GetSize (),
+			  txtmgr->GetTextureFormat ());
+  if(!image)
   {
-    system->Printf(MSG_INTERNAL_ERROR, "Could not read vfs file %s\n", 
-      vfsfilename);
-    return NULL;
+    Report (CS_REPORTER_SEVERITY_ERROR,
+      "The imageloader could not load image %s", vfsfilename);
+    goto create_out;
   }
-  iImage *image = imgloader->Load(buf->GetUint8 (), buf->GetSize (),
-    txtmgr->GetTextureFormat ());
-  if(!image) 
+
+  handle = txtmgr->RegisterTexture(image, CS_TEXTURE_2D | CS_TEXTURE_3D);
+  if(!handle)
   {
-    system->Printf(MSG_INTERNAL_ERROR, 
-      "The imageloader could not load image %s\n", vfsfilename);
-    return NULL;
+    Report (CS_REPORTER_SEVERITY_ERROR,
+      "Texturemanager could not register texture %s", vfsfilename);
+    goto create_out;
   }
-  iTextureHandle *handle = txtmgr->RegisterTexture(image, CS_TEXTURE_2D |
-    CS_TEXTURE_3D);
-  if(!handle) 
+
+  material = new csIsoMaterial(handle);
+  math = txtmgr->RegisterMaterial(material);
+  if(math)
   {
-    system->Printf(MSG_INTERNAL_ERROR, 
-      "Texturemanager could not register texture %s\n", vfsfilename);
-    return NULL;
+    mat_wrap = materials.scfiMaterialList.NewMaterial (math);
+    mat_wrap->IncRef ();	// Jorrit: @@@ Not sure why this is needed?
+    mat_wrap->QueryObject ()->SetName (materialname);
   }
-  csIsoMaterial *material = new csIsoMaterial(handle);
-  iMaterialHandle *math = txtmgr->RegisterMaterial(material);
-  if(!math) 
+  else
   {
-    system->Printf(MSG_INTERNAL_ERROR, 
-      "Texturemanager could not register material %s\n", materialname);
-    return NULL;
+    Report (CS_REPORTER_SEVERITY_ERROR,
+      "Texturemanager could not register material %s", materialname);
+    goto create_out;
   }
 
-  buf->DecRef();
-  imgloader->DecRef();
-  return CreateMaterialWrapper(math, materialname);
+ create_out:
+  if (math) math->DecRef ();
+  if (image) image->DecRef ();
+  if (buf) buf->DecRef();
+  if (imgloader) imgloader->DecRef ();
+  if (VFS) VFS->DecRef ();
+
+  return mat_wrap;
 }
 
-iMaterialWrapper *csIsoEngine::FindMaterial(const char *name)
+iMeshFactoryWrapper *csIsoEngine::CreateMeshFactory(const char* classId,
+    const char *name)
 {
-  return QUERY_INTERFACE(materials.FindByName(name), iMaterialWrapper);
-}
+  iMeshObjectFactory *mesh_fact;
+  iMeshObjectType *mesh_type;
 
-iMaterialWrapper *csIsoEngine::FindMaterial(int index)
-{
-  return QUERY_INTERFACE(materials.Get(index), iMaterialWrapper);
-}
-
-void csIsoEngine::RemoveMaterial(const char *name)
-{
-  csIsoMaterialWrapper *wrap = materials.FindByName(name);
-  if(!wrap) return;
-  int i;
-  for(i=0; i< materials.Length(); i++)
+  if (name)
   {
-    if(materials.Get(i) == wrap) break;
+    iMeshFactoryWrapper* wrap = meshfactories.
+    	scfiMeshFactoryList.FindByName (name);
+    if (wrap)
+      return wrap;
   }
-  materials.RemoveIndex(i);
-  delete wrap;
+
+  iPluginManager* plugin_mgr = CS_QUERY_REGISTRY (object_reg, iPluginManager);
+  mesh_type = CS_QUERY_PLUGIN_CLASS (plugin_mgr, classId, iMeshObjectType);
+
+  if(!mesh_type)
+    mesh_type = CS_LOAD_PLUGIN (plugin_mgr, classId, iMeshObjectType);
+  plugin_mgr->DecRef ();
+  if(!mesh_type)
+    return NULL;
+
+  csIsoMeshFactoryWrapper* wrap = NULL;
+  mesh_fact = mesh_type->NewFactory ();
+  if (mesh_fact)
+  {
+    //AddMeshFactory (mesh_fact, name);
+    //mesh_fact->DecRef ();
+    wrap = new csIsoMeshFactoryWrapper (mesh_fact);
+    iObject* obj = SCF_QUERY_INTERFACE (wrap, iObject);
+    obj->SetName (name);
+    obj->DecRef ();
+    meshfactories.scfiMeshFactoryList.Add (&(wrap->scfiMeshFactoryWrapper));
+    wrap->DecRef ();
+    mesh_fact->DecRef();
+    mesh_type->DecRef ();
+    return &(wrap->scfiMeshFactoryWrapper);
+  }
+  mesh_type->DecRef ();
+  return NULL;
 }
 
-void csIsoEngine::RemoveMaterial(int index)
-{
-  csIsoMaterialWrapper *wrap = materials.Get(index);
-  if(!wrap) return;
-  materials.RemoveIndex(index);
-  delete wrap;
-}
-
-int csIsoEngine::GetNumMaterials() const
-{
-  return materials.Length();
-}
-
-
-iMeshObjectFactory *csIsoEngine::CreateMeshFactory(const char* classId,
-    const char *name) 
-{
-  if(name && FindMeshFactory(name))
-    return FindMeshFactory(name);
-  iMeshObjectType *mesh_type = QUERY_PLUGIN_CLASS (system, classId, "MeshObj", 
-    iMeshObjectType);
-  if(!mesh_type) mesh_type = LOAD_PLUGIN( system, classId,  "MeshObj", 
-    iMeshObjectType);
-  if(!mesh_type) return NULL;
-  iMeshObjectFactory *mesh_fact = mesh_type->NewFactory();
-  if(!mesh_fact) return NULL;
-  AddMeshFactory(mesh_fact, name);
-  mesh_fact->DecRef();
-  return mesh_fact;
-}
-
-void csIsoEngine::AddMeshFactory(iMeshObjectFactory *fact, const char *name)
-{
-  if(name && FindMeshFactory(name))
-    return;
-  fact->IncRef();
-  meshfactories.Push(new csIsoObjWrapper(fact, name));
-}
-
-iMeshObjectFactory *csIsoEngine::FindMeshFactory(const char *name)
-{
-  return (iMeshObjectFactory *)meshfactories.FindContentByName(name);
-}
-
-void csIsoEngine::RemoveMeshFactory(const char *name)
-{
-  int idx = meshfactories.FindIndexByName(name);
-  if(idx==-1) return;
-  csIsoObjWrapper *wrap = (csIsoObjWrapper*) meshfactories.Get(idx);
-  meshfactories.Delete(idx);
-  if(wrap->GetContent())
-    wrap->GetContent()->DecRef();
-  delete wrap;
-}
 

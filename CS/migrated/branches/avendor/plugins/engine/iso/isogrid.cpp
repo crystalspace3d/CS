@@ -1,16 +1,16 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -22,30 +22,40 @@
 #include "qsqrt.h"
 #include "qint.h"
 
-IMPLEMENT_IBASE (csIsoGrid)
-  IMPLEMENTS_INTERFACE (iIsoGrid)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoGrid)
+  SCF_IMPLEMENTS_INTERFACE (iIsoGrid)
+SCF_IMPLEMENT_IBASE_END
 
 csIsoGrid::csIsoGrid (iBase *iParent, iIsoWorld *world, int w, int h)
 {
-  CONSTRUCT_IBASE (iParent);
+  SCF_CONSTRUCT_IBASE (iParent);
   csIsoGrid::world = world;
   width = w;
   height = h;
   grid = new iIsoCell* [width*height];
-  for(int i=0; i<width*height; i++) 
+  int i;
+  for(i=0; i<width*height; i++)
     grid[i] = NULL;
   mingridx = 0; mingridy = 0;
   box.Set(0,-9999,0, height,+9999,width);
   groundmap = new csIsoGroundMap(this, 1, 1);
   recalc_staticlight = true;
   fakelights = NULL;
+  num_fakelights = 0;
 }
 
 csIsoGrid::~csIsoGrid ()
 {
-  for(int i=0; i<width*height; i++) 
+  int i;
+  for(i=0; i<width*height; i++)
     if(grid[i]) grid[i]->DecRef();
+
+  for (i=0; i<lights.Length (); i++)
+    ((iIsoLight*)lights.Get (i))->DecRef ();
+
+  for (i=0; i<dynamiclights.Length (); i++)
+    ((iIsoLight*)dynamiclights.Get (i))->DecRef ();
+
   delete[] grid;
   delete groundmap;
   delete[] fakelights;
@@ -67,22 +77,24 @@ void csIsoGrid::AddSprite(iIsoSprite *sprite, const csVector3& pos)
   if(!cell)
   {
     //printf("new cell\n");
-    cell = new csIsoCell(this);
+    cell = new csIsoCell(NULL);
     SetCell(pos, cell);
   }
-  //printf("adding sprite at pos (%g, %g, %g) to cell %x\n", pos.x, 
+  //printf("adding sprite at pos (%g, %g, %g) to cell %x\n", pos.x,
     //pos.y, pos.z, cell);
   GetCell(pos)->AddSprite(sprite, pos);
 }
 
 void csIsoGrid::RemoveSprite(iIsoSprite *sprite)
 {
-  GetCell(sprite->GetPosition())->RemoveSprite(sprite, sprite->GetPosition());
+  iIsoCell *cell = GetCell(sprite->GetPosition());
+  if(cell) cell->RemoveSprite(sprite, sprite->GetPosition());
 }
 
 void csIsoGrid::MoveSprite(iIsoSprite *sprite, const csVector3& oldpos,
     const csVector3& newpos)
 {
+  //printf("IsoGrid::MoveSprite\n");
   /// same as below, but detect edging errors.
   //if(box.In(newpos)), must be epsilon from the border at least.
   if( (newpos.x - box.MinX() > EPSILON)
@@ -94,27 +106,36 @@ void csIsoGrid::MoveSprite(iIsoSprite *sprite, const csVector3& oldpos,
     )
   {
     //printf("Sprite moved to new pos\n");
-    GetCell(oldpos)->RemoveSprite(sprite, oldpos);
+    // prevent to destruct the sprite when moving
+    sprite->IncRef ();
+    iIsoCell *oldcell = GetCell(oldpos);
+    if(oldcell) oldcell->RemoveSprite(sprite, oldpos);
     AddSprite(sprite, newpos);
+    sprite->DecRef ();
     return;
   }
   // sprite not any longer in this grid
   iIsoGrid *newgrid = world->FindGrid(newpos);
-  if(!newgrid) 
+  if(!newgrid)
   {
     // uh oh sprite moved out of *all* grids
     // disallow the movement
+    //printf("Grid: no grid, disallowed movement\n");
     sprite->ForcePosition(oldpos);
     return;
   }
-  printf("Grid: Sprite moved to new grid\n");
-  GetCell(oldpos)->RemoveSprite(sprite, oldpos);
+  //printf("Grid: Sprite moved to new grid\n");
+  sprite->IncRef ();
+  iIsoCell *prevcell = GetCell(oldpos);
+  if(prevcell) prevcell->RemoveSprite(sprite, oldpos);
   sprite->SetGrid(newgrid);
   newgrid->AddSprite(sprite, newpos);
+  sprite->DecRef ();
 }
 
 void csIsoGrid::Draw(iIsoRenderView *rview)
 {
+  //printf("IsoGrid::Draw pass %d\n", rview->GetRenderPass());
   // only draw all the cells in the main render pass
   if((rview->GetRenderPass() == CSISO_RENDERPASS_MAIN)
     || (rview->GetRenderPass() == CSISO_RENDERPASS_FG))
@@ -148,7 +169,7 @@ void csIsoGrid::Draw(iIsoRenderView *rview)
 #if 1
     hpos = 0;
     if((width-0) < startx-starty)
-      hpos = (startx-starty - (width-0))/2; 
+      hpos = (startx-starty - (width-0))/2;
     if(0-height > startx-starty-scanh*2)
       scanh -= (0-height-(startx-starty-scanh*2))/2;
     for(; hpos < scanh; hpos++)
@@ -195,7 +216,7 @@ void csIsoGrid::Draw(iIsoRenderView *rview)
 	posx--; posy--;
       }
     }
-    
+
     return;
 
 #else
@@ -236,12 +257,14 @@ void csIsoGrid::Draw(iIsoRenderView *rview)
     if(recalc_staticlight) RecalcStaticLight();
     // calculate dyn lighting
     ResetAllLight();
-    for(int l=0; l<dynamiclights.Length(); l++)
+	int l;
+    for(l=0; l<dynamiclights.Length(); l++)
       ((iIsoLight*)(dynamiclights[l]))->ShineGrid();
     // reset fakelight array
     if(fakelights)
     {
       delete[] fakelights; fakelights = NULL;
+      num_fakelights = 0;
     }
   }
 }
@@ -249,7 +272,8 @@ void csIsoGrid::Draw(iIsoRenderView *rview)
 void csIsoGrid::RecalcStaticLight()
 {
   SetAllStaticLight(csColor(0.,0.,0.));
-  for(int l=0; l<lights.Length(); l++)
+  int l;
+  for(l=0; l<lights.Length(); l++)
     ((iIsoLight*)(lights[l]))->ShineGrid();
   recalc_staticlight = false;
 }
@@ -257,7 +281,7 @@ void csIsoGrid::RecalcStaticLight()
 void csIsoGrid::SetSpace(int minx, int minz, float miny = -1.0,
   float maxy = +10.0)
 {
-  mingridx = minz; 
+  mingridx = minz;
   mingridy = minx;
   box.Set(minx,miny,minz, minx+height,maxy,minz+width);
 }
@@ -270,13 +294,13 @@ void csIsoGrid::SetGroundMult(int multx, int multy)
 
 void csIsoGrid::SetGroundValue(int x, int y, int gr_x, int gr_y, float val)
 {
-  groundmap->SetGround(x*groundmap->GetMultX()+gr_x, 
+  groundmap->SetGround(x*groundmap->GetMultX()+gr_x,
     y*groundmap->GetMultY()+gr_y, val);
 }
 
 float csIsoGrid::GetGroundValue(int x, int y, int gr_x, int gr_y)
 {
-  return groundmap->GetGround(x*groundmap->GetMultX()+gr_x, 
+  return groundmap->GetGround(x*groundmap->GetMultX()+gr_x,
     y*groundmap->GetMultY()+gr_y);
 }
 
@@ -300,50 +324,98 @@ int csIsoGrid::GetGroundMultY() const
   return groundmap->GetMultY();
 }
 
-static void resetspritelight(iIsoSprite* spr, void * /*dat*/)
+struct ResetSpriteLight : public iIsoCellTraverseCallback
+{
+  SCF_DECLARE_IBASE;
+  ResetSpriteLight () { SCF_CONSTRUCT_IBASE (NULL); }
+  virtual ~ResetSpriteLight () { }
+  virtual void Traverse (iIsoSprite* spr);
+};
+
+SCF_IMPLEMENT_IBASE (ResetSpriteLight)
+  SCF_IMPLEMENTS_INTERFACE (iIsoCellTraverseCallback)
+SCF_IMPLEMENT_IBASE_END
+
+void ResetSpriteLight::Traverse (iIsoSprite* spr)
 {
   spr->ResetAllColors();
 }
 
 void csIsoGrid::ResetAllLight()
 {
-  for(int i=0; i<width*height; i++) 
-    if(grid[i]) 
-      grid[i]->Traverse(resetspritelight, NULL);
+  ResetSpriteLight* rs = new ResetSpriteLight ();
+  int i;
+  for(i=0; i<width*height; i++)
+    if(grid[i])
+      grid[i]->Traverse (rs);
+  rs->DecRef ();
 }
 
-static void setspritecolor(iIsoSprite* spr, void *dat)
+struct SetSpriteColor : public iIsoCellTraverseCallback
 {
-  const csColor *col = (const csColor*)dat;
+  const csColor* col;
+  SCF_DECLARE_IBASE;
+  SetSpriteColor () { SCF_CONSTRUCT_IBASE (NULL); }
+  virtual ~SetSpriteColor () { }
+  virtual void Traverse (iIsoSprite* spr);
+};
+
+SCF_IMPLEMENT_IBASE (SetSpriteColor)
+  SCF_IMPLEMENTS_INTERFACE (iIsoCellTraverseCallback)
+SCF_IMPLEMENT_IBASE_END
+
+void SetSpriteColor::Traverse (iIsoSprite* spr)
+{
   spr->SetAllColors(*col);
 }
 
 void csIsoGrid::SetAllLight(const csColor& color)
 {
-  // make copy of color, since (weird usermade) iIsoSprites could violate 
+  // make copy of color, since (weird usermade) iIsoSprites could violate
   // the const that is promised in my heading.
+  SetSpriteColor* sp = new SetSpriteColor ();
   csColor col = color;
-  for(int i=0; i<width*height; i++) 
-    if(grid[i]) 
+  sp->col = &col;
+  int i;
+  for(i=0; i<width*height; i++)
+    if(grid[i])
     {
-      grid[i]->Traverse(setspritecolor, &col);
+      grid[i]->Traverse (sp);
     }
+  sp->DecRef ();
 }
 
-static void setspritestaticcolor(iIsoSprite* spr, void *dat)
+struct SetSpriteStaticColor : public iIsoCellTraverseCallback
 {
-  const csColor *col = (const csColor*)dat;
+  const csColor* col;
+  SCF_DECLARE_IBASE;
+  SetSpriteStaticColor () { SCF_CONSTRUCT_IBASE (NULL); }
+  virtual ~SetSpriteStaticColor () { }
+  virtual void Traverse (iIsoSprite* spr);
+};
+
+SCF_IMPLEMENT_IBASE (SetSpriteStaticColor)
+  SCF_IMPLEMENTS_INTERFACE (iIsoCellTraverseCallback)
+SCF_IMPLEMENT_IBASE_END
+
+void SetSpriteStaticColor::Traverse (iIsoSprite* spr)
+{
+  spr->SetAllColors(*col);
   spr->SetAllStaticColors(*col);
 }
 
 void csIsoGrid::SetAllStaticLight(const csColor& color)
 {
   csColor col = color;
-  for(int i=0; i<width*height; i++) 
-    if(grid[i]) 
+  SetSpriteStaticColor* sp = new SetSpriteStaticColor ();
+  sp->col = &col;
+  int i;
+  for(i=0; i<width*height; i++)
+    if(grid[i])
     {
-      grid[i]->Traverse(setspritestaticcolor, &col);
+      grid[i]->Traverse (sp);
     }
+  sp->DecRef ();
 }
 
 
@@ -351,7 +423,10 @@ void csIsoGrid::RegisterLight(iIsoLight *light)
 {
   recalc_staticlight = true;
   if(lights.Find(light)==-1)
+  {
     lights.Push(light);
+    light->IncRef ();
+  }
 }
 
 void csIsoGrid::UnRegisterLight(iIsoLight *light)
@@ -359,6 +434,7 @@ void csIsoGrid::UnRegisterLight(iIsoLight *light)
   int idx = lights.Find(light);
   if(idx!=-1)
   {
+    ((iIsoLight*)lights.Get (idx))->DecRef ();
     lights.Delete(idx);
     recalc_staticlight = true;
   }
@@ -367,25 +443,33 @@ void csIsoGrid::UnRegisterLight(iIsoLight *light)
 void csIsoGrid::RegisterDynamicLight(iIsoLight *light)
 {
   if(dynamiclights.Find(light)==-1)
+  {
     dynamiclights.Push(light);
+    light->IncRef ();
+  }
 }
 
 void csIsoGrid::UnRegisterDynamicLight(iIsoLight *light)
 {
   int idx = dynamiclights.Find(light);
   if(idx!=-1)
+  {
+    ((iIsoLight*)dynamiclights.Get (idx))->DecRef ();
     dynamiclights.Delete(idx);
+  }
 }
 
-void csIsoGrid::GetFakeLights(const csVector3& pos, iLight **& flights, 
+void csIsoGrid::GetFakeLights(const csVector3& pos, iLight **& flights,
   int& num)
 {
   if(!fakelights)
   {
     // make an array 'big enough'
-    fakelights = new iLight* [ lights.Length() + dynamiclights.Length() ];
+    num_fakelights = lights.Length () + dynamiclights.Length ();
+    fakelights = new iLight* [ num_fakelights ];
   }
   flights = fakelights;
+  CS_ASSERT (num_fakelights == lights.Length () + dynamiclights.Length ());
 
   // fill the current array
   num = 0;
@@ -416,6 +500,9 @@ csIsoGroundMap::csIsoGroundMap(iIsoGrid *grid, int multx, int multy)
   width = grid->GetWidth() * multx;
   height = grid->GetHeight() * multy;
   map = new float[width*height];
+  int i;
+  for(i=0; i<width*height; i++)
+    map[i] = 0.0f;
 }
 
 csIsoGroundMap::~csIsoGroundMap()
@@ -436,13 +523,13 @@ bool csIsoGroundMap::HitBeam(const csVector3& gsrc, const csVector3& gdest)
   csVector3 isect;
   csSegment3 seg(src, dest);
   if(!box.In(src))
-    if(csIntersect3::BoxSegment(box, seg, isect))
+    if(csIntersect3::BoxSegment(box, seg, isect) > -1)
     {
       src = isect;
       seg.SetStart(isect + 0.001*(dest-src)); // avoid 2nd hit on src
     }
   if(!box.In(dest))
-    if(csIntersect3::BoxSegment(box, seg, isect))
+    if(csIntersect3::BoxSegment(box, seg, isect) > -1)
     {
       dest = isect;
       //seg.SetEnd(isect);
@@ -452,7 +539,7 @@ bool csIsoGroundMap::HitBeam(const csVector3& gsrc, const csVector3& gdest)
 
   /// check each square along groundsquare size steps...
   if(delta.IsZero()) return true;
-  float len = 2.0*qsqrt(delta.z*delta.z*float(multx*multx) + 
+  float len = 2.0*qsqrt(delta.z*delta.z*float(multx*multx) +
     delta.x*delta.x*float(multy*multy));
   csVector3 m = delta/len;
   m.z *= float(multx);
@@ -463,14 +550,18 @@ bool csIsoGroundMap::HitBeam(const csVector3& gsrc, const csVector3& gdest)
   pos.x *= float(multy);
   pos.z -= mingridx*multx;
   pos.x -= mingridy*multy;
+  int x,z;
   while(steps--)
   {
     //x = QInt(pos.z) - multminx;
     //y = QInt(pos.x) - multminy;
     //printf("Checking %d,%d (%g,%g,%g) %g\n", x,y, pos.x, pos.y, pos.z,
       //GetGround(x,y));
-    if(pos.y <= GetGround(QInt(pos.z), QInt(pos.x))) 
-      return false;
+    z = QInt(pos.z);
+    x = QInt(pos.x);
+    if(x >= 0 && z >= 0 && z<width && x<height)
+      if(pos.y <= GetGround(QInt(pos.z), QInt(pos.x)))
+        return false;
     pos += m;
   }
   return true;

@@ -1,0 +1,9 @@
+SubDir TOP plugins csparser services ;
+
+Description cssynldr : "format loader services" ;
+
+Plugin cssynldr
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith cssynldr : csgfx csgeom cstool csutil ;
+

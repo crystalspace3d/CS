@@ -1,0 +1,10 @@
+SubDir TOP apps tools vsh ;
+
+Application vsh
+	: [ Wildcard *.cpp *.h ]
+	: console
+;
+LinkWith vsh : cstool csutil ;
+
+Help vsh : "Crystal Space Virtual Shell tool" ;
+

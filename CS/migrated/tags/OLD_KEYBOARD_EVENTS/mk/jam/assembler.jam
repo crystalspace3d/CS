@@ -1,0 +1,30 @@
+#============================================================================
+# Rules for handling assembler files
+#============================================================================
+
+if $(CMD.NASM)
+{
+
+rule NasmRule
+{
+  local object = [ DoObjectGrist $(<:S=$(SUFOBJ)) ] ;
+  Nasm $(object) : $(<) ;
+  return $(object) ;
+}
+RegisterFileType NasmRule : .asm ;
+
+rule Nasm
+{
+  Depends $(<) : $(>) ;
+  NASM.FLAGS on $(<) += $(NASM.FLAGS) ;
+  INCLUDEFLAGS on $(<) = [ FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ] ;
+}
+
+NASM.HDRPATTERN = "^[ 	]*%[ 	]*include[ 	]*[<\"]([^\">]*)[\">].*$" ;
+RegisterHeaderRule HeaderRule : $(NASM.HDRPATTERN) : .asm .ash ;
+
+actions Nasm
+{
+  $(CMD.NASM) $(NASM.FLAGS) $(INCLUDEFLAGS) -o $(<) $(>)
+}
+}

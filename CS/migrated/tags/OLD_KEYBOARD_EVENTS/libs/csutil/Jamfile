@@ -1,0 +1,13 @@
+SubDir TOP libs csutil ;
+
+Library csutil
+	: [ Wildcard *.cpp *.h ]
+	:
+	: $(CSSYS_OBJ)
+;
+CFlags csutil :
+  -DCS_CONFIGDIR='\"$(INSTALLDIR.CONFIG)\"' 
+  -DCS_PLUGINDIR='\"$(INSTALLDIR.PLUGIN)\"' ;
+
+Help csutil : "Crystal Space utility library" ;
+InstallConfig mouse.cfg ;

@@ -1,0 +1,20 @@
+
+<shader name="shadowextrude_debug">
+	<technique priority="100">
+		<pass>
+			<mixmode><add /></mixmode>
+			<streammapping stream="shadow vertices" destination="attribute 0" />
+			<streammapping stream="shadow normals" destination="attribute 1" />
+			<vp type="gl_arb_vp" file="/shader/shadowextrude.avp"/>
+			<fp type="gl_fixed_fp">
+        <fixedfp>
+          <layer>
+            <colorsource num="0" source="primary color" modifier="color" />
+            <coloroperation operation="replace" />
+          </layer>
+        </fixedfp>
+      </fp>
+		</pass>
+	</technique>
+</shader>
+

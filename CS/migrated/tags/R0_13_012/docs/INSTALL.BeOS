@@ -1,0 +1,126 @@
+How to run CrystalSpace on BeOS
+====================
+by David Huen (david@huen.freeserve.co.uk)
+
+Version 0.1 (1/7/99)
+
+CrystalSpace is a full-featured 3D graphics engine and the BeOS port was originally done by Xavier Pianet.  I have sort of picked it up in his apparently prolonged absence (where are you Xavier?).  The project was initiated by Jorrit Tyberghein.
+
+I have assumed you will have obtained a full set of sources at this stage.
+
+BeOS settings
+========
+CrystalSpace is compiled using a GNU make.  Some of the makefiles currently require modification before use (may change later!).
+
+In mk/user.mak, change the following flags as indicated:-
+DO_ASM=no
+DO_PNG=no
+DO_BMP=no
+DO_TGA=no
+DO_JPG=no
+USE_MESA=0
+BUGGY_EGCS_COMPILER=yes
+
+Next, you will need to make accessible the make files for various optional components.  The general method is to go into the libs/ directory and you will see a large number of component folders covering specific functionalities within CrystalSpace. In each of these folders are yet another set of target folders, each with  a makefile to compile that particular component.  To use that component, move the makefile in the desired target folders up into its parent directory.  You will need to do this in the cs2d and cs3d folders.
+
+As it currently stands, the software, Glide and OpenGL renderers can be activated by the following steps.
+
+Move into cs2d/ the following makefiles:-
+cs2d/be/belib2d.mak
+cs2d/be/beglide2/glidebe2d.mak
+csd2/be/openglbe/glbe2d.mak
+
+And in cs3d/ the following makefiles:-
+cs3d/glide2/glide3d.mak
+cs3d/opengl/glrender.mak
+cs3d/software/cs3d.mak
+
+To get the search paths correct, you need to comment out the following:-
+CFLAGS.GLIDE3D+=-I/usr/local/glide/include -DDO_GLIDE -DGLIDE24_ONLY
+LIBS._GLIDE3D+=-lglide2x
+and add instead
+LIBS._GLIDE3D+=/boot/develop/lib/x86/glide2x.so
+
+You will also need to comment out the following lines in glrender.mak:-
+CFLAGS.GL3D+=-I$(X11_PATH)/include
+LIBS._GL3D+=-L$(X11_PATH)/lib -lXext -lX11
+and change the non-MESA case to:-
+  CFLAGS.GL3D+=-I/boot/develop/headers/be/opengl
+  LIBS._GL3D+=-lGL
+
+You can then set up the compilation environment by going into the CS/ directory in terminal and typing:
+make beos
+make clean
+make depend
+
+This sets up everything you should need to compile.
+
+Next, compile all the basic stuff:-
+make netmann
+make netdrvn
+make sndrdrn
+make snddrvn
+
+As sound and networking have not been implemented in the BeOS port yet, this just compiles null drivers.
+
+The graphics libraries consist of a OS-specific 2D driver and a OS-independent 3D renderer.  To get:-
+1) software renderer
+make be2d
+make soft
+
+2) Glide
+make glidebe2d
+make glide3d
+
+3) OpenGL
+make glbe2d
+make glrender
+
+You will need to register the libraries (which are pseudo-COM modules).  First compile the registrar:-
+make regsvr
+
+then:-
+csregsvr netmann.so netdrvn.so snddrvn.so sndrdrn.so
+csregsvr be2d.so softrndr.so   <for software renderer>
+csregsvr glidebe2d.so Glide2xRender.so <for Glide 2.54//Voodoo 2>
+csregsvr glbe2d.so glrender.so <for OpenGL>
+
+Finally, you will want to compile and run the test apps.
+The simple app is compiled with:-
+make simp
+
+and the walktest app with:-
+make walk
+
+If you use the simple app, make sure the worldfile in cryst.cfg is set to the 
+
+Program settings
+==========
+You will need to have a world file to do anything!  I suggest downloading fresh_large.zip.  Place this file in data/.
+
+Edit cryst.cfg to set the world file accordingly (used by walktest):-
+WORLDFILE=data/fresh_large.zip
+
+you may also wish to add a commented-out line which you can activate later to run the simple test.
+;WORLDFILE=standard.zip
+
+The rest of the settings are mostly self evident and can often be overridden at the command line.
+
+Testing
+=====
+Now switch to a workspace and set the screen resolution to something like 800*600, 16 bit.
+
+Form Terminal within this workspace, go to the CS/ folder and type:-
+walktest   <this will run with whatever settings are in the cryst.cfg file (usually software renderer>
+walktest -driver glide  <runs in Glide mode>
+walktest -driver opengl <runs in OpenGL mode>
+
+Alt-f will switch you in and out of full screen.
+
+Note that walktest requires a good world file to show off effectively (like fresh_large.zip).  Make sure that cryst.cfg is correctly set to identify this file.
+
+You can also run simple by replacing the walktest command with simple in the foregoing.  Simple requires the world file be set to standard.zip as shown earlier.
+
+You should be able to start experimenting with the BeOS port at this stage!
+
+P.S. There may well be mistakes in this document.  Please feel free to correct them and send the text back to me.

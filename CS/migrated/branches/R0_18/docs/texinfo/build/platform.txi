@@ -1,0 +1,37 @@
+@c -*-texinfo-*-
+@node Platform Instructions, Problems, External Libraries, Building
+@section Platform Specific Instructions
+
+When working with Crystal Space, always keep in mind, that this is a
+multiplatform project. So sometimes not all features will work correct
+on all platforms. Sometimes a specific port may even be broken due to
+changes in other ports. Since the introduction of CVS this is usually
+only for a short time, so if you got your version out of CVS, it usually
+pays off to post a message describing the problems to the Crystal
+Space Mailing List describing you problem and include the exact error
+messages. If you wait a while, this will probably be fixed, or at least be
+worked around. @xref{Mailing Lists}.
+
+For some ports there is additional reference information explaining the
+internal workings of the port.  When such detailed information exists, you
+will find a reference to it from within the instructions in this section.
+
+@menu
+* Unix::
+* Win32:: Windows - Using @sc{msvc}++ Compiler
+* Mingw:: Windows - Using Mingw Compiler
+* NeXT:: MacOS/X Server, OpenStep, NextStep
+* MacOS/9::
+* OS2:: @sc{os}/2
+* BeOS:: @sc{b}e@sc{os}
+* MS-DOS:: @sc{ms-dos} - Using @sc{djgpp} Compiler
+@end menu
+
+@importss{build,platform,unix.txi}
+@importss{build,platform,win32.txi}
+@importss{build,platform,win32gcc.txi}
+@importss{build,platform,next.txi}
+@importss{build,platform,mac.txi}
+@importss{build,platform,os2.txi}
+@importss{build,platform,beos.txi}
+@importss{build,platform,msdos.txi}

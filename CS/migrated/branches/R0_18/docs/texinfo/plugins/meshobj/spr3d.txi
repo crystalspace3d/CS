@@ -1,0 +1,179 @@
+@c -*-texinfo-*-
+@node MeshObject Spr3D, MeshObject Ball, MeshObject Spr2D, MeshObject
+@subsection Sprite3D Mesh Object
+@cindex MeshObject
+@cindex 3D Sprite
+@cindex @code{iMeshObject}
+@cindex @code{iMeshObjectFactory}
+@cindex @code{iMeshObjectType}
+@cindex @code{iSprite3DState}
+@cindex @code{iSprite3DFactoryState}
+@cindex @code{iPolygonMesh}
+@cindex @code{iConfig}
+@cindex @code{iSpriteFrame}
+@cindex @code{iSpriteAction}
+@cindex @code{iSkeleton}
+@cindex @code{iSkeletonLimb}
+@cindex @code{iSkeletonConnection}
+@cindex @code{iSkeletonState}
+@cindex @code{iSkeletonLimbState}
+@cindex @code{iSkeletonConnectionState}
+
+@emph{Written by Jorrit Tyberghein,
+@email{jorrit.tyberghein@@uz.kuleuven.ac.be}.}
+
+A 3D Sprite is a complex set of 3D triangles that either supports frame
+based animation or else skeletal animation.
+
+@subsubheading Basic Structure
+
+The following @sc{scf} class names are used (for @code{LOAD_PLUGIN()}):
+
+@itemize @bullet
+@item
+Type plugin: @samp{crystalspace.mesh.object.sprite.3d}
+@item
+Loader plugin: @samp{crystalspace.mesh.loader.sprite.3d}
+@item
+Factory loader plugin: @samp{crystalspace.mesh.loader.factory.sprite.3d}
+@end itemize
+
+Objects in this plugin implement the following @sc{scf} interfaces (get
+with @code{QUERY_INTERFACE()}):
+
+@itemize @bullet
+@item
+@emph{MeshObject}
+@itemize @bullet
+@item
+Implements @samp{iMeshObject}
+@item
+Implements @samp{iSprite3DState}
+@item
+Implements @samp{iPolygonMesh}
+@end itemize
+@item
+@emph{MeshObjectFactory}
+@itemize @bullet
+@item
+Implements @samp{iMeshObjectFactory}
+@item
+Implements @samp{iSprite3DFactoryState}
+@end itemize
+@item
+@emph{MeshObjectFactory}
+@itemize @bullet
+@item
+Implements @samp{iMeshObjectType}
+@item
+Implements @samp{iConfig}
+@end itemize
+@end itemize
+
+@subsubheading Factory State Interface
+
+@samp{iSprite3DFactoryState} is the @sc{scf} interface that you can
+use to set/get settings for a 3D Sprite factory. The definition of this
+interface can be found in @file{CS/include/imspr3d.h} and that is also the
+include file you need to include in your applications to use this plugin.
+Using this interface you can access the material, triangles, vertices, texture
+coordinates, normals, frames, actions, skeletal structure, and various
+other configuration parameters for a 3D sprite factory.
+
+For frame based animation you need to access the @samp{iSpriteFrame} and
+@samp{iSpriteAction} interfaces (defined in @file{CS/include/imspr3d.h})
+and for skeletal animation you need to work with @samp{iSkeletonLimb},
+@samp{iSkeletonConnection}, and @samp{iSkeleton} (defined in
+@file{CS/include/iskel.h}).  Note that you will also have to setup one frame if
+you use skeletal animation.  This frame defines the default setup of the sprite
+if the skeleton is at rest (i.e. all transformations in the skeleton
+connectors are identity transformations).
+
+@subsubheading Factory Loader
+
+@table @code
+@item MATERIAL
+Material to use for the sprite.
+@item FRAME
+Define one frame.  A frame is a list of vertices which are specified using the
+@samp{V} keyword.  Every vertex has a 3D position in object space and (u,v)
+coordinates in the given texture (from 0 to 1).  Note that every frame needs to
+have the same number of vertices.
+@item ACTION
+Define one action.  An action is a list of frames.  Every frame is annotated
+with the @samp{F} keyword which contains the name of the frame to use and a
+delay.
+@item SKELETON
+Define a skeleton. See below for keywords in skeleton.
+@item TRIANGLE
+Define one triangle.  The three parameters are the indices for the three
+triangle vertices.
+@item SMOOTH
+Defines how to apply normal smoothing on the sprite.
+@item TWEEN
+Set to true if you want to enable frame tweening.  Default is false.
+@end table
+
+A skeleton is a hierarchial structure which is defined as follows:
+
+@table @code
+@item LIMB
+A limb defines a connection to a child limb.  This is where the hierarchy kicks
+in.  Inside @samp{LIMB} you use the same keywords as on this level.
+@item VERTICES
+This is a list of vertex indices from the main frame.  This limb will control
+the given vertices.
+@item TRANSFORM
+Specify the default transformation to use for this limb with relation to its
+parent (cannot be used on the top level).
+@end table
+
+@subsubheading Object State Interface
+
+@samp{iSprite3DState} is the @sc{scf} interface that you can
+use to set/get settings for a 3D Sprite object. The definition of this
+interface can be found in @file{CS/include/imspr3d.h} and that's also the
+include file you need to include in your applications to use this plugin.
+Using this interface you can access the material, blending mode (mixmode),
+current frame and action, current skeletal animation state, and various
+other configuration parameters for a 3D sprite object.
+
+The state of a skeleton is described via the following interfaces which are
+defined in @file{CS/include/imspr3d.h}:
+
+@itemize @bullet
+@item
+@code{iSkeletonLimbState},
+@item
+@code{iSkeletonConnectionState}
+@item
+@code{iSkeletonState}
+@end itemize
+
+@subsubheading Object Loader
+
+@table @code
+@item FACTORY
+Name of the factory to use for creation of this instance.
+@item MIXMODE
+Blending mode, one of @samp{ADD}, @samp{ALPHA}, @samp{COPY}, @samp{KEYCOLOR},
+@samp{MULTIPLY2}, @samp{MULTIPLY}, or @samp{TRANSPARENT}.
+@item MATERIAL
+Material to use for the sprite.
+@item TWEEN
+Set to true if you want to enable frame tweening.  Default is false.
+@item ACTION
+The default action to use for this sprite instance.
+@end table
+
+@subsubheading Configuration Parameters
+
+The @file{sprite3d} plugin supports the following configuration parameters
+via the @samp{iConfig} interface in the mesh object type plugin:
+
+@table @code
+@item sprlod
+Set the sprite level-of-detail (@sc{lod}) level.
+@item sprlq
+Set the sprite lighting quality.
+@end table

@@ -1,0 +1,116 @@
+@c -*-texinfo-*-
+@node Mingw, NeXT, Win32, Platform Instructions
+@subsection Windows - Using Mingw Compiler
+
+@noindent
+@emph{Updated by Norman Kr@"amer, @email{norman@@users.sourceforge.net}.}
+
+These instructions are for building Crystal Space with Mingw - a @sc{gnu}
+compiler for Windows.  There are many different versions of the @sc{gnu}
+Windows compiler and problems arise with some Windows header files
+containing non-standard code used by Microsoft, so we recommend
+the Mingw compiler which is currently best supported by Crystal Space.
+
+@subsubheading Necessary Resources
+
+Download the following packages:
+
+@itemize @bullet
+@item
+All support files from the Mingw32 support directory at Linux Games@*
+@uref{ftp://ftp.linuxgames.com/crystal/support/mingw32/}
+
+@item
+@sc{nasm} (Netwide Assembler) for Windows@*
+@uref{ftp://ftp.linuxgames.com/crystal/nasm/nasm-0.98e-bin-w32.zip}
+
+@item
+Get the Mingw compiler itself, the most recently updated and well supported
+@sc{gcc} Windows compiler, @url{http://www.mingw.org/}.  @emph{Note}: Get the
+@emph{latest} release; either @file{*-msvcrt.exe} or @file{*-crtdll.exe}.  The
+first is optimized the latter is assured to work on all win32 platforms.
+@end itemize
+
+@subsubheading Installation
+
+Follow these instructions to install the packages which you downloaded.
+
+@itemize @bullet
+@item
+First install the Mingw compiler.  Place it in @file{c:\mingw32}, for
+instance.  The following instructions assume that it has been installed there.
+
+@item
+Unzip the @sc{nasm} archive files and copy the @file{.exe} files into
+@file{c:\mingw32\bin}.
+
+@item
+Unzip all files from the Mingw support package (downloaded from Linux Games)
+into @file{c:\}.  This will also overwrite the original @file{make} program in
+@file{c:\mingw32\bin}.
+
+@item
+Adjust your @samp{PATH} environment variable.  On Windows 95 and 98 edit the
+@file{c:\autoexec.bat} file and add the following entry.
+
+@example
+SET PATH=c:\mingw32\bin;c:\mingw32\lib;%PATH%
+@end example
+
+@noindent
+On Windows @sc{nt} and Windows 2000, use the System control panel to edit the
+environment variable.
+
+@item
+Also if you plan to do development with Mingw32 you should add the following
+additional environment variable:
+
+@example
+set C_INCLUDE_PATH=c:\mingw32\i386-mingw32msvc\include
+@end example
+
+If you fail to do so, then the makedep tool will not know where to look for
+Mingw32's system include files, and will emit a lot of warnings.
+
+@item
+Reboot your computer.
+@end itemize
+
+@subsubheading Building
+
+From within the Crystal Space directory (@file{CS\}), run the @samp{make}
+command and follow the instructions.  Typically, you would issue the following
+commands:
+
+@example
+make win32gcc MODE=debug
+make -k clean depend all
+@end example
+
+Note that making the @samp{depend} target is not absolutely required.  If
+doing so presents problems, then you can safely omit it:
+
+@example
+make win32gcc MODE=debug
+make -k clean all
+@end example
+
+@subsubheading Customizing
+
+You may need to customize settings in @file{CS\libs\cssys\win32\win32gcc.mak},
+the Mingw32 makefile.  Check the following variables:
+
+@itemize @bullet
+@item
+@code{LIBS.GL3D.SYSTEM}
+@item
+@code{LIBS.SOCKET.SYSTEM}
+@item
+@code{LIBS.SOUND.SYSTEM}
+@end itemize
+
+Adjust them to match your system libraries.  For example, if you use the
+@sc{sgi} OpenGL @sc{sdk} instead of Microsoft's OpenGL, change
+@samp{-lopengl32} and @samp{-lglut32} to @samp{-lopengl} and @samp{-lglut} in
+@samp{LIBS.GL3D.SYSTEM}.  Also in the file @file{CS\mk\user.mak} select which
+plugins you wish to compile.

@@ -1,0 +1,33 @@
+@c -*-texinfo-*-
+@node Libraries, Plug-In Drivers, Anatomy, Top
+@chapter Libraries
+@cindex Libraries
+
+This chapter describes the features of the libraries of which Crystal Space
+consists. There are certain dependencies between libraries which enforce a
+sort of hierarchy.  If you are developer actually working on Crystal Space,
+you should be careful not to introduce circular dependencies into the library
+graph.  @xref{Dependencies}.
+
+@emph{FIXME}: Fill in these sections.  Some of this information currently
+resides in LaTeX format.
+
+@itemize @bullet
+@item
+@anchor{csGame}
+Game Library (@code{csgame})
+@item
+@anchor{csGeom}
+Geometry Library (@code{csgeom})
+@item
+@anchor{csUtil}
+Utility Library (@code{csutil})
+@end itemize
+
+@menu
+* CSWS:: Crystal Space Windowing System (@sc{csws})
+* csPhyziks:: csPhyziks Library (@code{csphyzik})
+@end menu
+
+@imports{libs,csws.txi}
+@imports{libs,phyziks.txi}

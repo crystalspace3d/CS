@@ -1,0 +1,190 @@
+@c -*-texinfo-*-
+
+@macro BeOS{}
+@sc{b}e@sc{os}
+@end macro
+
+@node BeOS, MS-DOS, Macintosh, Platform Instructions
+@subsection @sc{b}e@sc{os}
+@cindex @sc{b}e@sc{os}
+
+@emph{Originally written by David Huen, @email{david@@huen.freeserve.co.uk};
+heavily amended by Eric Sunshine, @email{sunshine@@sunshineco.com}).  Last
+updated 17 November 1999.}
+
+CrystalSpace is a full-featured 3D graphics engine and the @BeOS{} port was
+originally created by Xavier Pianet (@email{xavier@@planet.dk}).  David Huen
+(@email{david@@huen.freeserve.co.uk}) performed a small amount of maintenance
+after Xavier abandoned the project.  Most recently, Eric Sunshine
+(@email{sunshine@@sunshineco.com}) re-engineered the port almost completely
+from scratch in order to ensure that all programs compile cleanly and run
+properly right out of the box.  He also heavily updated the accompanying
+documentation.
+
+This section contains configuration, compilation, and installation
+instructions.  Detailed information about the internals of this port is also
+available, @ref{BeOS Details}, as is a list of @BeOS{}-specific bugs and
+future plans, @ref{BeOS Notes}.
+
+It is assumed that you will have obtained a full set of sources at this stage.
+Full sources includes the Crystal Space sources as well as those for the
+supporting library, @samp{libjpeg}.  After downloading and unpacking the
+@sc{jpeg} library into @file{CS/libs/libjpeg}, you can build it by following
+these simple instructions:
+
+@example
+cd CS/libs/libjpeg
+sh ./configure
+make libjpeg.a
+@end example
+
+Other required libraries, @samp{zlib} and @samp{libpng} are already present on
+@BeOS{} 4.5, so there is no need to install them manually.
+
+@menu
+* BeOS Building:: Building
+* BeOS Running:: Running the Applications
+@end menu
+
+@node BeOS Building, BeOS Running, BeOS, BeOS
+@subsubsection Building
+
+You set up the compilation environment by changing to the @file{CS/} directory
+in terminal and typing:
+
+@example
+make beos
+make depend    # @r{Optional.}
+@end example
+
+This sets up everything you should need to compile the system.  After this,
+the simplest way to build the project is to type:
+
+@example
+make all
+@end example
+
+If you prefer more control over the build process, then you can compile the
+various modules separately or in batches.  To compile all the basic drivers
+and plug-in modules, type:
+
+@example
+make plugins
+@end example
+
+Or for even more fine-grained control:
+
+@example
+make drivers2d
+make drivers3d
+make csfont
+make rapid
+make netdrivers
+make cscon
+@end example
+
+The graphics libraries consist of several @BeOS{}-specific 2D drivers and
+OS-independent 3D renderer.  You may compile these manually if you like,
+though they are normally built as part of the targets already mentioned,
+such as @samp{all}, @samp{plugins}, @samp{drivers2d}, @samp{drivers3d}.
+
+@enumerate
+@item
+Software Renderer
+
+@example
+make be2d
+make soft
+@end example
+
+@item
+OpenGL
+
+@example
+make glbe2d
+make gl3d
+@end example
+
+@item
+Glide (Warning: @emph{The Glide driver is currently broken.  Do not use these
+commands.})
+
+@example
+make glidebe2d
+make glide3d
+@end example
+@end enumerate
+
+Finally, if you did not invoke the makefile target @samp{all}, you can build
+the example applications manually:
+
+@example
+make apps
+@end example
+
+@node BeOS Running, , BeOS Building, BeOS
+@subsubsection Running the Applications
+
+You will need to have a world file to do anything.  It is suggested that you
+download @file{flarge.zip} or any of the other world files offered on the
+Crystal Space web site.  Place the downloaded file in the @file{CS/data}
+directory.
+
+To use a particular world file, mention it on the command line when invoking
+the WalkTest application.  If you wish this file to be used by default, you
+may want to edit @file{cryst.cfg} to set the @samp{WORLDFILE} variable to the
+chosen file.
+
+@example
+WORLDFILE=flarge
+@end example
+
+The rest of the settings are mostly self evident and can often be overridden
+at the command line.
+
+You may want to switch to a different workspace and set the screen resolution
+to something like 800*600, 16 bit, though this is not strictly necessary.
+
+From @samp{Terminal} within this workspace, change to the @file{CS/} folder
+and type:
+
+@example
+walktest
+@end example
+
+This will run the WalkTest example program with the settings from the
+@file{cryst.cfg} file (usually using software renderer, though you can change
+this).  Alternately you can choose the driver by specifying the @samp{-driver}
+keyword on the command-line:
+
+@example
+walktest -video=software  # @r{Runs in software mode}
+walktest -video=opengl    # @r{Runs in OpenGL mode}
+walktest -video=glide     # @r{Runs in Glide mode (@emph{currently broken})}
+@end example
+
+@kbd{@key{ALT}-f} will switch you in and out of full screen.  (Note, the
+software driver does not currently implement full screen mode, though OpenGL
+does.)
+
+Note that walktest requires a good world file to show off effectively (like
+@file{flarge.zip}).  Make sure that @file{cryst.cfg} is correctly set to
+identify this file or type it on the command line:
+
+@example
+walktest flarge
+@end example
+
+You may have to adjust the @samp{AMBIENT_WHITE} level in @file{cryst.cfg} if
+the maps appear too dark.  After adjusting the ambient level, specify
+@samp{-relight} on the command-line to instruct Crystal Space to recalculate
+the lighting information.
+
+@example
+walktest -relight flarge
+@end example
+
+Other interesting example applications which you can run are @file{blocks},
+@file{metademo}, @file{shooter}, and @file{mazed}.
+
+@unmacro BeOS

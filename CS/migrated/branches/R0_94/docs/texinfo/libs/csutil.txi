@@ -1,0 +1,122 @@
+@node csUtil, SCF, csSys, Libraries
+@section Utility Library (@code{csUtil})
+@cindex csUtil
+@cindex Libraries,csUtil
+@cindex Utility Library
+
+The utility library consists of many smaller modules that are too small to
+live as a separate library. The biggest part of it is the @sc{scf} library.
+@xref{SCF}.
+
+The second most important class is probably the @code{csVector}. This class
+is a generic resizable array. It is generic because its elements are
+@code{(void*)} pointers. You can also use handy macros to create type-safe
+subclasses of this class. Also, the @file{.cfg} file reader and the random
+number generator will probably help you.
+
+The other classes might or might not be useful, so if you need some very
+common functionality in your application, you should look in the @sc{api}
+reference to see if it is already implemented. The usage of these classes
+will not be explained further, as most functions are self-explanatory. The
+comments in the @sc{api} reference and the header files should also help.
+
+Exceptions should be made here for the @code{csObject} class and for typed
+vectors. They will be explained in the next sections.
+
+@menu
+* csObject:: @code{csObject}
+* Typed Vectors:: @code{Typed Vectors}
+@end menu
+
+@node csObject, Typed Vectors, csUtil, csUtil
+@subsection @code{csObject}
+@cindex @code{csObject}
+
+The @code{csObject} class can be used to build object hierarchies. It supports
+building a simple tree structure. To use this functionality, you should derive
+your classes from @code{csObject}. @code{csObject} implements the
+@code{iObject} interface and can store any number of @code{iObject} children.
+Furthermore, every @code{csObject} has a name.
+
+All child objects are @code{IncRef}'ed when added and @code{DecRef}'ed when
+removed. An object also stores a pointer to its parent (which is not
+reference-counted to avoid circular references). Note that this pointer will
+always point to the last parent if the object is added to more than one
+parent. When the object is removed from a parent, the pointer is set to
+@code{NULL}, even if the object is still a child of another parent!
+
+Although the children of an object are only available as @code{iObject}'s,
+you can use @code{SCF_QUERY_INTERFACE} to query other interfaces from them.
+Some convenience macros are also available:
+@table @code
+@item CS_GET_CHILD_OBJECT(object,Interface)
+Get the first child object that implements the given interface.
+
+@item CS_GET_NAMED_CHILD_OBJECT(object,Interface,name)
+Get the first child object with the given name that implements the given
+interface. This will continue to search through the objects if an object
+with the right name but not the right interface was found, i.e. it handles
+multiple objects with the same name correctly.
+
+@item CS_GET_FIRST_NAMED_CHILD_OBJECT(object,Interface,name)
+Same as the above but stops at the first object with the given name, even if
+it does not implement the requested interface (in that case, @code{NULL} is
+returned). This is slightly faster.
+@end table
+There is also a @samp{@dots{}_FAST} version of each macro that uses the fast
+interface feature of @sc{scf}, i.e. you must declare a fast interface by using
+@code{SCF_DECLARE_FAST_INTERFACE} before using them. Note that all these
+macros increase the reference count of the returned object by 1.
+
+@node Typed Vectors, , csObject, csUtil
+@subsection @code{Typed Vectors}
+@cindex @code{Typed Vectors}
+
+Typed vectors are the type-safe equivalent to the @code{csVector} class. They
+work similar to templates, but use @code{#define}'s instead. Using one of
+these macros, you can create a vector class for a specific type of objects.
+There are several different macros which produce slightly different
+behaviour:
+
+@table @code
+@item CS_DECLARE_TYPED_VECTOR
+The standard macro. The elements of the vector are accessible like those of
+@code{csVector}. Objects which are removed with the @code{DeleteIt} parameter
+set to @code{true}, or objects left in the vector at destruction are deleted
+with the @code{delete} operator.
+
+@item CS_DECLARE_TYPED_VECTOR_NODELETE
+Like the above, but removed objects are never deleted. Instead, the pointer
+is just thrown away.
+
+@item CS_DECLARE_TYPED_VECTOR_DECREF
+Like the above, but removed objects are cast to @code{iBase} and
+@code{DecRef()} is called.
+
+@item CS_DECLARE_TYPED_RESTRICTED_ACCESS_VECTOR
+This vector is completely different from the above. Its elements cannot be
+accessed directly (i.e. with @code{operator[]}), but only by real methods.
+For every added object, @code{PrepareItem()} is called; for every removed
+object, @code{FreeItem()} is called. This time it really applies to
+@emph{every} object, since there is no @code{DeleteIt} parameter for methods
+that can remove elements.
+
+@item CS_DECLARE_TYPED_IBASE_VECTOR
+An example where restricted access vectors are useful. This vector holds a
+counted reference to all contained objects.
+@end table
+
+In addition, so-called @dfn{object vectors} are provided. They are specially
+suited to contain objects of type @code{csObject} and add special methods,
+for example to find an object by name. These macros are:
+@table @code
+@item CS_DECLARE_OBJECT_VECTOR_NOREF(NAME,TYPE)
+Object vector equivalent to @code{CS_DECLARE_TYPED_VECTOR_NODELETE}.
+
+@item CS_DECLARE_RESTRICTED_ACCESS_OBJECT_VECTOR(NAME,TYPE)
+Object vector equivalent to @code{CS_DECLARE_TYPED_RESTRICTED_ACCESS_VECTOR}.
+
+@item CS_DECLARE_OBJECT_VECTOR(NAME,TYPE)
+Object vector equivalent to @code{CS_DECLARE_TYPED_IBASE_VECTOR}.
+@end table
+

@@ -1,0 +1,240 @@
+@c -*-texinfo-*-
+@node FAQ, API Modifications, Contributing, Top
+@appendix Frequently Asked Questions (@sc{faq})
+@cindex Frequently Asked Questions
+@cindex @sc{faq}
+
+This is a list of frequently asked questions and their answers.  If you have
+some questions about Crystal Space, try consulting this list first.
+
+@itemize @bullet
+@item
+From where can I download Crystal Space?
+
+@strong{A}: The latest release of Crystal Space is always available from the
+Crystal Space home page, and from the Crystal Space @sc{ftp} site.  You can
+also access the bleeding-edge developmental version.  @xref{Where to Get}.
+
+@item
+What do I need to compile Crystal Space?
+
+@strong{A}: You need the source code, which you can obtain in a variety of
+ways.  @xref{Where to Get}.  You also need a compiler and development system
+for the platform which you are using.  Some of the supported compilers are
+@sc{gcc}, @sc{msvc}, Code Warrior, and Borland C++.
+
+@item
+What do you I to run Crystal Space?
+
+@strong{A}: You need the following items:
+
+@itemize @minus
+@item
+A compiled executable program such as @file{walktest} or @file{blocks}, for
+example.  These are demo programs included in the main source archive.
+
+Note that there exist two types of executables: staticly linked and
+dynamically linked.  If you have a staticly linked executable (for example,
+the @sc{dos} executable will always be static) then you don't need any of the
+following drivers.  Otherwise you will need the remaining items.
+
+@item
+A 3D rasterizer plug-in.  You can choose either the software renderer or else
+one of the hardware accelerated renderers.  You also have to choose the
+correct library for your system.  On OS/2 and Windows this will be a
+@file{.DLL} file.  On most Unix systems this will be an @file{.so} file.
+
+@item
+A 2D graphics driver which is particular to your platform.  The 3D rasterizer
+displays its rendered images thorugh the 2D graphics driver.
+
+@item
+A network driver, such as the @sc{bsd}-style Sockets driver.  Use this if
+the application you want to use relies upon network access.
+
+@item
+Many of the Crystal Space applications also need several other plugins. For
+example plugins which implement 3D sprites, particle systems, ... In general
+the Crystal Space distribution will contain source for all of them.
+
+@item
+You should also have @file{standard.zip} which is a library of standard
+resources used and shared by several of the Crystal Space applications.  You
+should @emph{not} unpack this file.  Crystal Space reads from @sc{zip} files
+directly.
+
+@item
+Finally you need at least one map file.  The map file is also typically a
+@sc{zip} archive.  Possible map files, among others, are @file{flarge.zip},
+@file{maze.zip}, and @file{room.zip}).  In addition to these map files you
+also need the standard texture archive @file{stdtex.zip}. You should
+@emph{not} unpack these files.  Note that @file{standard.zip} is not a
+map file, nor is @file{mazed.zip}, which is a resource file for MazeD, the
+Crystal Space map editor. All map files and related data files are usually
+located in the @file{data} directory.
+@end itemize
+
+@item
+I downloaded Crystal Space but it won't run.  What could be the cause?
+
+@strong{A1}: Are you sure that you have downloaded all the necessary
+components, as explained by the previous section? If not, then download the
+missing components.
+
+@strong{A2}: In general, Crystal Space requires an 8, 15, 16, or 32-bit
+display and will not work with other displays modes.  Note, however, that the
+MacOS/X Server, OpenStep, and NextStep ports of Crystal Space are not subject
+to this limitation.
+
+@strong{A3}: If you are using a dynamicly linked executable then the required
+plug-in modules, such as 3D renderer, 2D driver, etc.  usually must reside in
+the same directory.  On BeOS, the plug-in modules must be located in an
+@file{add-ons} subdirectory.  Most ports of Crystal Space use plug-in modules,
+with the notable exception of the @sc{dos} port which is statically linked.
+
+@strong{A4}: Are you certain that you are trying to load the correct map file?
+If you are running the application from the command-line, then you can try
+specifying the map file on on the command-line, like this:
+
+@example
+% walktest flarge
+@end example
+
+Where @samp{flarge} is the name of the map file you wish to use.  In this case,
+@samp{flarge} corresponds to the @file{flarge.zip} file which you downloaded.
+Also note that @file{flarge.zip} itself requires the file @file{stdtex.zip}
+which contains all the textures.
+
+Alternately, for WalkTest, you can change the @samp{WorldFile} setting in its
+configuration file @file{CS/data/config/cryst.cfg}.  For example:
+
+@example
+Walktest.Settings.WorldFile = flarge
+@end example
+
+@strong{A5}: If all else fails ask a question on the Crystal Space mailing
+list.  @xref{Mailing Lists}.
+
+@item
+What documentation is available?  Where can I find it?
+
+@strong{A}: There is a lot of documentation available.  Not all of it is
+completely up-to-date but we try to do our best in keeping it as up-to-date as
+possible.  Refer to the section in the Crystal Space manual which discusses
+documentation resources.  @xref{Documentation Resources}.
+
+@item
+I don't have lots of memory.  Can I still run Crystal Space?
+
+@strong{A1}: You may want to decrease the size of the texture cache with the
+@samp{-cache=<size>} command-line option or the @samp{CACHE} configuration
+option in @file{soft3d.cfg} if you are using the software renderer.  By
+default the size of the texture cache is quite large (typically 5 to eight
+megabytes in size), so adjusting this value might be useful for low-memory
+systems.
+
+@strong{A2}: Using a smaller window size and a lower bit-depth can also
+decrease memory usage.  In addition to the memory used for the actual graphics
+display, Crystal Space uses a Z-buffer containing 4-byte values with the same
+dimensions as the display.  Therefore, a display with dimensions of 640x480
+uses a Z-buffer of 1,228,800 bytes.
+
+@strong{A3}: If you are still low on memory there is only one thing you can
+do: decrease the complexity of the map.  For every polygon in the world a lot
+of memory used.  If you just want to try the engine you can run Crystal Space
+with some of the simpler worlds such as @file{perf.zip} or @file{rgb.zip}.
+
+@item
+Crystal Space is really slow on my computer.  What can I do to speed it up?
+
+@strong{A1}: Crystal Space is a 6@sc{dof} engine.  It needs to do
+semi-perspective correct texture mapping to get a nice display and
+calculations to achieve this are slow.  You can expect that Crystal Space will
+probably need the same kind of computer as a game such as Quake 1 or Quake 2,
+at least a Pentium or a very fast 486 with a floating point co-processor.
+Also note that Crystal Space is still in the developmental stage and has not
+yet been fully optimized.  You might try using smaller window dimensions
+with the @samp{-mode=} option.  @xref{Common Command Line Options}.
+
+@strong{A2}: Use a hardware accelerated graphics card and driver.  Such cards
+are quite popular these days and can perform extremely well, especially wnen
+compared to Crystal Space's software renderer.
+
+@item
+I want to create textures for Crystal Space.  What palette should I use?  How
+big should I create the textures?  What format can I use?
+
+@strong{A1}: The palette does not really matter because Crystal Space
+calculates its own optimal palette given a set of input textures.  But there
+are some things to keep in mind.  Try to get the number of different colors as
+low as possible without sacrificing for quality and if you design a set of
+textures that are meant to be used together it is always best to let them use
+a similar palette.  This will make it easier for Crystal Space to calculate a
+good palette.
+
+@strong{A2}: The width and height of a texture must be a power of 2 (such as
+8, 16, 32, 64, @dots{}).  That's about the only restriction.  Textures need
+not be square.  You can have textures with sizes like 16x256.
+
+@strong{A3}: Crystal Space textures may be in any of the supported image
+formats, such as @sc{png}, @sc{tga}, @sc{bmp}, @sc{jpg}, and @sc{gif}.
+
+@strong{A4}: Unless a texture is not meant for tiling you should make sure
+that it can be tiled.  This means that if you put a number of textures next to
+each other or above each other the boundaries should seemlessly integrate with
+each other.  Of course, it is entirely possible to create textures that are
+specifically drawn for untiled usage.  An example would be a texture
+representing a computer keyboard.
+
+@item
+I'd like to contribute to Crystal Space.  What can I do?
+
+@strong{A}: Have a look at the section of this manual about contributing
+to the project (@pxref{Contributing}), and take a look at the To-Do and
+Bug lists on the Developer's Project page at SourceForge:
+
+@noindent
+@uref{http://sourceforge.net/projects/crystal/}
+
+@noindent You can also contact the mailing list (@pxref{Mailing Lists}) in
+order to coordinate your efforts with those of other people.
+
+@item
+How does Crystal Space work?
+
+@strong{A1} If you want to know how you can use CS, you can look at the
+chapters describing the libraries of which CS consists, @xref{Libraries}.  Or
+you can look at the plug-ins, @xref{Plug-In Drivers}.  If you want to know how
+it works internally, @xref{Internals}.
+
+@strong{A2}: Read any other documentation related to this project as mentioned
+earlier in this @sc{faq}.
+
+@strong{A3}: If you need more information, you should consider posting your
+queries to the Crystal Space mailing list, @ref{Mailing Lists}.
+
+@item
+I want to write a game with Crystal Space.  Can I do this?
+
+@strong{A1}: The ultimate purpose of Crystal Space is that it will become a
+useable and powerful engine for writing games and other graphics visualization
+programs.  As a project which is still under development, it may be simple or
+difficult to build your particular game, depending upon your specific
+requirements.  One way to improve the state of Crystal Space so that it better
+fits your needs is to contribute to the project yourself.
+
+@strong{A2}: Crystal Space is under the @sc{lgpl} licensing policy so you can
+make commercial or shareware products using it.  For more details about what
+you can and cannot do, see the license, @ref{License}.
+
+@item
+How stable is the @sc{api} for Crystal Space?
+
+@strong{A}: This depends. If you use @sc{scf} interfaces (i.e. interfaces
+defined in the @file{include} folder) then you should be relatively safe.
+In the future (for the 1.0 release) we will put more stuff in plugins which
+means they will be accessible through @sc{scf} interfaces. So for now I
+would say that there are likely to be API changes. Note that we try to
+minimize that as much as possible and we also document them with every
+release to make the transition easier.
+@end itemize

@@ -1,0 +1,64 @@
+@c -*-texinfo-*-
+@node Common Command Line Options, Configuration File, Options, Options
+@section Common Command Line Options
+@cindex Common Command Line Options
+@cindex Command Line Options
+@cindex Options, Command Line
+
+All Crystal Space applications respond to a common set of command line
+options.  Many applications define additional options which are specific
+to that particular application.
+
+The most immediately useful command line option which all applications
+respond to is @samp{-help}.  This command list all of the other options to
+which an application responds.
+
+The default setting for each command line option is set internally in the 
+program unless there is a corresponding line for it in the configuration file.  
+For example, normally the default for @code{-gamma} is @code{1.0} (the default 
+brightness level).  But when @code{GAMMA=2.0} is set in configuration file 
+@file{soft3d.cfg} the default will be @code{2.0} instead.  Command line 
+options always override default values.  
+
+Some interesting options to play with are:
+
+@table @code
+@item -mode=640x480
+Use this option to set the size of the display.
+
+@item -video=opengl
+(or direct3d, glide, software, ...).
+Use this option to select type of display driver to use.  Other options
+are @code{software}, @code{glide}, @code{direct3d}, etc.
+
+@item -recalc
+Use this option to force recalculation of all cached information about a
+level, such as lightmaps and visibility data.  This is a convenient shortcut
+to typing the other commands individually, such as @samp{-relight},
+@samp{-revis}, etc.
+
+@item -norecalc
+Inhibit automatic recalculation of cached information if the engine determines
+that it is out of date.
+
+@item -relight
+Use this option to recalculate all lightmaps after you changed lighting
+or geometry in a level that you're trying. If you don't do this you either
+get the old lightmaps or no lightmaps at all.
+
+@item -norelight
+Inhibit automatic recalculation of the lightmap information which can occur
+if the engine finds that the existing lightmaps are out of date.
+
+@item -revis
+Use this option to recalculate all visibility information after you have
+changed geometry in a level.  This will force the engine to ignore the
+existing cached visibility information and recalculate it from scratch.
+
+@item -norevis
+Inhibit automatic recalculation of visibility information if the engine
+determines that it is out of date.
+
+@item @emph{FIXME}
+Document the remaining common command line options.
+@end table

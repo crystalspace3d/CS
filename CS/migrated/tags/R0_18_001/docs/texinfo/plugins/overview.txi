@@ -1,0 +1,115 @@
+@node Plug-In Overview, VFS, Plug-In Drivers, Plug-In Drivers
+@section Quick Overview
+@cindex Plugin List
+@cindex Plugin Overview
+
+This section presents a quick overview of the plug-ins provided by Crystal
+Space. More detailed descriptions of these facilities may be found in later
+sections.
+
+@itemize @bullet
+@item
+@emph{VFS} (Virtual File System)
+
+@sc{vfs} serves as the basic module for file access for all parts of Crystal
+Space.  It allows one to map ``virtual'' directories to ``real'' ones; to map
+several real directories together as a single virtual directory; and to treat
+@file{.zip} files like subdirectories.  @xref{VFS}.
+
+@item
+@emph{Graphics Drivers}
+
+The graphics modules provide ``low-level'' graphics output. This includes
+drawing pixels, lines and text, but also drawing polygons and polygon meshes
+to support hardware acceleration. @xref{Graphics Drivers}.
+
+@item
+@emph{Sound Drivers}
+
+The sound modules allow you to load and play sound effects and music. 3d
+effects are supported, as well as different ways to the same sound file.
+@xref{Sound Drivers}.
+
+@item
+@emph{Network Drivers}
+
+The networking modules allow CS programs to communicate between a network,
+internet or similar connection. @xref{Network Drivers}.
+
+@item
+@emph{3D Engine}
+
+This plug-in will replace the 3D engine in its current form as a static
+library. This module is currently not helpful for your own projects.
+@xref{csEngine}.
+
+@item
+@emph{Mesh Objects}
+
+Mesh objects are 3D objects that can be used and displayed by the engine.
+Examples are 3D sprites, 2D sprites, and particle systems. This functionality
+used to be in the engine but has been removed from the engine for greater
+flexibility.
+
+@item
+@emph{Standard Loader}
+
+This plug-in will replace the @code{csParser} library once the engine is a
+plug-in module. Until then, it is not helpful for your own projects.
+
+@item
+@emph{Collision Detection}
+
+There is currently only one collision plug-in, using the @sc{rapid} algorithm.
+Collision is based on testing for intersection of two non-moving objects.
+
+@item
+@emph{Console} and @emph{Console Input}
+
+These plug-in modules can be used for console-like text input and output,
+similar to the console in Quake.
+
+@item
+@emph{Metaballs}
+
+The Metaballs plug-in module can be used to build blob-shaped polygon
+structures based on points in 3d space with size and strength values.
+
+@item
+@emph{Crystal Clear}
+
+The Crystal Clear Plug-In provides high-level functions to make it easier to
+write games. @xref{CrystalClear}.
+
+@item
+@emph{Dungeon}
+
+The Dungeon Plug-In can be used to create random levels based on simple
+parts created by a level editor. @xref{Dungeon}.
+
+@item
+@emph{Scripting}
+
+The scripting plug-in modules allows support for Python and Java scripts.
+@xref{csPython}.
+
+@item
+@emph{Font Server}
+
+The font server can be used to display different fonts in your application.
+
+@item
+@emph{Motion Manager}
+
+Skeletal motion manager.
+
+@item
+@emph{Game Core}
+
+This plug-in also tries to make writing games easier, like Crystal Clear.
+
+@item
+@emph{Performance Statistics}
+
+This plug-in helps to measure performance of the 3D engine.
+@end itemize

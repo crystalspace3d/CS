@@ -1,0 +1,2870 @@
+The history order has been reversed so that new features are at the top.
+
+20-Feb-2001
+	- Eric Sunshine resolved several compilation problems on MacOS/X which
+	  were reported in a series of build-logs sent by Travis McLane
+	  <tmclane@swt.edu>.
+	    - Several AppKit and Foundation headers needed to be imported into
+	      various source files.  In the past, these headers got pulled in
+	      by other system headers which were already being imported, but
+	      this is no longer the case as of MacOS/X.
+	    - NSDPSContext was replaced by NSGraphicsContext.  The code now
+	      conditionally references the correct class depending upon
+	      platform.  Also centralized the graphics context flushing
+	      mechanism into NeXTDelegate.m since it is needed from a couple
+	      different places.  Added a new extension to
+	      NeXTSystemDriver::SystemExtension() named "flushgraphicscontext".
+	- Release of 0.18r001.
+19-Feb-2001
+	- Fixed a bug in csMeshWrapper::SetMeshObject().
+	- Fixed a bug in csMovable. The parent reference should not
+	  be incref'ed/decref'ed as that creates a circular reference.
+	- Fixed a bug in the handling of iMovable by csMeshWrapper. This
+	  caused simple to crash at exit.
+	- Fixed an additional bug in simple which would cause another
+	  crash at exit.
+	- Small update to python plugin.
+	- Fixed a bug in WalkTest. If you pressed the mouse button WalkTest
+	  would just continue going forward even after releasing it again.
+	  Bug fixed by Navdeep S. Tinna.
+	- Eric Sunshine eliminated several compilation warnings from MSVC
+	  (reported by Martin Geisse) in sft3dcom.cpp and avistrv.cpp about
+	  variables possibly used uninitialized.
+	- Eric Sunshine fixed a crasher in Phyztest which occurred when the
+	  tumbling block was launched.  QUERY_INTERFACE() was being called on
+	  the wrong object.
+	- Eric Sunshine performed a major update to the Apple/NeXT
+	  documentation in the user's manual.
+	    - Overhauled to reflect all the recent major work done to the
+	      Apple/NeXT ports.
+	    - Now mentions new (untested) MacOS/X port.
+	    - Added and updated resource URLs.
+	    - Reworked port-specific file-description section.  Now takes into
+	      account recent distillation of Objective-C++ into pure C++ and
+	      pure Objective-C.
+	    - Discusses new CrystalSpaceRoot and CrystalSpaceRootIgnore
+	      defaults.
+	    - Added key-mapping discussion for NextStep.
+	    - Added several new To-Do and Bugs items to the `NeXT Notes'
+	      section.
+	    - Many other clarifications and enhancements.
+	- Eric Sunshine updated the BeOS-specific documentation in the user's
+	  manual.
+	- Eric Sunshine repaired a significant number of TeX formatting
+	  problems which were recently introduced into the Texinfo source
+	  files.
+	- Eric Sunshine converted several of the map2cs tutorial EPS images
+	  back to gray scale so that they will look nicer in typical printed
+	  output.  They also display correctly once again on NeXT.
+18-Feb-2001
+	- Eric Sunshine eliminated a compilation warning in levtool.cpp on
+	  BeOS.
+	- Eric Sunshine finished the conversion of the Glide 3D driver to the
+	  new configuration file system.  This conversion had been started by
+	  someone else previously, but was incomplete.
+	- Eric Sunshine fixed g2dtest.cpp so that it now explicitly closes the
+	  iGraphics2D context which it creates (much like the 3D context is
+	  explicitly closed by 3D applications).
+	- Eric Sunshine began updating the documentation for the Apple/NeXT
+	  port:
+	    - Mentions new (untested) MacOS/X port.
+	    - Major changes in code and file organization.
+	- Eric Sunshine fixed a problem on MacOS/X Server 1.0 (Rhapsody) where
+	  a system header was defining a macro named Free().  Unfortunately,
+	  this macro was conflicting with several Crystal Space classes which
+	  have methods named Free().  This problem only manifested when certain
+	  facilities were requested via the SYSDEF_* macros and <libc.h> was
+	  imported.
+	- Eric Sunshine fixed the default setting of INSTALL_DIR in install.mak
+	  so that it now works correctly with the GNU make shipped with
+	  MacOS/X Server 1.0 (Rhapsody).
+	- Eric Sunshine changed next/csosdefs.h so that it only fakes up the
+	  strdup() function on OpenStep and NextStep.  It is no longer faked
+	  up for MacOS/X or MacOS/X Server 1.0 (Rhapsody).
+	- Eric Sunshine worked around a bug in the OpenStep compiler which was
+	  triggered by cfgmgr.cpp.  The problem is that the compiler creates
+	  unlinkable code when an inline method invokes a second inline method
+	  which the compiler has not yet seen.
+	- Eric Sunshine added an ugly (and hopefully temporary) OpenStep/Sparc
+	  hack to pol2d.cpp to work around "local relocation entries in
+	  non-writable section" linkage errors.
+	- Eric Sunshine fixed several Texinfo mark-up errors in the User's
+	  Manual.
+17-Feb-2001
+	- Eric Sunshine defined the missing DESCRIPTION.OS.beos variable in
+	  lib/cssys/beos/beos.mak.
+	- Eric Sunshine eliminated a compilation error in cfgfile.cpp on BeOS.
+	- Martin Geisse fixed a bug in the pysimp application.
+	- Martin also removed two unused options from cryst.cfg.
+	- Martin changed the VFS documentation to deal with the new
+	  config format.
+	- Norman Kramer changed the test for NASM slightly. Also removed
+	  writing of entry NASM=nasm.
+16-Feb-2001
+	- Dynamic lights do not traverse through mirroring portals anymore.
+	  This caused a bug because the dynamic lighting routine can't handle
+	  this correctly. Rather than fixing this routine (which would make
+	  it slower) I choose to just disable this feature.
+	- The dynamic lighting routine also accounts for space warping portals
+	  now.
+	- Removed a lot of the obsolete tokens in csparser.
+	- Fixed a bug in csThing::MergeTemplate(). The function did not
+	  correctly copy the flags from the template to the thing.
+	- Fixed a bug in simple.
+	- Eric Sunshine fixed a couple of problems in
+	  ddgTriangle3::intersectPointTriangle() which were reported by
+	  Jonathon Doran <jon.doran@nsc.com>:
+	    - The `d23' vector was being incorrectly computed.
+	    - The Borland compiler was not able to grok computation of the
+	      `d1', `d2', and `d3' vectors on account of very questionable
+	      mixing of references and pointers.
+15-Feb-2001
+	- Updated various parts of the documentation. The most important
+	  change is that the simple tutorial has been updated to the mesh
+	  object plugin system.
+	- Martin Geisse updated the documentation to deal with the new
+	  config system. Martin also added some hints from Paulo Candido
+	  to the win32 docs.
+	- Fixed an old bug in the OpenGL canvas. The ScreenShot() function
+	  did not work correctly on big-endian systems in 32-bit display
+	  mode. The colors were wrong.
+	- Fixed a bug in csMaterialHandle::FreeMaterial(). It would
+	  accidently clean up the texture as well.
+	- Fixed another bug in csMaterialHandle::Prepare(). This function
+	  will now look if the material is still there and copy the
+	  data again. This is useful to change material settings later.
+	- Fixed a bug in csMaterialWrapper::Visit(). It would call
+	  visit on the texture even if there is no texture for the material.
+	  This naturally caused a crash.
+	- Eric Sunshine eliminated several compilation warnings in cfgmgr.h
+	  and cfgmgr.h.
+14-Feb-2001
+	- Continued making use of QUERY_INTERFACE in the engine more sensible.
+	  This involves:
+	    - csMovable::SetParent()
+	    - csMeshWrapper::Draw()
+	    - csMeshWrapper::GetMovable()
+	    - csPolyTexture::GetPolygon()
+	    - csOctree::Cache()
+	- Also did the same for all mesh object plugins and loaders, csparser
+	  library, and csclear library.
+	- Added csEngine::current_iengine which is a reference to the main
+	  iEngine.
+	- Fixed a bug in csMeshFactoryWrapper::SetMeshObjectFactory().  This
+	  function would not correctly call DecRef() on the old factory and
+	  IncRef() on the new one.
+	- Renamed csEngine::meshobj_factories to csEngine::mesh_factories.
+	- Changed all UpdateLighting routines everywhere to work directly with
+	  iLight instead of csLight pointers.  That is easier and also avoids
+	  some problems with the need to conver them.  This also fixes
+	  iMeshWrapper::UpdateLighting().
+	- csEngine::GetNearbyLights() now returns references to iLight instead
+	  of csLight.
+	- Fixed a few bugs in the explosion loader which prevented that loader
+	  from working correctly.
+	- Fixed a reference to zlib-win32-bin in the documentation.
+	- Added full documentation for all the existing mesh object plugins in
+	  CS.
+	- Cleaned up mapfmt.txi documentation.  i.e.  removed all the
+	  documentation related to sprite and particle systems.  This is now
+	  documented with the mesh object plugin documentation.  Also added
+	  documentation about MESHOBJ keyword.
+	- Eric Sunshine made the following changes:
+	    - Modified static.mak so that cslibref.cpp now depends upon the
+	      system makefile (such as linux.mak) in addition to user.mak and
+	      config.mak (upon which it historically depended).  This new
+	      dependency catches the cases where the user modifies the PLUGINS
+	      variable in the system makefile.
+	    - Fixed a couple minor problems with ddraw.mak and fountain.mak so
+	      that they work correctly with static linking.
+	- Eric Sunshine made the following changes to snapshot.py, the CVS
+	  snapshot generation script.
+	    - Improved error reporting when external (shell invoked) commands
+	      fail.  The actual command is now reported (in addition to the
+	      error message which has always been reported).
+	    - Added the missing `-P' flag to the `cvs checkout' command.
+	- Martin Geisse added a "Sound System Changes" section to apimod18.txi.
+	- Eric Sunshine made the following changes to the user's manual:
+	    - Fixed a significant number of Texinfo errors and warnings which
+	      were recently introduced.
+	    - Normalized a lot of Texinfo mark-up usage.
+	    - Eliminated all overfull and underfull hbox warnings reported by
+	      TeX.
+13-Feb-2001
+	- Philip Wyett did some proof reading of the docs:
+	    - Added two missing web links for required mingw
+	      external dll's jpeg and png.
+	    - Grammar changes and added links.
+	    - Expanded MSVC version requirements for CS compilation (i.e.
+	      service pack 4, MS processor pack, ...).
+	    - Many typo's and cosmetic changes.
+	    - Update to Map2CS tutorial. Brings into line with use of
+	      WorldCraft 3.3 and simplified setup and usage instructions.
+	- Wouter Wijngaards did an update to the procedural sky so that
+	  it looks good in software too (disabled CS_PROC_TEXTURE_ALONE_HINT
+	  for the texture, so that the colormap is (re)computed in 8bit
+	  mode).
+	- Martin Geisse updated the apimod18.txi documentation on how
+	  to go from version 0.17 to 0.18 with regards to the config
+	  changes.
+	- Made all the members of csRenderView private and provided
+	  proper accessor functions. In particular added:
+	  	- SetEngine(), GetEngine()
+		- GetClipPlane()
+		- SetCallback(), GetCallback(), CallCallback(),
+		  GetCallbackData()
+		- GetFrustum()
+		- SetThisSector(), GetThisSector()
+		- SetPreviousSector(), GetPreviousSector()
+		- SetFogInfo(), GetFogInfo(), AddedFogInfo(), ResetFogInfo()
+		- GetG3D(), GetG2D()
+		- SetPortalPolygon(), GetPortalPolygon()
+		- GetView()
+		- HasClipPlane(), UseClipPlane()
+		- HasClipFrustum(), UseClipFrustum()
+	- Also added a copy constructor to csRenderView to correctly
+	  fix the ref counts.
+	- Since QUERY_INTERFACE does an implied IncRef() a lot of current
+	  code is not correctly handling this (i.e. does not call DecRef()).
+	  In addition QUERY_INTERFACE is not very efficient. So I rewrote
+	  a lot of the QUERY_INTERFACE calls so that the QUERY_INTERFACE
+	  result is remembered. The class remembering this result is
+	  now responsible for doing DecRef() when appropriate. This should
+	  make things slightly more efficient and certainly more correct:
+	  Here are the places where this is done:
+	  	- csView::SetCamera()
+		- csRenderView::SetView()
+		- csRenderView::SetEngine()
+		- csRenderView::camera
+	- Also fixed all of the apps where this DecRef() was missing.
+	- Fixed csEngine where this DecRef() was missing.
+	- Fixed csEngine::FindMeshObject() so that it will no longer crash
+	  when it cannot find the mesh.
+	- Fixed csEngine::FindTexture() so that it will no longer crash
+	  when it cannot find the texture.
+	- Fixed csEngine::FindCameraPosition() so that it will no longer
+	  crash when it cannot find the texture.
+	- Since csMeshWrapper is now the only class subclassing from
+	  csSprite it makes better sense to merge both classes into
+	  csMeshWrapper. So csSprite is now removed and the engine only
+	  talks about csMeshWrapper objects. This has the following
+	  additional consequences:
+	  	- csEngine::sprites is renamed to csEngine::meshes
+		- csEngine::UnlinkSprite/RemoveSprite renamed to <Xxx>Mesh.
+		- csEngine::PrepareSprites renamed to PrepareMeshes.
+		- csSector::sprites renamed to csSector::meshes
+	- Updated apimod18.txi with the full info on how to port csSprite3D
+	  to mesh object system.
+	- Fixed MazeD so that it correctly saves the new spr3d format
+	  instead of the old csSprite3D format.
+	- Extended iMeshObject with HitBeamObject() function. Only
+	  the spr3d plugin supports this at the moment. This is a todo
+	  for the other plugin types. csMeshWrapper will call this function
+	  now.
+	- Martin Geisse fixed a few problems in ptlab and csview that came
+	  with the removal of csSprite.
+	- Wouter Wijngaards fixed a compile error in terrddg.cpp.
+12-Feb-2001
+	- Wouter Wijngaards fixed the loading crash for csfedit. Now
+	  csfedit will create a new font called 'LoadingError' when
+	  loading fails.
+	- Wouter also made a big quality improvement on the procedural
+	  sky. Adjusted several parameters. The result is that clouds
+	  look much wispier then before. This also makes the texture
+	  look smoother.
+	- Martin Geisse fixed a bug that crashed levtool when loading
+	  a non-3d-sprite mesh object.
+11-Feb-2001
+	- Martin Geisse fixed a bug that crashed cctest when map file
+	  was not found.
+	- Martin also fixed a very old msvc compiler warning (msvc doesn't
+	  like usage of 'this' pointer in member/base class initialization
+	  list in constructors).
+10-Feb-2001
+	- Martin Geisse did the following changes to the config system:
+	    - Added the config manager object. This object takes several
+	      config files and makes them look like a single config object
+	      to the outside.
+	    - Removed Prev() method from iterators because they caused
+	      problems with the config manager.
+	    - Fixed a case where the dirty flag was not set.
+9-Feb-2001
+	- Wouter Wijngaards added default =0 to csPixmap function.
+	- Philip Wyett fixed memory reference errors on app exit under
+	  Windows. "->DecRef ();" both cube and ball inside the destructor.
+	- Added incomplete doc on transition from 0.17 to 0.18. Will work
+	  further on this.
+	- Added GetTransformedBoundingBox() and GetScreenBoundingBox() to
+	  csMeshWrapper.
+	- Changed sprite selection code in WalkTest to work on mesh objects.
+	- Spr3d plugin now also implements iConfig so that you can set
+	  sprite configuration options through that. Currently the supported
+	  options are 'sprlod' (sprite lod level) and 'sprlq' (sprite
+	  lighting quality).
+	- Modified WalkTest to use the iConfig interface of the spr3d
+	  plugin to implement the 'lod' and 'sprlight' console commands.
+	  Added GetConfigOption() and SetConfigOption() routines in WalkTest
+	  to make this easier.
+	- WalkTest is now completely free of the old csSprite3D and is
+	  fully converted to the new spr3d plugin.
+	- Converted cctest app and csclear lib to use new spr3d plugin.
+	- Added SetFactory() and GetFactory() to csMeshWrapper.
+	- Added GetFactory() to iMeshObject and removed GetFactory() from
+	  iSprite3DState. Changed all mesh object plugins accordingly.
+	- Fixed MazeD for the new spr3d plugin.
+	- Fixed Physics test appliation to use the new spr3d plugin.
+	- Fixed levtool app to use the new spr3d plugin.
+	- Changed GetRadius() in iMeshObject to return a csVector instead
+	  of a float.
+	- Completely removed csSprite3D and csSpriteTemplate from the engine.
+	  This means that csFrame, csSpriteAction, csSkeleton... are all
+	  gone now. Also removed csLoader::LoadSpriteTemplate and LoadSprite.
+	  The 'SPRITE' keyword is no longer recognized.
+	- Removed FindSprite() in iEngine, csEngine, iRegion, and csRegion and
+	  added FindMeshObject() instead.
+	- Removed iSprite and iSpriteTemplate interfaces.
+	- Eric Sunshine made the following changes to the API transition
+	  documentation:
+	    - Re-organized so that there is a single appendix for API
+	      transitions rather than multiple appendices.  The API transition
+	      appendix now contains a sub-section for each transitional
+	      version.
+	    - Ran nodefix.pl (make repairdoc) to repair out of date @node and
+	      @menu directives.
+	    - Eliminated underfull and overfull hbox warning messages reported
+	      by TeX.
+	    - Performed a bit of clean up in apimod18.txi.
+	- Eric Sunshine modified the Apple/NeXT system driver so that it now
+	  recognizes the new defaults `CrystalSpaceRoot' and
+	  `CrystalSpaceRootIgnore'.  The first setting allows the user to
+	  configure the location of the root directory which contains the
+	  Crystal Space resources.  This allows any Crystal Space application
+	  to locate its resources even when launched from the Workspace.  The
+	  reason that this is necessary, is that the Workspace launches the
+	  application without providing any path information (that is, argv[0]
+	  is the bare program name) and without setting the current working
+	  directory to a meaningful value.  The use of this setting is similar
+	  to the CRYSTAL environment variable, but since the Workspace does not
+	  allow environment variables to be set, the Apple/NeXT defaults system
+	  is used instead.  The second setting tells the application to ignore
+	  the first variable.  This is useful in cases when the first variable
+	  is set in the "global" domain, but a particular application wants to
+	  ignore the setting.  The upshot of this change is that it is now
+	  possible to launch Crystal Space applications via double-click in the
+	  Workspace on NextStep.  Unfortunately, this does not yet work on
+	  OpenStep due to some, as yet, undetermined problem where the
+	  NSApplication object throws an exception.  On MacOS/X and OpenStep,
+	  these defaults can be set as illustrated below:
+		defaults write NSGlobalDomain CrystalSpaceRoot /Library/CS
+	  On NextStep, the following command would be used:
+		dwrite -g CrystalSpaceRoot /LocalLibrary/CS
+8-Feb-2001
+	- Martin Geisse changed DirectInput version number from 0x0700
+	  to 0x0300.
+	- Philip Wyett fixed VERY VERY long standing compile errors
+	  in the MingW port. There are no code changes, just a code move
+	  around. Still compiles in VC6. Other platforms say Linux etc.
+	  will have to compile to verify this hack (and it is a hack :-))
+	  is OK?
+	- Changed 'bot' code in Walktest and ptlab to use the new spr3d
+	  plugin instead of csSprite3D.
+	- Initialization of collision detection in WalkTest will now work
+	  for all mesh objects that actually support iPolygonMesh (currently
+	  only spr3d plugin does this).
+	- Fixed spr3d plugin so that GenerateLOD() and ComputeBoundingBox()
+	  will now be called upon the first creation of a sprite instance
+	  from a factory. Previously this was not done so this could give
+	  problems.
+	- Changed csDrawCallback in meshobj.h to use iMeshWrapper and
+	  iRenderView instead of csMeshWrapper and csRenderView.
+	- Extended iMeshWrapper interface with SetDrawCallback() and
+	  GetDrawCallback().
+	- Added 'add_meshobj' to walktest which is equivalent to 'add_sprite'.
+	- Ported the skeletal tree from WalkTest to use the new spr3d
+	  plugin.
+	- Added ObjAdd(), ObjRemove(), ObjRelease(), and GetObjectParentI()
+	  to iObject SCF interface so that they can be used from within
+	  plugins too.
+	- Added a new constructor to csCollider which accepts an iObject*
+	  as a parent. This will help to attach csCollider objects to
+	  mesh object plugins.
+	- Fixed bug in csMeshWrapper. It did not use the correct SCF macros
+	  to indicate that it was actually getting iBase from the parent
+	  csSprite.
+	- Fixed a bug in the spr3d plugin where it would reset the value
+	  of MixMode to CS_FX_COPY the first time it was used.
+	- Converted the crossbuilder importer (i.e. the routines that can
+	  read MD2 and 3DS files to sprite templates) so that they use
+	  the new spr3d plugins.
+	- Added support for 'FILE' in MESHOBJ for factories. This is only
+	  temporary. The real solution is to move the 3DS and MDL/MD2 loaders
+	  which are now in impexp to plugins similar to the spr3dldr plugin.
+	  For now you can use this to import such a sprite template. If
+	  you use 'FILE' then you don't have to specify a 'PLUGIN' or use
+	  the 'PARAMS' statement. In addition also supported the MATERIAL
+	  keyword to set the material here. Note that you should only use
+	  MATERIAL in combination with the FILE keyword. In normal use
+	  MATERIAL is part of the PARAMS statement and parsed by the plugin.
+	- Converted Squawk to use the new spr3d plugin.
+	- Added 'loadmesh' and 'addmesh' console commands which complement
+	  the old 'loadsprite' and 'addsprite' commands. These work for
+	  meshes now. 'loadsprite' and 'addsprite' are now deleted.
+	- Renamed 'delsprite' to 'delmesh'.
+	- Renamed 'listsprites' to 'listmeshes'.
+	- 'listactions', 'setaction', and 'setmotion' use the new spr3d
+	  plugin system too. As a consequence, they no longer work for
+	  the old sprites.
+	- Changed name of csTriangleVertex to csTriangleVertex2 temporarily
+	  in spr3d plugin so that static build works again. After csSprite3D
+	  is removed this can be restored.
+7-Feb-2001
+	- Martin Geisse removed sound volume division by number of sources
+	  from software sound because it did not sound very good.
+	- Martin also fixed an old bug with distorted 8-bit software sound.
+	- Philip Wyett added missing line: "virtual void NextFrame ();"
+	  dec into section 5.2.4 of the Simple tutorial.
+	  The fact of this ommission was brought to my attention
+	  by Menachem Pastreich - Thanks :-)
+	- Philip also fixed a compile error in gamecore with regards to
+	  the move of cspixmap.h from csengine to csfx.
+	- Wouter Wijngaards added missing CreateInstance routine to
+	  csAnimationTemplate.
+	- Wouter also ixed another bug: the order of pushes in
+	  csAnimationTemplate::AddFrame was wrong. Also fixed the
+	  GetLength(). csAnimationTemplate and csAnimatedPixmap
+	  work now. (Tested in Tunnel Fighter).
+	- Converted the missile in walktest to use the new mesh object
+	  spr3d plugin instead of csSprite3D. Also modified standard.zip
+	  accordingly.
+	- Finished support for spr3dldr (added support for TWEEN and
+	  ACTION). Now it can correctly load sprites.
+	- Added SCF interface iMeshWrapper which is the SCF version of
+	  csMeshWrapper. Also put a few functions in there so that it
+	  is possible to actually use it.
+	- Added CreateMeshFactory() and CreateMeshObject() conveniance
+	  functions to iEngine. The first one creates a factory and the
+	  second one will create a mesh object given a factory and place
+	  it correctly in the world.
+	- Updated simple to use the new conveniance functions.
+	- Norman Kramer started optimizing AVI plugin using u/v pipe.
+	- Added csLoader::LoadMeshObjectFactory() to load mesh object
+	  factories.
+	- Simple now uses mesh object system for the sprite too.
+6-Feb-2001
+	- Continue implementation of spr3d loader plugin. The factory
+	  loader should work now.
+	- Added support for loading MESHOBJ factories in library files.
+	- Also added spr2d and spr2dldr to walkall because the explosion
+	  needs it.
+	- Eric and Jorrit fixed a bad bug in spr3d which caused the entire
+	  system driver to be included in the plugin. Plugins should not
+	  link with plugins. But if they do then can only use iSystem and
+	  not anything inside cssys (like fatal_exit in this case).
+	- Eric Sunshine fixed a couple copy/paste errors in linex2d.mak which
+	  were pointed out by Jan Dvorak <johnydog@go.cz>.
+	- Martin Geisse did the following changes to cspixmap and
+	  csanimation2d:
+	    - Moved both from csengine to csfx.
+	    - csPixmap is now a more general interface-like class.
+	    - csSimplePixmap is now what csPixmap was before.
+	    - Changed the animation system to work on a template-instance
+	      basis.  Templates are called csAnimationTemplate and instances
+	      of a template are called csAnimatedPixmap. These instances
+	      inherit from csPixmap.
+	    - Animations can now handle frames with different delay values.
+	- Wouter Wijngaards fixed a bug in csfedit where the mouse would draw
+	  on the character when the mouse was not down.
+	- Norman Kramer fixed a scaling bug in the AVI plugin.
+5-Feb-2001
+	- Eric Sunshine eliminated a couple compilation warnings in
+	  csfedit.cpp.
+	- Added GetFOVAngle() to iCamera.
+	- Created the spr3d plugin (untested). The old csSprite3D is still
+	  there and will remain there until everything is ported to the
+	  new plugin. I also still have to implement spr3dldr (the loader).
+	- Added spr3d, spr3dldr, explo, and exploldr targets to 'walkall'
+	  because these are really required by WalkTest.
+	- Started work on spr3dldr (the Sprite3D loader plugin). The
+	  plugin currently works but only supports a tiny subset of what
+	  needs to be supported (i.e. not enough to be useful).
+	- Wouter Wijngaards changed csPixmap to allow subclassing. Made
+	  a subclass of csPixmap, that is csAnim2D - an animated pixmap.
+	  Each time you draw the correct frame of the animation is
+	  substituted, and drawn. Use like a csPixmap, and redraw each frame
+	  (if not already a 2d overdraw).
+	- Wouter removed the already present csAnimation2D in csengine.
+	- Norman Kramer did the following:
+	    - Fixed bug in the c yuv2rgba routine: u,v values were taken
+	      for 4 sequential pixel, instead the were meant for a 2x2
+	      pixelblock.
+	    - Started NASM mmx routine for yuv2rgba: doesnt work yet and
+	      is not scheduled either.
+	- Removed glu.h includes from OpenGL plugins. We don't need it and it
+	  adds an unneeded dependency.
+4-Feb-2001
+	- Wouter Wijngaards changed includes, so that make depend works
+	  nicer for csfedit.
+	- Norman Kramer fixed a bug in the AVI plugin. Red and blue
+	  chrominance values were swapped.
+3-Feb-2001
+	- Wouter Wijngaards added full functionality to the .csf font
+	  editor. You can edit characters, see a preview, change individual
+	  character widths, change font names, widths, save, load, etc.
+	- Philip Wyett started integration of DivX into CS tree.
+	- Philip also added plggamecore and added "DSP.GCORE.LIBS = xmlparse"
+	  to generate correct VC6 project file and fix link errors in
+	  the plugin.
+2-Feb-2001
+	- Wouter Wijngaards continued work on csfedit. You can now load
+	  a font (or make a new font) and see its contents in a window.
+	  The window also has working scrollbars now.
+	- Norman Kramer added initialization of pG2D to NULL (for avi plugin).
+	- Fixed a compile error in csfedit (only in debug mode) and
+	  fixed the makefile so that the description of the make target
+	  aligns correctly with the other descriptions.
+	- Extended iSkeletonConnectionState with GetTransformation() and
+	  SetTransformation().
+	- csSprite3D now implements iSprite3DState (similar to the work that
+	  has been done yesterday on csSpriteTemplate).
+	- Walktest now uses this new iSprite3DState for the skeleton and
+	  the ghost.
+	- Eric Sunshine enabled generation of MSVC DSP files for the csPython
+	  plug-in module and the PySimp application since we have one or two
+	  Windows users who would like to build these modules.
+	- Martin Geisse fixed two bugs in the sound system.
+1-Feb-2001
+	- Martin Geisse changed the sockets driver to use system events
+	  instead of Open() and Close() methods.
+	- Martin also fixed a bug which caused the sound drivers to stop
+	  'open', 'close' and 'pre-process' system events from further
+	  processing.
+	- Norman Kramer set ApplicationShow to SW_SHOWNORMAL in main().
+	  For some reason the mingw links main and not WinMain for guio
+	  apps. In that case ApplicationShow was initialized to 0 which
+	  means HIDE which in turn was the reason the window was invisible
+	  when running with opengl/mingw. I remember that it worked before,
+	  so probably some linker options slightly changed when linking
+	  with mingw - I dont know.
+	- Wouter Wijngaards added the csf edit application (font editor).
+	  Now it can read files. Note that the csws querydialog for
+	  filedialog now only returns full system paths. Not VFS paths.
+	  I worked around (prob. unix specific) using stat() and fread().
+	- Philip Wyett updated levtool to take account of Andrew's changes
+	  yesterday. Move to csTreeBox and changed to new mouse handler
+	  csevMouseClick. App now compiles and runs OK again under Windows.
+	- Philip also added new avi plugin to autogeneration process. This
+	  will generate both the VC6 project files for the plugin and
+	  the test application.
+	- Added GetAnmIndex() and GetTexIndex() to iSpriteFrame.
+	- Added MergeNormals() to iSprite3DFactoryState.
+	- Changed csLoader to use the new iSkeletonLimb, iSkeletonConnection,
+	  iSkeleton, and iSprite3DFactoryState to load a sprite template.
+	  Only partially done though. The impexp loaders still need a pointer
+	  to csSpriteTemplate.
+	- Fixed QUERY_INTERFACE_SAFE so that it doesn't evaluate it's
+	  parameters multiple times.
+	- Changed skeletal demos in WalkTest to use the new
+	  iSprite3DFactoryState interface (and related).
+	- Eric Sunshine fixed a serious bug in cspython.cpp where the contents
+	  of several csString objects was potentially being used _after_ the
+	  csString was destroyed.  This was one of those object-lifetime
+	  issues which differ from compiler to compiler.
+31-Jan-2001
+	- Martin Geisse fixed a compile-time error in CSWS.
+	- Added GetPrivateObject() to iMaterialWrapper.
+	- Added QUERY_INTERFACE_SAFE() which will first test if the given
+	  object is NULL. In that case it will return NULL. Otherwise
+	  equivalent to QUERY_INTERFACE().
+	- Let csSpriteTemplate implement iSprite3DFactoryState. This is in
+	  preparation of the csSprite3D move to a plugin.
+	- Norman Kramer did further work on the video plugins:
+	    - Extended PLUGIN var to build AVI and optionally opendivx.
+	    - Added output of what is currently done when trying to load video.
+	- Philip Wyett altered path to file 'video.avi' to data directory.
+	- Andrew Zabolotny did the following changes to CS:
+	    - Now the toolbox toolbar tracks the active editor window
+	      (model or world) and changes accordingly. I have drawn a few
+	      more icons for MazeD in GIMP, and switched the toolbar
+	      texture format to truecolor PNG with alpha channel. Now
+	      toolbar icons can have (and some already have) semi-transparent
+	      parts :-)
+	    - CSWS buttons with pictures are grayed (pictures are displayed
+	      semi-transparent) when the buttons are disabled. Also they do
+	      not emit the cscmdRightButtonClick message when they are
+	      disabled (in MazeD this was manifesting as second-level
+	      toolbars popping up even from disabled buttons).
+	    - Floating hints will disappear properly even if some window
+	      has captured the focus (such as a dialog window). To do so
+	      they grab the mouse.
+	    - Rewrote much of the csTreeCtrl (treeview) control. The
+	      basical interface is very similar (except that I've renamed
+	      csTreeCtrl into csTreeBox); most of the changes are related
+	      to the internal implementation. Other features: a completely
+	      new look-and-feel; a extended, more flexible and less
+	      cumbersome API (and a simpler implementation). Also I have
+	      changed cswstest so that you can switch miscelaneous tree
+	      control styles at runtime and see them in effect instantly
+	      (like for notebook control).
+	    - Made the csLayout class to set the CSS_TRANSPARENT flag
+	      (again?) since otherwise the dialog background "under" the
+	      layout isn't drawn, and since the layout itself does not paint
+	      anything, you get an hall-of-mirrors like effect (when you
+	      move the window).
+	    - Dialogs with no children will SuggestSize 8x8 rather than
+	      2x2 like it did before. This allows for better identification
+	      of windows with wrongly set CSWS_TOOLBAR style bit set :-)
+	      (toolbar is a dialog too, so if you wrongly set this bit when
+	      creating the window, you'll get just a couple of thin black
+	      lines which are confusing, at least they were for me :-)
+	    - Changed a little the behaviour of csComponent::NextChild()
+	      and PrevChild(): now it returns the next/previous *visible*
+	      and selectable child rather than just selectable. This has
+	      the effect of not showing anymore the hidden windows when
+	      closing a visible window (per Jorrit's request). However, if
+	      there is nothing left than hidden window, a hidden window
+	      will be focused anyway (but not shown).
+	    - Changed a little listbox behaviour and look. No lightblue
+	      frame on the focused item anymore; when listbox is active,
+	      the focused item is denoted by a solid background, otherwise
+	      it is denoted with a thin frame of the same color.
+	    - Added a method csComponent::OtherToThis (csComponent, x&, y&)
+	      which will convert coordinates from coordinate system of
+	      other component to this component's coordinate system. This
+	      is faster than the using the LocalToGlobal -> GlobalToLocal
+	      pair if the `from' component is a child (or grandchild, or
+	      grandgrandchild etc) of `this' component.
+	    - Made the toolbars resizeable in MazeD. By default toolbars
+	      are now four buttons wide (rather than two like it was
+	      before), to reserve a little space for coming "world tree"
+	      and "material selector" toolbars.
+	    - Added a new kind of events: csevMouseClick. This is generated
+	      by mouse event manager (AKA mouse driver) when it detects that
+	      the mouse button has been pressed and then released within
+	      "DoubleClickTime" and the mouse haven't been moved further
+	      than "DoubleClickDist". That is, when you quickly press and
+	      release the mouse button twice in sequence, you will
+	      generate the next events:
+		csevMouseDown
+		csevMouseUp
+		csevMouseClick (at the same time with MouseUp)
+		* This event is emmited only if the mouse haven't moved too
+		* far between MouseDown and MouseUp and the time between
+		* them haven't exceeded some threshold value.
+		csevMouseDown
+		csevMouseDoubleClick (at the same with MouseDown)
+		* This event is also generated if the same conditions are true.
+		csevMouseUp
+		csevMouseClick (at the same time with MouseUp)
+		* Yet another mouse click event, if the conditions are met.
+	      You can notice a slight conceptual difference in Click and
+	      DoubleClick because Click is generated after mouse is
+	      released, and DoubleClick is generated when mouse is pressed.
+	      Well, this is so for historical reasons - most GUIs uses
+	      mouse this way.
+	      ---
+	      Also note that the behaviour of double clicks event has
+	      slightly changed: now DoubleClick is emmited *in addition*
+	      to MouseDown rather than *instead* like it was before. That is,
+	      you will *always* get all the MouseDown and MouseUp events
+	      disregarding whenever click and doubleclick events have
+	      occured; these events are additional and are introduced just
+	      to help the programmer to track these conditions; in general
+	      he could do it himself by using timer, remembering position etc.
+	      ---
+	      This has a slight impact on some seldom-encountered code
+	      sequences: if before to catch absolutely all mousedown
+	      events you had to catch both MouseDown and MouseDoubleClick
+	      events, now you have to catch just MouseDown and don't bother
+	      about MouseClick and MouseDoubleClick - the event you are
+	      looking for will be always emited. In fact, if you will
+	      leave the code as before, you will intercept now two
+	      events instead of one; while in most cases it doesn't matter,
+	      in some cases it can.
+	    - Added a small context menu to every toolbar in MazeD.
+	    - Started implementing world tree toolbar. Now it is one of the
+	      standard toolbars. It displays in a tree fashion the structure
+	      of the 3D world. At the "top" level there can be only sectors
+	      (AKA rooms), inside them you can nest things and sprites
+	      (but not rooms).
+	    - Remove ?= from assignment to CSSYS.OBJ since GNU Make 3.77
+	      doesn't expand the text after such an assignment. That is,
+	      "CSSYS.OBJ ?= $(...)" is treated literally, e.g. the text
+	      inside the brackets is not expanded. If someone really needs
+	      ?=, use ifndef instead -- although I don't see any assignments
+	      to CSSYS.OBJ, so I can't understand why somebody have put ?=
+	      there.
+	    - Removed "dep: ..." after last line of "clean:" target - it
+	      seems like traces of a CVS conflict introduced by someone in CVS.
+	- Eric Sunshine fixed cssys.mak to again support conditional setting
+	  of OBJ.CSSYS.  (This feature was disabled in the most recent
+	  revision).
+	- Eric Sunshine fixed video.mak so that the `vid' target only appears
+	  in the application list if the platform is also able to build
+	  video-related plugins.  Also fixed formatting of help message.
+	- Eric Sunshine fixed several compilation problems in MazeD and CSWS.
+	  Also resolved some const vs. non-const problems in these modules.
+	- Eric Sunshine fixed a slew of compilation warnings in cswstest.cpp.
+30-Jan-2001
+	- Norman Kramer did further work on the video plugins:
+	    - Removed some debug code and a stupid comment.
+	    - Divx codec works (AVI).
+	    - For opengl the pic is flipped vertically , eek (this is because I
+	      abused the csImageArea and filled it myself while it was actually
+	      meant to be filled by the renderer.  Jorrit talked about
+	      introducing a FillPixelArray, which should solve this problem -
+	      or the csImageArea can be extended to do that ).
+	- Eric Sunshine changed the behavior of the -simdepth option in the
+	  AppKit-based Apple/NeXT 2D driver.  If the user specifies an illegal
+	  depth, then a suitable warning message is issued and the request is
+	  ignored.  Previously, it would return a failure status from
+	  iGraphics2D::Initialize() in this circumstance.
+	- Eric Sunshine fixed SED_DEPEND in cs.mak so that it works more
+	  portably across different versions of GNU make.  In particular, the
+	  old definition failed to work correctly on MacOS/X Server 1.0
+	  (Rhapsody).
+	- Martin Geisse eliminated a few compiler warnings in csgfxldr,
+	  glcommon2d.cpp and MazeD.
+	- Martin also eliminated a few cases where options have different
+	  names in walktest sources and in config file.
+	- Eric Sunshine fixed potential a memory leak which Martin introduced
+	  in glcommon2d.cpp.
+	- Eric Sunshine fixed CS/include/cssys/next/csosdefs.h so that it
+	  respects SYSDEF_ACCESS.
+	- Eric Sunshine made the following changes to jobber.pl:
+	    - Now allows user-specification of the temporary working directory
+	      (default is "/tmp").
+	    - Added a --version option.
+29-Jan-2001
+	- Martin also modified the sound drivers so that they are now opened,
+	  closed, and updated via system events.
+	- Brandon Ehle added documentation for the Skeletal Animation format,
+	  and the INCLUDESPRITE macro.
+	- Philip Wyett added a divide by zero check in csSprite3D.  This fixes
+	  ptlab on Windows.
+	- Jorrit fixed the fix from Philip Wyett to make it slightly more
+	  robust.
+	- Eric Sunshine fixed a bug in csConfigFile where the SetInt(),
+	  SetFloat(), and SetBool() methods would not actually set the key
+	  of a newly created node if the value being set was 0, 0.0, or false,
+	  respectively.
+	- Eric Sunshine fixed a bug in csConfigFile where the SetInt(),
+	  SetFloat(), and SetBool() methods were applying `delete[]' to the
+	  Data value twice.
+	- Eric Sunshine made the following changes to the project:
+	    - Added a makefile (macosx.mak) for MacOS/X.  This makefile is for
+	      Apple's new MacOS/X platform using the Cocoa-based Apple/NeXT
+	      port.  Since I do not have access to either MacOS/X or recent
+	      Macintosh hardware, this makefile is currently untested, but I
+	      believe that the project should build cleanly.
+	    - Added new menu definition to next.cfg for MacOS/X which respects
+	      the new Aqua-style interface.  This differs from the existing
+	      menu definition for MacOS/X Server 1.0 (Rhapsody) which is
+	      specific to the Platinum-style interface.
+	    - Eliminated reliance upon the Objective-C++ compiler for the
+	      Apple/NeXT port by reorganizing the code and writing plain-C
+	      stubs which interface between the C++ world of Crystal Space and
+	      the Objective-C world of the AppKit frameworks of Cocoa,
+	      OpenStep, and NextStep.  By eliminating the need for an
+	      Objective-C++ compiler, the project can now be built on MacOS/X
+	      (which does not ship with an Objective-C++ compiler).  The
+	      port-specific .cpp files now contain only pure C++ code.  All of
+	      the Objective-C code has been moved to .m files.  (The standard
+	      file extension for Objective-C source files is .m.)
+	    - Added icursor.h.  This is a pure-C header which contains the
+	      csMouseCursorID constants which used to reside in igraph2d.h.
+	      Also added ievdefs.h.  This is a pure-C header which contains all
+	      of the event-related constants which used to reside in ievent.h.
+	      These files are pure-C, rather than C++, because they must be
+	      included by the Objective-C source files of the Apple/NeXT port.
+	    - Added NeXTDynamicLibrary.cpp, which is the C++ portion of the
+	      plugin loading facility for the Apple/NeXT ports.  The existing
+	      NeXTLoadLibrary.m is now pure Objective-C and publishes a plain-C
+	      interface for use by NeXTDynamicLibrary.
+	    - Added NeXTConfigFile which is a plain-C wrapper over the C++
+	      Crystal Space configuration facility.
+	    - Added rules and support facilities to the Apple/NeXT makefile
+	      (next.mak) for recognition and compilation of Objective-C (.m)
+	      files.  Also added Objective-C support to next2d.mak.
+	    - cssys.mak now sets OBJ.CSSYS conditionally; only if it has not
+	      already been set.  This allows the platform-specific makefile to
+	      override the list of object files for the system driver.  This
+	      facility is used by the Apple/NeXT port to mention Objective-C
+	      (.m) object files in OBJ.CSSYS as well as C and C++ files.
+	    - cssys.mak now automatically invokes `vpath' for all C files in
+	      the system driver source directories (in addition to the `vpath'
+	      for C++ files which it has always invoked).
+	    - NeXTSystemDriver::SystemExtension() understands the following new
+	      messages: "timerfired", "continuelooping", "continuerunning",
+	      "dispatchevent", "hidemouse", "showmouse", and "requestshutdown".
+	    - De-coupled the tight binding which existed between the
+	      AppKit-based NeXT 2D canvas and the NeXT system driver's
+	      Objective-C delegate.  Some of the functionality in NeXTDelegate
+	      was actually specific to the AppKit-based canvas and may not have
+	      been useful or correct for other drivers, such as the planned
+	      OpenGL and CoreGraphics drivers.  The following functionality has
+	      been moved from NeXTDelegate into the canvas plugin:
+		o Setting of "Paused" status message on window when application
+		  is suspended.  The canvas now listens for cscmdFocusChanged
+		  events to implement this behavior.
+		o Creation and management of the window's tracking-rectangle as
+		  well as the associated behavior.
+		o Window event mask management.
+		o Window position adjustment for video optimization.
+		o Response to user initiated window-close events.
+	      Other functionality which may be useful to any canvas
+	      implementation for Apple/NeXT is published by the system driver
+	      via iSystem::SystemExtension().  The messages which may be useful
+	      to 2D drivers include "dispatchevent", "keydown", "keyup",
+	      "mousedown", "mouseup", "mousemoved", "hidemouse", "showmouse",
+	      and "requestshutdown".  Furthermore, the canvas no longer
+	      communicates directly with the system driver's Objective-C proxy
+	      object; nor vice-versa.  All platform-specific communication with
+	      the system driver is now accomplished via
+	      iSystem::SystemExtension().
+	    - The default NeXT 2D canvas plugin no longer includes
+	      NeXTDelegate.h from the CS/libs/cssys/next directory.  2D drivers
+	      now communicate with the platform-specific library strictly via
+	      iSystemDriver::SystemExtension().
+	    - The Objective-C application delegate in the Apple/NeXT port now
+	      listens for application-activation and application-deactivation
+	      notifications in order to suspend and resume the engine rather
+	      than relying on window-activation and window-deactivation
+	      messages.  Not only is this more sensible, but it also helped to
+	      de-couple the AppKit-based 2D canvas from the system driver.
+	    - Fixed a simple logic problem in the AppKit-based Apple/NeXT 2D
+	      graphics driver where it failed to emit a warning message when
+	      the user selected an invalid display depth via the -simdepth
+	      option.
+	    - The AppKit-based 2D canvas for the Apple/NeXT port no longer
+	      relies upon the WindowServer to report its own preferred
+	      bit-depth.  It turns out (so I discovered) that this is an
+	      unreliable operation on OpenStep since the WindowServer will
+	      actually report a different value the very first time the program
+	      is run versus subsequent runs.  Instead, the driver now relies
+	      upon the preferred depth as reported by the NSWindow or Window
+	      class.
+	    - Mouse tracking in the canvas' window is now more accurate when
+	      user switches away from the window or application and then
+	      returns.  In particular, the driver now pays attention to the
+	      mouse's location at the time that it once again begins tracking
+	      the mouse.
+	    - Fixed a problem with the AppKit-based Apple/NeXT 2D driver.  If
+	      the mouse was hidden prior to the application being paused, it
+	      would not be re-hidden when the application resumed.
+	    - The special CFLAGS needed to build the AppKit-based 2D driver
+	      (next2d.mak) are now only applied when explicitly building that
+	      driver rather than being applied to all modules.
+	    - Added a new `inherit' keyword to the list of keywords understood
+	      by NeXTMenu when processing a menu item entry.  This keyword
+	      allows a menu item to inherit attributes from some other menu
+	      item.  These attributes can then be overridden locally.  This
+	      facility is useful, for example, when one menu item definition
+	      differs from another only by its title.
+	    - Added a copious amount of documentation to next.cfg describing
+	      all of the supported configuration options.
+	    - Fixed a bug in NeXTMenu on NextStep where it would fail to
+	      properly build submenus on account of a mis-constructed submenu
+	      key prefix.
+	    - Converted NeXTMenu and NeXTConfigFile to work with new
+	      csConfigFile and related SCF interfaces rather than the
+	      deprecated csIniFile.
+	    - Fixed vfs.cfg so that it works with MacOS/X Server again
+	      following Andrew's change to the meaning of CS_PLATFORM_NAME.
+	    - Fixed the Apple/NeXT system driver and next.cfg so that they once
+	      again work following andrew's change to the meaning of
+	      CS_PLATFORM_NAME.  More importantly, re-added the
+	      OS_NEXT_DESCRIPTION macro since it is needed to properly
+	      distinguish between platform options in next.cfg.  This is
+	      necessary since the menu layout differs between MacOS/X and
+	      MacOS/X Server 1.0 (Rhapsody).  However, Andrew's change made it
+	      impossible to make this distinction.
+	    - Fixed the csMaterial(csTextureWrapper*) constructor so that it
+	      works correctly for the Apple/NeXT platforms when the engine is
+	      used as a plugin module.  The problem was that this constructor
+	      was invoking another constructor in the same class.  The result
+	      of invoking a constructor in this situation is undefined at best
+	      since the C++ specification leaves the behavior up to the
+	      compiler implementation.  In this case, the result was that none
+	      of the instance variables, except `texture', were being
+	      initialized.  In particular, the lack of initialization of the
+	      SCF goop resulted in IncRef() being called infinitely.  Having
+	      fixed this bug, Simplep finally works on Apple/NeXT.
+	    - Fixed a problem where many `friend' functions of ddgMatrix4 and
+	      ddgVector2 were not declared as `inline' in the respective
+	      headers.  This resulted in implementations of these functions
+	      appearing in every file which included those headers, which
+	      ultimately caused linkage errors.
+	    - Eliminated all remaining imports of the deprecated <malloc.h>
+	      from platform-independent project sources files.  (Some
+	      platform-specific files may still include malloc.h, though.)
+	    - Eliminated several compilation warnings reported by the OpenStep
+	      compiler throughout the project regarding implicit conversion of
+	      void* to some other type.
+	    - Eliminated a compilation warning reported by CodeWarrior in
+	      csEventQueue::Lock().  The compiler did not like the empty
+	      statement following the while() loop.
+	- Eric Sunshine fixed a overfull hbox TeX warning in meshobj/using.txi.
+	- Martin Geisse changed csConfigFile and iConfigFileNew so that
+	  comments at the end of a file are now preserved and can be modified
+	  by the application.
+	- Eric Sunshine fixed the following problems in csConfigFile introduced
+	  by Martin's changes:
+	    - Fixed a dangling-pointer bug in csConfigFile::Clear().
+	    - Fixed several problem spots in csConfigFile::LoadFromBuffer()
+	      where it could assign the wrong comment as the "end-of-file"
+	      comment.
+	- Philip Wyett changed dnp_tab.cpp to include malloc.h on Windows.
+	- Eric Sunshine reverted Philip's change to dnp_tab.cpp and solved the
+	  missing malloc.h problem in a different fashion.  The problem with
+	  Philip's change was that his #if test was not well formed, and he
+	  also forgot to apply the change to CS/support/gnu/bison.sim, from
+	  which dnp_tab.cpp is built.
+28-Jan-2001
+	- Eric Sunshine fixed a crasher in PTLab where it was trying to
+	  access a texture (cslogo.gif) which it had never loaded.
+	- Philip Wyett removed the reference to the non-existant texture
+	  archive at http://server.empathy.com/crystal.
+	- Norman Kramer fixed Save & RestoreArea in iGraphics2D to be
+	  good with PixelBytes == 2.
+	- Norman also did some fixes on the OpenGL texture cache:
+	    - Texture size on caching is now only calculated when needed.
+	    - Keycolor setting is now remembered so that it is not processed
+	      again when texture handle is created again.
+27-Jan-2001
+	- Martin Geisse moved the main system/application config files to the
+	  new config system.
+	- Martin Geisse fixed a bug in the sound loader.
+26-Jan-2001
+	- Norman Kramer did further work on the video plugins.
+	  With exception of yuv2rgb conversion AVI is working.
+	- Wouter Wijngaards did nothing important to radiosity.
+	- Eric Sunshine eliminated a compilation warning in prsky.cpp.
+	- Eric Sunshine Made the following changes to inifile.cpp:
+	    - Eliminated compilation warnings about implicit conversion of
+	      void* to some other type.
+	    - GetYesNo() now also recognizes "1" as true in addition to "yes",
+	      "true", and "on".
+	- Wouter Wijngaards fixed several bugs in radiosity:
+	    - Normals when really close up for both lumels. Taking only one
+	      normal value would give bad results. This the code now averages
+	      for the corners of all lumels.
+	    - Set source_patch_size in the config to 1 (did not debug that
+	      yet). Vectors a,b when a*b is taken (to get cosinus), lengths
+	      must be one. a*b/length(a)/length(b) is only a valid approx
+	      when both a and b are pretty large. Close to zero this fails.
+	    - When lumels overlap in space (i.e. two polygons with the same
+	      texture seamlessly aligning) the distance would become almost
+	      zero. Added a test, and at such a moment a derivative of
+	      radiosity is applied (the diffuse*area*visibility/PI is taken,
+	      no angles/distances are used). This seems to remove all
+	      glitches from the radtest level.
+	    - To avoid light explosion with radiosity we do a Normalize()
+	      for each step now.
+25-Jan-2001
+	- Wouter Wijngaards fixed mazed compilation, by adding csutil
+	  library after the cssys for linking.
+	- Norman Kramer is still working hard on the new video codec plugins.
+24-Jan-2001
+	- Small update to Python scripting system.
+	- Norman Kramer added dummy audio stream and did some further work
+	  on AVI support.
+	- Eric Sunshine made the following changes to csConfigFile and
+	  iConfigFileNew:
+	    - Added SubsectionExists(), which is similar to KeyExists() except
+	      that it tests if at least one key exists with the supplied
+	      prefix, rather than testing if a particular key exists.
+	    - Renamed KeyExist() to KeyExists().
+	    - Added GetVFS() to complement existing GetFileName().
+	    - Renamed arguments in several method prototypes to clarify and
+	      better document their usage and intention.
+	    - Upgraded and clarified header comments.  Also removed incorrect
+	      references to INI-format files from comments.
+	- Eric Sunshine made the following changes to csConfigFile:
+	    - Now preserves blank lines in configuration files at save time
+	      instead of folding them out.  The blank lines are considered part
+	      of the comments.
+	    - Fixed bug: SaveNow() was not respecting assertion made by
+	      comments in header that a comment could be present but empty.
+	    - Now performs more thorough whitespace checking in
+	      LoadFromBuffer().
+	    - Eliminated the ugly `goto' statements from LoadFromBuffer().
+	    - Fixed bug: LoadFromBuffer() was not properly handling CRLF line
+	      terminators (though it was handling LF and CR individually).
+	    - LoadFromBuffer() now keeps track of the line number of the file
+	      being parsed.
+	    - LoadFromBuffer() now emits diagnostic messages if it encounters
+	      parse errors rather than silently ignoring them.
+	    - Fixed bug: LoadFromBuffer() was setting the comment on a node
+	      even if the source file did not include a comment.
+	    - The methods SetStr(), SetInt(), SetFloat(), SetBool(), and
+	      SetComment() are now much smarter about setting the Dirty flag,
+	      and only do so if the new value actually differs from the old.
+	    - GetBool() now recognizes the string "1" as true in addition to
+	      "true", "yes", and "on".
+	    - Augmented FindNode() so that it can search for a subsection as
+	      well as a full key.  This functionality is used by the new
+	      SubsectionExists() method.
+	    - csConfigIterator::CheckSubsection() now works correctly when
+	      enumerating the entire database (rather than just a subsection).
+	    - Resolved several const vs.  non-const issues.  Eliminated the
+	      ugly casting of pointers from const to non-const.
+	    - Moved the csConfigNode and csConfigIterator class declarations
+	      out of cfgfile.h and into cfgfile.cpp.  These are entirely
+	      private classes, so there was no need to publish them in a public
+	      header.
+	- Eric Sunshine fixed scfreg so that it works with the new csConfigFile
+	  class.  (Martin forgot to do this when he converted SCF to use the
+	  new configuration file format.  The result was that scfreg would
+	  blast the contents of scf.cfg.)
+	- Eric Sunshine augmented cspython.mak so that it is more permissive
+	  about locating the Python static link library.
+23-Jan-2001
+	- Martin Geisse moved the following to the new config system:
+	    - SCF.
+	    - Map2CS.
+	    - Freetype plugin.
+	    - Funcon plugin.
+	- Norman Kramer created new stream interface iStream, iAudioStream,
+	  iVideoStream, iCodec, iStreamIterator and iStreamFormat. These
+	  are mainly for the new video plugins.
+	- Norman Kramer did a beginning of AVI implementation (where the
+	  opendivx will live as an CODEC). Dont try to compile :)
+	- Norman also reorganized the new video plugin system a bit (for
+	  playing video's on a texture).
+	- Wouter Wijngaards improved texture alignment for the procedural
+	  sky. Now colors are computed for the center of a texel - not a
+	  corner point.
+22-Jan-2001
+	- Norman Kramer added a plugin for opendivx (MP4 decoder), note
+	  that you need the decoder lib from www.projectmayo.com (its
+	  opensource). Plugin compiles now, gonna test it tonite.
+	- Removed support from sprites and lights for an old and never-used
+	  dynamic lighting registration system. If we still need this later
+	  we'll have to redo it another way.
+	- Extended iSprite3DState a bit.
+	- Extended iMeshObject with GetRadius() function which will return
+	  the radius of the object in object space. Also added GetRadius()
+	  to csMeshWrapper.
+	- Extended all mesh object plugins to support this function.
+21-Jan-2001
+	- Martin Geisse moved the following modules to the new config system:
+	    - Glide renderer/canvas.
+	    - DirectX renderer/canvas.
+	    - Null renderer.
+	    - OpenGL renderer/canvas.
+	    - Software renderer.
+	- Wouter Wijngaards added intersection point caching to the
+	  procedural sky. Speed improvement is only 10%, using several
+	  Megs of memory.
+20-Jan-2001
+	- Martin Geisse removed the remaining entries about the DirectX 5
+	  renderer from the config files.
+	- Wyatt Miler fixed compiling problems with Codewarrior 6.
+	  Also a temporary hack for Codewarrior 6. CW 4&5 users should see
+	  if this still works for you.
+	- Philip Wyett added include for csgeom/transfrm.h to rain and
+	  snow plugins.
+19-Jan-2001
+	- Martin Geisse moved the following modules to the new config system:
+	    - Sound modules
+	- Fixed a 'delete' vs 'new[]' bug in csPolygonSet and csSprite3D.
+	- Fixed the bug which Martin Geisse reported with sprite frames
+	  and actions. They were contained within a csNamedObjVector
+	  which is not right because they are not csObject's.
+	- Added a 'virtual' to the destructor of the new ini file stuff
+	  because otherwise gcc gave warnings.
+	- Extended iMeshObject with HardTransform() to do a hard
+	  transform on the object. Also added this to csMeshWrapper.
+	  Also added SupportsHardTransform() so that an application
+	  can test if HardTransform() is supported.
+	- Extended iMeshObjectFactory with the same two functions. Sometimes
+	  HardTransform() only makes sense on the factory.
+	- Implemented HardTransform() in all mesh object plugins. Note
+	  that this transformation doesn't affect the orientation of
+	  the mesh object. Only the location is changed. Even for particle
+	  systems and cube although it could be useful there.
+	  Note that for spr2d, snow, and rain HardTransform() don't do
+	  anything.
+	- Fixed a bug in ball plugin if some setting was changed after
+	  already being initialized.
+	- Eric Sunshine removed some old COM (pre-SCF) goop from the Macintosh
+	  port.
+18-Jan-2001
+	- Wouter Wijngaards fixed Martin's stricmp() in cfgfile.cpp.
+	  stricmp is not portable, please use strcasecmp.
+	- Martin Geisse added a new module for configuration files with
+	  another format than INI. This format uses a flat list of config
+	  files with pseudo-hierarchy instead of the sections in INI
+	  files. The new system is intended to replace the current system
+	  soon.
+	- Martin also moved the dungeon plug-in to the new config system
+	  and fixed some bugs in both modules.
+	- Extended iMeshObject interface with SetVisibleCallback() and
+	  GetVisibleCallback(). This function will essentially provide
+	  the same functionality as SetDrawCallback2() does for csSprite3D.
+	  i.e. callback the application when the object is really (or almost
+	  really) visible. Note that you are not allowed to significantly
+	  change the layout, position or anything else that might affect
+	  visibility in this callback (for obvious reasons).
+	- Modified all the current mesh object plugins to support this new
+	  callback.
+	- Added SetDrawCallback() and GetDrawCallback() to csMeshWrapper.
+	  This has the same functionality as the SetDrawCallback() in
+	  csSprite3D. i.e. this callback is called when the object is
+	  considered for drawing. This means that there is a chance it
+	  is visible (but not guaranteed). It is allowed to do minor
+	  changes to geometry here as long as you don't change the sectors
+	  where this object lives.
+	- Added support for frames and actions to iSprite3DFactoryState.
+	- Fixed Mazed for my iSpriteFrame changes yesterday.
+17-Jan-2001
+	- Wouter Windows added more error messages to openglwin32 canvas.
+	- Martin Geisse removed current support for threading from the
+	  wave-out driver because it produced strange gaps in sound output.
+	  It was a bug in the concept. This does not mean that threading
+	  won't be supported at all, but not the way it was done till
+	  now. Wave-Out is now based on function callback mode, which is
+	  also modified to remove the sound gaps.
+	- Renamed iskeleton.h to iskel.h to make it work on DOS.
+	- Extended iskel.h with several new interface to represent the
+	  skeleton structure of a 3D sprite: iSkeletonLimb,
+	  iSkeletonConnection, iSkeleton, iSkeletonLimbState,
+	  iSkeletonConnectionState, and iSkeletonState. iSkeletonBone
+	  is retained and moved to iskelbon.h. It is used by the motion
+	  manager and independent as it could be implemented by other
+	  bone systems.
+	- The skeleton state classes no longer extend csObject. This is
+	  not needed and it is not useful because skeleton state classes
+	  are going to be moved outside the engine anyway. However, some
+	  applications (like WalkTest) require the ability to attach
+	  data to state objects so I extended the SCF interfaces with
+	  that ability.
+	- Modifed WalkTest to use the new user-data instead of the
+	  csObject system.
+	- Extended the iSprite3DFactoryState interface with
+	  EnableSkeletalAnimation() and GetSkeleton(). Also extended
+	  iSprite3DState with GetSkeletonState().
+	- Also added GetFactory() to iSprite3DState.
+	- Extended the iSprite3DFactoryState with various functions to access
+	  the vertices, texels, normals, and triangles.
+	- Added iSpriteFrame SCF interface and let csFrame implement this.
+	- Added iSpriteAction SCF interface and let csSpriteAction implement
+	  this.
+	- Fixed the 2D sprite plugin so that the initial color table is
+	  correctly copied to the real color table at initialization time
+	  when lighting is disabled.
+	- Changed the 2D sprite plugin so that order of SetColor() and
+	  SetLighting() doesn't matter anymore.
+	- Eric Sunshine fixed a syntax error in irix.mak.
+	- Eric Sunshine made the following changes to document.txi:
+	    - Fixed a couple factual errors.
+	    - Fixed several Texinfo mark-up problems.
+	    - Eliminated all of the over- and underfull `hbox' warnings
+	      reported by TeX.
+	    - Fixed the example @example block so that the Texinfo directives
+	      are actually displayed in the output rather than being eaten by
+	      the conversion process.
+	    - Minor rewriting and enhancement of various topics.
+	- Eric Sunshine changed the following classes so that they embed
+	  particular SCF interfaces, rather than inheriting them, in order to
+	  be NextStep-friendly:
+	    csSkeleton                -> iSkeleton
+	    csSkeletonState           -> iSkeletonState
+	    csSkeletonConnection      -> iSkeletonConnection
+	    csSkeletonConnectionState -> iSkeletonConnectionState
+16-Jan-2001
+	- Eric Sunshine changed the image-copying rule in docs.mak so that it
+	  should once again work on Windows/DOS.  (It used to work, but the
+	  command-line for copying images became too long, at some point, for
+	  the DOS command-line input buffer.)
+	- Eric Sunshine removed the broken and unuspported cygwin.mak file.
+	- Martin Geisse added some hints to the docs about how to write
+	  docs.
+	- Wouter Wijngaards fixed redefinition errors in OpenGL canvas by
+	  explicitly testing for each macro before defining it. This
+	  helps opengl canvas compilation on mingw32.
+15-Jan-2001
+	- Martin Geisse added a patch to csloader by Ed Halley.
+	- Fixed a serious bug in csMeshWrapper::SetMeshObject(). This
+	  function would do a DecRef() on the given mesh (possibly
+	  deleting it).
+	- Fixed a bug in WalkTest. It would not release the reference
+	  to all created particle systems. This caused memory leaks.
+	- Fixed another bug in WalkTest where the particle system was
+	  created with the wrong position. Actually, it is the right position
+	  but set through the wrong method. Now correctly uses
+	  movable.SetPosition() to set the position.
+	- Added the first and incomplete include/imspr3d.h which contains
+	  the iSprite3DState and iSprite3DFactoryState SCF interfaces that
+	  will be used by to access the sprite3d plugin (when it is ready).
+	- Wouter Wijngaards increased the speed of skydem (and sky proc
+	  texture in csfx) by making the floor simpler.
+14-Jan-2001
+	- Eric Sunshine fixed vfs.cfg so that it works with MacOS/X Server
+	  again following Andrew's change to the meaning of CS_PLATFORM_NAME.
+	- Eric Sunshine added several missing /lev/* entries to vfs.cfg.
+	- Norman Kramer removed empty and svga displaydrivers for MESA.
+	- Norman also did some small modifications to the OpenGL X2D canvas
+	  in general:
+	    - Explicit set of dispdriver to NULL.
+	    - Slightly changed error message when not being able to load
+	      from opengl.cfg.
+	- Norman did the following changes to the OpenGL renderer:
+	    - Enabled the perspective patch in DrawPolygonFX (although its
+	      a slowdown i'd rather trade that for a correctly mapped
+	      texture).
+	    - Perspective patch expected 1/z instead of z as the 3rd
+	      coo-value. Since this seemed not consistent with software
+	      renderer i changed it to expect a plain z-value.
+13-Jan-2001
+	- Wyatt Miler did some minor Mac project file adjustment and updated
+	  for the new mesh object plugins.
+12-Jan-2001
+	- Eric Sunshine fixed several bugs in soundraw.cpp where it was
+	  applying `delete[]' to a void*.
+	- Eric Sunshine fixed the makefiles for vsh and vfstest so that they
+	  link with the VFS plugin when built `statically'.  These broke for
+	  static builds when VFS was moved into its own plug-in module.
+	- Wouter Wijngaards added a method to csmeshwrapper to get a
+	  pointer to the mesh back again.
+	- Wouter also updated win32/directdetection.h to make it
+	  backwards compatible to dx3 define. It should compile fine now
+	  for dx8. (Also it still compiles fine with older dx versions).
+	- Wouter made similar changes in the make install target as the
+	  changes in docs from htm to html. The make install target
+	  should work once more.
+11-Jan-2001
+	- Wyatt Miler updated the Macintosh project files.
+	- Eric Sunshine made the following changes to the project:
+	    - Renamed the following project directories:
+		CS/plugins/meshldr --> CS/plugins/mesh/loader
+		CS/plugins/meshobj --> CS/plugins/mesh/object
+	    - Renamed the following SCF class names, prefixes, and suffixes:
+		crystalspace.meshldr --> crystalspace.mesh.loader
+		crystalspace.meshldr.ZZZfact
+		                     --> crystalspace.mesh.loader.factory.ZZZ
+		crystalspace.meshobj --> crystalspace.mesh.object
+		crystalspace...explo --> crystalspace...explosion
+		crystalspace...fount --> crystalspace...fountain
+		crystalspace...spr2d --> crystalspace...sprite.2d
+	    - Fixed all makefiles, source files, header files, documentation,
+	      and `world' files to account for the directory and SCF class name
+	      changes.
+	- Eric Sunshine moved selection of the software renderer for PLUGINS
+	  out of the platform-specific makefiles (CS/libs/cssys/*.mak) and
+	  into CS/mk/user.mak since it is not specific to any particular
+	  platform.
+10-Jan-2001
+	- Martin Geisse fixed some minor naming and comment flaws in the
+	  idungeon interface file.
+	- Martin changed the win32 docs: grouped msvc5 stuff in one section and
+	  added a FAQ entry.
+	- Martin also committed a patch to win32.cpp from Ed Halley.
+	- Martin added some information to the procedural texture docs and
+	  added better explanation of the Print() function of the 2D and 3D
+	  video driver.
+	- Eric Sunshine fixed a typo in win32.txi and made several other minor
+	  changes.
+	- Eric Sunshine changed the file extension on the HTML files in the
+	  docs/html and docs/pubapi directories from .htm to .html at Andrew's
+	  insistence.  :-)
+	- Eric Sunshine lowered the verbosity level of the build process for
+	  the HTML version of the User's Manual (make htmldoc).
+	- Andrew Zabolotny fixed qsqrt() so that both binutils 2.9.1 and 2.9.5
+	  assemble it exactly the same way.
+9-Jan-2001
+	- Wouter Wijngaards fixed a compile warning in WalkTest.
+	- Eric Sunshine fixed a problem in bmpimage.cpp which caused loading
+	  of BMP files on big-endian Solaris to fail.
+	- Andrew Zabolotny made the following changes:
+	    - Started implementing "hints" at startup.  Actually just wrote a
+	      number of them in MazeD.zip::hints.cfg
+	    - I decided to change a little the ideology of MazeD.  The
+	      ex-"Draft View" will be split now into two different kinds of
+	      windows: Model Editors and World Editors.  In Model Editor you
+	      will edit models (rooms, things, sprites) and in the World Editor
+	      you will place them (without being able to change the models
+	      itselves).  mzDraftView component is the common ancestor now for
+	      both mzModelEditor and mzWorldEditor components, and can draw the
+	      coordinate axis and grid, nothing mode.  The split between
+	      DraftView and ModelEditor is finished.
+	    - Created the mzWorldEditor window.  It doesn't do much yet, but
+	      already has basic functionality.  As the world is loaded, the
+	      rooms are "centered" around origin, and a respective
+	      mzModelInstance with the respective translation transform is set
+	      up.  This allow to edit every room as if it is located in the
+	      origin, which is easier.
+	    - Fixed a bug recently introduced by somebody.  For software
+	      renderer iTextureHandle::Prepare() did no remap_texture() which
+	      results in NULL palette->global palette conversion table.  This
+	      means you cannot use texture after you do Prepare, but can if you
+	      do PrepareAllTextures().  Or alternatively you can call Prepare()
+	      then SetGamma() :-) In short, a mess.
+	    - Fixed a lot of bugs in fullscreen switching logic for all three
+	      X11 canvas plug-ins (x2d, linex2d, glx2d):
+		- Moved all the code relevant to fullscreen switching to two
+		  files, x2dfs.h and x2dfs.inc for easier maintainance.  All
+		  three X11 plugins include them from the relevant .h and .cpp
+		  files.
+		- Fixed a bug: when a fullscreen mode not matching current
+		  canvas size is not available, the canvas may be cleared,
+		  which is not desirable.
+		- Bug: when current XFree86 videomode is the "best match"
+		  videomode for the current canvas size, the canvas driver
+		  would hang (loop forever in XWaitEvent).
+		- Bug: If videomode does not match canvas size, and canvas
+		  resizing is allowed, the canvas size will be adjusted to
+		  match videomode.  It was supposed to work before but it
+		  didn't.  If canvas resizing is not allowed, the canvas is not
+		  resized, but centered instead.
+		- Bug: If an unexpected ConfigureNotify would arrive to our
+		  window, canvas may be suddenly resized to an erroneous size.
+		  I've added a check for ConfigureNotify to be related to our
+		  window.
+	    - Re-implemented "model instances" in MazeD to allow arbitrary
+	      hierarchical structures.  For now the top level of the hierarchy
+	      can contain only rooms, although this is not a MazeD limit, it is
+	      a engine limit.  Each instance has its move vector and space warp
+	      matrix, which are relative to parent object.  Moving/rotating
+	      parent object will move/rotate child objects as well.  Model
+	      instance position and warp are stored either as a MOVE(), or a
+	      HARDMOVE() statement (for rooms and for instances that have the
+	      "LockedPos" flag set).  Alas, for now engine doesn't allow rooms
+	      at any level other than top level, maybe it makes sense to remove
+	      this limitation.  For example, a castle (which would be a room)
+	      would contain a hall (child room of castle) which contains
+	      something even smaller (child of hall).  Also for now we don't
+	      have sector templates, which is bad again (if you duplicate a
+	      room multiple times, you'll get it multiple times in output,
+	      although it could be avoided).
+	- Eric Sunshine fixed several compilation problems in MazeD following
+	  Andrew's changes.
+	- Eric Sunshine fixed a long-standing bug in archive.cpp where
+	  csArchive::ArchiveEntry::FreeBuffer() was clobbering the
+	  uncompressed-size value.  The bad side-effect of this was that if an
+	  attempt was made to re-read the entry's contents later on, the read
+	  operation would mysteriously return zero bytes.  This particular
+	  problem was often triggered during caching of PVS and Octree data
+	  structures.
+	- Eric Sunshine fixed a bug in the Octree caching code where, in one
+	  circumstance, the `write' routine would emit more data than the
+	  `read' routine was expecting; with the result that the data stream
+	  would become unsynchronized.
+	- Eric Sunshine made csPolygonTree's ReadString(), ReadBox3(),
+	  ReadVector3(), ReadPlane3(), ReadLong(), ReadUShort(), ReadByte(),
+	  and ReadBool() methods more robust by checking for VFS read errors
+	  and returning somewhat sensible values rather than returning complete
+	  garbage values.
+8-Jan-2001
+	- Wouter Wijngaards fixed procedural sky for OpenGL.
+	- Wouter also optimized it a little to use the new qsqrt().
+	- Made some initial documentation on the MeshObject system.  Not
+	  finished but already useful.  Check it out in
+	  docs/texinfo/plugins/meshobj.
+	- Eric Sunshine made the following changes to the Mesh Object
+	  documentation which Jorrit wrote:
+	    - Fixed a bunch of Texinfo mark-up errors and problems.
+	    - Normalized mark-up and typographical usage to be consistent with
+	      other idioms established throughout the manual.
+	    - Corrected several typographical and gramatical problems.
+	    - Eliminated a bunch of over- and underfull `hbox' errors reported
+	      by TeX.
+	- Eric Sunshine made the following changes to the project:
+	    - Added appropriate PIXEL_PREPROC() and PIXEL_POSTPROC()
+	      invocations to scanalph.inc in the software renderer so that
+	      these functions operate in the same manner as all other functions
+	      which take PIXEL_PREPROC() and PIXEL_POSTPROC() into account.
+	    - Entirely eliminated the TOP8BITS_R8G8B8_USED flag/mode from the
+	      software renderer.  There were several problems with this `patch'
+	      which was supposed to handle the case where some of the RGB pixel
+	      data occupied the top-byte of the 32-bit pixel:
+		o It was fragile.  Each time someone modified or added code to
+	          the software renderer, that code had to be checked for
+	          breakage.  If broken, then such code had to be fixed.
+		o It was difficult and time-consuming to fix these problems.
+	          Often, the affected code was spread about in several areas of
+	          the renderer.
+		o It coupled the software renderer far too tightly to the 2D
+	          driver by hardcoding the pixel layout of the 2D driver into
+	          the 3D renderer.  (This occurred in pixtype.inc.)  This made
+	          it impossible to use an alternate 2D driver with different
+	          pixel layout.
+	    - Removed the `pixel adjust' value from the software renderer.
+	      This was used as part of the TOP8BITS_R8G8B8_USED mechanism.
+	    - Note that even though the TOP8BITS_R8G8B8_USED mechanism was
+	      removed, I left all of the invocations of PIXEL_PREPROC() and
+	      PIXEL_POSTPROC() in place for posterity since they illustrate
+	      every place in the renderer where one must take special care to
+	      correctly deal with the hard-coded assumptions about pixel
+	      layout.  These two macros have been relocated (from various
+	      files) to a new master location in scan.h where they are provided
+	      with empty definitions.
+	    - The default Apple/NeXT 2D driver now post-processes the 32-bit
+	      RGB data delivered by the software renderer by re-arranging it
+	      into a secondary frame buffer.  This change was necessary for the
+	      following reasons:
+		o The fragile TOP8BITS_R8G8B8_USED mechanism was removed in
+	          order to decouple the 3D renderer from the 2D driver.
+		o Without the TOP8BITS_R8G8B8_USED mechanism, the software
+	          renderer is hardcoded (for performance reasons) to produce
+	          pixel data in a particular format (ARGB on little-endian, and
+	          ABGR on big-endian)
+		o The pixel data generated by the software renderer is
+	          unsuitable for default the Apple/NeXT 2D driver which expects
+	          the layout to be ABGR on little-endian and RGBA on
+	          big-endian.  (This is a limitation of the AppKit, which is
+	          what the default 2D driver is based upon.)
+	    - Removed the apparently unused RED_PREPROC() macro from
+	      haloscan.inc.
+	    - Fixed several copy/paste bugs in csLightMap::ReadFromCache().
+	    - Fixed a problem where `make depend' failed on Apple/NeXT when
+	      configured for multiple architectures via the TARGET_ARCHS
+	      makefile variable.  (Specifically, the compiler could not grok
+	      use of -MM with multiple -arch flags.)
+	    - Disabled the `quick' versions of QRound() and QInt() on M68K for
+	      NeXT.  Even though these methods work correctly on NeXT M68K in
+	      general, there were some cases where the compiler botched their
+	      invocations and generated incorrect results.
+	    - Disabled the new `quick' square-root (in qsqrt.h) for NeXT since
+	      the compiler can not grok the contained assembly.
+	    - Renamed the preprocessor flag NO_QSQRT to CS_NO_QSQRT.
+	    - Fixed a minor problem in -[NeXTDelegate localize:toView:x:y:]
+	      where the conversion of the mouse's Y-coordinate was off by one.
+	- Eric Sunshine fixed the QUERY_PLUGIN() macros in isystem.h so that it
+	  is possible to call them as QUERY_PLUGIN(&object, iBlah) rather than
+	  having to resort to the ugly QUERY_PLUGIN((&object), iBlah).
+	- Eric Sunshine fixed vfstest.cpp so that it no longer instantiates
+	  the VFS plug-in twice.
+	- Eric Sunshine changed all of the platform-specific makefiles so that
+	  they consistently use LIBS.SOCKET.SYSTEM to specify the Socket
+	  library.  Eliminated the old, unix-specific NEED_SOCKET_LIB flag.
+	- Eric Sunshine fixed problems in socket.mak where it did not link with
+	  the correct libraries when static linking was used.
+	- Eric Sunshine fixed the platform-specific makefiles so that they
+	  consistently use the makefile variables CFLAGS.D, CFLAGS.I, LFLAGS.L,
+	  and LFLAGS.l.
+7-Jan-2001
+	- Made usage of qisqrt() more sensible. First test if square
+	  is less than some amount then you don't have to do the entire
+	  qisqrt().
+	- By making use of the new qisqrt() I optimized csCamera::LookAt()
+	  a little more.
+6-Jan-2001
+	- Created snow and rain mesh object plugins (for the snow and rain
+	  particle systems).
+	- Created iSnowState and iRainState interfaces to access these plugins.
+	- Modified WalkTest to use the new snow and rain plugins instead of
+	  the old particle systems in csfx.
+	- Finished the snow and rain loader plugins.
+	- Moved spiral particle system to plugin. Note that this particle
+	  system currently crashes. Also created the loader and modified
+	  WalkTest.
+	- Removed native support for loading particle systems in csloader.
+	  Particle systems are now loaded through the new MESHOBJ keyword
+	  and the plugins. This means that the flarge.zip you can find
+	  on the CS site will no longer work. I will soon put a replacement
+	  there.
+	- Removed dependency on CSFX library from most apps (all except
+	  simple) since the loader no longer depends on csfx itself.
+	- Removed particle support from csengine. All particles have now
+	  moved to plugins.
+	- Fixed the new qsqrt and qisqrt from Andrew. It appears that it
+	  was returning the negative square root. I negated the result.
+	  I modified several places in csengine and csgeom where either
+	  FastSqrt (the old one) and normal sqrt were used and replaced it
+	  with qsqrt() and qisqrt(). All seems to work well but in case
+	  something bad happens I added a define NO_QSQRT to include/qsqrt.h.
+	  If you enable this define the fast versions of qsqrt will not be
+	  used. I'd like to be notified of this if there are problems.
+	- Made a new ball plugin just for demonstration purposes and also
+	  because it is a very efficient way to make a ball :-)
+	  Extended simple application to show such a ball with a plasma
+	  texture on top of it (just turn around to see it). It looks
+	  really nice :-)
+	- Philip Wyett fixed several compile errors in demosky.
+	- Philip also fixed the ddraw canvas to actually open windowed
+	  when it is told to.
+5-Jan-2001
+	- Wouter Wijngaards Added a procedural skybox texture.
+	  And a demoing program (ala simple) to show it. 'demosky'.
+	  the bottom half of the skybox is filled with a mock watery splotch,
+	  the top half with clouds and a sunlighted spot.
+	- Wouter Wijngaards says: From Harald Fielker
+	  (fielker@informatik.fh-augsburg.de) I got an addition to csloader,
+	  a LoadThing and LoadThingTemplate methods. You can load a thing
+	  from a vfs file with them.
+	- Norman Kramer replaced AdvanceSpriteFrames with engines NextFrame
+	  for cctest.
+	- Fixed a big initialization bug in the spr2d plugin. This would
+	  cause strange and hard to debug crashes sometimes.
+	- Fixed a very similar initialization bug in the fountain and
+	  explosion plugins.
+	- Fixed another bug in the general particle code for the particle
+	  plugins. Particles were DecRef()'ed once too many.
+	- Fixed csMeshWrapper::NextFrame() so that it also calls NextFrame
+	  on the children.
+	- csSprite no longer implements iParticle. In the future it will
+	  be the mesh objects themselves that implement iParticle. At this
+	  moment however, it means that only the 2D sprite mesh objects
+	  work as particles (which is fine since these are actually the
+	  only objects that are really useful as particles).
+	- Also removed csSprite::AddColor() and SetColor() since they
+	  were actually only ment for the particle systems. Moved AddColor()
+	  and SetColor() as specific functions for csSprite3D.
+	- Moved implementation of csSprite::Rotate() and ScaleBy() to
+	  csSprite and made non virtual. The implementation was the same
+	  for all subclasses anyway.
+	- Changed iParticle interface to make it possible to use relative
+	  transforms for particle systems. The transform of the parent
+	  particle system is given with Draw() and UpdateLighting().
+	  SetPosition() should now be specified in the particle system
+	  coordinate system.
+	- The particle system plugins now render correctly in a hierarchical
+	  transformation context. This gives really very nice effects.
+	  For example, I put a fountain particle system on the hand of the
+	  robot (which is rotating). This looks as if the robot is shooting
+	  around with fountain particles.
+	- Finished the explosion particle system loader plugins.
+	- Started working on the fire particle system (in
+	  plugins/meshobj/fire).
+	- Added iFireState interface for the fire plugin system.
+	- Finished the fire plugin and changed WalkTest to use it instead
+	  of the old version in csfx.
+	- Finished the fire loader plugins.
+	- Implemented MIXMODE command in all mesh object loader plugins.
+4-Jan-2001
+	- Martin Geisse moved volume control from the sound drivers to
+	  the software sound renderer. Also cleaned up the wave-out driver
+	  a bit.
+	- Andrew Zabolotny fixed the disaster caused to VFS by one of
+	  Eric's changes. CS_PLATFORM_NAME was not the strict name of
+	  platform like it should be, but rather a free-form description
+	  of the platform, which is wrong.
+	- The sprited2D plugin now also implements iParticle which means
+	  it can be directly used as a particle for the particle systems.
+	- The particle systems now use the sprite2d plugin directly instead
+	  of using csSprite2D.
+	- As a consequence of this I'm now able to remove csSprite2D
+	  from the engine. In addition I also removed support for loading
+	  2D sprites directly. Instead the new MESHOBJ token should be used.
+	- Forgot to implement support for the MATERIAL keyword in the
+	  sprite2d loader (the factory loader did support it).
+	- Started work on moving particle systems to plugins. There is
+	  now a directory plugins/meshobj/partgen which contains the
+	  general classes for particle systems (csParticleSystem
+	  and csNewtonianParticleSystem).
+	- Added iParticleState interface which represents the general
+	  settings common to all particle systems. csParticleSystem
+	  implements this.
+	- Started moving fountain particle system to plugins. Source can
+	  be found in plugins/meshobj/fountain.
+	- Added iFountainState interface which represents the general
+	  settings specific for the fountain. csFountainParticleSystem
+	  implements this.
+	- Fixed SCF macros for csPolygonSet, csSprite, csSkeletonLimbState
+	  and csPolygon3D. They were all using IMPLEMENT_IBASE_EXT
+	  but forgot to close this with IMPLEMENT_IBASE_EXT_END (instead
+	  they used the default IMPLEMENT_IBASE_END).
+	- Added NextFrame to csSprite and implement this in all the
+	  current remaining subclasses (csParticleSystem, csMeshWrapper,
+	  and csSprite3D).
+	- Added similar NextFrame() to iMeshObject.
+	- Added empty implementation of NextFrame() to cube and 2D sprite
+	  plugins. They don't have animation so they don't need a NextFrame().
+	- Added a functional implementation of NextFrame() to the general
+	  particle system plugin code.
+	- Renamed csEngine::AdvanceSpriteFrames() to NextFrame(). In
+	  addition it will now also control animation and deletion of
+	  particle systems.
+	- Removed UpdateParticleSystems() because csEngine::NextFrame()
+	  does this.
+	- Finished the fountain plugin. The fountain plugin itself uses
+	  the 2D sprite plugin to create the fountain particles.
+	- Added WantToDie() to iMeshObject. With this function a mesh
+	  can indicate that it wants to die. This is most useful for particle
+	  systems that have only a limited time to live (like an explosion).
+	- Also added default WantToDie() to csSprite and implemented it
+	  in csMeshWrapper by asking the mesh. By doing this the auto-delete
+	  system of particle systems is generalized to all mesh objects.
+	- Started moving explosion particle system to plugins. Source can
+	  be found in plugins/meshobj/explo.
+	- Added iExplosionState interface which represents the general
+	  settings specific for the explosion. csExploParticleSystem
+	  implements this.
+	- Added iDynLight SCF interface for dynamic lights. This is needed
+	  for the explosion plugin.
+	- Extended iLight SCF interface with SetColor() and SetSector().
+	- Extended iEngine with CreateDynLight() and RemoveDynLight().
+	- Finished the explosion plugin. Note that there still seems to be
+	  a bug with lighting and the particles of the particle systems.
+	  Sometimes the lighting routine on the particle system is not
+	  called (UpdateLighting).
+	- Changed walktest to use the fountain and explosion plugins instead
+	  of the still existing fountain particle systems in csfx.
+	- Fixed a CSFX dependency error in the blocks makefile.
+	- Implemented the fountain loader plugin (in plugins/meshldr/fountain).
+3-Jan-2001
+	- Andrew Zabolotny did the following changes to CS:
+	    - Enhanced a little software DrawPixmap for
+	      textures-with-alphamap, where in 16 and 8 bpp modes alpha=0
+	      still would lead to a changing background a little.
+	    - Added a nice logo to MazeD's About box.
+	    - Fixed a few things here and there in MazeD.
+	    - A new QInt and QRound that will work on some big-endian CPUs
+	      as well.
+	    - Fix to slow QRound so that it works correctly for negative
+	      numbers.
+	    - A new fast sqrt() and 1/sqrt() implementation. Not used
+	      anywhere for now (I'll leave this on Jorrit's behalf) but it
+	      has a big potential. Engine is using 1/sqrt() in a lot of
+	      places, and computing 1/sqrt() in one go is a big win. Plain
+	      sqrt() is about 31% faster (on PII and Celeron) than FPU's
+	      FSQRT instruction, and 1/sqrt() is 38% faster than FSQRT
+	      (dunno how fast than actually computing 1/sqrt(x) - division
+	      is quite a slow operation, almost as slow as sqrt itself - 42
+	      and 71 clocks respectively).
+	- Wouter Wijngaards improved the portal more. It has a border around
+	  the portal polygon, showing a part of the portal texture mapped
+	  on it.
+	- Added GetObjectBoundingBox() to iMeshObject.
+	  Added implementation for this method to the cube plugin.
+	- Implemented UpdateInPolygonTrees() in csMeshWrapper so that
+	  mesh objects will now correctly be drawn in BSP type levels too.
+	- Implemented csMeshWrapper::Rotate().
+	- Started porting csSprite2D (2D sprites) to the new mesh
+	  plugin system. Created new directory plugins/meshobj/spr2d
+	  where it will be located.
+	- Also created iSprite2DFactoryState SCF interface which will
+	  be used to set the characteristics of 2D sprite factories. Also
+	  added iSprite2DState to set the characteristics of 2D sprite
+	  instances.
+	- Renamed iCubeMeshObject to iCubeFactoryState because I think this
+	  is a better name which also fits the name of the 2D sprite
+	  state interfaces better.
+	- Also created the 2D sprite loaders.
+	- Plugin 2D sprites are now working mostly. The old 2D sprites are not
+	  yet removed because the particle systems still depend on them.
+	- Extended iMovable and csMovable with GetFullPosition() which returns
+	  the position of the movable but keeps track of the hierarchical
+	  transformations (similar to GetFullTransform()).
+	- Fixed a serious bug in csloader with regards to the new plugin
+	  loaders. The wrong type plugin was taken in some cases.
+	- Removed MoveToSector from iParticle. It is not needed and wrong
+	  if used in combination with the new mesh object system (they have no
+	  notion of sectors).
+	- Removed DeferUpdateLighting() from iParticle.
+	- Changed iParticle::UpdateLighting() to take an array of iLight
+	  instead of csLight. SCF classes should not refer to engine classes.
+	- Changed iParticle::Draw() to use iRenderView instead of csRenderView.
+	- Added iLight::GetPrivateObject() and iRenderView::GetPrivateObject().
+2-Jan-2001
+	- Philip Wyett fixed a small VC compiler warning.
+	- Wouter Wijngaards fixed a compile warning.
+	- Completed a fix Eric Sunshine did (previous millenium) with regards
+	  to CalculateFogMesh. Eric missed a tiny detail. Oops! :-)
+	- Added an extra level of abstraction in the mesh object system.
+	  Created a plugin called iMeshObjectType which represents a type
+	  of mesh objects. From this you can created instances of
+	  iMeshObjectFactory. So iMeshObjectFactory is no longer a plugin
+	  but instances have to be created through iMeshObjectType.
+	- Added csCubeMeshObjectType in the cube plugin to implement
+	  iMeshObjectType.
+	- Added new QueryPlugIn to iSystem and system.h with which you can
+	  query for a loaded plugin on class ID. This complements the two
+	  other existing QueryPlugIn functions which could look for Func ID
+	  and interface name. The reason for this function is that you
+	  sometimes want to load a plugin with a certain class ID but you
+	  only want one. If there already is one you reuse the previously
+	  loaded plugin instance. So in that case you do QUERY_PLUGIN_CLASS
+	  first and if that fails (returns NULL) you do LOAD_PLUGIN.
+	- Also added QUERY_PLUGIN_CLASS which will use the new QueryPlugIn.
+	- Added GetNumPlugIns() and GetPlugIn() to iSystem and system.h.
+	  With this you can query the list of currently loaded plugins in
+	  the system.
+	- Fixed a bug in csloader which would cause the loader plugins to
+	  be loaded multiple times instead of only once.
+	- csCubeMeshObjectType now also implements iConfig through embedding.
+	  Using this you can set the default size (x, y, and z) and the default
+	  shift (x, y, and z) for all factories created from this object
+	  mesh type.
+	- Added 'plugins' console command to WalkTest with which you can
+	  ask all loaded plugins (loaded into the system driver).
+	- Added 'conflist' console command to WalkTest with which you can
+	  ask all config options for some loaded plugin (use the 'plugins'
+	  command to get the list of plugins). You also get the current values
+	  of the options. For example 'conflist 3' will list all the config
+	  options and values for the plugin with number 3 (from the list
+	  given by 'plugins').
+	- Added 'confset' console command to WalkTest with which you can
+	  set a config option to some value. Arguments are <plugnr>,<name>,<val>
+	  with <plugnr> the number you get from the 'plugins' command.
+	- Eric Sunshine eliminated a compilation warning from walkcmd.cpp.
+1-Jan-2001
+	- Added 'children' array to csMeshWrapper. By this we will support
+	  hierarchical objects and transformations.
+	- Added support for MESHOBJ keyword in MESHOBJ. This will be used
+	  to specify the hierarchical objects. i.e. the mesh objects can
+	  be children of a parent mesh object. The transformation specified
+	  in the children is relative to the parent position and orientation.
+	- Generalized csRotatingObject in the entity system of WalkTest
+	  so that it will now also be able to rotate sprites instead of
+	  only things (sprites in the general sense: csSprite, so the new
+	  plugin objects are also included).
+	- Added support for KEY keyword in MESHOBJ.
+	- Modified WalkTest so that it will also recognize the children
+	  of csMeshWrapper and parse the KEY statements for them.
+	- Changed iCubeMeshObject to make it more general. You can now
+	  specify the sizes for x, y, and z seperatelly. So the cube does
+	  not have to be a cube anymore :-)
+	- Also added shift values so that you can shift the (0,0,0) point
+	  of the cube to another place.
+	- Fixed a bad bug with UpdateLighting for the cube plugin. In some
+	  cases it would actually crash because UpdateLighting was called
+	  before the cube object was properly initialized. Added SetupObject()
+  	  function to initialize cube properly and if needed.
+	- Hierarchical objects are now working :-)
+31-Dec-2000
+	- Eric Sunshine fixed compilation warnings in engine.cpp, rview.cpp,
+	  meshobj.cpp, prdots.cpp, prfire.cpp, proctex.cpp, cubeldr.cpp, and
+	  cube.cpp.
+	- Eric Sunshine fixed a bizarre bug in csRenderView's
+	  CalculateFogMesh() where a local `fog_info' variable was incorrectly
+	  initialized.  (There is no way that this code could have ever worked
+	  correctly prior to being repaired.)
+	- Eric Sunshine fixed a bug in cspython.mak where it would potentially
+	  try to compile cs_pyth.cpp twice.
+	- Eric Sunshine modified the Python plug-in makefile so that
+	  compilation warnings are disabled for the Swig-generated cs_pyth.cpp
+	  source file.  This was done since cs_pyth.cpp is known to spew many
+	  compilation warnings, yet because it is auto-generated, it is out of
+	  our control to eliminate the warnings.
+	- Eric Sunshine fixed the broken `linex2dclean' makefile target.
+30-Dec-2000
+	- Philip Wyett fixed some of the 3D renderers that Jorrit forgot
+	  to fix yesterday.
+	- Got two nice textures from Wouter Wijngaards to use for the
+	  'portal' console command. The textures are in standard.zip.
+	  Only the texture for the box of the portal is used for now.
+	  There are some technical problems to getting the other texture
+	  working correctly.
+	- Added iLoaderPlugIn interface. A mesh object plugin (or something
+	  else, it is general enough) can implement this in order to
+	  provide extra loading functionality for the loader.
+	- Renamed csMeshObject to csMeshWrapper in order not to let people
+	  think that csMeshWrapper actually implements iMeshObject
+	  (it does not).
+	- Added csMeshFactoryWrapper which is a class similar to what
+	  csSpriteTemplate is for sprites.
+	- Added iMeshFactoryWrapper and let csMeshFactoryWrapper implement
+	  this through embedding.
+	- Extended iEngine and csEngine with FindMeshFactory().
+	- Extended iRegion and csRegion with FindMeshFactory() and extended
+	  csRegion to actually support mesh object factories as well.
+	- Added new array of mesh object factories in csEngine
+	  (meshobj_factories).
+	- Implemented cube loader plugins. One for cube factories and one
+	  for regular cubes. These plugins are placed in plugins/meshldr/cube.
+	- Added support for MESHOBJ keyword in WORLD (loader). This will
+	  generate a general csMeshWrapper object for the specified
+	  plugin. For example, to load an instance of the cube factory
+	  in the world you can do:
+	  	MESHOBJ 'cubeFact' (
+		    PLUGIN ('crystalspace.meshldr.cubefact')
+		    PARAMS (
+		        MATERIAL ('stone')
+			SIZE (.5)
+		    )
+		)
+	  The section in the 'PARAMS' block will be passed to the plugin
+	  loader.
+	- Added support for MESHOBJ keyword in SECTOR or ROOM. This is
+	  based on the factory above:
+	  	MESHOBJ 'cube1' (
+		    PLUGIN ('crystalspace.meshldr.cube')
+		    PARAMS (
+		        FACTORY ('cubeFact')
+		    )
+		    MOVE (V (-4,0,9))
+		)
+	- Fixed some of the FindXxx() routines in csEngine so that they
+	  actually return NULL if the object is not found instead of
+	  some low (but invalid) value.
+29-Dec-2000
+	- Added iRenderView::ClipBBox() to test if a screen bounding box
+	  is visible and needs to be clipped. In addition it does far plane
+	  clipping. Thus it provides a quick and easy way for a mesh object
+	  plugin to test if some object is visible and needs to be clipped.
+	  The code is a straight copy from the code that was in csSprite3D.
+	  csSprite3D now also uses this function.
+	- Made iClipper2D and csClipper::ClassifyBox use a 'const' parameter.
+	- Cube also uses clipping correctly now.
+	- Extended iMeshObject with DrawTest() and UpdateLighting().
+	  DrawTest() is the first part of Draw() which is responsible for
+	  testing quick visibility. Draw() will do the real work. In between
+	  UpdateLighting() can optionally be called.
+	- Added IsMirrored() to iCamera.
+	- Fixed the Python plugin for the change of GetAspect() to GetFOV().
+	- Changed iGraphics3D::GetObjectToCamera() so that it returns a
+	  reference to the transformation. Modified all the 3D drivers
+	  accordingly.
+	- Extended iLight SCF structure to make it useful for calculating
+	  lighting in the cube plugin.
+	- Changed csLight to let it implement iLight through embedding
+	  instead of inheritance.
+	- Fixed UpdateLighting() for csMeshObject.
+	- Added SetMixMode() and GetMixMode() to iCubeMeshObject interface.
+	- Did some cleanup to various of the SCF include files (comments
+	  and CS code style).
+	- All the above changes accomplish the following for the cube plugin:
+	    - Lighting works now (similarly to how sprite lighting works but
+	      a bit simpler).
+	    - Cube will be correctly rendered through a mirror.
+	    - Changed Simple so that the new cube moves around at the
+	      same rate as the dynamic light at the top of the room.
+	      That way you can see how the lighting is dynamically updated.
+	    - Cube now uses the plasma procedural texture.
+	    - Cube is now drawn with CS_FX_ADD mixmode for a nice blending
+	      effect. This does not work correctly in software mode though
+	      because there is a bug with blending and procedural textures.
+	      The initialization of the procedural textures (which are
+	      8-bit textures) overwrites the blend tables for the 16/32-bit
+	      render mode as well.
+28-Dec-2000
+	- Philip Wyett made a small fix to the cube plugin header.
+	- Seth Galbraith added more error checking to the MD2 importer.
+	- Added Visit() to iMaterialWrapper.
+	- Cube plugin now renders using DrawTriangleMesh().
+	- Added CalculateFogMesh() and CalculateFogPolygon() to iRenderView.
+	  Mesh object plugins can call this function to update the fog
+	  information in the mesh or poly object. Removed the badly
+	  placed same functions from pol2d.cpp.
+	- Cube plugin now supports fog.
+	- Added iTransformationManager SCF interface for the transformation
+	  manager. Only contains GetCookie() function at the moment.
+	  csTransformationManager implements this interface through
+	  embedding.
+	- Added iEngine::GetTransformationManager().
+	- Added iRenderView::GetEngine().
+27-Dec-2000
+	- Added iCubeMeshObject interface. The cube plugin implements
+	  this interface in addition to iMeshObjectFactory. Using
+	  iCubeMeshObject you can specify the geometric constraints
+	  and appearance of the cube (size and texture). Every mesh object
+	  plugin will have such a companion interface to specify appearance.
+	- Added GetMaterialHandle() to iMaterialWrapper interface.
+	- Extended Draw() in iMeshObject with an iMovable parameter.
+	- Added GetTransform() in iCamera.
+	- Made QUERY_INTERFACE macro a wee bit safer.
+	- Fixed a bug in csCamera. One of the constructors didn't properly
+	  initialize the SCF stuff for iCamera. Also changed csCamera
+	  so that iCamera is now implemented through embedding instead
+	  of inheritance.
+	- Changed GetAspect() and GetInvAspect() to GetFOV() and GetInvFOV()
+	  in iCamera.
+	- Added GetShiftX() and GetShiftY() to iCamera.
+	- Fixed the SCF stuff for csRenderView. It was not properly done
+	  given that csCamera itself implements iBase.
+	- Continued work on csCubeMesh plugin so that it now renders a
+	  wireframe version.
+26-Dec-2000
+	- Samuel Humphreys did the following:
+	    - Little clean up of ptlab.
+	    - Fixed procedural textures after AndyZ's recent changes.
+	    - Removed Jorrit's additional PrepareTextures() from protex3d.cpp.
+	    - Fixed Simple to display procedural textures properly with the
+	      global palette properly communicated.
+	    - Cleaned up csphyzik library file formatting.
+	- csParser no longer deletes all textures and materials in the
+	  MATERIALS and TEXTURES statement. This caused bad crashes with the
+	  portal command. The portal command is now working properly again.
+	- Added iRenderView and let csRenderView implement this through
+	  embedding.
+	- Added iClipper2D and let csClipper implement this through
+	  inheritance.
+	- Removed csClipper::IsInside(x,y) so that only the csVector2 version
+	  remains.
+	- Renamed the in-place clipper from 'Clip' to 'ClipInPlace' to avoid
+	  C++ inheritance clashes.
+	- Added iMeshObject interface which will eventually be used
+	  to move sprites, and particle systems outside the engine as plugins.
+	- Additionally added iMeshObjectFactory plugin. This is a plugin
+	  that can be loaded in the engine will generate instances of
+	  one type of mesh object.
+	- Added csCubeMeshObject as a plugin (in plugins/meshobj/cube) which
+	  represents a simple cube that is going to be used as a test-base
+	  for the new iMeshObject system. Only when csCubeMeshObject is
+	  working properly; I am going to port csSprite3D and csParticleSystem
+	  to iMeshObject.
+	- Added csMeshObject which is the engine's implementation of
+	  iMeshObject. csMeshObject is eventually going to replace csSprite.
+	  It will controll all aspects of mesh objects which are global and
+	  pass them on to the various implementations of iMeshObject.
+	- Added code to Simple to query this new cube plugin.
+25-Dec-2000
+	- Norman Kramer changed csPixmap so that it calls IncRef() and
+	  DecRef() on the contained iTextureHandle.  He states that he came
+	  across this issue when someone added an `engine->StartEngine()'
+	  invocation to LoadMapFile(); all his pixmaps that held
+	  iTextureHandles created via LoadTexture() before LoadMapFile() was
+	  invoked became invalid.
+24-Dec-2000
+	- Norman Kramer added CSFX lib to several of the makefiles.
+	- Eric Sunshine made a slight modification to handling of the Backspace
+	  key in the OpenStep port so that it works in the expected fashion in
+	  Crystal Space.
+	- Eric Sunshine added documentation for the `walkall' makefile target
+	  to the output of the `help' makefile target.
+23-Dec-2000
+	- Norman Kramer fixed a bug in the bmp loader.
+	- Moved snow, rain, spiral, fountain, fire, and explosion particle
+	  systems from csengine to csfx library. Only the basic particle
+	  and newtonian particle systems remain in csengine.
+	- Found out that materials and textures were not correctly searched
+	  in the current region. Fixed csloader for this.
+	- Fixed a potential bug with polygons that had no texture. The
+	  new Visit() would crash on them. It seems however that there is
+	  still a bug somewhere. The portal command is very unreliable now.
+	  To be investigated.
+	- Extended csLoader::FindMaterial() with a regionOnly parameter.
+	- Added csEngine::FindCsTexture() and FindCsMaterial() which return
+	  a csTextureHandle and csMaterialHandle respectively.
+22-Dec-2000
+	- Eliminated a bug in the procedural texture manager for the software
+	  renderer.  The problem was that only the first 8-bit proc texture was
+	  correctly initialized.
+	- Fixed csfx so that there is only one Initialize() method now as was
+	  originally intended.
+	- Disabled lighting for the fire and water polygons that are created in
+	  simple.  Now fire and water will actually look like fire and water
+	  without having a green tint (from the nearby green light).
+	- Eric Sunshine made the following changes to the project:
+	    - Upgraded the NextStep port of Crystal Space to be fully
+	      compatible with Andrew's National Keyboard Support.  Implementing
+	      this required reverse engineering internal NextStep data
+	      structures and writing code to extract the appropriate
+	      information.  See the discussion in the new NeXTKeymap.cpp file
+	      for a detailed explanation.  (National Keyboard Support had
+	      already been enabled for the MacOS/X Server and OpenStep ports
+	      several days earlier.)
+	    - Fixed a long-standing problem with keyboard handling in the
+	      NextStep port.  Keystrokes modified by the Alternate key were
+	      never interpreted correctly by Crystal Space.  The reason for
+	      this was that NextStep had already cooked the keystroke
+	      completely out of recognition by the time Crystal Space had a
+	      chance to see it, and there was no way to retrieve the original,
+	      unmodified keystroke.  Reverse engineering the internal NeXT data
+	      structures for National Keyboard Support made it possible to fix
+	      this problem by making the unmodified (raw) keystroke available.
+	    - Implemented F1 - F12 function key translation in the NextStep
+	      port.  (These keys had already been implemented in the MacOS/X
+	      Server and OpenStep ports several days earlier.)
+21-Dec-2000
+	- Philip Wyett fixed a small bug in texture.h.
+	- Philip also found a bug in ~SoftwareCachedTexture () which
+	  causes an on exit error in "appptlab" in Windows. Because of
+	  possible side effects I have merely commented above the offending
+	  line for resolution at a later date/more convenient time..
+	  Hope that is OK.
+	- Wouter Wijngaards fixed the macintosh pow() command for radiosity.
+20-Dec-2000
+	- Continued work on csfx library. Implemented support for a random
+	  dot proc texture, plasma, fire and water (the last three are
+	  taken from ptlab and were added to that application by Wouter
+	  Wijngaards).
+	- Added the notion of a use-callback for a csTextureWrapper.
+	  This callback will be called right before a texture is used. Using
+	  this callback you can make sure that procedural textures are only
+	  updated when really needed (i.e. a polygon/object using the proc
+	  texture is visible). Note that the callback can be called several
+	  times in one frame if visible. The callback should keep this in
+	  mind and use the current time to check if the callback should do
+	  something.
+	- Extended csTextureWrapper and csMaterialWrapper with a Visit()
+	  function. The engine will call Visit() whenever the texture or
+	  material is used. Visit() will call the use callback.
+	- Note that this Visit() function is on csTextureWrapper and
+	  not on iTextureHandle. This means that (for example) csPixmap
+	  will not be able to fire this callback. If you use a procedural
+	  texture on a csPixmap then you'll have to do the call to Animate
+	  on your own.
+	- Added GetMaterialWrapper() to csCurve.
+	- Extended simple with a demo on how to use the new csfx
+	  library. Added a cube with six sides demonstrating the various
+	  procedural textures. Due to the new texture callback system the
+	  procedural textures are only updated when needed.
+	- There is currently an ugly hack in csProcTexture because there
+	  seems to be a bug in the software procedural texture implementation
+	  when several procedural textures are initialized from Register
+	  to Prepare (i.e. interleaved Register/Prepare as opposed to first
+	  doing all Register and then all Prepare). That's why there is
+	  now an Initialize1 and Initialize2. If the bug is fixed this will
+	  be removed.
+	- Eric Sunshine eliminated a compilation warning in me_matmn.cpp.
+	- Eric Sunshine made the following changes to MetaBalls:
+	    - Fixed bug which prevented statistical text from displaying.  This
+	      bug has existed since the beginning of time but was only
+	      triggered recently.  The problem was that the `count' instance
+	      variable, which plays a role in determining when statistics
+	      should be displayed, was never initialized.
+	    - Added default initializers for all other instance variables (in
+	      addition to `count').
+	    - Removed unnecessary call to csSystem::GetElapsedTime().
+	    - Fixed bug: MetaSys::Help() was printing null-pointer for default
+	      texture name.
+	    - No longer crashes when unable to load texture.  Now prints
+	      meaningful error message and exits cleanly.
+19-Dec-2000
+	- Andrew Zabolotny did the following changes:
+	    - Fixed a error in inifile.cpp. The array allocated with
+	      new[] was realloc()'ated. Now it is new/memcpy/delete'd.
+	    - Fixed a minor memory leak in system driver. Event cords
+	      weren't deleted at shutdown.
+	    - Fixed a bad error in inifile.cpp triggered by [Macintosh]
+	      section in vfs.cfg: the loader switches to base64 mode due
+	      to empty assignments like:
+		HOME =
+	      (such lines are used to denote base64 keys) and then
+	      doesn't switch back when it detects invalid base64 symbols.
+	      I changed the ini loader so that it switches to base64 mode
+	      by '==' statement, e.g.:
+		HOME ==
+		ODAwMDAwMDAgd2hpbGUKICAgIHNoYXJlZCBs
+		aWJyYXJpZXMgdXN1YWxseSBoYXZlIGFkZHJl
+		c3NlcyBsaWtlIDB4NHh4eHh4eHgpLgo=
+		===
+		;/HOME
+	      If you want to assign the '=' value to a key, insert a space,
+	      e.g:
+		HOME = =
+	      is interpreted as a normal key, not the head of a base64
+	      stream. csIniFile::Save() inserts spaces automatically, thus
+	      a saved ini file should read perfectly. Also if something other
+	      than newline follows the second equal sign, it is also
+	      interpreted as a normal key.
+	    - Fixed a few memory leaks in MazeD.
+	    - Finished material manager dialog. Now it is functional, use
+	      Ctrl+m to invoke it, model manager has moved to Ctrl+M. Fixed
+	      several bugs that leads to MazeD crashes related to materials.
+	    - Fixed a bad bug in common texture manager object (txtmgr.cpp):
+	      the constructor did no CONSTRUCT_IBASE.
+	    - I have enhanced the memory debugger so that on Linux and OS/2
+	      it is able to debug malloc/realloc/free's as well as new's and
+	      delete's. There is a drawback on Linux though: it will
+	      intercept all malloc/free's from all dynamic libraries (even
+	      from libX11.so) thus you will see a lot of memory leaks
+	      belonging to other libraries (notably libc and libX11). You can
+	      filter them by address (in Linux program address is >
+	      0x80000000 while shared libraries usually have addresses like
+	      0x4xxxxxxx). If you want to debug memory leaks in plug-ins,
+	      build executable in static link mode.
+	    - Fixed a memory leak in csfont plug-in.
+	    - Rearrangement of some aspects of the texture manager to simplify
+	      interface API for textures and materials. Previously you had to
+	      call texture manager's RegisterXXX (where XXX is Texture or
+	      Material) then you had to call PrepareXXX to force texture
+	      manager recompute the internal representation of the
+	      texture/material; when you are done you had to call
+	      UnregisterXXX. Now it works a little different: by calling
+	      RegisterXXX you create a new texture/material handle, and
+	      further you work only with that handle: call handle->Prepare()
+  	      to prepare texture or material for usage; call handle->DecRef()
+	      enough times to destroy the handle (you don't have to call
+	      UnregisterXXX anymore).
+	      I have fixed all the 3D renderers for this, however I'm not
+	      sure about Direct3D and Glide renderers (haven't compiled
+	      them). All others are fully functional.
+	      You can still call PrepareTextures() and PrepareMaterials()
+              on texture manager object to call Prepare on all objects at once.
+	    - Renamed csTextureMMSoftware into csSoftwareTextureHandle and
+	      csTextureMM into csTextureHandle for cleaner names.
+	    - Before closing the system (System::Close) the engine will
+	      free all texture and material handles since after closing
+	      the graphics driver the handles become invalid no matter
+	      whenever we did IncRef or not.
+	    - Implemented alpha textures support for DrawPolygon, DrawPFX
+	      and DrawPixmap in OpenGL renderer.
+	    - Re-worked OpenGL texture cache. Texture unloading happens now
+	      in a centralized routine, which minimizes the effort required
+	      to fix any bugs in it (one of which was causing SIGSEGV on
+	      exit).
+	- Fixed python plugin after Andrew broke it with the changes
+	  above (i.e. remove PrepareTexture() from the cs.i file).
+	- Philip Wyett fixed a few compile errors in OpenGL renderer
+	  after Andrew's commit.
+18-Dec-2000
+	- Rene Dudfield fixed a bug in sprite3d. The rand num generator
+	  was not initialized.
+	- Rene Dudfield also made the sprite3d lighting functions only
+	  light the vertices that are used for the lod level.
+	- Fixed a bug in WalkTest with ms->snd not being initialized to
+	  NULL on systems that don't have sound support. This could result
+	  in crashes when firing missiles.
+	- Eric Sunshine made the following changes to the project:
+	    - Repaired the MacOS/X Server, OpenStep, and NextStep ports of
+	      Crystal Space after they had sat idle for several months.  Many
+	      core-level changes to the project during the idle time broke
+	      these ports rather severely.  The ports are probably about 97%
+	      functional now compared to how functional they were once.  Some
+	      problems still exist which will be addressed in subsequent repair
+	      and upgrade sessions.  For instance, the NextStep port is not yet
+	      fully compatible with Andrew's new National Keyboard Support.
+	      Full compatiblity requires reverse engineering internal NextStep
+	      structures.  The MacOS/X Server and OpenStep ports, on the other
+	      hand, are now compatible with the National Keyboard Support.
+	      Further, certain portions of the software renderer (which Andrew
+	      updated since the last time I repaired all such problems) are
+	      broken for the Apple/NeXT ports running at 32-bit mode on
+	      big-endian hardware.  Future plans also include a port to the
+	      upcoming MacOS/X, as well as further decoupling of the 2D driver
+	      from the system driver.
+	    - The default NeXT 2D canvas is now responsible for the querying
+	      and interpreting its own `simulated depth' option.  This is no
+	      longer the responsibility of the system driver.
+	    - Eliminated iNeXTSystemDriver (NeXTSystemInterface.h) which
+	      published a method to report the simulated-depth value to the 2D
+	      canvas.  The canvas is now entirely responsible for this feature,
+	      so the system driver need not publish this any longer.
+	    - NeXTSystemDriver now manages an iEventOutlet which the 2D canvas
+	      can use for default handling of mouse and keyboard events.
+	    - NeXTSystemDriver now implements SystemExtension() to provide
+	      default mouse and keyboard event handling on behalf of canvases,
+	      as well as other functionality.
+	    - Promoted the ability to suspend the engine's virtual-time clock
+	      into csSystemDriver from NeXTSystemDriver where this feature was
+	      originally implemented.  This is useful for ports which allow the
+	      user to suspend the entire engine (for instance, to be friendly
+	      on multi-tasking systems).  Suspending the virtual-time clock
+	      prevents temporal anomalies from occurring within the engine even
+	      though the real-time clock continues to elapse.  An example of a
+	      temporal anomaly would be the firing of a missile just prior to
+	      suspension of the engine.  Upon engine resumption, if the
+	      virtual-time clock was not also suspended, the missile would
+	      suddenly jump forward as though much engine time had elapsed.
+	    - Updated Apple/NeXT plug-in loading (NeXTLoadLibrary.cpp) to work
+	      correctly with new plug-in search-path capabilites.  Also now
+	      implements a meaningful csPrintLibraryError()
+	    - Enhanced keyboard handling in the MacOS/X Server and OpenStep
+	      ports to be compatible with Andrew's National Language Support
+	      functionality.  (This feature is not yet fully implemented in the
+	      NextStep port.  Doing so requires reverse engineering internal
+	      NextStep data structures.)
+	    - Implemented F1 - F12 function key translation in MacOS/X Server
+	      and OpenStep ports.  (These keys are not yet implemented in the
+	      NextStep port.)
+	    - csEngineConfig is no longer an inner-class of csEngine.  This
+	      change was made in order to work around a bug in the NextStep
+	      compiler which was triggered after csObject (from which csEngine
+	      inherits) was changed so that it inherits from iObject.  Somehow,
+	      the compiler was getting confused by the QueryInterface(),
+	      IncRef(), and DecRef() methods declared in csEngineConfig as well
+	      as in iEngine and csObject (both of which csEngine inherits
+	      from).  Making csEngineConfig stand-alone works around the
+	      problem.
+	    - In order to work around a multiple-inheritance bug in NextStep
+	      compiler, changed the following classes so that they embed an SCF
+	      interface rather than inherit from it:
+		    iCameraPosition  -> csCameraPosition
+		    iMaterialWrapper -> csMaterialWrapper
+		    iRegion          -> csRegion
+		    iSpriteTemplate  -> csSpriteTemplate
+		    iTextureWrapper  -> csTextureWrapper
+	      The compiler's symptom was that it did not think that IncRef(),
+	      DecRef(), and QueryInterface() were implemented in classes which
+	      inherited from iBase multiple times (through different paths).
+	      *BEWARE* There were many places where the engine was dangerously
+	      and blindly casting pointers between the interface and the
+	      implementing class.  For instance, a pointer might be cast from a
+	      csMaterialWrapper to an iMaterialWrapper or vice-versa.  Although
+	      this worked when the implementing class inherited from the SCF
+	      interface, it does _not_ work when the interface is embedded.
+	      The danger here is that the compiler does not warn about this
+	      problem since it assumes that the programmer knew what he or she
+	      was doing when using the cast operation in the first place.  I
+	      tried to repair all such broken and dangerous blind casts in
+	      which the above classes were involved, but it is possible that I
+	      missed one here or there.
+	    - Added an assignment operator to ddgTriangle3 in order to appease
+	      the NextStep compiler.
+	    - Added a missing `inline' keyword to csCovMaskTriage::GetState().
+	      The lack of this keyword resulted in this function being
+	      implemented and exported from every single source file which
+	      included the header.
+	    - Unified the case of the `full-screen' extension as understood by
+	      iGraphics2D::PerformExtension().  Some canvases expected
+	      "fullscreen", whereas others expected "FullScreen".
+	    - Added a preprocessor flag to Blocks which allows all of the
+	      broken networking code to be disabled in one fell-swoop.
+	    - Eliminated compilation warning in pttex.cpp.
+	    - Minor modification to csphyzik/entity.h to appease broken
+	      OpenStep compiler which wasn't instantiating template methods
+	      early enough.  Worked around problem via simple textual
+	      reordering of header so that templatized variables are declared
+	      before they are actually referenced by inline methods.
+	    - Augmented TrueType to CS font converter makfile (csfgen.mak) so
+	      that its target only shows up on platforms which also build the
+	      TrueType font server plug-in.
+	    - Eliminated several compilation warnings in ddgchull.cpp regarding
+	      use of enumeral and non-enumeral types in conditional expression.
+	    - Added missing SYSDEF_ALLOC define to halogen2.cpp.
+	    - Worked around minor compiler bug on NextStep which affected
+	      csapp.cpp and txtmgr.cpp.
+	    - Eliminated several compilation warnings about "unused computed
+	      value" in CSWS and several applications which utilize CSWS, such
+	      as cswstest and levtool.
+	    - Worked around NextStep compiler limitation in null_pix.cpp and
+	      drawpmap.cpp.
+	    - 3dsout.cpp now includes cssysdefs.h in order to fake up a `bool'
+	      type for compilers which do not support `bool' natively.
+	    - Fixed error in me_app.cpp.  Was assinging an
+	      mzModificationOriginDepth constant to a csVector3 instance.
+	    - imotion.h no longer imports matrix3.h and quaterni.h.
+	      iskeleton.h no longer imports transfrm.h.  Not only was this
+	      unnecessary, but it also caused csSystemDriver to depend upon
+	      these classes on NextStep, which was a less-than-desirable
+	      consequence.  This resulted in linkage errors when linking the
+	      csSystem library into applications which do not otherwise link
+	      with the csGeometry library (such as scfreg).  (This problem is
+	      specific to the NextStep compiler which generates references to
+	      every mentioned class even if the class isn't actually used.)
+	    - All source files in apps/t3d2cs and apps/t3d2cs/libt3d now import
+	      cssysdef.h as the very first included file.  This ensures that
+	      the `bool' type is faked up, if necessary, before it is used by
+	      any other imported headers.
+	    - Eliminated an "unused variable" warning in tBrush.cpp.
+	    - Worked around a bizarre NextStep compiler bug which manifests as
+	      an apparent corruption of the virtual table for csSprite2D.
+	      Calls to QueryInterface() from a csSprite2D pointer would never
+	      actually invoke the real, inherited csSprite::QueryInterface(),
+	      and would instead always return NULL.  It is not even clear
+	      which, if any, method was being called in lieu of the real
+	      csSprite::QueryInterface().  Calls to QueryInterface() from a
+	      local instance of csSprite2D would succeed as expected (since the
+	      virtual table is not consulted in this case).  The work around
+	      for this problem (for magical reasons) is to declare
+	      QueryInterface() in csSprite2D which overrides the inherited
+	      csSprite::QueryInterface().  It is sufficient for this method to
+	      simply exist in csSprite2D.  Its actual implementation merely
+	      invokes its superclass' QueryInterface().
+17-Dec-2000
+	- Brandon Ehle fixed a quaternion bug, with r initializer in the
+	  wrong spot. The motion manager bug was fixed by this and
+	  motions now look correct.
+	- Started work on csfx library. Not finished yet. The csfx library
+	  will contain stuff that is not general enough to be placed in the
+	  engine but is general enough to be useful for several games. At
+	  first I plan to add some procedural textures (i.e. like fire, water,
+	  and plasma from the ptlab demo) and some of the particle systems
+	  (like rain, fire, fountain, snow, ...).
+	- Eric Sunshine temporarily disabled the sumlog.awk script which
+	  performs CVS commit-time mailings.  This was necessary since gawk is
+	  not present on the new CVS server which SourceForget installed, thus
+	  all invocations of sumlog.awk were failing.
+15-Dec-2000
+	- Bugfix in csPolygon3D::ClipToPlane(). If the portal has a clipping
+	  plane (can happen with floating portals) then it was possible that
+	  this clipper would result in badly formed polygons generating
+	  crashes or at least render errors in some cases. This problem
+	  was visible with the new 'portal' console command. Note that
+	  the problem is numerical. I'm not sure that my current fix will
+	  eliminate the problem completely but at least I wasn't able to
+	  reproduce it anymore.
+	- Fixed the portal command so that the created portal always
+	  faces the camera (at creation time only). The portal itself also
+	  has the correct space warping transformation so that it appears
+	  again at the starting point of the loaded world.
+	- Changed csCameraPosition so that it inherits from csPObject
+	  instead of csObject.
+	- Added iCameraPosition and let csCameraPosition inherit from this.
+	- Added iRegion/csRegion::FindCameraPosition().
+	- Added iEngine/csEngine::FindCameraPosition().
+	- csCameraPosition objects are now also supported by csRegion.
+	- The portal command now correctly uses the real start position of
+	  the loaded level (instead of just room,0,0,0) as given by the
+	  'START' command.
+	- The portal console command will now check if a region is already
+	  loaded. If so then it will just open a new portal to the already
+	  existing region.
+	- The portal command will now also generate a portal back to the
+	  world from which you created a portal. This only happens once though.
+	  i.e. if you do 'portal maze' then you will get a portal from the
+	  current position towards maze and a portal back from maze towards
+	  the current position. If you then move to another position and
+	  again do 'portal maze' you will only get a portal to maze and
+	  not one back.
+	- Renamed WalkTest::InitEngine() to InitCollDet() because that's
+	  what it is doing.
+	- If a new map file is loaded with the portal command the collision
+	  detection stuff will be correctly initialized.
+	- Moved the portal so that it is standing on the ground (relative
+	  to the position of the player).
+	- Known remaining issues with portal command:
+	    - If you move through the portal your direction will not be
+	      correct. This is caused by WalkTest having its own angle
+	      vector which is not yet updated when passing a space
+	      warping portal.
+	    - If you started WalkTest from flarge (for example) then
+	      typing 'portal flarge' will load a new instance. The reason
+	      is that the default world is not placed in a region so the
+	      portal command can't see that it is already loaded.
+	    - Missiles can't penetrate the portal.
+	    - Dynamic lights don't shine through the portal.
+14-Dec-2000
+	- Optimized csRegion::IsInRegion(). Replaced the loop over all
+	  the objects in the region with a single test if the parent
+	  of the given object is equal to the region.
+	- Changed the behaviour of csEngine::FindSector, FindThing, FindSky,
+	  FindThingTemplate, FindSprite, FindSpriteTemplate, FindTexture,
+	  and FindMaterial. If onlyRegion is false then the behaviour is
+	  as before but if onlyRegion is true then these functions will now
+	  only return objects that are in the region AND also connected
+	  to the engine. This contrasts with the old behaviour where these
+	  functions could actually return objects that were not connected
+	  to the world (example: do new csSector() and the created sector
+	  will automatically be added to the current region, however it will
+	  not be added automatically to the list of sectors in the engine).
+	  The same functions in csRegion behave like they did before (i.e.
+	  they can return objects that are not connected to the engine).
+	- The previous change fixes the portal command so that it now
+	  correctly loads another world and is able to create a portal to
+	  that other world. Note that this doesn't complete the portal
+	  command yet. A few extra things need to be done to make it
+	  truely usable (initialize collision detection, engine mode
+	  specific to sector instead of global to engine).
+	- Added a warping transformation to the portal generated by the
+	  'portal' command so that the portal destination matches the
+	  starting point of the loaded level.
+13-Dec-2000
+	- Did a little further work on the engine SCF interfaces:
+	    - Added iEngine/csEngine::FindTexture().
+	    - Added iEngine/csEngine::CreateMaterial().
+	    - Added iRegion/csRegion::FindTexture().
+	    - Changed FindTexture/FindMaterial to return the pointer
+	      to the texture/material on success instead of boolean.
+	    - Added iView::Draw().
+	    - Moved several defines for vectors in csCamera to iCamera.
+	    - Added iEngine::GetBeginDrawFlags().
+	    - Added iEngine::CreateLight.
+	- The result of the SCF changes today and yesterday is that
+	  simplep (the version of simple that uses the engine plugin) is
+	  actually able to create geometry and show it.
+	- Added iTextureWrapper SCF class and let csTextureWrapper implement
+	  it.
+	- Made some fixes to cs.i so that the Python plugin is now up-to-date
+	  to the latest SCF changes.
+12-Dec-2000
+	- Thomas Hieber added two files to gamecore plugin which he
+	  forgot to add in the past.
+	- Michael Dale Long fixed the cctest console. Also did some
+	  cosmetic code cleanup. Funky console is now enabled again.
+	- Philip Wyett fixed a memory write error in the OpenGL texture
+	  cache. This was causing an exit memory write error when exiting
+	  'Blocks' in Windows.
+	- Rene Dudfield made sprite lighting settings local to sprites so
+	  that different sprites can use different settings.
+	- Added ShineLights to iRegion/csRegion.
+	- Added IsInRegion to iRegion/csRegion to check if some object
+	  is in a region.
+	- Extended csEngine::ShineLights with an optional csRegion
+	  parameter to restrict recalculating lighting for some region.
+	- Extended csPolyIt, csCurveIt, and csLightIt (iterators that
+	  are defined in csEngine) with an optional csRegion parameter
+	  to restrict iteration over the objects in that region.
+	  Also extended csEngine::NewPolyIterator() and NewLightIterator()
+	  functions.
+	- Added GetLastSector() to csCurveIt and csLightIt (like csPolyIt).
+	- The 'portal' console command works better now. In some cases
+	  it 'almost' seems to be doing what it should. But it is still not
+	  good enough. It crashes while trying to load some levels and
+	  the portals in the other levels don't seem to be correct.
+	  'portal sydney' is the only one which seems to work nicely
+	  from flarge.
+	- Did a little further work on the engine SCF interfaces:
+	    - Added Prepare() to iEngine.
+	    - csView now extends the already existing but empty iView.
+	    - Added a few methods to iView.
+	    - Added CreateView() to iEngine.
+	    - Added lots of functions from csCamera to iCamera.
+10-Dec-2000
+	- Eric Sunshine made the following changes to the project:
+	    - Finally eliminated the evil monolithic apps/support/static.cpp
+	      file which caused repeated maintenance headaches.  The problem
+	      with this file was that every time a plug-in module was added or
+	      removed from the project, a developer also had to remember to
+	      edit static.cpp to reflect the change.  Thus, the perceived
+	      modularity of plug-ins was offset by the very real monolithic
+	      disposition of this file.
+	    - As a replacement for static.cpp, the new makefile
+	      CS/mk/static.mak automatically and dynamically synthesizes C++
+	      code which forces hard symbolic references to each plug-in module
+	      being linked into the application (assuming that the application
+	      is being linked statically---that is, with USE_PLUGINS=no).
+	    - Information used by the synthesis process is gleaned from the GNU
+	      makefiles, project-wide.  The old CFLAGS.STATIC_SCF makefile
+	      variable has been removed.  A new variable, SCF.STATIC, contains
+	      a list of plug-in module basenames (such as `soft3d', `vfs',
+	      etc.), and this information is used to synthesize the hard
+	      references needed when linking applications statically.
+	    - The static.mak makefile is smart enough to regenerate the
+	      synthesized symbolic references when certain events occur; such
+	      as when the user edits the list of plug-in modules in user.mak or
+	      reconfigures the project's makefiles.
+	    - Note that the new synthesis process is geared toward platforms
+	      which utilize the GNU makefile system to build the project.  It
+	      does not apply to ports which use `project files'.  However,
+	      historically, none of the ports which rely on project files has
+	      ever supported static linking, so this is no loss.  If, in the
+	      future, a port does wish to support static linking via project
+	      files, it would be a simple matter to set up an automated
+	      synthesis task, and commit the result to the CVS repository on a
+	      regular basis, much as is already done with MSVC project files.
+	    - Added $(DEP.EXE) to the dependency lists of the following GUI
+	      applications.  This should allow them to successfully link
+	      statically (that is, when USE_PLUGINS is `no'):
+		cctest
+		g2dtest
+	    - Removed $(DEP.EXE) from the dependency list of the following
+	      console applications, since they need not link against the
+	      various plug-in modules:
+		csfgen
+		makedep
+		scfreg
+		scftutor
+		textconv
+		uninst
+9-Dec-2000
+	- Added 'regionOnly' parameter to all 'FindXxx()' methods in
+	  csEngine and iEngine. When this parameter is 'true' (default is
+	  'false') only objects in the current region will be searched.
+	- Added 'FindSky' to csEngine and iEngine.
+	- Added all the 'FindXxx()' methods to csRegion and iRegion as well.
+	- In addition added a general 'FindObject()' method to csRegion with
+	  which you can find any object of a given name and type.
+	- Added csThing::IsSky() which returns true if the thing is a sky
+	  object.
+	- Added optional is_template parameter to the constructor of csThing.
+	  This is just to mark a thing as being a template. Usually this
+	  should be set to true if the thing is pushed on the template list
+	  in the engine. Also added IsTemplate() function to csThing to
+	  query the status of this flag. Modified csLoader to correctly
+	  set this flag in the constructor.
+	- Added 'FindThingTemplate()' to csEngine, iEngine, csRegion, and
+	  iRegion.
+	- Added iSprite and iSpriteTemplate SCF classes and let csSprite
+	  and csSpriteTemplate implement them. csSprite implements iSprite
+	  through embedding (similar to how csThing implements iThing).
+	  csSpriteTemplate implements iSpriteTemplate with (multiple)
+	  inheritance.
+	- Because iSprite is now implemented it is possible to actually
+	  implement csRegion and csEngine::FindSprite. In addition because
+	  iSpriteTemplate now exists I also added csRegion and csEngine::
+	  FindSpriteTemplate. Also added to iRegion and iEngine.
+	- Added iObject SCF interface. csObject now implements iObject.
+	  iObject is currently almost empty (only contains GetName and
+	  SetName). It's main purpose is to allow further definition of the
+	  engine SCF interface for all methods that expect or return csObject
+	  instances. This rather fundamental change triggered a number of
+	  other changes in the engine classes with regards to where they
+	  get the iBase implementation. Previously some of those classes
+	  implemented iBase for sake of embedding or subclasses. Now, those
+	  classes can use the iBase provided by csObject.
+	- Fixed a bug in Blocks which caused crashes if no network driver
+	  was present. Now it simply doesn't attempt to open a connection
+	  if there is no network driver.
+	- Implemented 'onlyRegion' support in csLoader by using the new
+	  FindXxx() routines that were added to csEngine.
+	- Extended csPObject thus that it correctly unlinks itself from its
+	  parent at destruction time. Previously it didn't care which could
+	  cause bad problems.
+	- Also fixed csObject::ObjRelease() so that it actually resets the
+	  parent to NULL at release time.
+	- In addition fixed the csObject destructor so that the children
+	  are destroyed the correct way now (given that destroying a child
+	  will automatically remove it from the 'children' array).
+	- The csObjectNoDel destructor has also been fixed so that it
+	  sets the parent of all children to NULL (since they are now
+	  unlinked).
+	- All engine classes that can be added to a region now extend
+	  csPObject instead of csObject. This is to make sure that they
+	  actually maintain the parent (which is the region they are in).
+	  When such an object is then deleted it will safely unlink itself
+	  from the parent (region).
+	- Added iRegion/csRegion::PrepareTextures() to prepare all textures
+	  and materials that were loaded in the context of this region.
+	- Renamed iRegion::Prepare() to PrepareSectors() and added a new
+	  Prepare() which calls PrepareTextures() followed by PrepareSectors().
+	  This way it works more like csEngine does.
+	- All the above changes done today result in the 'portal' console
+	  command not crashing anymore and loading the world given as a
+	  parameter (probably) correctly in a new region. The 'portal' command
+	  still doesn't work though because something is still wrong with
+	  the portal.
+8-Dec-2000
+	- Samuel Humphreys did the following changes to phyztest:
+	    - First stage of reformatting csphyziks to be more consistent
+	      with itself and the Crystal Space style.
+	    - Fixed the dissappearing block in phyztest..thx to Michaels
+	      guidance.
+	    - Added reportage of the main variables associated with the
+	      block object.
+	    - Changed the room to be a cube of 10 units each side centred
+	      on the origin.
+	- Samuel also fixed the bot cam so that it can traverse into the
+	  new room of visual feasts (plasma, water, and fire).
+	- Fixed a bug in cs.i for python. Eric Sunshine accidentally removed
+	  the essential '3' after csVector3 :-)
+	- Eric Sunshine moved command.cpp and command.h from apps/support to
+	  apps/walktest since these files are only used by WalkTest. Updated
+	  makefile and other source files to reflect this change.
+	- Martin Geisse added a missing lib in the ds3d makefile.
+	- Norman Kramer added missing include to a file in MazeD.
+	- Wouter Wijngaards improved fire a bit. You can now show single
+	  flames as well as a tiling wall of flame. Also added water and
+	  plasma textures (all viewable in ptlab).
+7-Dec-2000
+	- Wouter Wijngaards made the fire polygon unlit in ptlab. This
+	  looks better.
+	- Eric Sunshine made the following changes:
+	    - Renamed the following classes and SCF interfaces.  Fixed all
+	      source files, header files, and documentation to reflect these
+	      changes.
+		    iWorld --> iEngine
+		    csWorld --> csEngine
+		    csWorldConfig --> csEngineConfig
+		    csWorldState --> csEngineState
+		    csWorldStateVector --> csEngineStateVector
+	    - Renamed the following files.  Fixed all source files, header
+	      files, and documentation to reflect these changes.
+		    iworld.h --> iengine.h
+		    world.h --> engine.h
+		    world.cpp --> engine.cpp
+		    worldfmt.txi --> mapfmt.txi
+	    - Eliminated the old iEngine SCF interface and the iengine.h header
+	      file.  This interface was just a very thin wrapper around the
+	      existing iWorld (now iEngine) functionality.  However, since the
+	      engine library already contains sufficient SCF goop to pass as a
+	      plug-in module, the old thin iEngine wrapper was not actually
+	      needed.  The new iEngine is now the one and only interface for
+	      accessing the engine regardless of whether or not it is in a
+	      plug-in module or statically linked.  There is no longer any
+	      distinction.
+	    - Renamed all `world' variables to 'engine' throughout the project
+	      and documentation.  Renamed all variations of `world' (such as
+	      `World', etc.), as well.  Also renamed `world file' references to
+	      `map file' references.  Code and documentation which specifically
+	      refers to `world space' or `world coordinates' has not changed.
+	      In this case, the `world' terminology is appropriate and has been
+	      retained.
+	    - Added a bunch of missing `const' qualifiers to Dumper class.
+	    - Renamed Dungeon plug-in's SCF name from
+	      crystalspace.worldrnd.dungeon.std to crystalspace.dungeon.random.
+	    - csProgressPulse now uses iSystem::Printf() rather than
+	      CsPrintf(), thus it is no longer tied to the engine.  Also added
+	      Doxygen comments.
+	    - Enhanced the check for new C++ casting syntax in comptest.sh to
+	      be more thorough.  It now checks for all casting variations.
+	      This was necessary, since someone at NeXT botched the OpenStep
+	      Objective-C++ compiler so that it fails to understand
+	      reinterpret_cast even though it understands static_cast,
+	      const_cast, and dynamic_cast.
+	    - Eliminated compilation warning in csbaglay.cpp regarding one
+	      variable shadowing another.
+	    - NeXT csosdefs.h now defines __NEED_GENERIC_ISDIR for SYSDEF_DIR
+	      so that the generic isdir() gets defined.  This is now required
+	      by CSWS.
+	    - Added missing `const' qualifier to SetName() and GetName()
+	      methods of csFrame and csSpriteAction.
+	    - Eliminated several compilation warnings from the sound loader
+	      plug-in.
+	    - Eliminated compilation warning about redefinition of RED_PREPROC
+	      macro in haloscan.inc.  This warning only showed up on platforms
+	      which have TOP8BITS_R8G8B8_USED defined.
+	    - Eliminated several compilation warnings in g2dtest regarding
+	      implicit conversion of float to int.
+	    - Added missing `const' qualifiers to several methods in
+	      mz3DSprite.
+	    - Fixed quite a lot of multiple-include protection macros in
+	      include/csengine so that they are now prefixed by `CS' (for
+	      instance __CS_STATS_H__ rather than STATS_H).  This should help
+	      to avoid naming collisions with non-CS packages.
+	    - Eliminated compilation warning in ptlab.cpp.
+	    - Eliminated compilation warning in dnfnodes.cpp.
+6-Dec-2000
+	- Fixed a comment in iGraphics2D.
+	- Extend csObject::GetChild() with a new 'derived' parameter similar
+	  to how GetIterator() works. With 'derived' set to true GetChild()
+	  will return the first child that matches the type or is a type
+	  derived from the given type. To get the first child you can now
+	  use GetChild (csObject::Type, true);
+	- Added iRegion SCF interface which csRegion extends.
+	- Extended iWorld and csWorld with SelectRegion and GetCurrentRegion.
+	- More work on csRegion class. DeleteAll(), Clear(), and Prepare()
+	  should all work now. But untested at the moment.
+	- All objects that should belong to a region will now add themselves
+	  to the current region automatically.
+	- Added new 'REGION' keyworld to WORLD in loader. This keyworld
+	  will create/select a new region and all subsequent sectors,
+	  collections, sprite templates or thing templates, will be added
+	  to that region. If the name of the region is empty then the default
+	  NULL region will be used. Note that it is possible to interleave
+	  region selection. For example, you can first create a few sectors
+	  in region 'east', followed by a few sectors in region 'west',
+	  followed again by a few sectors in region 'east'.
+	- Fixed a bug in csWorld::CreateThing(). This function accidently
+	  added the thing twice to the list of things for every sector (once
+	  by doing SetSector on the movable and once explicit). In addition
+	  this routine forgot to add the thing to the list of things in the
+	  world.
+	- Added 'portal' console command to WalkTest. This will create a new
+	  region with the given name and load the same named level into
+	  that region. Then it will create a portal on the spot you are
+	  standing to the start position of the new level. For example,
+	  you can do 'portal maze' to load maze.zip into the 'maze' region.
+	  Then you can enter 'maze.zip' through the new portal :-)
+	  WARNING! This command does not work at the moment and the only
+	  effect is crashing WalkTest! Work in Progress!
+	- Added csLoader::AppendWorldFile() which will load a world
+	  file without first clearing the original world.
+	- Added a parameter 'onlyRegion' to AppendWorldFile(). If true then
+	  then portals will only connect to the sectors in the current
+	  region, things will only use thing templates defined in the
+	  current region and sprites will only use sprite templates
+	  defined in the current region.
+	- Small fix in OpenGL which SHOULD support alpha for DrawPixmap
+	  but for some reason doesn't.
+	- Eric Sunshine fixed unixconf.sh so that it respects the CXX setting
+	  from the environment if such a setting already exists, rather than
+	  completely ignoring such a setting.
+	- Eric Sunshine fixed some problems in cspython.mak and csjava.mak.
+	- Eric Sunshine added automatic detection of SVGALIB to unixconf.sh.
+	- Eric Sunshine removed the dead cygnus.mak makefile.
+	- Eric Sunshine eliminated several compilation warnings from
+	  crysball.cpp.
+	- Eric Sunshine added missing RequestPlugin(FontServer) to simplep.cpp.
+	- Samuel Humphreys added a fire procedural texture to ptlab. The fire
+	  algorithm was contributed by Wouter Wijngaards.
+	- Martin Geisse fixed a bug which caused the sound modules to ignore
+	  some config settings.
+5-Dec-2000
+	- Wouter Wijngaards created csBox3::SquaredOriginDist which returns
+	  a float with the squared distance of the box to (0,0,0). It
+	  is extremely fast (algo taken from sector.cpp).
+	- Norman Kramer did the following changes:
+	    - Catched a div by zero in LOD calc for sprites.
+     	    - Sprites are now clipped if shortest distance is greater than
+	      D() value of the farplane (squared version).
+	- Started work on csRegion class. Not functional at the moment.
+	- Eric Sunshine made the following changes:
+	    - Removed all platform-specific specializations from of csdef.h.
+	      These specializations have been moved to platform-specific
+	      makefiles and include files, where appropriate.  The idea here is
+	      to eliminate the mentality of monolithicism by moving as much
+	      platform-specific goop into platform-specific configuration files
+	      rather than polluting generalized project resources with
+	      platform-specific crud.
+	    - Moved all OS_NEXT-specific specializations out of csdef.h and
+	      into next/csosdefs.h.
+	    - csdef.h is no longer responsible for setting the OS_UNIX flag for
+	      Solaris, Linux, Irix, BSD, BeOS, NeXT, and PS2.  It is now the
+	      responsibility of each platform's makefile to set the OS_UNIX
+	      flag, instead, if that designation is appropriate for the given
+	      platform.
+	    - Upgraded volatile.mak so that it has an understanding of
+	      operating system `families', such as Unix, Win32, etc.  If it
+	      sees that a platform-specific makefile has designated itself as
+	      belonging to a particular family, then volatile.mak includes an
+	      appropriate definition (such as OS_UNIX) in volatile.h.  All
+	      platform-specific makefiles which require OS_UNIX now obtain it
+	      via the new `family' mechanism.
+	    - Added comptest.sh which tests for different compiler capabilities
+	      at project configuration time.  Both unixconf.sh and next.mak now
+	      invoke comptest.sh.
+	    - Merged booltest.sh into comptest.sh.  Removed booltest.sh.
+	    - Added a compiler capability test for new-style C++ casting syntax
+	      to comptest.sh.  If the compiler does not understand this syntax,
+	      then the makefile variable CS_USE_OLD_STYLE_CASTS is defined.
+	      volatile.mak then defines the preprocessor variable
+	      CS_USE_OLD_STYLE_CASTS which is recognized by csdef.h.
+	    - Added a compiler capability test for the new C++ `explicit'
+	      keyword.  If the compiler does not understand this keyword, then
+	      the makefile variable CS_USE_FAKE_EXPLICIT_KEYWORD is defined.
+	      volatile.mak then defines the preprocessor variable
+	      CS_USE_FAKE_EXPLICIT_KEYWORD which is recognized by csdef.h.
+	    - Renamed makefile and preprocessor variables DO_FAKE_BOOL to
+	      CS_USE_FAKE_BOOL_TYPE.
+	    - Renamed makefile and preprocessor variables DO_FAKE_SOCKLEN_T to
+	      CS_USE_FAKE_SOCKLEN_TYPE.
+	    - Moved initial definition of MAKE_VOLATILE_H out of Makefile and
+	      into volatile.mak.
+	    - Reworked the STATIC_CAST, DYNAMIC_CAST, REINTERPRET_CAST, and
+	      CONST_CAST macros so that the user is no longer responsible for
+	      remembering to add extra parentheses around the expression which
+	      is being casted.
+	    - Eliminated Linux-specific specializations from makedep/parse.cpp.
+	    - Eliminated NextStep-specific specializations from bspbox.cpp.
+	    - Eliminated platform-specific specializations from scf.h and moved
+	      them into the appropriate platform-specific csosdefs.h files.  In
+	      particular, the Windows, BeOS, and OS/2 configuration files now
+	      override the default function export mechanism rather than
+	      hard-coding such platform-specific knowledge into SCF.
+	    - Created include/cssys/csosdefs.h which takes over the
+	      responsibility of including the platform-specific csosdefs.h from
+	      cssysdef.h.  This helps to remove some platform-specific
+	      specialization from cssysdef.h.
+	    - Eliminated all platform-specific specializations from version.h.
+	      It is now the responsibility of the platform-specific makefile
+	      and project files to provide this information on behalf of
+	      version.h.  The idea here is to eliminate the mentality of
+	      monolithicism and promote the concept of modularity, rather than
+	      polluting generalized project resources, such as version.h, with
+	      platform-, processor-, and compiler-specific crud.  For all
+	      platforms which use the GNU makefile system, this information is
+	      now provided automatically by volatile.mak by gleaning the
+	      necessary information from the existing GNU makefiles.  In
+	      particular, volatile.mak examines the makefile variables
+	      $(DESCRIPTION.$(TARGET)), $(PROC), and $(COMP) in order to
+	      provide useful human-readable information to version.h.
+	    - Renamed the following preprocessor identifiers from version.h
+	      (some of which are now defined by platform-specific project files
+	      rather than being defined directly in version.h):
+		CS_VERSION    --> CS_VERSION_MAJOR
+		CS_SUBVERSION --> CS_VERSION_MINOR
+		VERSION       --> CS_VERSION
+		RELEASE_DATE  --> CS_RELEASE_DATE
+		OS_VERSION    --> CS_PLATFORM_NAME
+		PR_VERSION    --> CS_PROCESSOR_NAME
+		CC_VERSION    --> CS_COMPILER_NAME
+	    - Renamed the plug-in file extension for MacOS/X Server, OpenStep,
+	      and NextStep from .dylib to .csplugin.
+	    - Added general/findlib.cpp to SRC.SYS_CSSYS in next.mak.
+4-Dec-2000
+	- Norman Kramer implemented farplane culling for sprites.
+	- Added 'sndload' to the 'walkall' target because without the
+	  sound loader WalkTest will not run.
+	- Fixed a number of compile errors that trigger with VC5.
+3-Dec-2000
+	- Norman Kramer did some work on CrystalBall (his polygon culler).
+	- Norman also did the following with relation to the c-buffer
+	  culler:
+	    - GetConvexOutline (in csBox) has a new parameter: bVisisble.
+              If true it returns all visible corners, if not then just
+	      the outline.
+	    - The farplane is now recognized in the octree culling and
+	      polygon culling process.
+	- Noah L. Gibbs added support for change to libs/csphyzik/qtrbconn.cpp.
+	  Also some prototypes for new functions. Here is the comment:
+	      Checking in code that's almost enough to make the rigid-body
+	      connectors useful. They now successfully take derivatives of
+	      an arbitrary point and its velocity on the rigid body with
+	      respect to all state variables of that body -- except for the
+	      derivative of the velocity with respect to the rigid body's
+	      angular momentum.  Ouch.  Working on it.
+	- Eric Sunshine made the following changes to the documentation:
+	    - Fixed several Texinfo mark-up problems in msdos.txi, win32.txi,
+	      win32gcc.txi, 
+	    - Performed some re-writing and clean-up of features.txi.
+	    - Performed some minor reformatting of csgeom.txi, graphics.txi,
+	      and plugins/overview.txi.
+	    - Performed some minor re-writing of cssys.txi.
+	    - Replaced Doc++ references with Doxygen references in coding.txi.
+	- Eric Sunshine made the following changes to CVSROOT/sumlog.awk (and
+	    cousins):
+	    - Minor beautification of generated output in order to facilitate
+	      ease of reading.
+	    - Now ensures that all developers have write access to temporary
+	      working directory.  This should prevent the problem of
+	      "permission denied" errors which occurred for some users when
+	      committing files.
+	- Eric Sunshine added missing FontPlex registration to static.cpp.
+	- Eric Sunshine fixed copy/paste error in fontplex.mak.
+	- Eric Sunshine removed references to the obsolete and long dead
+	  Amiga and Watcom ports.
+	- Eric Sunshine removed the following modules and resources from the
+	  project.  Also removed all references to these modules from
+	  documentation, source and header files, configuration files, etc.
+	  All removed resources were tagged with the name "PURGE_1" just before
+	  being purged to CVS's "Attic".  This tag may be used to easily
+	  recover any module or resource back to the state it was in just prior
+	  to removal.
+	    - Defunct NetSpace project and its supporting modules:
+		apps/demonets
+		apps/nstp
+		docs/incoming/nstpimp.html
+		include/iauth.h
+		include/icmdmgr.h
+		include/inetcmd.h
+		include/inetman.h
+		include/iproto.h
+		plugins/csauth/simple
+		plugins/net/netman
+		plugins/netspace/nsmgr
+		plugins/netspace/nstp
+	    - Defunct and unmaintained video drivers:
+		plugins/video/canvas/dosalleg
+	    - Defunct and unmaintained sound renderers:
+		plugins/sound/renderer/a3d
+		plugins/sound/renderer/eax
+	    - Old networking resources and poorly designed cruft:
+		apps/ndrvdemo
+		mk/mwcw/NetworkDriverNull.mcp
+		mk/mwcw/NetworkMgrNull.mcp
+	    - Old csGame resources and Shooter demonstration program:
+		apps/shooter
+		data/shtlib_g.zip
+		data/shtlib_m.zip
+		data/config/shooter.cfg
+		include/csgame
+		mk/mwcw/Shooter.mcp
+	    - Limited-value applications:
+		apps/wscs3d
+		data/config/wscs3d.cfg
+	    - Old scripting cruft left around by Brandon:
+		apps/support/spawn.cpp
+		apps/test/pytest
+		include/css/cssint.h
+		include/ispawn.h
+		include/tests.h
+	    - Out of date documentation:
+		docs/incoming/changes.txt
+		docs/incoming/mazedtut.txi
+		docs/incoming/mazed123
+		docs/incoming/script.txt
+	    - Out of date scripts and makefiles:
+		bin/helpread.tcl
+		bin/launcryst.tcl
+		bin/makeman.py
+		bin/mshelp.py
+		bin/win32link.bat
+		libs/cssys/os2/os2wcc.mak
+		libs/cssys/win32/win32vc.mak
+	    - Other useless and out of date flotsam:
+		coordper
+		bin/indent.pro
+		data/entry.t3d
+		include/cssys/wcc
+		scripts/python/unrmap.py
+	- Martin Geisse added some sections and items to the libs and
+	  plugins chapters of the docs.
+2-Dec-2000
+	- Seth Galbraith did the following changes to sprites:
+	    - Automatic level-of-detail adjustment based on distance and
+	      field-of-view.
+	    - cfg_lod_detail (the "lod" setting in Walktest) is now
+	      basically the distance at which full detail is visible
+	      instead of a fractional value.
+	- Seth also added -mconsole to the linking flags for win32gcc.mak.
+          He also added comments explaining what to expect if you
+	  comment-out the -mconsole option.
+	- Wouter Wijngaards improved WalkTest as follows:
+	    - Finetuned the parameters for the 'flame' demo particle system.
+	      It looks better now, less blocky.
+	    - Removed those irritating 1 pixel wide margins where pixels
+	      from the console text could still be seen. At the end of
+	      initialize, ClearAll() is called.
+1-Dec-2000
+	- Andrew Zabolotny tried to fix OpenGL library problems.
+	  LIBS.OPENGL.SYSTEM is now the correct variable to define the
+	  system libraries for OpenGL support. For example (in system
+	  makefile or in config.mak):
+	    LIBS.OPENGL.SYSTEM=-L/usr/local/include/MesaGL -lMesaGL
+
+Please see "history.old" for less recent historical entries.

@@ -1,0 +1,18 @@
+@c -*-texinfo-*-
+@node Platform Details, Dependencies, Internals, Internals
+@section Platform-Specific Details
+@cindex Platform-Specific Details
+@cindex Details, Platform-Specific
+
+This section contains in-depth and detailed platform-specific documentation.
+If you have questions about the port of Crystal Space for a particular
+platform or merely wish to know how it works, this is the information which
+you should read.
+
+@menu
+* NeXT Details:: MacOS/X, MacOS/X Server 1.0, OpenStep, NextStep
+* OS2 Details:: OS/2
+@end menu
+
+@importss{internal,platform,next.txi}
+@importss{internal,platform,os2.txi}

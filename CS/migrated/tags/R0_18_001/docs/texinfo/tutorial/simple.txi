@@ -1,0 +1,601 @@
+@c -*-texinfo-*-
+@node Tutorial Simple, Tutorial Simple 2, Tutorial Introduction, Tutorials
+@section Simple Tutorial 1
+@cindex Tutorial, Simple
+@cindex Simple Tutorial
+
+This tutorial provides a step-by-step explanation on how you can use the 3D
+Engine from within your application.  This tutorial is mainly based on the
+@file{simple} application which you can compile and run to see what it does.
+There are various ways to use Crystal Space.  The @file{simple} application
+uses inheritance to create a subclass of the system dependent main class
+@samp{SysSystemDriver} but you don't need to do it like this.
+
+When you downloaded the Crystal Space package it contains a @samp{CS/include}
+directory.  This directory contains all header files you need to be able to
+use the Crystal Space components and libraries in your own applications.  On
+one hand, the include directory contains @sc{scf} interface definitions.
+These pure interface file names start with the letter @samp{i} (as in
+@file{iengine.h}).  On the other hand we also have plain C++ include files for
+interfacing with the libraries of Crystal Space.  When you install Crystal
+Space on your development system (for instance, by invoking @samp{make
+install}), these headers are placed in a location where they can be easily
+accessed when writing new programs based on Crystal Space.  On Unix systems,
+for instance, these files usually end up in @file{/usr/local/crystal/include}.
+
+Crystal Space also has a reference manual and @sc{api} documentation.
+The manual is included in @sc{html} form Crystal Space itself and is also
+available online.  The @sc{api} documentation can be generated locally or
+viewed online.  @xref{Where to Get}.
+
+@menu
+* Simple System Driver:: Creating the Simple System Driver
+* Simple Event Handling:: Event Handling
+* Simple World:: Creating a ``World''
+* Simple Camera:: The Camera
+* Simple Locomotion:: Locomotion (Moving Around)
+@end menu
+
+@node Simple System Driver, Simple Event Handling, Tutorial Simple, Tutorial Simple
+@subsection Creating the Simple System Driver
+@cindex Tutorial Simple System Driver
+@cindex Simple System Driver, Tutorial
+
+First a little explanation.  @samp{SysSystemDriver} is a system dependent
+class which is reponsible for controlling the main Crystal Space stuff.  It
+loads and initializes the needed components (drivers) and also manages the
+main event loop.  The @file{simple} application creates a subclass of this to
+provide it with its own functionality.  So we start by creating an include
+file @file{simple.h} with the following contents:
+
+@example
+#ifndef __SIMPLE_H__
+#define __SIMPLE_H__
+
+#include <stdarg.h>
+#include "cssys/sysdriv.h"
+
+class csEngine;
+
+class Simple : public SysSystemDriver
+@{
+  typedef SysSystemDriver superclass;
+public:
+  csEngine* engine;
+
+public:
+  Simple ();
+  virtual ~Simple ();
+
+  virtual bool Initialize (int argc, char const* const argv[],
+    char const *iConfigName);
+@};
+
+#endif // __SIMPLE_H__
+@end example
+
+In the source file @file{simple.cpp} we place the following:
+
+@example
+#include "cssysdef.h"
+#include "cssys/system.h"
+#include "apps/simple/simple.h"
+#include "csengine/sector.h"
+#include "csengine/engine.h"
+#include "csengine/csview.h"
+#include "csengine/camera.h"
+#include "csengine/light.h"
+#include "csengine/polygon.h"
+#include "csengine/texture.h"
+#include "csparser/csloader.h"
+#include "igraph3d.h"
+#include "itxtmgr.h"
+#include "iconsole.h"
+
+// We need the 3D engine
+REGISTER_STATIC_LIBRARY (engine)
+
+Simple::Simple ()
+@{
+  engine = NULL;
+@}
+
+Simple::~Simple ()
+@{
+@}
+
+void cleanup ()
+@{
+  delete System;
+@}
+
+bool Simple::Initialize (int argc, char const* const argv[],
+  char const* iConfigName)
+@{
+  if (!superclass::Initialize (argc, argv, iConfigName))
+    return false;
+
+  // Find the pointer to engine plugin
+  iEngine* Engine = QUERY_PLUGIN (this, iEngine);
+  if (!Engine)
+  @{
+    CsPrintf (MSG_FATAL_ERROR, "No iEngine plugin!\n");
+    exit (1);
+  @}
+  engine = Engine->GetCsEngine ();
+  Engine->DecRef ();
+
+  // Open the main system. This will open all
+  // the previously loaded plug-ins.
+  if (!Open ("Simple Crystal Space Application"))
+  @{
+    Printf (MSG_FATAL_ERROR, "Error opening system!\n");
+    cleanup ();
+    exit (1);
+  @}
+
+  Printf (MSG_INITIALIZATION,
+    "Simple Crystal Space Application.\n");
+
+  // First disable the lighting cache.
+  // Our app is simple enough not to need this.
+  engine->EnableLightingCache (false);
+
+  // Create our world.
+  Printf (MSG_INITIALIZATION, "Creating world...\n");
+  engine->Prepare ();
+  Printf (MSG_INITIALIZATION, "Created.\n");
+
+  return true;
+@}
+
+/*---------------*
+ * Main function *
+ *---------------*/
+int main (int argc, char* argv[])
+@{
+  srand (time (NULL));
+
+  // Create our main class.
+  System = new Simple ();
+
+  // We want at least the minimal set of plugins
+  System->RequestPlugin ("crystalspace.kernel.vfs:VFS");
+  System->RequestPlugin (
+    "crystalspace.graphics3d.software:VideoDriver");
+  System->RequestPlugin ("crystalspace.engine.core:Engine");
+
+  // Initialize the main system. This will load all needed
+  // plug-ins (3D, 2D, network, etc.) and initialize them.
+  if (!System->Initialize (argc, argv, NULL))
+  @{
+    System->Printf (MSG_FATAL_ERROR,
+      "Error initializing system.\n");
+    cleanup ();
+    exit (1);
+  @}
+
+  // Main loop.
+  System->Loop ();
+
+  // Cleanup.
+  cleanup ();
+  return 0;
+@}
+@end example
+
+This is almost the simplest possible application and it is absolutely useless.
+Also don't run it on an operating system where you can't kill a running
+application because there is no way to stop the application once it has
+started running.
+
+Before we start making this application more useful lets have a look at what
+actually happens here.  The main routine first creates an instance of our
+@samp{Simple} class.  The next step is the creation of the world.  The world
+is actually the main 3D engine class and is one of the most important classes
+for interfacing with the engine (see @samp{csEngine} reference for more
+information).
+
+To initialize the system, we call @code{Initialize()} on our @samp{Simple}
+instance.  This is a function inherited from @samp{SysSystemDriver} and is
+responsible for initializing all needed plugins.  It is also responsible for
+parsing the command line and feeding all the options to the appropriate
+handlers.  Note that you should always test for failure of such routines as
+there may be various reasons for failure.
+
+@samp{Initialize()} retrieves a pointer to the engine via a call to the
+@sc{scf} function @code{QUERY_PLUGIN()} and then ``opens'' the system, which
+basically means that all graphics subsystems are opened (i.e.  a window will
+be opened).  This function can also fail, so again test for this.
+
+The call to @code{Loop()} puts Crystal Space in the main event loop.  This is
+where the application really starts running and interacting with the user.
+This call returns as soon as an exit message was received by the system at
+which point we call @code{cleanup()} to clean up everything.
+
+@node Simple Event Handling, Simple World, Simple System Driver, Tutorial Simple
+@subsection Event Handling
+@cindex Event Handling, Simple Tutorial
+@cindex Simple Tutorial Event Handling
+
+To make the testing somewhat easier we will add a way to terminate the
+application by responding to the @key{ESC} key.  Add the following public
+method to our class in @file{simple.h}:
+
+@example
+virtual bool HandleEvent (iEvent&);
+@end example
+
+HandleEvent() is inherited from the system driver and is automatically called
+as each event is received, several of which can accumulate between frames.
+Our version checks if the @key{ESC} key has been pressed, and sets
+Shutdown to true if so.  Now add this code to @file{simple.cpp}:
+
+@example
+bool Simple::HandleEvent (iEvent& Event)
+@{
+  if (superclass::HandleEvent (Event))
+    return true;
+
+  if (Event.Type == csevKeyDown && Event.Key.Code == CSKEY_ESC)
+  @{
+    Shutdown = true;
+    return true;
+  @}
+
+  return false;
+@}
+@end example
+
+This code first gives the superclass a chance to respond to the event.  If the
+superclass couldn't handle the event, then our code tries to do so by checking
+for the @key{ESC} key and beginning the termination sequence if it found that
+that key had been pressed.  Otherwise @samp{false} is returned to indicate
+that the event was not handled at all.
+
+@node Simple World, Simple Camera, Simple Event Handling, Tutorial Simple
+@subsection Creating a ``World''
+@cindex Tutorial, Creating a ``World''
+@cindex World, Creating, Simple Tutorial
+
+Now we have a very exciting application which opens a black window and waits
+for the @key{ESC} key to quit.  We assume this is the application you always
+wanted to have?  No?  Ok then, let's create some 3D stuff.
+
+We'll add a texture manager, a room (technically called a @dfn{sector}) and
+some lights.  First, add these relevant declarations to @file{simple.h} so
+that it looks like this:
+
+@example
+@dots{}
+#include "csgeom/math2d.h"
+#include "csgeom/math3d.h"
+
+class csSector;
+class csView;
+class csEngine;
+
+class Simple : public SysSystemDriver
+@{
+  typedef SysSystemDriver superclass;
+public:
+  csSector* room;
+  csEngine* engine;
+  @dots{}
+@end example
+
+Now add these chunks of code (texture manager, room, lights) to
+@file{simple.cpp}:
+
+@example
+bool Simple::Initialize (int argc, char const* const argv[],
+  char const* iConfigName)
+@{
+  @dots{}
+  // Open the main system. This will open all
+  // the previously loaded plug-ins.
+  if (!Open ("Simple Crystal Space Application"))
+    @dots{}
+
+  // Setup the texture manager
+  iTextureManager* txtmgr = G3D->GetTextureManager ();
+  txtmgr->SetVerbose (true);
+
+  // Initialize the texture manager
+  txtmgr->ResetPalette ();
+  @dots{}
+  // Create the world.
+  Printf (MSG_INITIALIZATION, "Creating world...\n");
+
+  csLoader::LoadTexture (engine, "stone", "/lib/std/stone4.gif");
+  csMaterialWrapper* tm = engine->GetMaterials ()->FindByName ("stone");
+
+  room = engine->CreateCsSector ("room");
+  csPolygon3D* p;
+  p = room->NewPolygon (tm);
+  p->AddVertex (-5, 0,  5);
+  p->AddVertex ( 5, 0,  5);
+  p->AddVertex ( 5, 0, -5);
+  p->AddVertex (-5, 0, -5);
+  p->SetTextureSpace (p->Vobj (0), p->Vobj (1), 3);
+
+  p = room->NewPolygon (tm);
+  p->AddVertex (-5, 20, -5);
+  p->AddVertex ( 5, 20, -5);
+  p->AddVertex ( 5, 20,  5);
+  p->AddVertex (-5, 20,  5);
+  p->SetTextureSpace (p->Vobj (0), p->Vobj (1), 3);
+
+  p = room->NewPolygon (tm);
+  p->AddVertex (-5, 20, 5);
+  p->AddVertex ( 5, 20, 5);
+  p->AddVertex ( 5,  0, 5);
+  p->AddVertex (-5,  0, 5);
+  p->SetTextureSpace (p->Vobj (0), p->Vobj (1), 3);
+
+  p = room->NewPolygon (tm);
+  p->AddVertex (5, 20,  5);
+  p->AddVertex (5, 20, -5);
+  p->AddVertex (5,  0, -5);
+  p->AddVertex (5,  0,  5);
+  p->SetTextureSpace (p->Vobj (0), p->Vobj (1), 3);
+
+  p = room->NewPolygon (tm);
+  p->AddVertex (-5, 20, -5);
+  p->AddVertex (-5, 20,  5);
+  p->AddVertex (-5,  0,  5);
+  p->AddVertex (-5,  0, -5);
+  p->SetTextureSpace (p->Vobj (0), p->Vobj (1), 3);
+
+  p = room->NewPolygon (tm);
+  p->AddVertex ( 5, 20, -5);
+  p->AddVertex (-5, 20, -5);
+  p->AddVertex (-5,  0, -5);
+  p->AddVertex ( 5,  0, -5);
+  p->SetTextureSpace (p->Vobj (0), p->Vobj (1), 3);
+
+  csStatLight* light;
+  light = new csStatLight (-3, 5,  0, 10, 1, 0, 0, false);
+  room->AddLight (light);
+  light = new csStatLight ( 3, 5,  0, 10, 0, 0, 1, false);
+  room->AddLight (light);
+  light = new csStatLight ( 0, 5, -3, 10, 0, 1, 0, false);
+  room->AddLight (light);
+
+  engine->Prepare ();
+  Printf (MSG_INITIALIZATION, "Created.\n");
+
+  txtmgr->SetPalette ();
+  return true;
+@}
+@end example
+
+This extra code first loads a texture with @code{LoadTexture()}.  The first
+parameter is the engine into which to load the texture; the second parameter is
+the name of the texture as it will be known in the engine; and the third is the
+actual filename on the @sc{vfs} volume (@pxref{VFS}).  Note, if you don't have
+the @file{stone4.gif} texture you can use another one.  The only requirement
+is that it must have sizes which are a power of 2 (e.g. 64x64). This functions
+returns a @samp{csTextureWrapper} which we don't use.  Instead we use
+the @samp{csMaterialWrapper} which is created automatically bye
+@code{LoadTexture()}.
+
+Then we create our room with @code{CreateCsSector()}.  This room will initially
+be empty.  A room in Crystal Space is represented by @samp{csSector} which is
+basicly a convex set of polygons.
+
+Now we create the six walls of our room.  To do this we call
+@code{NewPolygon()} for every wall.  This call expects one parameter: the
+material to use.  @code{NewPolygon()} returns a pointer to a
+@samp{csPolygon3D}.  This polygon will be empty so you need to add vertices
+and also define how the texture should be mapped on that polygon.  To add
+vertices we use @code{AddVertex()} which expects a location in object space.
+To define how the texture is mapped on the polygon we use
+@code{SetTextureSpace()}.  There are several versions of this function.  The
+one we use in this tutorial is one of the simplest but it offers the least
+control.  In this particular case we take the first two vertices of the
+polygon and use that for the u-axis of the texture.  The v-axis will be
+calculated perpendicular to the u-axis.  The parameter 3 indicates that the
+texture will be scaled so that one texture tile is exactly 3x3 world units in
+size.
+
+Finally we create some lights in our room to make sure that we actually are
+able to see the walls.  The class @samp{csStatLight} represents a static light
+which can not move and change intensity.  We create three such lights and add
+them to the room with @code{AddLight()}.  When creating a light we use eight
+parameters.  The first three are the location of the light in the world.  Then
+follows a radius.  The light will not affect polygons which are outside the
+sphere described by the center of the light and the radius.  The three
+following parameters are the color of the light in @sc{rgb} format
+(@code{<1,1,1>} means white and @code{<0,0,0>} means black).  The last
+parameter indicates whether or not we want to have a pseudo-dynamic light.  A
+pseudo-dynamic light still cannot move but it can change intensity.  There are
+some performance costs associated with pseudo-dynamic lights so it is not
+enabled by default.
+
+The call to @code{Prepare()} prepares the engine for rendering your scene.  It
+will prepare all textures and create all lightmaps if needed.  Only after this
+call can you start rendering your world, because lightmaps may have to be
+converted to a format more suitable for the chosen 3D renderer.
+
+The last code we added allocates the palette.  Note that is needed even if you
+are running on a true-color display which has no palette.  That's because the
+code does some other things beside setting up a palette.
+
+Ok, now we have created our room and properly initialized it.  If you would
+compile and run this application you would still see a black screen.  Why?
+Because we have not created a camera through which you can see.
+
+@node Simple Camera, Simple Locomotion, Simple World, Tutorial Simple
+@subsection The Camera
+@cindex Tutorial, Camera
+@cindex Camera, Tutorial
+
+In Crystal Space there is a class called @samp{csView} which encapsulates both
+@samp{csCamera} and @samp{csClipper} instances.  In principle you can use
+those classes directly but using csView is easier.  Now edit @file{simple.h}
+to make use of @samp{csView}:
+
+@example
+@dots{}
+class csView;
+@dots{}
+class csEngine;
+
+class Simple : public SysSystemDriver
+@{
+public:
+  csSector* room;
+  @dots{}
+  csView* view;
+  @dots{}
+  csEngine* engine;
+  @dots{}
+  virtual void NextFrame ();
+  @dots{}
+@end example
+
+Then edit @file{simple.cpp} and make the following changes to the constructor
+and destructor of @samp{Simple}:
+
+@example
+Simple::Simple ()
+@{
+  @dots{}
+  view = NULL;
+  @dots{}
+  engine = NULL;
+@}
+
+Simple::~Simple ()
+@{
+  @dots{}
+  delete view;
+  @dots{}
+@}
+@end example
+
+At the end of our Initialize() function we add the following:
+
+@example
+bool Simple::Initialize (int argc, char const* const argv[],
+  char const* iConfigName)
+@{
+  @dots{}
+  Printf (MSG_INITIALIZATION, "Created.\n");
+
+  view = new csView (engine, G3D);
+  view->SetSector (room);
+  view->GetCamera ()->SetPosition (csVector3 (0, 5, 0));
+  view->SetRectangle (0, 0, FrameWidth, FrameHeight);
+
+  txtmgr->SetPalette ();
+  return true;
+@}
+@end example
+
+So first we create a view for our world and 3D graphics renderer.  The view
+has a current sector which is passed to the camera and is set by
+@code{SetSector()}.  The camera also has a position in that sector which you
+can set by first getting the camera with @code{GetCamera()} and then setting
+the position (which is a @samp{csVector3}) with @code{SetPosition()}.  The
+view also holds a clipping region which corresponds to the area on the window
+that is going to be used for drawing the world.  Crystal Space supports convex
+polygons to be used as viewing areas, but in case we use a simple rectangle
+which has almost the size of the window.  We set this viewing rectangle with
+@code{SetRectangle()}.
+
+Now, this still isn't enough.  We have a camera but the camera is not used.
+We still need to write a @code{NextFrame()} method which tells the camera to
+actually render the 3D image at each animation frame.  Implement NextFrame()
+as follows:
+
+@example
+void Simple::NextFrame ()
+@{
+  superclass::NextFrame ();
+
+  // Tell 3D driver we're going to display 3D things.
+  if (!G3D->BeginDraw (
+      engine->GetBeginDrawFlags () | CSDRAW_3DGRAPHICS))
+      return;
+
+  // Tell the camera to render into the frame buffer.
+  view->Draw ();
+
+  // Drawing code ends here.
+  G3D->FinishDraw ();
+  // Display the final output.
+  G3D->Print (NULL);
+@}
+@end example
+
+First we indicate to the 3D rasterizer that we want to start drawing 3D
+graphics.  This call makes sure that the needed buffers are set up and
+performs all necessary initialization. The engine often needs extra settings
+for this as well so you @emph{must} call @code{engine->GetBeginDrawFlags()} to
+get these flags and or them with the ones that you want.
+Then we draw through our view by calling @code{csView::Draw()} which
+updates the view area with the 3D world data as seen through the camera.
+After this we finish 3D drawing with
+@code{FinishDraw()} and then update the display by calling @code{Print()}.
+The @samp{NULL} pointer given to @code{Print()} is the area that you want to
+update (it is a rectangle).  If @samp{NULL} is used then the entire window is
+updated.
+
+Compile and run this example.  For the first time you should see something.  A
+solid wall.  Congratulations, you have created your first almost useful
+Crystal Space application.
+
+@node Simple Locomotion, , Simple Camera, Tutorial Simple
+@subsection Locomotion (Moving Around)
+@cindex Tutorial Simple Locomotion
+@cindex Locomotion, Tutorial
+@cindex Movement, Tutorial
+
+Staring at that solid wall gets a bit boring after some time.  The problem is
+that we can't move the camera to change our view point.  Let's add some code
+to do exactly this.  Edit @file{simple.cpp} again and change
+@file{NextFrame()} as follows:
+
+@example
+void Simple::NextFrame ()
+@{
+  superclass::NextFrame ();
+  @dots{}
+  // First get elapsed time from the system driver.
+  cs_time elapsed_time, current_time;
+  GetElapsedTime (elapsed_time, current_time);
+  
+  // Now rotate the camera according to keyboard state
+  float speed = (elapsed_time / 1000.0) * (0.03 * 20);
+
+  if (GetKeyState (CSKEY_RIGHT))
+    view->GetCamera ()->Rotate (VEC_ROT_RIGHT, speed);
+  if (GetKeyState (CSKEY_LEFT))
+    view->GetCamera ()->Rotate (VEC_ROT_LEFT, speed);
+  if (GetKeyState (CSKEY_PGUP))
+    view->GetCamera ()->Rotate (VEC_TILT_UP, speed);
+  if (GetKeyState (CSKEY_PGDN))
+    view->GetCamera ()->Rotate (VEC_TILT_DOWN, speed);
+  if (GetKeyState (CSKEY_UP))
+    view->GetCamera ()->Move (VEC_FORWARD * 4 * speed);
+  if (GetKeyState (CSKEY_DOWN))
+    view->GetCamera ()->Move (VEC_BACKWARD * 4 * speed);
+  @dots{}
+@}
+@end example
+
+That's all!  With this simple change you can rotate the camera with the left
+and right arrow keys and move forward and backward with the up and down arrow
+keys.  Try it out to see the effect.  To rotate the camera we use
+@code{Rotate()} which expects a vector to rotate along and an angle given in
+radians (the speed parameter).  There are a number of predefined vectors which
+you can use.  A couple of them are used in this example.
+
+That's it for now.  In this tutorial you learned how to setup the Crystal
+Space system for use, how to create a simple room with some lights, event
+handling, and how to handle some basic camera operations.
+
+You can now go on to the next tutorial (@pxref{Tutorial Simple 2})) to learn
+how to add a 3D sprite to this engine.

@@ -1,0 +1,17 @@
+@c -*-texinfo-*-
+@node Contributing, FAQ, Plug-In Drivers, Top
+@chapter Contributing to Crystal Space
+
+@imports{contrib,intro.txi}
+
+@menu
+* Writing Documentation::
+* Coding Style::
+* CVS Guide:: CVS Etiquette Guidelines
+* Porting:: Porting to a New Platorm
+@end menu
+
+@imports{contrib,document.txi}
+@imports{contrib,coding.txi}
+@imports{contrib,cvs.txi}
+@imports{contrib,porting.txi}

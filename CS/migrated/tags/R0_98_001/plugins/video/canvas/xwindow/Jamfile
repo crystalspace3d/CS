@@ -1,0 +1,18 @@
+SubDir TOP plugins video canvas xwindow ;
+
+if $(X11.AVAILABLE) = "yes"
+{
+Description xwin : "X Window Plugin" ;
+Plugin xwin : [ Wildcard *.cpp *.h ] ;
+LinkWith xwin : canvascommon csgeom csutil ;
+CompileGroups xwin : drivers2d softcanvas ;
+if $(XFREE86VM.AVAILABLE) = "yes"
+{
+  CFlags xwin : [ FDefines XFREE86VM ] ;
+  ExternalLibs xwin : XFREE86VM ;
+}
+else
+{
+  ExternalLibs xwin : X11 ;
+}
+}

@@ -1,0 +1,5 @@
+SubDir TOP apps tutorial simple1 ;
+
+Description simple1 : "tutorial part one" ;
+Application simple1 : [ Wildcard *.cpp *.h ] : noinstall ;
+LinkWith simple1 : csgeom csgfx cstool csutil ;

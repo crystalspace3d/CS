@@ -1,0 +1,9 @@
+SubDir TOP plugins bugplug ;
+
+Description bugplug : "debugging plugin" ;
+
+Plugin bugplug
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith bugplug : csgeom cstool csutil ;
+

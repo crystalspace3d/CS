@@ -1,0 +1,33 @@
+SubDir TOP include ;
+
+rule ScanHeaders
+{
+  local _top = $(<) ;
+  local _dir = [ FDirName $(_top) include $(>) ] ;
+  local _i, _files = [ GLOB $(_dir) : * ] ;
+
+  for _i in $(_files)
+  {
+    if $(_i:S) = ".h"
+    {
+      SEARCH on $(_i:BSG=header_$(>)) = $(_dir) ;
+      InstallHeader $(_i:BSG=header_$(>)) : $(>) ;
+    }
+    else
+    {
+      if $(_i:BS) != $(DOT) && $(_i:BS) != $(DOTDOT)
+      {
+	ScanHeaders $(_top) : [ FDirName $(>) $(_i:BS) ] ;
+      }
+    }
+  }
+}
+
+ScanHeaders $(TOP) ;
+
+# If build directory differs from source directory, we must take special care
+# to also install the generated $(BUILDTOP)/include/volatile.h.
+if $(TOP) != "."
+{
+  ScanHeaders $(BUILDTOP) ;
+}

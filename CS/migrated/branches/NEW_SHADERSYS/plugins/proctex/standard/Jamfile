@@ -1,0 +1,10 @@
+SubDir TOP plugins proctex standard ;
+
+Plugin stdpt
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith stdpt : cstool csgfx csutil ;
+
+Help stdpt : "Crystal Space standard procedural textures" ;
+CompileGroups stdpt :  proctexes ;
+

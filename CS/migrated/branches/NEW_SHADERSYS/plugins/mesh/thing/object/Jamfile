@@ -1,0 +1,10 @@
+SubDir TOP plugins mesh thing object ;
+
+Plugin thing
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith thing : csgfx csgeom csutil ;
+
+Help thing : "Thing mesh object plug-in" ;
+InstallConfig thing.cfg ;
+CompileGroups thing :  meshes ;

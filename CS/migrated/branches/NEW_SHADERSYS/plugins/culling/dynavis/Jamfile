@@ -1,0 +1,18 @@
+SubDir TOP plugins culling dynavis ;
+
+Plugin dynavis
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith dynavis : csgeom csutil ;
+
+Help dynavis : "Crystal Space Dynamic Visibility System" ;
+
+SubVariant debug ;
+Plugin dynavis_debug 
+       : [ Wildcard *.cpp *.h ]
+       : independent noinstall
+;
+LinkWith dynavis_debug : csgeom csutil ;
+CFlags dynavis_debug : -DDYNAVIS_DEBUG ;
+SubVariant ;
+

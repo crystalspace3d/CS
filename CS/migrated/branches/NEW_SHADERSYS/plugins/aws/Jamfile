@@ -1,0 +1,33 @@
+SubDir TOP plugins aws ;
+
+FILES = [ Wildcard *.cpp *.h ] ;
+
+if $(CMD.BISON) && $(CMD.FLEX)
+{
+  FILES = [ Filter $(FILES) : skinlex.cpp skinpars.cpp ] 
+	  skinlex.ll skinpars.yy ;
+  BisonFlags skinpars.yy : "-p aws" ;
+}
+
+Plugin aws :
+	$(FILES)
+;
+
+# Silence the compiler (we can't avoid the warnings in auto-generated code).
+# @@@ FIXME: The configure script should check if compiler recognizes
+# -Wno-unused rather than hard-coding it here.
+C++FLAGS on [ DoObjectGrist skinlex$(SUFOBJ) skinpars$(SUFOBJ) ] +=
+  -Wno-unused ;
+
+# Work around bizarre bug on older CompileFarm MacOS/X installation and
+# CompileFarm Linux 2.2 (Alpha) installation where preprocessor fails to search
+# the CS/plugins/aws directory for headers #included by skinpars.cpp and
+# skinlex.cpp.
+# @@@ FIXME: The configure script should check if compiler recognizes -I rather
+# than hard-coding it here.
+C++FLAGS on [ DoObjectGrist skinpars$(SUFOBJ) skinlex$(SUFOBJ) ] +=
+  -I$(SEARCH_SOURCE) ;
+
+LinkWith aws : csgeom csgfx cstool csutil ;
+
+Help aws : "Alternate Windowing System plug-in" ;

@@ -9,6 +9,16 @@ chronological order.
 13-Jun-2004
 	- Rhad fixed do_manual_colors in genmeshes (NR) by adding handling to 
 	  csGenmeshMeshObject::PreGetShaderVariableValues.
+	- Eric Sunshine upgraded the "Creating an External Application" HOWTO
+	  so that it discusses the 'jamtemplate' utility, and so that it
+	  discusses MacOS/X in the older Makefile-based section.
+	- Eric Sunshine fixed cs-config/Makfile.template and the
+	  cs-config/makevar.macosx fragment so that it works for creation of
+	  external Makefile-based projects on MacOS/X.  Previously, it was
+	  quite broken.  Added cs-config/appwrap.sh, which allows external
+	  application Makfiles to create proper Cocoa application wrappers on
+	  MacOS/X when using a Makefile-based build.  (This is documented in
+	  the HOWTO.)
 10-Jun-2004
 	- res fixed the OR renderers for the recent DrawSimpleMesh() changes.
 	- res fixed the Fixed FP plugin to reset the multitexturing setup on

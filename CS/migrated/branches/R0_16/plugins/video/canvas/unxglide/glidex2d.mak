@@ -1,0 +1,1 @@
+-include $(addprefix plugins/video/canvas/unxglide/v, $(addsuffix .sub, $(GLIDE_VERSIONS) ))

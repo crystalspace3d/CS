@@ -1,0 +1,40 @@
+@c -*-texinfo-*-
+@node Anatomy, Libraries, Concepts, Top
+@chapter Project Anatomy
+@cindex Anatomy
+
+This chapter dives into the actual anatomy of Crystal Space.  This is where
+you will find detailed descriptions of concrete implementations of concepts
+discussed in the Concepts chapter.  @xref{Concepts}.
+
+@emph{FIXME}: Fill in these sections.  Some of this information currently
+resides in LaTeX format.
+
+@itemize @bullet
+@item
+Format of @emph{World} File
+@item
+Importing Foreign Models
+@item
+Scripting
+@end itemize
+
+@menu
+* Library List:: Quick Overview of Modules and Libraries
+* Dependencies::
+* Directory Hierarchy::
+* Makefile How-To::
+* SCF:: Shared Class Facility (@sc{scf})
+* VFS:: Virtual File System (@sc{vfs})
+* Memory Debugger:: Crystal Space Memory Debugger
+* Platform Details:: Platform-Specific Details
+@end menu
+
+@imports{anatomy,liblist.txi}
+@imports{anatomy,depend.txi}
+@imports{anatomy,dirhier.txi}
+@imports{anatomy,makefile.txi}
+@imports{anatomy,scf.txi}
+@imports{anatomy,vfs.txi}
+@imports{anatomy,memdebug.txi}
+@importss{anatomy,platform,details.txi}

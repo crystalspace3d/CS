@@ -1,0 +1,165 @@
+/*
+    Hash Map.
+    Copyright (C) 2000 by Jorrit Tyberghein
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public
+    License along with this library; if not, write to the Free
+    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#include <stdio.h>
+#include "cssysdef.h"
+#include "csutil/hashmap.h"
+
+//---------------------------------------------------------------------------
+
+bool csHashIterator::HasNext ()
+{
+  return bucket != NULL;
+}
+
+void csHashIterator::GotoNextElement ()
+{
+  element_index++;
+  if (!bucket || element_index >= bucket->Length ())
+  {
+    // Next bucket.
+    bucket_index++;
+    while (bucket_index < hash->buckets.Length () &&
+    	!hash->buckets[bucket_index])
+      bucket_index++;
+    if (bucket_index >= hash->buckets.Length ())
+      bucket = NULL;	// The end
+    else
+    {
+      bucket = (csHashBucket*)(hash->buckets[bucket_index]);
+      element_index = 0;
+    }
+  }
+}
+
+void csHashIterator::GotoNextSameKey ()
+{
+  if (!bucket) return;
+  element_index++;
+  while (element_index < bucket->Length () &&
+  	((csHashElement*)(*bucket)[element_index])->key != key)
+  {
+    element_index++;
+  }
+  if (element_index >= bucket->Length ()) bucket = NULL;
+}
+
+csHashObject csHashIterator::Next ()
+{
+  if (bucket == NULL) return NULL;
+  csHashObject obj = ((csHashElement*)((*bucket)[element_index]))->object;
+  if (do_iterate_key) GotoNextSameKey ();
+  else GotoNextElement ();
+  return obj;
+}
+
+void csHashIterator::DeleteNext ()
+{
+  // @@@ Not yet implemented.
+}
+
+//---------------------------------------------------------------------------
+
+csHashMap::csHashMap (int size)
+{
+  max_size = size;
+  buckets.SetLength (max_size);
+  int i;
+  for (i = 0 ; i < max_size ; i++)
+    buckets[i] = NULL;
+}
+
+csHashMap::~csHashMap ()
+{
+  DeleteAll ();
+}
+
+void csHashMap::Put (csHashKey key, csHashObject object)
+{
+  int idx = key % max_size;
+  if (!buckets[idx]) buckets[idx] = new csHashBucket ();
+  csHashBucket& bucket = *(csHashBucket*)buckets[idx];
+  csHashElement* element = new csHashElement ();
+  element->key = key;
+  element->object = object;
+  bucket.Push (element);
+}
+
+csHashObject csHashMap::Get (csHashKey key) const
+{
+  int idx = key % max_size;
+  if (!buckets[idx]) return NULL;
+  csHashBucket& bucket = *(csHashBucket*)buckets[idx];
+  int i;
+  for (i = 0 ; i < bucket.Length () ; i++)
+  {
+    csHashElement* element = (csHashElement*)bucket[i];
+    if (element->key == key) return element->object;
+  }
+  return NULL;
+}
+
+csHashIterator* csHashMap::GetIterator (csHashKey key)
+{
+  int idx = key % max_size;
+
+  csHashIterator* iterator = new csHashIterator (this);
+  iterator->bucket = (csHashBucket*)buckets[idx]; // Will be NULL if bucket empty.
+  iterator->element_index = -1;
+  iterator->bucket_index = idx;
+  iterator->key = key;
+  iterator->do_iterate_key = true;
+  iterator->GotoNextSameKey ();
+
+  return iterator;
+}
+
+csHashIterator* csHashMap::GetIterator ()
+{
+  csHashIterator* iterator = new csHashIterator (this);
+  iterator->bucket = NULL;
+  iterator->element_index = 0;
+  iterator->bucket_index = -1;
+  iterator->do_iterate_key = false;
+  iterator->GotoNextElement ();
+
+  return iterator;
+}
+
+void csHashMap::DeleteAll (csHashKey key)
+{
+  int idx = key % max_size;
+  if (!buckets[idx]) return;
+  csHashBucket& bucket = *(csHashBucket*)buckets[idx];
+  int i;
+  for (i = bucket.Length () ; i >= 0 ; i--)
+  {
+    csHashElement* element = (csHashElement*)bucket[i];
+    if (element->key == key)
+      bucket.Delete (i);
+  }
+}
+
+void csHashMap::DeleteAll ()
+{
+  int b;
+  for (b = buckets.Length () ; b >= 0 ; b--)
+    buckets.Delete (b);
+}
+

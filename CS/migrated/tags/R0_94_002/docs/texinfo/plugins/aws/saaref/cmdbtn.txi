@@ -1,0 +1,69 @@
+@c -*-texinfo-*-
+@node AWS Command Button, AWS Label, AWS All Components, AWS Signals and Actions Reference
+@subsubsection Command Button
+
+A command button's type is ``Command Button''.
+
+@subsubheading Signals
+
+Command buttons send the following signals.
+
+@table @code
+@item signalCmdButtonClicked
+Occurs when the user clicks a mouse button on the component.
+@end table
+
+@subsubheading Properties
+
+Command buttons publish the following properties.
+
+@table @code
+@item Caption
+Used to change the text on the button.
+@end table
+
+@subsubheading Frame Styles
+
+Command buttons may be configured to display the following frame styles.
+
+@table @code
+@item bfsNormal
+A normal frame with text, a 3D border, and an optional image.
+
+@item bfsToolbar
+A normal frame without text, but may have an image.
+
+@item bfsBitmap
+A frame whose appearance is entirely dictated by images. This
+frame style @emph{must} be present with the @samp{BitmapNormal},
+@samp{BitmapFocused} and @samp{BitmapClicked} attributes in a
+definition file.
+@end table
+
+@subsubheading Attributes
+
+Command buttons publish the following attributes.
+
+@table @code
+@item Style
+Defines the frame style.
+
+@item Alpha
+Alpha level of the button. Only used for @samp{bfsBitmap} style.
+
+@item Caption
+The button's caption (title).
+@end table
+
+@subsubheading Skin Attributes
+
+Command buttons support the following skin attributes.
+
+@table @code
+@item OverlayTextureAlpha
+Used for texturing the button with a global texture.  Can be used to give a
+``liquid'' look to buttons.
+
+@item Texture
+Used for overlaying the button with the global texture.
+@end table

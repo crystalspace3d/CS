@@ -1,22 +1,22 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#define SYSDEF_ALLOCA
+#define CS_SYSDEF_PROVIDE_ALLOCA
 #include "cssysdef.h"
 #include "isospr.h"
 #include "ivideo/graph3d.h"
@@ -27,15 +27,16 @@
 #include "ivideo/txtmgr.h"
 #include "iengine/material.h"
 
-IMPLEMENT_IBASE (csIsoSprite)
-  IMPLEMENTS_INTERFACE (iIsoSprite)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoSprite)
+  SCF_IMPLEMENTS_INTERFACE (iIsoSprite)
+SCF_IMPLEMENT_IBASE_END
 
 csIsoSprite::csIsoSprite (iBase *iParent)
 {
-  CONSTRUCT_IBASE (iParent);
+  SCF_CONSTRUCT_IBASE (iParent);
   position.Set(0,0,0);
   material = NULL;
+  g3dpolyfx.num = 0;
   g3dpolyfx.mixmode = CS_FX_COPY;
   g3dpolyfx.use_fog = false;
   g3dpolyfx.mat_handle = NULL;
@@ -45,16 +46,16 @@ csIsoSprite::csIsoSprite (iBase *iParent)
   g3dpolyfx.flat_color_b = 1;
   grid = NULL;
   gridcall = NULL;
-  gridcalldata = NULL;
 }
 
 csIsoSprite::~csIsoSprite ()
 {
+  if (gridcall) gridcall->DecRef ();
 }
 
-int csIsoSprite::GetNumVertices() const
+int csIsoSprite::GetVertexCount() const
 {
-  return poly.GetNumVertices();
+  return poly.GetVertexCount();
 }
 
 void csIsoSprite::AddVertex(const csVector3& coord, float u, float v)
@@ -65,7 +66,7 @@ void csIsoSprite::AddVertex(const csVector3& coord, float u, float v)
   static_colors.AddVertex(1.,1.,1.);
 }
 
-void csIsoSprite::SetPosition(const csVector3& newpos) 
+void csIsoSprite::SetPosition(const csVector3& newpos)
 {
   /// manage movement of the sprite, oldpos, newpos
   csVector3 oldpos = position;
@@ -73,22 +74,22 @@ void csIsoSprite::SetPosition(const csVector3& newpos)
   if(grid) grid->MoveSprite(this, oldpos, newpos);
 }
 
-void csIsoSprite::MovePosition(const csVector3& delta) 
+void csIsoSprite::MovePosition(const csVector3& delta)
 {
   SetPosition(position + delta);
 }
 
 #define INTERPOLATE1(component) \
-  g3dpoly->vertices [i].##component## = inpoly [vt].##component## + \
-    t * (inpoly [vt2].##component## - inpoly [vt].##component##);
+  g3dpoly->vertices [i].component = inpoly [vt].component + \
+    t * (inpoly [vt2].component - inpoly [vt].component);
 
 #define INTERPOLATE(component) \
 { \
-  float v1 = inpoly [edge_from [0]].##component## + \
-    t1 * (inpoly [edge_to [0]].##component## - inpoly [edge_from [0]].##component##); \
-  float v2 = inpoly [edge_from [1]].##component## + \
-    t2 * (inpoly [edge_to [1]].##component## - inpoly [edge_from [1]].##component##); \
-  g3dpoly->vertices [i].##component## = v1 + t * (v2 - v1); \
+  float v1 = inpoly [edge_from [0]].component + \
+    t1 * (inpoly [edge_to [0]].component - inpoly [edge_from [0]].component); \
+  float v2 = inpoly [edge_from [1]].component + \
+    t2 * (inpoly [edge_to [1]].component - inpoly [edge_from [1]].component); \
+  g3dpoly->vertices [i].component = v1 + t * (v2 - v1); \
 }
 
 static void PreparePolygonFX2 (G3DPolygonDPFX* g3dpoly,
@@ -107,8 +108,8 @@ static void PreparePolygonFX2 (G3DPolygonDPFX* g3dpoly,
   float t;
   for (i = 0; i < num_vertices; i++)
   {
-    g3dpoly->vertices [i].sx = clipped_verts [i].x;
-    g3dpoly->vertices [i].sy = clipped_verts [i].y;
+    g3dpoly->vertices [i].x = clipped_verts [i].x;
+    g3dpoly->vertices [i].y = clipped_verts [i].y;
     switch (clipped_vtstats[i].Type)
     {
       case CS_VERTEX_ORIGINAL:
@@ -148,8 +149,8 @@ static void PreparePolygonFX2 (G3DPolygonDPFX* g3dpoly,
         j1 = orig_num_vertices - 1;
         for (j = 0; j < orig_num_vertices; j++)
         {
-          if ((y >= inpoly [j].sy && y <= inpoly [j1].sy) ||
-              (y <= inpoly [j].sy && y >= inpoly [j1].sy))
+          if ((y >= inpoly [j].y && y <= inpoly [j1].y) ||
+              (y <= inpoly [j].y && y >= inpoly [j1].y))
           {
 	    CS_ASSERT (edge >= 0 && edge < 2);
             edge_from [edge] = j;
@@ -169,10 +170,10 @@ static void PreparePolygonFX2 (G3DPolygonDPFX* g3dpoly,
         G3DTexturedVertex& B = inpoly [edge_to [0]];
         G3DTexturedVertex& C = inpoly [edge_from [1]];
         G3DTexturedVertex& D = inpoly [edge_to [1]];
-        float t1 = (y - A.sy) / (B.sy - A.sy);
-        float t2 = (y - C.sy) / (D.sy - C.sy);
-        float x1 = A.sx + t1 * (B.sx - A.sx);
-        float x2 = C.sx + t2 * (D.sx - C.sx);
+        float t1 = (y - A.y) / (B.y - A.y);
+        float t2 = (y - C.y) / (D.y - C.y);
+        float x1 = A.x + t1 * (B.x - A.x);
+        float x2 = C.x + t2 * (D.x - C.x);
         t = (x - x1) / (x2 - x1);
         INTERPOLATE (z);
         INTERPOLATE (u);
@@ -212,7 +213,7 @@ void csIsoSprite::Draw(iIsoRenderView *rview)
 
   //material->Visit ();
 
-  g3dpolyfx.num = poly.GetNumVertices ();
+  g3dpolyfx.num = poly.GetVertexCount ();
   g3dpolyfx.mat_handle = material->GetMaterialHandle();
   /// guesstimate of fov (angle) of view. 1/fov.
   g3d->SetPerspectiveAspect (180.);
@@ -237,13 +238,13 @@ void csIsoSprite::Draw(iIsoRenderView *rview)
   for (i = 0; i < g3dpolyfx.num; i++)
   {
     view->W2S(position + poly[i], screenpos);
-    //if(screenpos.z == 0.0) g3dpolyfx.vertices [i].z = 0.5; else 
-    //if(screenpos.z < 0.0) 
+    //if(screenpos.z == 0.0) g3dpolyfx.vertices [i].z = 0.5; else
+    //if(screenpos.z < 0.0)
          //g3dpolyfx.vertices [i].z = 1.0-.5/(-screenpos.z+1.);
     //else g3dpolyfx.vertices [i].z = .5/(screenpos.z+1.);
     g3dpolyfx.vertices [i].z = 1./(screenpos.z-zlowerbound);
-    g3dpolyfx.vertices [i].sx = poly2d [i].x = screenpos.x;
-    g3dpolyfx.vertices [i].sy = poly2d [i].y = screenpos.y;
+    g3dpolyfx.vertices [i].x = poly2d [i].x = screenpos.x;
+    g3dpolyfx.vertices [i].y = poly2d [i].y = screenpos.y;
     g3dpolyfx.vertices [i].r = colors [i].x;
     g3dpolyfx.vertices [i].g = colors [i].y;
     g3dpolyfx.vertices [i].b = colors [i].z;
@@ -252,16 +253,16 @@ void csIsoSprite::Draw(iIsoRenderView *rview)
   }
 
   int num_clipped_verts;
-  UByte clip_result = rview->GetClipper()->Clip (poly2d, g3dpolyfx.num,
+  uint8 clip_result = rview->GetClipper()->Clip (poly2d, g3dpolyfx.num,
     clipped_poly2d, num_clipped_verts, clipped_vtstats);
   if (clip_result == CS_CLIP_OUTSIDE) return;// false;
   g3dpolyfx.num = num_clipped_verts;
 
   if (clip_result != CS_CLIP_INSIDE)
     PreparePolygonFX2 (&g3dpolyfx, clipped_poly2d, num_clipped_verts,
-        clipped_vtstats, poly.GetNumVertices(), true);
+        clipped_vtstats, poly.GetVertexCount(), true);
 
-  iIsoMaterialWrapperIndex *wrapindex = QUERY_INTERFACE(
+  iIsoMaterialWrapperIndex *wrapindex = SCF_QUERY_INTERFACE(
     material, iIsoMaterialWrapperIndex);
   if((rview->GetRenderPass()==CSISO_RENDERPASS_MAIN) && wrapindex)
   {
@@ -284,15 +285,16 @@ void csIsoSprite::SetGrid(iIsoGrid *grid)
   if(csIsoSprite::grid != grid)
   {
     csIsoSprite::grid = grid;
-    if(gridcall) gridcall(this, gridcalldata);
+    if(gridcall) gridcall->GridChange (this);
   }
 }
 
 void csIsoSprite::SetAllColors(const csColor& color)
 {
-  CS_ASSERT (poly.GetNumVertices () == colors.GetNumVertices ());
-  CS_ASSERT (poly.GetNumVertices () == static_colors.GetNumVertices ());
-  for(int i=0; i<poly.GetNumVertices(); i++)
+  CS_ASSERT (poly.GetVertexCount () == colors.GetVertexCount ());
+  CS_ASSERT (poly.GetVertexCount () == static_colors.GetVertexCount ());
+  int i;
+  for(i=0; i<poly.GetVertexCount(); i++)
   {
     colors[i].Set(color.red, color.green, color.blue);
   }
@@ -300,22 +302,23 @@ void csIsoSprite::SetAllColors(const csColor& color)
 
 void csIsoSprite::AddToVertexColor(int i, const csColor& color)
 {
-  CS_ASSERT (poly.GetNumVertices () == colors.GetNumVertices ());
-  CS_ASSERT (i >= 0 && i < colors.GetNumVertices ());
-  colors[i].x += color.red; 
+  CS_ASSERT (poly.GetVertexCount () == colors.GetVertexCount ());
+  CS_ASSERT (i >= 0 && i < colors.GetVertexCount ());
+  colors[i].x += color.red;
   if(colors[i].x>1.0f) colors[i].x=1.0f;
   else if(colors[i].x < 0.0f) colors[i].x = 0.0f;
-  colors[i].y += color.green; 
+  colors[i].y += color.green;
   if(colors[i].y>1.0f) colors[i].y=1.0f;
   else if(colors[i].y < 0.0f) colors[i].y = 0.0f;
-  colors[i].z += color.blue; 
+  colors[i].z += color.blue;
   if(colors[i].z>1.0f) colors[i].z=1.0f;
   else if(colors[i].z < 0.0f) colors[i].z = 0.0f;
 }
 
 void csIsoSprite::ResetAllColors()
 {
-  for(int i=0; i<poly.GetNumVertices(); i++)
+  int i;
+  for(i=0; i<poly.GetVertexCount(); i++)
   {
     colors[i] = static_colors[i];
   }
@@ -323,7 +326,8 @@ void csIsoSprite::ResetAllColors()
 
 void csIsoSprite::SetAllStaticColors(const csColor& color)
 {
-  for(int i=0; i<poly.GetNumVertices(); i++)
+  int i;
+  for(i=0; i<poly.GetVertexCount(); i++)
   {
     static_colors[i].Set(color.red, color.green, color.blue);
   }
@@ -331,15 +335,15 @@ void csIsoSprite::SetAllStaticColors(const csColor& color)
 
 void csIsoSprite::AddToVertexStaticColor(int i, const csColor& color)
 {
-  CS_ASSERT (poly.GetNumVertices () == static_colors.GetNumVertices ());
-  CS_ASSERT (i >= 0 && i < static_colors.GetNumVertices ());
-  static_colors[i].x += color.red; 
+  CS_ASSERT (poly.GetVertexCount () == static_colors.GetVertexCount ());
+  CS_ASSERT (i >= 0 && i < static_colors.GetVertexCount ());
+  static_colors[i].x += color.red;
   if(static_colors[i].x>1.0f) static_colors[i].x=1.0f;
   else if(static_colors[i].x < 0.0f) static_colors[i].x = 0.0f;
-  static_colors[i].y += color.green; 
+  static_colors[i].y += color.green;
   if(static_colors[i].y>1.0f) static_colors[i].y=1.0f;
   else if(static_colors[i].y < 0.0f) static_colors[i].y = 0.0f;
-  static_colors[i].z += color.blue; 
+  static_colors[i].z += color.blue;
   if(static_colors[i].z>1.0f) static_colors[i].z=1.0f;
   else if(static_colors[i].z < 0.0f) static_colors[i].z = 0.0f;
 }

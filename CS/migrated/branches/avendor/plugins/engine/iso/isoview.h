@@ -1,16 +1,16 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -25,6 +25,7 @@
 class csIsoRenderView;
 class csBoxClipper;
 class csIsoFakeCamera;
+class csPlane3;
 
 /**
  *  isometric view
@@ -57,7 +58,7 @@ private:
   float invx_axis_y;
 
 public:
-  DECLARE_IBASE;
+  SCF_DECLARE_IBASE;
 
   ///
   csIsoView(iBase *iParent, iIsoEngine *eng, iIsoWorld *world);
@@ -83,7 +84,7 @@ public:
   virtual void MoveScroll(const csVector3& delta);
   virtual void SetAxes(float xscale, float yscale, float zscale,
     float zskew, float xskew);
-  virtual iCamera* GetFakeCamera(const csVector3& center, 
+  virtual iCamera* GetFakeCamera(const csVector3& center,
     iIsoRenderView *rview);
 };
 
@@ -109,12 +110,12 @@ class csIsoFakeCamera : public iCamera
   /// the scale of the view
   float scale;
 public:
-  DECLARE_IBASE;
+  SCF_DECLARE_IBASE;
   csIsoFakeCamera();
   virtual ~csIsoFakeCamera();
 
   /// precalc values for this view
-  void SetIsoView(const csVector2& scroll, const csVector2& x_axis, 
+  void SetIsoView(const csVector2& scroll, const csVector2& x_axis,
     const csVector2& y_axis, const csVector2& z_axis);
 
   /// ready for a particular mesh (approximate for that mesh)
@@ -122,6 +123,8 @@ public:
 
   //----------- iCamera --------------------------
   virtual csCamera* GetPrivateObject () {return 0;}
+  virtual iCamera* Clone () const
+  { return new csIsoFakeCamera (*this); }
   virtual int GetFOV () const {return fov;}
   virtual float GetInvFOV () const {return invfov;}
   virtual float GetFOVAngle () const {return fovangle;}
@@ -132,6 +135,10 @@ public:
   virtual void SetPerspectiveCenter(float, float) {}
   virtual csOrthoTransform& GetTransform ()
   { return trans; }
+  virtual const csOrthoTransform& GetTransform () const
+  { return trans; }
+  virtual void SetTransform (const csOrthoTransform& tr)
+  { trans = tr; }
   virtual void MoveWorld (const csVector3&, bool ) {}
   virtual void Move (const csVector3&, bool ) {}
   virtual void MoveWorldUnrestricted (const csVector3& ) {}
@@ -141,8 +148,10 @@ public:
   virtual void Correct(int) {}
   virtual bool IsMirrored() const {return mirror;}
   virtual void SetMirrored(bool m) {mirror = m;}
-  virtual bool GetFarPlane(class csPlane3 &) const {return false;}
+  virtual void SetFarPlane(csPlane3*) { }
+  virtual csPlane3* GetFarPlane() const {return NULL;}
   virtual long GetCameraNumber() const {return camnum;}
+  virtual iPolygon3D *GetHit (csVector3 &) {return NULL;}
 
   /// but in isometric space :-)
   virtual void Perspective (const csVector3& v, csVector2& p) const
@@ -156,7 +165,8 @@ public:
     /// @@@ not done yet.... use the screen Z value to compute z,x.
     (void)z;
   }
-
+  virtual void OnlyPortals (bool) { }
+  virtual bool GetOnlyPortals () { return true; }
 };
 
 

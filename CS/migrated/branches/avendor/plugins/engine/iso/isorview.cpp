@@ -1,16 +1,16 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -20,13 +20,13 @@
 #include "isorview.h"
 #include "ivideo/graph3d.h"
 
-IMPLEMENT_IBASE (csIsoRenderView)
-  IMPLEMENTS_INTERFACE (iIsoRenderView)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoRenderView)
+  SCF_IMPLEMENTS_INTERFACE (iIsoRenderView)
+SCF_IMPLEMENT_IBASE_END
 
 csIsoRenderView::csIsoRenderView (iBase *iParent)
 {
-  CONSTRUCT_IBASE (iParent);
+  SCF_CONSTRUCT_IBASE (iParent);
   view = NULL;
   g3d = NULL;
   renderpass = 0;
@@ -52,7 +52,8 @@ void csIsoRenderView::CreateBuckets(int num)
 void csIsoRenderView::DrawBuckets()
 {
   csIsoRenderBucket *p, *np;
-  for(int i=0; i<maxbuckets; i++)
+  int i;
+  for(i=0; i<maxbuckets; i++)
   {
     p = buckets[i];
     if(!p) continue;
@@ -64,6 +65,9 @@ void csIsoRenderView::DrawBuckets()
       np = p->next;
       p->next = prebuck;
       prebuck = p;
+#if CS_DEBUG
+      prebuck->g3dpolyfx = NULL;
+#endif
       p = np;
       //num++;
     }
@@ -72,10 +76,11 @@ void csIsoRenderView::DrawBuckets()
   }
 }
 
-void csIsoRenderView::AddPolyFX(int materialindex, G3DPolygonDPFX *g3dpolyfx,  
-  UInt mixmode) 
-{ 
-  if(materialindex>=maxbuckets) 
+void csIsoRenderView::AddPolyFX(int materialindex, G3DPolygonDPFX *g3dpolyfx,
+  uint mixmode)
+{
+  CS_ASSERT (materialindex >= 0);
+  if(materialindex>=maxbuckets)
   {
     g3dpolyfx->mixmode = mixmode;
     g3d->DrawPolygonFX (*g3dpolyfx);
@@ -98,3 +103,4 @@ void csIsoRenderView::AddPolyFX(int materialindex, G3DPolygonDPFX *g3dpolyfx,
   bucket->next = buckets[materialindex];
   buckets[materialindex] = bucket;
 }
+

@@ -1,16 +1,16 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -20,16 +20,17 @@
 #include "isoview.h"
 #include "isorview.h"
 #include "ivideo/graph3d.h"
+#include "iengine/material.h"
 #include "csgeom/polyclip.h"
 #include "qint.h"
 
-IMPLEMENT_IBASE (csIsoView)
-  IMPLEMENTS_INTERFACE (iIsoView)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoView)
+  SCF_IMPLEMENTS_INTERFACE (iIsoView)
+SCF_IMPLEMENT_IBASE_END
 
 csIsoView::csIsoView (iBase *iParent, iIsoEngine *eng, iIsoWorld *world)
 {
-  CONSTRUCT_IBASE (iParent);
+  SCF_CONSTRUCT_IBASE (iParent);
   engine = eng;
   csIsoView::world = world;
   rect.Set(1,1,engine->GetG3D()->GetWidth()-1, engine->GetG3D()->GetHeight()-1);
@@ -40,14 +41,14 @@ csIsoView::csIsoView (iBase *iParent, iIsoEngine *eng, iIsoWorld *world)
   y_axis.Set(0.0,1.0);
   z_axis.Set(1.0,1.0);
   // default scale.
-  float startscale = float(engine->GetG3D()->GetHeight())/16.0; 
+  float startscale = float(engine->GetG3D()->GetHeight())/16.0;
   x_axis *= startscale;
   y_axis *= startscale;
   z_axis *= startscale;
   invx_axis_y = 1.0 / x_axis.y;
 
   // prealloc a renderview
-  rview = new csIsoRenderView(this);
+  rview = new csIsoRenderView(NULL);
   fakecam = new csIsoFakeCamera();
 }
 
@@ -91,21 +92,24 @@ void csIsoView::Draw()
   //printf("IsoView::Draw\n");
   rview->SetView(this);
   rview->SetG3D(engine->GetG3D());
-  csBoxClipper* clipper = new csBoxClipper(rect.xmin, rect.ymin, 
+  csBoxClipper* clipper = new csBoxClipper(rect.xmin, rect.ymin,
     rect.xmax, rect.ymax);
 
   rview->SetClipper(clipper);
   rview->GetG3D()->SetClipper( rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
   rview->GetG3D()->ResetNearPlane ();
-  if(rview->GetNumBuckets() < engine->GetNumMaterials())
-    rview->CreateBuckets(engine->GetNumMaterials());
+  iMaterialList* ml = engine->GetMaterialList ();
+  if(rview->GetNumBuckets() < ml->GetCount ())
+    rview->CreateBuckets(ml->GetCount ());
   PreCalc();
-  
-  for(int pass = CSISO_RENDERPASS_PRE; pass <= CSISO_RENDERPASS_POST; pass++)
+
+  int pass;
+  for(pass = CSISO_RENDERPASS_PRE; pass <= CSISO_RENDERPASS_POST; pass++)
   {
+    //printf("Renderpass %d\n", pass);
     rview->SetRenderPass(pass);
     world->Draw(rview);
-    if(pass == CSISO_RENDERPASS_MAIN)
+    //if(pass == CSISO_RENDERPASS_MAIN)
       rview->DrawBuckets();
     if(pass == CSISO_RENDERPASS_PRE)
     {
@@ -116,6 +120,7 @@ void csIsoView::Draw()
 
   rview->GetG3D()->SetClipper(NULL, CS_CLIPPER_NONE);
   delete clipper;
+  //printf("IsoView::Draw done\n");
 }
 
 void csIsoView::SetScroll(const csVector3& worldpos, const csVector2& coord)
@@ -170,7 +175,7 @@ void csIsoView::PreCalc()
   rview->SetMinZ(0.0);
 }
 
-void csIsoView::SetAxes(float xscale, float yscale, float zscale, float zskew, 
+void csIsoView::SetAxes(float xscale, float yscale, float zscale, float zskew,
   float xskew)
 {
   x_axis.Set(1.0,-xskew);
@@ -193,9 +198,9 @@ iCamera* csIsoView::GetFakeCamera(const csVector3& center,
 
 //------------- csIsoFakeCamera -----------------------------------
 
-IMPLEMENT_IBASE (csIsoFakeCamera)
-  IMPLEMENTS_INTERFACE (iCamera)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoFakeCamera)
+  SCF_IMPLEMENTS_INTERFACE (iCamera)
+SCF_IMPLEMENT_IBASE_END
 
 
 csIsoFakeCamera::csIsoFakeCamera()
@@ -273,7 +278,7 @@ void csIsoFakeCamera::SetIsoView(const csVector2& scroll,
   shifty = scroll.y;
 }
 
-void csIsoFakeCamera::IsoReady(const csVector3& position, 
+void csIsoFakeCamera::IsoReady(const csVector3& position,
   iIsoRenderView *rview)
 {
   //printf("IsoReady %g,%g,%g\n", position.x, position.y, position.z);

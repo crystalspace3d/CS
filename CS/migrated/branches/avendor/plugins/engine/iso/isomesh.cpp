@@ -1,25 +1,28 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#define SYSDEF_ALLOCA
+#define CS_SYSDEF_PROVIDE_ALLOCA
 #include "cssysdef.h"
+#include "cssys/sysfunc.h"
 #include "isomesh.h"
+#include "csutil/scf.h"
 #include "ivideo/graph3d.h"
+#include "csgeom/sphere.h"
 #include "csgeom/math2d.h"
 #include "csgeom/polyclip.h"
 #include "ivideo/material.h"
@@ -27,7 +30,7 @@
 #include "ivideo/txtmgr.h"
 #include "iengine/material.h"
 #include "imesh/object.h"
-#include "isys/system.h"
+#include "qint.h"
 
 #include "iengine/movable.h"
 #include "iengine/rview.h"
@@ -42,16 +45,17 @@ class csIsoFakeMovable : public iMovable
   csReversibleTransform obj;
   long updatenumber;
 public:
-  DECLARE_IBASE;
+  SCF_DECLARE_IBASE;
   csIsoFakeMovable(iIsoMeshSprite *t) {isomesh = t; updatenumber = 0;}
   virtual ~csIsoFakeMovable() {}
 
   //----- iMovable -------------------------------
   virtual iMovable* GetParent () const {return 0;}
+  virtual void SetParent (iMovable* /*parent*/) { return; }
   virtual void SetSector (iSector* ) { updatenumber++; }
   virtual void ClearSectors () { updatenumber++; }
   virtual void AddSector (iSector* ) { updatenumber++; }
-  virtual const csVector& GetSectors () const {return *(csVector*)0;}
+  virtual iSectorList *GetSectors () {return (iSectorList*)0;}
   virtual iSector* GetSector (int ) const {return 0;}
   virtual int GetSectorCount () const { return 0; }
   virtual bool InSector () const {return true;}
@@ -64,22 +68,22 @@ public:
   }
   virtual const csVector3& GetPosition () const {return isomesh->GetPosition();}
   virtual const csVector3 GetFullPosition () const {return isomesh->GetPosition();}
-  virtual void SetTransform (const csReversibleTransform& t) 
+  virtual void SetTransform (const csReversibleTransform& t)
   {
     isomesh->SetTransform(t.GetT2O());
     isomesh->SetPosition(t.GetOrigin());
     updatenumber++;
   }
-  virtual csReversibleTransform& GetTransform () 
-  { 
-    obj.SetT2O(isomesh->GetTransform()); 
+  virtual csReversibleTransform& GetTransform ()
+  {
+    obj.SetT2O(isomesh->GetTransform());
     obj.SetOrigin(isomesh->GetPosition());
     return obj;
   }
   virtual csReversibleTransform GetFullTransform () const
-  { 
+  {
     csReversibleTransform obj;
-    obj.SetT2O(isomesh->GetTransform()); 
+    obj.SetT2O(isomesh->GetTransform());
     obj.SetOrigin(isomesh->GetPosition());
     return obj;
   }
@@ -114,27 +118,32 @@ public:
 
 };
 
-IMPLEMENT_IBASE (csIsoFakeMovable)
-  IMPLEMENTS_INTERFACE (iMovable)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoFakeMovable)
+  SCF_IMPLEMENTS_INTERFACE (iMovable)
+SCF_IMPLEMENT_IBASE_END
 
 
 /// fake 3d render view ...
-class csIsoFakeRenderView : public iRenderView {
+class csIsoFakeRenderView : public iRenderView
+{
   iCamera *fakecam;
   iIsoRenderView *isorview;
   /**
    * A callback function. If this is set then no drawing is done.
    * Instead the callback function is called.
    */
-  csDrawFunc* callback;
-  /// Userdata belonging to the callback.
-  void* callback_data;
-  
+  iDrawFuncCallback* callback;
+
 public:
-  DECLARE_IBASE;
-  csIsoFakeRenderView() {}
-  virtual ~csIsoFakeRenderView() {}
+  SCF_DECLARE_IBASE;
+  csIsoFakeRenderView()
+  {
+    callback = NULL;
+  }
+  virtual ~csIsoFakeRenderView()
+  {
+    SCF_DEC_REF (callback);
+  }
 
   /// set data to render an isometric mesh
   void SetIsoData(iIsoRenderView *r, iCamera *cam)
@@ -149,11 +158,12 @@ public:
   virtual void RestoreRenderContext (csRenderContext* ) {}
   virtual iCamera* CreateNewCamera() {return fakecam;} //@@@ copy?
   virtual iEngine* GetEngine () {return 0;}
-  virtual iGraphics2D* GetGraphics2D () 
+  virtual iGraphics2D* GetGraphics2D ()
   {return isorview->GetG3D()->GetDriver2D();}
   virtual iGraphics3D* GetGraphics3D () {return isorview->GetG3D();}
   virtual void SetFrustum (float, float, float, float) {}
   virtual void GetFrustum (float&, float&, float&, float&) {}
+  virtual csRenderContextFrustum* GetTopFrustum () { return NULL; }
   virtual iClipper2D* GetClipper () {return isorview->GetClipper();}
   virtual void SetClipper (iClipper2D*) {}
   virtual bool IsClipperRequired () {return false;}
@@ -167,18 +177,128 @@ public:
   virtual bool AddedFogInfo () {return false;}
   virtual void ResetFogInfo () {}
   virtual iCamera* GetCamera () {return fakecam;}
-  virtual void CalculateFogPolygon (G3DPolygonDP& ) {}
-  virtual void CalculateFogPolygon (G3DPolygonDPFX& ) {}
-  virtual void CalculateFogMesh (const csTransform& , G3DTriangleMesh& ) {}
-  virtual bool ClipBBox (const csBox2& /*sbox*/, const csBox3& /*cbox*/,
-          int& clip_portal, int& clip_plane, int& clip_z_plane) 
+  virtual void CalculateFogPolygon (G3DPolygonDP& poly) { poly.use_fog = false; }
+  virtual void CalculateFogPolygon (G3DPolygonDPFX& poly) { poly.use_fog = false; }
+  virtual void CalculateFogMesh (const csTransform& , G3DTriangleMesh& mesh)
   {
-    // could clip more efficiently
-    // @@@ WARNING! This is potentially unsafe. A mesh that must be clipped
-    // MUST be clipped!
-    clip_portal = false;
-    clip_plane = false;
-    clip_z_plane = false;
+    mesh.do_fog = false;
+  }
+  virtual bool TestBSphere (const csReversibleTransform& o2c,
+	const csSphere& sphere)
+  {
+    csSphere tr_sphere = o2c.Other2This (sphere);
+    const csVector3& tr_center = tr_sphere.GetCenter ();
+    float radius = tr_sphere.GetRadius ();
+
+    float sx = fakecam->GetShiftX ();
+    float sy = fakecam->GetShiftY ();
+    float inv_fov = fakecam->GetInvFOV ();
+    const csRect& rect = isorview->GetView()->GetRect();
+    float xmin = (rect.xmin - sx) * inv_fov;
+    float ymin = (rect.ymin - sy) * inv_fov;
+    float xmax = (rect.xmax - sx) * inv_fov;
+    float ymax = (rect.ymax - sy) * inv_fov;
+    /// test if chance that we must clip to a portal -> or the Toplevel clipper
+    /// better: only if it crosses that.
+    bool outside = true, inside = true;
+    csVector3 v1 (xmin, ymin, 1);
+    csVector3 v2 (xmax, ymin, 1);
+    float dist = csVector3::Unit (v1 % v2) * tr_center;
+    if ((-dist) <= radius)
+    {
+      if (dist < radius) inside = false;
+      csVector3 v3 (xmax, ymax, 1);
+      dist = csVector3::Unit (v2 % v3) * tr_center;
+      if ((-dist) <= radius)
+      {
+        if (dist < radius) inside = false;
+        v2.Set (xmin, ymax, 1);
+        dist = csVector3::Unit (v3 % v2) * tr_center;
+        if ((-dist) <= radius)
+        {
+          if (dist < radius) inside = false;
+          dist = csVector3::Unit (v2 % v1) * tr_center;
+          if ((-dist) <= radius)
+	  {
+	    outside = false;
+            if (dist < radius) inside = false;
+	  }
+        }
+      }
+    }
+    if (outside) return false;
+    return true;
+  }
+  virtual bool ClipBSphere (const csReversibleTransform& o2c,
+	const csSphere& sphere,
+	int& clip_portal, int& clip_plane, int& clip_z_plane)
+  {
+    clip_plane = CS_CLIP_NOT;
+
+    csSphere tr_sphere = o2c.Other2This (sphere);
+    const csVector3& tr_center = tr_sphere.GetCenter ();
+    float radius = tr_sphere.GetRadius ();
+
+    float sx = fakecam->GetShiftX ();
+    float sy = fakecam->GetShiftY ();
+    float inv_fov = fakecam->GetInvFOV ();
+    const csRect& rect = isorview->GetView()->GetRect();
+    float xmin = (rect.xmin - sx) * inv_fov;
+    float ymin = (rect.ymin - sy) * inv_fov;
+    float xmax = (rect.xmax - sx) * inv_fov;
+    float ymax = (rect.ymax - sy) * inv_fov;
+    /// test if chance that we must clip to a portal -> or the Toplevel clipper
+    /// better: only if it crosses that.
+    bool outside = true, inside = true;
+    csVector3 v1 (xmin, ymin, 1);
+    csVector3 v2 (xmax, ymin, 1);
+    float dist = csVector3::Unit (v1 % v2) * tr_center;
+    if ((-dist) <= radius)
+    {
+      if (dist < radius) inside = false;
+      csVector3 v3 (xmax, ymax, 1);
+      dist = csVector3::Unit (v2 % v3) * tr_center;
+      if ((-dist) <= radius)
+      {
+        if (dist < radius) inside = false;
+        v2.Set (xmin, ymax, 1);
+        dist = csVector3::Unit (v3 % v2) * tr_center;
+        if ((-dist) <= radius)
+        {
+          if (dist < radius) inside = false;
+          dist = csVector3::Unit (v2 % v1) * tr_center;
+          if ((-dist) <= radius)
+	  {
+	    outside = false;
+            if (dist < radius) inside = false;
+	  }
+        }
+      }
+    }
+    if (outside) return false;
+    if (!inside) clip_portal = CS_CLIP_NEEDED;
+    else clip_portal = CS_CLIP_NOT;
+
+    /// test if z becomes negative, should never happen
+    clip_z_plane = CS_CLIP_NOT;
+    return true;
+  }
+  virtual bool ClipBBox (const csBox2& sbox, const csBox3& /*cbox*/,
+          int& clip_portal, int& clip_plane, int& clip_z_plane)
+  {
+    clip_plane = CS_CLIP_NOT;
+    /// test if chance that we must clip to a portal -> or the Toplevel clipper
+    /// better: only if it crosses that.
+    const csRect& rect = isorview->GetView()->GetRect();
+    if( (rect.xmin >= QInt(sbox.MinX())) || (rect.xmax <= QInt(sbox.MaxX())) ||
+        (rect.ymin >= QInt(sbox.MinY())) || (rect.ymax <= QInt(sbox.MaxY())) )
+      clip_portal = CS_CLIP_TOPLEVEL;
+    else clip_portal = CS_CLIP_NOT;
+    /// test if z becomes negative, should never happen
+    clip_z_plane = CS_CLIP_NOT;
+    //printf("ClipBBox %g,%g %g,%g gives portal=%d plane=%d z=%d return true\n",
+      //sbox.MinX(), sbox.MinY(), sbox.MaxX(), sbox.MaxY(), clip_portal,
+      //clip_plane, clip_z_plane);
     return true;
   }
 
@@ -204,52 +324,48 @@ public:
   {
     (void)key;
   }
-  virtual void SetCallback (csDrawFunc* cb, void* cbdata)
+  virtual void SetCallback (iDrawFuncCallback* cb)
   {
-    callback = cb;
-    callback_data = cbdata;
+    SCF_SET_REF (callback, cb);
   }
-  virtual csDrawFunc* GetCallback ()
+  virtual iDrawFuncCallback* GetCallback ()
   {
     return callback;
   }
-  virtual void* GetCallbackData ()
-  {
-    return callback_data;
-  }
   virtual void CallCallback (int type, void* data)
   {
-    callback (this, type, data);
+    callback->DrawFunc (this, type, data);
   }
+  virtual iCamera* GetOriginalCamera () const { return NULL; }
 };
 
-IMPLEMENT_IBASE (csIsoFakeRenderView)
-  IMPLEMENTS_INTERFACE (iRenderView)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoFakeRenderView)
+  SCF_IMPLEMENTS_INTERFACE (iRenderView)
+SCF_IMPLEMENT_IBASE_END
 
 
 //------------ IsoMeshSprite ------------------------------------
 
-IMPLEMENT_IBASE (csIsoMeshSprite)
-  IMPLEMENTS_INTERFACE (iIsoMeshSprite)
-  IMPLEMENTS_INTERFACE (iIsoSprite)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoMeshSprite)
+  SCF_IMPLEMENTS_INTERFACE (iIsoMeshSprite)
+  SCF_IMPLEMENTS_INTERFACE (iIsoSprite)
+SCF_IMPLEMENT_IBASE_END
 
 csIsoMeshSprite::csIsoMeshSprite (iBase *iParent)
 {
-  CONSTRUCT_IBASE (iParent);
+  SCF_CONSTRUCT_IBASE (iParent);
   position.Set(0,0,0);
   transform.Identity();
   grid = NULL;
   gridcall = NULL;
-  gridcalldata = NULL;
   mesh = NULL;
   zbufmode = CS_ZBUF_USE;
 }
 
 csIsoMeshSprite::~csIsoMeshSprite ()
 {
-  if(mesh) mesh->DecRef();
+  if (mesh) mesh->DecRef();
+  if (gridcall) gridcall->DecRef ();
 }
 
 
@@ -266,7 +382,7 @@ void csIsoMeshSprite::Draw(iIsoRenderView *rview)
     //position.z);
 
   /// update animation
-  mesh->NextFrame(rview->GetView()->GetEngine()->GetSystem()->GetTime());
+  mesh->NextFrame(csGetTicks ());
 
   //iGraphics3D* g3d = rview->GetG3D ();
   iIsoView* view = rview->GetView ();
@@ -331,19 +447,19 @@ void csIsoMeshSprite::Draw(iIsoRenderView *rview)
 
 //------ further iIsoSprite compliance implementation ---------
 
-int csIsoMeshSprite::GetNumVertices() const
+int csIsoMeshSprite::GetVertexCount() const
 {
   return 0;
 }
 
-void csIsoMeshSprite::AddVertex(const csVector3& /*coord*/, float /*u*/, 
+void csIsoMeshSprite::AddVertex(const csVector3& /*coord*/, float /*u*/,
   float /*v*/)
 {
   /// no effect
 }
 
 
-void csIsoMeshSprite::SetPosition(const csVector3& newpos) 
+void csIsoMeshSprite::SetPosition(const csVector3& newpos)
 {
   /// manage movement of the sprite, oldpos, newpos
   csVector3 oldpos = position;
@@ -351,7 +467,7 @@ void csIsoMeshSprite::SetPosition(const csVector3& newpos)
   if(grid) grid->MoveSprite(this, oldpos, newpos);
 }
 
-void csIsoMeshSprite::MovePosition(const csVector3& delta) 
+void csIsoMeshSprite::MovePosition(const csVector3& delta)
 {
   SetPosition(position + delta);
 }
@@ -367,12 +483,12 @@ iMaterialWrapper* csIsoMeshSprite::GetMaterialWrapper() const
   return NULL;
 }
 
-void csIsoMeshSprite::SetMixMode(UInt /*mode*/)
+void csIsoMeshSprite::SetMixMode(uint /*mode*/)
 {
   // nothing
 }
 
-UInt csIsoMeshSprite::GetMixMode() const
+uint csIsoMeshSprite::GetMixMode() const
 {
   /// CS_FX_COPY -> rendered in main pass,
   /// CS_FX_ADD -> in alpha pass
@@ -387,7 +503,7 @@ void csIsoMeshSprite::SetGrid(iIsoGrid *grid)
   if(csIsoMeshSprite::grid != grid)
   {
     csIsoMeshSprite::grid = grid;
-    if(gridcall) gridcall(this, gridcalldata);
+    if(gridcall) gridcall->GridChange (this);
   }
 }
 
@@ -417,10 +533,89 @@ void csIsoMeshSprite::SetAllStaticColors(const csColor& /*color*/)
   /// nothing
 }
 
-void csIsoMeshSprite::AddToVertexStaticColor(int /*i*/, 
+void csIsoMeshSprite::AddToVertexStaticColor(int /*i*/,
   const csColor& /*color*/)
 {
   /// nothing
 }
 
+// ---------------------------------------------------------------------------
+// csIsoMeshFactoryWrapper
+// ---------------------------------------------------------------------------
+
+SCF_IMPLEMENT_IBASE_EXT (csIsoMeshFactoryWrapper)
+  SCF_IMPLEMENTS_EMBEDDED_INTERFACE (iMeshFactoryWrapper)
+  SCF_IMPLEMENTS_INTERFACE (csIsoMeshFactoryWrapper)
+SCF_IMPLEMENT_IBASE_EXT_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE (csIsoMeshFactoryWrapper::MeshFactoryWrapper)
+  SCF_IMPLEMENTS_INTERFACE (iMeshFactoryWrapper)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+csIsoMeshFactoryWrapper::csIsoMeshFactoryWrapper (iMeshObjectFactory* meshFact)
+{
+  SCF_CONSTRUCT_EMBEDDED_IBASE (scfiMeshFactoryWrapper);
+  csIsoMeshFactoryWrapper::meshFact = meshFact;
+  meshFact->IncRef ();
+}
+
+csIsoMeshFactoryWrapper::csIsoMeshFactoryWrapper ()
+{
+  SCF_CONSTRUCT_EMBEDDED_IBASE (scfiMeshFactoryWrapper);
+  csIsoMeshFactoryWrapper::meshFact = NULL;
+}
+
+csIsoMeshFactoryWrapper::~csIsoMeshFactoryWrapper ()
+{
+  if (meshFact) meshFact->DecRef ();
+}
+
+void csIsoMeshFactoryWrapper::SetMeshObjectFactory (
+	iMeshObjectFactory* meshFact)
+{
+  if (meshFact) meshFact->IncRef ();
+  if (csIsoMeshFactoryWrapper::meshFact)
+    csIsoMeshFactoryWrapper::meshFact->DecRef ();
+  csIsoMeshFactoryWrapper::meshFact = meshFact;
+}
+
+void csIsoMeshFactoryWrapper::HardTransform (const csReversibleTransform& t)
+{
+  meshFact->HardTransform (t);
+}
+
+//--------------------------------------------------------------------------
+// csIsoMeshFactoryList
+//--------------------------------------------------------------------------
+
+SCF_IMPLEMENT_IBASE (csIsoMeshFactoryList)
+  SCF_IMPLEMENTS_EMBEDDED_INTERFACE (iMeshFactoryList)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE (csIsoMeshFactoryList::MeshFactoryList)
+  SCF_IMPLEMENTS_INTERFACE (iMeshFactoryList)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+csIsoMeshFactoryList::csIsoMeshFactoryList ()
+{
+  SCF_CONSTRUCT_IBASE (NULL);
+  SCF_CONSTRUCT_EMBEDDED_IBASE (scfiMeshFactoryList);
+}
+
+int csIsoMeshFactoryList::MeshFactoryList::GetCount () const
+  { return scfParent->Length (); }
+iMeshFactoryWrapper *csIsoMeshFactoryList::MeshFactoryList::Get (int n) const
+  { return scfParent->Get (n); }
+int csIsoMeshFactoryList::MeshFactoryList::Add (iMeshFactoryWrapper *obj)
+  { scfParent->Push (obj); return true; }
+bool csIsoMeshFactoryList::MeshFactoryList::Remove (iMeshFactoryWrapper *obj)
+  { scfParent->Delete (obj); return true; }
+bool csIsoMeshFactoryList::MeshFactoryList::Remove (int n)
+  { scfParent->Delete (scfParent->Get (n)); return true; }
+void csIsoMeshFactoryList::MeshFactoryList::RemoveAll ()
+  { scfParent->DeleteAll (); }
+int csIsoMeshFactoryList::MeshFactoryList::Find (iMeshFactoryWrapper *obj) const
+  { return scfParent->Find (obj); }
+iMeshFactoryWrapper *csIsoMeshFactoryList::MeshFactoryList::FindByName (const char *Name) const
+  { return scfParent->FindByName (Name); }
 

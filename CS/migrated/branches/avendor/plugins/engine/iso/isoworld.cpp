@@ -1,16 +1,16 @@
 /*
     Copyright (C) 2001 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -20,13 +20,13 @@
 #include "isoworld.h"
 #include "isogrid.h"
 
-IMPLEMENT_IBASE (csIsoWorld)
-  IMPLEMENTS_INTERFACE (iIsoWorld)
-IMPLEMENT_IBASE_END
+SCF_IMPLEMENT_IBASE (csIsoWorld)
+  SCF_IMPLEMENTS_INTERFACE (iIsoWorld)
+SCF_IMPLEMENT_IBASE_END
 
 csIsoWorld::csIsoWorld (iBase *iParent)
 {
-  CONSTRUCT_IBASE (iParent);
+  SCF_CONSTRUCT_IBASE (iParent);
   gridlist = NULL;
 }
 
@@ -45,10 +45,12 @@ csIsoWorld::~csIsoWorld ()
 void csIsoWorld::AddSprite(iIsoSprite *sprite)
 {
   iIsoGrid *grid = FindGrid(sprite->GetPosition());
-  if(!grid) 
+  if(!grid)
   {
+#if CS_DEBUG
     printf("World: no grid to add sprite to.\n");
-    return; 
+#endif
+    return;
   }
   grid->AddSprite(sprite);
   sprite->SetGrid(grid);
@@ -71,7 +73,7 @@ void csIsoWorld::MoveSprite(iIsoSprite *sprite, const csVector3& oldpos,
 
 iIsoGrid* csIsoWorld::CreateGrid(int width, int height)
 {
-  iIsoGrid *grid = new csIsoGrid(this, this, width, height);
+  iIsoGrid *grid = new csIsoGrid(NULL, this, width, height);
   csIsoGridListNode *node = new csIsoGridListNode;
   node->next = gridlist;
   node->grid = grid;

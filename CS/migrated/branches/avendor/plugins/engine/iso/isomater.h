@@ -1,17 +1,17 @@
 /*
     Copyright (C) 2001 by Jorrit Tyberghein
     Copyright (C) 2000 by W.C.A. Wijngaards
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -86,14 +86,14 @@ public:
   /// Set reflection of the material
   inline void SetReflection (float val) { reflection = val; }
 
-  DECLARE_IBASE;
+  SCF_DECLARE_IBASE;
 
   //--------------------- iMaterial implementation ---------------------
 
   /// Get texture.
   virtual iTextureHandle* GetTexture ();
   /// Number of texture layers.
-  virtual int GetNumTextureLayers () { return 0; }
+  virtual int GetTextureLayerCount () { return 0; }
   /// Get a texture layer.
   virtual csTextureLayer* GetTextureLayer (int) { return NULL; }
   /// Set the flat shading color
@@ -168,16 +168,20 @@ public:
   /// Set the material index
   void SetIndex(int i) {index = i;}
 
-  DECLARE_IBASE_EXT (csObject);
+  SCF_DECLARE_IBASE_EXT (csObject);
 
   //------------------- iMaterialWrapper implementation -----------------------
   struct MaterialWrapper : public iMaterialWrapper
   {
-    DECLARE_EMBEDDED_IBASE (csIsoMaterialWrapper);
+    SCF_DECLARE_EMBEDDED_IBASE (csIsoMaterialWrapper);
     //// @@@ cast is wrong! It is an csIsoMaterialWrapper
     virtual csMaterialWrapper* GetPrivateObject ()
     {
       return (csMaterialWrapper*)scfParent;
+    }
+    virtual iMaterialWrapper *Clone () const
+    {
+      return &(new csIsoMaterialWrapper (*scfParent))->scfiMaterialWrapper;
     }
     virtual void SetMaterialHandle (iMaterialHandle* m)
     {
@@ -206,7 +210,7 @@ public:
   //------------------- iIsoMaterialWrapperIndex implementation ------------
   struct IsoMaterialWrapperIndex : public iIsoMaterialWrapperIndex
   {
-    DECLARE_EMBEDDED_IBASE (csIsoMaterialWrapper);
+    SCF_DECLARE_EMBEDDED_IBASE (csIsoMaterialWrapper);
     virtual int GetIndex() const {return scfParent->GetIndex();}
     virtual void SetIndex(int i) {scfParent->SetIndex(i);}
   } scfiIsoMaterialWrapperIndex;
@@ -244,15 +248,15 @@ public:
   csIsoMaterialWrapper *FindByName (const char* iName)
   { return (csIsoMaterialWrapper *)csNamedObjVector::FindByName (iName); }
 
-  /// remove 'index' from the list. Does not decref/delete.
+  /// remove 'index' from the list. Does DecRef().
   void RemoveIndex(int i);
 
-  DECLARE_IBASE;
+  SCF_DECLARE_IBASE;
 
   //------------------- iMaterialList implementation -----------------------
   struct MaterialList : public iMaterialList
   {
-    DECLARE_EMBEDDED_IBASE (csIsoMaterialList);
+    SCF_DECLARE_EMBEDDED_IBASE (csIsoMaterialList);
     virtual iMaterialWrapper* NewMaterial (iMaterial* material)
     {
       csIsoMaterialWrapper* mw = scfParent->NewMaterial (material);
@@ -265,19 +269,50 @@ public:
       if (mw) return &(mw->scfiMaterialWrapper);
       else return NULL;
     }
-    virtual int GetNumMaterials ()
+    virtual int Add (iMaterialWrapper *imw)
+    {
+      csIsoMaterialWrapper* mw = scfParent->NewMaterial (
+      	imw->GetMaterialHandle ());
+      if (mw) return Find (&(mw->scfiMaterialWrapper));
+      return -1;
+    }
+    virtual bool Remove (int idx)
+    {
+      scfParent->RemoveIndex (idx);
+      return true;
+    }
+
+    virtual bool Remove (iMaterialWrapper *imw)
+    {
+      int idx = Find (imw);
+      if (idx != -1)
+	Remove (idx);
+      return idx != -1;
+    }
+
+    virtual void RemoveAll ()
+    {
+      for (int i=GetCount ()-1; i>=0; i--)
+	scfParent->RemoveIndex (i);
+    }
+    virtual int GetCount () const
     {
       return scfParent->Length ();
     }
-    virtual iMaterialWrapper* Get (int idx)
+    virtual iMaterialWrapper* Get (int idx) const
     {
+      CS_ASSERT (idx >= 0 && idx < GetCount ());
       return &(scfParent->Get (idx)->scfiMaterialWrapper);
     }
-    virtual iMaterialWrapper* FindByName (const char* iName)
+    virtual iMaterialWrapper* FindByName (const char* iName) const
     {
       csIsoMaterialWrapper* mw = scfParent->FindByName (iName);
       if (mw) return &(mw->scfiMaterialWrapper);
       else return NULL;
+    }
+    virtual int Find (iMaterialWrapper *imw) const
+    {
+      return scfParent->Find (imw->GetPrivateObject ());
     }
   } scfiMaterialList;
 };

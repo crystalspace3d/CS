@@ -6,6 +6,9 @@ each new day's entries apears before the previous day's entries.  The
 individual changes for each given day, however, are in normal (ascending)
 chronological order.
 
+13-Jun-2004
+	- Rhad fixed do_manual_colors in genmeshes (NR) by adding handling to 
+	  csGenmeshMeshObject::PreGetShaderVariableValues.
 10-Jun-2004
 	- res fixed the OR renderers for the recent DrawSimpleMesh() changes.
 	- res fixed the Fixed FP plugin to reset the multitexturing setup on

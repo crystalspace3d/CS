@@ -1,0 +1,9 @@
+.cvsignore
+*.dll
+*.exe
+*.zip
+*.txt
+config.mak*
+cache.mak*
+coord*
+out

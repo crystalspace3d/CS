@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- joylin.csplugin -->
+<plugin>
+  <scf>
+    <classes>
+      <class>
+        <name>crystalspace.device.joystick.linux</name>
+        <implementation>csLinuxJoystick</implementation>
+        <description>Crystal Space Joystick plugin for Linux</description>
+      </class>
+    </classes>
+  </scf>
+</plugin>

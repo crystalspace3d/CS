@@ -1,0 +1,18 @@
+SubDir TOP libs csengine ;
+
+SearchSubdir basic ;
+SearchSubdir light ;
+SearchSubdir objects ;
+
+Library csengine :
+	[ Wildcard *.cpp *.h ]
+	[ Wildcard basic : *.cpp *.h ]
+	[ Wildcard light : *.cpp *.h ]
+	[ Wildcard objects : *.cpp *.h ]
+;
+
+Help csengine : "Crystal Space 3D engine" ;
+LibDepends csengine : cstool csgfx csgeom csutil ;
+
+InstallConfig engine.cfg ;
+

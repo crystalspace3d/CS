@@ -1,0 +1,164 @@
+@c -*-texinfo-*-
+@node API Modifications 92, API Modifications 90, API Modifications 94, API Modifications
+@appendixsec @sc{api} Changes from 0.90 to 0.92
+@cindex @sc{api} Changes
+
+This section documents the major changes between versions 0.90 and 0.92 of of
+Crystal Space.
+
+@subheading csInitializer changes
+@cindex @code{csInitializer}
+
+@code{csInitializer::CreateEnvironment()} now accepts two additional
+parameters: @code{argc} and @code{argv}.
+Consequently @code{csInitializer::SetupKeyboardHandler()} has been removed.
+
+@subheading iCollideSystem changes
+@cindex @code{iCollideSystem}
+
+The @code{iCollideSystem::Collide()} function now accepts
+@code{csReversibleTransform} transforms instead of just @code{csTransform}.
+
+@subheading Texture Manager Changes
+@cindex @code{iTextureManager.UnregisterTexture()}
+@cindex @code{iTextureManager.UnregisterMaterial()}
+
+The following deregistration functions have been removed.  Instead, use the
+normal @code{DecRef()} mechanism.
+
+@itemize @bullet
+@item
+@code{iTextureManager::UnregisterTexture()}
+@item
+@code{iTextureManager::UnregisterMaterial()}
+@end itemize
+
+@subheading iRegion
+@cindex @code{iRegion}
+
+The functions @code{iRegion::Find@dots{}()} will no longer increase
+the reference count of the returned objects.
+
+@subheading GetThingState
+@cindex @code{iEngine.GetThingState()}
+
+@code{iEngine::GetThingState()} has not been removed but this function
+is now deprecated. It is recommended that you get the @code{iMeshObjectType}
+for the thing mesh objects the usual way (i.e. by loading the plugin).
+
+@subheading iThingState
+@cindex @code{iThingState}
+
+The following functions were made @code{const} in @code{iThingState}:
+@itemize @bullet
+@item
+@code{CurveTexel()}
+@item
+@code{CurveVertex()}
+@item
+@code{GetCurveVertices()}
+@item
+@code{GetCurveVertexCount()}
+@item
+@code{GetCurveCount()}
+@item
+@code{GetCurvesScale()}
+@item
+@code{GetMovingOption()}
+@item
+@code{GetPortalCount()}
+@item
+@code{GetPortal()}
+@item
+@code{GetPortalPolygon()}
+@item
+@code{GetVertexCount()}
+@end itemize
+
+Renamed two functions in @code{iThingState}:
+
+@itemize @bullet
+@item
+@code{CurveVertex()} to @code{GetCurveVertex()}
+@item
+@code{CurveTexel()} to @code{GetCuveTexel()}
+@end itemize
+
+Added several functions to @code{iThingState}:
+
+@itemize @bullet
+@item
+@code{FindPolygonIndex()}
+@item
+@code{RemovePolygon()}
+@item
+@code{RemovePolygons()}
+@item
+@code{SetVertex()}
+@item
+@code{DeleteVertex()}
+@item
+@code{DeleteVertices()}
+@item
+@code{SetCurveVertex()}
+@item
+@code{SetCurveTexel()}
+@item
+@code{ClearCurveVertices()}
+@item
+@code{FindCurveIndex()}
+@item
+@code{RemoveCurve()}
+@item
+@code{RemoveCurves()}
+@end itemize
+
+@subheading Isometric Engine
+@cindex @code{iIsoEngine}
+
+Added @code{iIsoEngine::GetMaterialList()} and removed all other
+material functions from @code{iIsoEngine} except the one to create a material
+from a @sc{vfs} path.
+
+Added @code{iIsoEngine::GetMeshFactories()} and removed the following
+functions.
+
+@itemize @bullet
+@item
+@code{AddMeshFactory()}
+@item
+@code{FindMeshFactory()}
+@item
+@code{RemoveMeshFactory()}
+@end itemize
+
+@subheading Terrain Mesh Object
+@cindex @code{iTerrFuncState}
+
+Changed @code{iTerrFuncState::LoadMaterialGroup()} so that the first
+parameter is now a material list (@code{iMaterialList}) instead of
+@code{iEngine}.
+
+@subheading Loader and Saver Plugins
+@cindex @code{iLoaderPlugin}
+@cindex @code{iSaverPlugin}
+
+Changed @code{iLoaderPlugin::Parse()} to accept a material list and mesh
+factory list (@code{iMaterialList} and @code{iMeshFactoryList}) instead of an
+@code{iEngine} instance.
+
+Changed @code{iSaverPlugin::WriteDown()} so that it no longer has
+the @code{iEngine} parameter.
+
+@subheading iMeshObject and iMeshObjectFactory Changes
+@cindex @code{iMeshObject}
+@cindex @code{iMeshObjectFactory}
+
+Added @code{SetLogicalParent()} and @code{GetLogicalParent()} to
+both @code{iMeshObject} and @code{iMeshObjectFactory}. This should
+be no issue for applications simply using mesh objects but it is an
+issue if you made your own mesh object implementation. Also beware
+that there have been some changes in the way the parser interact
+with the plugin loaders. The plugin loaders are no longer responsible
+for setting the factory pointer. The parser will now do that.
+

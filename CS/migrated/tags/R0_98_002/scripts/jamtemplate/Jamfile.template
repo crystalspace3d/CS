@@ -1,0 +1,69 @@
+TOP ?= "@top_srcdir@" ;
+BUILDTOP ?= "@top_builddir@" ;
+
+SubDir TOP ;
+
+IncludeDir ;
+IncludeDir src ;
+IncludeDir $(BUILDTOP) : : ignoresubdir ;
+
+CleanDir clean :
+    out ;
+Clean distclean :
+    aclocal.m4
+    config.h
+    config.log
+    config.status
+    config.status.lineno
+    config.cache
+    configure.lineno
+    Jamconfig
+    Jamfile ;
+CleanDir distclean :
+    autom4te.cache ;
+Depends distclean : clean ;
+
+Clean maintainerclean :
+  config.h.in
+  configure ;
+Depends maintainerclean : distclean ;
+
+Help distclean : "Remove built targets and configuration" ;
+Help maintainerclean :
+    "Remove built targets, configuration, and generated files." ;
+
+MsvcGenSubDir TOP msvc : 6 ;
+MsvcGenSubDir TOP msvc : 7 ;
+MsvcGenTemplateDir TOP mk msvcgen template ;
+MsvcGenWorkspace #PROJECTNAME# ;
+
+MsvcGenConfig CRYSTAL.AVAILABLE : yes ;
+MsvcGenConfig CRYSTAL.CFLAGS ;
+MsvcGenConfig CRYSTAL.LFLAGS ;
+MsvcGenConfig CRYSTAL.LIBS : 
+  "libcstool.lib libcsgfx.lib libcsgeom.lib libcsutil.lib" ;
+MsvcGenConfig CRYSTAL.CFLAGS.DEBUG ;
+MsvcGenConfig CRYSTAL.LFLAGS.DEBUG ;
+MsvcGenConfig CRYSTAL.LIBS.DEBUG : 
+  "libcstool_d.lib libcsgfx_d.lib libcsgeom_d.lib libcsutil_d.lib" ;
+
+if $(CEL.DESIRED) = yes
+{
+MsvcGenConfig CEL.AVAILABLE : yes ;
+MsvcGenConfig CEL.CFLAGS : "/D \"USE_CEL\"" ;
+MsvcGenConfig CEL.LFLAGS ;
+MsvcGenConfig CEL.LIBS : "libceltool.lib" ;
+MsvcGenConfig CEL.CFLAGS.DEBUG : "/D \"USE_CEL\"" ;
+MsvcGenConfig CEL.LFLAGS.DEBUG ;
+MsvcGenConfig CEL.LIBS.DEBUG : "libceltool_d.lib" ;
+}
+
+# Set project-specific compiler and linker options for msvcgen.
+#MsvcGenConfig MSVC.CFLAGS : "/D \"MY_DEFINE\"" ;
+#MsvcGenConfig MSVC.CFLAGS_DEBUG : "/D \"MY_DEBUG_DEFINE\"" ;
+#MsvcGenConfig MSVC.LFLAGS : "/libpath:\"my\\lib\\path\"" ;
+#MsvcGenConfig MSVC.LFLAGS_DEBUG : "/libpath:\"my\\debuglib\\path\"" ;
+#MsvcGenConfig MSVC.LIBRARY : supercool.lib ;
+#MsvcGenConfig MSVC.LIBRARY_DEBUG : supercooldebug.lib ;
+
+SubInclude TOP src ;

@@ -1,0 +1,969 @@
+#==============================================================================
+# Rules for creating MSVC project files.
+# Copyright (C) 2004 by Eric Sunshine <sunshine@sunshineco.com>
+# Copyright (C) 2003 by Matze Braun <matzebraun@users.sourceforge.net>
+#
+#    This library is free software; you can redistribute it and/or modify it
+#    under the terms of the GNU Library General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or (at your
+#    option) any later version.
+#
+#    This library is distributed in the hope that it will be useful, but
+#    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+#    License for more details.
+#
+#    You should have received a copy of the GNU Library General Public License
+#    along with this library; if not, write to the Free Software Foundation,
+#    Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#==============================================================================
+#
+# During a project file synthesis run, the property name 'projgen' in the
+# container 'build' will be given a value describing which type of project
+# files are being generated. For MSVC project files, the value of the 'projgen'
+# property will be "msvc". When project file synthesis supports multiple tool
+# versions, the 'projgen_version' property will have a value indicating the
+# version of the tool for which project files are being created. For instance,
+# when generating MSVC7 project files, 'projgen' will be set to "msvc" and
+# 'projgen_version' will have the value "7".
+#
+# Jamfiles throughout the project, if they need to alter their behavior (for
+# one reason or another), can invoke the Property rule to determine whether
+# project files are being synthesized.  For example, to learn if project file
+# synthesis is active:
+#
+# if [ Property build : projgen ] { ... do something ... }
+#
+# To take action if only a particular type of project file is being generated
+# (i.e. "msvc"):
+#
+# if [ Property build : projgen ] = msvc { ... do something ... }
+#
+#==============================================================================
+
+MSVCGEN_SUPPORTED_VERSIONS = 6 7 ;
+MSVCGEN_BUILD_ROOT ?= [ ConcatDirs $(BUILDTOP) out ] ;
+
+#------------------------------------------------------------------------------
+# Public rule stubs. May be implemented by msvcgen phase 1 or phase 2 or both.
+
+## MsvcGenConfig variable [ : value ]
+##   Specify additional configuration information to augment the msvcgen
+##   environment.  The Jam variable named by 'variable' is set to 'value' for
+##   the msvcgen run.  If 'value' is omitted, then 'variable' is cleared.
+##   Invocations of MsvcGenConfig are cumulative, so variable/value tuples can
+##   be provided incrementally.  It is legal to use this rule in conjunction
+##   with MsvcGenConfigFile; they are not mutually exclusive.
+##
+##   The most common reason to invoke this rule is to provide MSVC-specific
+##   fallback values for the library checks typically performed by an Autoconf
+##   configure script, which the Jamfiles reference via the ExternalLibs rule.
+##   Such fallbacks consist of variables named TAG.CFLAGS, TAG.LFLAGS, and
+##   TAG.LIBS, where TAG represents the library's identifier exported by the
+##   configure script.  For instance, to provide MSVC-specific fallback values
+##   for the FreeType2 library, which the configure script might identify as
+##   FT2, you can define variables named FT2.CFLAGS, FT2.LFLAGS, and FT2.LIBS.
+##   The msvcgen process will consult these variables when it encounters
+##   invocations of the ExternalLibs rule, and apply the overrides to the
+##   generated project files.  If yours is a multi-platform project which
+##   conditionally defines Application, Plugin, and Library targets based upon
+##   the platform, then you should also define whatever additional variables or
+##   properties are needed to ensure that your project's Jamfiles invoke the
+##   Application, Plugin, and Library rules for modules suitable for Windows,
+##   and that they do not invoke those rules for modules specific to other
+##   platforms.
+rule MsvcGenConfig { MsvcGenConfig1 $(1) : $(2) ; }
+rule MsvcGenConfig1 { }
+
+## MsvcGenConfigFile file
+##   Similar to MsvcGenConfig, except that the configuration is provided via a
+##   file containing Jam statements.  In the common case, the file will contain
+##   a series of simple Jam variable assignment statements.  May be invoked
+##   multiple times to specify additional configuration files.  It is legal to
+##   use this rule in conjunction with MsvcGenConfig; they are not mutually
+##   exclusive.
+rule MsvcGenConfigFile { MsvcGenConfigFile1 $(1) : $(2) ; }
+rule MsvcGenConfigFile1 { }
+
+## MsvcGenVariable variable [ : value ]
+##   Define a %foo%-style variable for direct interpolation into msvcgen
+##   template files.  'variable' is the name of the variable to define (sans
+##   "%" decorations).  For instance, if 'variable' is "foobar", then it can be
+##   referenced in template files as %foobar%.  'value' is the value which
+##   should be assigned to 'variable'.  If 'value' is omitted, then 'variable'
+##   is defined as the null (empty) string.  You may invoke this rule multiple
+##   times to define any number of interpolation variables.  If you invoke it
+##   multiple times for the same variable name, then the individually-specified
+##   values are collected to form a single value (delimited by whitespace).
+rule MsvcGenVariable { MsvcGenVariable1 $(1) : $(2) ; }
+rule MsvcGenVariable1 { }
+
+## MsvcGenWorkspace name [ : accepts [ : rejects ]]
+##   Specify the name of a workspace which the 'msvcgen' target should create.
+##   The generated workspace file name will be prefixed by "wks".  By default,
+##   a workspace contains all projects resulting from invocations of the
+##   Application, Plugin, Library, and CompileGroups rules. It is possible to
+##   restrict the projects placed into the workspace by providing the optional
+##   'accepts' and/or 'rejects'. These are lists of Perl regular expressions
+##   matched against the project names. (Project names are composed of "app",
+##   "plg", "lib", and "grp" prepended to the target name given to the
+##   Application, Plugin, Library, and CompileGroups rules, respectively.)
+##   Reject patterns take precedence over accept patterns.  This rule must be
+##   invoked before any invocations of Application, Plugin, Library, or
+##   CompileGroups.  You may invoke this rule multiple times to produce
+##   multiple workspaces, but you must invoke it at least once in order for the
+##   'msvcgen' target to produce any output.
+rule MsvcGenWorkspace { MsvcGenWorkspace1 $(1) : $(2) : $(3) ; }
+rule MsvcGenWorkspace1 { }
+
+## MsvcGenSubDir dircomponents [ : version ]
+##   Invoke this rule with the location of the project file directory as a
+##   whitepace-delimited set of tokens, much as you would the SubDir rule.
+##   This information is used in two ways.  (1) The directory structure for the
+##   generated files will be duplicated under $(MSVCGEN_BUILD_ROOT).  For
+##   instance, if your project files are at "$(TOP)/proj/msvc", then the
+##   generated files will be deposited at "$(MSVCGEN_BUILD_ROOT)/proj/msvc".
+##   (2) The depth of the directory indicated by 'dircomponents' will be taken
+##   into account when generating references to resources in your project tree.
+##   For example, if your project files reside at "$(TOP)/proj/msvc", and you
+##   have set "$(TOP)/resources/game.ico" as the application icon with the
+##   ApplicationIconDefault or ApplicationIcon rule, then msvcgen will know
+##   that game.ico can be found relative to the project file directory via the
+##   path "../../resources/game.ico".  If 'version' is specified, then
+##   'dircomponents' applies to generated files for that version of MSVC only.
+##   If 'version' is not specified, then the path will be composed of
+##   'dircomponents' and the version number.  For instance, if 'dircomponents'
+##   is "$(TOP)/proj/msvc" and 'version' was not provided, then it will be
+##   assumed that MSVC7 project files should reside at $(TOP)/proj/msvc7".  You
+##   must invoke this rule at least once to ensure that 'msvcgen' targets are
+##   made available for user invocation.
+rule MsvcGenSubDir { msvcgen_path_version MsvcGenSubDir1 : $(1) : $(2) ; }
+rule MsvcGenSubDir1 { }
+
+## MsvcGenTemplateDir dircomponents [ : version ]
+##   Invoke this rule with the location of the msvcgen template directory as a
+##   whitepace-delimited set of tokens.  If 'version' is specified, then
+##   'dircomponents' applies to generated files for that version of MSVC only.
+##   If 'version' is not specified, then the path will be composed of
+##   'dircomponents' and the verison number.  For instance, if 'dircomponents'
+##   is "$(TOP)/msvc/template" and 'version' was not provided, then it will be
+##   assumed that MSVC7 templates can be found at "$(TOP)/msvc/template7".
+rule MsvcGenTemplateDir
+{ msvcgen_path_version MsvcGenTemplateDir1 : $(1) : $(2) ; }
+rule MsvcGenTemplateDir1 { }
+
+#------------------------------------------------------------------------------
+# Private utility rules. Common to all phases.
+
+## msvcgen_path_version rule : dircomponents [ : version ]
+##   If 'version' is provided, invoke 'rule' once with 'dircomponents' and
+##   'version' as arguments.  If 'version' is not provided, invoke 'rule' once
+##   per supported MSVC version with 'dircomponents' augmented so that
+##   'version' is appended to the very last element of 'dircomponents'.  For
+##   example, if 'version' is omitted, and 'dircomponents' is "TOP proj msvc",
+##   then 'rule' will be invoked as "rule TOP proj msvc6 : 6", then "rule TOP
+##   proj msvc7 : 7", etc.
+rule msvcgen_path_version
+{
+  local subrule = $(1) ;
+  local path = $(2) ;
+  local version = $(3) ;
+  if $(version)
+  {
+    msvcgen_version_check $(version) ;
+    $(subrule) $(path) : $(version) ;
+  }
+  else
+  {
+    local v ;
+    for v in $(MSVCGEN_SUPPORTED_VERSIONS)
+    {
+      local p = [ FReverse $(path) ] ;
+      $(subrule) [ FReverse $(p[1])$(v) $(p[2-]) ] : $(v) ;
+    }
+  }
+}
+
+rule msvcgen_resolve_dir
+{ return $($(<[1])) $(<[2-]) ; }
+rule msvcgen_target_dir
+{ return [ ConcatDirs $(MSVCGEN_BUILD_ROOT) $(<[2-]) ] ; }
+rule msvcgen_template_dir
+{ return [ ConcatDirs [ msvcgen_resolve_dir $(<) ] ] ; }
+rule msvcgen_version_check
+{
+  if ! [ IsElem $(<) : $(MSVCGEN_SUPPORTED_VERSIONS) ]
+  {
+    exit "Error: `$(<)' is not a supported msvcgen version number; valid "
+      "numbers are:" $(MSVCGEN_SUPPORTED_VERSIONS) ;
+  }
+}
+
+#------------------------------------------------------------------------------
+# Phase 1
+
+if ! $(DO_MSVCGEN)
+{
+JAM ?= jam ;
+MSVCGEN_JAMOPTIONS ?= ;
+MSVCGEN_SILENT ?= no ;
+MSVCGEN_VERBOSE ?= no ;
+if $(MSVCGEN_SILENT) = yes
+{
+  MSVCGEN_JAMOPTIONS += -d0 ;
+}
+else if $(MSVCGEN_VERBOSE) = yes
+{
+  if $(JAMVERSION) <= 2.4
+  {
+    MSVCGEN_JAMOPTIONS += -d+2 ;
+  }
+  else
+  {
+    MSVCGEN_JAMOPTIONS += -dx ;
+  }
+}
+
+## MsvcGenConfigFile file
+##   (See documentation above.)
+rule MsvcGenConfigFile1
+{
+  MSVCGEN_CONFIG_FILES += $(<) ;
+}
+
+## MsvcGenSubDir dircomponents [ : version ]
+##   (See documentation above.)
+rule MsvcGenSubDir1
+{
+  local path = $(1) ;
+  local version = $(2) ;
+  if ! [ Property msvcgen : pathset$(version) ]
+  {
+    SetProperty msvcgen : pathset$(version) ;
+    MsvcGenTarget $(path) : $(version) ;
+  }
+  else
+  {
+    Echo "Warning: MsvcGenSubDir already invoked for version $(version)" ;
+  }
+}
+
+## MsvcGenTarget dircomponents : version
+##   Create pseudo-targets for building and removing project files for the
+##   specified version of MSVC.  'dircomponents' is interpreted as described
+##   for the MsvcGenSubDir rule.  Also populates the list MSVCGEN_TARGETS with
+##   names of the targets.  Clients which need to perform some pre-processing
+##   prior to the actual msvcgen run may set the targets in this list to depend
+##   upon client-supplied targets.
+rule MsvcGenTarget
+{
+  local path = $(1) ;
+  local version = $(2) ;
+  MsvcGenUmbrella ;
+  Always msvc$(version)gen ;
+  NotFile msvc$(version)gen ;
+  MSVC_VERSION on msvc$(version)gen = $(version) ;
+  MsvcGen msvc$(version)gen ;
+  Depends msvcgen : msvc$(version)gen ;
+  Help msvc$(version)gen : "Create MSVC$(version) project files" ;
+  MSVCGEN_TARGETS += msvc$(version)gen ;
+  CleanDir msvc$(version)clean : [ msvcgen_target_dir $(path) ] ;
+  Depends msvcclean : msvc$(version)clean ;
+  Help msvc$(version)clean : "Remove built MSVC$(version) project files" ;
+}
+
+actions MsvcGen bind MSVCGEN_CONFIG_FILES
+{
+  $(JAM) $(MSVCGEN_JAMOPTIONS) \
+    -sDO_MSVCGEN=yes \
+    -sMSVC_VERSION=$(MSVC_VERSION) \
+    -sMSVCGEN_CONFIG_FILES='$(MSVCGEN_CONFIG_FILES)' \
+    -sTARGET.OS=WIN32 \
+    msvcgen
+}
+
+## MsvcGenUmbrella
+##   Create pseudo-targets for building and removing project files for all
+##   version of MSVC.
+rule MsvcGenUmbrella
+{
+  if ! [ Property msvcgen : umbrella ]
+  {
+    SetProperty msvcgen : umbrella ;
+
+    Always msvcgen ;
+    NotFile msvcgen ;
+    Help msvcgen : "Create MSVC project files (all versions)" ;
+
+    Always msvcclean ;
+    NotFile msvcclean ;
+    Help msvcclean : "Remove built MSVC project files (all versions)" ;
+    Depends clean : msvcclean ;
+  }
+}
+
+}
+else
+{
+
+#------------------------------------------------------------------------------
+# Phase 2
+
+if $(MSVCGEN_CONFIG_FILES)
+{
+  local f ;
+  for f in $(MSVCGEN_CONFIG_FILES)
+  {
+    include $(f) ;
+  }
+}
+
+PERL ?= perl ;
+MSVCGEN ?= [ ConcatDirs $(TOP) mk msvcgen msvcgen.pl ] ;
+RUN_MSVCGEN ?= $(PERL) $(MSVCGEN) ;
+
+# Implementation note: The --strip-root directives are order-sensitive when the
+# build directory is the same as the source directory, in which case TOP is "."
+# and MSVCGEN_BUILD_ROOT is "./out".  If TOP incorrectly appeared first, then
+# it would invalidate the following --strip-root option since TOP is a prefix
+# of MSVCGEN_BUILD_ROOT.
+MSVCGEN_STRIP_ROOT = $(MSVCGEN_BUILD_ROOT)/ $(TOP)/ ;
+
+# When generating the icon file .rc, we compose a 'sed' expression out of
+# MSVCGEN_BUILD_ROOT in order to ensure that the referenced icon paths are
+# correct. However, we must take care to protect characters in
+# MSVCGEN_BUILD_ROOT which have special meaning to 'sed'.  For instance, in
+# MSVCGEN_BUILD_ROOT, if $(TOP)/ is "./", then we want it to match a literal
+# period followed by a slash, not 'any character' followed by a slash, so it
+# must be transformed to "\./". (Presently we take the simple-minded approach
+# of protecting only "." since it arises frequently.)
+MSVCGEN_SED_PROTECT = "$(SED) 's:\\.:\\\\\\.:g'" ;
+
+MSVC_VERSION ?= 7 ;
+if $(MSVC_VERSION) = 6
+{
+  MSVCGEN_EXTRA_OPTS = ;
+  SUFPRJ = .dsp ;
+  SUFWSP = .dsw ;
+}
+else if $(MSVC_VERSION) = 7
+{
+  MSVCGEN_EXTRA_OPTS = --xml-protect ;
+  SUFPRJ = .vcproj ;
+  SUFWSP = .sln ;
+}
+else
+{
+  exit "No msvcgen support for MSVC version $(MSVC_VERSION) yet!" ;
+}
+  
+MSVC.DEPEND ?= ;
+MSVC_DEBUG.DEPEND ?= ;
+MSVC.LIBRARY ?= ;
+MSVC_DEBUG.LIBRARY ?= ;
+MSVC.LFLAGS ?= ;
+MSVC_DEBUG.LFLAGS ?= ;
+MSVC.CFLAGS ?= ;
+MSVC_DEBUG.CFLAGS ?= ;
+MSVC.DEPEND.appgui ?= ;
+MSVC.DEPEND_DEBUG.appgui ?= ;
+MSVC.LIBRARY.appgui ?= ;
+MSVC.LIBRARY_DEBUG.appgui ?= ;
+MSVC.LFLAGS.appgui ?= ;
+MSVC.LFLAGS_DEBUG.appgui ?= ;
+MSVC.CFLAGS.appgui ?= ;
+MSVC.CFLAGS_DEBUG.appgui ?= ;
+MSVC.DEPEND.appcon ?= ;
+MSVC.DEPEND_DEBUG.appcon ?= ;
+MSVC.LIBRARY.appcon ?= ;
+MSVC.LIBRARY_DEBUG.appcon ?= ;
+MSVC.LFLAGS.appcon ?= ;
+MSVC.LFLAGS_DEBUG.appcon ?= ;
+MSVC.CFLAGS.appcon ?= ;
+MSVC.CFLAGS_DEBUG.appcon ?= ;
+MSVC.DEPEND.plugin ?= ;
+MSVC.DEPEND_DEBUG.plugin ?= ;
+MSVC.LIBRARY.plugin ?= ;
+MSVC.LIBRARY_DEBUG.plugin ?= ;
+MSVC.LFLAGS.plugin ?= ;
+MSVC.LFLAGS_DEBUG.plugin ?= ;
+MSVC.CFLAGS.plugin ?= ;
+MSVC.CFLAGS_DEBUG.plugin ?= ;
+MSVC.DEPEND.library ?= ;
+MSVC.DEPEND_DEBUG.library ?= ;
+MSVC.LIBRARY.library ?= ;
+MSVC.LIBRARY_DEBUG.library ?= ;
+MSVC.LFLAGS.library ?= ;
+MSVC.LFLAGS_DEBUG.library ?= ;
+MSVC.CFLAGS.library ?= ;
+MSVC.CFLAGS_DEBUG.library ?= ;
+
+SetProperty build : projgen : msvc ;
+SetProperty build : projgen_version : $(MSVC_VERSION) ;
+
+#----------------------------------------------------------------------------
+# Override some rules
+
+## MsvcGenConfig variable [ : value ]
+##   (See documentation above.)
+rule MsvcGenConfig
+{
+  $(<) = $(>) ;
+}
+
+## MsvcGenVariable variable [ : value ]
+##   (See documentation above.)
+rule MsvcGenVariable1
+{
+  MSVCGEN_VARIABLES += "$(<)=$(>)" ;
+}
+
+## MsvcGenWorkspace name [ : accepts [ : rejects ]]
+##   (See documentation above.)
+rule MsvcGenWorkspace1
+{
+  local name = $(1) ;
+  MSVC.WORKSPACES += $(name) ;
+  MSVC.ACCEPTS.$(name) = $(2) ;
+  MSVC.REJECTS.$(name) = $(3) ;
+}
+
+## MsvcGenSubDir dircomponents [ : version ]
+##   (See documentation above.)
+rule MsvcGenSubDir1
+{
+  local path = $(1) ;
+  local version = $(2) ;
+
+  local relpath ;
+  if ! $(path[2])
+  {
+    relpath = $(DOT) ;
+  }
+  else
+  {
+    local i ;
+    for i in $(path[2-])
+    {
+      relpath += $(DOTDOT) ;
+    }
+  }
+
+  SetProperty msvcgen : outdir$(version) : [ msvcgen_target_dir $(path) ] ;
+  SetProperty msvcgen : relpath$(version) : $(relpath) ;
+}
+
+## MsvcGenTemplateDir dircomponents [ : version ]
+##   (See documentation above.)
+rule MsvcGenTemplateDir1
+{
+  SetProperty msvcgen : templatedir$(>) : [ msvcgen_template_dir $(<) ] ;
+}
+
+## MsvcProject target : type : target-with-ext : sources
+## MsvcProject target : type : target-with-ext : accepts : rejects
+##   Create a project file for 'target', which is the project's raw name.
+##   If 'type' is not "group", then 'sources' is a list of files comprising
+##   the target. If 'type' is "group", then 'accepts' and 'rejects' are the
+##   Perl regular-expression lists indicating which dependencies of the group
+##   should be accepted and rejected, respectively.
+rule MsvcProject
+{
+  local rawname = $(1) ;
+  local type = $(2) ;
+  local decorated = $(3) ;
+  local sources = $(4) ;
+  local accepts = $(4) ;
+  local rejects = $(5) ;
+  local outdir = [ Property msvcgen : outdir$(MSVC_VERSION) ] ;
+
+  local msvcname ;
+  switch $(type)
+  {
+    case appgui :
+      msvcname = app$(rawname) ;
+    case appcon :
+      msvcname = app$(rawname) ;
+    case plugin :
+      msvcname = plg$(rawname) ;
+    case library :
+      msvcname = lib$(rawname) ;
+    case group :
+      msvcname = grp$(rawname) ;
+    case * :
+      exit "Unknown msvc projecttype: $(type) specified!" ;
+  }
+  $(rawname)_MSVCNAME = $(msvcname) ;
+      
+  local fragroot = [ ConcatDirs $(outdir) $(msvcname).frag ] ;
+  NotFile $(fragroot) ;
+
+  local fragments = [ FAppendSuffix $(msvcname) : .frag.cff ]
+		    [ FAppendSuffix $(msvcname) : .frag.dpf ]
+		    [ FAppendSuffix $(msvcname) : .frag.pjf ] ;
+  MakeLocate $(fragments) : $(outdir) ;
+
+  local target = [ FAppendSuffix $(msvcname) : $(SUFPRJ) ] ;
+  MakeLocate $(target) : $(outdir) ;
+  target += $(fragments) ;
+  $(rawname)_TARGET = $(target) ;
+
+  # Only include source and headers files for now.  In the future, we also
+  # want to include .cfg files and any other textual resources which which the
+  # user might care to read/view in the MSVC IDE.
+  local i, files ;
+  for i in $(sources)
+  {
+    if [ IsElem $(i:S) : .h .hpp .H .c .cc .cpp .C .m .mm .M ]
+    {
+      files += $(i:G=$(LOCATE_SOURCE)) ;
+    }
+  }
+  # Search at the correct place for the files
+  SEARCH on $(files) = $(SEARCH_SOURCE) ;
+
+  # Add resource file.
+  if [ IsElem $(type) : plugin appgui appcon ]
+  {
+    local resource = $(msvcname:S=.rc) ;
+    files += $(resource) ;
+    Depends $(target) : $(resource) ;
+    MakeLocate $(resource) : $(outdir) ;
+    SEARCH on $(resource) = $(outdir) ;
+    NAME on $(resource) = $(rawname) ;
+    $(rawname)_RCNAME = $(resource) ;
+  
+    local versionrc = $(resource:S=.vrctmp) ;
+    MakeLocate $(versionrc) : $(outdir) ;
+    MakeVersionRc $(versionrc) : $(rawname) ;
+    Always $(versionrc) ;
+    Win32Resource $(rawname) : $(versionrc) ;
+    RmTemps $(resource) : $(versionrc) ;
+    
+    if $(type) = "plugin" 
+    {
+      local metarc = $(resource:S=.mrctmp) ;
+    
+      MakeLocate $(metarc) : $(outdir) ;
+      SEARCH on $(metarc) = $(SEARCH_SOURCE) ;
+    
+      files += $($(rawname)_METAFILE) ;
+      Depends $(metarc) : $($(rawname)_METAFILE) ;
+      GenerateWin32MetadataRc $(metarc) : $($(rawname)_METAFILE) ;
+      Always $(metarc) ;
+      Win32Resource $(rawname) : $(metarc) ;
+      RmTemps $(resource) : $(metarc) ;
+    }
+
+    if [ IsElem $(type) : appgui appcon ]
+    {
+      local manifestrc = $(resource:S=.mfrctmp) ;
+      MakeLocate $(manifestrc) : $(outdir) ;
+      MakeManifestRc $(manifestrc) : $(rawname) ;
+      Always $(manifestrc) ;
+      Win32Resource $(rawname) : $(manifestrc) ;
+      RmTemps $(resource) : $(manifestrc) ;
+      
+      local icon = [ ApplicationIcon win32 : $(rawname) ] ;
+      if ! $(icon)
+      {
+        local apptype = gui ;
+        if $(type) = "appcon" { apptype = console ; }
+        icon = [ ApplicationIconDefault win32 : $(apptype) ] ;
+      }
+      if $(icon)
+      {
+	local iconrc = $(resource:S=.iconrctmp) ;
+	# RELPATH includes trailing slash (hence the "" in ConcatDirs).
+	RELPATH on $(iconrc) =
+	  [ ConcatDirs [ Property msvcgen : relpath$(MSVC_VERSION) ] "" ] ;
+	MakeLocate $(iconrc) : $(outdir) ;
+	Depends $(iconrc) : $(icon) ;
+        GenerateIconRc $(iconrc) : $(icon) ;
+	Always $(iconrc) ;
+	Win32Resource $(rawname) : $(iconrc) ;
+	RmTemps $(resource) : $(iconrc) ;
+      }
+    }
+
+    Always $(resource) ;
+  }
+  
+  local relpath = [ Property msvcgen : relpath$(MSVC_VERSION) ] ;
+  PROJECTNAME on $(target) = $(msvcname) ;
+  TARGET on $(target) = $(decorated) ;
+  TYPE on $(target) = $(type) ;
+  FRAGMENT_ROOT on $(target) = $(fragroot) ;
+  DEPEND on $(target) += $(MSVC.DEPEND) $(MSVC.DEPEND.$(type)) ;
+  LIBRARIES on $(target) += $(MSVC.LIBRARY) $(MSVC.LIBRARY.$(type)) ;
+  LIBRARIES_DEBUG on $(target) +=
+    $(MSVC.LIBRARY_DEBUG) $(MSVC.LIBRARY_DEBUG.$(type)) ;
+  LFLAGS on $(target) += $(MSVC.LFLAGS) $(MSVC.LFLAGS.$(type)) ;
+  LFLAGS_DEBUG on $(target) +=
+    $(MSVC.LFLAGS_DEBUG) $(MSVC.LFLAGS_DEBUG.$(type)) ;
+  CFLAGS on $(target) += $(MSVC.CFLAGS) $(MSVC.CFLAGS.$(type)) ;
+  CFLAGS_DEBUG on $(target) +=
+    $(MSVC.CFLAGS_DEBUG) $(MSVC.CFLAGS_DEBUG.$(type)) ;
+  RELPATH on $(target) = $(relpath:J=\\) ;
+
+  local incdirs ;
+  for incdirs in $(MSVC.INCDIRS) $(MSVC.INCDIRS.$(rawname))
+  {
+    local incdir ;
+    if $(incdirs) = "."
+    {
+      incdir = $(relpath) ;
+    }
+    else
+    {
+      incdir = $(relpath) $(incdirs) ;
+    }
+    INCDIRS on $(target) += "/I \"$(incdir:J=\\)\"" ;
+  }
+
+  local templatedir = [ Property msvcgen : templatedir$(MSVC_VERSION) ] ;
+  if $(templatedir)
+  {
+    MSVCGEN_TEMPLATEDIR on $(target) = $(templatedir) ;
+  }
+  else
+  {
+    exit "Error: You must invoke MsvcGenTemplateDir for project generation." ;
+  }
+
+  if $(type) = "group"
+  {
+    ACCEPTS on $(target) = $(accepts) ;
+    REJECTS on $(target) = $(rejects) ;
+  }
+  else
+  {
+    ACCEPTS on $(target) = ;
+    REJECTS on $(target) = ;
+  }
+
+  local filelist = [ ResponseFile $(msvcname:G=msvcgen$(rawname):S=.filelist) :
+    $(files) : $(outdir) ] ;
+  Always $(filelist) ;
+  Depends $(target) : $(files) $(filelist) ;
+  Depends msvcgen : $(target) ;
+  MsvcProjectGen $(target) : $(filelist) ;
+  Always $(target) ;
+  RmTemps $(target) : $(filelist) ;
+
+  if ! $(MSVC.WORKSPACES)
+  {
+    exit "You must specify at least one workspace via MsvcGenWorkspace" ;
+  }
+
+  local w ;
+  for w in $(MSVC.WORKSPACES)
+  {
+    MSVCWorkspace $(w) : $(fragments) : $(fragroot) ;
+  }
+
+  Clean msvcclean : $(target) ;
+}
+
+# MSVCWorkspace name : fragments : fragmentroot
+rule MSVCWorkspace
+{
+  local name = $(1) ;
+  local fragments = $(2) ;
+  local fragroot = $(3) ;
+  local target = wks$(name) ;
+  target = $(target:G=msvcworkspace:S=$(SUFWSP)) ;
+  local outdir = [ Property msvcgen : outdir$(MSVC_VERSION) ] ;
+
+  RAWNAME on $(target) = $(name) ;
+  MSVCGEN_TEMPLATEDIR on $(target) =
+    [ Property msvcgen : templatedir$(MSVC_VERSION) ] ;
+
+  local filelist = [ ResponseFile $(target:G=msvcgen$(name):S=.filelist) :
+    $(fragroot) : $(outdir) ] ;
+  Always $(filelist) ;
+
+  Depends $(target) : $(fragments[1]) $(filelist) ;
+  Depends msvcgen : $(target) ;
+  MakeLocate $(target) : $(outdir) ;
+  MsvcWorkspaceGen $(target) : $(filelist) ;
+  RmTemps $(target) : $(filelist) ;
+  RmTemps msvcgen : $(fragments) ;
+}
+
+#----------------------------------------------------------------------------
+
+# Ensure that the pseudo-groups exist with which the overridden Application,
+# Plugin, and Library rules will register their targets. We have to do this
+# here rather than at the top-level (outside of any rule invocation) because we
+# need to give the client time to invoke MsvcGenWorkspace first to set up the
+# workspaces into which these groups will be inserted. If we tried registering
+# theses pseudo-groups at the top-level, registration would occur before the
+# client has had a chance to invoke MsvcGenWorkspace, thus these pseudo-groups
+# would not inhabit any workspaces.
+rule RegisterWellKnownCompileGroups
+{
+  if $(MSVCGEN.WELL_KNOWN_GROUPS_REGISTERED) != yes
+  {
+    MSVCGEN.WELL_KNOWN_GROUPS_REGISTERED = yes ;
+    RegisterCompileGroups all apps plugins libs ;
+  }
+}
+
+rule Application
+{
+  RegisterWellKnownCompileGroups ;
+
+  local projtype ;
+  if [ IsElem console : $(3) ]
+  {
+    projtype = appcon ;
+  }
+  else
+  {
+    projtype = appgui ;
+  }
+  MsvcProject $(<) : $(projtype) : $(<:S=.exe) : $(>) ;
+  CompileGroups $(<) : all apps ;
+}
+
+rule Plugin
+{
+  RegisterWellKnownCompileGroups ;
+
+  local metafile ;
+  metafile = [ FAppendSuffix $(<) : $(SUFMETA) ] ;
+  SEARCH on $(metafile) = $(SEARCH_SOURCE) ;
+  $(<)_METAFILE = $(metafile) ;
+  MsvcProject $(<) : plugin : $(<:S=.dll) : $(>) ;
+  CompileGroups $(<) : all plugins ;
+}
+
+rule Library
+{
+  RegisterWellKnownCompileGroups ;
+  $(<)_TYPE = library ;
+  MsvcProject $(<) : library : $(<:S=.lib) : $(>) ;
+  CompileGroups $(<) : all libs ;
+}
+
+rule RegisterCompileGroups
+{
+  local i ;
+  for i in $(<)
+  {
+    local w ;
+    for w in $(MSVC.WORKSPACES)
+    {
+      MsvcProject
+        $(i)_$(w) : group : : $(MSVC.ACCEPTS.$(w)) : $(MSVC.REJECTS.$(w)) ;
+    }
+  }
+}
+
+rule CompileGroups
+{
+  local i ;
+  for i in $(>)_$(MSVC.WORKSPACES)
+  {
+    DEPEND on $($(i)_TARGET) += $($(<)_MSVCNAME) ;
+  }
+}
+
+rule LinkWith
+{
+  local libs = [ ResolveLibs $(>) ] ;
+  DEPEND on $($(<)_TARGET) += lib$(libs) ;
+  MsvcLFlags $(<) : $($($(>).EXTERNALLIBS).LFLAGS) ;
+  MsvcExternalLibrary $(<) : $($($(>).EXTERNALLIBS).LIBS) ;
+}
+
+rule MsvcExternalLibrary
+{
+  if $(>) { LIBRARIES on $($(<)_TARGET) += $(>) ; }
+}
+
+rule MsvcCFlags
+{
+  if $(>) { CFLAGS on $($(<)_TARGET) += $(>) ; }
+}
+
+rule MsvcLFlags
+{
+  if $(>) { LFLAGS on $($(<)_TARGET) += $(>) ; }
+}
+
+rule MsvcExternalDebugLibrary
+{
+  if $(>) { LIBRARIES_DEBUG on $($(<)_TARGET) += $(>) ; }
+}
+
+rule MsvcDebugCFlags
+{
+  if $(>) { CFLAGS_DEBUG on $($(<)_TARGET) += $(>) ; }
+}
+
+rule MsvcDebugLFlags
+{
+  if $(>) { LFLAGS_DEBUG on $($(<)_TARGET) += $(>) ; }
+}
+
+rule ExternalLibs
+{
+  local i ;
+  for i in $(>)
+  {
+    MsvcCFlags $(<) : $($(i).CFLAGS) ;
+    if $($(i).CFLAGS.DEBUG)
+    {
+      MsvcDebugCFlags $(<) : $($(i).CFLAGS.DEBUG) ;
+    }
+    else
+    {
+      MsvcDebugCFlags $(<) : $($(i).CFLAGS) ;
+    }
+    MsvcLFlags $(<) : $($(i).LFLAGS) ;
+    if $($(i).LFLAGS.DEBUG)
+    {
+      MsvcDebugLFlags $(<) : $($(i).LFLAGS.DEBUG) ;
+    }
+    else
+    {
+      MsvcDebugLFlags $(<) : $($(i).LFLAGS) ;
+    }
+    MsvcExternalLibrary $(<) : $($(i).LIBS) ;
+    if $($(i).LIBS.DEBUG)
+    {
+      MsvcExternalDebugLibrary $(<) : $($(i).LIBS.DEBUG) ;
+    }
+    else
+    {
+      MsvcExternalDebugLibrary $(<) : $($(i).LIBS) ;
+    }
+    
+    if $($(<)_TYPE) = library
+    {
+      $(<).EXTERNALLIBS += $(i) ;
+    }
+  }
+}
+
+rule IncludeDir
+{
+  local dir = $(1) ;
+  local target = $(2) ;
+  local options = $(3) ;
+
+  # We prefer directories in source tree and ignore others.
+  if ! [ IsElem ignoresubdir : $(options) ]
+  {
+    if $(dir)
+    {
+      dir = [ ConcatDirs $(dir) ] ;
+    }
+    else
+    {
+      dir = "." ;
+    }
+
+    if $(target)
+    {
+      MSVC.INCDIRS.$(target) += $(dir) ;
+    }
+    else
+    {
+      MSVC.INCDIRS += $(dir) ;
+    }
+  }
+}
+
+# Normal invocations of these two rules are made using Unix-style flags;
+# possibly determined by an Autoconf configuration script.  Such flags are
+# unsuitable for MSVC, so we ignore them.
+rule CFlags { }
+rule LFlags { }
+
+rule Win32Resource
+{
+  Depends $(<) : $($(<)_RCNAME) ;
+  Depends $($(<)_RCNAME) : $(>) ;
+  MergeResources $($(<)_RCNAME) : $(>) ;
+}
+
+#----------------------------------------------------------------------------
+
+# Implementation: Command arguments with a leading slash (or a slash following
+# some punctuation, such as ', ", =, etc.) are interpreted by the MSYS shell as
+# if they are MSYS absolute pathnames which need to be transmogrified into
+# Windows pathnames.  This is a problem if arguments we pass to msvcgen.pl
+# contain MSVC compiler or linker flags, such as /D, /I, etc., since MSYS will
+# incorrectly think that they are pathnames, and change them to something along
+# the lines of C:/Path/To/Msys/Root/D.  To avoid this problem, we prepend the
+# literal"%null%" to values which are likely to trigger this problem.
+# msvcgen.pl will see the %null% as just another interpolation variable
+# reference and replace it with its value (the empty string in this case since
+# it is undefined), which restores the value to its original form before we
+# prepended %null%.
+actions MsvcProjectGen
+{
+  $(RUN_MSVCGEN) \
+  --quiet \
+  --project \
+  $(MSVCGEN_EXTRA_OPTS) \
+  --template=$(TYPE) \
+  --template-dir=$(MSVCGEN_TEMPLATEDIR) \
+  --output=$(<[1]) \
+  --fragment=$(FRAGMENT_ROOT) \
+  --depend=$(DEPEND) \
+  --strip-root='$(MSVCGEN_STRIP_ROOT)' \
+  --accept='$(ACCEPTS)' \
+  --reject='$(REJECTS)' \
+  --response-file=$(>) \
+  --set=project=$(PROJECTNAME) \
+  --set=target=$(TARGET) \
+  --set=makefile=$(<[1]:BS=.mak) \
+  --set=libs='$(LIBRARIES:S=.lib)' \
+  --set=lflags='%null%$(LFLAGS)' \
+  --set=cflags='%null%$(CFLAGS)' \
+  --set=cflags='%null%$(INCDIRS)' \
+  --set=debuglibs='$(LIBRARIES_DEBUG:S=.lib)' \
+  --set=debuglflags='%null%$(LFLAGS_DEBUG)' \
+  --set=debugcflags='%null%$(CFLAGS_DEBUG)' \
+  --set=debugcflags='%null%$(INCDIRS)' \
+  --set=sourceroot='$(RELPATH)' \
+  --set=buildroot='$(RELPATH)' \
+  --set='$(MSVCGEN_VARIABLES)'
+}
+
+actions together MsvcWorkspaceGen
+{
+  $(RUN_MSVCGEN) \
+  --quiet \
+  --workspace \
+  $(MSVCGEN_EXTRA_OPTS) \
+  --output=$(<) \
+  --template-dir=$(MSVCGEN_TEMPLATEDIR) \
+  --accept='$(MSVC.ACCEPTS.$(RAWNAME))' \
+  --reject='$(MSVC.REJECTS.$(RAWNAME))' \
+  --response-file=$(>) \
+  --set='$(MSVCGEN_VARIABLES)'
+}
+
+actions together MergeResources
+{
+  cat $(>) > $(<)
+}
+
+actions GenerateIconRc
+{
+  sedexpr=`echo 's^$(MSVCGEN_STRIP_ROOT)^^;' | $(MSVCGEN_SED_PROTECT)`
+  icon=`echo "$(>)" | sed "$sedexpr"`
+  echo "1 ICON \"$(RELPATH)$icon\"" > $(<)
+}
+
+#----------------------------------------------------------------------------
+
+NotFile msvcgen ;
+Always msvcgen ;
+}

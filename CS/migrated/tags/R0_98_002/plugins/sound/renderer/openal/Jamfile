@@ -1,0 +1,10 @@
+SubDir TOP plugins sound renderer openal ;
+
+if $(OPENAL.AVAILABLE) = "yes"
+{
+Description sndoal : "OpenAL sound renderer" ;
+Plugin sndoal : [ Wildcard *.cpp *.h ] ;
+LinkWith sndoal : soundrendercommon csgeom csutil ;
+ExternalLibs sndoal : OPENAL ;
+CompileGroups sndoal : sounddrivers ;
+}

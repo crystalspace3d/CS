@@ -1,0 +1,270 @@
+@c -*-texinfo-*-
+@node MSVC7, , MSVC6, MSVC
+@subsubsection Microsoft Visual C++ 7
+@cindex Windows, Building
+
+@noindent
+@emph{Philip Wyett @email{philipwyett@@dsl.pipex.com}.}
+@noindent
+@emph{Last updated 3 May 2004.}
+
+In order to successfully compile the Crystal Space 3D Software Development Kit
+(@sc{sdk}), you will need a copy of @emph{Microsoft Developer Studio @sc{.net}}
+or the stand alone version of @emph{Microsoft Visual C++ 7}.
+
+@subsubheading Getting Extra Help
+
+If you need help with Crystal Space and Visual C++ or just Crystal Space in
+general.  You can subscribe and then post a message to the Crystal Space
+mailing list.  To subscribe see the following site and fill in the form:
+
+@uref{http://lists.sourceforge.net/lists/listinfo/crystal-main}
+
+@subsubheading Required/Optional External Libraries and Software
+
+All the following libraries and Software Development Kits (@sc{sdk}) unless
+stated are not required.  However, if you choose not to install them, at
+compile time you must follow the documented instructions of how to unload these
+projects from the Crystal Space build process.
+
+@subsubheading cs-win32libs - Required
+
+Before you attempt to compile Crystal Space, you must download
+and install the ``cs-win32libs'' archive.  This archive contains alot of the
+third party header, pre-built libraries and dll files used by Crystal
+Space, i.e. @file{libz.dll}, @file{libjpeg.dll}, @file{libpng.dll}, etc.
+@xref{cs-win32libs}.
+
+Once you have downloaded the cs-win32libs package, execute the binary and
+follow the setup instructions.  You may want to select ``VC typical'' in the
+``Select Components'' screen. You can further adjust the selection of installed 
+components depending on your actual set up (e.g. install MinGW-related 
+components if you plan to also use CrystalSpace with MinGW/MSYS).
+
+@subsubheading DirectX - Optional
+
+In order to compile Crystal Space at its minimum i.e. the software renderer,
+you must have at least some form of the DirectX Software Development Kit 
+(@sc{sdk}) on your system. 
+
+Visual C++ 7 comes with the minimum DirectX @sc{sdk} 8.1 pre-release files
+in-order to build Crystal Space. 
+
+The ``cs-win32libs'' package also come with minimum headers and libraries that 
+suffice to compile the parts of Crystal Space that utilize DirectX. However, 
+the version included in cs-win32libs is DirectX 7, so may want to stick to 
+DirectX 8.1 shipped with VC++ 7.
+
+You can optionally download the latest DirectX Software Development Kit 
+(@sc{sdk}), which can be obtained from:
+
+@uref{http://www.msdn.microsoft.com/directx}
+
+Thanks, to the miracle which is Microsoft.  If you download and install the
+latest DirectX  Software Development Kit (@sc{sdk}) and already have Visual
+C++ installed, it will ask you if you wish to add the paths to the @sc{sdk} to
+Visual C++ so it can use it.  We recommend you accept when offered this option.
+If it is not the latest @sc{sdk} you install you will have to manually point
+Visual C++ to where you installed the @sc{sdk} in-order for it to be used.
+This can be done from the Visual C++ file menu and selecting
+@emph{Tools->Options->Directories}.  You must add the paths for both the
+include files and libraries and being that we wish Visual C++ to see and use
+this new @sc{sdk} before all possible others on your system, you must click on
+and drag both paths you have entered to the top of the list.
+
+@subsubheading Python - Optional
+
+Crystal Space contains support for Python scripting and thus has projects
+within it requires that Python be installed on your system.  Make sure you add
+the Python @emph{include} and @emph{libs} directories to @sc{msvc} so that the
+compiler can see those files.  If you wish to compile with Python support you
+must install Python 2.2 or later, which can be obtained from:
+
+@uref{http://www.python.org}
+
+@sc{note}: To have parity with one of the latest versions of msvc_libs and take
+full advantage of the debug elements - you should have Python 2.2.3 or 2.3.0
+installed on your system. Whichever version you decide to use, make sure you
+download the comparable msvc_libs.
+
+@subsubheading Selecting the Renderer Architecture
+
+At this moment we have two completely different renderer architectures
+in Crystal Space. The old renderer (which is still default) and the new
+renderer. The new renderer hasn't been made default yet because it is still
+considered to be experimental and some features haven't been ported yet
+(like software renderer which works only partially and fog). On the other
+hand the new renderer supports shaders, stencil shadows, and other advanced
+OpenGL stuff and for most people it seems to work very well. So we personally
+recommend trying out the new renderer first. If it doesn't work right for
+you then you should send us a report and go back to old renderer then.
+To use the new renderer you should use the @file{wksnewrenderer.sln} instead
+of @file{wkstypical.sln} (see below).
+
+@subsubheading Compiling Crystal Space
+
+To compile Crystal Space, you'll have to perform the following steps.  If
+anything doesn't work, see the Win32 @sc{faq}, @ref{MSVC7 FAQ}.
+
+@enumerate
+@item
+Load @file{CS\mk\visualc7\wkstypical.sln} (On the other hand, if you want to
+try out the experimental new renderer, open the workspace
+@file{wksnewrenderer.sln} in the same directory, and select either the
+Release_NR or Debug_NR build mode.)
+
+@item
+From the file menu select @emph{Build->Build Solution}.  @strong{Note} that you
+must build the project using the @emph{Release} or @emph{Debug} build modes.
+Do @strong{not} use the special-purpose @emph{Release_NR}, @emph{Debug_NR}, or
+@emph{ExtensiveMemDebug} build modes (which are reserved for specific
+developmental activities on Crystal Space itself).  @strong{Note} that you
+@strong{must} use @emph{Release_NR} or @emph{Debug_NR} if you selected
+@file{wksnewrenderer.sln}.
+
+@item
+After a while the compilation should finish.  The signal for a
+successful build will be come in the form of the something similar to the
+following:
+
+@example
+Build: 1 succeeded, 0 failed, 0 skipped
+@end example
+@end enumerate
+
+@subsubheading Running the Demonstration Applications
+
+The first app you should try is Walktest.  This program shows many of the
+features of the 3D engine.  You can run it by starting it from the windows
+explorer.  It should be at @file{.../cs/walktest.exe}.  Don't start it from
+other locations or from within Visual Studio.  It won't find the required files
+if you do.
+
+If you want to run a debug session, you first have to set the working
+directory.  First select the project you wish to debug and setting it as the
+startup project. Next open @emph{Project->Properties->Debugging} and enter
+the base @file{CS\} directory as the working directory for debug sessions
+(for example, @file{C:\CS\}).  Be sure to to this for @emph{Debug} and
+@emph{Release} builds.
+
+You can now continue with the next platform-independent step.  The remaining
+Windows-specific sections are only important when you want to compile your own
+application using Crystal Space.
+
+@subsubheading Structure of the Workspace
+
+@emph{Note}: If you find bugs in the @sc{msvc} project or workspace files
+coming with Crystal Space, don't send fixes for these files to the developers.
+These files are generated automatically, so your fixes would be useless.
+Better, send a description of the bug to the mailing list.
+
+The Crystal Space workspace is divided into several projects.  They all exist
+as separate project files (@file{*.vcproj}).  The projects are collected
+together by workspaces @file{*.sln}.  A workspace will also ensure correct
+linking between the various projects.  There are several workspaces to choose
+from.  Most users should choose the @emph{typical} workspace, but the others
+are available for the adventurous.
+
+@itemize @bullet
+@item
+@file{wkstypical.sln} --- Builds the typical modules needed by most users of
+Crystal Space.
+
+@c @item
+@c @file{wksall.sln} --- Builds all modules, even the experimental ones.
+@c 
+@item
+@file{wksnewrenderer.sln} --- Same as @file{wkstypical.sln}, but builds the new
+experimental renderer, rather than the old one.  When using this workspace, you
+also need to select either the @emph{Release_NR} or @emph{Debug_NR} build mode,
+rather than the @emph{Release} or @emph{Debug} build mode.
+@end itemize
+
+The workspace uses a prefix system for naming contained projects:
+
+@itemize @bullet
+@item
+@file{app} --- Prefixes application projects.
+@item
+@file{lib} --- Prefixes library projects.
+@item
+@file{plg} --- Prefixes plugin module projects.
+@item
+@file{grp} --- Prefixes psuedo-groups of related projects.
+@end itemize
+
+The @emph{Libraries} are C++ libraries that you can link into your own
+programs.  Some of these libraries are part of the core of Crystal Space.  You
+can find more information about this in @ref{Libraries}.  Their output are
+@file{.lib} files.
+
+The @emph{Plugins} are also programming libraries, but they use a special
+mechanism called @sc{scf} as their interface to your program.  This separates
+their interface from the internals of the library and thus allows dynamic
+linking.  In fact, some of the @emph{Libraries} also use @sc{scf}.  The rule
+for the @sc{msvc} workspace is simple: The @emph{Plugins} are projects that
+build a dynamic library (@file{.dll}).  You can find more information in the
+section of this manual dealing with plug-in modules.  @xref{Plug-In Drivers}.
+
+The @emph{Applications} are programs using some of these libraries, so they
+produce @file{.exe} files.
+
+@subsubheading Compiling Your Own Program Using Crystal Space
+
+There is a @sc{howto} which explains how to create an @sc{msvc7} project file
+for your own program which utilizes Crystal Space.
+@xref{HOWTO Creating External MSVC 7 Application}.
+
+@subsubheading Frequently Asked Questions (@sc{faq})
+@anchor{MSVC7 FAQ}
+
+This is the list of frequently asked questions for the Win32 port of Crystal
+Space.  Please consult this list if you are having difficulty building or using
+the project.
+
+@subsubheading Compilation
+
+@itemize @bullet
+@item 
+Q. @emph{I get "Errors in post link" and later "file not found" errors.}
+
+A. Some problems with non-latin directory names have been reported (e.g.
+Hebrew).  If your @file{CS} directory is under such a directory, try to move it
+to a directory which name has only Latin characters in it.
+@end itemize
+
+@subsubheading Blasting the Past
+
+If you have previously used the @file{msvc_libs} package, it's recommended you
+remove it before installing the @file{cs-win32libs} package as outlined above.
+Unfortunately, the @file{msvc_libs} package was a simple @sc{zip} file with no
+means of uninstalling whatsoever. However, the header and library files were
+located in the @file{include\cssys\win32} resp. @file{libs\cssys\win32\cssys}
+directories, but as the @code{cssys} library has been merged into
+@code{csutil}, CS' files in those directories has been relocated as well, so
+you can safely remove these directories.
+
+However, the @file{msvc_libs} package also contained a couple of @sc{dll} 
+files, copied to CS' root directory.  To remove them, use the following batch 
+file that removes all @sc{dll} files contained in the different versions of 
+the @file{msvc_libs} package:
+
+@noindent
+@ifnottex
+@uref{ftp://sunsite.dk/projects/crystal/support/win32/remove_msvc_libs.bat}
+@end ifnottex
+@iftex
+@code{ftp://sunsite.dk/projects/crystal/support/win32/remove_msvc_libs.bat}
+@end iftex
+
+@subsubheading Miscellaneous
+
+@itemize @bullet
+@item
+Q. @emph{I have a problem that you haven't solved here!}
+
+A. Try sending a note to the Crystal Space mailing list and asking your
+question there.  @xref{Mailing Lists}.  Be sure to include any pertinent
+information, such as the operating system you are using, the compiler, which
+version of Crystal Space, and any special configuration information.
+@end itemize

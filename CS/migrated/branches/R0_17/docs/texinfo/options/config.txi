@@ -1,0 +1,21 @@
+@c -*-texinfo-*-
+@node Configuration File, , Common Command Line Options, Options
+@section Configuration File
+@cindex Configuration File
+
+Most applications have an accompanying configuration file which describes
+configuration options particular to that application.  In other cases, a
+configuration file may be specific to a particular plug-in module or device
+driver.  Configuration files are named with the file extension @file{.cfg}
+and are typically located within the virtual directory @file{/config/} which
+is most usually mounted at the physical location @file{CS/data/config}.
+
+@menu
+* Config Common:: Common Configuration Options
+* Config Soft3D TextureManager:: @code{[TextureManager]} section
+* Config SoundDriver:: @code{[SoundDriver]} section
+@end menu
+
+@importss{options,config,common.txi}
+@importss{options,config,soft3d.txi}
+@importss{options,config,sndsoft.txi}

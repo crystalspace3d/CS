@@ -1,0 +1,160 @@
+@c -*-texinfo-*-
+@node MinGW, NeXT, MSVC, Platform Instructions
+@subsection Windows using MinGW
+
+@noindent
+@emph{Philip Wyett @email{philipwyett@@dsl.pipex.com}.}
+@noindent
+@emph{Last updated October 13, 2001}
+
+These instructions are for building Crystal Space with MinGW---a @sc{gnu}
+compiler for Windows.  There are many different versions of the @sc{gnu}
+Windows compiler and problems arise with some Windows header files
+containing non-standard code used by Microsoft, so we recommend
+the MinGW compiler which is currently best supported by Crystal Space.
+
+@subsubheading Necessary Resources
+
+Download the following packages:
+
+@itemize @bullet
+@item
+Crystal Space MinGW package @file{cs_mingw_0.90.exe} from the Mingw32 support
+directory at Linux Games.  This package contains all the recent MinGW package
+releases (i.e. all the files necessary to compile Crystal Space successfully).
+
+@noindent
+@uref{ftp://ftp.sunsite.dk/projects/crystal/support/mingw32/cs_mingw_0.90.exe}
+
+@item
+@sc{nasm} (Netwide Assembler) for Windows @file{nasm-0.98e-bin-w32.zip}
+
+@iftex
+@noindent
+@uref{ftp://ftp.sunsite.dk/projects/crystal/}@*
+@uref{support/nasm/nasm-0.98e-bin-w32.zip}
+@end iftex
+@ifnottex
+@noindent
+@uref{ftp://ftp.sunsite.dk/projects/crystal/support/nasm/nasm-0.98e-bin-w32.zip}
+@end ifnottex
+@end itemize
+
+@subsubheading Installation
+
+Follow these instructions to install the packages which you downloaded.
+
+@itemize @bullet
+@item
+First install the MinGW compiler.  The file is a self extracting executable and
+will create the @file{mingw32} directory for you.  So if you wish to install it
+to your @file{C:\} drive as @file{C:\mingw32\}, extract the archive to
+@file{C:\}.
+
+The following instructions assume the MinGW package is installed in
+@file{C:\mingw32}.
+
+@item
+Unzip the @sc{nasm} archive files and copy the @file{.exe} files into
+@file{C:\mingw32\bin}.
+
+@item
+Adjust your @samp{PATH} environment variable.  On Windows 95 and 98 edit the
+@file{C:\autoexec.bat} file add the following entry:
+
+@example
+SET PATH=C:\mingw32\bin
+@end example
+
+You must also add the following variables, so that @sc{gcc} can find the Python
+header files.
+
+@example
+SET PYTHON_INC=C:\mingw32\include\python1.5
+SET PYTHONPATH=C:\mingw32\lib\python1.5
+@end example
+
+@noindent
+On Windows @sc{nt}, 2000 and @sc{xp}, use the System control panel to edit the
+environment variable.
+
+If you fail to do so, then the @file{makedep} tool will not know where to look
+for Mingw32's system include files, and will emit a lot of warnings.
+
+@item
+Reboot your computer.
+@end itemize
+
+@subsubheading Building
+
+From within the Crystal Space directory (@file{CS\}), run the @samp{make}
+command and follow the instructions.  Typically, you would issue the following
+commands:
+
+@example
+make win32gcc MODE=debug
+make depend
+make -k all
+@end example
+
+Some Windows ME users have reported a system crash when running the 
+@samp{make win32gcc} command. If you have that problem, try adding
+@samp{FORCEBUCK=SS} to the command line, like this:
+
+@example
+make win32gcc MODE=debug FORCEBUCK=SS
+make depend
+make -k all
+@end example
+
+Note that making the @samp{depend} target is not absolutely required.  If
+doing so presents problems, then you can safely omit it:
+
+@example
+make win32gcc MODE=debug
+make -k all
+@end example
+
+@subsubheading Additional Command Line Compile Options
+
+You can also insert the @samp{clean} makefile target into the @samp{make}
+command, as follows:
+
+@example
+make -k clean all
+@end example
+
+@noindent
+This will first remove all object files, libraries, etc.  from the
+@file{CS\out\WIN32\X86\debug} directory and will then build the entire project.
+
+The @samp{-k} option used in the @samp{make -k all} command instructs the
+compiler to ignore errors and continue compiling regardless.
+
+@subsubheading Customizing
+
+You may need to customize settings in @file{CS\libs\cssys\win32\win32gcc.mak},
+the Mingw32 makefile.  Check the following variables:
+
+@itemize @bullet
+@item
+@code{LIBS.GL3D.SYSTEM}
+@item
+@code{LIBS.SOCKET.SYSTEM}
+@item
+@code{LIBS.SOUND.SYSTEM}
+@end itemize
+
+Adjust them to match your system libraries.  For example, if you use the
+@sc{sgi} OpenGL @sc{sdk} instead of Microsoft's OpenGL, change
+@samp{-lopengl32} and @samp{-lglut32} to @samp{-lopengl} and @samp{-lglut} in
+@samp{LIBS.GL3D.SYSTEM}.  Also in the file @file{CS\mk\user.mak} select which
+plugins you wish to compile.
+
+@subsubheading Troubleshooting
+
+If you successfully compiled Crystal Space, yet find that you cannot run the
+applications from the @file{CS\} root directory, a possible cause might be that
+the pathname leading up to the @file{CS\} directory may have whitespace in it.
+For instance, if you installed the project in @file{C:\my stuff\CS}, try
+renaming the path to @file{C:\my_stuff\CS} or @file{C:\mystuff\CS}.

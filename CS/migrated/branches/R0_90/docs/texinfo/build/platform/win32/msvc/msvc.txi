@@ -1,0 +1,18 @@
+@c -*-texinfo-*-
+@node MSVC, MinGW, Unix, Platform Instructions
+@subsection Windows using Microsoft Visual C++ 
+@cindex Windows, Building
+
+Crystal Space currently supports compilation primarily with
+Microsoft Visual C++ 6. However, Crystal Space has been compiled fairly
+successfully with vesrion 5. Please select the link to the
+version you wish to compile Crystal Space with for info, compile
+instructions and @sc{faq}.
+
+@menu
+* MSVC5:: Microsoft Visual C++ 5
+* MSVC6:: Microsoft Visual C++ 6
+@end menu
+
+@importssss{build,platform,win32,msvc,msvc5.txi}
+@importssss{build,platform,win32,msvc,msvc6.txi}

@@ -1,0 +1,251 @@
+Crystal Space VC++ Win32 Development Readme
+This is up to date as of June 12th, 1999
+
+Written by Dan Ogles
+Updated by Noote (Nathaniel Saint Martin)
+Updated by Thomas Hieber
+
+If you have any questions, contact me at thieber@gmx.net 
+(or dogles@peachtree.com or noote@bigfoot.com).
+
+Contents:
+1.  Quickstart
+2.  Working with the Workspace.
+3.  Frequently Asked Questions.
+
+---------[1] Quickstart - for the impatient -------------
+
+To compile Crystal Space, you'll have to perform the following steps:
+(Using Microsoft Visual C++ 6.0)
+
+1. Load mk/visualc/csall.dsw
+
+2. Make "All Files" you active project.
+
+3. Select Menu "Build" "Rebuild All"
+
+4. After a while you should finish with almost no warnings and no errors.
+
+5. Change your settings in cryst.cfg (included in the Configuration Files folder
+   in the CrystalSpace project) to the following (or whatever you like more):
+
+     DRIVER = crystalspace.graphics3d.software
+     WORLDFILE = data/large.zip
+
+   This will set up CrystalSpace to run in software mode using the worldfile
+   "large.zip". Make sure that you have downloaded a worldfile from the 
+   Crystal Space Website before this. These files are in ZIP format and should
+   be downloaded to the $/cryst/data directory. Do not attempt to extract this 
+   archive - Crystal Space decompresses the ZIP file at run time.
+
+6. Open "Project", "Settings", select walktest on the left list. Select the 
+   "Debug" tab in the register, select category "general" and enter the the 
+   same directory the exe sits in as workdirectory. If the executable would be 
+   in "E:\cvs\Cs\walktest.exe", you should select "E:\cvs\Cs\" as working 
+   directory. Make sure you do these settings for "Win32 Debug" and 
+   "Win32 Release" (Using the combobox on top of the left list).
+   Then confirm the settings by pressing OK. Now select "WalkTest files" in 
+   the Workspace files tab, click the right mouse button and select "Set as 
+   active project". Now call "Build", "execute walktest.exe"
+
+   alternatively, you can switch to the windows explorer and call walktest. 
+   
+7. Enjoy :-)
+
+(Or see the FAQ section below)
+
+---------[2] WORKING WITH THE WORKSPACE-------------------
+
+The Crystal Space workspace is divided into several projects. They
+all exist as separate project files (*.dsp). All of them are being bound
+together by a workkspace. You can choose either csall.dsw or cssimple.dsw.
+This workspace will also ensure correct linking between the various projects,
+so you need to use a predefined workspace or, if you create your own,
+you will have to set project dependencies right.
+
+Currently the project files are created by using MS Visual C++ 6.0. I can't
+tell you anything about other compilers or other versions of MSVC, because
+6.0 is the only version I have at home. (It was reported, that for using
+MSVC 5.0 you could use the project files, but would have to create a new
+workspace.)
+
+
+The libraries :
+* Com -- the statically linked library which includes all the
+  definitions for the interface IDs used in all the projects. This is linked
+  into all of the projects.
+* CsWs -- the window manager library (need for Mazed editor)
+* CSpace - the static linked library, which includes the majority of the code
+
+The drivers :
+* SoftwareRender - the SoftwareRender DLL, which includes the 3D graphics
+  driver for software rasterization. This is loaded by the CrystalSpace EXE.
+* Direct3D5Render - the Direct3D Dx5 Render DLL, which includes the 3D graphics
+  driver for Direct3D-accelerated rasterization. This is loaded by the
+  CrystalSpace EXE.
+* Direct3D6Render - the Direct3D Dx6 Render DLL, which includes the 3D graphics
+  driver for Direct3D-accelerated rasterization. This is loaded by the
+  CrystalSpace EXE. (This driver is not working, and will proably be
+  removed soon)
+* Glide2xRender - the Glide2x Render DLL, which includes the 3D graphics
+  driver for Glide-accelerated rasterization. This is loaded by the
+  CrystalSpace EXE. (This driver is not part of the standard Windows workspace
+  any more. If you still want to give it a try, you will need to add it to
+  the workspace manually, and add a depencency to the "com" project.)
+* Glide3xRender - the Glide3x Render DLL, which includes the 3D graphics
+  driver for Glide-accelerated rasterization. This is loaded by the
+  CrystalSpace EXE. (Not yet working, and therefore not included in 
+  csall workspace)
+* OpenGLRender - the OpenGLRender DLL, which includes the 3D graphics
+  driver for OpenGL-accelerated rasterization. This is loaded by the
+  CrystalSpace EXE.
+* DirectDraw2D - the DirectDraw Dx3 Graphics DLL, which includes the 2D graphics
+  layer for DirectDraw screen devices. This is loaded by the CrystalSpace
+  EXE.
+* DirectDraw2D6 - the DirectDraw Dx6 Graphics DLL, which includes the 2D graphics
+  layer for DirectDraw screen devices. This is loaded by the CrystalSpace
+  EXE. it's Dx6 compatible and used by Direct3D Dx6 Render. (This driver is not 
+  working, and will proably be removed soon)
+
+* SoundDriverNull - A dummy sound driver
+* SoundDriverWaveOut - A simple sound driver
+* SoundRenderNull - A dummy 3D sound render
+* SoundRenderA3D - A special 3D sound render. 
+* SoundRenderEAX - A special 3D sound render. 
+* SoundRenderDS3D - A DirectX 3D sound driver. 
+
+* NetworkDriverNull - the null network Driver, This is loaded by the CrystalSpace
+  EXE.
+* NetworkDriverSock - the BSD Sockets network Driver, This is loaded by the CrystalSpace
+  EXE.
+* NetworkManagerNull - Dummy Network Manager. (The network manager is an layer
+  above simple network services and offers more game oriented functions)
+* NetworkManagerSimple - Dummy Network Manager. (The network manager is an layer
+  above simple network services and offers more game oriented functions)
+
+The applications :
+* WalkTest -- a walktest application, which includes key handling and such.
+* MazeD -- an editor. (Almost working, but progressing much slower, than 
+  the CS engine.)
+* Simple -- a simple (minimum) CyrstalSpace application.
+* metademo -- a demonstration of a completely different use of Crystal Space
+* shooter -- a simple example of a 3D shooter and the csgame library. 
+  - Not finished yet.
+
+---------[3] FREQUENTLY ASKED QUESTIONS-------------------
+
+Written by Xavier Trochu.
+Updated by NooTe (Nathaniel Saint Martin)
+Updated by Thomas Hieber
+
+- How do I compile Crystal Space using Visual C++ 5.0?
+
+MSVC 5.0 should work, if you have installed the latest Service Release.
+It should be enough to follow the steps described in this doc. 
+If you have further questions, you might want to contact  "Brad 
+'GreyBear' Davis" <jbdavis@uswest.net>, as he has recently reported 
+successful compilation of CS, using MSVC 5.0.
+
+- How do I compile Crystal Space using Visual C++ 6.0?
+
+see section 1: Quickstart. Be sure to do exactly what is written there.
+If that doesn't work, read on. :-)
+
+I. COMPILATION TIME:
+
+- Where are those damn zlib.h, png.h or jpeglib.h files?
+
+They are now included in the official release, so you shouldn't need
+to bother any more. If they are sill missing, send me a mail.
+
+- Will I need to install additional SDK's?
+
+Crystal Space includes all headers and libraries that are needed to 
+compile and link Crystal Space on Win32. However, if you want the
+full sources, documentation and other stuff, you will still need
+to visit the homepage of the respective SDK's distributors.
+Note also, that the Glide2x headers and libs are not included. You
+need to get them from http://www.3dfx.com yourself.
+
+II. LINKING TIME:
+
+- I've got unresolved symbols!
+
+What kind of symbols?
+  _png_... : That means that you don't link the project with png.lib. Just
+      take a look below where it is explained how to do so.
+  _inflate... and _deflate... : Well, it seems to your project lacks
+      zlib.lib. The trick is explained just below, so hang on.
+  _DirectDraw... : Idem, but for ddraw.lib (DirectX component), look below.
+  others        : Well, I always have a solution, but this one is more
+      difficult. It seems that there is a missing source file in your
+      project. But the question is, which source file? If it isn't obvious
+      by the name of the functions, just to the following: In the menu
+      "Edit", select the option "Find in Files...". Put the name of the
+      function in the field "Find what", Check that the "In folder" field
+      content is the CrystalSpace src directory and press "Find". You should
+      get a bunch of files, many of them just making a call to the function.
+      But there is surely one which contains the definition of the function.
+      Look at the position of the file where it is defined, and add it to the
+      project (Menu "Project"|"Add To Project"|"Files").
+
+In order to add (or remove) a library for the link process, Let's go in the
+menu "Project"|"Settings", "Link" Tab, "General" category. There is a field
+called "Object/library modules" that lists all the libraries added to the
+project at link time. 
+
+OK, Now, it should link. So you should have an executable file called
+"walktest.exe" in your src directory. Let's run it!
+
+
+III. MISCELLANEOUS THINGS:
+
+- When I want to launch Walktest I got an 'standard.zip not found' error!
+
+Make sure you placed standard.zip into the same directory as the exe file
+and have not unzipped it. If it is there, make sure, that walktest will
+use the proper working directory. See Section [1] quickstart step 9 for
+details on how to do this.
+
+- When I start walktest I just get a black screen, maybe with some
+  text output, but after a few seconds it drops back to the normal
+  windows screen without an error
+
+This shouldn't happen any more, because in most cases now, walktest
+will display proper error messages. Anyway, you should make 
+sure you have set an appropriate directory set. (see above)
+Make sure you have the level given in cryst.cfg as WORLDFILE=
+at the exact location available (also keep in mind, that your 
+current directory is, where the executable sits.)
+
+- My last update did compile, but now I got a new version and everthing 
+  seems to be broken.
+
+When working with Crystal Space, always keep in mind, that this is a 
+multiplatform project. So sometimes not all features will work correct
+on all platforms. Sometimes a specific port may even be broken due to
+changes in other ports. Since the introduction of CVS this is usually
+only for a short time, so if you got your version out of CVS, it usually
+pays off, to post a message describing the problems to the Crystal 
+Space Mailing List (crystal@lists.linux.it) describing you problem and
+enclude the exact error messages. If you wait a while, this will probably
+be fixed, or at least be worked around.
+
+- I compile for the first time, and I have a problem that you haven't 
+  solved here!
+
+Mail me at thieber@gmx.net. You can also try to reach Dan Ogles or Noote or
+send a note to Crystal Space Mailing List (crystal@lists.linux.it). 
+Don't forget to tell us if you're not a member of that list so that we can 
+then send you a personal reply.
+
+Hope this helps you!
+
+Thomas Hieber
+thieber@gmx.net
+Xavier TROCHU
+xtrochu@yahoo.com
+NooTe (Nathaniel Saint Martin)
+noote@bigfoot.com
+
+

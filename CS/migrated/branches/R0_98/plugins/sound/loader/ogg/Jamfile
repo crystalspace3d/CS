@@ -1,0 +1,10 @@
+SubDir TOP plugins sound loader ogg ;
+
+if $(VORBISFILE.AVAILABLE) = "yes"
+{
+Description sndogg : "ogg vorbis sound loader" ;
+Plugin sndogg : [ Wildcard *.cpp *.h ] ;
+LinkWith sndogg : soundloadercommon csutil ;
+ExternalLibs sndogg : VORBISFILE ;
+CompileGroups sndogg : soundloaders ;
+}

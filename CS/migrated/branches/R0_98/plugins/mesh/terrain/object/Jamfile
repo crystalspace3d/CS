@@ -1,0 +1,11 @@
+SubDir TOP plugins mesh terrain object ;
+
+Description chunklod : "CLOD Terrain plugin" ;
+
+Plugin chunklod
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith chunklod : cstool csgfx csgeom csutil ;
+
+CompileGroups chunklod :  meshes ;
+

@@ -1,0 +1,11 @@
+SubDir TOP plugins sound loader wav ;
+
+Description sndwav : "wav sound loader" ;
+
+Plugin sndwav
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith sndwav : soundloadercommon csutil ;
+
+CompileGroups sndwav :  soundloaders ;
+

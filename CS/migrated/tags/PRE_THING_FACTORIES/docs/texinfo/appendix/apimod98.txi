@@ -1,0 +1,139 @@
+@c -*-texinfo-*-
+@node API Modifications 98, API Modifications 96, API Modifications, API Modifications
+@appendixsec @sc{api} Changes from 0.96 to 0.98
+@cindex @sc{api} Changes
+
+This section documents the major changes between versions 0.96 and 0.98 of of
+Crystal Space.
+
+@subheading Polygon Texture Mapping Changes
+@cindex @code{iPolygon3D}
+@cindex @code{iPolyTexNone}
+@cindex @code{iPolyTexGouraud}
+@cindex @code{iPolyTexFlat}
+@cindex @code{iPolyTexLightMap}
+@cindex shading
+
+The following interfaces have been removed: @code{iPolyTexNone},
+@code{iPolyTexGouraud}, @code{iPolyTexFlat}, and  @code{iPolyTexLightMap}.
+The combined @sc{api} from @code{iPolyTexNone} and the @code{iPolyTexLightMap}
+have moved to @code{iPolygon3D} itself.
+
+@code{iPolygon3D->SetTextureType()} has been removed (and also
+@code{GetTextureType()}. Instead there is now
+@code{iPolygon3D->EnableTextureMapping()} and
+@code{iPolygon3D->IsTextureMappingEnabled()}.
+
+@code{iPolygon3D->GetPolyTexType()} has been removed.
+
+The @code{shading} keyword in polygons now accepts a boolean value
+instead of @samp{NONE}, @samp{FLAT}, @samp{GOURAUD}, or @samp{LIGHTMAP}.
+With this you can enable/disable lightmapping.
+
+If you want gouraud shaded polygons you should use the @samp{genmesh}
+mesh object plugin instead.
+
+@subheading Bezier Curve Changes
+@cindex Bezier Curve Changes
+@cindex @code{iCurveTemplate}
+@cindex @code{iCurve}
+
+The notion of curve templates has been reworked. @code{iCurveTemplate} has
+been removed and it's functionality has moved to @code{iCurve} itself.
+As a consequence of this change the bezier addon loader has been removed.
+A curve like this in the past:
+@example
+<addon>
+  <plugin>crystalspace.mesh.loader.thing.bezier</plugin>
+  <params>
+    <name>b1</name>
+    <material>mosaic</material>
+    <v>0</v> <v>1</v> <v>2</v>
+    <v>3</v> <v>4</v> <v>5</v>
+    <v>6</v> <v>7</v> <v>8</v>
+  </params>
+</addon>
+<meshfact name="tunnel">
+  <plugin>crystalspace.mesh.loader.factory.thing</plugin>
+  <params>
+    <curvecenter x="0" y="0" z="0" />
+    <curvescale>80</curvescale>
+    <curvecontrol x="5" y="2" z="0" u="1" v="0" />
+    @dots{}
+    <curve name="bez">b1</curve>
+  </params>
+</meshfact>
+@end example
+
+should now become:
+
+@example
+<meshfact name="tunnel">
+  <plugin>crystalspace.mesh.loader.factory.thing</plugin>
+  <params>
+    <curvecenter x="0" y="0" z="0" />
+    <curvescale>80</curvescale>
+    <curvecontrol x="5" y="2" z="0" u="1" v="0" />
+    @dots{}
+    <curve name="b1">
+      <material>mosaic</material>
+      <v>0</v> <v>1</v> <v>2</v>
+      <v>3</v> <v>4</v> <v>5</v>
+      <v>6</v> <v>7</v> <v>8</v>
+    </curve>
+  </params>
+</meshfact>
+@end example
+
+@subheading iThingState and iPolygon3D Changes
+@cindex @code{iThingState}
+@cindex @code{iPolygon3D}
+@cindex @code{iObject}
+
+@code{iPolygon3D} and @code{iThingState} no longer implement @code{iObject}.
+So the @code{QueryObject()} function has been removed. Polygons can still
+have names though. Added @code{SetName()} and @code{GetName()} for that.
+
+@code{iPolygon3D} has been split in @code{iPolygon3D} and
+@code{iPolygon3DStatic}. The static version contains all static data that
+can be put in a factory. Several functions like
+@code{iThingState->CreatePolygon()} will now return @code{iPolygon3DStatic}.
+
+@code{iThingState} has been split in @code{iThingState} and
+@code{iThingFactoryState}.
+
+@subheading Polygon Planes
+@cindex @code{iPolyTxtPlane}
+@cindex @code{iThingEnvironment}
+
+Polygon planes are removed. So it is no longer possible to use
+the plane addon loader to define texture mapping for a polygon outside
+of the polygon itself. To fix this you must specify all texture mapping
+information in the @code{texmap} statement of the polygon. @file{map2cs}
+now correctly outputs polygons like this (no longer outputs planes) and
+@file{levtool} can convert old style maps to new format like this:
+
+@code{iThingEnvironment} no longer has code to maintain polygon texture
+mapping planes.
+
+The plane loader and saver addons have been removed from the thing
+loader plugin.
+
+Removed @code{iPolyTxtPlane} interface. Added
+@code{iPolygon3DStatic->GetTextureSpace()} function to get texture space
+definition for polygon.
+
+@example
+levtool -planes yourmap.zip
+@end example
+
+@subheading Portal changes
+@cindex @code{iPortal}
+
+Several methods in @code{iPortal} have changed slightly. For example
+@code{SetMirror} now expects a plane instead of a polygon.
+
+@subheading Datatype changes
+
+The @code{csSome}, @code{csConstSome} and @code{uint} types have been removed.
+Use @code{void*}, @code{const void*} and @code{usigned int} instead.

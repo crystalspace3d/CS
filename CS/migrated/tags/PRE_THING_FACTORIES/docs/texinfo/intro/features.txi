@@ -1,0 +1,212 @@
+@c -*-texinfo-*-
+@node Feature List, Where to Get, DocGuide, CS Introduction
+@section Feature List
+@cindex Features
+
+The first feature to mention here is that Crystal Space is an Open Source
+project (or a Free Software project, depending on your religion) that is
+freely available under the @sc{gnu} Lesser General Public License
+(@sc{gnu lgpl}). @xref{License}. This means a number of things for developers,
+but perhaps most important is that any program you write may freely link to the
+Crystal Space libraries.
+
+The second important feature of Crystal Space is that it is written to run
+under a wide variety of hardware and software platforms. As of this writing
+Crystal Space has been known to run on the following systems. Note that if a
+system is listed here it does not necessarily mean that it is 100% supported:
+
+@itemize @bullet
+@item
+Windows (Windows 9x/NT/ME/2000/XP)
+
+@item
+Unix (Linux, FreeBSD, etc.)
+
+@item
+MacOS/X
+@end itemize
+
+@noindent
+Here are some of just some of Crystal Space's features in no particular order:
+
+@c this used to be listed by library and plug-in, but I found that organization
+@c redundant after looking at some other sections of the documentation,
+@c namely the directory hierarchy section
+
+@itemize @bullet
+@item
+2D and 3D vectors
+
+@item
+quaternions
+
+@item
+2D and 3D polygons
+
+@item
+2D and 3D matrices (and transforms)
+
+@item
+Shared Class Facility @sc{scf}.  @xref{SCF}.
+
+@item
+plug-in system
+
+@item
+archival (@sc{zip} files)
+
+@item
+configuration files
+
+@item
+command-line parsing
+
+@item
+events (queues, cords, outlets)
+
+@item
+user input
+
+@item
+@sc{md5} signatures
+
+@item
+random number generator
+
+@item
+virtual clock and scheduler
+
+@item
+strings
+
+@item
+storage vectors (not geometry vectors)
+
+@item
+data streams
+
+@item
+hash maps
+
+@item
+progress meters and pulses (in text)
+
+@item
+screen @sc{fx} (fading, whiteout, etc)
+
+@item
+procedural textures
+
+@item
+2D animations
+
+@item
+sprite building
+
+@item
+two different windowing systems
+
+@item
+2D canvases (OpenGL, DirectDraw, X11, CoreGraphics, Cocoa, null, memory, line)
+
+@item
+3D renderers (OpenGL, software, null, line)
+
+@item
+@sc{avi} streams (@sc{rle}, DivX 4, OpenDivX)
+
+@item
+image loaders (@sc{bmp}, @sc{gif}, @sc{jpg}, @sc{png}, @sc{sgi}, @sc{tga},
+@sc{wal})
+
+@item
+portals and sectors
+
+@item
+lighting (static, pseudo-dynamic, dynamic, halos, shadows, radiosity)
+
+@item
+bezier curves
+
+@item
+visibility culling based on kd-tree with coverage buffers
+
+@item
+multiple cameras
+
+@item
+textures, materials, and shaders
+
+@item
+optional isometric engine
+
+@item
+a virtual file system (allows reading into zip files)
+
+@item
+sound drivers (CoreAudio, @sc{oss}, and WaveOut)
+
+@item
+sound renderers (software, DirectSound 3D, @sc{eax}, aRts)
+
+@item
+sound loaders (@sc{wav}, @sc{au}, @sc{iff}, @sc{aiff}, @sc{mod}, @sc{mp3},
+@sc{ogg})
+
+@item
+thing and mesh objects
+
+@item
+2D and 3D sprites
+
+@item
+terrains
+
+@item
+metaballs
+
+@item
+particle systems (fire, explosions, rain, snow, spirals, fountain)
+
+@item
+haze meshes
+
+@item
+mesh builders and sprite factories
+
+@item
+volumetric light
+
+@item
+pull-down console
+
+@item
+network sockets
+
+@item
+collision detection (using @sc{rapid} or @sc{opcode})
+
+@item
+bitmapped and vector fonts
+
+@item
+map file loader and converters
+
+@item
+scripting engine (python, perl, ...)
+
+@item
+performance statistics
+
+@item
+skeletal animation
+
+@item
+object movement
+
+@item
+Dynavis visibility culling system
+
+@item
+debugging system
+@end itemize

@@ -1,0 +1,12 @@
+*.dll
+*.exe
+*.log
+*.zip
+*.txt
+config.mak*
+cache.mak*
+out
+Jamconfig
+Makefile
+config.*
+

@@ -1,0 +1,91 @@
+/*
+    Copyright (C) 2001 by Martin Geisse <mgeisse@gmx.net>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public
+    License along with this library; if not, write to the Free
+    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+/**
+ * \file
+ */
+
+#ifndef __CS_OBJITER_H__
+#define __CS_OBJITER_H__
+
+#include "iutil/object.h"
+
+/**
+ * Defines a typed objectiterator class, descending from 
+ * csTypedObjectIterator. This macro assumes that the requested interface 
+ * is already declared as a fast interface.
+ */
+#define CS_DECLARE_OBJECT_ITERATOR(NAME,INTERFACE)			\
+  class NAME : public csTypedObjectIterator				\
+  {									\
+  protected:								\
+    virtual void GetRequestedInterface (scfInterfaceID &id, int &ver) const	\
+    { id = INTERFACE##_scfGetID (); ver = INTERFACE##_VERSION; }	\
+  public:								\
+    inline NAME (iObject *Parent) : csTypedObjectIterator (Parent)	\
+      { FetchObject (); }						\
+    inline INTERFACE *Get ()						\
+      { return (INTERFACE*)(iBase*)CurrentTypedObject; }		\
+  };
+
+/**
+ * Helper class for #CS_DECLARE_OBJECT_ITERATOR macro.
+ */
+class csTypedObjectIterator
+{
+protected:
+  csRef<iObjectIterator> iter;
+  csRef<iBase> CurrentTypedObject;
+
+  void FetchObject ();
+  virtual void GetRequestedInterface (scfInterfaceID &id, int &ver) const = 0;
+
+public:
+  /// constructor
+  csTypedObjectIterator (iObject *Parent);
+  /// destructor
+  virtual ~csTypedObjectIterator ();
+
+  /// Move forward
+  inline bool Next();
+  /// Reset the iterator to the beginning
+  inline void Reset();
+  /// Get the object we are pointing at
+  inline iObject *GetObject () const;
+  /// Get the parent object
+  inline iObject *GetParentObj() const;
+  /// Check if we have any children of requested type
+  inline bool IsFinished () const;
+  /// Find the object with the given name
+  inline bool FindName (const char* name);
+};
+
+inline bool csTypedObjectIterator::Next()
+  { bool r = iter->Next (); FetchObject (); return r; }
+inline void csTypedObjectIterator::Reset()
+  { iter->Reset (); FetchObject (); }
+inline iObject *csTypedObjectIterator::GetObject () const
+  { return iter->GetObject (); }
+inline iObject *csTypedObjectIterator::GetParentObj() const
+  { return iter->GetParentObj (); }
+inline bool csTypedObjectIterator::IsFinished () const
+  { return iter->IsFinished (); }
+inline bool csTypedObjectIterator::FindName (const char* name)
+  { bool r = iter->FindName (name); FetchObject (); return r; }
+
+#endif // __CS_OBJITER_H__

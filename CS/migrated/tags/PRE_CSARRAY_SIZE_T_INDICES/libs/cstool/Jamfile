@@ -1,0 +1,7 @@
+SubDir TOP libs cstool ;
+
+Description cstool : "tool library" ;
+Library cstool :
+  [ Wildcard *.cpp *.h ]
+  [ Wildcard [ ConcatDirs $(DOTDOT) $(DOTDOT) include cstool ] : *.h ] ;
+LibDepends cstool : csgfx csgeom csutil ;

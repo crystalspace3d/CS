@@ -1,0 +1,11 @@
+SubDir TOP plugins video loader sgi ;
+
+Description cssgiimg : "sgi image loader" ;
+
+Plugin cssgiimg
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith cssgiimg : csgfx csutil ;
+
+CompileGroups cssgiimg :  imageloaders ;
+

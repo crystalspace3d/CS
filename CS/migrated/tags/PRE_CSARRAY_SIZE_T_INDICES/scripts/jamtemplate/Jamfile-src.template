@@ -1,0 +1,9 @@
+SubDir TOP src ;
+
+Description #PROJECTNAME# : "#LONGNAME#" ;
+Application #PROJECTNAME# : [ Wildcard *.cpp *.h ] ;
+ExternalLibs #PROJECTNAME# : CRYSTAL ;
+if $(CEL.DESIRED) = yes && $(CEL.AVAILABLE) = yes
+{
+  ExternalLibs #PROJECTNAME# : CEL ;
+}

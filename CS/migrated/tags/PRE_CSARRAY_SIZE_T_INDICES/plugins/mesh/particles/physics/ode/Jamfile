@@ -1,0 +1,9 @@
+SubDir TOP plugins mesh particles physics ode ;
+
+if $(ODE.AVAILABLE) = "yes"
+{
+Description partphys_ode : "Particle ODE-based Physics plugin" ;
+Plugin partphys_ode : [ Wildcard *.cpp *.h ] ;
+LinkWith partphys_ode : csutil csgeom ;
+CompileGroups partphys_ode : meshes ;
+}

@@ -1,0 +1,11 @@
+SubDir TOP plugins sound loader au ;
+
+Description sndau : "au sound loader" ;
+
+Plugin sndau
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith sndau : soundloadercommon csutil ;
+
+CompileGroups sndau :  soundloaders ;
+

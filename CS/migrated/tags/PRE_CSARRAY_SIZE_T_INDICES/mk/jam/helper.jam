@@ -1,0 +1,355 @@
+#============================================================================
+# Helper rules
+# Copyright (C)2003 by Matze Braun <matzebraun@users.sourceforge.net>
+# Copyright (C)2004 by Eric Sunshine <sunshine@sunshineco.com>
+#
+#    This library is free software; you can redistribute it and/or modify it
+#    under the terms of the GNU Library General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or (at your
+#    option) any later version.
+#
+#    This library is distributed in the hope that it will be useful, but
+#    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+#    License for more details.
+#
+#    You should have received a copy of the GNU Library General Public License
+#    along with this library; if not, write to the Free Software Foundation,
+#    Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#============================================================================
+
+SED ?= sed ;
+DEEPCOPY ?= "cp -R" ;
+DELTREE ?= "rm -rf" ;
+
+# The -f option to `cp' is not supported on older platforms.
+# The convolution of the conditional arises because CP is defined in Jambase as
+# two tokens rather than a single string, so we must check the tokens
+# individually; yet we also check it as a simple string for future robustness.
+if $(CP) = "cp -f" || $(CP[1]) = "cp" && $(CP[2]) = "-f"
+{
+  CP = cp ;
+}
+
+##  IncludeDir [ dir [ : target [ : options ]]]
+##    Specify the location of a directory containing header files for a target,
+##    or for the whole project if no target is given.  "dir" is a list of
+##    components composing the path.  This rule will automatically generate the
+##    -I compiler flags and makes sure the dependency scanner is able to locate
+##    your header files.  "dir" is assumed to be relative to the current
+##    subdirectory specified with the SubDir rule unless the "ignoresubdir"
+##    option is given, in which case "dir" is used literally.  If "dir" is
+##    omitted, then the current subdirectory specified with SubDir is used as
+##    the header directory.  An omitted "dir" and the "ignoresubdir" option are
+##    mutually exclusive.  You may invoke this rule multiple times to specify
+##    any number of header file directories.
+##    Options:
+##	ignoresubdir: Do not prepend $(SUBDIR) to "dir".
+##
+##    Implementation: The directory is simply added to the HDRS variable which
+##    is respected by all Jam rules.
+rule IncludeDir
+{
+  local dir = $(1) ;
+  local target = $(2) ;
+  local options = $(3) ;
+
+  CheckOptions ignoresubdir : $(options) : $(dir) ;
+  if ! $(dir) || ! [ IsElem ignoresubdir : $(options) ]
+  {
+    dir = $(SUBDIR) $(dir) ;
+  }
+  dir = [ ConcatDirs $(dir) ] ;
+
+  if $(target)
+  {
+    local o ;
+    for o in $($(target)_OBJECTS)
+    {
+      CCHDRS on $(o) += [ FIncludes $(dir) ] ;
+    }
+  }
+  else
+  {
+    HDRS += $(dir) ;
+  }   
+}
+
+##  Wildcard [ dir : ] patterns
+##    Create a list of files in a directory which match the pattern. You can
+##    optionally specify a subdirectory. The files will be returned with
+##    stripped pathnames. The difference from GLOB is that this rule respects
+##    subdirectories which may have been entered with the SubDir rule.
+rule Wildcard
+{
+  local files dir sdir wildcards ;
+  
+  # Is a directory given?
+  if $(>) {
+    dir = $(<)/ ;
+    sdir = $(<) ;
+    wildcards = $(>) ;
+  } else {
+    dir = "" ;
+    sdir = "" ;
+    wildcards = $(<) ;
+  }
+
+  files = [ GLOB [ ConcatDirs $(SUBDIR) $(dir) ] : $(wildcards) ] ;
+
+  return $(files:BSR=$(sdir)) ;
+}
+
+##  Recurse rule : types [ : prefix ]
+##    Recursively scan current directory, $(SUBDIR), for files matching 'types'
+##    and invoke 'rule' for each file which matches one of the 'types'.
+##    'types' is a list of file extensions (with the leading dot).  'rule' will
+##    be invoked with two arguments: (1) the basename of the file including the
+##    extension, (2) a list of the path components from the current directory
+##    to the file's directory.  When 'rule' is invoked, it will see a $(SUBDIR)
+##    value of the directory containing the file (as if the rule had been
+##    invoked from within the file's directory).  'prefix' is an optional list
+##    of path components which will be prepended to rule's second argument.
+rule Recurse
+{
+  local innerrule = $(1) ;
+  local types = $(2) ;
+  local prefix = $(3) ;
+  local files = [ GLOB $(SUBDIR) : * ] ;
+  
+  local i ;
+  for i in $(files)
+  {
+    if [ IsElem $(i:S) : $(types) ]
+    {
+      $(innerrule) $(i:BS) : $(prefix) ;
+    }
+    else
+    {
+      if ! [ IsElem $(i:BS) : $(DOT) $(DOTDOT) ]
+      {
+        local SUBDIR = $(i) ; # Called rules see this new temporary value.
+	Recurse $(innerrule) : $(types) : $(prefix) $(i:BS) ;
+      }
+    }
+  }
+}
+
+##  ResponseFile file : [ items [ : directory ]]
+##    Jam places a fairly restrictive limit on the length of the command string
+##    emitted by an 'actions' block.  If the limit is exceeded, Jam rudely
+##    aborts.  This problem is easily triggered when actions are invoked
+##    'together' but not 'piecemeal'; especially when the command arguments
+##    involve many lengthy pathnames.  To work around this type of problem,
+##    some tools allow the client to furnish a file containing information
+##    which would otherwise be specified via the command-line.  This is often
+##    called a "response file".  The ResponseFile rule can be used to create a
+##    response file named 'file' in 'directory' containing 'items', one per
+##    line.  If 'directory' is not specified, then the file is placed in
+##    $(LOCATE_TARGET).  If there is a possibility that the same 'file' name
+##    might be used in other contexts, be sure to grist it appropriately to
+##    avoid conflicts.  This rule assumes that 'items' contains bound entries.
+##    If this is not the case, then be sure to invoke NotFile for the contained
+##    items.  This rule may be invoked multiple times for the same 'file' in
+##    order to populate the file incrementally.  The rule returns 'file' to
+##    make it convenient to daisy chain with invocations of other rules, such
+##    as Depends or Always.
+rule ResponseFile
+{
+  local file = $(1) ;
+  local items = $(2) ;
+  local dir = $(3) ;
+
+  if ! $(items)
+  {
+    items = "" ; # Force file creation even if list is empty.
+    NotFile $(items) ;
+  }
+
+  if ! $(dir) { dir = $(LOCATE_TARGET) ; }
+  MakeLocate $(file) : $(dir) ;
+
+  local firsttime = no ;
+  if ! [ IsElem $(file) : $(RESPONSE_FILE_REGISTRY) ]
+  {
+    firsttime = yes ;
+    RESPONSE_FILE_REGISTRY += $(file) ;
+  }
+
+  local i ;
+  for i in $(items)
+  {
+    if $(firsttime) = yes
+    {
+      ResponseFile1 $(file) : $(i) ;
+      firsttime = no ;
+    }
+    else
+    {
+      ResponseFile2 $(file) : $(i) ;
+    }
+  }
+
+  return $(file) ;
+}
+
+actions ResponseFile1
+{
+  echo '$(>)' > $(<)
+}
+
+actions quietly ResponseFile2
+{
+  echo '$(>)' >> $(<)
+}
+
+##  Prefix list : prefix
+##    Adds a prefix to a all elements in list.
+rule Prefix
+{
+  return $(>)$(<) ;
+}
+
+if $(JAMVERSION) >= 2.5
+{
+
+##  IsElem element : list
+##    Returns "true" if the elemnt is in the list. Otherwise nothing is
+##    returned.
+rule IsElem
+{
+  local i ;
+
+  for i in $(>)
+  {
+    if $(i) = $(<)
+    {
+      return "true" ;
+    }
+  }
+
+  return ;
+}
+
+}
+else
+{
+
+# jam<2.4's return statement doesn't exit the function
+rule IsElem
+{
+  local i result ;
+
+  for i in $(>)
+  {
+    if $(i) = $(<)
+    {
+      result = "true" ;
+      $(>) = ;
+    }
+  }
+
+  return $(result) ;
+}
+
+}
+
+##  Filter list : filter
+##    Returns the list without the words contained in filter.
+rule Filter
+{
+  local i result ;
+
+  for i in $(<)
+  {
+    if ! [ IsElem $(i) : $(>) ]
+    {
+      result += $(i) ;
+    }
+  }
+
+  return $(result) ;
+}
+
+##  RemoveDups list
+##    Removes duplicates in the list (this function tries to preserve the list
+##    order)
+rule RemoveDups
+{
+  local i result ;
+
+  for i in $(<)
+  {
+    if ! [ IsElem $(i) : $(result) ]
+    {
+      result += $(i) ;
+    }  
+  }
+
+  return $(result) ;
+} 
+
+##  Reverse list
+##    Reverse the order of items in the list.
+rule Reverse
+{
+  local result ;
+  
+  for i in $(<)
+  {
+    result = $(i) $(result) ;
+  }
+  return $(result) ;
+}
+
+##  GetVar argument
+##    Simply returns the value of the variable with name argument.
+##    This is useful to query on target variables:
+##       bla = [ on TARGET GetVar CFlags ] ;
+rule GetVar
+{
+  return $($(<)) ;
+}
+
+##  ConcatDirs dirs
+##    Concatenates a set of directories. This is a substitute for FDirName in
+##    Jambase. It works also correctly for several rooted paths, where FDirName
+##    fails.
+##    The advantage over $(dir1)/$(dir2) is that this also works correctly if
+##    $(dir1) or $(dir2) is not set.
+rule ConcatDirs
+{
+  local i ;
+  local result = $(<[1]) ;
+  if ! $(result) { $result = "" ; }
+  local dir1 dir2 ;
+
+  for i in $(<[2-])
+  {
+    # eleminate multiple slashes because jam is somewhat buggy here
+    dir1 = [ MATCH (.*[^/]?) : $(result) ] ;
+    dir2 = [ MATCH ([^/].*) : $(i) ] ;
+    if ! $(dir1) { dir1 = "" ; }
+    if $(dir1) != "" { dir1 = $(dir1)/ ; }
+    if ! $(dir2) { dir2 = "" ; }
+    result = $(dir1)$(dir2) ;
+  }
+
+  return $(result) ;
+}
+
+##  Copy target : source
+##    Copy source to target.
+actions Copy
+{
+  $(RM) $(<)
+  $(CP) $(>) $(<)
+}
+
+##  Move target : source
+##    Move (or rename) source to target.
+actions ignore Move
+{
+  $(MV) $(>) $(<)
+}

@@ -1,0 +1,401 @@
+@c -*-texinfo-*-
+@node Directory Hierarchy, Requirements, Building, Building
+@section Directory Hierarchy
+@cindex Directory Hierarchy
+@cindex Hierarchy, Directory
+
+This section is intended to explain the general CS directory structure.
+Crystal Space consists of the following directories:
+
+@c --------------------------------------------------------------------------
+@c Most directories should get a very short note and a link to their real
+@c documentation.
+@c --------------------------------------------------------------------------
+@table @code
+@item CS
+The main directory for Crystal Space.  You can choose any path for it, as long
+as it is supported by your operating system.  If you choose to build the
+project within this directory, then this is where the built applications and
+plugin modules are deposited.  The file @file{vfs.cfg} also resides in this
+directory.
+
+@item CS/out
+This directory is used by the build process if you build the project using
+``make'' or ``jam'' within the source tree.  It is also possible---indeed
+recommended---to build the project in some other location.  This directory will
+contain all object files, static link libraries, and other generated files
+needed for building the project.
+
+@item CS/apps
+Contains the source code for applications which ship with Crystal Space.
+@xref{Applications}.
+
+@table @code
+@item CS/apps/tests
+Applications for testing specific features of the project reside here.
+@end table
+
+@item CS/bin
+Miscellaneous scripts used by the project maintainers.
+
+@item CS/data
+Location of data files and maps distributed with Crystal Space.
+
+@item CS/data/config
+May applications and plugins utilize a (@file{.cfg}) file.  For convenience
+they are grouped here.
+
+@item CS/docs
+The root of the Crystal Space documentation hierarchy.  There are several
+subdirectories.
+
+@table @code
+@item CS/docs/texinfo
+Texinfo is the master format for all Crystal Space documentation.  This
+directory and its subdirectories contain all of the Texinfo source and images
+which comprise the Crystal Space manual.  Most users need not concern
+themselves with this directory since the Texinfo documentation is
+automatically converted to @sc{html} which is more accessible to the general
+user.  Documentation writers and maintainers, however, may be interested in
+this directory.
+
+@item CS/docs/html/manual
+This directory contains the @sc{html} conversion of the Texinfo Crystal Space
+manual.  Most users will want to browse the file
+@file{CS/docs/html/manual/index.html}.
+
+@item CS/docs/html/api
+This directory contains the Crystal Space @sc{sdk}'s public @sc{api} reference
+manual. Most users will want to browse the file
+@file{CS/docs/html/api/index.html}.
+
+@item CS/docs/support
+This directory contains support scripts and templates for automatically
+generating documentation.
+@end table
+
+@item CS/include
+These are the public Crystal Space header files.  These headers will be
+installed as part of the @sc{sdk} when you invoke @samp{make install} or
+@samp{jam install}.
+
+@item CS/libs
+Here is where the utility-like link libraries reside.  There are relatively few
+such libraries since most of Crystal Space's functionality is provided in the
+form of plugin modules.
+
+@table @code
+@item CS/libs/csgeom
+The geometry library. Various geometry related functions and classes can be
+found here: matrices, vectors, transforms, clipper, planes, etc.
+
+@item CS/libs/csgfx
+The graphics library. Here you will find bumpmapping, mipmapping, quantizers,
+and routines to support loading an image file (through the various image
+loading plug-ins).
+
+@item CS/libs/cstool
+This library contains high-level utility functions which rely upon the other
+libraries, and possibly upon plugin modules.  It is possible to write programs
+without utilizing this library, but it does provide several convenience classes
+for common cases and is, therefore, quite valuable.
+
+@item CS/libs/csutil
+This library contains various low-level utilities.  The utilities include an
+archiver, configuration manager, virtual clock, scheduler, strings, hash
+tables, @sc{scf} (@pxref{SCF}), @sc{md5} algorithm, command-line parser, event
+structures, and many others.
+
+@table @code
+@item CS/libs/csutil/generic
+Generic implementations of possibly platform-specific functionality.
+@item CS/libs/csutil/macosx
+MacOS/X-specific functionality.
+@item CS/libs/csutil/unix
+Unix-specific functionality.
+@item CS/libs/csutil/win32
+Windows-specific functionality.
+@end table
+
+@item CS/libs/csws
+The Crystal Space Windowing System which is platform-independent and works
+within a Crystal Space window.  @emph{This library is deprecated, unmaintained,
+and no longer developed.  Instead, use @sc{aws}.  @xref{AWS}.}
+@end table
+
+@item CS/mk
+This directory contains support facilities for the configuration and build
+systems.
+
+@table @code
+@item CS/mk/autoconf
+Handy Autoconf utility macros which may be of use to external projects based
+upon Crystal space.
+@item CS/mk/jam
+Handy Jam rules which may be of use to external projects based upon Crystal
+Space.
+@item CS/mk/msvcgen
+Component for automatic generation of Visual C++ project files based upon
+information gleaned from Jamfiles project-wide.
+@item CS/mk/visualc6
+Project files for Win32 using @sc{msvc} 6.0
+@item CS/mk/visualc7
+Project files for Win32 using @sc{msvc} 7.0
+@end table
+
+@item CS/plugins
+Dynamically loaded plug-ins. Communication with these modules is performed
+strictly via @sc{scf} interfaces. @xref{SCF}.
+
+@table @code
+@item CS/plugin/aws
+Alternate Windowing System.
+
+@item CS/plugins/bugplug
+Crystal Space debugger.
+
+@item CS/plugins/collide
+Collision detection plugins.
+
+@table @code
+@item CS/plugins/collide/rapid
+This is the @sc{rapid} collision detection plugin.
+
+@item CS/plugins/collide/opcode
+This is the Opcode collision detection plugin which is based upon the Opcode
+library. This plugin is generally much faster then @sc{rapid} and also uses
+less memory.
+@end table
+
+@item CS/plugins/console
+Various console plugins for input/output.  A console is often overlaid atop the
+3D display.
+
+@item CS/plugins/cscript
+The Crystal Script plugins. Crystal Script plugins allow programmers to
+interact with the Crystal Space engine via a scripting language.
+
+@table @code
+@item CS/plugins/cscript/csjava
+Java interface.
+
+@item CS/plugins/cscript/csperl5
+Perl5 interface.
+
+@item CS/plugins/cscript/cspython
+Python interface.
+@end table
+
+@item CS/plugins/csparser
+A plugin which parses structured map files and imports the map into the
+3D engine. The standard map file format is @sc{xml}, however the parser can
+parse any structured document which can be represented by an @samp{iDocument}
+interface.
+
+@table @code
+@item CS/plugins/csparser/services
+Crystal Space format loader services.
+@end table
+
+@item CS/plugins/culling
+Visibility culling plug-ins.
+
+@table @code
+@item CS/plugins/culling/dynavis
+Dynavis visibility culling system.
+@item CS/plugins/culling/frustvis
+Frustvis visibility culling system (default culler if no other is selected).
+@end table
+
+@item CS/plugins/device
+Hardware device plugins.
+
+@table @code
+@item CS/plugins/device/joystick
+Joystick support.
+@end table
+
+@item CS/plugins/engine
+The 3D @dfn{engine} which drives Crystal Space.
+
+@table @code
+@item CS/plugins/engine/3d
+The 3D engine plugin.
+@end table
+
+@item CS/plugins/filesys
+Filesystem-related plugins.
+
+@table @code
+@item CS/plugins/filesys/vfs
+Virtual filesystem, @sc{vfs}.  @xref{VFS}.
+@end table
+
+@item CS/plugins/font
+Collection of font servers.
+
+@table @code
+@item CS/plugins/font/server/csfont
+Standard (bitmapped) Crystal Space font server.
+@item CS/plugins/font/server/freefont
+FreeType (version 2) font server.
+@item CS/plugins/font/server/fontplex
+Font server multiplexer.
+@end table
+
+@item CS/plugins/mesh
+Various mesh object implementations (@pxref{MeshObject}).  For every mesh
+object there is typically one implementation in @file{object/} and one or more
+loader/saver plugins in @file{persist/}.  @file{persist/standard/} is the
+loader in Crystal Space format.
+
+@item CS/plugins/physics
+Plug-ins relating to the physics of motion.
+
+@table @code
+@item CS/plugins/physics/odedynam
+@sc{ode} dynamics.
+@end table
+
+@item CS/plugins/reporter
+Reporter.
+
+@item CS/plugins/sequence
+This is the sequence manager which is useful for managing timed sequences
+of events such as for demos.
+
+@item CS/plugins/sound
+Audio plugins.
+
+@table @code
+@item CS/plugins/sound/driver
+Platform-specific sound drivers.
+
+@table @code
+@item CS/plugins/sound/driver/coreaudio
+CoreAudio sound driver (MacOS/X).
+@item CS/plugins/sound/driver/oss
+Open Sound System (@sc{oss}) sound driver (@sc{unix}).
+@item CS/plugins/sound/driver/waveoutsd
+WaveOut sound driver (Windows).
+@end table
+
+@item CS/plugins/sound/loader
+Loaders for various sound file formats.
+
+@item CS/plugins/sound/renderer
+Platform- or facility-specific sound renderers.
+
+@table @code
+@item CS/plugins/sound/renderer/common
+Common sound rendering utility functions.
+
+@item CS/plugins/sound/renderer/ds3d
+DirectSound 3D sound renderer.
+
+@item CS/plugins/sound/renderer/openal
+OpenAL sound renderer.
+
+@item CS/plugins/sound/renderer/software
+Software sound renderer.
+@end table
+@end table
+
+@item CS/plugins/stdrep
+Standard reporter listener.
+
+@item CS/plugins/video
+All rendering- and graphics-related plugins.
+
+@table @code
+@item CS/plugins/video/canvas
+The 2D driver component which manages creation of the Crystal Space window used
+for rendering and also supports limited 2D drawing capabilities (including 2D
+pixmaps).
+
+@table @code
+@item CS/plugins/video/canvas/asciiart
+@sc{ascii} Art driver.
+
+@item CS/plugins/video/canvas/common
+Common code for 2D drivers.
+
+@item CS/plugins/video/canvas/ddraw
+Windows DirectDraw driver.
+
+@item CS/plugins/video/canvas/directxcommon
+Common DirectX (Win32) code.
+
+@item CS/plugins/video/canvas/macosx
+MacOS/X OpenGL and CoreGraphics graphics drivers.
+
+@item CS/plugins/video/canvas/memory
+Memory driver (render a scene directly to memory).
+
+@item CS/plugins/video/canvas/null2d
+A do-nothing 2D canvas.
+
+@item CS/plugins/video/canvas/openglcommon
+Common code for all OpenGL 2D drivers.
+
+@item CS/plugins/video/canvas/openglwin
+OpenGL 2D driver for Windows.
+
+@item CS/plugins/video/canvas/openglx
+OpenGL 2D driver for X11.
+
+@item CS/plugins/video/canvas/softx
+X11 software 2D driver.
+
+@item CS/plugins/video/canvas/xextf86vm
+X-extension driver (X11).
+
+@item CS/plugins/video/canvas/xextshm
+@sc{mit} X-extension shared memory driver (X11).
+
+@item CS/plugins/video/canvas/xwindow
+X-windows X11 driver.
+@end table
+
+@item CS/plugins/video/format
+Code for playing video files on a surface.
+
+@table @code
+@item CS/plugins/video/format/avi
+Audio-Video Interlace format.
+
+@item CS/plugins/video/format/codecs
+Video codecs for various formats (currently only @sc{avi}).
+
+@table @code
+@item codecs/divx4
+DivX version 4.
+
+@item codecs/opendivx
+OpenDivX.
+@end table
+@end table
+
+@item CS/plugins/video/loader
+Loaders for various graphics file formats.
+
+@item CS/plugins/video/renderer
+The 3D rasterizer component is required by the 3D engine but may also be
+used in a standalone environment.  It requires a 2D canvas.
+
+@table @code
+@item CS/plugins/video/renderer/common
+Common code for 3D rasterizers.
+
+@item CS/plugins/video/renderer/null
+A do-nothing renderer (required when working only with 2D graphics).
+
+@item CS/plugins/video/renderer/opengl
+OpenGL renderer.
+
+@item CS/plugins/video/renderer/software
+Software (non-accelerated) renderer.
+@end table
+@end table
+@end table
+@end table

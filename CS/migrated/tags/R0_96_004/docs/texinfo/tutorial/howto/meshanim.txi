@@ -1,0 +1,51 @@
+@c -*-texinfo-*-
+@node HOWTO Mesh LightAnim, HOWTO Mesh Movement, HOWTO Collision Detection, HOWTO
+@subsection Mesh Lighting and Animation
+@cindex mesh lighting
+@cindex mesh animation
+@cindex @code{iMeshWrapper}
+@cindex @code{DeferUpdateLighting}
+
+This section describes how to do animation for meshes and how they can
+get lit by surrounding lights.
+
+@subsubheading Animating Meshes
+
+Not all meshes support animation. All particle systems and 3D sprites
+have animation.
+
+The engine is smart enough to only animate mesh objects that are actually
+visible on screen.
+
+@subsubheading Lighting Meshes
+
+Almost all meshes support lighting. Mesh things are treated
+specially as they have support for lightmaps and dynamic lighting using
+dynamic lightmaps. So this discussion is not for them. But for all other
+meshes the system below applies. Note that for many meshes lighting can
+be disabled (usually by calling @code{SetLighting(false)} on the
+state of the mesh object).
+
+To make sure that lighting will be calculated for an object you
+need to call @code{DeferUpdateLighting()} on the mesh wrapper.
+Usually this is called after creation of a mesh and also after moving
+lights and/or the mesh itself. This call is cheap. It will only set
+a flag that lighting has to be recalculated as soon as the object will
+be visible. Here is an example:
+
+@example
+  iMeshWrapper* mesh;
+  mesh->DeferUpdateLighting (CS_NLIGHT_STATIC|CS_NLIGHT_DYNAMIC, 10);
+@end example
+
+This example considers both dynamic and static lights and will take the
+10 lights that are closest to the mesh.
+
+@subsubheading Mesh Include Files
+
+The include files useful for this section are:
+
+@example
+  #include "iengine/mesh.h"
+  #include "iengine/engine.h"
+@end example

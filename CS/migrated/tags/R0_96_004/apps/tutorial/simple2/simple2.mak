@@ -1,0 +1,69 @@
+# Application description
+DESCRIPTION.simple2 = Crystal Space tutorial part two, sprite
+
+#------------------------------------------------------------- rootdefines ---#
+ifeq ($(MAKESECTION),rootdefines)
+
+# Application-specific help commands
+APPHELP += \
+  $(NEWLINE)echo $"  make simple2      Make the $(DESCRIPTION.simple2)$"
+
+endif # ifeq ($(MAKESECTION),rootdefines)
+
+#------------------------------------------------------------- roottargets ---#
+ifeq ($(MAKESECTION),roottargets)
+
+.PHONY: simple2 simple2clean
+
+all apps: simple2
+simple2:
+	$(MAKE_APP)
+simple2clean:
+	$(MAKE_CLEAN)
+
+endif # ifeq ($(MAKESECTION),roottargets)
+
+#------------------------------------------------------------- postdefines ---#
+ifeq ($(MAKESECTION),postdefines)
+
+vpath %.cpp apps/tutorial/simple2
+
+SIMPLE2.EXE = simple2$(EXE)
+INC.SIMPLE2 = $(wildcard apps/tutorial/simple2/*.h)
+SRC.SIMPLE2 = $(wildcard apps/tutorial/simple2/*.cpp)
+OBJ.SIMPLE2 = $(addprefix $(OUT)/,$(notdir $(SRC.SIMPLE2:.cpp=$O)))
+DEP.SIMPLE2 = CSTOOL CSGFX CSUTIL CSSYS CSGEOM CSUTIL CSSYS
+LIB.SIMPLE2 = $(foreach d,$(DEP.SIMPLE2),$($d.LIB))
+
+#TO_INSTALL.EXE += $(SIMPLE2.EXE)
+
+MSVC.DSP += SIMPLE2
+DSP.SIMPLE2.NAME = simple2
+DSP.SIMPLE2.TYPE = appcon
+
+endif # ifeq ($(MAKESECTION),postdefines)
+
+#----------------------------------------------------------------- targets ---#
+ifeq ($(MAKESECTION),targets)
+
+.PHONY: build.simple2 simple2clean
+
+all: $(SIMPLE2.EXE)
+build.simple2: $(OUTDIRS) $(SIMPLE2.EXE)
+clean: simple2clean
+
+$(SIMPLE2.EXE): $(DEP.EXE) $(OBJ.SIMPLE2) $(LIB.SIMPLE2)
+	$(DO.LINK.EXE)
+
+simple2clean:
+	-$(RMDIR) $(SIMPLE2.EXE) $(OBJ.SIMPLE2)
+
+ifdef DO_DEPEND
+dep: $(OUTOS)/simple2.dep
+$(OUTOS)/simple2.dep: $(SRC.SIMPLE2)
+	$(DO.DEP)
+else
+-include $(OUTOS)/simple2.dep
+endif
+
+endif # ifeq ($(MAKESECTION),targets)

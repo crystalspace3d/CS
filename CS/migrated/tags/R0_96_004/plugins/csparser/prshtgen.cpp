@@ -1,0 +1,415 @@
+/*
+    Copyright (C) 2000-2001 by Jorrit Tyberghein
+    Copyright (C) 1998-2000 by Ivan Avramovic <ivan@avramovic.com>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public
+    License along with this library; if not, write to the Free
+    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#include "cssysdef.h"
+#include "csloader.h"
+#include "csutil/scanstr.h"
+#include "iutil/document.h"
+#include "csgfx/rgbpixel.h"
+#include "cstool/gentrtex.h"
+#include "ivideo/graph3d.h"
+#include "ivideo/texture.h"
+#include "iengine/engine.h"
+#include "iengine/texture.h"
+#include "iutil/object.h"
+
+struct PrsHeightMapData : public iGenerateImageFunction
+{
+  csRef<iImage> im;
+  int iw, ih;	// Image width and height.
+  float w, h;	// Image width and height.
+  csRGBpixel* p;
+  float hscale, hshift;
+  bool slope;
+  SCF_DECLARE_IBASE;
+
+  PrsHeightMapData (bool s) : slope (s)
+  {
+    SCF_CONSTRUCT_IBASE (NULL);
+  }
+  virtual ~PrsHeightMapData ()
+  {
+  }
+  float GetHeight (float dx, float dy);
+  float GetSlope (float dx, float dy);
+  virtual float GetValue (float dx, float dy);
+};
+
+SCF_IMPLEMENT_IBASE (PrsHeightMapData)
+  SCF_IMPLEMENTS_INTERFACE (iGenerateImageFunction)
+SCF_IMPLEMENT_IBASE_END
+
+float PrsHeightMapData::GetSlope (float x, float y)
+{
+  float div = 0.02;
+  float mx = x-.01; if (mx < 0) { mx = x; div = .01; }
+  float px = x+.01; if (px > 1) { px = x; div = .01; }
+  float dhdx = GetHeight (px, y) - GetHeight (mx, y);
+  dhdx /= div;
+  div = 0.02;
+  float my = y-.01; if (my < 0) { my = y; div = .01; }
+  float py = y+.01; if (py > 1) { py = y; div = .01; }
+  float dhdy = GetHeight (x, py) - GetHeight (x, my);
+  dhdy /= div;
+  //printf ("x=%g y=%g dhdx=%g dhdy=%g slope=%g , %g\n", x, y, dhdx, dhdy,
+    //fabs((dhdx+dhdy)/2.), fabs(dhdx)/2.+fabs(dhdy)/2.); fflush (stdout);
+  //return fabs ((dhdx+dhdy)/2.);
+  return (fabs(dhdx)+fabs(dhdy))/2.;
+}
+
+float PrsHeightMapData::GetHeight (float x, float y)
+{
+  float dw = fmod (x*(w-1), 1.0f);
+  float dh = fmod (y*(h-1), 1.0f);
+  int ix = int (x*(w-1));
+  int iy = int (y*(h-1));
+  int idx = iy * iw + ix;
+  float col00, col01, col10, col11;
+  col00 = float (p[idx].red + p[idx].green + p[idx].blue)/3.;
+  if (ix < iw-1)
+    col10 = float (p[idx+1].red + p[idx+1].green + p[idx+1].blue)/3.;
+  else
+    col10 = col00;
+  if (iy < ih-1)
+    col01 = float (p[idx+iw].red + p[idx+iw].green + p[idx+iw].blue)/3.;
+  else
+    col01 = col00;
+  if (ix < iw-1 && iy < ih-1)
+    col11 = float (p[idx+iw+1].red + p[idx+iw+1].green + p[idx+iw+1].blue)/3.;
+  else
+    col11 = col00;
+  float col0010 = col00 * (1-dw) + col10 * dw;
+  float col0111 = col01 * (1-dw) + col11 * dw;
+  float col = col0010 * (1-dh) + col0111 * dh;
+  //printf("Heightmap x=%g y=%g height=%g\n", x, y, col * hm->hscale + hm->hshift);
+  return col * hscale + hshift;
+}
+
+float PrsHeightMapData::GetValue (float x, float y)
+{
+  if (slope) return GetSlope (x, y);
+  else return GetHeight (x, y);
+}
+
+csGenerateImageValue* csLoader::ParseHeightgenValue (iDocumentNode* node)
+{
+  csGenerateImageValue* v = NULL;
+
+  csRef<iDocumentNodeIterator> it = node->GetNodes ();
+  while (it->HasNext ())
+  {
+    csRef<iDocumentNode> child = it->Next ();
+    if (child->GetType () != CS_NODE_ELEMENT) continue;
+    const char* value = child->GetValue ();
+    csStringID id = xmltokens.Request (value);
+    switch (id)
+    {
+      case XMLTOKEN_CONSTANT:
+        {
+	  csGenerateImageValueFuncConst* vt =
+	  	new csGenerateImageValueFuncConst ();
+	  vt->constant = child->GetContentsValueAsFloat ();
+	  v = vt;
+	}
+	break;
+      case XMLTOKEN_HEIGHTMAP:
+        {
+	  csGenerateImageValueFunc* vf = new csGenerateImageValueFunc ();
+	  float hscale = 1, hshift = 0;
+	  csRef<iDocumentNode> imagenode = child->GetNode ("image");
+	  if (!imagenode)
+	  {
+	    ReportError (
+	      "crystalspace.maploader.parse.heightgen",
+              "Expected 'image' token in 'heightmap'!");
+	  }
+	  const char* heightmap = imagenode->GetContentsValue ();;
+	  csRef<iDocumentNode> scalenode = child->GetNode ("scale");
+	  if (scalenode)
+	    hscale = scalenode->GetContentsValueAsFloat ();
+	  csRef<iDocumentNode> shiftnode = child->GetNode ("shift");
+	  if (shiftnode)
+	    hshift = shiftnode->GetContentsValueAsFloat ();
+
+	  csRef<iImage> img (LoadImage (heightmap, CS_IMGFMT_TRUECOLOR));
+	  if (!img) return NULL;
+	  PrsHeightMapData* data = new PrsHeightMapData (false);
+  	  data->im = img;
+  	  data->iw = img->GetWidth ();
+  	  data->ih = img->GetHeight ();
+  	  data->w = float (data->iw);
+  	  data->h = float (data->ih);
+  	  data->p = (csRGBpixel*)(img->GetImageData ());
+  	  data->hscale = hscale;
+  	  data->hshift = hshift;
+	  vf->SetFunction (data);
+	  data->DecRef ();
+	  v = vf;
+	}
+	break;
+      case XMLTOKEN_SLOPE:
+        {
+	  csGenerateImageValueFunc* vf = new csGenerateImageValueFunc ();
+	  float hscale = 1, hshift = 0;
+	  csRef<iDocumentNode> imagenode = child->GetNode ("image");
+	  if (!imagenode)
+	  {
+	    ReportError (
+	      "crystalspace.maploader.parse.heightgen",
+              "Expected 'image' token in 'slope'!");
+	  }
+	  const char* heightmap = imagenode->GetContentsValue ();;
+	  csRef<iDocumentNode> scalenode = child->GetNode ("scale");
+	  if (scalenode)
+	    hscale = scalenode->GetContentsValueAsFloat ();
+	  csRef<iDocumentNode> shiftnode = child->GetNode ("shift");
+	  if (shiftnode)
+	    hshift = shiftnode->GetContentsValueAsFloat ();
+	  csRef<iImage> img (LoadImage (heightmap, CS_IMGFMT_TRUECOLOR));
+	  if (!img) return NULL;
+	  PrsHeightMapData* data = new PrsHeightMapData (true);
+  	  data->im = img;
+  	  data->iw = img->GetWidth ();
+  	  data->ih = img->GetHeight ();
+  	  data->w = float (data->iw);
+  	  data->h = float (data->ih);
+  	  data->p = (csRGBpixel*)(img->GetImageData ());
+  	  data->hscale = hscale;
+  	  data->hshift = hshift;
+	  vf->SetFunction (data);
+	  data->DecRef ();
+	  v = vf;
+	}
+	break;
+      case XMLTOKEN_TEXTURE:
+	{
+	  csGenerateImageValueFuncTex* vf = new csGenerateImageValueFuncTex ();
+	  vf->tex = ParseHeightgenTexture (child);
+	  v = vf;
+	}
+	break;
+      default:
+	SyntaxService->ReportBadToken (child);
+	return NULL;
+    }
+  }
+  return v;
+}
+
+csGenerateImageTexture* csLoader::ParseHeightgenTexture (iDocumentNode* node)
+{
+  csGenerateImageTexture* t = NULL;
+
+  csRef<iDocumentNodeIterator> it = node->GetNodes ();
+  while (it->HasNext ())
+  {
+    csRef<iDocumentNode> child = it->Next ();
+    if (child->GetType () != CS_NODE_ELEMENT) continue;
+    const char* value = child->GetValue ();
+    csStringID id = xmltokens.Request (value);
+    switch (id)
+    {
+      case XMLTOKEN_SOLID:
+        {
+	  csColor col;
+          if (!SyntaxService->ParseColor (child, col))
+	    return NULL;
+	  csGenerateImageTextureSolid* ts = new csGenerateImageTextureSolid ();
+	  ts->color = col;
+	  t = ts;
+	}
+	break;
+      case XMLTOKEN_SINGLE:
+        {
+	  csRef<iDocumentNode> imagenode = child->GetNode ("image");
+	  if (!imagenode)
+	  {
+	    ReportError (
+		    "crystalspace.maploader.parse.heightgen",
+		    "No 'image' child specified for 'single'!");
+	    return NULL;
+	  }
+	  const char* imagename = imagenode->GetContentsValue ();
+	  csVector2 scale (1, 1), offset (0, 0);
+	  csRef<iDocumentNode> scalenode = child->GetNode ("scale");
+	  if (scalenode)
+	  {
+	    scale.x = scalenode->GetAttributeValueAsFloat ("x");
+	    scale.y = scalenode->GetAttributeValueAsFloat ("y");
+	  }
+	  csRef<iDocumentNode> offsetnode = child->GetNode ("offset");
+	  if (offsetnode)
+	  {
+	    offset.x = offsetnode->GetAttributeValueAsFloat ("x");
+	    offset.y = offsetnode->GetAttributeValueAsFloat ("y");
+	  }
+
+	  csRef<iImage> img (LoadImage (imagename, CS_IMGFMT_TRUECOLOR));
+	  if (!img) return NULL;
+	  csGenerateImageTextureSingle* ts =
+	  	new csGenerateImageTextureSingle ();
+	  ts->SetImage (img);
+	  ts->scale = scale;
+	  ts->offset = offset;
+	  t = ts;
+	}
+	break;
+      case XMLTOKEN_BLEND:
+        {
+	  csGenerateImageTextureBlend* tb = new csGenerateImageTextureBlend ();
+	  csRef<iDocumentNodeIterator> blend_it = child->GetNodes ();
+	  while (blend_it->HasNext ())
+	  {
+	    csRef<iDocumentNode> blend_child = blend_it->Next ();
+	    if (blend_child->GetType () != CS_NODE_ELEMENT) continue;
+	    const char* blend_value = blend_child->GetValue ();
+	    csStringID id = xmltokens.Request (blend_value);
+	    switch (id)
+	    {
+	      case XMLTOKEN_VALUE:
+	        tb->valuefunc = ParseHeightgenValue (blend_child);
+		if (!tb->valuefunc)
+		{
+		  ReportError (
+		    "crystalspace.maploader.parse.heightgen",
+		    "Problem with returned value!");
+		  return NULL;
+		}
+	        break;
+	      case XMLTOKEN_LAYER:
+	        {
+		  float height = 0;
+		  csGenerateImageTexture* txt = NULL;
+		  csRef<iDocumentNode> texturenode = blend_child->GetNode (
+		  	"texture");
+		  if (!texturenode)
+		  {
+		    ReportError (
+		      "crystalspace.maploader.parse.heightgen",
+		      "No 'texture' specified inside 'layer'!");
+		    return NULL;
+		  }
+	          txt = ParseHeightgenTexture (texturenode);
+		  if (!txt)
+		  {
+		    ReportError (
+			    "crystalspace.maploader.parse.heightgen",
+			    "Problem with returned texture!");
+		    return NULL;
+		  }
+		  csRef<iDocumentNode> heightnode = blend_child->GetNode (
+		  	"height");
+		  if (heightnode)
+		  {
+		    height = heightnode->GetContentsValueAsFloat ();
+		  }
+		  tb->AddLayer (height, txt);
+	  	}
+	        break;
+	      default:
+		SyntaxService->ReportBadToken (blend_child);
+		return NULL;
+	    }
+	  }
+	  t = tb;
+	}
+	break;
+      default:
+	SyntaxService->ReportBadToken (child);
+	return NULL;
+    }
+  }
+  if (!t)
+  {
+    ReportError (
+	    "crystalspace.maploader.parse.heightgen",
+	    "Problem with texture specification!");
+  }
+  return t;
+}
+
+bool csLoader::ParseHeightgen (iDocumentNode* node)
+{
+  int totalw = 256, totalh = 256;
+  int partw = 64, parth = 64;
+  int mw = 1, mh = 1;
+  csGenerateImage* gen = new csGenerateImage ();
+
+  csRef<iDocumentNodeIterator> it = node->GetNodes ();
+  while (it->HasNext ())
+  {
+    csRef<iDocumentNode> child = it->Next ();
+    if (child->GetType () != CS_NODE_ELEMENT) continue;
+    const char* value = child->GetValue ();
+    csStringID id = xmltokens.Request (value);
+    switch (id)
+    {
+      case XMLTOKEN_SIZE:
+	totalw = child->GetAttributeValueAsInt ("w");
+	totalh = child->GetAttributeValueAsInt ("h");
+	break;
+      case XMLTOKEN_MULTIPLY:
+	mw = child->GetAttributeValueAsInt ("w");
+	mh = child->GetAttributeValueAsInt ("h");
+	break;
+      case XMLTOKEN_PARTSIZE:
+	partw = child->GetAttributeValueAsInt ("w");
+	parth = child->GetAttributeValueAsInt ("h");
+	break;
+      case XMLTOKEN_TEXTURE:
+        {
+          csGenerateImageTexture* txt = ParseHeightgenTexture (child);
+          gen->SetTexture (txt);
+	}
+	break;
+      case XMLTOKEN_GENERATE:
+        {
+          if (!Engine || !G3D)
+	    break;
+
+	  int startx = child->GetAttributeValueAsInt ("x");
+	  int starty = child->GetAttributeValueAsInt ("y");
+	  iImage* img = gen->Generate (totalw, totalh, startx*mw, starty*mh,
+	  	partw, parth);
+	  csRef<iTextureHandle> TexHandle (G3D->GetTextureManager ()
+	  	->RegisterTexture (img, CS_TEXTURE_3D));
+	  if (!TexHandle)
+	  {
+	    ReportError (
+	      "crystalspace.maploader.parse.heightgen",
+	      "Cannot create texture!");
+	    return false;
+	  }
+	  iTextureWrapper *TexWrapper = Engine->GetTextureList ()
+	  	->NewTexture (TexHandle);
+	  TexWrapper->QueryObject ()->SetName (
+	  	child->GetAttributeValue ("name"));
+	}
+	break;
+      default:
+	SyntaxService->ReportBadToken (child);
+	delete gen;
+	return false;
+    }
+  }
+
+  delete gen;
+  return true;
+}
+

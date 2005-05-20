@@ -1,0 +1,14 @@
+@c -*-texinfo-*-
+@node MSVC, MinGW, Unix, Platform Instructions
+@subsection Windows using Microsoft Visual C++ 
+@cindex Windows, Building
+
+Crystal Space can be built with Microsoft Visual C++ 6 and 7.
+
+@menu
+* MSVC6:: Microsoft Visual C++ 6
+* MSVC7:: Microsoft Visual C++ 7
+@end menu
+
+@importssss{build,platform,win32,msvc,msvc6.txi}
+@importssss{build,platform,win32,msvc,msvc7.txi}

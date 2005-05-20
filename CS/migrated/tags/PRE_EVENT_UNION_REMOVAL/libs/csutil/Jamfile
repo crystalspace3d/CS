@@ -1,0 +1,42 @@
+SubDir TOP libs csutil ;
+
+CsLibAddModule ;
+
+CSUTIL.GENERIC = ;
+
+switch $(TARGET.OS)
+{
+case WIN32 :				# Windows 
+  SubInclude TOP libs csutil win32 ;
+case MACOS_X :				# MacOS/X
+  SubInclude TOP libs csutil macosx ;
+case * :				# Posix, Unix, Linux, etc.
+  SubInclude TOP libs csutil unix ;
+}
+
+if $(TARGET.OS) != "WIN32"
+{
+  if $(BACKTRACE.AVAILABLE) = "yes"
+  {
+    CSUTIL.GENERIC += callstack-backtrace.cpp ;
+  }
+  else
+  {
+    CSUTIL.GENERIC += callstack-dummy.cpp ;
+  }
+}
+
+if $(REGEX.AVAILABLE) != "yes"
+{
+  CSUTIL.GENERIC += regex.c ;
+}
+
+SubInclude TOP libs csutil generic ;
+
+CSLIB.CFLAGS +=
+  [ FDefines CS_CONFIGDIR='\"$(appconfdir)\"' ]
+  [ FDefines CS_PLUGINDIR='\"$(plugindir)\"'  ] ;
+CSLIB.EXTERNAL_LIBS += PTHREAD ZLIB ;
+
+# Uncomment to build the tool to generate the Unicode mapping tables.
+#SubInclude TOP libs csutil ucmapgen ;

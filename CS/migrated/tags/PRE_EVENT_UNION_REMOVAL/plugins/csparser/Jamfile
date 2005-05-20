@@ -1,0 +1,10 @@
+SubDir TOP plugins csparser ;
+
+Description csparser : "map file parser" ;
+
+Plugin csparser
+	: [ Wildcard *.cpp *.h ]
+;
+LinkWith csparser : crystalspace ;
+
+SubInclude TOP plugins csparser services ;

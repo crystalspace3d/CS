@@ -1,0 +1,30 @@
+@c -*-texinfo-*-
+@node NonLGPL, Copying, Library Copying, Licenses
+@appendixsec Portions of Crystal Space Covered Under Different Licenses
+
+Some portions of CrystalSpace are @emph{not} covered by @sc{lgpl} license. You
+might have to consider this, depending on how you intend to distribute your
+finished product. However, this is usually not problematic, as the modular 
+design of CrystalSpace allows to simply exclude the plugins in question.
+
+@itemize @bullet
+@item 
+@code{map2cs}, the Quake @sc{map} to Crystal Space converter in 
+@file{apps/import/map2cs}
+
+Licensed under the @sc{gnu} General Public License. @xref{Copying}.
+
+@item 
+@code{movierecorder} plugin
+
+Licensed under the @sc{gnu} General Public License. @xref{Copying}.
+
+@end itemize
+
+In addition, some plugins may need to link to external libraries covered 
+under a license other than the @sc{lgpl}.
+
+@itemize @bullet
+@item
+@emph{None yet.}
+@end itemize

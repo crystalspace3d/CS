@@ -1,0 +1,10 @@
+SubDir TOP plugins video render3d shader shaderplugins glshader_fixed ;
+
+if $(GL.AVAILABLE) = "yes"
+{
+Description glshader_fixed : "fixed function pipeline shader" ;
+Plugin glshader_fixed : [ Wildcard *.cpp *.h ] ;
+LinkWith glshader_fixed : crystalspace ;
+ExternalLibs glshader_fixed : GL ;
+CompileGroups glshader_fixed : shaders renderers renderall openglrenderer ;
+}

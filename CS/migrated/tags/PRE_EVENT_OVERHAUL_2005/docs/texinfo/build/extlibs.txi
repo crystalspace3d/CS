@@ -1,0 +1,171 @@
+@c -*-texinfo-*-
+@node External Libraries, Platform Instructions, Requirements, Building
+@section External Libraries
+
+Crystal Space may utilize several optional external, and publicly available
+development libraries.  These libraries are:
+
+@itemize @bullet
+@item
+zlib
+@item
+libpng
+@item
+libjpeg
+@item
+Freetype2
+@item
+@sc{ode}
+@item
+Cal3D
+@item
+lib3ds
+@item
+Ogg/Vorbis
+@item
+libmng
+@item
+MikMod
+@item
+@sc{cegui}
+@end itemize
+
+Most of these libraries are optional.  If you do not have them installed, then
+Crystal Space will still function, though features related to the missing
+libraries will be disabled.  Despite being optional, at the very minimum, you
+should at least ensure that zlib, libpng, and libjpeg are installed since much
+useful functionality depends upon those libraries.  Many computer systems come
+with these libraries pre-installed.  If the libraries are not already available
+on your system, then see the following sections for information about how to
+obtain them.
+
+@c This section should be moved once we have build instructions covering VC8
+@subheading Platform @sc{sdk} (Microsoft Visual C++ 2005 Express Edition only)
+@cindex Windows, Building
+
+All supported versions of Microsoft Visual C++ ship with a version of the
+Platform @sc{sdk} that suffices to compile Crystal Space, except the 
+Microsoft Visual C++ 2005 Express Edition, which requires a seperate setup of 
+the Platform SDK. Follow these instructions to set up the @sc{psdk}:
+
+@noindent
+@ifnottex
+@uref{http://msdn.microsoft.com/vstudio/express/visualc/usingpsdk/}
+@end ifnottex
+@iftex
+@code{http://msdn.microsoft.com/vstudio/express/visualc/usingpsdk/}
+@end iftex
+
+@subheading The ``cs-win32libs'' Package
+@cindex Windows, Building
+@anchor{cs-win32libs}
+
+Rather than having to install these components manually, Microsoft Visual C++ 6
+& 7, MinGW/MSYS, and Cygwin users can download a single package which contains
+all common headers, pre-built library files, and dynamic link libraries in
+pre-compiled form from the following location:
+
+@noindent
+@ifnottex
+@uref{http://www.crystalspace3d.org/support/win32/cs-win32libs-0.99r0_017.exe}
+@end ifnottex
+@iftex
+@code{http://www.crystalspace3d.org/support/win32/}@*
+@code{cs-win32libs-0.99r0_017.exe}
+@end iftex
+
+@subheading zlib
+@cindex zlib
+@cindex Libraries, zlib
+@cindex Compression library, zlib
+
+Crystal Space relies upon the @code{zlib} library for reading @sc{zip} files,
+and for a few other uses.  You can download @code{zlib} from:
+
+@noindent
+@uref{http://www.gzip.org/zlib/}
+
+After downloading you can either install the package normally (i.e. @samp{make
+install}) or unpack it into the directory @file{CS/libs/zlib*}.  In general, if
+you have permission to do so, it is best to install the library.
+
+@subheading libpng
+@cindex libpng
+@cindex Libraries, libpng
+@cindex PNG library
+
+Crystal Space relies upon the @code{libpng} library for reading @sc{png}
+graphic files.  You can download @code{libpng} from:
+
+@noindent
+@uref{http://www.libpng.org/pub/png/libpng.html}
+
+After downloading you can either install the package normally (i.e. @samp{make
+-f scripts/makefile.std install}) or unpack it into the directory
+@file{CS/libs/libpng*}.  In general, if you have permission to do so, it is
+best to install the library.
+
+@subheading libjpeg
+@cindex libjpeg
+@cindex Libraries, libjpeg
+@cindex JPEG library
+
+Crystal Space relies upon the @code{libjpeg} library for reading @sc{jpeg}
+graphic files.  You can download @code{libjpeg} from:
+
+@noindent
+@uref{http://www.ijg.org/files/}
+
+After downloading you can either install the package normally (i.e. @samp{make
+install}) or unpack it into the directory @file{CS/libs/jpeg*}.  In general,
+if you have permission to do so, it is best to install the library.
+
+@subheading Freetype2
+@cindex Freetype2
+@cindex Libraries, Freetype2
+
+Crystal Space can utilize the FreeType2 library to display TrueType fonts. You
+can get the latest version at:
+
+@noindent
+@uref{http://www.freetype.org/}
+
+@subheading @sc{ode}
+@cindex @sc{ode}
+@cindex Libraries, @sc{ode}
+@cindex Physics library
+
+Crystal Space contains a plugin providing physics through @sc{ode}. You can get
+the required latest @sc{cvs} code at:
+
+@noindent
+@uref{http://www.ode.org/}
+
+@emph{Note:} You @emph{must} compile @sc{ode} with @sc{opcode} support enabled
+in order to use the library with Crystal Space.
+
+@subheading Ogg/Vorbis libraries
+@cindex Ogg/Vorbis
+@cindex Libraries, Ogg/Vorbis
+
+With this libraries you can use the Ogg/Vorbis sound plugin. You can get the
+latest version at:
+
+@noindent
+@uref{http://www.vorbis.com/download.psp}
+
+@subheading libmng
+@cindex libmng
+@cindex Libraries, libmng
+@cindex @sc{mng}/@sc{jng} library
+@anchor{GettingLibmng}
+
+Crystal Space can optionally utilize the @code{libmng} library for reading
+@sc{mng}/@sc{jng} graphic files.  You can download @code{libmng} from:
+
+@noindent
+@uref{http://www.libmng.com/}
+
+After downloading you can either install the package normally (i.e. @samp{make
+install}) or unpack it into the directory @file{CS/libs/libmng*}.  In general,
+if you have permission to do so, it is best to install the library.

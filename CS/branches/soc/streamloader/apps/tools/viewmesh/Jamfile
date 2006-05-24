@@ -1,0 +1,11 @@
+SubDir TOP apps tools viewmesh ;
+
+Description viewmesh : "mesh viewing utility" ;
+Application viewmesh : [ Wildcard *.cpp *.h ] ;
+LinkWith viewmesh : crystalspace ;
+MsvcCFlags viewmesh : "/D CS_HAVE_CAL3D" ;
+if $(CAL3D.AVAILABLE) = yes
+{
+  CFlags viewmesh : [ FDefines CS_HAVE_CAL3D ] ;
+  ExternalLibs viewmesh : CAL3D ;
+}

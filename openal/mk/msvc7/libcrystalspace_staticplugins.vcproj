@@ -12662,6 +12662,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tempheap.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_tempheap.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_tempheap.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_tempheap.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_tempheap.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\valueset.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -14580,6 +14607,9 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tempheap.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tokenhelper.h">
 			</File>
 			<File
@@ -14644,6 +14674,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_ps1\ps1_parser.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_ps1\stringlists.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\softshader\scan_z.h">

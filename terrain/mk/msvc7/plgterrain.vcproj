@@ -305,50 +305,56 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\terrain\builder.cpp">
+				RelativePath="..\..\plugins\mesh\terrain\improved\cell.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\cell.cpp">
+				RelativePath="..\..\plugins\mesh\terrain\improved\factory.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\simplecollider.cpp">
+				RelativePath="..\..\plugins\mesh\terrain\improved\meshobjecttype.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\simpledatafeeder.cpp">
+				RelativePath="..\..\plugins\mesh\terrain\improved\simplecollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\simplerenderer.cpp">
+				RelativePath="..\..\plugins\mesh\terrain\improved\simpledatafeeder.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\terrain.cpp">
+				RelativePath="..\..\plugins\mesh\terrain\improved\simplerenderer.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\terrainsystem.cpp">
+				RelativePath="..\..\plugins\mesh\terrain\improved\terrain.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terrainsystem.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\terrain\builder.h">
+				RelativePath="..\..\plugins\mesh\terrain\improved\cell.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\cell.h">
+				RelativePath="..\..\plugins\mesh\terrain\improved\debug.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\debug.h">
+				RelativePath="..\..\plugins\mesh\terrain\improved\factory.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\simplecollider.h">
+				RelativePath="..\..\plugins\mesh\terrain\improved\meshobjecttype.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\simpledatafeeder.h">
+				RelativePath="..\..\plugins\mesh\terrain\improved\simplecollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\simplerenderer.h">
+				RelativePath="..\..\plugins\mesh\terrain\improved\simpledatafeeder.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\terrainsystem.h">
+				RelativePath="..\..\plugins\mesh\terrain\improved\simplerenderer.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terrainsystem.h">
 			</File>
 		</Filter>
 		<Filter
@@ -358,7 +364,7 @@
 				RelativePath="..\..\mk\msvc\plgterrain.rc">
 			</File>
 			<File
-				RelativePath="..\..\plugins\terrain\terrain.csplugin">
+				RelativePath="..\..\plugins\mesh\terrain\improved\terrain.csplugin">
 			</File>
 		</Filter>
 	</Files>

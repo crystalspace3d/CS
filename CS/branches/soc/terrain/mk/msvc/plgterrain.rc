@@ -17,7 +17,7 @@ FILEFLAGS 0x0
       VALUE "ProductVersion", "0.99"
       VALUE "FileVersion", "0.99"
       VALUE "LegalCopyright", "Copyright (C)1998-2005 Jorrit Tyberghein and others"
-      VALUE "FileDescription", "Virtual File System plugin"
+      VALUE "FileDescription", "Improved Terrain plugin"
 #ifdef CS_DEBUG
       VALUE "Comments", "Debug build"
 #else
@@ -31,33 +31,33 @@ FILEFLAGS 0x0
 
 17485 RCDATA 
 {
-  "<?xml version=""1.0""?>",
-  "<!-- terrain.csplugin -->",
-  "<plugin>",
-  "  <scf>",
-  "    <classes>",
-  "      <class>",
-  "        <name>crystalspace.mesh.object.terrainimproved.simplerenderer</name>",
-  "        <implementation>csTerrainSimpleRenderer</implementation>",
-  "        <description>Simple terrain renderer</description>",
-  "      </class>",
-  "      <class>",
-  "        <name>crystalspace.mesh.object.terrainimproved.simplecollider</name>",
-  "        <implementation>csTerrainSimpleCollider</implementation>",
-  "        <description>Simple terrain collider</description>",
-  "      </class>",
-  "      <class>",
-  "        <name>crystalspace.mesh.object.terrainimproved.simpledatafeeder</name>",
-  "        <implementation>csTerrainSimpleDataFeeder</implementation>",
-  "        <description>Terrain simple data feeder</description>",
-  "      </class>",
-  "      <class>",
-  "        <name>crystalspace.mesh.object.terrainimproved</name>",
-  "        <implementation>csTerrainMeshObjectType</implementation>",
-  "        <description>Terrain mesh type</description>",
-  "      </class>",
-  "    </classes>",
-  "  </scf>",
-  "</plugin>",
+  "<?xml version=""1.0""?>",
+  "<!-- terrain.csplugin -->",
+  "<plugin>",
+  "  <scf>",
+  "    <classes>",
+  "      <class>",
+  "        <name>crystalspace.mesh.object.terrainimproved.simplerenderer</name>",
+  "        <implementation>csTerrainSimpleRenderer</implementation>",
+  "        <description>Simple terrain renderer</description>",
+  "      </class>",
+  "      <class>",
+  "        <name>crystalspace.mesh.object.terrainimproved.simplecollider</name>",
+  "        <implementation>csTerrainSimpleCollider</implementation>",
+  "        <description>Simple terrain collider</description>",
+  "      </class>",
+  "      <class>",
+  "        <name>crystalspace.mesh.object.terrainimproved.simpledatafeeder</name>",
+  "        <implementation>csTerrainSimpleDataFeeder</implementation>",
+  "        <description>Terrain simple data feeder</description>",
+  "      </class>",
+  "      <class>",
+  "        <name>crystalspace.mesh.object.terrainimproved</name>",
+  "        <implementation>csTerrainMeshObjectType</implementation>",
+  "        <description>Terrain mesh type</description>",
+  "      </class>",
+  "    </classes>",
+  "  </scf>",
+  "</plugin>",
   "\0"
 }

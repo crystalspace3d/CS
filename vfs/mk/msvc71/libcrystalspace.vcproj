@@ -680,6 +680,9 @@
 				RelativePath="..\..\libs\csutil\debug.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\dlmalloc.c">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\documentcommon.cpp">
 			</File>
 			<File
@@ -735,6 +738,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\memfile.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\memheap.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\mempool.cpp">
@@ -1506,6 +1512,9 @@
 				RelativePath="..\..\libs\..\include\csutil\memfile.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\memheap.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\mempool.h">
 			</File>
 			<File
@@ -1603,6 +1612,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\scf_interface.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\scfarray.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\scfstr.h">

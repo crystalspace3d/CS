@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="appterraindemo"
-	ProjectGUID="{697D0556-0651-E688-A50C-B08F26CB7A19}"
+	Name="plgterrainimprovedldr"
+	ProjectGUID="{10E09BF5-0B30-3AE1-5D7D-7D52BCF444FC}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,10 +13,9 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release71\build\appterraindemo\"
-			IntermediateDirectory="..\..\out\release71\build\appterraindemo\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\release71\build\plgterrainimprovedldr\"
+			IntermediateDirectory="..\..\out\release71\build\plgterrainimprovedldr\"
+			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -32,10 +31,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\appterraindemo\appterraindemo.pch"
-				AssemblerListingLocation="..\..\out\release71\build\appterraindemo\"
-				ObjectFile="..\..\out\release71\build\appterraindemo\"
-				ProgramDataBaseFileName="..\..\out\release71\build\appterraindemo\terraindemo.pdb"
+				PrecompiledHeaderFile="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
+				AssemblerListingLocation="..\..\out\release71\build\plgterrainimprovedldr\"
+				ObjectFile="..\..\out\release71\build\plgterrainimprovedldr\"
+				ProgramDataBaseFileName="..\..\out\release71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -50,14 +49,15 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\terraindemo.exe"
-				SubSystem="2"
+				OutputFile="..\..\terrainimprovedldr.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\release71\build\appterraindemo\terraindemo.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -68,7 +68,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\appterraindemo\appterraindemo.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -88,10 +88,9 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug71\build\appterraindemo\"
-			IntermediateDirectory="..\..\out\debug71\build\appterraindemo\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -105,10 +104,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appterraindemo\appterraindemo.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appterraindemo\"
-				ObjectFile="..\..\out\debug71\build\appterraindemo\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
+				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -121,14 +120,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terraindemo.exe"
-				SubSystem="1"
+				OutputFile="..\..\terrainimprovedldr.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -139,7 +139,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appterraindemo\appterraindemo.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -159,10 +159,9 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\appterraindemo\"
-			IntermediateDirectory="..\..\out\debug71\build\appterraindemo\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -176,10 +175,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appterraindemo\appterraindemo.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appterraindemo\"
-				ObjectFile="..\..\out\debug71\build\appterraindemo\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
+				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -192,14 +191,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terraindemo.exe"
-				SubSystem="1"
+				OutputFile="..\..\terrainimprovedldr.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -210,7 +210,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appterraindemo\appterraindemo.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -230,10 +230,9 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\appterraindemo\"
-			IntermediateDirectory="..\..\out\debug71\build\appterraindemo\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -247,10 +246,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appterraindemo\appterraindemo.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appterraindemo\"
-				ObjectFile="..\..\out\debug71\build\appterraindemo\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
+				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -263,14 +262,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terraindemo.exe"
-				SubSystem="1"
+				OutputFile="..\..\terrainimprovedldr.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -281,7 +281,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appterraindemo\appterraindemo.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -305,21 +305,24 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\apps\terraindemo\terraindemo.cpp">
+				RelativePath="..\..\plugins\mesh\terrain\persist\improved\loader.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\apps\terraindemo\terraindemo.h">
+				RelativePath="..\..\plugins\mesh\terrain\persist\improved\loader.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\appterraindemo.rc">
+				RelativePath="..\..\mk\msvc\plgterrainimprovedldr.rc">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\persist\improved\terrainimprovedldr.csplugin">
 			</File>
 		</Filter>
 	</Files>

@@ -364,7 +364,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgstdpt", "plgstdpt.vcproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgstdrep", "plgstdrep.vcproj", "{5EBE818D-D189-5005-C925-70D37C4D6C6B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgterrain", "plgterrain.vcproj", "{11B49D8C-99FB-8102-FFE8-2BE27393A619}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgterrainimproved", "plgterrainimproved.vcproj", "{11B49D8C-99FB-8102-FFE8-2BE27393A619}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgterrainimprovedldr", "plgterrainimprovedldr.vcproj", "{10E09BF5-0B30-3AE1-5D7D-7D52BCF444FC}"
 EndProject

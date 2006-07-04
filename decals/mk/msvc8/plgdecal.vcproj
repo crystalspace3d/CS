@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
-	Name="plgxmlshader"
-	ProjectGUID="{DED511E1-E0A0-194E-5E42-0A6AB3B847A0}"
+	Version="8.00"
+	Name="plgdecal"
+	ProjectGUID="{E62BED54-9455-C053-CAA8-B81A06A61D3B}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release7\build\plgxmlshader\"
-			IntermediateDirectory="..\..\out\release7\build\plgxmlshader\"
+			OutputDirectory="..\..\out\release8\build\plgdecal\"
+			IntermediateDirectory="..\..\out\release8\build\plgdecal\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -31,10 +31,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release7\build\plgxmlshader\plgxmlshader.pch"
-				AssemblerListingLocation="..\..\out\release7\build\plgxmlshader\"
-				ObjectFile="..\..\out\release7\build\plgxmlshader\"
-				ProgramDataBaseFileName="..\..\out\release7\build\plgxmlshader\xmlshader.pdb"
+				PrecompiledHeaderFile="..\..\out\release8\build\plgdecal\plgdecal.pch"
+				AssemblerListingLocation="..\..\out\release8\build\plgdecal\"
+				ObjectFile="..\..\out\release8\build\plgdecal\"
+				ProgramDataBaseFileName="..\..\out\release8\build\plgdecal\decal.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -49,15 +49,15 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\xmlshader.dll"
+				OutputFile="..\..\decal.dll"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release7\build\plgxmlshader\plgxmlshader.lib"
+				ImportLibrary="..\..\out\release8\build\plgdecal\plgdecal.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\release7\build\plgxmlshader\xmlshader.pdb"
+				ProgramDatabaseFile="..\..\out\release8\build\plgdecal\decal.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -68,7 +68,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release7\build\plgxmlshader\plgxmlshader.tlb"/>
+				TypeLibraryName="..\..\out\release8\build\plgdecal\plgdecal.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -78,7 +78,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -88,8 +88,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug7\build\plgxmlshader\"
-			IntermediateDirectory="..\..\out\debug7\build\plgxmlshader\"
+			OutputDirectory="..\..\out\debug8\build\plgdecal\"
+			IntermediateDirectory="..\..\out\debug8\build\plgdecal\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -104,10 +104,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\plgxmlshader\plgxmlshader.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\plgxmlshader\"
-				ObjectFile="..\..\out\debug7\build\plgxmlshader\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgxmlshader\xmlshader.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgdecal\plgdecal.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgdecal\"
+				ObjectFile="..\..\out\debug8\build\plgdecal\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgdecal\decal.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -120,15 +120,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\xmlshader.dll"
+				OutputFile="..\..\decal.dll"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgxmlshader\plgxmlshader.lib"
+				ImportLibrary="..\..\out\debug8\build\plgdecal\plgdecal.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgxmlshader\xmlshader.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgdecal\decal.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -139,7 +139,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\plgxmlshader\plgxmlshader.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgdecal\plgdecal.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -149,7 +149,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -159,8 +159,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
-			OutputDirectory="..\..\out\debug7\build\plgxmlshader\"
-			IntermediateDirectory="..\..\out\debug7\build\plgxmlshader\"
+			OutputDirectory="..\..\out\debug8\build\plgdecal\"
+			IntermediateDirectory="..\..\out\debug8\build\plgdecal\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -175,10 +175,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\plgxmlshader\plgxmlshader.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\plgxmlshader\"
-				ObjectFile="..\..\out\debug7\build\plgxmlshader\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgxmlshader\xmlshader.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgdecal\plgdecal.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgdecal\"
+				ObjectFile="..\..\out\debug8\build\plgdecal\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgdecal\decal.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -191,15 +191,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\xmlshader.dll"
+				OutputFile="..\..\decal.dll"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgxmlshader\plgxmlshader.lib"
+				ImportLibrary="..\..\out\debug8\build\plgdecal\plgdecal.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgxmlshader\xmlshader.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgdecal\decal.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -210,7 +210,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\plgxmlshader\plgxmlshader.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgdecal\plgdecal.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -220,7 +220,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -230,8 +230,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
-			OutputDirectory="..\..\out\debug7\build\plgxmlshader\"
-			IntermediateDirectory="..\..\out\debug7\build\plgxmlshader\"
+			OutputDirectory="..\..\out\debug8\build\plgdecal\"
+			IntermediateDirectory="..\..\out\debug8\build\plgdecal\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -246,10 +246,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\plgxmlshader\plgxmlshader.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\plgxmlshader\"
-				ObjectFile="..\..\out\debug7\build\plgxmlshader\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgxmlshader\xmlshader.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgdecal\plgdecal.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgdecal\"
+				ObjectFile="..\..\out\debug8\build\plgdecal\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgdecal\decal.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -262,15 +262,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\xmlshader.dll"
+				OutputFile="..\..\decal.dll"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgxmlshader\plgxmlshader.lib"
+				ImportLibrary="..\..\out\debug8\build\plgdecal\plgdecal.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgxmlshader\xmlshader.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgdecal\decal.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -281,7 +281,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\plgxmlshader\plgxmlshader.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgdecal\plgdecal.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -291,7 +291,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -305,90 +305,24 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condeval.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condition.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap_replacer.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\expparser.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\mybitarray.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shader.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tempheap.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\valueset.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.cpp">
+				RelativePath="..\..\plugins\decal\decalmanager.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condeval.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condition.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap_replacer.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\expparser.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\logic3.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\mybitarray.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shader.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tempheap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tokenhelper.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\valueset.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.h">
+				RelativePath="..\..\plugins\decal\decalmanager.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgxmlshader.rc">
+				RelativePath="..\..\mk\msvc\plgdecal.rc">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.csplugin">
+				RelativePath="..\..\plugins\decal\decal.csplugin">
 			</File>
 		</Filter>
 	</Files>

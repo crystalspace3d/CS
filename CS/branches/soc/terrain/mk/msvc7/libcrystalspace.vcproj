@@ -602,6 +602,9 @@
 				RelativePath="..\..\libs\cstool\vertexcompress.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\alignedalloc.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\ansiparse.cpp">
 			</File>
 			<File
@@ -734,6 +737,9 @@
 				RelativePath="..\..\libs\csutil\inputdef.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\measuretime.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\memdebug.cpp">
 			</File>
 			<File
@@ -756,6 +762,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\physfile.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\platform_new.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\plugldr.cpp">
@@ -1482,6 +1491,9 @@
 				RelativePath="..\..\libs\..\include\csutil\filereadhelper.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\fixedsizeallocator.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\flags.h">
 			</File>
 			<File
@@ -1516,6 +1528,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\list.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\measuretime.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\memdebug.h">
@@ -1678,9 +1693,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\timemeasure.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\timer.h">

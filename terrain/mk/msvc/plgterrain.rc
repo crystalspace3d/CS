@@ -32,7 +32,7 @@ FILEFLAGS 0x0
 17485 RCDATA 
 {
   "<?xml version=""1.0""?>",
-  "<!-- terrainimproved.csplugin -->",
+  "<!-- terrain.csplugin -->",
   "<plugin>",
   "  <scf>",
   "    <classes>",

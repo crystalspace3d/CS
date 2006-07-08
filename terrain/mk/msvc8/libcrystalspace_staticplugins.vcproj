@@ -3455,30 +3455,30 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\mk\msvc\libterrain_staticreg.cpp">
+				RelativePath="..\..\mk\msvc\libterrainimproved_staticreg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\mk_msvc_libterrain_staticreg.cpp.obj"/>
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\mk_msvc_libterrainimproved_staticreg.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libterrain_staticreg.cpp.obj"/>
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libterrainimproved_staticreg.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libterrain_staticreg.cpp.obj"/>
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libterrainimproved_staticreg.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libterrain_staticreg.cpp.obj"/>
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libterrainimproved_staticreg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -14734,6 +14734,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\meshobjecttype.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\segmentcell.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simplecollider.h">

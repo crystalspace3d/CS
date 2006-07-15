@@ -48,7 +48,7 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib opengl32.lib"
 				OutputFile="..\..\terraindemo.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

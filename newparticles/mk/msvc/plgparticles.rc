@@ -50,7 +50,7 @@ FILEFLAGS 0x0
   "        <name>crystalspace.mesh.object.particles.effector</name>",
   "        <implementation>ParticleEffectorFactory</implementation>",
   "        <description>Crystal Space Particle System - Effectors</description>",
-  "      </class>",
+  "      </class>      ",
   "    </classes>",
   "  </scf>",
   "</plugin>",

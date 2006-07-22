@@ -29,7 +29,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\release8\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\release8\build\libcrystalspace\"
 				ObjectFile="..\..\out\release8\build\libcrystalspace\"
@@ -76,7 +76,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -100,7 +100,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug8\build\libcrystalspace\"
@@ -145,7 +145,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -169,7 +169,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug8\build\libcrystalspace\"
@@ -214,7 +214,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -238,7 +238,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug8\build\libcrystalspace\"
@@ -283,7 +283,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -569,6 +569,9 @@
 				RelativePath="..\..\libs\cstool\normalcalc.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\cstool\numberedfilename.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\cstool\pen.cpp">
 			</File>
 			<File
@@ -596,10 +599,16 @@
 				RelativePath="..\..\libs\cstool\saverref.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\cstool\uberscreenshot.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\cstool\userrndbuf.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\vertexcompress.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\alignedalloc.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\ansiparse.cpp">
@@ -734,6 +743,9 @@
 				RelativePath="..\..\libs\csutil\inputdef.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\measuretime.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\memdebug.cpp">
 			</File>
 			<File
@@ -758,6 +770,9 @@
 				RelativePath="..\..\libs\csutil\physfile.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\platform_new.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\plugldr.cpp">
 			</File>
 			<File
@@ -768,6 +783,12 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\profile.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\ptmalloc\ptmalloc3.c">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\ptmalloc_wrap.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\radixsort.cpp">
@@ -1272,6 +1293,9 @@
 				RelativePath="..\..\libs\..\include\cstool\normalcalc.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\numberedfilenamehelper.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\cstool\objmodel.h">
 			</File>
 			<File
@@ -1306,6 +1330,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\tokenlist.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\uberscreenshot.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\userrndbuf.h">
@@ -1437,6 +1464,12 @@
 				RelativePath="..\..\libs\..\include\csutil\csunicode.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\custom_new_disable.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\custom_new_enable.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\databuf.h">
 			</File>
 			<File
@@ -1468,6 +1501,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\filereadhelper.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\fixedsizeallocator.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\flags.h">
@@ -1504,6 +1540,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\list.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\measuretime.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\memdebug.h">
@@ -1614,6 +1653,9 @@
 				RelativePath="..\..\libs\..\include\csutil\scf_interface.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\scfarray.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\scfstr.h">
 			</File>
 			<File
@@ -1638,6 +1680,9 @@
 				RelativePath="..\..\libs\..\include\csutil\sparse3d.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\spinlock.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\strhash.h">
 			</File>
 			<File
@@ -1660,9 +1705,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\timemeasure.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\timer.h">
@@ -1695,7 +1737,202 @@
 				RelativePath="..\..\libs\..\include\csutil\weakrefarr.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\AabbUtil2.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\caca.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\callstack.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUI.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIBase.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIcolour.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIColourRect.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIConfig.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIConfig_xmlHandler.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIDataContainer.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIDefaultResourceProvider.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIEvent.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIEventArgs.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIEventSet.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIExceptions.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFactoryModule.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFont.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFont_implData.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFont_xmlHandler.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFontManager.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFontManager_implData.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIForwardRefs.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIGlobalEventSet.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIGUILayout_xmlHandler.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIImage.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIImageset.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIImageset_xmlHandler.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIImagesetManager.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIInputEvent.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIIteratorBase.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUILogger.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIMouseCursor.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIProperty.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIPropertyHelper.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIPropertySet.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRect.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRefPtr.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderableElement.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderableFrame.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderableImage.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderCache.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderer.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIResourceProvider.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIScheme.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIScheme_xmlHandler.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUISchemeManager.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIScriptModule.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUISingleton.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUISize.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIString.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUISystem.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUITexture.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUITextUtils.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUITinyXMLParser.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIUDim.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIVector.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIVersion.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIWindow.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIWindowFactory.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIWindowFactoryManager.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIWindowManager.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIWindowProperties.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIXercesParser.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIXMLAttributes.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIXMLHandler.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIXMLParser.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\csconfig.h">
@@ -1704,7 +1941,136 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\csosdefs.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\d3d.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\d3dcaps.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\d3dtypes.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\DbgHelpAPI.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\ddraw.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\dinput.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\dsound.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\ft2build.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\GEN_List.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\GEN_MinMax.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\GEN_random.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\Geometry.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\IDebugDraw.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\jconfig.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\jerror.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\jinclude.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\jmorecfg.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\jpeglib.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_chunk_descr.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_chunk_io.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_chunk_prc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_chunks.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_cms.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_conf.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_data.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_display.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_dither.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_error.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_filter.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_jpeg.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_memory.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_object_prc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_objects.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_pixels.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_read.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_trace.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_types.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_write.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_zlib.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\Maths.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\Matrix.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\Memory2.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\mikmod.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\minidump.h">
@@ -1719,16 +2085,88 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\msvc_deprecated_warn_on.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\PHY_DynamicTypes.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\PHY_IMotionState.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\PHY_IPhysicsController.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\PHY_IPhysicsEnvironment.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\PHY_IVehicle.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\PHY_Pro.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\png.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\pngconf.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\psdk-compat.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\Quat.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\quickprof.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\registrycfg.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\Scalar.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdMatrix3x3.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdMinMax.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdPoint3.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdQuadWord.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdQuaternion.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdScalar.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdTransform.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdTransformUtil.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\SimdVector3.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\Vector.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\VectorBase.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\win32.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\wintools.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\zconf.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\zlib.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\xmltiny.h">
@@ -1762,6 +2200,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\demangle.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\dlmalloc-settings.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\reftrack.h">

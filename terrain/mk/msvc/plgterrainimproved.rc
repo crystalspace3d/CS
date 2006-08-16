@@ -31,28 +31,33 @@ FILEFLAGS 0x0
 
 17485 RCDATA 
 {
-  "<?xml version=""1.0""?>",
-  "<!-- terrainimproved.csplugin -->",
-  "<plugin>",
-  "  <scf>",
-  "    <classes>",
-  "      <class>",
-  "        <name>crystalspace.mesh.object.terrainimproved.simplerenderer</name>",
-  "        <implementation>csTerrainSimpleRenderer</implementation>",
-  "        <description>Simple terrain renderer</description>",
-  "      </class>",
-  "      <class>",
-  "        <name>crystalspace.mesh.object.terrainimproved.simpledatafeeder</name>",
-  "        <implementation>csTerrainSimpleDataFeeder</implementation>",
-  "        <description>Terrain simple data feeder</description>",
-  "      </class>",
-  "      <class>",
-  "        <name>crystalspace.mesh.object.terrainimproved</name>",
-  "        <implementation>csTerrainMeshObjectType</implementation>",
-  "        <description>Terrain mesh type</description>",
-  "      </class>",
-  "    </classes>",
-  "  </scf>",
-  "</plugin>",
+  "<?xml version=""1.0""?>",
+  "<!-- terrainimproved.csplugin -->",
+  "<plugin>",
+  "  <scf>",
+  "    <classes>",
+  "      <class>",
+  "        <name>crystalspace.mesh.object.terrainimproved.bruteblockrenderer</name>",
+  "        <implementation>csTerrainBruteBlockRenderer</implementation>",
+  "        <description>Bruteblock terrain renderer</description>",
+  "      </class>",
+  "      <class>",
+  "        <name>crystalspace.mesh.object.terrainimproved.simplerenderer</name>",
+  "        <implementation>csTerrainSimpleRenderer</implementation>",
+  "        <description>Simple terrain renderer</description>",
+  "      </class>",
+  "      <class>",
+  "        <name>crystalspace.mesh.object.terrainimproved.simpledatafeeder</name>",
+  "        <implementation>csTerrainSimpleDataFeeder</implementation>",
+  "        <description>Terrain simple data feeder</description>",
+  "      </class>",
+  "      <class>",
+  "        <name>crystalspace.mesh.object.terrainimproved</name>",
+  "        <implementation>csTerrainMeshObjectType</implementation>",
+  "        <description>Terrain mesh type</description>",
+  "      </class>",
+  "    </classes>",
+  "  </scf>",
+  "</plugin>",
   "\0"
 }

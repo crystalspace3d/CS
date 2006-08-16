@@ -371,6 +371,12 @@
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrainimproved.csplugin">
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.cpp">
+		</File>
+		<File
+			RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.h">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

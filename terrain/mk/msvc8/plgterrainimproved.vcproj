@@ -453,6 +453,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terraformerdatafeeder.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrain.cpp"
 				>
 			</File>
@@ -502,6 +506,10 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simplerenderer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terraformerdatafeeder.h"
 				>
 			</File>
 			<File

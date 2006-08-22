@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
-	Name="plgterrainimprovedldr"
-	ProjectGUID="{10E09BF5-0B30-3AE1-5D7D-7D52BCF444FC}"
+	Version="8.00"
+	Name="plgcsvosa3dl"
+	ProjectGUID="{45A131ED-0AC0-301E-26F6-5168ECC267A9}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release71\build\plgterrainimprovedldr\"
-			IntermediateDirectory="..\..\out\release71\build\plgterrainimprovedldr\"
+			OutputDirectory="..\..\out\release8\build\plgcsvosa3dl\"
+			IntermediateDirectory="..\..\out\release8\build\plgcsvosa3dl\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -31,10 +31,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
-				AssemblerListingLocation="..\..\out\release71\build\plgterrainimprovedldr\"
-				ObjectFile="..\..\out\release71\build\plgterrainimprovedldr\"
-				ProgramDataBaseFileName="..\..\out\release71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				PrecompiledHeaderFile="..\..\out\release8\build\plgcsvosa3dl\plgcsvosa3dl.pch"
+				AssemblerListingLocation="..\..\out\release8\build\plgcsvosa3dl\"
+				ObjectFile="..\..\out\release8\build\plgcsvosa3dl\"
+				ProgramDataBaseFileName="..\..\out\release8\build\plgcsvosa3dl\csvosa3dl.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -49,15 +49,15 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\terrainimprovedldr.dll"
+				OutputFile="..\..\csvosa3dl.dll"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
+				ImportLibrary="..\..\out\release8\build\plgcsvosa3dl\plgcsvosa3dl.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib libvutil.lib libvip.lib libvos.lib libmetaobject_a3dl.lib libmetaobject_misc.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\release71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				ProgramDatabaseFile="..\..\out\release8\build\plgcsvosa3dl\csvosa3dl.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -68,7 +68,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
+				TypeLibraryName="..\..\out\release8\build\plgcsvosa3dl\plgcsvosa3dl.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -78,7 +78,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -88,8 +88,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			OutputDirectory="..\..\out\debug8\build\plgcsvosa3dl\"
+			IntermediateDirectory="..\..\out\debug8\build\plgcsvosa3dl\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -104,10 +104,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgcsvosa3dl\"
+				ObjectFile="..\..\out\debug8\build\plgcsvosa3dl\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgcsvosa3dl\csvosa3dl.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -120,15 +120,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terrainimprovedldr.dll"
+				OutputFile="..\..\csvosa3dl.dll"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
+				ImportLibrary="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib libvutil.lib libvip.lib libvos.lib libmetaobject_a3dl.lib libmetaobject_misc.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgcsvosa3dl\csvosa3dl.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -139,7 +139,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -149,7 +149,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -159,8 +159,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			OutputDirectory="..\..\out\debug8\build\plgcsvosa3dl\"
+			IntermediateDirectory="..\..\out\debug8\build\plgcsvosa3dl\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -175,10 +175,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgcsvosa3dl\"
+				ObjectFile="..\..\out\debug8\build\plgcsvosa3dl\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgcsvosa3dl\csvosa3dl.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -191,15 +191,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terrainimprovedldr.dll"
+				OutputFile="..\..\csvosa3dl.dll"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
+				ImportLibrary="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib libvutil.lib libvip.lib libvos.lib libmetaobject_a3dl.lib libmetaobject_misc.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgcsvosa3dl\csvosa3dl.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -210,7 +210,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -220,7 +220,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -230,8 +230,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
+			OutputDirectory="..\..\out\debug8\build\plgcsvosa3dl\"
+			IntermediateDirectory="..\..\out\debug8\build\plgcsvosa3dl\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -246,10 +246,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgcsvosa3dl\"
+				ObjectFile="..\..\out\debug8\build\plgcsvosa3dl\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgcsvosa3dl\csvosa3dl.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -262,15 +262,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terrainimprovedldr.dll"
+				OutputFile="..\..\csvosa3dl.dll"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
+				ImportLibrary="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib libvutil.lib libvip.lib libvos.lib libmetaobject_a3dl.lib libmetaobject_misc.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgcsvosa3dl\csvosa3dl.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -281,7 +281,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgcsvosa3dl\plgcsvosa3dl.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -291,7 +291,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -305,24 +305,108 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\persist\improved\loader.cpp">
+				RelativePath="..\..\plugins\net\vos\csvosa3dl.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosbillboard.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosclone.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voscone.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voscube.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voscylinder.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voslight.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voslightmapcache.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosmaterial.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosmodel.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosobject3d.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vospolygonmesh.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vossector.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vossphere.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vostexture.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\persist\improved\loader.h">
+				RelativePath="..\..\plugins\net\vos\csvosa3dl.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosbillboard.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosclone.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voscone.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voscube.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voscylinder.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voslight.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\voslightmapcache.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosmaterial.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosmodel.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vosobject3d.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vospolygonmesh.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vossector.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vossphere.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\net\vos\vostexture.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgterrainimprovedldr.rc">
+				RelativePath="..\..\mk\msvc\plgcsvosa3dl.rc">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\persist\improved\terrainimprovedldr.csplugin">
+				RelativePath="..\..\plugins\net\vos\csvosa3dl.csplugin">
 			</File>
 		</Filter>
 	</Files>

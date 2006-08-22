@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="appterraindemo"
 	ProjectGUID="{697D0556-0651-E688-A50C-B08F26CB7A19}"
-	RootNamespace="appterraindemo"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -17,22 +16,22 @@
 			OutputDirectory="..\..\out\release71\build\appterraindemo\"
 			IntermediateDirectory="..\..\out\release71\build\appterraindemo\"
 			ConfigurationType="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			CharacterSet="2"
-			WholeProgramOptimization="TRUE">
+			WholeProgramOptimization="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="2"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
 				EnableFunctionLevelLinking="TRUE"
-				TreatWChar_tAsBuiltInType="FALSE"
+				RuntimeLibrary="2"
+				DebugInformationFormat="3"
+				BufferSecurityCheck="FALSE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\release71\build\appterraindemo\appterraindemo.pch"
 				AssemblerListingLocation="..\..\out\release71\build\appterraindemo\"
 				ObjectFile="..\..\out\release71\build\appterraindemo\"
@@ -40,26 +39,29 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"
+				TreatWChar_tAsBuiltInType="false"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="TRUE"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib opengl32.lib"
-				OutputFile="..\..\terraindemo.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="..\..\out\release71\build\appterraindemo\terraindemo.pdb"
-				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				OutputFile="..\..\terraindemo.exe"
+				SubSystem="2"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				IgnoreImportLibrary="TRUE"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\release71\build\appterraindemo\terraindemo.pdb"
 				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
@@ -68,7 +70,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\release71\build\appterraindemo\appterraindemo.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -76,38 +79,32 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
-				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"/>
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="..\..\out\debug71\build\appterraindemo\"
 			IntermediateDirectory="..\..\out\debug71\build\appterraindemo\"
 			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				MinimalRebuild="TRUE"
-				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="FALSE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\appterraindemo\appterraindemo.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\appterraindemo\"
 				ObjectFile="..\..\out\debug71\build\appterraindemo\"
@@ -115,24 +112,27 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"
+				TreatWChar_tAsBuiltInType="false"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="TRUE"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib opengl32.lib"
-				OutputFile="..\..\terraindemo.exe"
 				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\terraindemo.exe"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
-				SubSystem="1"
 				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
@@ -141,7 +141,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\appterraindemo\appterraindemo.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -149,38 +150,32 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
-				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"/>
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
 			OutputDirectory="..\..\out\debug71\build\appterraindemo\"
 			IntermediateDirectory="..\..\out\debug71\build\appterraindemo\"
 			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				MinimalRebuild="TRUE"
-				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="FALSE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\appterraindemo\appterraindemo.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\appterraindemo\"
 				ObjectFile="..\..\out\debug71\build\appterraindemo\"
@@ -188,24 +183,27 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"
+				TreatWChar_tAsBuiltInType="false"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="TRUE"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\terraindemo.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
-				OutputFile="..\..\terraindemo.exe"
-				LinkIncremental="2"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
-				SubSystem="1"
 				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
@@ -214,7 +212,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\appterraindemo\appterraindemo.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -222,38 +221,32 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
-				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"/>
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
 			OutputDirectory="..\..\out\debug71\build\appterraindemo\"
 			IntermediateDirectory="..\..\out\debug71\build\appterraindemo\"
 			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
 				MinimalRebuild="TRUE"
-				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="FALSE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\appterraindemo\appterraindemo.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\appterraindemo\"
 				ObjectFile="..\..\out\debug71\build\appterraindemo\"
@@ -261,24 +254,27 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"
+				TreatWChar_tAsBuiltInType="false"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="TRUE"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\terraindemo.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
-				OutputFile="..\..\terraindemo.exe"
-				LinkIncremental="2"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="..\..\out\debug71\build\appterraindemo\terraindemo.pdb"
-				SubSystem="1"
 				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
@@ -287,7 +283,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\appterraindemo\appterraindemo.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -295,22 +292,14 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
-				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"/>
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
 	<Files>
 		<Filter
 			Name="Source Files"

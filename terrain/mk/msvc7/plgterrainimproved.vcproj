@@ -305,6 +305,9 @@
 			Name="Source Files"
 			Filter="">
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\cell.cpp">
 			</File>
 			<File
@@ -314,13 +317,13 @@
 				RelativePath="..\..\plugins\mesh\terrain\improved\meshobjecttype.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\improved\simplecollider.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simpledatafeeder.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simplerenderer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terraformerdatafeeder.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrain.cpp">
@@ -328,10 +331,16 @@
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrainsystem.cpp">
 			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\threadeddatafeeder.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.h">
+			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\cell.h">
 			</File>
@@ -345,19 +354,19 @@
 				RelativePath="..\..\plugins\mesh\terrain\improved\meshobjecttype.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\improved\segmentcell.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\improved\simplecollider.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simpledatafeeder.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simplerenderer.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terraformerdatafeeder.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrainsystem.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\threadeddatafeeder.h">
 			</File>
 		</Filter>
 		<Filter

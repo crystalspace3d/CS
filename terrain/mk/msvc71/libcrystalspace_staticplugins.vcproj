@@ -4886,6 +4886,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\collide\opcode\terraincollider.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_collide_opcode_terraincollider.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_collide_opcode_terraincollider.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_collide_opcode_terraincollider.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_collide_opcode_terraincollider.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\console\input\standard\csconin.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -10043,6 +10070,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_bruteblockrenderer.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_bruteblockrenderer.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_bruteblockrenderer.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_bruteblockrenderer.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\cell.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -10124,33 +10178,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\improved\simplecollider.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_simplecollider.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_simplecollider.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_simplecollider.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_simplecollider.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simpledatafeeder.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -10205,6 +10232,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terraformerdatafeeder.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_terraformerdatafeeder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_terraformerdatafeeder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_terraformerdatafeeder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_terraformerdatafeeder.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrain.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -10256,6 +10310,33 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_terrainsystem.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\threadeddatafeeder.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_threadeddatafeeder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_threadeddatafeeder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_threadeddatafeeder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_terrain_improved_threadeddatafeeder.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -14181,7 +14262,13 @@
 				RelativePath="..\..\plugins\collide\opcode\Opcode.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\collide\opcode\segmentcell.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\collide\opcode\Stdafx.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\collide\opcode\terraincollider.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\console\input\standard\csconin.h">
@@ -14781,6 +14868,9 @@
 				RelativePath="..\..\plugins\mesh\terrain\brute\brute.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\cell.h">
 			</File>
 			<File
@@ -14793,19 +14883,19 @@
 				RelativePath="..\..\plugins\mesh\terrain\improved\meshobjecttype.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\improved\segmentcell.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\improved\simplecollider.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simpledatafeeder.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\simplerenderer.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terraformerdatafeeder.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrainsystem.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\threadeddatafeeder.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\persist\improved\loader.h">

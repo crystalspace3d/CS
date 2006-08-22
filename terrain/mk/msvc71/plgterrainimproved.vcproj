@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
@@ -16,21 +16,21 @@
 			OutputDirectory="..\..\out\release71\build\plgterrainimproved\"
 			IntermediateDirectory="..\..\out\release71\build\plgterrainimproved\"
 			ConfigurationType="2"
+			WholeProgramOptimization="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			WholeProgramOptimization="TRUE">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="2"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
 				EnableFunctionLevelLinking="TRUE"
-				TreatWChar_tAsBuiltInType="FALSE"
+				RuntimeLibrary="2"
+				DebugInformationFormat="3"
+				BufferSecurityCheck="FALSE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\release71\build\plgterrainimproved\plgterrainimproved.pch"
 				AssemblerListingLocation="..\..\out\release71\build\plgterrainimproved\"
 				ObjectFile="..\..\out\release71\build\plgterrainimproved\"
@@ -38,27 +38,30 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"
+				TreatWChar_tAsBuiltInType="false"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="TRUE"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\terrainimproved.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="..\..\out\release71\build\plgterrainimproved\terrainimproved.pdb"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				OutputFile="..\..\terrainimproved.dll"
+				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release71\build\plgterrainimproved\plgterrainimproved.lib"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				IgnoreImportLibrary="TRUE"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\release71\build\plgterrainimproved\terrainimproved.pdb"
 				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
@@ -67,7 +70,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\release71\build\plgterrainimproved\plgterrainimproved.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -75,18 +79,12 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
-				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"/>
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
@@ -97,15 +95,15 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				MinimalRebuild="TRUE"
-				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="FALSE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimproved\"
 				ObjectFile="..\..\out\debug71\build\plgterrainimproved\"
@@ -113,25 +111,28 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"
+				TreatWChar_tAsBuiltInType="false"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="TRUE"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\terrainimproved.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\terrainimproved.dll"
-				LinkIncremental="2"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimproved\terrainimproved.pdb"
-				ImportLibrary="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.lib"
 				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
@@ -140,7 +141,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -148,18 +150,12 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
-				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"/>
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
@@ -170,15 +166,15 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				MinimalRebuild="TRUE"
-				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="FALSE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimproved\"
 				ObjectFile="..\..\out\debug71\build\plgterrainimproved\"
@@ -186,25 +182,28 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"
+				TreatWChar_tAsBuiltInType="false"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="TRUE"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\terrainimproved.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\terrainimproved.dll"
-				LinkIncremental="2"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimproved\terrainimproved.pdb"
-				ImportLibrary="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.lib"
 				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
@@ -213,7 +212,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -221,18 +221,12 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
-				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"/>
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
@@ -243,15 +237,15 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
 				MinimalRebuild="TRUE"
-				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="FALSE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimproved\"
 				ObjectFile="..\..\out\debug71\build\plgterrainimproved\"
@@ -259,25 +253,28 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"
+				TreatWChar_tAsBuiltInType="false"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="TRUE"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\terrainimproved.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\terrainimproved.dll"
-				LinkIncremental="2"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimproved\terrainimproved.pdb"
-				ImportLibrary="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.lib"
 				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
@@ -286,7 +283,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\plgterrainimproved\plgterrainimproved.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -294,26 +292,21 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
-				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"/>
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
 			Filter="">
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.cpp">
+			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\cell.cpp">
 			</File>
@@ -330,15 +323,24 @@
 				RelativePath="..\..\plugins\mesh\terrain\improved\simplerenderer.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terraformerdatafeeder.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrain.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrainsystem.cpp">
 			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\threadeddatafeeder.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.h">
+			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\cell.h">
 			</File>
@@ -358,7 +360,13 @@
 				RelativePath="..\..\plugins\mesh\terrain\improved\simplerenderer.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\terraformerdatafeeder.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrainsystem.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\terrain\improved\threadeddatafeeder.h">
 			</File>
 		</Filter>
 		<Filter
@@ -371,12 +379,6 @@
 				RelativePath="..\..\plugins\mesh\terrain\improved\terrainimproved.csplugin">
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.cpp">
-		</File>
-		<File
-			RelativePath="..\..\plugins\mesh\terrain\improved\bruteblockrenderer.h">
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

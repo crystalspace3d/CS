@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="plgterrainimprovedldr"
-	ProjectGUID="{10E09BF5-0B30-3AE1-5D7D-7D52BCF444FC}"
+	Name="appvostest"
+	ProjectGUID="{BEB3BD72-DE2C-8DD9-FED4-552FE214A440}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,9 +13,10 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release71\build\plgterrainimprovedldr\"
-			IntermediateDirectory="..\..\out\release71\build\plgterrainimprovedldr\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release71\build\appvostest\"
+			IntermediateDirectory="..\..\out\release71\build\appvostest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -31,10 +32,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
-				AssemblerListingLocation="..\..\out\release71\build\plgterrainimprovedldr\"
-				ObjectFile="..\..\out\release71\build\plgterrainimprovedldr\"
-				ProgramDataBaseFileName="..\..\out\release71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				PrecompiledHeaderFile="..\..\out\release71\build\appvostest\appvostest.pch"
+				AssemblerListingLocation="..\..\out\release71\build\appvostest\"
+				ObjectFile="..\..\out\release71\build\appvostest\"
+				ProgramDataBaseFileName="..\..\out\release71\build\appvostest\vostest.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -49,15 +50,14 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\terrainimprovedldr.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
+				OutputFile="..\..\vostest.exe"
+				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib libvutil.lib libvip.lib libvos.lib libmetaobject_a3dl.lib libmetaobject_misc.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\release71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\appvostest\vostest.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -68,7 +68,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\appvostest\appvostest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -88,9 +88,10 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\appvostest\"
+			IntermediateDirectory="..\..\out\debug71\build\appvostest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -104,10 +105,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\appvostest\appvostest.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\appvostest\"
+				ObjectFile="..\..\out\debug71\build\appvostest\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appvostest\vostest.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -120,15 +121,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terrainimprovedldr.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
+				OutputFile="..\..\vostest.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib libvutil.lib libvip.lib libvos.lib libmetaobject_a3dl.lib libmetaobject_misc.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appvostest\vostest.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -139,7 +139,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\appvostest\appvostest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -159,9 +159,10 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\appvostest\"
+			IntermediateDirectory="..\..\out\debug71\build\appvostest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -175,10 +176,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\appvostest\appvostest.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\appvostest\"
+				ObjectFile="..\..\out\debug71\build\appvostest\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appvostest\vostest.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -191,15 +192,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terrainimprovedldr.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
+				OutputFile="..\..\vostest.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib libvutil.lib libvip.lib libvos.lib libmetaobject_a3dl.lib libmetaobject_misc.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appvostest\vostest.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -210,7 +210,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\appvostest\appvostest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -230,9 +230,10 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			IntermediateDirectory="..\..\out\debug71\build\plgterrainimprovedldr\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\appvostest\"
+			IntermediateDirectory="..\..\out\debug71\build\appvostest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -246,10 +247,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ObjectFile="..\..\out\debug71\build\plgterrainimprovedldr\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\appvostest\appvostest.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\appvostest\"
+				ObjectFile="..\..\out\debug71\build\appvostest\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appvostest\vostest.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -262,15 +263,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\terrainimprovedldr.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.lib"
+				OutputFile="..\..\vostest.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib libvutil.lib libvip.lib libvos.lib libmetaobject_a3dl.lib libmetaobject_misc.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgterrainimprovedldr\terrainimprovedldr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appvostest\vostest.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -281,7 +281,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgterrainimprovedldr\plgterrainimprovedldr.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\appvostest\appvostest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -305,24 +305,21 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\persist\improved\loader.cpp">
+				RelativePath="..\..\apps\tests\vostest\vostest.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\persist\improved\loader.h">
+				RelativePath="..\..\apps\tests\vostest\vostest.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgterrainimprovedldr.rc">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\persist\improved\terrainimprovedldr.csplugin">
+				RelativePath="..\..\mk\msvc\appvostest.rc">
 			</File>
 		</Filter>
 	</Files>

@@ -23,24 +23,24 @@ static char const metainfo_gmeshskelanim[] =
 "    <classes>"
 "      <class>"
 "        <name>crystalspace.mesh.anim.skeleton</name>"
-"        <implementation>csGenmeshSkelAnimationControlTypeOld</implementation>"
+"        <implementation>csGenmeshSkelAnimationControlType</implementation>"
 "        <description>Crystal Space General Mesh Animation Control</description>"
 "      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
 ;
-  #ifndef csGenmeshSkelAnimationControlTypeOld_FACTORY_REGISTER_DEFINED 
-  #define csGenmeshSkelAnimationControlTypeOld_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csGenmeshSkelAnimationControlTypeOld) 
+  #ifndef csGenmeshSkelAnimationControlType_FACTORY_REGISTER_DEFINED 
+  #define csGenmeshSkelAnimationControlType_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csGenmeshSkelAnimationControlType) 
   #endif
 
 class gmeshskelanim
 {
 SCF_REGISTER_STATIC_LIBRARY(gmeshskelanim,metainfo_gmeshskelanim)
-  #ifndef csGenmeshSkelAnimationControlTypeOld_FACTORY_REGISTERED 
-  #define csGenmeshSkelAnimationControlTypeOld_FACTORY_REGISTERED 
-    csGenmeshSkelAnimationControlTypeOld_StaticInit csGenmeshSkelAnimationControlTypeOld_static_init__; 
+  #ifndef csGenmeshSkelAnimationControlType_FACTORY_REGISTERED 
+  #define csGenmeshSkelAnimationControlType_FACTORY_REGISTERED 
+    csGenmeshSkelAnimationControlType_StaticInit csGenmeshSkelAnimationControlType_static_init__; 
   #endif
 public:
  gmeshskelanim();

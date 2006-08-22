@@ -1,122 +1,90 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="plgcsopcode"
 	ProjectGUID="{2389381D-9B05-73F1-1784-7EFBC15206E6}"
-	>
+	SccProjectName=""
+	SccLocalPath="">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="..\..\out\release8\build\plgcsopcode\"
 			IntermediateDirectory="..\..\out\release8\build\plgcsopcode\"
 			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
 			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\plgcsopcode\plgcsopcode.tlb"
-			/>
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="2"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
-				StringPooling="true"
+				StringPooling="TRUE"
+				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
-				BufferSecurityCheck="false"
-				EnableFunctionLevelLinking="true"
-				TreatWChar_tAsBuiltInType="false"
+				DebugInformationFormat="3"
+				BufferSecurityCheck="FALSE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\release8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\release8\build\plgcsopcode\"
 				ObjectFile="..\..\out\release8\build\plgcsopcode\"
 				ProgramDataBaseFileName="..\..\out\release8\build\plgcsopcode\csopcode.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-				CompileAs="0"
-			/>
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				CompileAs="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				OutputFile="..\..\csopcode.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\release8\build\plgcsopcode\plgcsopcode.lib"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				IgnoreImportLibrary="TRUE"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\release8\build\plgcsopcode\csopcode.pdb"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\release8\build\plgcsopcode\plgcsopcode.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
-				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-			/>
+				Culture="1033"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\csopcode.dll"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release8\build\plgcsopcode\csopcode.pdb"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release8\build\plgcsopcode\plgcsopcode.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCWebDeploymentTool"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
@@ -124,100 +92,70 @@
 			IntermediateDirectory="..\..\out\debug8\build\plgcsopcode\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgcsopcode\plgcsopcode.tlb"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
-				MinimalRebuild="true"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="false"
-				RuntimeTypeInfo="true"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
 				ProgramDataBaseFileName="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				CompileAs="0"
-			/>
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				CompileAs="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\csopcode.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug8\build\plgcsopcode\plgcsopcode.lib"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				IgnoreImportLibrary="TRUE"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgcsopcode\plgcsopcode.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
-				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-			/>
+				Culture="1033"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\csopcode.dll"
-				LinkIncremental="2"
-				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
-				ImportLibrary="..\..\out\debug8\build\plgcsopcode\plgcsopcode.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCWebDeploymentTool"/>
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
@@ -225,100 +163,70 @@
 			IntermediateDirectory="..\..\out\debug8\build\plgcsopcode\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgcsopcode\plgcsopcode.tlb"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
-				MinimalRebuild="true"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="false"
-				RuntimeTypeInfo="true"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
 				ProgramDataBaseFileName="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				CompileAs="0"
-			/>
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				CompileAs="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\csopcode.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug8\build\plgcsopcode\plgcsopcode.lib"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				IgnoreImportLibrary="TRUE"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgcsopcode\plgcsopcode.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-			/>
+				Culture="1033"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\csopcode.dll"
-				LinkIncremental="2"
-				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
-				ImportLibrary="..\..\out\debug8\build\plgcsopcode\plgcsopcode.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCWebDeploymentTool"/>
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
@@ -326,543 +234,404 @@
 			IntermediateDirectory="..\..\out\debug8\build\plgcsopcode\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgcsopcode\plgcsopcode.tlb"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
-				MinimalRebuild="true"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="false"
-				RuntimeTypeInfo="true"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
 				ProgramDataBaseFileName="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				CompileAs="0"
-			/>
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				CompileAs="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\csopcode.dll"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug8\build\plgcsopcode\plgcsopcode.lib"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				IgnoreImportLibrary="TRUE"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgcsopcode\plgcsopcode.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-			/>
+				Culture="1033"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\csopcode.dll"
-				LinkIncremental="2"
-				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\csopcode.pdb"
-				ImportLibrary="..\..\out\debug8\build\plgcsopcode\plgcsopcode.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCWebDeploymentTool"/>
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			>
+			Filter="">
 			<File
-				RelativePath="..\..\plugins\collide\opcode\CSopcode.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\CSopcode.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\CSopcodecollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\CSopcodecollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\csTerraFormerCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\csTerraFormerCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceAABB.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceAABB.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceContainer.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceContainer.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceHPoint.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceHPoint.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceIndexedTriangle.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceIndexedTriangle.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix3x3.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix3x3.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix4x4.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix4x4.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceOBB.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceOBB.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePlane.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IcePlane.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePoint.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IcePoint.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRandom.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceRandom.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRay.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceRay.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRevisitedRadix.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceRevisitedRadix.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceSegment.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceSegment.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceTriangle.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceTriangle.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceUtils.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceUtils.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_AABBCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_AABBCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_AABBTree.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_AABBTree.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BaseModel.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_BaseModel.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BoxPruning.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_BoxPruning.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Collider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Collider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Common.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Common.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_HybridModel.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_HybridModel.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_LSSCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_LSSCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_MeshInterface.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_MeshInterface.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Model.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Model.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_OBBCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_OBBCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_OptimizedTree.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_OptimizedTree.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Picking.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Picking.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_RayCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_RayCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SphereCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_SphereCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SweepAndPrune.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_SweepAndPrune.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TreeBuilders.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_TreeBuilders.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TreeCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_TreeCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_VolumeCollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_VolumeCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Opcode.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Opcode.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\terraincollider.cpp"
-				>
+				RelativePath="..\..\plugins\collide\opcode\terraincollider.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			>
+			Filter="">
 			<File
-				RelativePath="..\..\plugins\collide\opcode\CSopcode.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\CSopcode.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\CSopcodecollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\CSopcodecollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\csTerraFormerCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\csTerraFormerCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceAABB.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceAABB.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceAxes.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceAxes.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceBoundingSphere.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceBoundingSphere.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceContainer.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceContainer.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceFPU.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceFPU.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceHPoint.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceHPoint.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceIndexedTriangle.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceIndexedTriangle.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceLSS.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceLSS.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix3x3.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix3x3.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix4x4.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix4x4.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMemoryMacros.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceMemoryMacros.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceOBB.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceOBB.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePairs.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IcePairs.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePlane.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IcePlane.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePoint.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IcePoint.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePreprocessor.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IcePreprocessor.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRandom.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceRandom.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRay.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceRay.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRevisitedRadix.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceRevisitedRadix.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceSegment.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceSegment.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceTriangle.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceTriangle.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceTrilist.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceTrilist.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceTypes.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceTypes.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceUtils.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\IceUtils.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_AABBCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Ice\Stdafx.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_AABBTree.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_AABBCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BaseModel.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_AABBTree.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BoxBoxOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_BaseModel.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BoxPruning.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_BoxBoxOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Collider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_BoxPruning.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Common.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Collider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_HybridModel.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Common.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_IceHook.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_HybridModel.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_LSSAABBOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_IceHook.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_LSSCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_LSSAABBOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_LSSTriOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_LSSCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_MeshInterface.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_LSSTriOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Model.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_MeshInterface.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_OBBCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Model.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_OptimizedTree.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_OBBCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Picking.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_OptimizedTree.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesAABBOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Picking.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesAABBOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesTriOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_RayAABBOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesTriOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_RayCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_RayAABBOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_RayTriOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_RayCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Settings.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_RayTriOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SphereAABBOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_Settings.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SphereCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_SphereAABBOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SphereTriOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_SphereCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SweepAndPrune.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_SphereTriOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TreeBuilders.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_SweepAndPrune.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TreeCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_TreeBuilders.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TriBoxOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_TreeCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TriTriOverlap.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_TriBoxOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_VolumeCollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_TriTriOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Opcode.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\OPC_VolumeCollider.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\segmentcell.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Opcode.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\Stdafx.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\segmentcell.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\Stdafx.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\Stdafx.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\terraincollider.h"
-				>
+				RelativePath="..\..\plugins\collide\opcode\terraincollider.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			>
+			Filter="">
 			<File
-				RelativePath="..\..\plugins\collide\opcode\csopcode.csplugin"
-				>
+				RelativePath="..\..\mk\msvc\plgcsopcode.rc">
 			</File>
 			<File
-				RelativePath="..\..\mk\msvc\plgcsopcode.rc"
-				>
+				RelativePath="..\..\plugins\collide\opcode\csopcode.csplugin">
 			</File>
 		</Filter>
 	</Files>

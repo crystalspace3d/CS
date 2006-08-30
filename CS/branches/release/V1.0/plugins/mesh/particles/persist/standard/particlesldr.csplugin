@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- particlesldr.csplugin -->
+<plugin>
+  <scf>
+    <classes>
+      <class>
+        <name>crystalspace.mesh.loader.factory.particles</name>
+        <implementation>ParticlesFactoryLoader</implementation>
+        <description>Crystal Space Particles Factory Loader</description>
+      </class>
+      <class>
+        <name>crystalspace.mesh.loader.particles</name>
+        <implementation>ParticlesObjectLoader</implementation>
+        <description>Crystal Space Particles Mesh Loader</description>
+      </class>
+    </classes>
+  </scf>
+</plugin>

@@ -569,6 +569,9 @@
 				RelativePath="..\..\libs\cstool\normalcalc.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\cstool\numberedfilename.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\cstool\pen.cpp">
 			</File>
 			<File
@@ -596,10 +599,16 @@
 				RelativePath="..\..\libs\cstool\saverref.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\cstool\uberscreenshot.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\cstool\userrndbuf.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\vertexcompress.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\alignedalloc.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\ansiparse.cpp">
@@ -732,6 +741,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\inputdef.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\measuretime.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\memdebug.cpp">
@@ -1281,6 +1293,9 @@
 				RelativePath="..\..\libs\..\include\cstool\normalcalc.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\numberedfilenamehelper.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\cstool\objmodel.h">
 			</File>
 			<File
@@ -1315,6 +1330,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\tokenlist.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\uberscreenshot.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\userrndbuf.h">
@@ -1485,6 +1503,9 @@
 				RelativePath="..\..\libs\..\include\csutil\filereadhelper.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\fixedsizeallocator.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\flags.h">
 			</File>
 			<File
@@ -1519,6 +1540,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\list.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\measuretime.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\memdebug.h">
@@ -1681,9 +1705,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\timemeasure.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\timer.h">

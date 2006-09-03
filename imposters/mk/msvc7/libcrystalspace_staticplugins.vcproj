@@ -26,7 +26,7 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -49,7 +49,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc7.lib lib3ds.lib ode.lib cal3d-vc7.lib libopentree.lib bullet-vc7.lib bulletdynamics-vc7.lib bulletphysicsinterfacecommon-vc7.lib bulletccdphysics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc7.lib lib3ds.lib cal3d-vc7.lib ode.lib bullet-vc7.lib bulletdynamics-vc7.lib bulletphysicsinterfacecommon-vc7.lib bulletccdphysics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -61,7 +61,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -75,7 +75,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -97,7 +97,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -118,7 +118,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc7_d.lib lib3ds.lib ode.lib cal3d-vc7_d.lib libopentree_d.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -130,7 +130,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -144,7 +144,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -166,7 +166,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -187,7 +187,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc7_d.lib lib3ds.lib ode.lib cal3d-vc7_d.lib libopentree_d.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -199,7 +199,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -213,7 +213,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -235,7 +235,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -256,7 +256,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc7_d.lib lib3ds.lib ode.lib cal3d-vc7_d.lib libopentree_d.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -268,7 +268,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -282,7 +282,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;YY_NEVER_INTERACTIVE;CS_USE_ODE_EXTERN_C;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -2159,60 +2159,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\mk\msvc\libopentree_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libopentree_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libopentree_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libopentree_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libopentree_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libopentreeldr_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libopentreeldr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libopentreeldr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libopentreeldr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libopentreeldr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\mk\msvc\libpagingformer_staticreg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -2321,60 +2267,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\mk\msvc\libpartphys_ode_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libpartphys_ode_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libpartphys_ode_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libpartphys_ode_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libpartphys_ode_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libpartphys_simple_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libpartphys_simple_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libpartphys_simple_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libpartphys_simple_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libpartphys_simple_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\mk\msvc\libphysldr_staticreg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -2480,6 +2372,33 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libptanimimg_staticreg.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libptpdlight_staticreg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libptpdlight_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libptpdlight_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libptpdlight_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libptpdlight_staticreg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -9017,6 +8936,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\genmesh\object\submeshes.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_submeshes.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_submeshes.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_submeshes.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_submeshes.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\genmesh\persist\gmesh3ds\gmesh3ds.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -9341,57 +9287,57 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\opentree\object\opentree.cpp">
+				RelativePath="..\..\plugins\mesh\particles\object\builtineffectors.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_opentree_object_opentree.cpp.obj"/>
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_builtineffectors.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_opentree_object_opentree.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_builtineffectors.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_opentree_object_opentree.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_builtineffectors.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_opentree_object_opentree.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_builtineffectors.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\opentree\persist\standard\opentreeldr.cpp">
+				RelativePath="..\..\plugins\mesh\particles\object\builtinemitters.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_opentree_persist_standard_opentreeldr.cpp.obj"/>
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_builtinemitters.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_opentree_persist_standard_opentreeldr.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_builtinemitters.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_opentree_persist_standard_opentreeldr.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_builtinemitters.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_opentree_persist_standard_opentreeldr.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_builtinemitters.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -9422,6 +9368,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\particles\object\vertexsetup.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_vertexsetup.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_vertexsetup.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_vertexsetup.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_object_vertexsetup.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\particles\persist\standard\particlesldr.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -9446,60 +9419,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_persist_standard_particlesldr.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\particles\physics\ode\odeparticles.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_particles_physics_ode_odeparticles.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_physics_ode_odeparticles.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_physics_ode_odeparticles.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_physics_ode_odeparticles.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\particles\physics\simple\simplephys.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_particles_physics_simple_simplephys.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_physics_simple_simplephys.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_physics_simple_simplephys.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_particles_physics_simple_simplephys.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -10526,6 +10445,33 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_proctex_ptanimimg_ptanimimg.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -13714,6 +13660,60 @@
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_tridraw_fill_gen_uint32.cpp.obj"/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\software\vertextransform.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_vertextransform.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_vertextransform.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_vertextransform.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_vertextransform.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\software\vertices_ltn.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_vertices_ltn.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_vertices_ltn.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_vertices_ltn.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_software_vertices_ltn.cpp.obj"/>
+				</FileConfiguration>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -14400,6 +14400,9 @@
 				RelativePath="..\..\plugins\mesh\genmesh\object\genmesh.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\genmesh\object\submeshes.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\genmesh\persist\gmesh3ds\gmesh3ds.h">
 			</File>
 			<File
@@ -14436,22 +14439,19 @@
 				RelativePath="..\..\plugins\mesh\null\persist\standard\nmeshldr.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\opentree\object\opentree.h">
+				RelativePath="..\..\plugins\mesh\particles\object\builtineffectors.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\opentree\persist\standard\opentreeldr.h">
+				RelativePath="..\..\plugins\mesh\particles\object\builtinemitters.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\particles\object\particles.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\particles\object\vertexsetup.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\particles\persist\standard\particlesldr.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\particles\physics\ode\odeparticles.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\particles\physics\simple\simplephys.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\protomesh\object\protomesh.h">
@@ -14572,6 +14572,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\proctex\ptanimimg\ptanimimg.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\proctex\standard\dots.h">
@@ -14959,6 +14962,12 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\software\types.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\software\vertextransform.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\software\vertices_ltn.h">
 			</File>
 		</Filter>
 	</Files>

@@ -26,7 +26,7 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -49,7 +49,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc71.lib lib3ds.lib cal3d-vc71.lib ode.lib bullet-vc71.lib bulletdynamics-vc71.lib bulletphysicsinterfacecommon-vc71.lib bulletccdphysics-vc71.lib bulletmath-vc71.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71.lib lib3ds.lib cal3d-vc71.lib ode.lib bullet-vc71.lib bulletdynamics-vc71.lib bulletphysicsinterfacecommon-vc71.lib bulletccdphysics-vc71.lib bulletmath-vc71.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -61,7 +61,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -75,7 +75,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -97,7 +97,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -118,7 +118,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bullet-vc71_d.lib bulletdynamics-vc71_d.lib bulletphysicsinterfacecommon-vc71_d.lib bulletccdphysics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bullet-vc71_d.lib bulletdynamics-vc71_d.lib bulletphysicsinterfacecommon-vc71_d.lib bulletccdphysics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -130,7 +130,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -144,7 +144,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -166,7 +166,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -187,7 +187,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bullet-vc71_d.lib bulletdynamics-vc71_d.lib bulletphysicsinterfacecommon-vc71_d.lib bulletccdphysics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bullet-vc71_d.lib bulletdynamics-vc71_d.lib bulletphysicsinterfacecommon-vc71_d.lib bulletccdphysics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -199,7 +199,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -213,7 +213,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -235,7 +235,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -256,7 +256,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib js.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bullet-vc71_d.lib bulletdynamics-vc71_d.lib bulletphysicsinterfacecommon-vc71_d.lib bulletccdphysics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bullet-vc71_d.lib bulletdynamics-vc71_d.lib bulletphysicsinterfacecommon-vc71_d.lib bulletccdphysics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -268,7 +268,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -282,7 +282,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;XP_WIN;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;YY_NEVER_INTERACTIVE;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -295,33 +295,6 @@
 		<Filter
 			Name="Source Files"
 			Filter="">
-			<File
-				RelativePath="..\..\mk\msvc\libaws2_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\mk_msvc_libaws2_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libaws2_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libaws2_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libaws2_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libaws_staticreg.cpp">
 				<FileConfiguration
@@ -7856,492 +7829,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\gui\aws2\color.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_color.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_color.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_color.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_color.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\font.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_font.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_font.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_font.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_font.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\frame.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_frame.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_frame.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_frame.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_frame.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\fvg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_fvg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_fvg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_fvg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_fvg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\gradient.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_gradient.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_gradient.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_gradient.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_gradient.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\manager.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_manager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_manager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_manager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_manager.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\pen.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_pen.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_pen.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_pen.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_pen.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\plugin.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_plugin.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_plugin.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_plugin.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_plugin.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\preferences.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_preferences.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_preferences.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_preferences.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_preferences.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\script_console.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_console.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_console.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_console.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_console.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\script_manager.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_manager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_manager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_manager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_manager.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\script_object.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_object.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_object.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_object.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_script_object.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\skin.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_skin.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_skin.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_skin.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_skin.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\texture.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_texture.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_texture.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_texture.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_texture.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\timer.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_timer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_timer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_timer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_timer.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\vfs.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_vfs.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_vfs.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_vfs.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_vfs.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\widget.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_widget.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_widget.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_widget.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_widget.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\xml_def.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_gui_aws2_xml_def.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_xml_def.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_xml_def.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_gui_aws2_xml_def.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguievthandler.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -14269,69 +13756,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\aws\xml_def.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\color.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\font.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\frame.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\fvg.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\fvg_shape.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\gradient.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\javascript.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\manager.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\pen.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\preferences.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\script_console.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\script_manager.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\script_object.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\sigslot.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\skin.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\split.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\texture.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\timer.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\vfs.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\widget.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\aws2\xml_def.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguievthandler.h">

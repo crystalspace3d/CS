@@ -16,24 +16,24 @@
 namespace csStaticPluginInit
 {
 static char const metainfo_terrainimprovedldr[] =
-"<?xml version=\"1.0\"?>"
-"<!-- loader.csplugin -->"
-"<plugin>"
-"  <scf>"
-"    <classes>"
-"      <class>"
-"        <name>crystalspace.mesh.loader.factory.terrainimproved</name>"
-"        <implementation>csTerrainFactoryLoader</implementation>"
-"        <description>Terrain Factory Loader</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.mesh.loader.terrainimproved</name>"
-"        <implementation>csTerrainObjectLoader</implementation>"
-"        <description>Terrain Object Loader</description>"
-"      </class>"
-"    </classes>"
-"  </scf>"
-"</plugin>"
+"<?xml version=\"1.0\"?>"
+"<!-- loader.csplugin -->"
+"<plugin>"
+"  <scf>"
+"    <classes>"
+"      <class>"
+"        <name>crystalspace.mesh.loader.factory.terrainimproved</name>"
+"        <implementation>csTerrainFactoryLoader</implementation>"
+"        <description>Terrain Factory Loader</description>"
+"      </class>"
+"      <class>"
+"        <name>crystalspace.mesh.loader.terrainimproved</name>"
+"        <implementation>csTerrainObjectLoader</implementation>"
+"        <description>Terrain Object Loader</description>"
+"      </class>"
+"    </classes>"
+"  </scf>"
+"</plugin>"
 ;
   #ifndef csTerrainFactoryLoader_FACTORY_REGISTER_DEFINED 
   #define csTerrainFactoryLoader_FACTORY_REGISTER_DEFINED 

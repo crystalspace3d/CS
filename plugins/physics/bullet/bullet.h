@@ -27,8 +27,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csutil/csobject.h"
 #include "csutil/nobjvec.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet)
-{
 
 /**
 * This is the implementation for the actual plugin.
@@ -350,8 +348,5 @@ public:
 protected:
     void ResetShape ();
 };
-
-}
-CS_PLUGIN_NAMESPACE_END(Bullet)
 
 #endif //__CS_BULLET_DYNAMICS_H__

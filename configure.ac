@@ -12,7 +12,7 @@ AC_PREREQ([2.56])
 # cs_version_number
 #	Keep this value synchronized with CS/include/csver.h.
 #------------------------------------------------------------------------------
-m4_define([cs_version_number], [1.1])
+m4_define([cs_version_number], [1.0pre1])
 
 
 
@@ -627,6 +627,16 @@ CS_EMIT_BUILD_FLAGS([if missing symbols can be reported as warnings],
 
 
 #------------------------------------------------------------------------------
+# Check if linker recognizes "--as-needed" which only links dynamic libs that
+# are really honestly needed.
+#------------------------------------------------------------------------------
+#CS_EMIT_BUILD_FLAGS([if --as-needed is supported], 
+#    [cs_cv_prog_link_as_needed], [CS_CREATE_TUPLE([],[-Wl,--as-needed])], 
+#    [C++], [COMPILER.LFLAGS], [+])
+
+
+
+#------------------------------------------------------------------------------
 # Check if C++ function inlining can be enabled and disabled. Apparently, with
 # some versions of GNU build tools on Windows, the Crystal Space Python plugin
 # fails to link and emits the error message "Error: 0-bit reloc in dll". In
@@ -871,11 +881,11 @@ AC_MSG_CHECKING([whether to split debug information])
 AC_ARG_ENABLE([separate-debug-info], 
     [AC_HELP_STRING([--enable-separate-debug-info],
         [split debug information into separate files. (default YES if 
-        binutils >= 2.17, otherwise default NO)])])
+        binutils >= 2.17 detected and not on Cygwin, otherwise default NO)])])
 AS_IF([test -z "$enable_separate_debug_info"], 
     AS_IF([test -z `uname | grep -i CYGWIN`],
         [enable_separate_debug_info=$cs_cv_binutils_2_17],
-        [enable_separate_debug_info=$cs_cv_binutils_true_2_17]))
+        [enable_separate_debug_info=no]))
 AC_MSG_RESULT([$enable_separate_debug_info])
 
 CS_EMIT_BUILD_PROPERTY([LINK.DEBUG.INFO.SEPARATE], [$enable_separate_debug_info])
@@ -984,35 +994,8 @@ AC_DEFUN([CS_X_CHECK_PREPARE],
     AS_IF([test x$cs_host_macosx = xyes], [with_x=no])])
 
 CS_X_CHECK_PREPARE
-# Compatiblity: use --with-x param for individual X lib checks
-AS_IF([test -z "$with_x11"], [with_x11=$with_x])
-# Newer X.org versions ship with pkgconfig packages, which will be picked up
-# by this check
-CS_CHECK_LIB_WITH([x11],
-    [AC_LANG_PROGRAM(
-	[[#include <X11/Xlib.h>]],
-	[XOpenDisplay (0)])])
-AS_IF([test $cs_cv_libx11 = yes],
-    [# Probably "new" X.org
-    AS_IF([test -z "$with_xext"], [with_xext=$with_x])
-    CS_CHECK_LIB_WITH([xext],
-	[AC_LANG_PROGRAM(
-	    [[#include <X11/Xlib.h>
-	    #include <X11/extensions/XShm.h>]],
-	    [XShmCreateImage(0, 0, 0, 0, 0, 0, 0, 0)])], [], [], [],
-	    [$cs_cv_libx11_cflags], 
-	    [$cs_cv_libx11_lflags], 
-	    [$cs_cv_libx11_libs])
-    no_x=no
-    X_CFLAGS="$cs_cv_libxext_cflags $cs_cv_libx11_cflags"
-    X_LFLAGS="$cs_cv_libxext_lflags $cs_cv_libx11_lflags"
-    X_LIBS="$cs_cv_libxext_libs $cs_cv_libx11_libs"
-    ],
-    [# Use "old" autoconf X11 macros
-    AC_PATH_X
-    AC_PATH_XTRA
-    X_LFLAGS=$(X_PRE_LIBS) $(X_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)])
-
+AC_PATH_X
+AC_PATH_XTRA
 
 AS_IF([test "$no_x" != yes],
     [# We must be especially careful to instruct CS_EMIT_BUILD_PROPERTY() to
@@ -1025,10 +1008,15 @@ AS_IF([test "$no_x" != yes],
     # must ensure that those other variables are defined (even if only with an
     # empty string).
     CS_EMIT_BUILD_PROPERTY([X11.AVAILABLE], [yes])
-    CS_EMIT_BUILD_PROPERTY([X11.CFLAGS], [$X_CFLAGS])
-    CS_EMIT_BUILD_PROPERTY([X11.LFLAGS], [$X_LIBS $X_LFLAGS])
+    CS_EMIT_BUILD_PROPERTY([X_CFLAGS], [$X_CFLAGS], [], [Y])
+    CS_EMIT_BUILD_PROPERTY([X_LIBS], [$X_LIBS], [], [Y])
+    CS_EMIT_BUILD_PROPERTY([X_PRE_LIBS], [$X_PRE_LIBS], [], [Y])
+    CS_EMIT_BUILD_PROPERTY([X_EXTRA_LIBS], [$X_EXTRA_LIBS], [], [Y])
+    CS_EMIT_BUILD_PROPERTY([X11.CFLAGS], [AS_ESCAPE([$(X_CFLAGS)])])
+    CS_EMIT_BUILD_PROPERTY([X11.LFLAGS],
+      [AS_ESCAPE([$(X_PRE_LIBS) $(X_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)])])
 
-    CS_CHECK_LIB_WITH([xxf86vm],
+    CS_CHECK_LIB_WITH([Xxf86vm],
 	[AC_LANG_PROGRAM(
 	    [[#define XK_MISCELLANY 1
 	    #include <X11/Xlib.h>
@@ -1037,24 +1025,19 @@ AS_IF([test "$no_x" != yes],
 	    #include <X11/extensions/xf86vmode.h>]],
 	    [XF86VidModeLockModeSwitch(0, 0, 0)])], [], [],
 	[CS_EMIT_BUILD_PROPERTY([XFREE86VM.AVAILABLE], [yes])
-	CS_EMIT_BUILD_PROPERTY([XFREE86VM.CFLAGS], [$cs_cv_libxxf86vm_cflags])
-	CS_EMIT_BUILD_PROPERTY([XFREE86VM.LFLAGS], 
-	    [$cs_cv_libxxf86vm_libs $cs_cv_libxxf86vm_lflags])], [],
-	[$X_CFLAGS], 
-	[$X_LFLAGS], 
-	[$X_PRE_LIBS $X_LIBS -lX11 -lXext $X_EXTRA_LIBS],
-	[Xxf86vm])
+	CS_EMIT_BUILD_PROPERTY([XFREE86VM.CFLAGS], [AS_ESCAPE([$(X_CFLAGS)])])
+	CS_EMIT_BUILD_PROPERTY([XFREE86VM.LFLAGS],
+	    [AS_ESCAPE([$(X_PRE_LIBS) $(X_LIBS) -lXxf86vm -lXext -lX11
+	    $(X_EXTRA_LIBS)])])], [],
+	[$X_CFLAGS], [], [$X_PRE_LIBS $X_LIBS -lX11 -lXext $X_EXTRA_LIBS])
 
-    CS_CHECK_LIB_WITH([xaw7],
+    CS_CHECK_LIB_WITH([Xaw],
 	[AC_LANG_PROGRAM(
 	    [[#include <X11/Shell.h>
 	    #include <X11/Xaw/Form.h>]],
 	    [XtVaGetValues(0,0,0,0)])],
-	[], [],	[CS_EMIT_BUILD_RESULT([cs_cv_libxaw7], [XAW])], [],
-	[$X_CFLAGS], 
-	[$X_LFLAGS], 
-	[$X_PRE_LIBS $X_LIBS -lXt -lX11 $X_EXTRA_LIBS],
-	[Xaw])])
+	[], [],	[CS_EMIT_BUILD_RESULT([cs_cv_libXaw], [XAW])], [],
+	[$X_CFLAGS], [], [$X_PRE_LIBS $X_LIBS -lXt -lX11 $X_EXTRA_LIBS])])
 
 
 
@@ -1549,51 +1532,7 @@ AS_IF([test $cs_cv_libCEGUI = yes],
 	[$cs_cv_libCEGUI_lflags],
 	[$cs_cv_libCEGUI_libs])])
 
-#------------------------------------------------------------------------------
-# Check if cegui.i is available, cegui.py compatible and cegui new enough
-#------------------------------------------------------------------------------
-m4_define([pycegui_paths_default],
-	  [/usr/local/include/CEGUI/bindings /usr/include/CEGUI/bindings /sw/include/CEGUI/bindings /opt/local/include/CEGUI/bindings /opt/include/CEGUI/bindings])
-pyceguitest="
-import os.path
-try:
-	import cegui
-	pyfile=getattr(cegui,'__'+'file__')
-	print pyfile.replace('.pyc','.py')
-except:
-	pass
-"
-AC_ARG_WITH([pycegui], [AC_HELP_STRING([--with-pycegui],
-    [use pycegui scripting interface (default YES)])])
-AS_IF([test -z "$with_pycegui"], [with_pycegui=yes])
 
-AS_IF([test -n "$PYTHON" && test -n "$SWIG"],[
-
-  AS_IF([test "$with_pycegui" != no && test $cs_cv_libCEGUI = yes], [
-
-    CS_CHECK_BUILD([if CEGUI is bleeding edge], [cs_cv_CEGUI_bleeding],
-      [AC_LANG_PROGRAM(
-	[[#include <CEGUIWindow.h>]],
-	[CEGUI::Window *w=new CEGUI::Window("","");w->getXPosition();])],
-      [], [C++],[
-      AS_IF([test "$with_pycegui" != yes],
-          [PYCEGUI_I_FILE="$with_pycegui/package/cegui.i"
-           PYCEGUI_PY_FILE="$with_pycegui/src/cegui.py"],
-          [AC_PATH_PROGS([PYCEGUI_I_FILE],[cegui.i],[],[pycegui_paths_default])
-	   PYCEGUI_PY_FILE=CS_RUN_PATH_NORMALIZE([$PYTHON -c "$pyceguitest"])])
-      m4_define([PYCEGUI_EXPECTED_SWIG_VERSION],[cs_prog_swig_version])
-      AS_IF([test -f "$PYCEGUI_PY_FILE" && test -f "$PYCEGUI_I_FILE"],[
-	CS_CHECK_PROG_VERSION([cegui.py was generated with same swig],
-		[sed -n -e '1p' "$PYCEGUI_PY_FILE"],
-		[PYCEGUI_EXPECTED_SWIG_VERSION],[9.9|.9],
-		[PYCEGUI_I_DIR=`AS_DIRNAME([$PYCEGUI_I_FILE])`
-		 CS_EMIT_BUILD_PROPERTY([PYCEGUI.SWIGOK], [yes])
-		 CS_EMIT_BUILD_PROPERTY([PYCEGUI.SWIGFLAGS], [-I$PYCEGUI_I_DIR])
-		],[],[=])
-      ]) # AS_IF
-    ],[],[],[$cs_cv_libCEGUI_cflags],[$cs_cv_libCEGUI_lflags],[$cs_cv_libCEGUI_libs])
-  ],[]) # AS_IF ["$with_pycegui" != no && test $cs_cv_libCEGUI = yes]
-],[]) # AS_IF([test -n "$PYTHON" && test -n "$SWIG"],[
 
 #------------------------------------------------------------------------------
 # Check if GNU/Linux joystick API is present.

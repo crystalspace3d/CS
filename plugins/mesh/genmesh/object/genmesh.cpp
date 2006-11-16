@@ -2030,12 +2030,19 @@ void csGenmeshMeshObjectFactory::CalculateNormals (bool compress)
 
       SubMesh* subMesh (subMeshes[s]);
       csRef<iRenderBuffer> indices (subMesh->GetIndices());
+      csRenderBufferLock<uint8> indexLock (indices, CS_BUF_LOCK_READ);
+
+      size_t stride = indices->GetElementDistance();
+      const uint8* tri = indexLock;
+      const uint8* triEnd = tri + indices->GetElementCount()*stride;
 
       CS::TriangleIndicesStream<int> triangles;
-      triangles.BeginTriangulate (indices, CS_MESHTYPE_TRIANGLES);
-      while (triangles.HasNext ())
+      triangles.BeginTriangulate (tri, triEnd, stride, 
+        indices->GetComponentType(), CS_MESHTYPE_TRIANGLES);
+      while (triangles.HasNextTri ())
       {
-        csTriangle tri (triangles.Next ());
+        csTriangle tri;
+        triangles.NextTriangle (tri.a, tri.b, tri.c);
         newTriangles.Push (tri);
       }
     }

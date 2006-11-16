@@ -172,8 +172,6 @@
 // list. Please keep the list sorted alphabetically.
 #ifndef CS_MINI_SWIG
 %define APPLY_FOR_EACH_INTERFACE
-  INTERFACE_APPLY(iAws)
-  INTERFACE_APPLY(iAwsKey)
   INTERFACE_APPLY(iBase)
   INTERFACE_APPLY(iBinaryLoaderPlugin)
   INTERFACE_APPLY(iBodyGroup)
@@ -885,16 +883,6 @@ template<typename T> struct csVector4T {
 %ignore csPoly3D::GetVertices (); // Non-const.
 %include "csgeom/poly3d.h"
 
-namespace CS
-{
-  template<typename T> struct TriangleT
-  { 
-    T a, b, c;
-    void Set (const T& _a, const T& _b, const T& _c);
-  };
-}
-%template(TriangleInt) CS::TriangleT<int >;
-%warnfilter(302) TriangleT; // redefined
 %include "csgeom/tri.h"
 
 %ignore csRect::AddAdjanced; // Deprecated misspelling.
@@ -996,7 +984,6 @@ iArrayChangeElements<csShaderVariable * >;
 %template(csPluginRequestArray) csArray<csPluginRequest>;
 
 #ifndef CS_MINI_SWIG
-%include "iaws/aws.h"
 
 %include "igeom/clip2d.h"
 %include "imesh/objmodel.h"
@@ -1321,13 +1308,6 @@ APPLY_FOR_EACH_INTERFACE
   { return &(self->GetColors()[index]); }
 }
 
-// iaws/aws.h
-%extend iAws
-{
-  bool SetupCanvas (iGraphics2D *g2d=0, iGraphics3D *g3d=0)
-  { return self->SetupCanvas(0, g2d, g3d); }
-}
-
 // iutil/csinput.h
 %extend iKeyboardDriver
 {
@@ -1609,19 +1589,6 @@ uint _CS_FX_SETALPHA_INT (uint);
   csQuaternion operator + (const csQuaternion& q) { return *self + q; }
   csQuaternion operator - (const csQuaternion& q) { return *self - q; }
   csQuaternion operator * (const csQuaternion& q) { return *self * q; }
-}
-
-%include "cstool/primitives.h"
-%extend csSimpleRenderMesh
-{
-  void SetWithGenmeshFactory(iGeneralFactoryState *factory) 
-  {
-    self->vertices = factory->GetVertices(); 
-    self->vertexCount = factory->GetVertexCount(); 
-    self->indices = (uint *)factory->GetTriangles();
-    self->indexCount = factory->GetTriangleCount()*3; 
-    self->texcoords = factory->GetTexels();
-  }
 }
 
 /* List Methods */

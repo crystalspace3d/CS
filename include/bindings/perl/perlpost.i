@@ -738,7 +738,7 @@ TYPEMAP_OUTARG_ARRAY_PTR_CNT((char * & __chars__, int & __len__), 0, *)
 %enddef
 
 /*****************************************************************************
- * Use the macros we defined above for iEventHandler and iAwsSink.
+ * Use the macros we defined above for iEventHandler.
  *****************************************************************************/
 #ifndef CS_MICRO_SWIG
 WRAP_SCRIPT_CLASS (iEventHandler,
@@ -767,29 +767,5 @@ WRAP_SCRIPT_CLASS (iEventPlug,
   )
 )
 #endif // CS_MICRO_SWIG
-
-#ifndef CS_MINI_SWIG
-WRAP_SCRIPT_CLASS (iAwsSink,
-  WRAP_FUNC (unsigned long, GetTriggerID, (const char *name),
-    XPUSHp (name, strlen (name));,
-
-    POPu
-  )
-  WRAP_VOID (HandleTrigger, (int id, iAwsSource *src),
-    XPUSHi (id);
-    SV *ev_rv = newSViv (0);
-    SWIG_MakePtr (ev_rv, src, SWIGTYPE_p_iAwsSource, 0);
-    XPUSHs (sv_2mortal (ev_rv));
-  )
-  WRAP_VOID (RegisterTrigger, (const char *n, void (*t) (void*, iAwsSource*)),
-    /**/
-  )
-  WRAP_FUNC (unsigned int, GetError, (),
-    /**/,
-
-    POPu
-  )
-)
-#endif // CS_MINI_SWIG
 
 #endif // SWIGPERL5

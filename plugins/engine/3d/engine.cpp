@@ -642,9 +642,6 @@ bool csEngine::HandleEvent (iEvent &Event)
   {
     globalStringSet = CS_QUERY_REGISTRY_TAG_INTERFACE (
       objectRegistry, "crystalspace.shared.stringset", iStringSet);
-
-    id_creation_time = globalStringSet->Request("mesh creation time");
-
     csConfigAccess cfg (objectRegistry, "/config/engine.cfg");
 
     maxAspectRatio = 4096;
@@ -1406,7 +1403,7 @@ void csEngine::PrecacheDraw (iRegion* region)
   {
     iSector* s = sectors.Get (sn);
     if (!region || region->IsInRegion (s->QueryObject ()))
-      s->PrecacheDraw ();
+      s->GetVisibilityCuller ()->PrecacheCulling ();
   }
 
   size_t i;

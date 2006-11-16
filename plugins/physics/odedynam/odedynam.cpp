@@ -1083,11 +1083,8 @@ bool csODECollider::CreateMeshGeometry (iMeshWrapper *mesh)
   iPolygonMesh* p = mesh->GetMeshObject()->GetObjectModel()
   	->GetPolygonMeshColldet();
 
-  if (!p || p->GetVertexCount () == 0 || p->GetTriangleCount () == 0)
-  {
-    csFPrintf(stderr, "csODECollider: No collision polygons, triangles or vertices on %s\n",mesh->QueryObject()->GetName());
+  if (p->GetVertexCount () == 0 || p->GetTriangleCount () == 0)
     return false;
-  }
 
   csTriangle *c_triangle = p->GetTriangles();
   int tr_num = p->GetTriangleCount();
@@ -2421,6 +2418,11 @@ csODEJoint::csODEJoint (csODEDynamicSystem *sys) : scfImplementationType (this, 
   rotConstraint[1] = 1;
   rotConstraint[2] = 1;
 
+  maxTrans.Set (0, 0, 0);
+  minTrans.Set (0, 0, 0);
+  maxAngle.Set (0, 0, 0);
+  minAngle.Set (0, 0, 0);
+
   lo_stop = csVector3 (-dInfinity, -dInfinity, -dInfinity);
   hi_stop = csVector3 (dInfinity, dInfinity, dInfinity); 
   vel = csVector3 (0);
@@ -2494,21 +2496,21 @@ void csODEJoint::SetTransConstraints (bool X, bool Y, bool Z)
 
 void csODEJoint::SetMinimumDistance (const csVector3 &min)
 {
-  lo_stop = min;
+  minTrans = min;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetMinimumDistance ()
 {
-  return lo_stop;
+  return minTrans;
 }
 void csODEJoint::SetMaximumDistance (const csVector3 &max)
 {
-  hi_stop = max;
+  maxTrans = max;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetMaximumDistance ()
 {
-  return hi_stop;
+  return maxTrans;
 }
 
 void csODEJoint::SetRotConstraints (bool X, bool Y, bool Z)
@@ -2521,29 +2523,40 @@ void csODEJoint::SetRotConstraints (bool X, bool Y, bool Z)
 }
 void csODEJoint::SetMinimumAngle (const csVector3 &min)
 {
-  lo_stop = min;
+  minAngle = min;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetMinimumAngle ()
 {
-  return lo_stop;
+  return minAngle;
 }
 void csODEJoint::SetMaximumAngle (const csVector3 &max)
 {
-  hi_stop = max;
+  maxAngle = max;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetMaximumAngle ()
 {
-  return hi_stop;
+  return maxAngle;
 }
 
-void csODEJoint::BuildHinge (const csVector3 &axis)
+void csODEJoint::BuildHinge (const csVector3 &axis, float min, float max)
 {
   dJointSetHingeAxis (jointID, axis.x, axis.y, axis.z);
+  if (max > min)
+  {
+    dJointSetHingeParam (jointID, dParamLoStop, min);
+    dJointSetHingeParam (jointID, dParamHiStop, max);
+  }
+  else
+  {
+    dJointSetHingeParam (jointID, dParamLoStop, -dInfinity);
+    dJointSetHingeParam (jointID, dParamHiStop, dInfinity);
+  }
 }
 
-void csODEJoint::BuildHinge2 (const csVector3 &axis1, const csVector3 &axis2)
+void csODEJoint::BuildHinge2 (const csVector3 &axis1, float min1, float max1,
+                              const csVector3 &axis2, float min2, float max2)
 {
   if (custom_aconstraint_axis)
   {
@@ -2556,11 +2569,41 @@ void csODEJoint::BuildHinge2 (const csVector3 &axis1, const csVector3 &axis2)
     dJointSetHinge2Axis1 (jointID, axis1.x, axis1.y, axis1.z);
     dJointSetHinge2Axis2 (jointID, axis2.x, axis2.y, axis2.z);
   }
+  if (max1 > min1)
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop, min1);
+    dJointSetHinge2Param (jointID, dParamHiStop, max1);
+  }
+  else
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop, -dInfinity);
+    dJointSetHinge2Param (jointID, dParamHiStop, dInfinity);
+  }
+  if (max2 > min2)
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop2, min2);
+    dJointSetHinge2Param (jointID, dParamHiStop2, max2);
+  }
+  else
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop2, -dInfinity);
+    dJointSetHinge2Param (jointID, dParamHiStop2, dInfinity);
+  }
 }
 
-void csODEJoint::BuildSlider (const csVector3 &axis)
+void csODEJoint::BuildSlider (const csVector3 &axis, float min, float max)
 {
   dJointSetSliderAxis (jointID, axis.x, axis.y, axis.z);
+  if (max > min)
+  {
+    dJointSetSliderParam (jointID, dParamLoStop, min);
+    dJointSetSliderParam (jointID, dParamHiStop, max);
+  }
+  else
+  {
+    dJointSetSliderParam (jointID, dParamLoStop, -dInfinity);
+    dJointSetSliderParam (jointID, dParamHiStop, dInfinity);
+  }
 }
 
 void csODEJoint::SetAngularConstraintAxis (const csVector3 &axis, int body)
@@ -2686,15 +2729,15 @@ void csODEJoint::BuildJoint ()
       rot = transform.GetO2T();
       if (rotConstraint[0])
       {
-        BuildHinge (rot.Col1());
+        BuildHinge (rot.Col1(), minAngle.x, maxAngle.x);
       }
       else if (rotConstraint[1])
       {
-        BuildHinge (rot.Col2());
+        BuildHinge (rot.Col2(), minAngle.y, maxAngle.y);
       }
       else if (rotConstraint[2])
       {
-        BuildHinge (rot.Col3());
+        BuildHinge (rot.Col3(), minAngle.z, maxAngle.z);
       }
       // TODO: insert some mechanism for bounce, erp and cfm
       break;
@@ -2710,16 +2753,19 @@ void csODEJoint::BuildJoint ()
       {
         if (rotConstraint[1])
         {
-          BuildHinge2 (rot.Col2(), rot.Col1());
+          BuildHinge2 (rot.Col2(), minAngle.y, maxAngle.y,
+            rot.Col1(), minAngle.x, maxAngle.x);
         }
         else
         {
-          BuildHinge2 (rot.Col3(), rot.Col1());
+          BuildHinge2 (rot.Col3(), minAngle.z, maxAngle.z,
+            rot.Col1(), minAngle.x, maxAngle.x);
         }
       }
       else
       {
-        BuildHinge2 (rot.Col2(), rot.Col3());
+        BuildHinge2 (rot.Col2(), minAngle.y, maxAngle.y,
+          rot.Col3(), minAngle.z, maxAngle.z);
       }
       break;
     case 3:
@@ -2753,15 +2799,15 @@ void csODEJoint::BuildJoint ()
       rot = transform.GetO2T();
       if (transConstraint[0])
       {
-        BuildSlider (rot.Col1());
+        BuildSlider (rot.Col1(), minTrans.x, maxTrans.x);
       }
       else if (transConstraint[1])
       {
-        BuildSlider (rot.Col2());
+        BuildSlider (rot.Col2(), minTrans.y, maxTrans.y);
       }
       else
       {
-        BuildSlider (rot.Col3());
+        BuildSlider (rot.Col3(), minTrans.z, maxTrans.z);
       }
       break;
     case 2:

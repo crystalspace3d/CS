@@ -314,9 +314,6 @@ public:
 
   virtual iShaderVariableContext* GetSVContext()
   { return static_cast<iShaderVariableContext*> (this); }
-
-  virtual void PrecacheDraw ();
-
 private:
   // -- PRIVATE METHODS
 

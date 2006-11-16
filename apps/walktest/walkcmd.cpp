@@ -749,22 +749,23 @@ void WalkTest::ParseKeyCmds (iObject* src)
     }
     else if (!strcmp (kp->GetKey (), "cmd_AnimateDirLight"))
     {
-      csRef<iMeshWrapper> wrap = scfQueryInterface<iMeshWrapper> (src);
+      csRef<iMeshWrapper> wrap (SCF_QUERY_INTERFACE (src, iMeshWrapper));
       if (wrap)
         anim_dirlight = wrap;	// @@@ anim_dirlight should be csRef
     }
     else if (!strcmp (kp->GetKey (), "entity_WavePortal"))
     {
-      csRef<iMeshWrapper> wrap = scfQueryInterface<iMeshWrapper> (src);
+      csRef<iMeshWrapper> wrap = SCF_QUERY_INTERFACE (src, iMeshWrapper);
       if (wrap)
       {
-        const csRef<iSceneNodeArray> ml = 
-          wrap->QuerySceneNode ()->GetChildrenArray ();
+	const csRefArray<iSceneNode>& ml = wrap->QuerySceneNode ()
+		->GetChildren ();
 	size_t i;
 	iMeshWrapper* pcmesh = 0;
-        for (i = 0 ; i < ml->GetSize() ; i++)
-          if ((pcmesh = ml->Get(i)->QueryMesh ()))
+	for (i = 0 ; i < ml.Length () ; i++)
+	  if (ml[i]->QueryMesh ())
 	  {
+	    pcmesh = ml[i]->QueryMesh ();
 	    break;
 	  }
 	if (pcmesh)
@@ -816,15 +817,14 @@ void WalkTest::ParseKeyCmds (iObject* src)
     }
   }
 
-  csRef<iMeshWrapper> mesh (scfQueryInterface<iMeshWrapper> (src));
+  csRef<iMeshWrapper> mesh (SCF_QUERY_INTERFACE (src, iMeshWrapper));
   if (mesh)
   {
     size_t k;
-    const csRef<iSceneNodeArray> ml = 
-      mesh->QuerySceneNode ()->GetChildrenArray ();
-    for (k = 0 ; k < ml->GetSize() ; k++)
+    const csRefArray<iSceneNode>& ml = mesh->QuerySceneNode ()->GetChildren ();
+    for (k = 0 ; k < ml.Length () ; k++)
     {
-      iMeshWrapper* spr = ml->Get(k)->QueryMesh ();
+      iMeshWrapper* spr = ml[k]->QueryMesh ();
       // @@@ Also for others?
       if (spr)
         ParseKeyCmds (spr->QueryObject ());

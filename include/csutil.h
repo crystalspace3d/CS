@@ -88,7 +88,6 @@
 #include "csutil/mempool.h"
 #include "csutil/mmapio.h"
 #include "csutil/nobjvec.h"
-#include "csutil/noncopyable.h"
 #include "csutil/nulcache.h"
 #include "csutil/objiter.h"
 #include "csutil/objreg.h"
@@ -142,7 +141,6 @@
 #include "csutil/virtclk.h"
 #include "csutil/weakref.h"
 #include "csutil/weakrefarr.h"
-#include "csutil/weakreferenced.h"
 #include "csutil/xmltiny.h"
 #if defined(CS_PLATFORM_MACOSX)
 #include "csutil/macosx/OSXAssistant.h"

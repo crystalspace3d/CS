@@ -34,8 +34,6 @@ struct iMaterialWrapper;
 struct iMeshFactoryWrapper;
 struct iObject;
 struct iTextureWrapper;
-struct iThingFactoryState;
-struct iMeshWrapper;
 
 namespace CS
 {
@@ -103,14 +101,6 @@ namespace CS
       /// Check whether an engine object is a Thing factory and handle if so
       bool ProbeThingFactory (ImportKit::Container& container, 
 	iMeshFactoryWrapper* fact, const char* name);
-      /// Convert thing factory geometry into importkit Mesh geometry
-      bool HandleThingFactory (ImportKit::Container::Model& newModel,
-        iThingFactoryState* thingFact);
-      /// Check whether an engine object is a mesh object and handle if so
-      bool ProbeMeshObject (ImportKit::Container& container, iObject* obj);
-      /// Check whether an engine object is a Thing object and handle if so
-      bool ProbeThingObject (ImportKit::Container& container, 
-	iMeshWrapper* wrap, const char* name);
     public:
       Glue (iObjectRegistry* objectReg);
       ~Glue();

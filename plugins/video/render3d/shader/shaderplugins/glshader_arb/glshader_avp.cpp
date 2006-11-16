@@ -82,6 +82,7 @@ void csShaderGLAVP::SetupState (const csRenderMesh* /*mesh*/,
     case csShaderVariable::INT:
     case csShaderVariable::FLOAT:
     case csShaderVariable::VECTOR2:
+    case csShaderVariable::COLOR:
     case csShaderVariable::VECTOR3:
     case csShaderVariable::VECTOR4:
       {
@@ -138,6 +139,7 @@ void csShaderGLAVP::SetupState (const csRenderMesh* /*mesh*/,
         case csShaderVariable::INT:
         case csShaderVariable::FLOAT:
         case csShaderVariable::VECTOR2:
+        case csShaderVariable::COLOR:
         case csShaderVariable::VECTOR3:
         case csShaderVariable::VECTOR4:
           {

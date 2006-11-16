@@ -1,0 +1,4 @@
+@c -*-texinfo-*-
+@set UPDATED 12 November 2006
+@set EDITION 1.0pre2
+@set VERSION 1.0pre2

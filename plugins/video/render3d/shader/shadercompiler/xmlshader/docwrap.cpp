@@ -580,7 +580,7 @@ void csWrappedDocumentNode::ProcessInclude (ConditionEval& eval,
 					    NodeProcessingState* state, 
 					    iDocumentNode* node)
 {
-  csRef<iVFS> vfs = csQueryRegistry<iVFS> (objreg);
+  csRef<iVFS> vfs = CS_QUERY_REGISTRY (objreg, iVFS);
   CS_ASSERT (vfs.IsValid ());
   csRef<iFile> include = vfs->Open (filename, VFS_FILE_READ);
   if (!include.IsValid ())
@@ -591,7 +591,7 @@ void csWrappedDocumentNode::ProcessInclude (ConditionEval& eval,
   else
   {
     csRef<iDocumentSystem> docsys (
-      csQueryRegistry<iDocumentSystem> (objreg));
+      CS_QUERY_REGISTRY(objreg, iDocumentSystem));
     if (!docsys.IsValid())
       docsys.AttachNew (new csTinyDocumentSystem ());
 
@@ -1502,7 +1502,7 @@ void csWrappedDocumentNode::Report (int severity, iDocumentNode* node,
   va_list args;
   va_start (args, msg);
 
-  csRef<iSyntaxService> synsrv = csQueryRegistry<iSyntaxService> (objreg);
+  csRef<iSyntaxService> synsrv = CS_QUERY_REGISTRY (objreg, iSyntaxService);
   if (synsrv.IsValid ())
   {
     csString str;

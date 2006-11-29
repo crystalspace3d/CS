@@ -163,9 +163,9 @@ csGenericRenderStep::csGenericRenderStep (
 {
   objreg = object_reg;
 
-  strings = csQueryRegistryTagInterface<iStringSet> 
-    (object_reg, "crystalspace.shared.stringset");
-  shaderManager = csQueryRegistry<iShaderManager> (object_reg);
+  strings = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg, 
+    "crystalspace.shared.stringset", iStringSet);
+  shaderManager = CS_QUERY_REGISTRY (object_reg, iShaderManager);
 
   shadertype = 0;
   zOffset = false;
@@ -227,7 +227,7 @@ void csGenericRenderStep::RenderMeshes (iRenderView* rview, iGraphics3D* g3d,
   ToggleStepSettings (g3d, true);
   if (!shaderManager)
   {
-    shaderManager = csQueryRegistry<iShaderManager> (objreg);
+    shaderManager = CS_QUERY_REGISTRY (objreg, iShaderManager);
   }
   csRef<csShaderVariable> svO2W = 
     shadervars.Top ().GetVariable(string_object2world);

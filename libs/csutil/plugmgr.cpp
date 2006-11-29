@@ -45,6 +45,7 @@ csPluginManager::csPlugin::~csPlugin ()
 {
   //csPrintf ("DecRef %08p/'%s' ref=%d\n", Plugin, ClassID, Plugin->GetRefCount ()); fflush (stdout);
   delete [] ClassID;
+  Plugin->DecRef ();
 }
 
 //------------------------------------------------------------------------
@@ -109,10 +110,10 @@ void csPluginManager::Clear ()
 
 void csPluginManager::QueryOptions (iComponent *obj)
 {
-  csRef<iCommandLineParser> CommandLine (
-  	csQueryRegistry<iCommandLineParser> (object_reg));
+  csRef<iCommandLineParser> CommandLine (CS_QUERY_REGISTRY (object_reg,
+  	iCommandLineParser));
 
-  csRef<iPluginConfig> Config (scfQueryInterface<iPluginConfig> (obj));
+  csRef<iPluginConfig> Config (SCF_QUERY_INTERFACE (obj, iPluginConfig));
   if (Config)
   {
     size_t on = OptionList.Length ();
@@ -171,7 +172,15 @@ void csPluginManager::QueryOptions (iComponent *obj)
 
 iBase *csPluginManager::LoadPlugin (const char *classID, bool init)
 {
-  csRef<iComponent> p (scfCreateInstance<iComponent> (classID));
+  iComponent *p = 0;
+  { 
+    // The reference must be held beyond the scope of this block.
+    csRef<iComponent> dummy (SCF_CREATE_INSTANCE (classID, iComponent));
+    if (dummy) {
+      p = dummy;
+      p->IncRef ();
+    }
+  }
   
   if (!p)
   {
@@ -182,7 +191,7 @@ iBase *csPluginManager::LoadPlugin (const char *classID, bool init)
   else
   {
     csScopedMutexLock lock (mutex);
-    size_t index = csArrayItemNotFound;
+    size_t index = (size_t)-1;
     // See if the plugin is already in our plugin list.
     for (size_t i = 0 ; i < Plugins.Length () ; i++)
     {
@@ -195,23 +204,46 @@ iBase *csPluginManager::LoadPlugin (const char *classID, bool init)
 	}
     }
 
-    if (index == csArrayItemNotFound)
+    bool added_here = false;
+    if (index == (size_t)-1)
     {
       // The plugin wasn't in our plugin list yet. Add it here.
       index = Plugins.Push (new csPlugin (p, classID));
+      added_here = true;
     }
 
     if ((!init) || p->Initialize (object_reg))
     {
       p->IncRef();
-      if (init) QueryOptions (p);
-      return p;
+      if (p)
+      {
+        if (!added_here)
+	{
+	  // If we didn't add the plugin (i.e. this is not the first time
+	  // we called LoadPlugin() for this plugin) then we need to
+	  // DecRef() the component to avoid memory leaks.
+	  p->DecRef ();
+	}
+
+        if (init) QueryOptions (p);
+        return p;
+      }
+      else
+      {
+        if (!added_here)
+	{
+	  // If we didn't add the plugin (i.e. this is not the first time
+	  // we called LoadPlugin() for this plugin) then we need to
+	  // DecRef() the component to avoid memory leaks.
+	  p->DecRef ();
+	}
+      }
     }
     csReport (object_reg, CS_REPORTER_SEVERITY_WARNING,
     	"crystalspace.pluginmgr.loadplugin",
     	"failed to initialize plugin '%s'", classID);
     // If we added this plugin in this call then we remove it here as well.
-    if (index != csArrayItemNotFound)
+    if (added_here)
       Plugins.DeleteIndex (index);
   }
   return 0;
@@ -225,6 +257,7 @@ bool csPluginManager::RegisterPlugin (const char *classID,
   if (obj->Initialize (object_reg))
   {
     QueryOptions (obj);
+    obj->IncRef ();
     return true;
   }
   else
@@ -290,7 +323,7 @@ bool csPluginManager::UnloadPlugin (iComponent* obj)
   if (idx == csArrayItemNotFound)
     return false;
 
-  csRef<iPluginConfig> config (scfQueryInterface<iPluginConfig> (obj));
+  csRef<iPluginConfig> config (SCF_QUERY_INTERFACE (obj, iPluginConfig));
   if (config)
   {
     for (size_t i = OptionList.Length (); i > 0; i--)

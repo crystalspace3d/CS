@@ -638,7 +638,7 @@ int main (int argc, char *argv[])
     exit (0);
   }
 
-  ImageLoader = csQueryRegistry<iImageIO> (object_reg);
+  ImageLoader = CS_QUERY_REGISTRY (object_reg, iImageIO);
   if (!ImageLoader)
   {
     csPrintf("could not load image loader\n");

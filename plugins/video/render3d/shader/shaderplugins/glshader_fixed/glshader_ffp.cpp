@@ -623,7 +623,7 @@ bool csGLShaderFFP::Compile ()
   maxlayers = shaderPlug->texUnits;
 
   //get a statecache
-  csRef<iGraphics2D> g2d = csQueryRegistry<iGraphics2D> (objectReg);
+  csRef<iGraphics2D> g2d = CS_QUERY_REGISTRY (objectReg, iGraphics2D);
   g2d->PerformExtension ("getstatecache", &statecache);
 
   if (texlayers.Length () > (size_t)maxlayers)

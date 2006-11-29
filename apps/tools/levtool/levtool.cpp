@@ -1633,10 +1633,10 @@ LevTool::~LevTool ()
 
 void LevTool::Main ()
 {
-  cmdline = csQueryRegistry<iCommandLineParser> (object_reg);
-  vfs = csQueryRegistry<iVFS> (object_reg);
+  cmdline = CS_QUERY_REGISTRY (object_reg, iCommandLineParser);
+  vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
   csRef<iPluginManager> plugin_mgr = 
-    csQueryRegistry<iPluginManager> (object_reg);
+    CS_QUERY_REGISTRY (object_reg, iPluginManager);
 
   int op = OP_HELP;
 

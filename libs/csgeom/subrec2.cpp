@@ -547,9 +547,9 @@ void csSubRectangles::Dump ()
   if (!iSCF::SCF->object_reg) return;
 
   csRef<iImageIO> imgsaver =
-    csQueryRegistry<iImageIO> (iSCF::SCF->object_reg);
+    CS_QUERY_REGISTRY (iSCF::SCF->object_reg, iImageIO);
   csRef<iVFS> vfs =
-    csQueryRegistry<iVFS> (iSCF::SCF->object_reg);
+    CS_QUERY_REGISTRY (iSCF::SCF->object_reg, iVFS);
 
   if (!imgsaver || !vfs) return;
   

@@ -37,7 +37,6 @@
 #include "csutil/syspath.h"
 #include "csutil/util.h"
 #include "csutil/vfsplat.h"
-#include "iutil/databuff.h"
 #include "iutil/objreg.h"
 #include "iutil/verbositymanager.h"
 
@@ -1556,7 +1555,7 @@ bool csVFS::Initialize (iObjectRegistry* r)
 #endif
 
   csRef<iVerbosityManager> vm (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (vm.IsValid()) 
   {
     verbosity = VERBOSITY_NONE;
@@ -1566,7 +1565,7 @@ bool csVFS::Initialize (iObjectRegistry* r)
   }
 
   csRef<iCommandLineParser> cmdline =
-    csQueryRegistry<iCommandLineParser> (object_reg);
+    CS_QUERY_REGISTRY (object_reg, iCommandLineParser);
   if (cmdline)
   {
     resdir = alloc_normalized_path(cmdline->GetResourceDir());
@@ -1993,15 +1992,6 @@ bool csVFS::DeleteFile (const char *FileName)
 
   ArchiveCache->CheckUp ();
   return rc;
-}
-
-bool csVFS::SymbolicLink(const char *Target, const char *Link, int priority)
-{
-  csRef<iDataBuffer> rpath = GetRealPath (Link);
-  if (!rpath->GetSize ())
-    return false;
-  Mount (Target, rpath->GetData ());
-  return true;
 }
 
 bool csVFS::Mount (const char *VirtualPath, const char *RealPath)

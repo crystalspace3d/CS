@@ -233,8 +233,8 @@ bool csSimpleFormer::SetFloatMap (csStringID type, iImage* map,
                                   float scale, float offset)
 {
 
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    objectRegistry, "crystalspace.shared.stringset", iStringSet);
 
   // First check if we already have an floatmap of this type.
   size_t floatmap_idx = (size_t)~0;
@@ -451,8 +451,8 @@ bool csSimpleFormer::Initialize (iObjectRegistry* objectRegistry)
   csSimpleFormer::objectRegistry = objectRegistry;
 
   // Get the shared string repository
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    objectRegistry, "crystalspace.shared.stringset", iStringSet);
 
   // Grab string IDs
   stringVertices = strings->Request ("vertices");
@@ -561,8 +561,9 @@ bool csSimpleFormer::SampleInteger (csStringID type, float x, float z,
 csVector2 csSimpleFormer::GetIntegerMapSize (csStringID type)
 {
   // Get the shared string repository
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    objectRegistry, "crystalspace.shared.stringset",
+    iStringSet);
 
   csString typestring = csString(strings->Request(type));
 
@@ -946,8 +947,9 @@ const csVector3 *csSimpleSampler::SampleVector3 (csStringID type)
 const int *csSimpleSampler::SampleInteger (csStringID type)
 {
   // Get the shared string repository
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    terraFormer->objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    terraFormer->objectRegistry, "crystalspace.shared.stringset",
+    iStringSet);
 
   csString typestring = csString(strings->Request(type));
 

@@ -72,8 +72,8 @@ csTerrainFactoryLoader::~csTerrainFactoryLoader ()
 bool csTerrainFactoryLoader::Initialize (iObjectRegistry* objreg)
 {
   object_reg = objreg;
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
-  vfs = csQueryRegistry<iVFS> (object_reg);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
+  vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
 
   xmltokens.Register ("plugin", XMLTOKEN_PLUGIN);
   xmltokens.Register ("terraformer", XMLTOKEN_TERRAFORMER);
@@ -84,8 +84,8 @@ bool csTerrainFactoryLoader::Initialize (iObjectRegistry* objreg)
 csPtr<iBase> csTerrainFactoryLoader::Parse (iDocumentNode* node,
   iStreamSource*, iLoaderContext* /*ldr_context*/, iBase* /*context*/)
 {
-  csRef<iPluginManager> plugin_mgr = 
-    csQueryRegistry<iPluginManager> (object_reg);
+  csRef<iPluginManager> plugin_mgr = CS_QUERY_REGISTRY (object_reg,
+    iPluginManager);
 
   csRef<iMeshObjectFactory> fact;
   csRef<iTerrainFactoryState> state;
@@ -116,7 +116,7 @@ csPtr<iBase> csTerrainFactoryLoader::Parse (iDocumentNode* node,
           synldr->ReportError ("crystalspace.terrain.loader.factory",
             node, "Could not create a factory from %s", pluginname);
         }
-        state = scfQueryInterface<iTerrainFactoryState> (fact);
+        state = SCF_QUERY_INTERFACE (fact, iTerrainFactoryState);
         if (!state)
         {
           synldr->ReportError ("crystalspace.terrain.loader.factory",
@@ -127,8 +127,8 @@ csPtr<iBase> csTerrainFactoryLoader::Parse (iDocumentNode* node,
       case XMLTOKEN_TERRAFORMER:
       {
         const char* name = child->GetContentsValue ();
-        csRef<iTerraFormer> form = csQueryRegistryTagInterface<iTerraFormer>
-	  (object_reg, name);
+        csRef<iTerraFormer> form = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg,
+	  name, iTerraFormer);
 	if (form == 0) 
 	{
           synldr->ReportError ("crystalspace.terrain.factory.loader",
@@ -174,7 +174,7 @@ csTerrainFactorySaver::~csTerrainFactorySaver ()
 bool csTerrainFactorySaver::Initialize (iObjectRegistry* objreg)
 {
   object_reg = objreg;
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 
@@ -189,9 +189,9 @@ bool csTerrainFactorySaver::WriteDown (iBase* obj, iDocumentNode* parent,
   if (obj)
   {
     csRef<iTerrainFactoryState> tfact = 
-      scfQueryInterface<iTerrainFactoryState> (obj);
+      SCF_QUERY_INTERFACE (obj, iTerrainFactoryState);
     csRef<iMeshObjectFactory> meshfact = 
-      scfQueryInterface<iMeshObjectFactory> (obj);
+      SCF_QUERY_INTERFACE (obj, iMeshObjectFactory);
     if (!tfact) return false;
     if (!meshfact) return false;
     
@@ -201,7 +201,7 @@ bool csTerrainFactorySaver::WriteDown (iBase* obj, iDocumentNode* parent,
     pluginNode->SetValue("plugin");
     
     csRef<iFactory> factory = 
-      scfQueryInterface<iFactory> (meshfact->GetMeshObjectType());
+      SCF_QUERY_INTERFACE(meshfact->GetMeshObjectType(), iFactory);
     const char* pluginname = factory->QueryClassID();
     if (!(pluginname && *pluginname)) return false;
     
@@ -242,8 +242,8 @@ csTerrainObjectLoader::~csTerrainObjectLoader ()
 bool csTerrainObjectLoader::Initialize (iObjectRegistry* objreg)
 {
   object_reg = objreg;
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
-  vfs = csQueryRegistry<iVFS> (object_reg);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
+  vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
 
   xmltokens.Register ("factory", XMLTOKEN_FACTORY);
   xmltokens.Register ("color", XMLTOKEN_COLOR);
@@ -294,7 +294,7 @@ csPtr<iBase> csTerrainObjectLoader::Parse (iDocumentNode* node,
           return 0;
         }
         mesh = fact->GetMeshObjectFactory ()->NewInstance ();
-        state = scfQueryInterface<iTerrainObjectState> (mesh);
+        state = SCF_QUERY_INTERFACE (mesh, iTerrainObjectState);
 	if (!state)
 	{
       	  synldr->ReportError (
@@ -457,7 +457,7 @@ csTerrainObjectSaver::~csTerrainObjectSaver ()
 bool csTerrainObjectSaver::Initialize (iObjectRegistry *objreg)
 {
   object_reg = objreg;
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 
@@ -472,8 +472,8 @@ bool csTerrainObjectSaver::WriteDown (iBase* obj, iDocumentNode* parent,
   if (obj)
   {
     csRef<iTerrainObjectState> tmesh = 
-      scfQueryInterface<iTerrainObjectState> (obj);
-    csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (obj);
+      SCF_QUERY_INTERFACE (obj, iTerrainObjectState);
+    csRef<iMeshObject> mesh = SCF_QUERY_INTERFACE (obj, iMeshObject);
     if (!tmesh) return false;
     if (!mesh) return false;
 

@@ -145,10 +145,10 @@ void IsoTest::SetupFrame ()
     }
     // update animation state
     csRef<iGeneralMeshState> spstate (
-      scfQueryInterface<iGeneralMeshState> (actor->GetMeshObject ()));
+      SCF_QUERY_INTERFACE (actor->GetMeshObject (), iGeneralMeshState));
     csRef<iGenMeshSkeletonControlState> animcontrol (
-       
-      scfQueryInterface<iGenMeshSkeletonControlState> (spstate->GetAnimationControl ()));
+      SCF_QUERY_INTERFACE (spstate->GetAnimationControl (), 
+      iGenMeshSkeletonControlState));
     iSkeleton* skeleton = animcontrol->GetSkeleton ();
     if(actor_is_walking && !moved)
     {
@@ -236,7 +236,7 @@ bool IsoTest::HandleEvent (iEvent& ev)
     utf32_char c = csKeyEventHelper::GetCookedCode (&ev);
     if (c == CSKEY_ESC)
     {
-      csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+      csRef<iEventQueue> q (CS_QUERY_REGISTRY (object_reg, iEventQueue));
       if (q)
 	q->GetEventOutlet()->Broadcast (csevQuit (object_reg));
       return true;
@@ -301,7 +301,7 @@ bool IsoTest::LoadMap ()
   engine->SetLightingCacheMode (0);
 
   // Set VFS current directory to the level we want to load.
-  csRef<iVFS> VFS (csQueryRegistry<iVFS> (object_reg));
+  csRef<iVFS> VFS (CS_QUERY_REGISTRY (object_reg, iVFS));
   VFS->ChDir ("/lev/isomap");
   // Load the level file which is called 'world'.
   if (!loader->LoadMapFile ("world"))
@@ -355,7 +355,7 @@ bool IsoTest::LoadMap ()
 
 bool IsoTest::CreateActor ()
 {
-  csRef<iVFS> vfs (csQueryRegistry<iVFS> (object_reg));
+  csRef<iVFS> vfs (CS_QUERY_REGISTRY (object_reg, iVFS));
   vfs->PushDir ();
   vfs->ChDir ("/lib/kwartz");
   if (!loader->LoadLibraryFile ("kwartz.lib"))
@@ -377,10 +377,10 @@ bool IsoTest::CreateActor ()
     imeshfact, "MySprite", room, csVector3 (-3, 1, 3));
   actor->GetMovable ()->UpdateMove ();
   csRef<iGeneralMeshState> spstate (
-    scfQueryInterface<iGeneralMeshState> (actor->GetMeshObject ()));
+    SCF_QUERY_INTERFACE (actor->GetMeshObject (), iGeneralMeshState));
   csRef<iGenMeshSkeletonControlState> animcontrol (
-     
-    scfQueryInterface<iGenMeshSkeletonControlState> (spstate->GetAnimationControl ()));
+    SCF_QUERY_INTERFACE (spstate->GetAnimationControl (), 
+    iGenMeshSkeletonControlState));
   iSkeleton* skel = animcontrol->GetSkeleton ();
   skel->StopAll();
   skel->Execute("idle");
@@ -445,7 +445,7 @@ bool IsoTest::Initialize ()
   }
 
   // The virtual clock.
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  vc = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
   if (!vc)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -455,7 +455,7 @@ bool IsoTest::Initialize ()
   }
 
   // Find the pointer to engine plugin
-  engine = csQueryRegistry<iEngine> (object_reg);
+  engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   if (!engine)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -464,7 +464,7 @@ bool IsoTest::Initialize ()
     return false;
   }
 
-  loader = csQueryRegistry<iLoader> (object_reg);
+  loader = CS_QUERY_REGISTRY (object_reg, iLoader);
   if (!loader)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -473,7 +473,7 @@ bool IsoTest::Initialize ()
     return false;
   }
 
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   if (!g3d)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -482,7 +482,7 @@ bool IsoTest::Initialize ()
     return false;
   }
 
-  kbd = csQueryRegistry<iKeyboardDriver> (object_reg);
+  kbd = CS_QUERY_REGISTRY (object_reg, iKeyboardDriver);
   if (!kbd)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,

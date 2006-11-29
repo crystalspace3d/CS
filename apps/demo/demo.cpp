@@ -86,7 +86,7 @@ void Demo::Report (int severity, const char* msg, ...)
 {
   va_list arg;
   va_start (arg, msg);
-  csRef<iReporter> rep (csQueryRegistry<iReporter> (System->object_reg));
+  csRef<iReporter> rep (CS_QUERY_REGISTRY (System->object_reg, iReporter));
   if (rep)
   {
     rep->ReportV (severity, "crystalspace.application.demo", msg, arg);
@@ -246,44 +246,44 @@ bool Demo::Initialize (int argc, const char* const argv[],
   }
 
   // The virtual clock.
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  vc = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
 
-  kbd = csQueryRegistry<iKeyboardDriver> (object_reg);
+  kbd = CS_QUERY_REGISTRY (object_reg, iKeyboardDriver);
   if (!kbd)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No keyboard driver!");
     return false;
   }
 
-  engine = csQueryRegistry<iEngine> (object_reg);
+  engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   if (!engine)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No engine!");
     return false;
   }
 
-  loader = csQueryRegistry<iLoader> (object_reg);
+  loader = CS_QUERY_REGISTRY (object_reg, iLoader);
   if (!loader)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No loader!");
     return false;
   }
 
-  myG3D = csQueryRegistry<iGraphics3D> (object_reg);
+  myG3D = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   if (!myG3D)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No 3D driver!");
     return false;
   }
 
-  myG2D = csQueryRegistry<iGraphics2D> (object_reg);
+  myG2D = CS_QUERY_REGISTRY (object_reg, iGraphics2D);
   if (!myG2D)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No 2D driver!");
     return false;
   }
 
-  myVFS = csQueryRegistry<iVFS> (object_reg);
+  myVFS = CS_QUERY_REGISTRY (object_reg, iVFS);
   if (!myVFS)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No VFS!");
@@ -310,8 +310,8 @@ bool Demo::Initialize (int argc, const char* const argv[],
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Creating world!...");
 
   // Check the demo file and mount it if required.
-  csRef<iCommandLineParser> cmdline (
-  	csQueryRegistry<iCommandLineParser> (object_reg));
+  csRef<iCommandLineParser> cmdline (CS_QUERY_REGISTRY (object_reg,
+  	iCommandLineParser));
   const char *val;
   if ((val = cmdline->GetName ()) != 0)
   {
@@ -707,7 +707,7 @@ bool Demo::DemoHandleEvent (iEvent &Event)
     {
       if (keyCode == CSKEY_ESC)
       {
-	csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+	csRef<iEventQueue> q (CS_QUERY_REGISTRY (object_reg, iEventQueue));
 	if (q)
 	  q->GetEventOutlet()->Broadcast (csevQuit (object_reg));
         return true;
@@ -1242,7 +1242,7 @@ bool Demo::DemoHandleEvent (iEvent &Event)
       //==============================
       if (keyCode == CSKEY_ESC)
       {
-	csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+	csRef<iEventQueue> q (CS_QUERY_REGISTRY (object_reg, iEventQueue));
 	if (q)
 	  q->GetEventOutlet()->Broadcast (csevQuit (object_reg));
         return true;

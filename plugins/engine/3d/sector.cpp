@@ -24,7 +24,6 @@
 #include "csutil/csppulse.h"
 #include "csutil/csstring.h"
 #include "csutil/debug.h"
-#include "cstool/csview.h"
 #include "iengine/portal.h"
 #include "iengine/rview.h"
 #include "igeom/clip2d.h"
@@ -164,15 +163,15 @@ void csSector::SelfDestruct ()
 void csSector::RegisterLightToCuller (csLight* light)
 {
   light->UseAsCullingObject ();
-  csRef<iVisibilityObject> vo = 
-        scfQueryInterface<iVisibilityObject> (light);
+  csRef<iVisibilityObject> vo = SCF_QUERY_INTERFACE (light,
+        iVisibilityObject);
   culler->RegisterVisObject (vo);
 }
 
 void csSector::UnregisterLightToCuller (csLight* light)
 {
-  csRef<iVisibilityObject> vo = 
-        scfQueryInterface<iVisibilityObject> (light);
+  csRef<iVisibilityObject> vo = SCF_QUERY_INTERFACE (light,
+        iVisibilityObject);
   culler->UnregisterVisObject (vo);
   light->StopUsingAsCullingObject ();
 }
@@ -248,8 +247,8 @@ void csSector::RegisterEntireMeshToCuller (iMeshWrapper* mesh)
   csMeshWrapper* cmesh = (csMeshWrapper*)mesh;
   if (cmesh->SomeParentHasStaticLOD ()) return;
 
-  csRef<iVisibilityObject> vo = 
-        scfQueryInterface<iVisibilityObject> (mesh);
+  csRef<iVisibilityObject> vo = SCF_QUERY_INTERFACE (mesh,
+        iVisibilityObject);
   culler->RegisterVisObject (vo);
 
   if (cmesh->GetStaticLODMesh ()) return;
@@ -268,15 +267,15 @@ void csSector::RegisterMeshToCuller (iMeshWrapper* mesh)
   csMeshWrapper* cmesh = (csMeshWrapper*)mesh;
   if (cmesh->SomeParentHasStaticLOD ()) return;
 
-  csRef<iVisibilityObject> vo = 
-        scfQueryInterface<iVisibilityObject> (mesh);
+  csRef<iVisibilityObject> vo = SCF_QUERY_INTERFACE (mesh,
+        iVisibilityObject);
   culler->RegisterVisObject (vo);
 }
 
 void csSector::UnregisterMeshToCuller (iMeshWrapper* mesh)
 {
-  csRef<iVisibilityObject> vo = 
-        scfQueryInterface<iVisibilityObject> (mesh);
+  csRef<iVisibilityObject> vo = SCF_QUERY_INTERFACE (mesh,
+        iVisibilityObject);
   culler->UnregisterVisObject (vo);
 }
 
@@ -327,47 +326,6 @@ void csSector::RelinkMesh (iMeshWrapper *mesh)
   }
 }
 
-void csSector::PrecacheDraw ()
-{
-  GetVisibilityCuller ()->PrecacheCulling ();
-
-  // First calculate the box of all objects in the level.
-  csBox3 box;
-  box.StartBoundingBox ();
-  int i;
-  for (i = 0; i < meshes.GetCount (); i++)
-  {
-    iMeshWrapper* m = meshes.Get (i);
-    const csBox3& mesh_box = m->GetWorldBoundingBox ();
-    box += mesh_box;
-  }
-
-  // Try to position our camera somewhere above the bounding
-  // box of the sector so we see as much as possible.
-  csVector3 pos = box.GetCenter ();
-  pos.y = box.MaxY () + (box.MaxY () - box.MinY ());
-  csVector3 lookat = pos;
-  lookat.y = box.MinY ();
-
-  csRef<iGraphics3D> g3d = csQueryRegistry<iGraphics3D> (
-      engine->objectRegistry);
-  csRef<csView> view;
-  view.AttachNew (new csView (engine, g3d));
-  iGraphics2D* g2d = g3d->GetDriver2D ();
-  view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
-
-  iCamera* camera = view->GetCamera ();
-  camera->SetSector (this);
-  camera->GetTransform ().SetOrigin (pos);
-  camera->GetTransform ().LookAt (lookat-pos, csVector3 (0, 0, 1));
-
-  // @@@ Ideally we would want to disable visibility culling
-  // here so that all objects are visible.
-  g3d->BeginDraw (CSDRAW_3DGRAPHICS);
-  view->Draw ();
-  g3d->FinishDraw ();
-}
-
 //----------------------------------------------------------------------
 
 bool csSector::SetVisibilityCullerPlugin (const char *plugname,
@@ -387,8 +345,8 @@ bool csSector::SetVisibilityCullerPlugin (const char *plugname,
   culler = 0;
 
   // Load the culler plugin.
-  csRef<iPluginManager> plugmgr = 
-  	csQueryRegistry<iPluginManager> (engine->objectRegistry);
+  csRef<iPluginManager> plugmgr = CS_QUERY_REGISTRY (engine->objectRegistry,
+  	iPluginManager);
   culler = CS_LOAD_PLUGIN (plugmgr, plugname, iVisibilityCuller);
 
   if (!culler)
@@ -525,7 +483,7 @@ public:
     }
     else
     {
-      csRef<iLight> light = scfQueryInterface<iLight> (visobj);
+      csRef<iLight> light = SCF_QUERY_INTERFACE (visobj, iLight);
       if (light)
       {
         csSector* csector = (csSector*)sector;
@@ -1236,7 +1194,7 @@ csSectorList::~csSectorList ()
 void csSectorList::NameChanged (iObject* object, const char* oldname,
   	const char* newname)
 {
-  csRef<iSector> sector = scfQueryInterface<iSector> (object);
+  csRef<iSector> sector = SCF_QUERY_INTERFACE (object, iSector);
   CS_ASSERT (sector != 0);
   if (oldname) sectors_hash.Delete (oldname, sector);
   if (newname) sectors_hash.Put (newname, sector);

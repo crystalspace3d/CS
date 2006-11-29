@@ -110,7 +110,7 @@ void csGLFontCache::Setup()
     "Video.OpenGL.FontCache.UseIntensityBlend", true);
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (G2D->object_reg));
+    CS_QUERY_REGISTRY (G2D->object_reg, iVerbosityManager));
   bool do_verbose = false;
   if (verbosemgr) 
     do_verbose = verbosemgr->Enabled ("renderer.fontcache");

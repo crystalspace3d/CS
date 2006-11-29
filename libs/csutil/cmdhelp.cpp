@@ -78,11 +78,11 @@ void csCommandLineHelper::Help (iObjectRegistry* object_reg,
 {
   csRef<iCommandLineParser> cmd = cmdline;
   if (!cmd)
-    cmd = csQueryRegistry<iCommandLineParser> (object_reg);
+    cmd = CS_QUERY_REGISTRY (object_reg, iCommandLineParser);
   CS_ASSERT (cmd != 0);
 
   // First send a global csevCommandLineHelp event.
-  csRef<iEventQueue> evq (csQueryRegistry<iEventQueue> (object_reg));
+  csRef<iEventQueue> evq (CS_QUERY_REGISTRY (object_reg, iEventQueue));
   if (evq)
   {
     iEventOutlet* evout = evq->GetEventOutlet ();
@@ -93,15 +93,15 @@ void csCommandLineHelper::Help (iObjectRegistry* object_reg,
     evout->ImmediateBroadcast (csevCommandLineHelp(object_reg), 0);
   }
 
-  csRef<iPluginManager> plgmgr = csQueryRegistry<iPluginManager> (object_reg);
+  csRef<iPluginManager> plgmgr = CS_QUERY_REGISTRY (object_reg, iPluginManager);
   csRef<iPluginIterator> it = plgmgr->GetPlugins ();
   while (it->HasNext ())
   {
     iBase* plug = it->Next ();
-    csRef<iPluginConfig> config (scfQueryInterface<iPluginConfig> (plug));
+    csRef<iPluginConfig> config (SCF_QUERY_INTERFACE (plug, iPluginConfig));
     if (config)
     {
-      csRef<iFactory> fact (scfQueryInterface<iFactory> (plug));
+      csRef<iFactory> fact (SCF_QUERY_INTERFACE (plug, iFactory));
       if (fact)
         csPrintf ("Options for %s:\n", fact->QueryDescription ());
       else
@@ -127,7 +127,7 @@ bool csCommandLineHelper::CheckHelp (iObjectRegistry* object_reg,
 {
   csRef<iCommandLineParser> cmd = cmdline;
   if (!cmd)
-    cmd = csQueryRegistry<iCommandLineParser> (object_reg);
+    cmd = CS_QUERY_REGISTRY (object_reg, iCommandLineParser);
   CS_ASSERT (cmd != 0);
   bool rc = cmd->GetOption ("help") != 0;
   return rc;

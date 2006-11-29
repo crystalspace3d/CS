@@ -222,7 +222,7 @@ bool csPlatformStartup(iObjectRegistry* r)
    */
   SetThreadAffinityMask (GetCurrentThread(), 1);
   
-  csRef<iCommandLineParser> cmdline (csQueryRegistry<iCommandLineParser> (r));
+  csRef<iCommandLineParser> cmdline (CS_QUERY_REGISTRY (r, iCommandLineParser));
 
   csPathsList* pluginpaths = csGetPluginPaths (cmdline->GetAppPath());
 
@@ -370,7 +370,7 @@ Win32Assistant::Win32Assistant (iObjectRegistry* r)
 
   use_own_message_loop = true;
 
-  csRef<iCommandLineParser> cmdline (csQueryRegistry<iCommandLineParser> (r));
+  csRef<iCommandLineParser> cmdline (CS_QUERY_REGISTRY (r, iCommandLineParser));
   console_window = cmdline->GetBoolOption ("console", console_window);
 
   cmdline_help_wanted = (cmdline->GetOption ("help") != 0);
@@ -513,7 +513,7 @@ Win32Assistant::Win32Assistant (iObjectRegistry* r)
 
   m_hCursor = LoadCursor (0, IDC_ARROW);
 
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (registry));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY (registry, iEventQueue));
   CS_ASSERT (q != 0);
   csEventID events[] = {
     csevPreProcess (registry),
@@ -540,12 +540,12 @@ Win32Assistant::Win32Assistant (iObjectRegistry* r)
   }
 
   csRef<iBase> currentKbd = 
-    csQueryRegistryTag (r, "iKeyboardDriver");
+    CS_QUERY_REGISTRY_TAG (r, "iKeyboardDriver");
   if (currentKbd != 0)
   {
     // Bit hacky: remove old keyboard driver
-    csRef<iEventHandler> eh =  
-      scfQueryInterface<iEventHandler> (currentKbd);
+    csRef<iEventHandler> eh = SCF_QUERY_INTERFACE (currentKbd, 
+      iEventHandler);
     q->RemoveListener (eh);
     r->Unregister (currentKbd, "iKeyboardDriver");
   }
@@ -566,7 +566,7 @@ Win32Assistant::~Win32Assistant ()
 
 void Win32Assistant::Shutdown()
 {
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (registry));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY (registry, iEventQueue));
   if (q != 0)
     q->RemoveListener(this);
   if (!is_console_app && (cmdline_help_wanted || console_window))
@@ -612,7 +612,7 @@ iEventOutlet* Win32Assistant::GetEventOutlet()
 {
   if (!EventOutlet.IsValid())
   {
-    csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (registry));
+    csRef<iEventQueue> q (CS_QUERY_REGISTRY(registry, iEventQueue));
     if (q != 0)
       EventOutlet = q->CreateEventOutlet(this);
   }

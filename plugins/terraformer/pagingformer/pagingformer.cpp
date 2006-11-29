@@ -72,8 +72,8 @@ bool csPagingFormer::Initialize (iObjectRegistry* objectRegistry)
   csPagingFormer::objectRegistry = objectRegistry;
 
   // Get the shared string repository
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    objectRegistry, "crystalspace.shared.stringset", iStringSet);
 
   // Grab string IDs
   stringVertices = strings->Request ("vertices");
@@ -171,7 +171,7 @@ void csPagingFormer::LoadFormer (uint x, uint y)
 
     if (heightmapformat == PAGINGHEIGHT_RAWFLOATLE)
     {
-      csRef<iVFS> vfs = csQueryRegistry<iVFS> (objectRegistry);
+      csRef<iVFS> vfs = CS_QUERY_REGISTRY (objectRegistry, iVFS);
       csRef<iDataBuffer> buf = 
         vfs->ReadFile(heightmapdir+ending+".raw", false);
 

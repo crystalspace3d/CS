@@ -73,13 +73,13 @@ csParticleSystem::csParticleSystem (
   spr_factory = type->NewFactory ();
   current_lod = 1;
   current_features = 0;
-  csRef<iEngine> eng = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> eng = CS_QUERY_REGISTRY (object_reg, iEngine);
   engine = eng;	// We don't want to keep a reference.
-  light_mgr = csQueryRegistry<iLightManager> (object_reg);
+  light_mgr = CS_QUERY_REGISTRY (object_reg, iLightManager);
 
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet>
-    (object_reg, "crystalspace.shared.stringset");
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg,
+    "crystalspace.shared.stringset", iStringSet);
 
   part_sides = 0;
 }
@@ -142,8 +142,8 @@ void csParticleSystem::AppendRectSprite (float width, float height,
   iMaterialWrapper *mat, bool lighted)
 {
   csRef<iMeshObject> sprmesh (spr_factory->NewInstance ());
-  csRef<iParticle> part (scfQueryInterface<iParticle> (sprmesh));
-  csRef<iSprite2DState> state (scfQueryInterface<iSprite2DState> (sprmesh));
+  csRef<iParticle> part (SCF_QUERY_INTERFACE (sprmesh, iParticle));
+  csRef<iSprite2DState> state (SCF_QUERY_INTERFACE (sprmesh, iSprite2DState));
   csRef<iColoredVertices> vs = state->GetVertices();
 
   vs->SetSize (4);
@@ -171,8 +171,8 @@ void csParticleSystem::AppendRegularSprite (int n, float radius,
   iMaterialWrapper* mat, bool lighted)
 {
   csRef<iMeshObject> sprmesh (spr_factory->NewInstance ());
-  csRef<iParticle> part (scfQueryInterface<iParticle> (sprmesh));
-  csRef<iSprite2DState> state (scfQueryInterface<iSprite2DState> (sprmesh));
+  csRef<iParticle> part (SCF_QUERY_INTERFACE (sprmesh, iParticle));
+  csRef<iSprite2DState> state (SCF_QUERY_INTERFACE (sprmesh, iSprite2DState));
   state->CreateRegularVertices (n, true);
   part->ScaleBy (radius);
   if (mat) sprmesh->SetMaterialWrapper (mat);
@@ -254,7 +254,7 @@ void csParticleSystem::Update (csTicks elapsed_time)
     {
       if (engine)
       {
-        csRef<iMeshWrapper> m = scfQueryInterface<iMeshWrapper> (logparent);
+        csRef<iMeshWrapper> m = SCF_QUERY_INTERFACE (logparent, iMeshWrapper);
 	if (m)
           engine->WantToDie (m);
       }

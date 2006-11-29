@@ -28,7 +28,7 @@ csCEGUIScriptModule::csCEGUIScriptModule (iScript* script, iObjectRegistry* reg)
   d_identifierString = "Crystal Space iScript Scripting Module";
 
   obj_reg = reg;
-  vfs = csQueryRegistry<iVFS> (obj_reg);
+  vfs = CS_QUERY_REGISTRY(obj_reg, iVFS);
   scripting = script;
 }
 

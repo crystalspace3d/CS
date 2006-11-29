@@ -121,15 +121,6 @@ namespace CS
 	size_t GetMeshCount () const { return meshes.Length(); }
 	/// Get a mesh.
 	const Mesh& GetMesh (size_t index) const { return meshes[index]; }
-        /// Type of this model
-        enum ModelType
-        {
-          /// Model is a mesh factory.
-          Factory,
-          /// Model is a mesh object.
-          Object
-        };
-        ModelType GetType () const { return type; }
 
 	~Model();
 	Model (const Model& other);
@@ -139,9 +130,8 @@ namespace CS
 	wchar_t* name;
 	ImportKitImpl::GluedModel* glueModel;
 	csArray<Mesh> meshes;
-        ModelType type;
 
-        Model () : type (Factory) {}
+	Model () {}
       };
       /// Return number of models.
       size_t GetModelCount () const { return models.Length(); }

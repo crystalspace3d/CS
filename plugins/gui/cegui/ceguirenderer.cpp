@@ -48,7 +48,7 @@ csCEGUIRenderer::csCEGUIRenderer (iBase *parent) :
 // TODO add description
 bool csCEGUIRenderer::Initialize (iScript* script)
 {
-  g3d = csQueryRegistry<iGraphics3D> (obj_reg);
+  g3d = CS_QUERY_REGISTRY (obj_reg, iGraphics3D);
 
   if (!g3d) {
     return false;

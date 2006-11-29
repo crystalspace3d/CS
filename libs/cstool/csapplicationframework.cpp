@@ -107,7 +107,7 @@ bool csApplicationFramework::Initialize (int argc, char *argv[])
 
 void csApplicationFramework::Quit ()
 {
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (GetObjectRegistry()));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY (GetObjectRegistry(), iEventQueue));
   if (q)
     q->GetEventOutlet()->Broadcast (csevQuit(GetObjectRegistry()));
   else

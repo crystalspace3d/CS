@@ -64,9 +64,6 @@
 #include "gl_txtmgr.h"
 #include "gl_r2t_ext_fb_o.h"
 
-#include "csplugincommon/opengl/glextmanager.h"
-
-
 
 #define BYTE_TO_FLOAT(x) ((x) * (1.0 / 255.0))
 
@@ -147,7 +144,7 @@ csGLGraphics3D::csGLGraphics3D (iBase *parent) :
 
 csGLGraphics3D::~csGLGraphics3D()
 {
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY(object_reg, iEventQueue));
   if (q)
     q->RemoveListener (scfiEventHandler);
 }
@@ -733,11 +730,11 @@ bool csGLGraphics3D::Open ()
 {
   if (isOpen) return true;
   isOpen = true;
-  csRef<iPluginManager> plugin_mgr = 
-  	csQueryRegistry<iPluginManager> (object_reg);
+  csRef<iPluginManager> plugin_mgr = CS_QUERY_REGISTRY (
+  	object_reg, iPluginManager);
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr) verbose = verbosemgr->Enabled ("renderer");
   if (!verbose) bugplug = 0;
 
@@ -786,19 +783,14 @@ bool csGLGraphics3D::Open ()
   ext->InitGL_ARB_point_parameters ();
   ext->InitGL_ARB_point_sprite ();
   ext->InitGL_EXT_framebuffer_object ();
-  ext->InitGL_ARB_texture_non_power_of_two ();
-  if (!ext->CS_GL_ARB_texture_non_power_of_two)
+  ext->InitGL_ARB_texture_rectangle ();
+  if (!ext->CS_GL_ARB_texture_rectangle)
   {
-    ext->InitGL_ARB_texture_rectangle ();
-    if (!ext->CS_GL_ARB_texture_rectangle)
-    {
-      ext->InitGL_EXT_texture_rectangle();
-      if (!ext->CS_GL_EXT_texture_rectangle)
-        ext->InitGL_NV_texture_rectangle();
-    }
+    ext->InitGL_EXT_texture_rectangle();
+    if (!ext->CS_GL_EXT_texture_rectangle)
+      ext->InitGL_NV_texture_rectangle();
   }
   ext->InitGL_ARB_vertex_program (); // needed for vertex attrib code
-  // || ARB_vertex_shader, || GL_version_2_0
   ext->InitGL_ARB_fragment_program (); // needed for AFP DrawPixmap() workaround
   //ext->InitGL_ATI_separate_stencil ();
   ext->InitGL_EXT_secondary_color ();
@@ -1039,12 +1031,12 @@ bool csGLGraphics3D::Open ()
   cache_clip_z_plane = -1;
 
   const char* r2tBackendStr;
-  if (ext->CS_GL_EXT_framebuffer_object)
+  /*if (ext->CS_GL_EXT_framebuffer_object)
   {
     r2tBackendStr = "EXT_framebuffer_object";
     r2tbackend = new csGLRender2TextureEXTfbo (this);
   }
-  else
+  else*/
   {
     r2tBackendStr = "framebuffer";
     r2tbackend = new csGLRender2TextureFramebuf (this);
@@ -1230,7 +1222,11 @@ bool csGLGraphics3D::BeginDraw (int drawflags)
 	Turn off some stuff that isn't needed for 2d (or even can
 	cause visual glitches.)
       */
-      DeactivateBuffers (0, 0);
+      if (use_hw_render_buffers)
+      {
+	ext->glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
+	ext->glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+      }
       statecache->Disable_GL_ALPHA_TEST ();
       if (ext->CS_GL_ARB_multitexture)
       {
@@ -1421,13 +1417,6 @@ void csGLGraphics3D::DeactivateBuffers (csVertexAttrib *attribs, unsigned int co
         statecache->Disable_GL_TEXTURE_COORD_ARRAY ();
       }
     }
-    if (ext->glDisableVertexAttribArrayARB)
-    {
-      for (i = 0; i < CS_VATTRIB_GENERIC_LAST-CS_VATTRIB_GENERIC_FIRST+1; i++)
-      {
-        ext->glDisableVertexAttribArrayARB (i);
-      }
-    }
 
     for (i = 0; i < CS_VATTRIB_SPECIFIC_LAST-CS_VATTRIB_SPECIFIC_FIRST+1; i++)
     {
@@ -1583,111 +1572,7 @@ void csGLGraphics3D::SetWorldToCamera (const csReversibleTransform& w2c)
   statecache->SetMatrixMode (GL_MODELVIEW);
   glLoadMatrixf (m);
 }
-void csGLGraphics3D::DrawInstancesUseShader (
-  const csCoreRenderMesh* mymesh, const csRenderMeshModes& modes,
-  GLenum primitivetype, iRenderBuffer* iIndexbuf, void* bufData, 
-  GLenum compType, size_t indexCompsBytes)
-{
 
-  if (ext->glMultiTexCoord4fvARB)
-  {
-    size_t values_cnt = modes.instances_binds.GetSize ();
-    //loop through all instances
-    csHash<csInstance*>::ConstGlobalIterator it = modes.instances.GetIterator ();
-    
-    while (it.HasNext ())
-    {
-      //loop through all parameters
-      csInstance* instance = it.Next ();
-      for (size_t i = 0; i < values_cnt; i++)
-      {
-        GLfloat glvector [4];
-        glvector[0] = instance->values[i].x;
-        glvector[1] = instance->values[i].y;
-        glvector[2] = instance->values[i].z;
-        glvector[3] = instance->values[i].w;
-        switch (modes.instances_binds[i])
-        {
-        case CS_VATTRIB_TEXCOORD0:
-          ext->glMultiTexCoord4fvARB (GL_TEXTURE0, glvector);
-          break;
-        case CS_VATTRIB_TEXCOORD1:
-          ext->glMultiTexCoord4fvARB (GL_TEXTURE1, glvector);
-          break;
-        case CS_VATTRIB_TEXCOORD2:
-          ext->glMultiTexCoord4fvARB (GL_TEXTURE2, glvector);
-          break;
-        case CS_VATTRIB_TEXCOORD3:
-          ext->glMultiTexCoord4fvARB (GL_TEXTURE3, glvector);
-          break;
-        case CS_VATTRIB_TEXCOORD4:
-          ext->glMultiTexCoord4fvARB (GL_TEXTURE4, glvector);
-          break;
-        default:
-          break;
-        }
-      }
-
-      glDrawRangeElements (primitivetype, (GLuint)iIndexbuf->GetRangeStart(), 
-        (GLuint)iIndexbuf->GetRangeEnd(), mymesh->indexend - mymesh->indexstart,
-        compType, 
-        ((uint8*)bufData) + (indexCompsBytes * mymesh->indexstart));
-    }
-  }
-}
-void csGLGraphics3D::DrawInstancesNoShader (
-  const csCoreRenderMesh* mymesh, const csRenderMeshModes& modes,
-  GLenum primitivetype, iRenderBuffer* iIndexbuf, void* bufData, 
-  GLenum compType, size_t indexCompsBytes)
-{
-  bool using_transform = false;
-
-  //FIXME: it works only for for very specyfic setup
-  //loop through all instances
-  csHash<csInstance*>::ConstGlobalIterator it = modes.instances.GetIterator ();
-  while (it.HasNext ())
-  {
-    //loop through all parameters
-    csInstance* instance = it.Next ();
-    if (instance->values.GetSize () != 4) continue;
-    for (size_t j = 0; j < instance->values.GetSize (); j++)
-    {
-      float matrix[16];
-      matrix[0] = instance->values[0].x;
-      matrix[1] = instance->values[0].y;
-      matrix[2] = instance->values[0].z;
-      matrix[3] = instance->values[0].w;
-
-      matrix[4] = instance->values[1].x;
-      matrix[5] = instance->values[1].y;
-      matrix[6] = instance->values[1].z;
-      matrix[7] = instance->values[1].w;
-
-      matrix[8] = instance->values[2].x;
-      matrix[9] = instance->values[2].y;
-      matrix[10] = instance->values[2].z;
-      matrix[11] = instance->values[2].w;
-
-      matrix[12] = instance->values[3].x;
-      matrix[13] = instance->values[3].y;
-      matrix[14] = instance->values[3].z;
-      matrix[15] = instance->values[3].w;
-
-      statecache->SetMatrixMode (GL_MODELVIEW);
-      glPushMatrix ();
-      glMultMatrixf (matrix);
-      using_transform  = true;
-    }
-
-    glDrawRangeElements (primitivetype, (GLuint)iIndexbuf->GetRangeStart(), 
-      (GLuint)iIndexbuf->GetRangeEnd(), mymesh->indexend - mymesh->indexstart,
-      compType, 
-      ((uint8*)bufData) + (indexCompsBytes * mymesh->indexstart));
-
-    if (using_transform)
-      glPopMatrix ();
-  }
-}
 void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
     const csRenderMeshModes& modes,
     const iShaderVarStack* stacks)
@@ -1916,24 +1801,11 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
     if (mixmode & CS_FX_MASK_ALPHA)
       alpha = 1.0f - (float)(mixmode & CS_FX_MASK_ALPHA) / 255.0f;
     glColor4f (1.0f, 1.0f, 1.0f, alpha);
-
-    if (modes.instances.GetSize () > 0)
-    {
-      if (!modes.supports_pseudoinstancing)
-        DrawInstancesNoShader (mymesh, modes, primitivetype, iIndexbuf, bufData,
-        compType, indexCompsBytes);
-      else 
-        DrawInstancesUseShader (mymesh, modes, primitivetype, iIndexbuf, bufData,
-        compType, indexCompsBytes);
-    }
-    else
-    {
-      glDrawRangeElements (primitivetype, (GLuint)iIndexbuf->GetRangeStart(), 
-        (GLuint)iIndexbuf->GetRangeEnd(), mymesh->indexend - mymesh->indexstart,
-        compType, 
-        ((uint8*)bufData) + (indexCompsBytes * mymesh->indexstart));
-      //indexbuf->Release();
-    }
+    glDrawRangeElements (primitivetype, (GLuint)iIndexbuf->GetRangeStart(), 
+      (GLuint)iIndexbuf->GetRangeEnd(), mymesh->indexend - mymesh->indexstart,
+      compType, 
+      ((uint8*)bufData) + (indexCompsBytes * mymesh->indexstart));
+    //indexbuf->Release();
   }
 
   if (mymesh->meshtype == CS_MESHTYPE_POINT_SPRITES) 
@@ -2331,7 +2203,7 @@ void csGLGraphics3D::ApplyBufferChanges()
       case CS_VATTRIB_NORMAL:
         statecache->Enable_GL_NORMAL_ARRAY ();
         statecache->SetNormalPointer (compType, (GLsizei)buffer->GetStride (), 
-          data);
+	  data);
         break;
       case CS_VATTRIB_COLOR:
         statecache->Enable_GL_COLOR_ARRAY ();
@@ -3472,7 +3344,7 @@ bool csGLGraphics3D::Initialize (iObjectRegistry* p)
   SystemOpen = csevSystemOpen(object_reg);
   SystemClose = csevSystemClose(object_reg);
 
-  csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+  csRef<iEventQueue> q = CS_QUERY_REGISTRY(object_reg, iEventQueue);
   if (q)
   {
     csEventID events[] = { SystemOpen, SystemClose, 
@@ -3481,15 +3353,15 @@ bool csGLGraphics3D::Initialize (iObjectRegistry* p)
   }
   // We subscribe to csevCanvasResize after G2D has been created
   
-  bugplug = csQueryRegistry<iBugPlug> (object_reg);
+  bugplug = CS_QUERY_REGISTRY (object_reg, iBugPlug);
 
-  strings = csQueryRegistryTagInterface<iStringSet> (
-    object_reg, "crystalspace.shared.stringset");
+  strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    object_reg, "crystalspace.shared.stringset", iStringSet);
 
-  csRef<iPluginManager> plugin_mgr = 
-  	csQueryRegistry<iPluginManager> (object_reg);
-  csRef<iCommandLineParser> cmdline = 
-  	csQueryRegistry<iCommandLineParser> (object_reg);
+  csRef<iPluginManager> plugin_mgr = CS_QUERY_REGISTRY (
+  	object_reg, iPluginManager);
+  csRef<iCommandLineParser> cmdline = CS_QUERY_REGISTRY (
+  	object_reg, iCommandLineParser);
 
   /* Note: r3dopengl.cfg is also added by the canvases. This is done because
    * either the canvas or the renderer may be loaded before the other, but
@@ -3579,7 +3451,7 @@ bool csGLGraphics3D::DebugCommand (const char* cmdstr)
 
   if (strcasecmp (cmd, "dump_slms") == 0)
   {
-    csRef<iImageIO> imgsaver = csQueryRegistry<iImageIO> (object_reg);
+    csRef<iImageIO> imgsaver = CS_QUERY_REGISTRY (object_reg, iImageIO);
     if (!imgsaver)
     {
       Report (CS_REPORTER_SEVERITY_WARNING,
@@ -3587,7 +3459,7 @@ bool csGLGraphics3D::DebugCommand (const char* cmdstr)
       return false;
     }
 
-    csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
+    csRef<iVFS> vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
     if (!vfs)
     {
       Report (CS_REPORTER_SEVERITY_WARNING, 
@@ -3622,7 +3494,7 @@ bool csGLGraphics3D::DebugCommand (const char* cmdstr)
 
 void csGLGraphics3D::DumpZBuffer (const char* path)
 {
-  csRef<iImageIO> imgsaver = csQueryRegistry<iImageIO> (object_reg);
+  csRef<iImageIO> imgsaver = CS_QUERY_REGISTRY (object_reg, iImageIO);
   if (!imgsaver)
   {
     Report (CS_REPORTER_SEVERITY_WARNING,
@@ -3630,7 +3502,7 @@ void csGLGraphics3D::DumpZBuffer (const char* path)
     return;
   }
 
-  csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
+  csRef<iVFS> vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
   if (!vfs)
   {
     Report (CS_REPORTER_SEVERITY_WARNING, 

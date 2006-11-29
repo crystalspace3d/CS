@@ -655,7 +655,7 @@ void csGenmeshMeshObject::CastShadows (iMovable* movable, iFrustumView* fview)
   if (!do_lighting) return;
 
   iBase* b = (iBase *)fview->GetUserdata ();
-  csRef<iLightingProcessInfo> lpi = scfQueryInterface<iLightingProcessInfo> (b);
+  csRef<iLightingProcessInfo> lpi = SCF_QUERY_INTERFACE(b,iLightingProcessInfo);
   CS_ASSERT (lpi != 0);
 
   iLight* li = lpi->GetLight ();
@@ -1546,13 +1546,13 @@ csGenmeshMeshObjectFactory::csGenmeshMeshObjectFactory (
 
   material = 0;
   polygons = 0;
-  light_mgr = csQueryRegistry<iLightManager> (object_reg);
+  light_mgr = CS_QUERY_REGISTRY (object_reg, iLightManager);
   back2front = false;
   back2front_tree = 0;
 
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  strings = csQueryRegistryTagInterface<iStringSet>
-    (object_reg, "crystalspace.shared.stringset");
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
+  strings = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg,
+    "crystalspace.shared.stringset", iStringSet);
 
   mesh_vertices_dirty_flag = false;
   mesh_texels_dirty_flag = false;
@@ -1573,13 +1573,13 @@ csGenmeshMeshObjectFactory::csGenmeshMeshObjectFactory (
   default_shadowcasting = true;
   default_shadowreceiving = false;
 
-  csRef<iEngine> eng = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> eng = CS_QUERY_REGISTRY (object_reg, iEngine);
   engine = eng; // We don't want a circular reference!
 
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  vc = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
 
-  csRef<iCommandLineParser> cmdline = 
-  	csQueryRegistry<iCommandLineParser> (object_reg);
+  csRef<iCommandLineParser> cmdline = CS_QUERY_REGISTRY (
+  	object_reg, iCommandLineParser);
   do_fullbright = (cmdline->GetOption ("fullbright") != 0);
 }
 
@@ -2030,12 +2030,19 @@ void csGenmeshMeshObjectFactory::CalculateNormals (bool compress)
 
       SubMesh* subMesh (subMeshes[s]);
       csRef<iRenderBuffer> indices (subMesh->GetIndices());
+      csRenderBufferLock<uint8> indexLock (indices, CS_BUF_LOCK_READ);
+
+      size_t stride = indices->GetElementDistance();
+      const uint8* tri = indexLock;
+      const uint8* triEnd = tri + indices->GetElementCount()*stride;
 
       CS::TriangleIndicesStream<int> triangles;
-      triangles.BeginTriangulate (indices, CS_MESHTYPE_TRIANGLES);
-      while (triangles.HasNext ())
+      triangles.BeginTriangulate (tri, triEnd, stride, 
+        indices->GetComponentType(), CS_MESHTYPE_TRIANGLES);
+      while (triangles.HasNextTri ())
       {
-        csTriangle tri (triangles.Next ());
+        csTriangle tri;
+        triangles.NextTriangle (tri.a, tri.b, tri.c);
         newTriangles.Push (tri);
       }
     }

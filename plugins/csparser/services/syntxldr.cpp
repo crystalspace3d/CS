@@ -1461,46 +1461,31 @@ bool csTextSyntaxService::WriteZMode (iDocumentNode* node,
   return true;
 }
 
-csPtr<iKeyValuePair> csTextSyntaxService::ParseKey (iDocumentNode* node)
+bool csTextSyntaxService::ParseKey (iDocumentNode *node, iKeyValuePair* &keyvalue)
 {
   const char* name = node->GetAttributeValue ("name");
   if (!name)
   {
     ReportError ("crystalspace.syntax.key",
     	        node, "Missing 'name' attribute for 'key'!");
-    return 0;
+    return false;
   }
-  csRef<csKeyValuePair> cskvp;
-  cskvp.AttachNew (new csKeyValuePair (name));
-
-  bool editoronly = node->GetAttributeValueAsBool ("editoronly");
-  cskvp->SetEditorOnly (editoronly);
-
+  csKeyValuePair* cskvp = new csKeyValuePair (name);
   csRef<iDocumentAttributeIterator> atit = node->GetAttributes ();
   while (atit->HasNext ())
   {
     csRef<iDocumentAttribute> at = atit->Next ();
-    const char* attrName = at->GetName ();
-    if (strcmp (attrName, "editoronly") == 0) continue;
-    cskvp->SetValue (attrName, at->GetValue ());
+    cskvp->SetValue (at->GetName (), at->GetValue ());
   }
-  return scfQueryInterface<iKeyValuePair> (cskvp);
-}
-
-bool csTextSyntaxService::ParseKey (iDocumentNode *node, iKeyValuePair* &keyvalue)
-{
-  csRef<iKeyValuePair> kvp = ParseKey (node);
-  if (!kvp.IsValid()) return false;
+  csRef<iKeyValuePair> kvp = SCF_QUERY_INTERFACE (cskvp, iKeyValuePair);
+  
   keyvalue = kvp;
-  keyvalue->IncRef();
   return true;
 }
 
 bool csTextSyntaxService::WriteKey (iDocumentNode *node, iKeyValuePair *keyvalue)
 {
   node->SetAttribute ("name", keyvalue->GetKey ());
-  if (keyvalue->GetEditorOnly ())
-    node->SetAttribute ("editoronly", "yes");
   csRef<iStringArray> vnames = keyvalue->GetValueNames ();
   for (size_t i=0; i<vnames->Length (); i++)
   {
@@ -1889,14 +1874,14 @@ csRef<iShader> csTextSyntaxService::ParseShaderRef (
     return 0;
   }
 
-  csRef<iShaderManager> shmgr = csQueryRegistry<iShaderManager> (object_reg);
+  csRef<iShaderManager> shmgr = CS_QUERY_REGISTRY(object_reg, iShaderManager);
   csRef<iShader> shader = shmgr->GetShader (shaderName);
   if (shader.IsValid()) return shader;
 
   const char* shaderFileName = node->GetAttributeValue ("file");
   if (shaderFileName != 0)
   {
-    csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
+    csRef<iVFS> vfs = CS_QUERY_REGISTRY(object_reg, iVFS);
     csVfsDirectoryChanger dirChanger (vfs);
     csString filename (shaderFileName);
     csRef<iFile> shaderFile = vfs->Open (filename, VFS_FILE_READ);
@@ -1909,7 +1894,7 @@ csRef<iShader> csTextSyntaxService::ParseShaderRef (
     }
 
     csRef<iDocumentSystem> docsys =
-      csQueryRegistry<iDocumentSystem> (object_reg);
+      CS_QUERY_REGISTRY(object_reg, iDocumentSystem);
     if (docsys == 0)
       docsys.AttachNew (new csTinyDocumentSystem ());
     csRef<iDocument> shaderDoc = docsys->CreateDocument ();

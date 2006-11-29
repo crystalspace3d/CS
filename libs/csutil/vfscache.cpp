@@ -44,7 +44,7 @@ csVfsCacheManager::~csVfsCacheManager ()
 iVFS* csVfsCacheManager::GetVFS ()
 {
   if (!vfs)
-    vfs = csQueryRegistry<iVFS> (object_reg);
+    vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
   return vfs;
 }
 

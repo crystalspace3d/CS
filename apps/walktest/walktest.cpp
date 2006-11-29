@@ -141,7 +141,7 @@ void WalkTest::Report (int severity, const char* msg, ...)
 {
   va_list arg;
   va_start (arg, msg);
-  csRef<iReporter> rep (csQueryRegistry<iReporter> (object_reg));
+  csRef<iReporter> rep (CS_QUERY_REGISTRY (object_reg, iReporter));
   if (rep)
   {
     rep->ReportV (severity, "crystalspace.system", msg, arg);
@@ -156,13 +156,13 @@ void WalkTest::Report (int severity, const char* msg, ...)
 
 void WalkTest::SetDefaults ()
 {
-  csRef<iConfigManager> Config (csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> Config (CS_QUERY_REGISTRY (object_reg, iConfigManager));
   bool do_cd = Config->GetBool ("Walktest.Settings.Colldet", true);
   collider_actor.SetCD (do_cd);
   do_logo = Config->GetBool ("Walktest.Settings.DrawLogo", true);
 
-  csRef<iCommandLineParser> cmdline (
-  	csQueryRegistry<iCommandLineParser> (object_reg));
+  csRef<iCommandLineParser> cmdline (CS_QUERY_REGISTRY (object_reg,
+  	iCommandLineParser));
 
   const char *val;
   if (!(val = cmdline->GetName ()))
@@ -239,7 +239,7 @@ void WalkTest::SetDefaults ()
 
 void WalkTest::Help ()
 {
-  csRef<iConfigManager> cfg (csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> cfg (CS_QUERY_REGISTRY (object_reg, iConfigManager));
   csPrintf ("Options for WalkTest:\n");
   csPrintf ("  -exec=<script>     execute given script at startup\n");
   csPrintf ("  -[no]colldet       collision detection system (default '%scolldet')\n", collider_actor.HasCD () ? "" : "no");
@@ -962,7 +962,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
     return false;
   }
 
-  csRef<iConfigManager> cfg (csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> cfg (CS_QUERY_REGISTRY (object_reg, iConfigManager));
 #if defined(CS_PLATFORM_WIN32)
   const bool mdumpDefault =
 #if defined(CS_COMPILER_MSVC)
@@ -1013,31 +1013,31 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
     exit (0);
   }
 
-  plugin_mgr = csQueryRegistry<iPluginManager> (object_reg);
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  plugin_mgr = CS_QUERY_REGISTRY (object_reg, iPluginManager);
+  vc = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
 
-  myG3D = csQueryRegistry<iGraphics3D> (object_reg);
+  myG3D = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   if (!myG3D)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iGraphics3D plugin!");
     return false;
   }
 
-  myG2D = csQueryRegistry<iGraphics2D> (object_reg);
+  myG2D = CS_QUERY_REGISTRY (object_reg, iGraphics2D);
   if (!myG2D)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iGraphics2D plugin!");
     return false;
   }
 
-  myVFS = csQueryRegistry<iVFS> (object_reg);
+  myVFS = CS_QUERY_REGISTRY (object_reg, iVFS);
   if (!myVFS)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iVFS plugin!");
     return false;
   }
 
-  kbd = csQueryRegistry<iKeyboardDriver> (object_reg);
+  kbd = CS_QUERY_REGISTRY (object_reg, iKeyboardDriver);
   if (!kbd)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iKeyboardDriver!");
@@ -1048,8 +1048,8 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   CanvasExposed = csevCanvasExposed (name_reg, myG2D);
   CanvasResize = csevCanvasResize (name_reg, myG2D);
 
-  myConsole = csQueryRegistry<iConsoleOutput> (object_reg);
-  mySound = csQueryRegistry<iSndSysRenderer> (object_reg);
+  myConsole = CS_QUERY_REGISTRY (object_reg, iConsoleOutput);
+  mySound = CS_QUERY_REGISTRY (object_reg, iSndSysRenderer);
 
   // Some commercials...
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Crystal Space version %s (%s).", CS_VERSION, CS_RELEASE_DATE);
@@ -1122,7 +1122,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   start_console ();
 
   // Find the engine plugin and query the csEngine object from it...
-  Engine = csQueryRegistry<iEngine> (object_reg);
+  Engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   if (!Engine)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iEngine plugin!");
@@ -1131,7 +1131,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   Engine->SetSaveableFlag (doSave);
 
   // Find the level loader plugin
-  LevelLoader = csQueryRegistry<iLoader> (object_reg);
+  LevelLoader = CS_QUERY_REGISTRY (object_reg, iLoader);
   if (!LevelLoader)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No level loader plugin!");
@@ -1255,8 +1255,8 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
       	first_map->map_dir);
 
     // Check if we have to load every separate map in a separate region.
-    csRef<iCommandLineParser> cmdline = 
-    	csQueryRegistry<iCommandLineParser> (object_reg);
+    csRef<iCommandLineParser> cmdline = CS_QUERY_REGISTRY (object_reg,
+    	iCommandLineParser);
     bool do_regions = false;
     if (cmdline->GetOption ("regions"))
       do_regions = true;
@@ -1391,7 +1391,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   {
     myConsole->SetVisible (false);
     myConsole->AutoUpdate (false);
-    ConsoleInput = csQueryRegistry<iConsoleInput> (object_reg);
+    ConsoleInput = CS_QUERY_REGISTRY (object_reg, iConsoleInput);
     if (ConsoleInput)
     {
       ConsoleInput->Bind (myConsole);
@@ -1441,7 +1441,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
 #if 0
 {
   csRef<iDocumentSystem> xml (
-      csQueryRegistry<iDocumentSystem> (object_reg));
+      CS_QUERY_REGISTRY (object_reg, iDocumentSystem));
 
   MyThread* t1 = new MyThread ();
   MyThread* t2 = new MyThread ();

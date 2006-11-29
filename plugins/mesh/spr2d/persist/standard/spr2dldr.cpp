@@ -76,8 +76,8 @@ csSprite2DFactoryLoader::~csSprite2DFactoryLoader ()
 bool csSprite2DFactoryLoader::Initialize (iObjectRegistry* object_reg)
 {
   csSprite2DFactoryLoader::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
 
   xmltokens.Register ("lighting", XMLTOKEN_LIGHTING);
   xmltokens.Register ("material", XMLTOKEN_MATERIAL);
@@ -172,7 +172,7 @@ csPtr<iBase> csSprite2DFactoryLoader::Parse (iDocumentNode* node,
   }
   csRef<iMeshObjectFactory> fact (type->NewFactory ());
   csRef<iSprite2DFactoryState> spr2dLook (
-  	scfQueryInterface<iSprite2DFactoryState> (fact));
+  	SCF_QUERY_INTERFACE (fact, iSprite2DFactoryState));
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -240,8 +240,8 @@ csSprite2DFactorySaver::~csSprite2DFactorySaver ()
 bool csSprite2DFactorySaver::Initialize (iObjectRegistry* object_reg)
 {
   csSprite2DFactorySaver::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 
@@ -254,8 +254,8 @@ bool csSprite2DFactorySaver::WriteDown (iBase* obj, iDocumentNode* parent,
   csRef<iDocumentNode> paramsNode = parent->CreateNodeBefore(CS_NODE_ELEMENT, 0);
   paramsNode->SetValue("params");
 
-  csRef<iSprite2DFactoryState> spritefact = scfQueryInterface<iSprite2DFactoryState> (obj);
-  csRef<iMeshObjectFactory> meshfact = scfQueryInterface<iMeshObjectFactory> (obj);
+  csRef<iSprite2DFactoryState> spritefact = SCF_QUERY_INTERFACE (obj, iSprite2DFactoryState);
+  csRef<iMeshObjectFactory> meshfact = SCF_QUERY_INTERFACE (obj, iMeshObjectFactory);
   if (!spritefact) return false;
   if (!meshfact) return false;
 
@@ -325,8 +325,8 @@ csSprite2DLoader::~csSprite2DLoader ()
 bool csSprite2DLoader::Initialize (iObjectRegistry* object_reg)
 {
   csSprite2DLoader::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
 
   xmltokens.Register ("color", XMLTOKEN_COLOR);
   xmltokens.Register ("factory", XMLTOKEN_FACTORY);
@@ -380,7 +380,7 @@ csPtr<iBase> csSprite2DLoader::Parse (iDocumentNode* node,
 	    return 0;
 	  }
 	  mesh = fact->GetMeshObjectFactory ()->NewInstance ();
-          spr2dLook = scfQueryInterface<iSprite2DState> (mesh);
+          spr2dLook = SCF_QUERY_INTERFACE (mesh, iSprite2DState);
 	  if (!spr2dLook)
 	  {
       	    synldr->ReportError (
@@ -510,8 +510,8 @@ csSprite2DSaver::~csSprite2DSaver ()
 bool csSprite2DSaver::Initialize (iObjectRegistry* object_reg)
 {
   csSprite2DSaver::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 
@@ -524,8 +524,8 @@ bool csSprite2DSaver::WriteDown (iBase* obj, iDocumentNode* parent,
   csRef<iDocumentNode> paramsNode = parent->CreateNodeBefore(CS_NODE_ELEMENT, 0);
   paramsNode->SetValue("params");
 
-  csRef<iSprite2DState> sprite = scfQueryInterface<iSprite2DState> (obj);
-  csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (obj);
+  csRef<iSprite2DState> sprite = SCF_QUERY_INTERFACE (obj, iSprite2DState);
+  csRef<iMeshObject> mesh = SCF_QUERY_INTERFACE (obj, iMeshObject);
 
   if (!sprite) return false;
   if (!mesh) return false;

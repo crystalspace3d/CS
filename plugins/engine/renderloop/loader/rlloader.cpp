@@ -59,7 +59,7 @@ bool csRenderLoopLoader::Initialize(iObjectRegistry *object_reg)
 {
   csRenderLoopLoader::object_reg = object_reg;
   
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   rsp.Initialize (object_reg);
 
   return true;
@@ -85,7 +85,7 @@ bool csRenderLoopLoader::ParseRenderSteps (iRenderLoop* loop,
 csPtr<iBase> csRenderLoopLoader::Parse (iDocumentNode* node, 
   iStreamSource*, iLoaderContext* ldr_context, iBase* /*context*/)
 {
-  csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   if (!engine)
   {
     if (synldr)

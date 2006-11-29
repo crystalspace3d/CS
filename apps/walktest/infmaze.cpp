@@ -231,12 +231,12 @@ void InfiniteMaze::connect_infinite (int x1, int y1, int z1, int x2, int y2,
 bool InfPortalCS::Traverse (iPortal* portal, iBase* context)
 {
   csRef<iFrustumView> fv;
-  if (context) fv = scfQueryInterface<iFrustumView> (context);
+  if (context) fv = SCF_QUERY_INTERFACE (context, iFrustumView);
   if (fv)
   {
     iFrustumViewUserdata* ud = fv->GetUserdata ();
-    csRef<iLightingProcessInfo> linfo (
-    	scfQueryInterface<iLightingProcessInfo> (ud));
+    csRef<iLightingProcessInfo> linfo (SCF_QUERY_INTERFACE (ud,
+    	iLightingProcessInfo));
     if (linfo)
     {
       if (false && !linfo->IsDynamic ())
@@ -270,8 +270,8 @@ bool InfPortalCS::Traverse (iPortal* portal, iBase* context)
     for (i = 0 ; i < ml->GetCount () ; i++)
     {
       iMeshWrapper* mesh = ml->Get (i);
-      csRef<iLightingInfo> linfo (
-      	scfQueryInterface<iLightingInfo> (mesh->GetMeshObject ()));
+      csRef<iLightingInfo> linfo (SCF_QUERY_INTERFACE (mesh->GetMeshObject (),
+      	iLightingInfo));
       if (linfo)
         linfo->InitializeDefault (true);
     }
@@ -279,8 +279,8 @@ bool InfPortalCS::Traverse (iPortal* portal, iBase* context)
     for (i = 0 ; i < ml->GetCount () ; i++)
     {
       iMeshWrapper* mesh = ml->Get (i);
-      csRef<iLightingInfo> linfo (
-      	scfQueryInterface<iLightingInfo> (mesh->GetMeshObject ()));
+      csRef<iLightingInfo> linfo (SCF_QUERY_INTERFACE (mesh->GetMeshObject (),
+      	iLightingInfo));
       if (linfo)
         linfo->PrepareLighting ();
     }

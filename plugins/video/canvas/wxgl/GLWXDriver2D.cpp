@@ -75,7 +75,7 @@ void csGraphics2DWX::Report (int severity, const char* msg, ...)
 {
   va_list arg;
   va_start (arg, msg);
-  csRef<iReporter> rep (csQueryRegistry<iReporter> (object_reg));
+  csRef<iReporter> rep (CS_QUERY_REGISTRY (object_reg, iReporter));
   if (rep)
     rep->ReportV (severity, "crystalspace.canvas.glwx2d", msg, arg);
   else
@@ -97,7 +97,7 @@ bool csGraphics2DWX::Initialize (iObjectRegistry *object_reg)
   pfmt.PalEntries = 0;
 
   // Create the event outlet
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY(object_reg, iEventQueue));
   if (q != 0)
     EventOutlet = q->CreateEventOutlet (this);
 
@@ -159,7 +159,7 @@ bool csGraphics2DWX::Open()
   if (is_open) return true;
 
 #ifdef WIN32
-  csRef<iWin32Assistant> w32(csQueryRegistry<iWin32Assistant> (object_reg));
+  csRef<iWin32Assistant> w32(CS_QUERY_REGISTRY(object_reg, iWin32Assistant));
   if(w32 != 0) w32->UseOwnMessageLoop(false);
 #endif
 
@@ -466,13 +466,13 @@ csGLCanvas::~csGLCanvas()
 
 void csGLCanvas::OnEnterWindow( wxMouseEvent& WXUNUSED(event) )
 {
-  csRef<iEventNameRegistry> enr = csQueryRegistry<iEventNameRegistry> (g2d->object_reg);
+  csRef<iEventNameRegistry> enr = CS_QUERY_REGISTRY (g2d->object_reg, iEventNameRegistry);
   g2d->EventOutlet->Broadcast(csevFocusGained(enr));
 }
 
 void csGLCanvas::OnLeaveWindow( wxMouseEvent& WXUNUSED(event) )
 {
-  csRef<iEventNameRegistry> enr = csQueryRegistry<iEventNameRegistry> (g2d->object_reg);
+  csRef<iEventNameRegistry> enr = CS_QUERY_REGISTRY (g2d->object_reg, iEventNameRegistry);
   g2d->EventOutlet->Broadcast(csevFocusLost(enr));
 }
 

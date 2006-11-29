@@ -234,7 +234,7 @@ bool StartMe::OnKeyboard(iEvent& ev)
         // main runloop to stop. To do that we get the event queue from
         // the object registry and then post the event.
         csRef<iEventQueue> q = 
-          csQueryRegistry<iEventQueue> (GetObjectRegistry());
+          CS_QUERY_REGISTRY(GetObjectRegistry(), iEventQueue);
         if (q.IsValid()) 
 	  q->GetEventOutlet()->Broadcast(csevQuit(GetObjectRegistry()));
       }
@@ -248,7 +248,7 @@ bool StartMe::OnMouseDown (iEvent& /*event*/)
   if (InDescriptionMode ())
   {
     csRef<iCommandLineParser> cmdline =
-        csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
+        CS_QUERY_REGISTRY(GetObjectRegistry(), iCommandLineParser);
     csString appdir = cmdline->GetAppDir ();
     system (appdir << CS_PATH_SEPARATOR <<
         csInstallationPathsHelper::GetAppFilename (
@@ -332,31 +332,31 @@ bool StartMe::Application()
   // Now get the pointer to various modules we need. We fetch them
   // from the object registry. The RequestPlugins() call we did earlier
   // registered all loaded plugins with the object registry.
-  g3d = csQueryRegistry<iGraphics3D> (GetObjectRegistry());
+  g3d = CS_QUERY_REGISTRY(GetObjectRegistry(), iGraphics3D);
   if (!g3d) return ReportError("Failed to locate 3D renderer!");
 
-  engine = csQueryRegistry<iEngine> (GetObjectRegistry());
+  engine = CS_QUERY_REGISTRY(GetObjectRegistry(), iEngine);
   if (!engine) return ReportError("Failed to locate 3D engine!");
 
-  vc = csQueryRegistry<iVirtualClock> (GetObjectRegistry());
+  vc = CS_QUERY_REGISTRY(GetObjectRegistry(), iVirtualClock);
   if (!vc) return ReportError("Failed to locate Virtual Clock!");
 
-  kbd = csQueryRegistry<iKeyboardDriver> (GetObjectRegistry());
+  kbd = CS_QUERY_REGISTRY(GetObjectRegistry(), iKeyboardDriver);
   if (!kbd) return ReportError("Failed to locate Keyboard Driver!");
 
-  mouse = csQueryRegistry<iMouseDriver> (GetObjectRegistry());
+  mouse = CS_QUERY_REGISTRY(GetObjectRegistry(), iMouseDriver);
   if (!mouse) return ReportError("Failed to locate Mouse Driver!");
 
-  cdsys = csQueryRegistry<iCollideSystem> (GetObjectRegistry());
+  cdsys = CS_QUERY_REGISTRY(GetObjectRegistry(), iCollideSystem);
   if (!cdsys) return ReportError("Failed to locate CollDet System!");
 
-  loader = csQueryRegistry<iLoader> (GetObjectRegistry());
+  loader = CS_QUERY_REGISTRY(GetObjectRegistry(), iLoader);
   if (!loader) return ReportError("Failed to locate Loader!");
 
-  vfs = csQueryRegistry<iVFS> (GetObjectRegistry());
+  vfs = CS_QUERY_REGISTRY(GetObjectRegistry(), iVFS);
   if (!vfs) return ReportError("Failed to locate VFS!");
 
-  confman = csQueryRegistry<iConfigManager> (GetObjectRegistry());
+  confman = CS_QUERY_REGISTRY(GetObjectRegistry(), iConfigManager);
   if (!confman) return ReportError("Failed to locate Config Manager!");
 
   // We need a View to the virtual world.
@@ -417,9 +417,8 @@ void StartMe::CreateRoom ()
   iMaterialWrapper* spark_mat = engine->FindMaterial ("spark");
   csRef<iMeshFactoryWrapper> spark_fact = engine->CreateMeshFactory (
   	"crystalspace.mesh.object.genmesh", "spark_fact");
-  csRef<iGeneralFactoryState> spark_state = 
-    scfQueryInterface<iGeneralFactoryState> (
-      spark_fact->GetMeshObjectFactory ());
+  csRef<iGeneralFactoryState> spark_state = SCF_QUERY_INTERFACE (
+  	spark_fact->GetMeshObjectFactory (), iGeneralFactoryState);
   spark_state->SetVertexCount (4);
   spark_state->GetVertices ()[0].Set (-.1f, -.1f, 0);
   spark_state->GetVertices ()[1].Set (.1f, -.1f, 0);
@@ -456,9 +455,8 @@ void StartMe::CreateRoom ()
 
   box_fact = engine->CreateMeshFactory (
   	"crystalspace.mesh.object.genmesh", "box_fact");
-  csRef<iGeneralFactoryState> box_state = 
-    scfQueryInterface<iGeneralFactoryState> (
-      box_fact->GetMeshObjectFactory ());
+  csRef<iGeneralFactoryState> box_state = SCF_QUERY_INTERFACE (
+  	box_fact->GetMeshObjectFactory (), iGeneralFactoryState);
   csBox3 b (-1, -1, -1, 1, 1, 1);
   box_state->GenerateBox (b);
   box_state->CalculateNormals ();

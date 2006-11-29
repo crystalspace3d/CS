@@ -172,8 +172,6 @@
 // list. Please keep the list sorted alphabetically.
 #ifndef CS_MINI_SWIG
 %define APPLY_FOR_EACH_INTERFACE
-  INTERFACE_APPLY(iAws)
-  INTERFACE_APPLY(iAwsKey)
   INTERFACE_APPLY(iBase)
   INTERFACE_APPLY(iBinaryLoaderPlugin)
   INTERFACE_APPLY(iBodyGroup)
@@ -190,15 +188,10 @@
   INTERFACE_APPLY(iDataBuffer)
   INTERFACE_APPLY(iDebugHelper)
   INTERFACE_APPLY(iDocument)
-  INTERFACE_APPLY(iDocumentAttribute)
-  INTERFACE_APPLY(iDocumentAttributeIterator)
-  INTERFACE_APPLY(iDocumentNode)
-  INTERFACE_APPLY(iDocumentNodeIterator)
   INTERFACE_APPLY(iDocumentSystem)
   INTERFACE_APPLY(iDynamics)
   INTERFACE_APPLY(iDynamicSystem)
   INTERFACE_APPLY(iEngine)
-  INTERFACE_APPLY(iEngineSequenceManager)
   INTERFACE_APPLY(iEvent)
   INTERFACE_APPLY(iEventHandler)
   INTERFACE_APPLY(iEventQueue)
@@ -218,7 +211,6 @@
   INTERFACE_APPLY(iImage)
   INTERFACE_APPLY(iImageIO)
   INTERFACE_APPLY(iJoint)
-  INTERFACE_APPLY(iJoystickDriver)
   INTERFACE_APPLY(iODEDynamicState)
   INTERFACE_APPLY(iODEDynamicSystemState)
   INTERFACE_APPLY(iODEJointState)
@@ -503,7 +495,6 @@
 #define TYPEMAP_OUTARG_ARRAY_PTR_CNT(a,b,c)
 #define TYPEMAP_ARGOUT_PTR(T)
 #define APPLY_TYPEMAP_ARGOUT_PTR(T,Args)
-#define ITERATOR_FUNCTIONS(T)
 
 #if defined(SWIGPYTHON)
   %include "bindings/python/pythpre.i"
@@ -892,17 +883,6 @@ template<typename T> struct csVector4T {
 %ignore csPoly3D::GetVertices (); // Non-const.
 %include "csgeom/poly3d.h"
 
-namespace CS
-{
-  template<typename T> struct TriangleT
-  { 
-    T a, b, c;
-    void Set (const T& _a, const T& _b, const T& _c);
-  };
-}
-%template(TriangleInt) CS::TriangleT<int >;
-%warnfilter(302) TriangleT; // redefined
-%ignore CS::TriangleT::operator[];
 %include "csgeom/tri.h"
 
 %ignore csRect::AddAdjanced; // Deprecated misspelling.
@@ -1004,7 +984,6 @@ iArrayChangeElements<csShaderVariable * >;
 %template(csPluginRequestArray) csArray<csPluginRequest>;
 
 #ifndef CS_MINI_SWIG
-%include "iaws/aws.h"
 
 %include "igeom/clip2d.h"
 %include "imesh/objmodel.h"
@@ -1062,19 +1041,6 @@ iArrayChangeElements<csShaderVariable * >;
 %include "iengine/viscull.h"
 %include "iengine/portal.h"
 %include "iengine/portalcontainer.h"
-
-%extend iVisibilityObjectIterator {
-  ITERATOR_FUNCTIONS(iVisibilityObjectIterator)
-}
-%extend iLightIterator {
-  ITERATOR_FUNCTIONS(iLightIterator)
-}
-%extend iSectorIterator {
-  ITERATOR_FUNCTIONS(iSectorIterator)
-}
-%extend iMeshWrapperIterator {
-  ITERATOR_FUNCTIONS(iMeshWrapperIterator)
-}
 
 #ifndef CS_SWIG_PUBLISH_IGENERAL_FACTORY_STATE_ARRAYS
 %ignore iGeneralFactoryState::GetVertices;
@@ -1196,16 +1162,6 @@ APPLY_TYPEMAP_ARGOUT_PTR(csKeyModifiers,csKeyModifiers& modifiers)
 %include "iutil/cfgmgr.h"
 %include "iutil/stringarray.h"
 %include "iutil/document.h"
-
-%extend iDocumentAttributeIterator
-{
-  ITERATOR_FUNCTIONS(iDocumentAttributeIterator)
-}
-
-%extend iDocumentNodeIterator
-{
-  ITERATOR_FUNCTIONS(iDocumentNodeIterator)
-}
 
 %include "csutil/xmltiny.h"
 
@@ -1350,13 +1306,6 @@ APPLY_FOR_EACH_INTERFACE
 
   csColor *GetColorByIndex(int index)
   { return &(self->GetColors()[index]); }
-}
-
-// iaws/aws.h
-%extend iAws
-{
-  bool SetupCanvas (iGraphics2D *g2d=0, iGraphics3D *g3d=0)
-  { return self->SetupCanvas(0, g2d, g3d); }
 }
 
 // iutil/csinput.h
@@ -1640,19 +1589,6 @@ uint _CS_FX_SETALPHA_INT (uint);
   csQuaternion operator + (const csQuaternion& q) { return *self + q; }
   csQuaternion operator - (const csQuaternion& q) { return *self - q; }
   csQuaternion operator * (const csQuaternion& q) { return *self * q; }
-}
-
-%include "cstool/primitives.h"
-%extend csSimpleRenderMesh
-{
-  void SetWithGenmeshFactory(iGeneralFactoryState *factory) 
-  {
-    self->vertices = factory->GetVertices(); 
-    self->vertexCount = factory->GetVertexCount(); 
-    self->indices = (uint *)factory->GetTriangles();
-    self->indexCount = factory->GetTriangleCount()*3; 
-    self->texcoords = factory->GetTexels();
-  }
 }
 
 /* List Methods */

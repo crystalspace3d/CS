@@ -52,7 +52,7 @@ private:
   {
   public:
     /// The plugin itself
-    csRef<iComponent> Plugin;
+    iComponent *Plugin;
     /// The class ID of the plugin
     char *ClassID;
 

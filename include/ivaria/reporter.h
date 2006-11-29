@@ -331,7 +331,7 @@ inline void csReporterHelper::ReportV(iObjectRegistry* reg, int severity,
   char const* msgId, char const* description, va_list args)
 {
   csRef<iReporter> reporter;
-  if (reg && (reporter = csQueryRegistry<iReporter> (reg)))
+  if (reg && (reporter = CS_QUERY_REGISTRY (reg, iReporter)))
     reporter->ReportV (severity, msgId, description, args);
   else
   {

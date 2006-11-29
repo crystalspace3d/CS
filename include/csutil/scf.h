@@ -776,17 +776,9 @@ inline csPtr<Interface> scfQueryInterface (ClassPtr object)
   return csPtr<Interface> (x);
 }
 
-template<class Interface, class ClassPtr>
-inline CS_DEPRECATED_METHOD_MSG ("SCF_QUERY_INTERFACE macro is deprecated")
-csPtr<Interface> SCF_QUERY_INTERFACE_is_deprecated (ClassPtr object)
-{
-  return scfQueryInterface<Interface> (object);
-}
-/**
- * \deprecated Compatibility macro for scfQueryInterface
- */
+//Compatibility macro for scfQueryInterface
 #define SCF_QUERY_INTERFACE(Object,Interface) \
-  SCF_QUERY_INTERFACE_is_deprecated<Interface> (Object)
+  scfQueryInterface<Interface> (Object)
 
 /**
  * Helper function around iBase::QueryInterface which also 
@@ -802,18 +794,9 @@ inline csPtr<Interface> scfQueryInterfaceSafe (ClassPtr object)
     scfInterfaceTraits<Interface>::GetVersion ());
   return csPtr<Interface> (x);
 }
-
-template<class Interface, class ClassPtr>
-inline CS_DEPRECATED_METHOD_MSG ("SCF_QUERY_INTERFACE_SAFE macro is deprecated")
-csPtr<Interface> SCF_QUERY_INTERFACE_SAFE_is_deprecated (ClassPtr object)
-{
-  return scfQueryInterfaceSafe<Interface> (object);
-}
-/**
- * \deprecated Compatibility macro for scfQueryInterfaceSafe
- */
+//Compatibility macro for scfQueryInterfaceSafe
 #define SCF_QUERY_INTERFACE_SAFE(Object,Interface) \
-  SCF_QUERY_INTERFACE_SAFE_is_deprecated<Interface> (Object)
+  scfQueryInterfaceSafe<Interface> (Object)
 
 /**
  * Handy function to create an instance of a shared class.
@@ -833,18 +816,9 @@ inline csPtr<Interface> scfCreateInstance (char const * const ClassID)
   return csPtr<Interface> (x);
 }
 
-template<class Interface>
-inline CS_DEPRECATED_METHOD_MSG ("SCF_CREATE_INSTANCE macro is deprecated")
-csPtr<Interface> SCF_CREATE_INSTANCE_is_deprecated (
-  char const * const ClassID)
-{
-  return scfCreateInstance<Interface> (ClassID);
-}
-/**
- * \deprecated Compatibility macro for scfCreateInstance function
- */
+// Compatibility macro for scfCreateInstance function
 #define SCF_CREATE_INSTANCE(ClassID,Interface) \
-  SCF_CREATE_INSTANCE_is_deprecated<Interface> (ClassID)
+  scfCreateInstance<Interface> (ClassID)
 
 // Give versions to above declared classes.
 SCF_VERSION (iFactory, 0, 0, 2);

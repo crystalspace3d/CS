@@ -774,12 +774,6 @@ public:
   csRef<iGraphics3D> G3D;
   /// Pointer to the shader manager
   csRef<iShaderManager> shaderManager;
-  
-  /// Store virtual clock to speed up time queries.
-  csRef<iVirtualClock> virtualClock;
-
-  /// Store engine shadervar names
-  csStringID id_creation_time;
   /**
    * This is the Virtual File System object where all the files
    * used by the engine live. Textures, models, data, everything -
@@ -890,6 +884,9 @@ private:
    * and warning messages.
    */
   csRef<iReporter> reporter;
+
+  /// Store virtual clock to speed up time queries.
+  csRef<iVirtualClock> virtualClock;
 
   /// Default render loop
   csRef<iRenderLoop> defaultRenderLoop;

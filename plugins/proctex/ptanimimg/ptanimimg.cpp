@@ -73,7 +73,7 @@ csPtr<iBase> csAnimateProctexLoader::Parse (iDocumentNode* node,
   if (context)
   {
     ctx = csPtr<iTextureLoaderContext>
-      (scfQueryInterface<iTextureLoaderContext> (context));
+      (SCF_QUERY_INTERFACE (context, iTextureLoaderContext));
   }
 
   csRef<iImage> img = (ctx && ctx->HasImage()) ? ctx->GetImage() : 0;
@@ -86,7 +86,7 @@ csPtr<iBase> csAnimateProctexLoader::Parse (iDocumentNode* node,
       return 0;
     }
 
-    csRef<iLoader> LevelLoader = csQueryRegistry<iLoader> (object_reg);
+    csRef<iLoader> LevelLoader = CS_QUERY_REGISTRY (object_reg, iLoader);
     if (!LevelLoader) 
     {
       Report (CS_REPORTER_SEVERITY_WARNING, 0, "No level loader");
@@ -120,7 +120,7 @@ csPtr<iBase> csAnimateProctexLoader::Parse (iDocumentNode* node,
   csRef<csProcTexture> pt = csPtr<csProcTexture> (new csProcAnimated (img));
   if (pt->Initialize (object_reg))
   {
-    csRef<iGraphics3D> G3D = csQueryRegistry<iGraphics3D> (object_reg);
+    csRef<iGraphics3D> G3D = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
     if (!G3D) return 0;
     csRef<iTextureManager> tm = G3D->GetTextureManager();
     if (!tm) return 0;
@@ -149,7 +149,7 @@ void csAnimateProctexLoader::Report (int severity, iDocumentNode* node,
   csRef<iSyntaxService> synserv;
 
   if (node)
-    synserv = csQueryRegistry<iSyntaxService> (object_reg);
+    synserv = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
 
   if (node && synserv)
   {

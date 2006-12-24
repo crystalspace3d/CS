@@ -61,14 +61,14 @@ ul.toc {list-style: none}
 <h3 class="subsection"> 4.14.3 Socket Animation </h3>
 
 <p>When you have an animated actor you often want that actor to hold something
-in its hands. Or put a helmet on its head. For this purpose Crystal Space
-has the concept of <em>sockets</em>. Basically a socket is a triangle of the
-mesh on which you can attach other meshes. So when the triangle moves (because
+in its hands.  Or put a helmet on its head. For this purpose Crystal Space
+has the concept of <em>sockets</em>.  Basically a socket is a triangle of the
+mesh on which you can attach other meshes.  So when the triangle moves (because
 the model animates) the other mesh (like a weapon) will move with it.
 At this moment both 3D sprites (see section <a href="cs_4.9.13.html#4.9.13">Sprite3D Mesh Object</a>, and Cal3D sprites
 (see section <a href="cs_4.9.14.html#4.9.14">SpriteCal3D Mesh Object</a>) support this feature.
 </p>
-<a name="SEC462"></a>
+<a name="SEC482"></a>
 <h4 class="subsubheading"> Defining the Socket </h4>
 
 <p>To define the socket you can specify it in the mesh factory file of the model.
@@ -84,7 +84,7 @@ For Cal3D models this happens with something like this:
 &lt;/meshfact&gt;
 </pre></td></tr></table>
 <p>Basically you have to find out the mesh, submesh, and triangle that specifies
-the place where you want to attach things. In the example above we created
+the place where you want to attach things.  In the example above we created
 two sockets, one for the left hand and one for the right hand.
 </p>
 <p>For Spr3D models you have to do it like this:
@@ -100,7 +100,7 @@ two sockets, one for the left hand and one for the right hand.
 </pre></td></tr></table>
 <p>So it is the same but Spr3D doesn't have the concept of meshes and submeshes.
 </p>
-<a name="SEC463"></a>
+<a name="SEC483"></a>
 <h4 class="subsubheading"> Attaching a Mesh to a Socket </h4>
 
 <p>With this function you can attach a mesh to a socket for a Cal3D model:
@@ -131,7 +131,7 @@ two sockets, one for the left hand and one for the right hand.
 <code>iSpriteSocket</code> instead of <code>iSpriteCal3DSocket</code> and you can't
 currently change the relative transform.
 </p>
-<a name="SEC464"></a>
+<a name="SEC484"></a>
 <h4 class="subsubheading"> Detaching a Mesh from a Socket </h4>
 
 <p>To remove a mesh from a socket you can do this:
@@ -151,7 +151,6 @@ currently change the relative transform.
   return true;
 }
 </pre></td></tr></table>
-
 <hr size="1">
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="cs_4.14.2.html#4.14.2" title="Previous section in reading order"> &lt; </a>]</td>

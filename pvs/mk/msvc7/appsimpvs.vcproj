@@ -40,6 +40,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -53,7 +54,7 @@
 				OutputFile="..\..\simpvs.exe"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc7.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -113,6 +114,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -124,7 +126,7 @@
 				OutputFile="..\..\simpvs.exe"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc7_d.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -184,6 +186,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -195,7 +198,7 @@
 				OutputFile="..\..\simpvs.exe"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc7_d.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -255,6 +258,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -266,7 +270,7 @@
 				OutputFile="..\..\simpvs.exe"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc7_d.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -307,18 +311,12 @@
 			<File
 				RelativePath="..\..\apps\tutorial\simpvs\simpvs.cpp">
 			</File>
-			<File
-				RelativePath="..\..\apps\tutorial\simpvs\vidprefs.cpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
 				RelativePath="..\..\apps\tutorial\simpvs\simpvs.h">
-			</File>
-			<File
-				RelativePath="..\..\apps\tutorial\simpvs\vidprefs.h">
 			</File>
 		</Filter>
 		<Filter

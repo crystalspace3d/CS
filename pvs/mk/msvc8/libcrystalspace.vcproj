@@ -29,7 +29,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\release8\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\release8\build\libcrystalspace\"
 				ObjectFile="..\..\out\release8\build\libcrystalspace\"
@@ -38,6 +38,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -76,7 +77,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -100,7 +101,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug8\build\libcrystalspace\"
@@ -109,6 +110,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -145,7 +147,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -169,7 +171,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug8\build\libcrystalspace\"
@@ -178,6 +180,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -214,7 +217,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -238,7 +241,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug8\build\libcrystalspace\"
@@ -247,6 +250,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -283,7 +287,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -452,6 +456,9 @@
 				RelativePath="..\..\libs\csgfx\shadervarframeholder.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgfx\xorpat.cpp">
 			</File>
 			<File
@@ -480,9 +487,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\particlesys\partgen.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\particlesys\particle.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\render3d\normalizationcube.cpp">
@@ -569,6 +573,9 @@
 				RelativePath="..\..\libs\cstool\normalcalc.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\cstool\numberedfilename.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\cstool\pen.cpp">
 			</File>
 			<File
@@ -596,10 +603,16 @@
 				RelativePath="..\..\libs\cstool\saverref.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\cstool\uberscreenshot.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\cstool\userrndbuf.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\vertexcompress.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\alignedalloc.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\ansiparse.cpp">
@@ -734,6 +747,9 @@
 				RelativePath="..\..\libs\csutil\inputdef.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\measuretime.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\memdebug.cpp">
 			</File>
 			<File
@@ -758,6 +774,9 @@
 				RelativePath="..\..\libs\csutil\physfile.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\platform_new.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\plugldr.cpp">
 			</File>
 			<File
@@ -768,6 +787,12 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\profile.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\ptmalloc\ptmalloc3.c">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\ptmalloc_wrap.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\radixsort.cpp">
@@ -819,6 +844,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\syspath.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\threading\win32_thread.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\threadjobqueue.cpp">
@@ -972,6 +1000,9 @@
 				RelativePath="..\..\libs\..\include\csgeom\obb.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgeom\odesolver.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgeom\path.h">
 			</File>
 			<File
@@ -1065,6 +1096,9 @@
 				RelativePath="..\..\libs\..\include\csgfx\gradient.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgfx\imageautoconvert.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgfx\imagebase.h">
 			</File>
 			<File
@@ -1072,6 +1106,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\imagemanipulate.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgfx\imagememory.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\imagetools.h">
@@ -1120,6 +1157,12 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\shadervarframeholder.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgfx\textureformatstrings.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgfx\trianglestream.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\vertexlight.h">
@@ -1171,9 +1214,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\particlesys\partgen.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\particlesys\particle.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\render3d\normalizationcube.h">
@@ -1272,6 +1312,9 @@
 				RelativePath="..\..\libs\..\include\cstool\normalcalc.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\numberedfilenamehelper.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\cstool\objmodel.h">
 			</File>
 			<File
@@ -1306,6 +1349,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\tokenlist.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\uberscreenshot.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\userrndbuf.h">
@@ -1437,6 +1483,12 @@
 				RelativePath="..\..\libs\..\include\csutil\csunicode.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\custom_new_disable.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\custom_new_enable.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\databuf.h">
 			</File>
 			<File
@@ -1468,6 +1520,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\filereadhelper.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\fixedsizeallocator.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\flags.h">
@@ -1506,6 +1561,9 @@
 				RelativePath="..\..\libs\..\include\csutil\list.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\measuretime.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\memdebug.h">
 			</File>
 			<File
@@ -1528,6 +1586,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\nobjvec.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\noncopyable.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\nulcache.h">
@@ -1641,6 +1702,9 @@
 				RelativePath="..\..\libs\..\include\csutil\sparse3d.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\spinlock.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\strhash.h">
 			</File>
 			<File
@@ -1662,10 +1726,31 @@
 				RelativePath="..\..\libs\..\include\csutil\thread.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\timemeasure.h">
+				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\mutex.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\thread.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_apifuncs.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_condition.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_mutex.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_thread.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\timer.h">
@@ -1696,6 +1781,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\weakrefarr.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\weakreferenced.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\callstack.h">
@@ -1767,6 +1855,9 @@
 				RelativePath="..\..\libs\csutil\demangle.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\dlmalloc-settings.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\reftrack.h">
 			</File>
 			<File
@@ -1774,9 +1865,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\tinystr.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\tinywrap.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\tinyxml.h">

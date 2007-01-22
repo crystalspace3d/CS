@@ -123,8 +123,8 @@ bool csShadowmapRSLoader::ParseStep (iLoaderContext* ldr_context,
     csShadowmapRenderStep* step, 
     csShadowmapRenderStep::DrawSettings& settings)
 {
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    object_reg, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    object_reg, "crystalspace.shared.stringset", iStringSet);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -186,14 +186,14 @@ csShadowmapRenderStep::csShadowmapRenderStep (
   iObjectRegistry* object_reg) :
   scfImplementationType (this)
 {
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> 
-    (object_reg, "crystalspace.shared.stringset");
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg, 
+    "crystalspace.shared.stringset", iStringSet);
   csShadowmapRenderStep::object_reg = object_reg;
   bones_name = strings->Request("bones");
   shader_name = strings->Request("distance_animated");
   depth_cubemap_name = strings->Request("cubemap depth");
-  engine = csQueryRegistry<iEngine> (object_reg);
+  engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   context = 0;
   defShader = 0;
 

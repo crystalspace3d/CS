@@ -137,18 +137,12 @@ void csTextureWrapper::Register (iTextureManager *txtmgr)
     }
   }
 
-  csRef<scfString> fail_reason;
-  fail_reason.AttachNew (new scfString ());
-  handle = txtmgr->RegisterTexture (image, flags, fail_reason);
+  handle = txtmgr->RegisterTexture (image, flags);
   if (handle)
   {
     SetKeyColor (key_col_r, key_col_g, key_col_b);
     handle->SetTextureClass (texClass);
     delete[] texClass; texClass = 0; 
-  }
-  else
-  {
-    engine->Error ("Error creating texture: %s", fail_reason->GetData ());
   }
 
   if (!keep_image)

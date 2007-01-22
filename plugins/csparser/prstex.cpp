@@ -339,7 +339,7 @@ iTextureWrapper* csLoader::ParseTexture (iLoaderContext* ldr_context,
     if (image && type.IsEmpty ())
     {
       // special treatment for animated textures
-      csRef<iAnimatedImage> anim = scfQueryInterface<iAnimatedImage> (image);
+      csRef<iAnimatedImage> anim = SCF_QUERY_INTERFACE (image, iAnimatedImage);
       if (anim && anim->IsAnimated())
       {
 	type = PLUGIN_TEXTURELOADER_ANIMIMG;
@@ -419,7 +419,7 @@ iTextureWrapper* csLoader::ParseTexture (iLoaderContext* ldr_context,
   {
     csRef<iBase> b = plugin->Parse (ParamsNode,
       0/*ssource*/, ldr_context, static_cast<iBase*> (&context));
-    if (b) tex = scfQueryInterface<iTextureWrapper> (b);
+    if (b) tex = SCF_QUERY_INTERFACE (b, iTextureWrapper);
   }
 
   if (!tex)
@@ -438,7 +438,7 @@ iTextureWrapper* csLoader::ParseTexture (iLoaderContext* ldr_context,
     csRef<iBase> b = BuiltinCheckerTexLoader->Parse (ParamsNode,
       0/*ssource*/, ldr_context, static_cast<iBase*> (&context));
     CS_ASSERT(b);
-    tex = scfQueryInterface<iTextureWrapper> (b);
+    tex = SCF_QUERY_INTERFACE (b, iTextureWrapper);
     CS_ASSERT(tex);
   }
 
@@ -455,7 +455,7 @@ iTextureWrapper* csLoader::ParseTexture (iLoaderContext* ldr_context,
     if (overrideAlphaType)
       tex->GetTextureHandle()->SetAlphaType (alphaType);
 
-    csRef<iProcTexture> ipt = scfQueryInterface<iProcTexture> (tex);
+    csRef<iProcTexture> ipt = SCF_QUERY_INTERFACE (tex, iProcTexture);
     if (ipt)
       ipt->SetAlwaysAnimate (always_animate);
     AddToRegion (ldr_context, tex->QueryObject ());
@@ -463,7 +463,14 @@ iTextureWrapper* csLoader::ParseTexture (iLoaderContext* ldr_context,
     size_t i;
     for (i = 0 ; i < key_nodes.Length () ; i++)
     {
-      if (!ParseKey (key_nodes[i], tex->QueryObject()))
+      iKeyValuePair* kvp = 0;
+      SyntaxService->ParseKey (key_nodes[i], kvp);
+      if (kvp)
+      {
+        tex->QueryObject()->ObjAdd (kvp->QueryObject ());
+	kvp->DecRef ();
+      }
+      else
 	return 0;
     }
   }
@@ -541,8 +548,8 @@ iMaterialWrapper* csLoader::ParseMaterial (iLoaderContext* ldr_context,
       case XMLTOKEN_SHADER:
         {
 	  shaders_mentioned = true;
-          csRef<iShaderManager> shaderMgr = 
-	  	csQueryRegistry<iShaderManager> (object_reg);
+          csRef<iShaderManager> shaderMgr = CS_QUERY_REGISTRY (object_reg,
+	  	iShaderManager);
           if (!shaderMgr)
           {
             ReportNotify ("iShaderManager not found, ignoring shader!");
@@ -626,7 +633,13 @@ iMaterialWrapper* csLoader::ParseMaterial (iLoaderContext* ldr_context,
 
   for (i = 0 ; i < key_nodes.Length () ; i++)
   {
-    if (!ParseKey (key_nodes[i], mat->QueryObject()))
+    iKeyValuePair* kvp = 0;
+    SyntaxService->ParseKey (key_nodes[i], kvp);
+    if (kvp)
+    {
+      mat->QueryObject ()->ObjAdd (kvp->QueryObject ());
+      kvp->DecRef ();
+    } else
       return 0;
   }
   AddToRegion (ldr_context, mat->QueryObject ());
@@ -658,7 +671,7 @@ iTextureWrapper* csLoader::ParseCubemap (iLoaderContext* ldr_context,
 
   csRef<iBase> b = plugin->Parse (node, 0/*ssource*/, ldr_context, context);
   csRef<iTextureWrapper> tex;
-  if (b) tex = scfQueryInterface<iTextureWrapper> (b);
+  if (b) tex = SCF_QUERY_INTERFACE (b, iTextureWrapper);
 
   if (tex)
   {
@@ -694,7 +707,7 @@ iTextureWrapper* csLoader::ParseTexture3D (iLoaderContext* ldr_context,
 
   csRef<iBase> b = plugin->Parse (node, 0/*ssource*/, ldr_context, context);
   csRef<iTextureWrapper> tex;
-  if (b) tex = scfQueryInterface<iTextureWrapper> (b);
+  if (b) tex = SCF_QUERY_INTERFACE (b, iTextureWrapper);
 
   if (tex)
   {

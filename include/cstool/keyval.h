@@ -47,7 +47,7 @@ private:
   const char *m_Value;	// Points to a string in the hash below.
   csHash<csString, csString> values;
   csSet<csString> names;
-  bool editoronly;
+
 public:
   /// The constructor. Requires both key and value. Data is being copied!
   csKeyValuePair (const char* Key, const char* Value);
@@ -56,12 +56,7 @@ public:
   /// The destructor as usual
   virtual ~csKeyValuePair ();
 
-  /// Set the "editor only" flag of this key value pair
-  void SetEditorOnly (bool flag)
-  { editoronly = flag; }
-
-  /**\name iKeyValuePair implementation
-   * @{ */
+  //----------------------- iKeyValuePair --------------------------
   virtual iObject *QueryObject() { return (csObject*)this; }
   virtual const char *GetKey () const;
   virtual void SetKey (const char* s);
@@ -72,9 +67,6 @@ public:
 
   virtual csRef<iStringArray> GetValueNames () const;
 
-  virtual bool GetEditorOnly () const
-  { return editoronly; }
-  /** @} */
 };
 
 #endif // __CS_KEYVAL_H__

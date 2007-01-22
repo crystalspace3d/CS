@@ -655,7 +655,7 @@ void csGenmeshMeshObject::CastShadows (iMovable* movable, iFrustumView* fview)
   if (!do_lighting) return;
 
   iBase* b = (iBase *)fview->GetUserdata ();
-  csRef<iLightingProcessInfo> lpi = scfQueryInterface<iLightingProcessInfo> (b);
+  csRef<iLightingProcessInfo> lpi = SCF_QUERY_INTERFACE(b,iLightingProcessInfo);
   CS_ASSERT (lpi != 0);
 
   iLight* li = lpi->GetLight ();
@@ -1167,15 +1167,9 @@ csRenderMesh** csGenmeshMeshObject::GetRenderMeshes (
       CS_ASSERT (mater != 0);
       meshPtr->worldspace_origin = wo;
       csRef<MergedSVContext> mergedSVContext;
-#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
-# undef new
-#endif
       mergedSVContext.AttachNew (
         new (factory->genmesh_type->mergedSVContextPool) MergedSVContext (
         static_cast<iShaderVariableContext*> (&subMesh), svcontext));
-#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
-# define new CS_EXTENSIVE_MEMDEBUG_NEW
-#endif
       meshPtr->variablecontext = mergedSVContext;
       meshPtr->object2world = o2wt;
 
@@ -1552,13 +1546,13 @@ csGenmeshMeshObjectFactory::csGenmeshMeshObjectFactory (
 
   material = 0;
   polygons = 0;
-  light_mgr = csQueryRegistry<iLightManager> (object_reg);
+  light_mgr = CS_QUERY_REGISTRY (object_reg, iLightManager);
   back2front = false;
   back2front_tree = 0;
 
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  strings = csQueryRegistryTagInterface<iStringSet>
-    (object_reg, "crystalspace.shared.stringset");
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
+  strings = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg,
+    "crystalspace.shared.stringset", iStringSet);
 
   mesh_vertices_dirty_flag = false;
   mesh_texels_dirty_flag = false;
@@ -1579,13 +1573,13 @@ csGenmeshMeshObjectFactory::csGenmeshMeshObjectFactory (
   default_shadowcasting = true;
   default_shadowreceiving = false;
 
-  csRef<iEngine> eng = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> eng = CS_QUERY_REGISTRY (object_reg, iEngine);
   engine = eng; // We don't want a circular reference!
 
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  vc = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
 
-  csRef<iCommandLineParser> cmdline = 
-  	csQueryRegistry<iCommandLineParser> (object_reg);
+  csRef<iCommandLineParser> cmdline = CS_QUERY_REGISTRY (
+  	object_reg, iCommandLineParser);
   do_fullbright = (cmdline->GetOption ("fullbright") != 0);
 }
 
@@ -1749,13 +1743,13 @@ static void RemapIndexBuffer (csRef<iRenderBuffer>& index_buffer,
 
 void csGenmeshMeshObjectFactory::Compress ()
 {
-  //size_t old_num = mesh_vertices.Length ();
+  size_t old_num = mesh_vertices.Length ();
   csCompressVertexInfo* vt = csVertexCompressor::Compress (
     	mesh_vertices, mesh_texels, mesh_normals, mesh_colors);
   if (vt)
   {
-    //printf ("From %d to %d\n", int (old_num), int (mesh_vertices.Length ()));
-    //fflush (stdout);
+    printf ("From %d to %d\n", int (old_num), int (mesh_vertices.Length ()));
+    fflush (stdout);
 
     if (subMeshes.GetSize () == 0)
     {
@@ -1801,8 +1795,6 @@ void csGenmeshMeshObjectFactory::Compress ()
           case CS_BUFCOMP_DOUBLE:
             RemapIndexBuffer<double> (subMesh->index_buffer, vt);
             break;
-	  case CS_BUFCOMP_TYPECOUNT:
-	    CS_ASSERT_MSG("invalid component type", false);
         }
       }
     }
@@ -1984,7 +1976,6 @@ void csGenmeshMeshObjectFactory::AddVertex (const csVector3& v,
 void csGenmeshMeshObjectFactory::AddTriangle (const csTriangle& tri)
 {
   mesh_triangles.Push (tri);
-
   Invalidate ();
 }
 
@@ -2039,12 +2030,19 @@ void csGenmeshMeshObjectFactory::CalculateNormals (bool compress)
 
       SubMesh* subMesh (subMeshes[s]);
       csRef<iRenderBuffer> indices (subMesh->GetIndices());
+      csRenderBufferLock<uint8> indexLock (indices, CS_BUF_LOCK_READ);
+
+      size_t stride = indices->GetElementDistance();
+      const uint8* tri = indexLock;
+      const uint8* triEnd = tri + indices->GetElementCount()*stride;
 
       CS::TriangleIndicesStream<int> triangles;
-      triangles.BeginTriangulate (indices, CS_MESHTYPE_TRIANGLES);
-      while (triangles.HasNext ())
+      triangles.BeginTriangulate (tri, triEnd, stride, 
+        indices->GetComponentType(), CS_MESHTYPE_TRIANGLES);
+      while (triangles.HasNextTri ())
       {
-        csTriangle tri (triangles.Next ());
+        csTriangle tri;
+        triangles.NextTriangle (tri.a, tri.b, tri.c);
         newTriangles.Push (tri);
       }
     }
@@ -2231,8 +2229,6 @@ void csGenmeshMeshObjectFactory::Invalidate ()
   object_bbox_valid = false;
   delete[] polygons;
   polygons = 0;
-  index_buffer = 0;
-  initialized = false;
 
   mesh_vertices_dirty_flag = true;
   mesh_texels_dirty_flag = true;

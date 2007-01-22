@@ -119,10 +119,9 @@ static int csFPutStr (FILE* file, const char* str)
   while (csAnsiParser::ParseAnsi (str, ansiCommandLen, cmdClass, textLen))
   {
     int rc;
-    if (isTTY && (cmdClass != csAnsiParser::classNone)
-      && (cmdClass != csAnsiParser::classUnknown))
+    if (isTTY && (cmdClass == csAnsiParser::classFormat))
     {
-      // Only let known codes through
+      // Only let formatting codes through
       rc = cs_fputsn (file, str, ansiCommandLen);
       if (rc == EOF)
 	return EOF;

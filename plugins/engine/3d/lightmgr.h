@@ -38,8 +38,6 @@ public:
 
   virtual const csArray<iLightSectorInfluence*>& GetRelevantLights (
       	iMeshWrapper* logObject, int maxLights, bool desireSorting);
-  virtual const csArray<iLightSectorInfluence*>& GetRelevantLights (
-      	iSector* sector, int maxLights, bool desireSorting);
 };
 
 #endif // __CS_CSENGINE_LIGHTMGR_H__

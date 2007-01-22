@@ -35,7 +35,6 @@ class csPlane3;
 template<class T>
 class csPtr;
 class csTransform;
-class csSegment3;
 
 /** \name Polygon-to-Frustum relations
  * Return values for csFrustum::Classify. The routine makes a difference
@@ -224,9 +223,6 @@ public:
   /// Copy constructor.
   csFrustum (const csFrustum &copy);
 
-  /// Assignment operator
-  const csFrustum& operator= (const csFrustum& other);
-
   ///
   virtual ~csFrustum ();
 
@@ -400,13 +396,6 @@ public:
   static csPtr<csFrustum> Intersect (
     const csVector3& frust_origin, csVector3* frust, int num_frust,
     const csVector3& v1, const csVector3& v2, const csVector3& v3);
-
-  /**
-   * Intersect a segment with the frustum.
-   * \return True if the segment is inside the frustum at any point. The segment
-   * will be updated to be the part within the frustum
-   */
-  bool Intersect (csSegment3& segment);
 
   /**
    * Check if a polygon intersects with the frustum (i.e.

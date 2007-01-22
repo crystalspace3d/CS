@@ -404,7 +404,7 @@ static bool Convert (const char *fontfile)
   if (opt.verbose)
     csPrintf ("Loading font %s, size = %d\n", fontfile, opt.fontsize);
 
-  csRef<iFontServer> fs = csQueryRegistry<iFontServer> (object_reg);
+  csRef<iFontServer> fs = CS_QUERY_REGISTRY (object_reg, iFontServer);
   if (!fs)
   {
     csPrintf ("Font server plugin has not been loaded.\n");

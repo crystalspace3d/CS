@@ -19,6 +19,7 @@
 #include "cssysdef.h"
 #include "csqint.h"
 
+#include "csutil/debug.h"
 #include "iengine/texture.h"
 #include "ivideo/texture.h"
 #include "ivideo/txtmgr.h"
@@ -194,7 +195,7 @@ csMaterialWrapper::csMaterialWrapper (iMaterialList* materials,
   scfImplementationType (this), materials (materials)
 {
   material = m;
-  matEngine = scfQueryInterface<iMaterialEngine> (material);
+  matEngine = SCF_QUERY_INTERFACE (material, iMaterialEngine);
 }
 
 csMaterialWrapper::~csMaterialWrapper ()
@@ -209,7 +210,7 @@ void csMaterialWrapper::SelfDestruct ()
 void csMaterialWrapper::SetMaterial (iMaterial *m)
 {
   material = m;
-  matEngine = scfQueryInterface<iMaterialEngine> (material);
+  matEngine = SCF_QUERY_INTERFACE (material, iMaterialEngine);
 }
 
 void csMaterialWrapper::Visit ()

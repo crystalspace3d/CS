@@ -911,7 +911,7 @@ csPtr<iMeshObject> csEmitMeshObjectFactory::NewInstance ()
 {
   csEmitMeshObject* cm =
     new csEmitMeshObject (object_reg, (iMeshObjectFactory*)this);
-  csRef<iMeshObject> im (scfQueryInterface<iMeshObject> (cm));
+  csRef<iMeshObject> im (SCF_QUERY_INTERFACE (cm, iMeshObject));
   cm->DecRef ();
   return csPtr<iMeshObject> (im);
 }
@@ -933,7 +933,7 @@ csPtr<iMeshObjectFactory> csEmitMeshObjectType::NewFactory ()
 {
   csEmitMeshObjectFactory* cm = new csEmitMeshObjectFactory (this, object_reg);
   csRef<iMeshObjectFactory> ifact (
-    scfQueryInterface<iMeshObjectFactory> (cm));
+    SCF_QUERY_INTERFACE (cm, iMeshObjectFactory));
   cm->DecRef ();
   return csPtr<iMeshObjectFactory> (ifact);
 }

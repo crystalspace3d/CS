@@ -82,7 +82,7 @@ csPtr<iBase> csTargetRSLoader::Parse (iDocumentNode* node,
   newstep.AttachNew (step);
 
   csRef<iRenderStepContainer> steps =
-    scfQueryInterface<iRenderStepContainer> (step);
+    SCF_QUERY_INTERFACE (step, iRenderStepContainer);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -168,7 +168,7 @@ csTargetRenderStep::csTargetRenderStep (
   iObjectRegistry* object_reg) :
   scfImplementationType (this)
 {
-  engine = csQueryRegistry<iEngine> (object_reg);
+  engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   doCreate = false;
   persistent = false;
 }

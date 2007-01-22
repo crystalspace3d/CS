@@ -39,8 +39,6 @@ struct csGradientShade;
 CS_PLUGIN_NAMESPACE_BEGIN(SyntaxService)
 {
 
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 /**
  * This component provides services for other loaders to easily parse
  * properties of standard CS world syntax. This implementation will parse
@@ -116,7 +114,6 @@ public:
   virtual bool WriteZMode (iDocumentNode* node, csZBufMode zmode,
     bool allowZmesh);
   virtual bool ParseKey (iDocumentNode* node, iKeyValuePair* &keyvalue);
-  virtual csPtr<iKeyValuePair> ParseKey (iDocumentNode* node);
   virtual bool WriteKey (iDocumentNode* node, iKeyValuePair* keyvalue);
 
   virtual csRef<iRenderBuffer> ParseRenderBuffer (iDocumentNode* node);
@@ -148,8 +145,6 @@ public:
   virtual bool DebugCommand (const char* /*cmd*/)
   { return false; }
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 }
 CS_PLUGIN_NAMESPACE_END(SyntaxService)

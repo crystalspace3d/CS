@@ -172,7 +172,7 @@ bool CGDriver2D::Resize(int w, int h)
         Memory = (unsigned char *) realloc(Memory, Width * Height * pfmt.PixelBytes);
 
         // Should CGDriver2D inherit from iEventPlug and get it's own outlet?
-        csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (object_reg);
+        csRef<iEventQueue> queue = CS_QUERY_REGISTRY(object_reg, iEventQueue);
         if (queue.IsValid())
 	  queue->GetEventOutlet()->Broadcast (csevCanvasResize (object_reg, this));
     }

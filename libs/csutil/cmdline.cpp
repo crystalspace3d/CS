@@ -190,9 +190,3 @@ const char* csCommandLineParser::GetOptionName (size_t iIndex) const
   if (iIndex >= Options.GetSize()) return 0;
   return Options[iIndex]->Name;
 }
-
-const char* csCommandLineParser::GetOption (size_t iIndex) const
-{
-  if (iIndex >= Options.GetSize()) return 0;
-  return Options[iIndex]->Value;
-}

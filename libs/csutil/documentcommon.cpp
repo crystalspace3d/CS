@@ -23,8 +23,6 @@
 
 using namespace CS;
 
-CS_LEAKGUARD_IMPLEMENT (csEmptyDocumentNodeIterator);
-CS_LEAKGUARD_IMPLEMENT (csEmptyDocumentAttributeIterator);
 
 csEmptyDocumentNodeIterator::csEmptyDocumentNodeIterator ()
   : scfImplementationType (this)

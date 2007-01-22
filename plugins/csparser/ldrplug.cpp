@@ -54,6 +54,7 @@ struct csLoaderPluginRec
 csLoader::csLoadedPluginVector::csLoadedPluginVector ()
 {
   plugin_mgr = 0;
+  mutex = csMutex::Create (true);
 }
 
 csLoader::csLoadedPluginVector::~csLoadedPluginVector ()
@@ -63,14 +64,14 @@ csLoader::csLoadedPluginVector::~csLoadedPluginVector ()
 
 void csLoader::csLoadedPluginVector::DeleteAll ()
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   size_t i;
   for (i = 0 ; i < vector.Length () ; i++)
   {
     csLoaderPluginRec* rec = vector[i];
     if (rec->Component && plugin_mgr)
     {
-      csRef<iComponent> comp = scfQueryInterface<iComponent> (rec->Component);
+      csRef<iComponent> comp = SCF_QUERY_INTERFACE (rec->Component, iComponent);
       if (comp)
         plugin_mgr->UnloadPlugin (comp);
     }
@@ -82,7 +83,7 @@ void csLoader::csLoadedPluginVector::DeleteAll ()
 csLoaderPluginRec* csLoader::csLoadedPluginVector::FindPluginRec (
 	const char* name)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   size_t i;
   for (i=0 ; i<vector.Length () ; i++)
   {
@@ -101,7 +102,7 @@ bool csLoader::csLoadedPluginVector::GetPluginFromRec (
 {
   if (!rec->Component)
   {
-    rec->Component = csQueryRegistryTag (object_reg, rec->ClassID);
+    rec->Component = CS_QUERY_REGISTRY_TAG (object_reg, rec->ClassID);
     if (!rec->Component)
     {
       csRef<iComponent> comp = CS_LOAD_PLUGIN (plugin_mgr,
@@ -110,9 +111,9 @@ bool csLoader::csLoadedPluginVector::GetPluginFromRec (
     }
     if (rec->Component)
     {
-      rec->Plugin = scfQueryInterface<iLoaderPlugin> (rec->Component);
-      rec->BinPlugin = 
-      	scfQueryInterface<iBinaryLoaderPlugin> (rec->Component);
+      rec->Plugin = SCF_QUERY_INTERFACE (rec->Component, iLoaderPlugin);
+      rec->BinPlugin = SCF_QUERY_INTERFACE (rec->Component,
+      	iBinaryLoaderPlugin);
     }
   }
   plug = rec->Plugin;
@@ -124,7 +125,7 @@ bool csLoader::csLoadedPluginVector::FindPlugin (
 	const char* Name, iLoaderPlugin*& plug,
 	iBinaryLoaderPlugin*& binplug, iDocumentNode*& defaults)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   // look if there is already a loading record for this plugin
   csLoaderPluginRec* pl = FindPluginRec (Name);
   if (pl)
@@ -143,7 +144,7 @@ bool csLoader::csLoadedPluginVector::FindPlugin (
 void csLoader::csLoadedPluginVector::NewPlugin
 	(const char *ShortName, iDocumentNode* child)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   csRef<iDocumentNode> id = child->GetNode ("id");
   csRef<iDocumentNode> defaults = child->GetNode ("defaults");
 

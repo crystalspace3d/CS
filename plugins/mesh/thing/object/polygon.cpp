@@ -25,6 +25,7 @@
 #include "csgeom/textrans.h"
 #include "csutil/csendian.h"
 #include "csutil/dirtyaccessarray.h"
+#include "csutil/debug.h"
 #include "csutil/memfile.h"
 
 #include "iengine/engine.h"
@@ -613,8 +614,8 @@ bool csPolygon3DStatic::Finish (iBase* thing_logparent)
       const char* mname = 0;
       if (thing_logparent)
       {
-        csRef<iMeshWrapper> m = 
-          scfQueryInterface<iMeshWrapper> (thing_logparent);
+        csRef<iMeshWrapper> m = SCF_QUERY_INTERFACE (thing_logparent,
+          iMeshWrapper);
         if (m) mname = m->QueryObject ()->GetName ();
         else mname = "<unknown>";
       }

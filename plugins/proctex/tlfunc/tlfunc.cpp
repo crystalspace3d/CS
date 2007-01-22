@@ -99,14 +99,14 @@ csPtr<iBase> csFuncTexLoader::Parse (iDocumentNode* node,
 				     iBase* context)
 {
   csRef<iSyntaxService> synldr = 
-    csQueryRegistry<iSyntaxService> (object_reg);
+    CS_QUERY_REGISTRY (object_reg, iSyntaxService);
 
   int w = 256, h = 256;
   csRef<iTextureLoaderContext> ctx;
   if (context)
   {
     ctx = csPtr<iTextureLoaderContext>
-      (scfQueryInterface<iTextureLoaderContext> (context));
+      (SCF_QUERY_INTERFACE (context, iTextureLoaderContext));
     if (ctx) 
     {
       if (ctx->HasSize())
@@ -172,13 +172,13 @@ csPtr<iBase> csFuncTexLoader::Parse (iDocumentNode* node,
 
   // Cache stuff
   csRef<iImage> Image;
-  csRef<iEngine> Engine = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> Engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   if (!Engine)
     return 0;
   const char* cache_type = "tlfunc";
   csString cache_scope (ctx->GetName ());
   csRef<iCacheManager> cache = Engine->GetCacheManager();
-  csRef<iImageIO> imageio (csQueryRegistry<iImageIO> (object_reg));
+  csRef<iImageIO> imageio (CS_QUERY_REGISTRY (object_reg, iImageIO));
   bool do_cache = imageio && cache && cache_scope;
 
   if (exprNode)
@@ -208,8 +208,8 @@ csPtr<iBase> csFuncTexLoader::Parse (iDocumentNode* node,
 
     if (exprNode)
     {
-      csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-	object_reg, "crystalspace.shared.stringset");
+      csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+	object_reg, "crystalspace.shared.stringset", iStringSet);
 
       csShaderExpression expr (object_reg);
       
@@ -271,7 +271,7 @@ csPtr<iBase> csFuncTexLoader::Parse (iDocumentNode* node,
     }
   }
 
-  csRef<iGraphics3D> G3D = csQueryRegistry<iGraphics3D> (object_reg);
+  csRef<iGraphics3D> G3D = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   if (!G3D) return 0;
   csRef<iTextureManager> tm = G3D->GetTextureManager();
   if (!tm) return 0;

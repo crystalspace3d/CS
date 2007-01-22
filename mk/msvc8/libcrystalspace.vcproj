@@ -38,7 +38,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -110,7 +109,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -180,7 +178,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -250,7 +247,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -454,9 +450,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csgfx\shadervarframeholder.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgfx\xorpat.cpp">
@@ -690,6 +683,9 @@
 				RelativePath="..\..\libs\csutil\csuctransform.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\debug.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\dlmalloc.c">
 			</File>
 			<File
@@ -783,6 +779,9 @@
 				RelativePath="..\..\libs\csutil\prfxcfg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\profile.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\ptmalloc\ptmalloc3.c">
 			</File>
 			<File
@@ -838,9 +837,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\syspath.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\threading\win32_thread.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\threadjobqueue.cpp">
@@ -1151,9 +1147,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\shadervarframeholder.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgfx\textureformatstrings.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\trianglestream.h">
@@ -1582,9 +1575,6 @@
 				RelativePath="..\..\libs\..\include\csutil\nobjvec.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\noncopyable.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\nulcache.h">
 			</File>
 			<File
@@ -1720,30 +1710,6 @@
 				RelativePath="..\..\libs\..\include\csutil\thread.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\mutex.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\thread.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\win32_apifuncs.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\win32_condition.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\win32_mutex.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\win32_thread.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">
 			</File>
 			<File
@@ -1775,9 +1741,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\weakrefarr.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\weakreferenced.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\callstack.h">

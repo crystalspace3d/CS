@@ -46,7 +46,7 @@ csLightningMeshObject::csLightningMeshObject (
 {
   csLightningMeshObject::factory = factory;
   logparent = 0;
-  ifactory = scfQueryInterface<iMeshObjectFactory> (factory);
+  ifactory = SCF_QUERY_INTERFACE (factory, iMeshObjectFactory);
 
   initialized = false;
   vis_cb = 0;
@@ -66,7 +66,7 @@ csLightningMeshObject::csLightningMeshObject (
   GenMesh = factory->GetMeshFactory ()->NewInstance ();
   if (GenMesh)
   {
-    GenState = scfQueryInterface<iGeneralMeshState> (GenMesh);
+    GenState = SCF_QUERY_INTERFACE (GenMesh, iGeneralMeshState);
     GenState->SetLighting (false);
     GenState->SetManualColors (true);
     GenMesh->SetMaterialWrapper (material);
@@ -159,7 +159,7 @@ csLightningMeshObjectFactory::csLightningMeshObjectFactory (
   logparent = 0;
   lghtng_type = pParent;
   
-  csRef<iPluginManager> PlugMgr (csQueryRegistry<iPluginManager> (object_registry));
+  csRef<iPluginManager> PlugMgr (CS_QUERY_REGISTRY (object_registry, iPluginManager));
   CS_ASSERT (PlugMgr);
   csRef<iMeshObjectType> MeshType (CS_LOAD_PLUGIN(PlugMgr,
       "crystalspace.mesh.object.genmesh", iMeshObjectType));
@@ -243,7 +243,7 @@ void csLightningMeshObjectFactory::NextFrame (csTicks CurrentTime)
 csPtr<iMeshObject> csLightningMeshObjectFactory::NewInstance ()
 {
   csLightningMeshObject* cm = new csLightningMeshObject (this);
-  csRef<iMeshObject> im (scfQueryInterface<iMeshObject> (cm));
+  csRef<iMeshObject> im (SCF_QUERY_INTERFACE (cm, iMeshObject));
   cm->DecRef ();
   return csPtr<iMeshObject> (im);
 }
@@ -265,7 +265,7 @@ csPtr<iMeshObjectFactory> csLightningMeshObjectType::NewFactory ()
 {
   csLightningMeshObjectFactory* cm = new csLightningMeshObjectFactory (this, Registry);
   csRef<iMeshObjectFactory> ifact (
-  	scfQueryInterface<iMeshObjectFactory> (cm));
+  	SCF_QUERY_INTERFACE (cm, iMeshObjectFactory));
   cm->DecRef ();
   return csPtr<iMeshObjectFactory> (ifact);
 }

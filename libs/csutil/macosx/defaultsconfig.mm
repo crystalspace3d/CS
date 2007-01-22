@@ -18,10 +18,7 @@
 
 #include "cssysdef.h"
 #include "csutil/util.h"
-#include "csutil/scfstringarray.h"
 #include "defaultsconfig.h"
-
-
 
 #import <Foundation/NSEnumerator.h>
 
@@ -199,38 +196,6 @@ bool csDefaultsConfig::GetBool (const char* Key, bool Def) const
   return Def;
 }
 
-csPtr<iStringArray> csDefaultsConfig::GetTuple(const char* Key) const
-{
-
-
- scfStringArray *items = new scfStringArray;		// the output list
-  csString item;
-
-  const char *sinp = GetStr(Key, 0);
-  const char *comp;
-  size_t len;
-  bool finished = (sinp == 0);
-
-  while (!finished)
-  {
-    comp = strchr (sinp, ',');
-    if (!comp)
-    {
-      finished = true;
-      comp = &sinp [strlen (sinp)];
-    }
-    len = strlen (sinp) - strlen (comp);
-    item = csString (sinp, len);
-    item.Trim ();
-    sinp = comp + 1;
-    items->Push (item);
-  }
-
-  csPtr<iStringArray> v(items);
-  return v;
-
-}
-
 const char* csDefaultsConfig::GetComment (const char* Key) const
 {
   return 0;
@@ -267,22 +232,6 @@ void csDefaultsConfig::SetBool (const char* Key, bool Value)
   if (Writable(keystr))
     [dict setObject:valstr forKey:keystr];
 }
-
-void csDefaultsConfig::SetTuple (const char* Key, iStringArray* Value)
-{
-  // this should output a string like
-  // abc, def, ghi
-  csString s;
-  while (!Value->IsEmpty ())
-  {
-    csString i = Value->Pop ();
-    if (!Value->IsEmpty ())
-      i.Append (", ");
-    s.Append(i);
-  }
-  SetStr (Key, s);
-}
-
 
 bool csDefaultsConfig::SetComment (const char* Key, const char* Text)
 {
@@ -406,11 +355,6 @@ const char* csDefaultsIterator::GetStr () const
 bool csDefaultsIterator::GetBool () const
 {
   return config->GetBool([currentkey lossyCString], false);
-}
-
-csPtr<iStringArray> csDefaultsIterator::GetTuple () const
-{
-  return config->GetTuple([currentkey lossyCString]);
 }
 
 const char* csDefaultsIterator::GetComment () const

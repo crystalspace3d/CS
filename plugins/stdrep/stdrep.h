@@ -30,7 +30,7 @@
 #include "csutil/refarr.h"
 #include "csutil/weakref.h"
 #include "csutil/util.h"
-#include "csutil/threading/mutex.h"
+#include "csutil/scopedmutexlock.h"
 
 struct iConsoleOutput;
 struct iFile;
@@ -88,7 +88,7 @@ private:
   bool dest_popup[5];
   bool msg_remove[5];
   bool show_msgid[5];
-  CS::Threading::RecursiveMutex mutex;
+  csRef<csMutex> mutex;
   csRefArray<csTimedMessage> messages;
   csString lastID;
   csRef<iFont> fnt;

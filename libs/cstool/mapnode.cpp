@@ -76,7 +76,7 @@ void csNodeIterator::Reset (iSector *pSector, const char *classname)
   Classname = classname;
   iObject* n = Iterator->Next ();
   if (n)
-    CurrentNode = scfQueryInterface<iMapNode> (n);
+    CurrentNode = SCF_QUERY_INTERFACE (n, iMapNode);
   else
     CurrentNode = 0;
 
@@ -116,7 +116,7 @@ void csNodeIterator::NextNode ()
 {
   iObject* obj = Iterator->Next ();
   if (obj)
-    CurrentNode = scfQueryInterface<iMapNode> (obj);
+    CurrentNode = SCF_QUERY_INTERFACE (obj, iMapNode);
   else
     CurrentNode = 0;
 }

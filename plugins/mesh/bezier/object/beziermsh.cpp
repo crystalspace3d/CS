@@ -30,6 +30,7 @@
 #include "csutil/csendian.h"
 #include "csutil/csmd5.h"
 #include "csutil/csstring.h"
+#include "csutil/debug.h"
 #include "csutil/dirtyaccessarray.h"
 #include "csutil/memfile.h"
 #include "iengine/camera.h"
@@ -155,8 +156,8 @@ csBezierMesh::csBezierMesh (iBase *parent, csBezierMeshObjectType* thing_type) :
   dynamic_ambient_version = 0;
 
   csRef<iStringSet> strings;
-  strings = csQueryRegistryTagInterface<iStringSet>
-    (thing_type->object_reg, "crystalspace.shared.stringset");
+  strings = CS_QUERY_REGISTRY_TAG_INTERFACE (thing_type->object_reg,
+    "crystalspace.shared.stringset", iStringSet);
 
   if ((vertex_name == csInvalidStringID) ||
     (texel_name == csInvalidStringID) ||
@@ -1001,7 +1002,7 @@ void csBezierMesh::MergeTemplate (
   static_data->curves_scale = tpl->GetCurvesScale ();
 
   //@@@ TEMPORARY
-  csRef<iBezierState> ith = scfQueryInterface<iBezierState> (tpl);
+  csRef<iBezierState> ith = SCF_QUERY_INTERFACE (tpl, iBezierState);
   ParentTemplate = (csBezierMesh*)(iBezierState*)ith;
 
   for (i = 0; i < tpl->GetCurveVertexCount (); i++)
@@ -1056,15 +1057,15 @@ csBezierMeshObjectType::~csBezierMeshObjectType ()
 bool csBezierMeshObjectType::Initialize (iObjectRegistry *object_reg)
 {
   csBezierMeshObjectType::object_reg = object_reg;
-  csRef<iEngine> e = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> e = CS_QUERY_REGISTRY (object_reg, iEngine);
   engine = e;	// We don't want a real ref here to avoid circular refs.
-  csRef<iGraphics3D> g = csQueryRegistry<iGraphics3D> (object_reg);
+  csRef<iGraphics3D> g = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   G3D = g;
 
   lightpatch_pool = new csBezierLightPatchPool ();
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr) 
     do_verbose = verbosemgr->Enabled ("bezier");
 
@@ -1080,8 +1081,8 @@ void csBezierMeshObjectType::Clear ()
 csPtr<iMeshObjectFactory> csBezierMeshObjectType::NewFactory ()
 {
   csBezierMesh *cm = new csBezierMesh (this, this);
-  csRef<iMeshObjectFactory> ifact (
-    scfQueryInterface<iMeshObjectFactory> (cm));
+  csRef<iMeshObjectFactory> ifact (SCF_QUERY_INTERFACE (
+      cm, iMeshObjectFactory));
   cm->DecRef ();
   return csPtr<iMeshObjectFactory> (ifact);
 }

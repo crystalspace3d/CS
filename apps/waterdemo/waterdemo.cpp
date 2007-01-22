@@ -236,7 +236,7 @@ bool csWaterDemo::HandleEvent (iEvent& ev)
     {
     case CSKEY_ESC:
       {
-        csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+        csRef<iEventQueue> q (CS_QUERY_REGISTRY (object_reg, iEventQueue));
         if (q) 
 	  q->GetEventOutlet()->Broadcast (csevQuit (object_reg));
         return true;
@@ -330,7 +330,7 @@ bool csWaterDemo::Initialize ()
     return false;
   }
 
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  vc = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
   if (vc == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -339,7 +339,7 @@ bool csWaterDemo::Initialize ()
     return false;
   }
 
-  vfs = csQueryRegistry<iVFS> (object_reg);
+  vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
   if (vfs == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -348,7 +348,7 @@ bool csWaterDemo::Initialize ()
     return false;
   }
 
-  r3d = csQueryRegistry<iGraphics3D> (object_reg);
+  r3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   if (r3d == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -359,7 +359,7 @@ bool csWaterDemo::Initialize ()
 
   font = r3d->GetDriver2D ()->GetFontServer()->LoadFont(CSFONT_LARGE);
 
-  engine = csQueryRegistry<iEngine> (object_reg);
+  engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   if (engine == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -368,7 +368,7 @@ bool csWaterDemo::Initialize ()
     return false;
   }
 
-  kbd = csQueryRegistry<iKeyboardDriver> (object_reg);
+  kbd = CS_QUERY_REGISTRY (object_reg, iKeyboardDriver);
   if (kbd == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -377,7 +377,7 @@ bool csWaterDemo::Initialize ()
     return false;
   }
 
-  mouse = csQueryRegistry<iMouseDriver> (object_reg);
+  mouse = CS_QUERY_REGISTRY (object_reg, iMouseDriver);
   if (mouse == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -386,7 +386,7 @@ bool csWaterDemo::Initialize ()
     return false;
   }
 
-  csRef<iLoader> loader = csQueryRegistry<iLoader> (object_reg);
+  csRef<iLoader> loader = CS_QUERY_REGISTRY (object_reg, iLoader);
   if (loader == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -397,7 +397,7 @@ bool csWaterDemo::Initialize ()
 
   vfs->ChDir ("/tmp");
   
-  console = csQueryRegistry<iConsoleOutput> (object_reg);
+  console = CS_QUERY_REGISTRY (object_reg, iConsoleOutput);
 
   // Open the main system. This will open all the previously loaded plug-ins.
   if (!csInitializer::OpenApplication (object_reg))
@@ -435,11 +435,11 @@ bool csWaterDemo::Initialize ()
   r3d->GetDriver2D ()->SetMouseCursor( csmcNone );
 
   csRef<iPluginManager> plugin_mgr (
-    csQueryRegistry<iPluginManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iPluginManager));
 
   csRef<iStringSet> strings = 
-    csQueryRegistryTagInterface<iStringSet> 
-    (object_reg, "crystalspace.shared.stringset");
+    CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg, 
+    "crystalspace.shared.stringset", iStringSet);
 
   //get a custom renderloop
   csRef<iRenderLoop> rl = engine->GetRenderLoopManager ()->Create ();
@@ -456,7 +456,7 @@ bool csWaterDemo::Initialize ()
 
   step = genFact->Create ();
   rl->AddStep (step);
-  genStep = scfQueryInterface<iGenericRenderStep> (step);
+  genStep = SCF_QUERY_INTERFACE (step, iGenericRenderStep);
 
   genStep->SetShaderType ("general");
   genStep->SetZBufMode (CS_ZBUF_USE);
@@ -466,16 +466,16 @@ bool csWaterDemo::Initialize ()
   engine->SetCurrentDefaultRenderloop (rl);
 
   // Load in lighting shaders
-  csRef<iVFS> vfs (csQueryRegistry<iVFS> (object_reg));
+  csRef<iVFS> vfs (CS_QUERY_REGISTRY(object_reg, iVFS));
   csRef<iFile> shaderFile = vfs->Open ("/shader/water.xml", VFS_FILE_READ);
 
   csRef<iDocumentSystem> docsys (
-    csQueryRegistry<iDocumentSystem> (object_reg));
+    CS_QUERY_REGISTRY(object_reg, iDocumentSystem));
   csRef<iDocument> shaderDoc = docsys->CreateDocument ();
   shaderDoc->Parse (shaderFile, true);
 
   csRef<iShader> shader;
-  csRef<iShaderManager> shmgr (csQueryRegistry<iShaderManager> (object_reg));
+  csRef<iShaderManager> shmgr (CS_QUERY_REGISTRY(object_reg, iShaderManager));
   csRef<iShaderCompiler> shcom (shmgr->GetCompiler ("XMLShader"));
   csRef<iLoaderContext> ldr_context = engine->CreateLoaderContext ();
   shader = shcom->CompileShader (ldr_context,
@@ -496,10 +496,10 @@ bool csWaterDemo::Initialize ()
   
   gFact = gType->NewFactory ();
   csRef<iMeshFactoryWrapper> fw = engine->CreateMeshFactory (gFact, "waterFactory");
-  gFactState = scfQueryInterface<iGeneralFactoryState> (gFact);
+  gFactState = SCF_QUERY_INTERFACE(gFact, iGeneralFactoryState);
 
   gMesh = gFact->NewInstance ();
-  gMeshState = scfQueryInterface<iGeneralMeshState> (gMesh);
+  gMeshState = SCF_QUERY_INTERFACE(gMesh, iGeneralMeshState);
   gMeshState->SetShadowCasting (false);
   gMeshState->SetShadowReceiving (false);
 

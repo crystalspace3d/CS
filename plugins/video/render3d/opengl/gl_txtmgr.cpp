@@ -21,6 +21,7 @@
 #include "cssysdef.h"
 #include "csutil/array.h"
 #include "csutil/databuf.h"
+#include "csutil/debug.h"
 #include "csutil/util.h"
 #include "csgfx/bakekeycolor.h"
 #include "csgfx/imagecubemapmaker.h"
@@ -39,7 +40,7 @@
 #include "gl_render3d.h"
 #include "gl_txtmgr.h"
 
-CS_LEAKGUARD_IMPLEMENT(csGLBasicTextureHandle);
+CS_LEAKGUARD_IMPLEMENT(csGLTextureHandle);
 CS_LEAKGUARD_IMPLEMENT(csGLRendererLightmap);
 CS_LEAKGUARD_IMPLEMENT(csGLSuperLightmap);
 CS_LEAKGUARD_IMPLEMENT(csGLTextureManager);
@@ -56,17 +57,13 @@ CS_IMPLEMENT_STATIC_VAR (GetRLMAlloc, csRLMAlloc, ())
 
 //---------------------------------------------------------------------------
 
-csGLBasicTextureHandle::csGLBasicTextureHandle (
-    csImageType imagetype, int flags, csGLGraphics3D *iG3D) : 
-  scfImplementationType (this), uploadData(0), 
+csGLTextureHandle::csGLTextureHandle (iImage* image, int flags, 
+				      csGLGraphics3D *iG3D) : 
+  scfImplementationType (this), origName(0), uploadData(0), 
   texFormat((TextureBlitDataFormat)-1)
 {
-  G3D = iG3D;
-  txtmgr = G3D->txtmgr;
-  Handle = 0;
-  textureClass = txtmgr->GetTextureClassID ("default");
-
-  switch (imagetype)
+  this->image = image;
+  switch (image->GetImageType())
   {
     case csimgCube:
       target = CS_TEX_IMG_CUBEMAP;
@@ -78,6 +75,11 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (
       target = CS_TEX_IMG_2D;
       break;
   }
+  G3D = iG3D;
+  txtmgr = G3D->txtmgr;
+  Handle = 0;
+  textureClass = txtmgr->GetTextureClassID ("default");
+
   const uint npotsNeededFlags = (CS_TEXTURE_NOMIPMAPS | CS_TEXTURE_CLAMP);
   if (flags & CS_TEXTURE_NPOTS)
   {
@@ -87,38 +89,56 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (
       (G3D->ext->CS_GL_ARB_texture_rectangle
       || G3D->ext->CS_GL_EXT_texture_rectangle
       || G3D->ext->CS_GL_NV_texture_rectangle
-      || txtmgr->enableNonPowerOfTwo2DTextures
-      || G3D->ext->CS_GL_ARB_texture_non_power_of_two)
-      // Certain additional texture flags, unless we have ARB_tnpot
-      && (((flags & npotsNeededFlags) == npotsNeededFlags) 
-        || G3D->ext->CS_GL_ARB_texture_non_power_of_two))
-      // A 2D image, unless we have ARB_tnpot
-      && ((imagetype == csimg2D)
-        || G3D->ext->CS_GL_ARB_texture_non_power_of_two);
+      || txtmgr->enableNonPowerOfTwo2DTextures)
+      // Certain additional texture flags
+      && ((flags & npotsNeededFlags) == npotsNeededFlags))
+      // A 2D image
+      && (image->GetImageType() == csimg2D);
     if (!npotsValid)
     {
       flags &= ~CS_TEXTURE_NPOTS;
     }
-    else if (!txtmgr->enableNonPowerOfTwo2DTextures
-      && !G3D->ext->CS_GL_ARB_texture_non_power_of_two)
+    else if (!txtmgr->enableNonPowerOfTwo2DTextures)
       /* Note that 'enableNonPowerOfTwo2DTextures' is the flag for ATI's
        * support of non-POT _2D_ textures; that is, the textures, being
-       * NPOTS, need to go to the 2D target, not RECT. 
-       * Same when ARB_tnpot is available. */
+       * NPOTS, need to go to the 2D target, not RECT. */
       target = CS_TEX_IMG_RECT;
   }
   texFlags.Set (flagsPublicMask, flags);
 
   transp_color.red = transp_color.green = transp_color.blue = 0;
+  if (image->GetFormat () & CS_IMGFMT_ALPHA)
+    alphaType = csAlphaMode::alphaSmooth;
+  else if (image->HasKeyColor ())
+    alphaType = csAlphaMode::alphaBinary;
+  else
+    alphaType = csAlphaMode::alphaNone;
+
+  if (image->HasKeyColor())
+    SetTransp (true);
 }
 
-csGLBasicTextureHandle::~csGLBasicTextureHandle()
+csGLTextureHandle::csGLTextureHandle (int target, GLuint Handle, 
+				      csGLGraphics3D *iG3D) : 
+  scfImplementationType (this), origName(0), uploadData(0), 
+  texFormat((TextureBlitDataFormat)-1)
+{
+  G3D = iG3D;
+  txtmgr = G3D->txtmgr;
+  this->target = target;
+  csGLTextureHandle::Handle = Handle;
+  alphaType = csAlphaMode::alphaNone;
+  SetForeignHandle (true);
+}
+
+csGLTextureHandle::~csGLTextureHandle()
 {
   Clear ();
   txtmgr->UnregisterTexture (this);
+  delete[] origName;
 }
 
-void csGLBasicTextureHandle::Clear()
+void csGLTextureHandle::Clear()
 {
   if (uploadData != 0)
   {
@@ -128,12 +148,27 @@ void csGLBasicTextureHandle::Clear()
   Unload ();
 }
 
-int csGLBasicTextureHandle::GetFlags () const
+void csGLTextureHandle::FreeImage ()
+{
+  if (image.IsValid()) 
+  {
+    origName = csStrNew (image->GetName());
+    if (IsTransp() && !IsTranspSet())
+    {
+      int r,g,b;
+      image->GetKeyColor (r,g,b);
+      SetKeyColor (r, g, b);
+    }						 
+  }
+  image = 0;
+}
+
+int csGLTextureHandle::GetFlags () const
 {
   return texFlags.Get() & flagsPublicMask;
 }
 
-void csGLBasicTextureHandle::SetKeyColor (bool Enable)
+void csGLTextureHandle::SetKeyColor (bool Enable)
 {
   SetTransp (Enable);
   SetTexupdateNeeded (true);
@@ -143,7 +178,7 @@ void csGLBasicTextureHandle::SetKeyColor (bool Enable)
     alphaType = csAlphaMode::alphaNone;
 }
 
-void csGLBasicTextureHandle::SetKeyColor (uint8 red, uint8 green, uint8 blue)
+void csGLTextureHandle::SetKeyColor (uint8 red, uint8 green, uint8 blue)
 {
   transp_color.red = red;
   transp_color.green = green;
@@ -153,28 +188,43 @@ void csGLBasicTextureHandle::SetKeyColor (uint8 red, uint8 green, uint8 blue)
   texFlags.Set (flagTransp | flagTranspSet | flagTexupdateNeeded);
 }
 
-bool csGLBasicTextureHandle::GetKeyColor () const
+bool csGLTextureHandle::GetKeyColor () const
 {
   return IsTransp();
 }
 
-void csGLBasicTextureHandle::GetKeyColor (uint8 &red,
-	uint8 &green, uint8 &blue) const
+void csGLTextureHandle::GetKeyColor (uint8 &red, uint8 &green, uint8 &blue) const
 {
-  red = transp_color.red;
-  green = transp_color.green;
-  blue = transp_color.blue;
+  if (image.IsValid() && image->HasKeyColor() && !IsTranspSet ())
+  {
+    int r,g,b;
+    image->GetKeyColor (r,g,b);
+    red = r; green = g; blue = b;
+  }
+  else
+  {
+    red = transp_color.red;
+    green = transp_color.green;
+    blue = transp_color.blue;
+  }
 }
 
-bool csGLBasicTextureHandle::GetRendererDimensions (int &mw, int &mh)
+bool csGLTextureHandle::GetRendererDimensions (int &mw, int &mh)
 {
   AdjustSizePo2 ();
   mw = actual_width; mh = actual_height;
   return true;
 }
 
+void csGLTextureHandle::GetOriginalDimensions (int& mw, int& mh)
+{
+  AdjustSizePo2 ();
+  mw = orig_width;
+  mh = orig_height;
+}
+
 // Check the two below for correctness
-bool csGLBasicTextureHandle::GetRendererDimensions (int &mw, int &mh, int &md)
+bool csGLTextureHandle::GetRendererDimensions (int &mw, int &mh, int &md)
 {
   AdjustSizePo2 ();
   mw = actual_width;
@@ -183,12 +233,28 @@ bool csGLBasicTextureHandle::GetRendererDimensions (int &mw, int &mh, int &md)
   return true;
 }
 
-void *csGLBasicTextureHandle::GetPrivateObject ()
+void csGLTextureHandle::GetOriginalDimensions (int& mw, int& mh, int &md)
 {
-  return (csGLBasicTextureHandle *)this;
+  AdjustSizePo2 ();
+  mw = orig_width;
+  mh = orig_height;
+  md = orig_d;
 }
 
-bool csGLBasicTextureHandle::GetAlphaMap () 
+const char* csGLTextureHandle::GetImageName () const
+{
+  if (image.IsValid()) 
+    return image->GetName();
+  else
+    return origName;
+}
+
+void *csGLTextureHandle::GetPrivateObject ()
+{
+  return (csGLTextureHandle *)this;
+}
+
+bool csGLTextureHandle::GetAlphaMap () 
 {
   return (alphaType != csAlphaMode::alphaNone);
 }
@@ -215,40 +281,259 @@ static void ComputeNewPo2ImageSize (int texFlags,
     newdepth = max_tex_size;
 }
 
-csRef<iImage> csGLBasicTextureHandle::PrepareIntImage (
-    int actual_width, int actual_height, int actual_depth, iImage* srcimage,
-    csAlphaMode::AlphaType newAlphaType)
+void csGLTextureHandle::PrepareInt ()
 {
-  csRef<iImage> newImage;
-  if (actual_width != srcimage->GetWidth () || actual_height != srcimage->GetHeight () 
-      || actual_depth != srcimage->GetDepth ())
+  //@@@ Images may be lost if preparing twice. Some better way of solving it?
+  if (!image.IsValid()) return;
+  if (IsPrepared ()) return;
+  SetPrepared (true);
+
+  if (IsTransp() && !IsTranspSet())
   {
-    newImage = csImageManipulate::Rescale (srcimage, actual_width, 
-	actual_height, actual_depth);
-  }
-  if (IsTransp())
+    int r,g,b;
+    image->GetKeyColor (r,g,b);
+    SetKeyColor (r, g, b);
+  }						 
+
+  // In opengl all textures, even non-mipmapped textures are required
+  // to be powers of 2.
+  AdjustSizePo2 ();
+
+  csAlphaMode::AlphaType newAlphaType = csAlphaMode::alphaNone;
+
+  // Do any resizing, if needed
+  if (image->GetImageType() == csimgCube)
   {
-    if (!newImage.IsValid()) 
-      newImage.AttachNew (new csImageMemory (srcimage));
-    // Set the alpha of keycolored images to 0.
-    PrepareKeycolor (newImage, transp_color, newAlphaType);
+    // Handle cube map faces
+    csRef<csImageCubeMapMaker> newCube;
+    int faceCount = MIN (image->HasSubImages() + 1, 6);
+    for (int i = 0; i < faceCount; i++)
+    {
+      int newFaceW, newFaceH, newFaceD;
+      csRef<iImage> imgFace = image->GetSubImage (i);
+      ComputeNewPo2ImageSize (texFlags.Get(), 
+	imgFace->GetWidth(), imgFace->GetHeight(), 1,
+	newFaceW, newFaceH, newFaceD, txtmgr->max_tex_size);
+      csRef<iImage> newFace;
+      if (newFaceW != newFaceH) newFaceH = newFaceW;
+      if ((newFaceW != imgFace->GetWidth()) 
+	|| (newFaceH != imgFace->GetHeight()))
+      {
+	newFace = csImageManipulate::Rescale (imgFace, 
+	  newFaceW, newFaceH);
+      }
+      if (IsTransp())
+      {
+	if (!newFace.IsValid()) 
+	  newFace.AttachNew (new csImageMemory (imgFace));
+	// Set the alpha of keycolored images to 0.
+	PrepareKeycolor (newFace, transp_color, newAlphaType);
+      }
+      if (newFace.IsValid())
+      {
+	// Create a new cube if we needed to resize one face.
+	if (!newCube.IsValid()) 
+	{
+	  newCube.AttachNew (new csImageCubeMapMaker ());
+	  newCube->SetName (image->GetName());
+	}
+	newCube->SetSubImage (i, newFace);
+      }
+    }
+    if (faceCount < 6) // Ensure at least the 6 faces.
+    {
+      newCube.AttachNew (new csImageCubeMapMaker ());
+      newCube->SetName (image->GetName());
+    }
+    if (newCube.IsValid())
+    {
+      for (int i = 0; i < faceCount; i++)
+      {
+	if (!newCube->SubImageSet (i))
+	  newCube->SetSubImage (i, image->GetSubImage (i));
+      }
+      image = newCube;
+    }
   }
-#if 0
-  // Avoid accessing the image data until really needed
   else
-    /* Check all alpha values for the actual alpha type.  */
-    CheckAlpha  (image->GetWidth(), image->GetHeight(), 
+  {
+    csRef<iImage> newImage;
+    if (actual_width != orig_width || actual_height != orig_height 
+      || actual_d != orig_d)
+    {
+      newImage = csImageManipulate::Rescale (image, actual_width, 
+	actual_height, actual_d);
+    }
+    if (IsTransp())
+    {
+      if (!newImage.IsValid()) 
+	newImage.AttachNew (new csImageMemory (image));
+      // Set the alpha of keycolored images to 0.
+      PrepareKeycolor (newImage, transp_color, newAlphaType);
+    }
+  #if 0
+    // Avoid accessing the image data until really needed
+    else
+      /*
+	Check all alpha values for the actual alpha type.
+	*/
+      CheckAlpha  (image->GetWidth(), image->GetHeight(), 
 	(csRGBpixel*)image->GetImageData (), 0, newAlphaType);
-#endif
-  if (newImage.IsValid()) return newImage;
-  return 0;
+  #endif
+    if (newImage.IsValid()) image = newImage;
+  }
+  if (newAlphaType > alphaType) alphaType = newAlphaType;
+
+  CreateMipMaps ();
+  FreeImage ();
 }
 
-void csGLBasicTextureHandle::PrepareInt ()
+void csGLTextureHandle::AdjustSizePo2 ()
 {
+  if (IsSizeAdjusted ()) return;
+  SetSizeAdjusted (true);
+
+  //actual_d = orig_d = images->Length();
+  orig_width  = image->GetWidth();
+  orig_height = image->GetHeight();
+  orig_d = image->GetDepth();
+
+  if (texFlags.Check (CS_TEXTURE_NPOTS)) 
+  {
+    actual_width = MIN(orig_width, G3D->maxNpotsTexSize);
+    actual_height = MIN(orig_height, G3D->maxNpotsTexSize);
+    actual_d = MIN(orig_d, G3D->maxNpotsTexSize);
+    return;
+  }
+
+  int newwidth, newheight, newd;
+
+  ComputeNewPo2ImageSize (texFlags.Get(), orig_width, orig_height, orig_d, 
+    newwidth, newheight, newd, txtmgr->max_tex_size);
+
+  actual_width = newwidth;
+  actual_height = newheight;
+  actual_d = newd;
 }
 
-GLenum csGLBasicTextureHandle::DetermineTargetFormat (GLenum defFormat, 
+//#define MIPMAP_DEBUG
+
+void csGLTextureHandle::CreateMipMaps()
+{
+  csRGBpixel *tc = IsTransp() ? &transp_color : (csRGBpixel *)0;
+
+  const csGLTextureClassSettings* textureSettings = 
+    txtmgr->GetTextureClassSettings (textureClass);
+  /* Determine internal format of the texture. You can't mix glTexImage and 
+   * glCompressedTexImage for different mip levels unless the internal format
+   * is exactly the same. The target formats of the lower mip levels are later
+   * checked against the target format of the first mip.
+   */
+  bool compressedTarget;
+  GLenum targetFormat; 
+  if ((target == iTextureHandle::CS_TEX_IMG_RECT)
+    && (txtmgr->disableRECTTextureCompression))
+    /* @@@ Hack: Some ATI drivers can't grok generic compressed formats for 
+     * RECT textures, so force an uncompressed format in this case. */
+    targetFormat = (alphaType != csAlphaMode::alphaNone) ? 
+      GL_RGBA : GL_RGB;
+  else
+    targetFormat = (alphaType != csAlphaMode::alphaNone) ? 
+      textureSettings->formatRGBA : textureSettings->formatRGB;
+  targetFormat = DetermineTargetFormat (targetFormat, 
+    !textureSettings->forceDecompress, image->GetRawFormat(), 
+    compressedTarget);
+
+  // Determine if and how many mipmaps we skip.
+  const bool doReduce = !texFlags.Check (CS_TEXTURE_2D | CS_TEXTURE_NOMIPMAPS)
+    && textureSettings->allowDownsample;
+  int mipskip = doReduce ? txtmgr->texture_downsample : 0;
+  while (((actual_width >> mipskip) > txtmgr->max_tex_size)
+    || ((actual_height >> mipskip) > txtmgr->max_tex_size)
+    || ((actual_d >> mipskip) > txtmgr->max_tex_size))
+    mipskip++;
+
+  // Delete existing mipmaps, if any
+  size_t i;
+  if (uploadData != 0)
+    uploadData->DeleteAll();
+  else
+    uploadData = new csArray<csGLUploadData>;
+
+  size_t subImageCount = image->HasSubImages() + 1;
+#ifdef MIPMAP_DEBUG
+  for (i=0; i < subImageCount; i++)
+  {
+    csDebugImageWriter::DebugImageWrite (image->GetSubImage (i),
+      "/tmp/mipdebug/%p_%zu_0.png", this, i);
+  }
+#endif
+  if (texFlags.Check (CS_TEXTURE_NOMIPMAPS))
+  {
+    for (i=0; i < subImageCount; i++)
+    {
+      transform (!textureSettings->forceDecompress, targetFormat, 
+	image->GetSubImage ((uint)i), 0, (int)i);
+    }
+  }
+  else
+  {
+    for (i=0; i < subImageCount; i++)
+    {
+      // Create each new level by creating a level 2 mipmap from previous level
+      // we do this down to 1x1 as opengl defines it
+      int w, h;
+      int nTex = 0;
+      int nMip = 0;
+      csRef<iImage> thisImage = image->GetSubImage ((uint)i); 
+      int nMipmaps = thisImage->HasMipmaps();
+
+      do
+      {
+	w = thisImage->GetWidth ();
+	h = thisImage->GetHeight ();
+
+	if ((mipskip == 0) || ((w == 1) && (h == 1)))
+	  transform (!textureSettings->forceDecompress, targetFormat, 
+	  thisImage, nTex++, (int)i);
+
+	if ((w == 1) && (h == 1)) break;
+
+	nMip++;
+	csRef<iImage> cimg;
+	bool precompMip = false;
+	if (nMipmaps != 0)
+	{
+	  cimg = image->GetSubImage ((uint)i)->GetMipmap (nMip);
+	  nMipmaps--;
+	  precompMip = true;
+	}
+	else
+	{
+	  cimg = csImageManipulate::Mipmap (thisImage, 1, tc);
+	}
+	if (txtmgr->sharpen_mipmaps 
+	  && (mipskip == 0) // don't sharpen when doing skip...
+	  && textureSettings->allowMipSharpen
+	  && (cimg->GetDepth() == 1) // @@@ sharpen not "depth-safe"
+	  && (!precompMip || textureSettings->sharpenPrecomputedMipmaps))
+	{
+	  cimg = csImageManipulate::Sharpen (cimg, txtmgr->sharpen_mipmaps, 
+	    tc);
+	}
+  #ifdef MIPMAP_DEBUG
+	csDebugImageWriter::DebugImageWrite (cimg,
+	  "/tmp/mipdebug/%p_%zu_%d.png", this, i, nMip);
+  #endif
+	thisImage = cimg;
+	if (mipskip != 0) mipskip--;
+      }
+      while (true);
+    }
+  }
+}
+
+GLenum csGLTextureHandle::DetermineTargetFormat (GLenum defFormat, 
 						 bool allowCompress,
 						 const char* rawFormat, 
 						 bool& compressedFormat)
@@ -261,22 +546,18 @@ GLenum csGLBasicTextureHandle::DetermineTargetFormat (GLenum defFormat,
     if (G3D->ext->CS_GL_EXT_texture_compression_s3tc 
       && allowCompress)
     {
-      if (strcmp (rawFormat, "*dxt1") == 0)
+      if (strcmp (rawFormat, "dxt1") == 0)
       {
-	targetFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+	targetFormat = (alphaType != csAlphaMode::alphaNone) ?
+	  GL_COMPRESSED_RGBA_S3TC_DXT1_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 	compressedFormat = true;
       }
-      else if (strcmp (rawFormat, "*dxt1a") == 0)
-      {
-	targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-	compressedFormat = true;
-      }
-      else if (strcmp (rawFormat, "*dxt3") == 0)
+      else if (strcmp (rawFormat, "dxt3") == 0)
       {
 	targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 	compressedFormat = true;
       }
-      else if (strcmp (rawFormat, "*dxt5") == 0)
+      else if (strcmp (rawFormat, "dxt5") == 0)
       {
 	targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 	compressedFormat = true;
@@ -286,96 +567,7 @@ GLenum csGLBasicTextureHandle::DetermineTargetFormat (GLenum defFormat,
   return targetFormat;
 }
 
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_r8g8b8_i
-	= CS::TextureFormatStrings::ConvertStructured ("r8g8b8_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_b8g8r8_i
-	= CS::TextureFormatStrings::ConvertStructured ("b8g8r8_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_r5g6b5_i
-	= CS::TextureFormatStrings::ConvertStructured ("r5g6b5_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_a8r8g8b8_i
-	= CS::TextureFormatStrings::ConvertStructured ("a8r8g8b8_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_l8_i
-	= CS::TextureFormatStrings::ConvertStructured ("l8_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_dxt1
-	= CS::TextureFormatStrings::ConvertStructured ("*dxt1");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_dxt1a
-	= CS::TextureFormatStrings::ConvertStructured ("*dxt1a");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_dxt3
-	= CS::TextureFormatStrings::ConvertStructured ("*dxt3");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_dxt5
-	= CS::TextureFormatStrings::ConvertStructured ("*dxt5");
-
-bool csGLBasicTextureHandle::ConvertFormat2GL (const char* format,
-	csGLSource& src, GLenum& targetFormat, bool allowCompressed,
-	bool& compressed)
-{
-  CS::StructuredTextureFormat fmt = CS::TextureFormatStrings
-  	::ConvertStructured (format);
-  if (fmt == fmt_b8g8r8_i)
-  {
-    src.format = GL_RGB;
-    src.type = GL_UNSIGNED_BYTE;
-    return true;
-  }
-  if (fmt == fmt_l8_i)
-  {
-    src.format = GL_LUMINANCE;
-    src.type = GL_UNSIGNED_BYTE;
-    targetFormat = GL_LUMINANCE;
-    return true;
-  }
-  if (G3D->ext->CS_GL_version_1_2)
-  {
-    if (fmt == fmt_r8g8b8_i)
-    {
-      src.format = GL_BGR;
-      src.type = GL_UNSIGNED_BYTE;
-      return true;
-    }
-    else if (fmt == fmt_r5g6b5_i)
-    {
-      src.format = GL_RGB;
-      src.type = GL_UNSIGNED_SHORT_5_6_5;
-      return true;
-    }
-    else if (fmt == fmt_a8r8g8b8_i)
-    {
-      src.format = GL_BGRA;
-      src.type = GL_UNSIGNED_BYTE;
-      return true;
-    }
-  }
-  if (allowCompressed && G3D->ext->CS_GL_EXT_texture_compression_s3tc)
-  {
-   if (fmt == fmt_dxt1)
-    {
-      targetFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-      compressed = true;
-      return true;
-    }
-    else if (fmt == fmt_dxt1a)
-    {
-      targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-      compressed = true;
-      return true;
-    }
-    else if (fmt == fmt_dxt3)
-    {
-      targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      compressed = true;
-      return true;
-    }
-    else if (fmt == fmt_dxt3)
-    {
-      targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-      compressed = true;
-      return true;
-    }
-  }
-  return false;
-}
-
-bool csGLBasicTextureHandle::transform (bool allowCompressed, GLenum targetFormat, 
+bool csGLTextureHandle::transform (bool allowCompressed, GLenum targetFormat, 
 				   iImage* Image, int mipNum, int imageNum)
 {
   csGLUploadData& uploadData = this->uploadData->GetExtend (
@@ -385,12 +577,53 @@ bool csGLBasicTextureHandle::transform (bool allowCompressed, GLenum targetForma
   {
     csRef<iDataBuffer> imageRaw = Image->GetRawData();
     uploadData.dataRef = imageRaw;
-    if (ConvertFormat2GL (rawFormat, uploadData.source, targetFormat,
-	allowCompressed, uploadData.isCompressed))
+    if (strcmp (rawFormat, "r8g8b8") == 0)
     {
       uploadData.image_data = imageRaw->GetUint8();
-      if (uploadData.isCompressed)
+      uploadData.source.format = GL_RGB;
+      uploadData.source.type = GL_UNSIGNED_BYTE;
+    }
+    else if (G3D->ext->CS_GL_version_1_2
+      && (strcmp (rawFormat, "b8g8r8") == 0))
+    {
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_BGR;
+      uploadData.source.type = GL_UNSIGNED_BYTE;
+    }
+    else if (G3D->ext->CS_GL_version_1_2
+      && (strcmp (rawFormat, "r5g6b5") == 0))
+    {
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_RGB;
+      uploadData.source.type = GL_UNSIGNED_SHORT_5_6_5;
+    }
+    else if (G3D->ext->CS_GL_version_1_2
+      && (strcmp (rawFormat, "b8g8r8a8") == 0))
+    {
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_BGRA;
+      uploadData.source.type = GL_UNSIGNED_BYTE;
+    }
+    else if (strcmp (rawFormat, "l8") == 0)
+    {
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_LUMINANCE;
+      uploadData.source.type = GL_UNSIGNED_BYTE;
+      targetFormat = GL_LUMINANCE;
+    }
+    else 
+    {
+      bool isCompressedTarget;
+      /* Only use glCompressedTexImage if the target format matches
+       * exactly the one of mip 0. */
+      if ((DetermineTargetFormat (targetFormat, allowCompressed,
+	rawFormat, isCompressedTarget) == targetFormat) 
+	&& isCompressedTarget)
+      {
+	uploadData.image_data = imageRaw->GetUint8();
+	uploadData.isCompressed = true;
 	uploadData.compressed.size = imageRaw->GetSize();
+      }
     }
   }
 
@@ -427,7 +660,7 @@ bool csGLBasicTextureHandle::transform (bool allowCompressed, GLenum targetForma
   return true;
 }
 
-void csGLBasicTextureHandle::Blit (int x, int y, int width,
+void csGLTextureHandle::Blit (int x, int y, int width,
     int height, unsigned char const* data, TextureBlitDataFormat format)
 {
   // @@@ Keycolor not yet supported here!
@@ -485,7 +718,7 @@ void csGLBasicTextureHandle::Blit (int x, int y, int width,
   //SetNeedMips (true);
 }
 
-void csGLBasicTextureHandle::SetupAutoMipping()
+void csGLTextureHandle::SetupAutoMipping()
 {
   // Set up mipmap generation
   if ((!(texFlags.Get() & CS_TEXTURE_NOMIPMAPS))
@@ -499,7 +732,7 @@ void csGLBasicTextureHandle::SetupAutoMipping()
   }
 }
 
-void csGLBasicTextureHandle::Load ()
+void csGLTextureHandle::Load ()
 {
   if (Handle != 0) return;
 
@@ -690,7 +923,7 @@ void csGLBasicTextureHandle::Load ()
   delete uploadData; uploadData = 0;
 }
 
-void csGLBasicTextureHandle::Unload ()
+void csGLTextureHandle::Unload ()
 {
   if ((Handle == 0) || IsForeignHandle()) return;
   if (target == CS_TEX_IMG_1D)
@@ -707,28 +940,28 @@ void csGLBasicTextureHandle::Unload ()
   Handle = 0;
 }
 
-void csGLBasicTextureHandle::Precache ()
+void csGLTextureHandle::Precache ()
 {
   PrepareInt ();
   Load ();
 }
 
-void csGLBasicTextureHandle::SetTextureClass (const char* className)
+void csGLTextureHandle::SetTextureClass (const char* className)
 {
   textureClass = txtmgr->GetTextureClassID (className ? className : "default");
 }
 
-const char* csGLBasicTextureHandle::GetTextureClass ()
+const char* csGLTextureHandle::GetTextureClass ()
 {
   return txtmgr->GetTextureClassName (textureClass);
 }
 
-void csGLBasicTextureHandle::UpdateTexture ()
+void csGLTextureHandle::UpdateTexture ()
 {
   Unload ();
 }
 
-GLuint csGLBasicTextureHandle::GetHandle ()
+GLuint csGLTextureHandle::GetHandle ()
 {
   Precache ();
   if ((!(texFlags.Get() & CS_TEXTURE_NOMIPMAPS))
@@ -742,7 +975,7 @@ GLuint csGLBasicTextureHandle::GetHandle ()
   return Handle;
 }
 
-GLenum csGLBasicTextureHandle::GetGLTextureTarget() const
+GLenum csGLTextureHandle::GetGLTextureTarget() const
 {
   switch (target)
   {
@@ -761,7 +994,7 @@ GLenum csGLBasicTextureHandle::GetGLTextureTarget() const
   }
 }
 
-void csGLBasicTextureHandle::CheckAlpha (int w, int h, int d, csRGBpixel *src, 
+void csGLTextureHandle::CheckAlpha (int w, int h, int d, csRGBpixel *src, 
 				    const csRGBpixel* transp_color, 
 				    csAlphaMode::AlphaType& alphaType)
 {
@@ -785,7 +1018,7 @@ void csGLBasicTextureHandle::CheckAlpha (int w, int h, int d, csRGBpixel *src,
 }
 
 
-void csGLBasicTextureHandle::PrepareKeycolor (csRef<iImage>& image,
+void csGLTextureHandle::PrepareKeycolor (csRef<iImage>& image,
 					 const csRGBpixel& transp_color,
 					 csAlphaMode::AlphaType& alphaType)
 {
@@ -796,319 +1029,6 @@ void csGLBasicTextureHandle::PrepareKeycolor (csRef<iImage>& image,
   CheckAlpha (w, h, d, _src, &transp_color, alphaType);
   if (alphaType == csAlphaMode::alphaNone) return; // Nothing to fix up
   image = csBakeKeyColor::Image (image, transp_color);
-}
-
-//---------------------------------------------------------------------------
-
-csGLTextureHandle::csGLTextureHandle (iImage* image, int flags, 
-				      csGLGraphics3D *iG3D) : 
-  csGLBasicTextureHandle (image->GetImageType (), flags, iG3D),
-  origName(0)
-{
-//printf ("image='%s' format='%08x' rawformat='%s' type=%d\n",
-    //image->GetName (), image->GetFormat (), image->GetRawFormat (),
-    //image->GetImageType ()); fflush (stdout);
-  this->image = image;
-  if (image->GetFormat () & CS_IMGFMT_ALPHA)
-    alphaType = csAlphaMode::alphaSmooth;
-  else if (image->HasKeyColor ())
-    alphaType = csAlphaMode::alphaBinary;
-  else
-    alphaType = csAlphaMode::alphaNone;
-
-  if (image->HasKeyColor())
-    SetTransp (true);
-}
-
-csGLTextureHandle::csGLTextureHandle (int target, GLuint Handle, 
-				      csGLGraphics3D *iG3D) : 
-  csGLBasicTextureHandle (csimg2D, 0, iG3D),
-  origName(0)
-{
-  this->target = target;
-  csGLBasicTextureHandle::Handle = Handle;
-  alphaType = csAlphaMode::alphaNone;
-  SetForeignHandle (true);
-}
-
-csGLTextureHandle::~csGLTextureHandle()
-{
-  delete[] origName;
-}
-
-
-void csGLTextureHandle::FreeImage ()
-{
-  if (image.IsValid()) 
-  {
-    origName = csStrNew (image->GetName());
-    if (IsTransp() && !IsTranspSet())
-    {
-      int r,g,b;
-      image->GetKeyColor (r,g,b);
-      SetKeyColor (r, g, b);
-    }						 
-  }
-  image = 0;
-}
-
-void csGLTextureHandle::GetOriginalDimensions (int& mw, int& mh)
-{
-  AdjustSizePo2 ();
-  mw = orig_width;
-  mh = orig_height;
-}
-
-void csGLTextureHandle::GetOriginalDimensions (int& mw, int& mh, int &md)
-{
-  AdjustSizePo2 ();
-  mw = orig_width;
-  mh = orig_height;
-  md = orig_d;
-}
-
-const char* csGLTextureHandle::GetImageName () const
-{
-  if (image.IsValid()) 
-    return image->GetName();
-  else
-    return origName;
-}
-
-//#define MIPMAP_DEBUG
-
-void csGLTextureHandle::CreateMipMaps()
-{
-  csRGBpixel *tc = IsTransp() ? &transp_color : (csRGBpixel *)0;
-
-  const csGLTextureClassSettings* textureSettings = 
-    txtmgr->GetTextureClassSettings (textureClass);
-  /* Determine internal format of the texture. You can't mix glTexImage and 
-   * glCompressedTexImage for different mip levels unless the internal format
-   * is exactly the same. The target formats of the lower mip levels are later
-   * checked against the target format of the first mip.
-   */
-  bool compressedTarget;
-  GLenum targetFormat; 
-  if ((target == iTextureHandle::CS_TEX_IMG_RECT)
-    && (txtmgr->disableRECTTextureCompression))
-    /* @@@ Hack: Some ATI drivers can't grok generic compressed formats for 
-     * RECT textures, so force an uncompressed format in this case. */
-    targetFormat = (alphaType != csAlphaMode::alphaNone) ? 
-      GL_RGBA : GL_RGB;
-  else
-    targetFormat = (alphaType != csAlphaMode::alphaNone) ? 
-      textureSettings->formatRGBA : textureSettings->formatRGB;
-  targetFormat = DetermineTargetFormat (targetFormat, 
-    !textureSettings->forceDecompress, image->GetRawFormat(), 
-    compressedTarget);
-
-  // Determine if and how many mipmaps we skip.
-  const bool doReduce = !texFlags.Check (CS_TEXTURE_2D | CS_TEXTURE_NOMIPMAPS)
-    && textureSettings->allowDownsample;
-  int mipskip = doReduce ? txtmgr->texture_downsample : 0;
-  while (((actual_width >> mipskip) > txtmgr->max_tex_size)
-      || ((actual_height >> mipskip) > txtmgr->max_tex_size)
-      || ((actual_d >> mipskip) > txtmgr->max_tex_size))
-    mipskip++;
-
-  // Delete existing mipmaps, if any
-  size_t i;
-  if (uploadData != 0)
-    uploadData->DeleteAll();
-  else
-    uploadData = new csArray<csGLUploadData>;
-
-  size_t subImageCount = image->HasSubImages() + 1;
-#ifdef MIPMAP_DEBUG
-  for (i=0; i < subImageCount; i++)
-  {
-    csDebugImageWriter::DebugImageWrite (image->GetSubImage (i),
-      "/tmp/mipdebug/%p_%zu_0.png", this, i);
-  }
-#endif
-  if (texFlags.Check (CS_TEXTURE_NOMIPMAPS))
-  {
-    for (i=0; i < subImageCount; i++)
-    {
-      transform (!textureSettings->forceDecompress, targetFormat, 
-	image->GetSubImage ((uint)i), 0, (int)i);
-    }
-  }
-  else
-  {
-    for (i=0; i < subImageCount; i++)
-    {
-      // Create each new level by creating a level 2 mipmap from previous level
-      // we do this down to 1x1 as opengl defines it
-      int w, h;
-      int nTex = 0;
-      int nMip = 0;
-      csRef<iImage> thisImage = image->GetSubImage ((uint)i); 
-      int nMipmaps = thisImage->HasMipmaps();
-
-      do
-      {
-	w = thisImage->GetWidth ();
-	h = thisImage->GetHeight ();
-
-	if ((mipskip == 0) || ((w == 1) && (h == 1)))
-	  transform (!textureSettings->forceDecompress, targetFormat, 
-	  thisImage, nTex++, (int)i);
-
-	if ((w == 1) && (h == 1)) break;
-
-	nMip++;
-	csRef<iImage> cimg;
-	bool precompMip = false;
-	if (nMipmaps != 0)
-	{
-	  cimg = image->GetSubImage ((uint)i)->GetMipmap (nMip);
-	  nMipmaps--;
-	  precompMip = true;
-	}
-	else
-	{
-	  cimg = csImageManipulate::Mipmap (thisImage, 1, tc);
-	}
-	if (txtmgr->sharpen_mipmaps 
-	  && (mipskip == 0) // don't sharpen when doing skip...
-	  && textureSettings->allowMipSharpen
-	  && (cimg->GetDepth() == 1) // @@@ sharpen not "depth-safe"
-	  && (!precompMip || textureSettings->sharpenPrecomputedMipmaps))
-	{
-	  cimg = csImageManipulate::Sharpen (cimg, txtmgr->sharpen_mipmaps, 
-	    tc);
-	}
-  #ifdef MIPMAP_DEBUG
-	csDebugImageWriter::DebugImageWrite (cimg,
-	  "/tmp/mipdebug/%p_%zu_%d.png", this, i, nMip);
-  #endif
-	thisImage = cimg;
-	if (mipskip != 0) mipskip--;
-      }
-      while (true);
-    }
-  }
-}
-
-void csGLTextureHandle::PrepareInt ()
-{
-  //@@@ Images may be lost if preparing twice. Some better way of solving it?
-  if (!image.IsValid()) return;
-  if (IsPrepared ()) return;
-  SetPrepared (true);
-
-  if (IsTransp() && !IsTranspSet())
-  {
-    int r,g,b;
-    image->GetKeyColor (r,g,b);
-    SetKeyColor (r, g, b);
-  }						 
-
-  // In opengl all textures, even non-mipmapped textures are required
-  // to be powers of 2.
-  AdjustSizePo2 ();
-
-  csAlphaMode::AlphaType newAlphaType = csAlphaMode::alphaNone;
-
-  // Do any resizing, if needed
-  if (image->GetImageType() == csimgCube)
-  {
-    // Handle cube map faces
-    csRef<csImageCubeMapMaker> newCube;
-    int faceCount = MIN (image->HasSubImages() + 1, 6);
-    for (int i = 0; i < faceCount; i++)
-    {
-      int newFaceW, newFaceH, newFaceD;
-      csRef<iImage> imgFace = image->GetSubImage (i);
-      ComputeNewPo2ImageSize (texFlags.Get(), 
-	imgFace->GetWidth(), imgFace->GetHeight(), 1,
-	newFaceW, newFaceH, newFaceD, txtmgr->max_tex_size);
-      if (newFaceW != newFaceH) newFaceH = newFaceW;
-      csRef<iImage> newFace = PrepareIntImage (newFaceW, newFaceH,
-	imgFace->GetDepth (), imgFace, newAlphaType);
-      if (newFace.IsValid())
-      {
-	// Create a new cube if we needed to resize one face.
-	if (!newCube.IsValid()) 
-	{
-	  newCube.AttachNew (new csImageCubeMapMaker ());
-	  newCube->SetName (image->GetName());
-	}
-	newCube->SetSubImage (i, newFace);
-      }
-    }
-    if (faceCount < 6) // Ensure at least the 6 faces.
-    {
-      newCube.AttachNew (new csImageCubeMapMaker ());
-      newCube->SetName (image->GetName());
-    }
-    if (newCube.IsValid())
-    {
-      for (int i = 0; i < faceCount; i++)
-      {
-	if (!newCube->SubImageSet (i))
-	  newCube->SetSubImage (i, image->GetSubImage (i));
-      }
-      image = newCube;
-    }
-  }
-  else
-  {
-    csRef<iImage> newImage = PrepareIntImage (actual_width, actual_height,
-	actual_d, image, newAlphaType);
-    if (newImage.IsValid()) image = newImage;
-  }
-  if (newAlphaType > alphaType) alphaType = newAlphaType;
-
-  CreateMipMaps ();
-  FreeImage ();
-}
-
-void csGLTextureHandle::GetKeyColor (uint8 &red,
-	uint8 &green, uint8 &blue) const
-{
-  if (image.IsValid() && image->HasKeyColor() && !IsTranspSet ())
-  {
-    int r,g,b;
-    image->GetKeyColor (r,g,b);
-    red = r; green = g; blue = b;
-  }
-  else
-  {
-    red = transp_color.red;
-    green = transp_color.green;
-    blue = transp_color.blue;
-  }
-}
-
-void csGLTextureHandle::AdjustSizePo2 ()
-{
-  if (IsSizeAdjusted ()) return;
-  SetSizeAdjusted (true);
-
-  //actual_d = orig_d = images->Length();
-  orig_width  = image->GetWidth();
-  orig_height = image->GetHeight();
-  orig_d = image->GetDepth();
-
-  if (texFlags.Check (CS_TEXTURE_NPOTS)) 
-  {
-    actual_width = MIN(orig_width, G3D->maxNpotsTexSize);
-    actual_height = MIN(orig_height, G3D->maxNpotsTexSize);
-    actual_d = MIN(orig_d, G3D->maxNpotsTexSize);
-    return;
-  }
-
-  int newwidth, newheight, newd;
-
-  ComputeNewPo2ImageSize (texFlags.Get(), orig_width, orig_height, orig_d, 
-    newwidth, newheight, newd, txtmgr->max_tex_size);
-
-  actual_width = newwidth;
-  actual_height = newheight;
-  actual_d = newd;
 }
 
 //---------------------------------------------------------------------------
@@ -1334,7 +1254,7 @@ void csGLTextureManager::Clear()
   size_t i;
   for (i=0; i < textures.Length (); i++)
   {
-    csGLBasicTextureHandle* tex = textures[i];
+    csGLTextureHandle* tex = textures[i];
     if (tex != 0) tex->Clear ();
   }
   for (i = 0; i < superLMs.Length(); i++)
@@ -1374,50 +1294,28 @@ void csGLTextureManager::UnsetTexture (GLenum target, GLuint texture)
 }
 
 csPtr<iTextureHandle> csGLTextureManager::RegisterTexture (iImage *image,
-	int flags, iString* fail_reason)
+	int flags)
 {
   if (!image)
   {
-    if (fail_reason) fail_reason->Replace (
-      "No image given to RegisterTexture!");
+    G3D->Report(CS_REPORTER_SEVERITY_BUG,
+      "BAAAAAAAD!!! csGLTextureManager::RegisterTexture with 0 image!");
     return 0;
   }
 
   if ((image->GetImageType() == csimgCube)
-      && !G3D->ext->CS_GL_ARB_texture_cube_map)
-  {
-    if (fail_reason) fail_reason->Replace (
-      "Cubemap images are not supported!");
+    && !G3D->ext->CS_GL_ARB_texture_cube_map)
     return 0;
-  }
   if ((image->GetImageType() == csimg3D)
-      && !G3D->ext->CS_GL_EXT_texture3D)
-  {
-    if (fail_reason) fail_reason->Replace (
-      "3D images are not supported!");
+    && !G3D->ext->CS_GL_EXT_texture3D)
     return 0;
-  }
 
   csGLTextureHandle *txt = new csGLTextureHandle (image, flags, G3D);
   textures.Push(txt);
   return csPtr<iTextureHandle> (txt);
 }
 
-csPtr<iTextureHandle> csGLTextureManager::CreateTexture (int w, int h,
-      csImageType imagetype, const char* format, int flags,
-      iString* fail_reason)
-{
-  (void)w;
-  (void)h;
-  (void)format;
-
-  csGLBasicTextureHandle *txt = new csGLBasicTextureHandle (
-      imagetype, flags, G3D);
-  textures.Push(txt);
-  return csPtr<iTextureHandle> (txt);
-}
-
-void csGLTextureManager::UnregisterTexture (csGLBasicTextureHandle* handle)
+void csGLTextureManager::UnregisterTexture (csGLTextureHandle* handle)
 {
   size_t const idx = textures.Find (handle);
   if (idx != csArrayItemNotFound) textures.DeleteIndexFast (idx);

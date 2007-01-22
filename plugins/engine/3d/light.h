@@ -308,11 +308,6 @@ public:
   }
 
   /**
-   * Get the current full sector (including parents).
-   */
-  iSector* GetFullSector ();
-
-  /**
    * Set the center position.
    */
   void SetCenter (const csVector3& v)

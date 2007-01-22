@@ -90,7 +90,7 @@ csSndSysRendererSoftware::~csSndSysRendererSoftware()
   RecordEvent(SSEL_DEBUG, "Sound system destructing.");
   if (weakEventHandler)
   {
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (m_pObjectRegistry);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (m_pObjectRegistry, iEventQueue);
     if (q)
       CS::RemoveWeakListener (q, weakEventHandler);
   }
@@ -249,15 +249,15 @@ bool csSndSysRendererSoftware::Initialize (iObjectRegistry *obj_reg)
 
   // Get an interface for the plugin manager
   csRef<iPluginManager> plugin_mgr (
-    csQueryRegistry<iPluginManager> (m_pObjectRegistry));
+    CS_QUERY_REGISTRY (m_pObjectRegistry, iPluginManager));
 
 
   // read the config file
   m_Config.AddConfig(m_pObjectRegistry, "/config/sound.cfg");
 
   // check for optional sound driver from the commandline
-  csRef<iCommandLineParser> cmdline (
-  	csQueryRegistry<iCommandLineParser> (m_pObjectRegistry));
+  csRef<iCommandLineParser> cmdline (CS_QUERY_REGISTRY (m_pObjectRegistry,
+  	iCommandLineParser));
   const char *drv = cmdline->GetOption ("sounddriver");
   if (!drv)
   {
@@ -328,7 +328,7 @@ bool csSndSysRendererSoftware::Initialize (iObjectRegistry *obj_reg)
 
 
   // set event callback
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (m_pObjectRegistry));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY(m_pObjectRegistry, iEventQueue));
   evSystemOpen = csevSystemOpen(m_pObjectRegistry);
   evSystemClose = csevSystemClose(m_pObjectRegistry);
   evFrame = csevFrame(m_pObjectRegistry);

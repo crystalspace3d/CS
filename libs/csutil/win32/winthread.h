@@ -21,8 +21,6 @@
 #include "csextern.h"
 #include "csutil/thread.h"
 
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 class CS_CRYSTALSPACE_EXPORT csWinThread : public csThread
 {
  public:
@@ -146,7 +144,5 @@ class CS_CRYSTALSPACE_EXPORT csWinCondition : public csCondition
   HANDLE cond;
   char* lasterr;
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 #endif // __CS_WINTHREAD_H__

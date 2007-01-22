@@ -185,7 +185,7 @@ csODEDynamics::~csODEDynamics ()
 {
   if (scfiEventHandler)
   {
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (object_reg, iEventQueue);
     if (q)
       q->RemoveListener (scfiEventHandler);
   }
@@ -198,7 +198,7 @@ bool csODEDynamics::Initialize (iObjectRegistry* object_reg)
 {
   csODEDynamics::object_reg = object_reg;
 
-  clock = csQueryRegistry<iVirtualClock> (object_reg);
+  clock = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
   if (!clock)
     return false;
 
@@ -210,7 +210,7 @@ bool csODEDynamics::Initialize (iObjectRegistry* object_reg)
 csPtr<iDynamicSystem> csODEDynamics::CreateSystem ()
 {
   csODEDynamicSystem* system = new csODEDynamicSystem (erp, cfm);
-  csRef<iDynamicSystem> isystem (scfQueryInterface<iDynamicSystem> (system));
+  csRef<iDynamicSystem> isystem (SCF_QUERY_INTERFACE (system, iDynamicSystem));
   systems.Push (isystem);
   isystem->DecRef ();
   if(stepfast) system->EnableStepFast(true);
@@ -401,8 +401,8 @@ void csODEDynamics::SetGlobalERP (float erp)
 
   for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->SetERP (erp);
   }
 }
@@ -412,8 +412,8 @@ void csODEDynamics::SetGlobalCFM (float cfm)
   csODEDynamics::cfm = cfm;
   for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->SetCFM (cfm);
   }
 }
@@ -425,8 +425,8 @@ void csODEDynamics::EnableStepFast (bool enable)
 
   for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->EnableStepFast (enable);
   }
 }
@@ -437,8 +437,8 @@ void csODEDynamics::SetStepFastIterations (int iter)
 
   for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->SetStepFastIterations (iter);
   }
 }
@@ -450,8 +450,8 @@ void csODEDynamics::EnableQuickStep (bool enable)
 
   for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->EnableQuickStep (enable);
   }
 }
@@ -462,8 +462,8 @@ void csODEDynamics::SetQuickStepIterations (int iter)
 
   for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->SetQuickStepIterations (iter);
   }
 }
@@ -476,7 +476,7 @@ void csODEDynamics::EnableEventProcessing (bool enable)
 
     if (!scfiEventHandler)
       scfiEventHandler = csPtr<EventHandler> (new EventHandler (this));
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (object_reg, iEventQueue);
     if (q)
       q->RegisterListener (scfiEventHandler, PreProcess);
   }
@@ -486,7 +486,7 @@ void csODEDynamics::EnableEventProcessing (bool enable)
 
     if (scfiEventHandler)
     {
-      csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+      csRef<iEventQueue> q = CS_QUERY_REGISTRY (object_reg, iEventQueue);
       if (q)
         q->RemoveListener (scfiEventHandler);
       scfiEventHandler = 0;
@@ -1618,7 +1618,6 @@ bool csODERigidBody::AttachColliderPlane (const csPlane3& plane,
 
 void csODERigidBody::AttachCollider (iDynamicsSystemCollider* collider)
 {
-  colliders.Push (collider);
   dynsys->DestroyCollider (collider);
   if (collider->GetGeometryType () == PLANE_COLLIDER_GEOMETRY)
     ((csODECollider*) collider)->AddToSpace (dynsys->GetSpaceID());
@@ -1627,6 +1626,7 @@ void csODERigidBody::AttachCollider (iDynamicsSystemCollider* collider)
 
   ((csODECollider*) collider)->AttachBody (bodyID);
   collider->MakeDynamic ();
+  colliders.Push (collider);
 }
 
 void csODERigidBody::SetPosition (const csVector3& pos)
@@ -2409,6 +2409,7 @@ csODEJoint::csODEJoint (csODEDynamicSystem *sys) : scfImplementationType (this, 
 {
   jointID = 0;
   motor_jointID = 0;
+  custom_aconstraint_axis = false;
 
   body[0] = body[1] = 0;
   bodyID[0] = bodyID[1] = 0;
@@ -2420,11 +2421,13 @@ csODEJoint::csODEJoint (csODEDynamicSystem *sys) : scfImplementationType (this, 
   rotConstraint[1] = 1;
   rotConstraint[2] = 1;
 
-  aconstraint_axis[0] = csVector3 (0,1,0);
-  aconstraint_axis[1] = csVector3 (0,0,1);
+  maxTrans.Set (0, 0, 0);
+  minTrans.Set (0, 0, 0);
+  maxAngle.Set (0, 0, 0);
+  minAngle.Set (0, 0, 0);
 
-  lo_stop = csVector3 (dInfinity, dInfinity, dInfinity);
-  hi_stop = csVector3 (-dInfinity, -dInfinity, -dInfinity); 
+  lo_stop = csVector3 (-dInfinity, -dInfinity, -dInfinity);
+  hi_stop = csVector3 (dInfinity, dInfinity, dInfinity); 
   vel = csVector3 (0);
   fmax = csVector3 (0);
   fudge_factor = csVector3 (1);
@@ -2434,7 +2437,6 @@ csODEJoint::csODEJoint (csODEDynamicSystem *sys) : scfImplementationType (this, 
   stop_cfm = csVector3 (9.9999997e-006f);
   suspension_erp = csVector3 (0.0f);
   suspension_cfm = csVector3 (0.0f);
-  custom_aconstraint_axis = false;
 
   dynsys = sys;
 }
@@ -2497,21 +2499,21 @@ void csODEJoint::SetTransConstraints (bool X, bool Y, bool Z)
 
 void csODEJoint::SetMinimumDistance (const csVector3 &min)
 {
-  lo_stop = min;
+  minTrans = min;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetMinimumDistance ()
 {
-  return lo_stop;
+  return minTrans;
 }
 void csODEJoint::SetMaximumDistance (const csVector3 &max)
 {
-  hi_stop = max;
+  maxTrans = max;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetMaximumDistance ()
 {
-  return hi_stop;
+  return maxTrans;
 }
 
 void csODEJoint::SetRotConstraints (bool X, bool Y, bool Z)
@@ -2524,29 +2526,40 @@ void csODEJoint::SetRotConstraints (bool X, bool Y, bool Z)
 }
 void csODEJoint::SetMinimumAngle (const csVector3 &min)
 {
-  lo_stop = min;
+  minAngle = min;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetMinimumAngle ()
 {
-  return lo_stop;
+  return minAngle;
 }
 void csODEJoint::SetMaximumAngle (const csVector3 &max)
 {
-  hi_stop = max;
+  maxAngle = max;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetMaximumAngle ()
 {
-  return hi_stop;
+  return maxAngle;
 }
 
-void csODEJoint::BuildHinge (const csVector3 &axis)
+void csODEJoint::BuildHinge (const csVector3 &axis, float min, float max)
 {
   dJointSetHingeAxis (jointID, axis.x, axis.y, axis.z);
+  if (max > min)
+  {
+    dJointSetHingeParam (jointID, dParamLoStop, min);
+    dJointSetHingeParam (jointID, dParamHiStop, max);
+  }
+  else
+  {
+    dJointSetHingeParam (jointID, dParamLoStop, -dInfinity);
+    dJointSetHingeParam (jointID, dParamHiStop, dInfinity);
+  }
 }
 
-void csODEJoint::BuildHinge2 (const csVector3 &axis1, const csVector3 &axis2)
+void csODEJoint::BuildHinge2 (const csVector3 &axis1, float min1, float max1,
+                              const csVector3 &axis2, float min2, float max2)
 {
   if (custom_aconstraint_axis)
   {
@@ -2559,17 +2572,47 @@ void csODEJoint::BuildHinge2 (const csVector3 &axis1, const csVector3 &axis2)
     dJointSetHinge2Axis1 (jointID, axis1.x, axis1.y, axis1.z);
     dJointSetHinge2Axis2 (jointID, axis2.x, axis2.y, axis2.z);
   }
+  if (max1 > min1)
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop, min1);
+    dJointSetHinge2Param (jointID, dParamHiStop, max1);
+  }
+  else
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop, -dInfinity);
+    dJointSetHinge2Param (jointID, dParamHiStop, dInfinity);
+  }
+  if (max2 > min2)
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop2, min2);
+    dJointSetHinge2Param (jointID, dParamHiStop2, max2);
+  }
+  else
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop2, -dInfinity);
+    dJointSetHinge2Param (jointID, dParamHiStop2, dInfinity);
+  }
 }
 
-void csODEJoint::BuildSlider (const csVector3 &axis)
+void csODEJoint::BuildSlider (const csVector3 &axis, float min, float max)
 {
   dJointSetSliderAxis (jointID, axis.x, axis.y, axis.z);
+  if (max > min)
+  {
+    dJointSetSliderParam (jointID, dParamLoStop, min);
+    dJointSetSliderParam (jointID, dParamHiStop, max);
+  }
+  else
+  {
+    dJointSetSliderParam (jointID, dParamLoStop, -dInfinity);
+    dJointSetSliderParam (jointID, dParamHiStop, dInfinity);
+  }
 }
 
 void csODEJoint::SetAngularConstraintAxis (const csVector3 &axis, int body)
 {
-  custom_aconstraint_axis = true;
   aconstraint_axis[body] = axis; 
+  custom_aconstraint_axis = true;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetAngularConstraintAxis (int body)
@@ -2619,14 +2662,14 @@ void csODEJoint::ApplyJointProperty (int parameter, const csVector3 &values)
     dJointSetHinge2Param (jointID, parameter, values.x);
     dJointSetHinge2Param (jointID, parameter + dParamGroup, values.y);
     //dParamXi = dParamX + dParamGroup * (i-1)
-  case dJointTypeBall:       
-    if (motor_jointID)
-    {
-      dJointSetAMotorParam (motor_jointID, parameter, values.x);
-      //We use only euler mode, se we only need to setup parameter for 2 axes
-      dJointSetAMotorParam (motor_jointID, parameter + 2*dParamGroup, values.z);
-    }
   default:
+    case dJointTypeBall:       
+      if (motor_jointID)
+      {
+        dJointSetAMotorParam (motor_jointID, parameter, values.x);
+        //We use only euler mode, se we only need to setup parameter for 2 axes
+        dJointSetAMotorParam (motor_jointID, parameter + 2*dParamGroup, values.z);
+      }
     //case dJointTypeAMotor:     // not supported here
     //case dJointTypeUniversal:  // not sure if that's supported in here
     break;
@@ -2660,7 +2703,6 @@ void csODEJoint::BuildJoint ()
   if (motor_jointID)
   {
     dJointDestroy (motor_jointID);
-    motor_jointID = 0;
   }
   if (jointID)
   {
@@ -2690,15 +2732,15 @@ void csODEJoint::BuildJoint ()
       rot = transform.GetO2T();
       if (rotConstraint[0])
       {
-        BuildHinge (rot.Col1());
+        BuildHinge (rot.Col1(), minAngle.x, maxAngle.x);
       }
       else if (rotConstraint[1])
       {
-        BuildHinge (rot.Col2());
+        BuildHinge (rot.Col2(), minAngle.y, maxAngle.y);
       }
       else if (rotConstraint[2])
       {
-        BuildHinge (rot.Col3());
+        BuildHinge (rot.Col3(), minAngle.z, maxAngle.z);
       }
       // TODO: insert some mechanism for bounce, erp and cfm
       break;
@@ -2714,34 +2756,37 @@ void csODEJoint::BuildJoint ()
       {
         if (rotConstraint[1])
         {
-          BuildHinge2 (rot.Col2(), rot.Col1());
+          BuildHinge2 (rot.Col2(), minAngle.y, maxAngle.y,
+            rot.Col1(), minAngle.x, maxAngle.x);
         }
         else
         {
-          BuildHinge2 (rot.Col3(), rot.Col1());
+          BuildHinge2 (rot.Col3(), minAngle.z, maxAngle.z,
+            rot.Col1(), minAngle.x, maxAngle.x);
         }
       }
       else
       {
-        BuildHinge2 (rot.Col2(), rot.Col3());
+        BuildHinge2 (rot.Col2(), minAngle.y, maxAngle.y,
+          rot.Col3(), minAngle.z, maxAngle.z);
       }
       break;
     case 3:
       jointID = dJointCreateBall (dynsys->GetWorldID(), 0);
+      SetStopAndMotorsParams ();
       dJointAttach (jointID, bodyID[0], bodyID[1]);
       pos = transform.GetOrigin();
       dJointSetBallAnchor (jointID, pos.x, pos.y, pos.z);
-      if (hi_stop.x > lo_stop.x || hi_stop.y > lo_stop.y || hi_stop.z > lo_stop.z )
+      if (custom_aconstraint_axis)
       {
         motor_jointID = dJointCreateAMotor (dynsys->GetWorldID(), 0);
-        dJointAttach (motor_jointID, bodyID[0], bodyID[1]);
+        dJointAttach (jointID, bodyID[0], bodyID[1]);
         dJointSetAMotorMode (motor_jointID, dAMotorEuler);
         dJointSetAMotorAxis (motor_jointID, 0, 1,
           aconstraint_axis[0].x, aconstraint_axis[0].y, aconstraint_axis[0].z);
         dJointSetAMotorAxis (motor_jointID, 2, 2,
           aconstraint_axis[1].x, aconstraint_axis[1].y, aconstraint_axis[1].z);
       }
-      SetStopAndMotorsParams ();
       break;
     }
   }
@@ -2757,15 +2802,15 @@ void csODEJoint::BuildJoint ()
       rot = transform.GetO2T();
       if (transConstraint[0])
       {
-        BuildSlider (rot.Col1());
+        BuildSlider (rot.Col1(), minTrans.x, maxTrans.x);
       }
       else if (transConstraint[1])
       {
-        BuildSlider (rot.Col2());
+        BuildSlider (rot.Col2(), minTrans.y, maxTrans.y);
       }
       else
       {
-        BuildSlider (rot.Col3());
+        BuildSlider (rot.Col3(), minTrans.z, maxTrans.z);
       }
       break;
     case 2:

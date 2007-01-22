@@ -26,6 +26,7 @@
 #include "plugins/engine/3d/light.h"
 #include "plugins/engine/3d/engine.h"
 #include "iengine/portal.h"
+#include "csutil/debug.h"
 #include "iengine/rview.h"
 #include "ivideo/graph3d.h"
 
@@ -119,6 +120,8 @@ public:
 csMeshWrapper::csMeshWrapper (csEngine* engine, iMeshObject *meshobj) 
   : scfImplementationType (this), engine (engine)
 {
+  DG_TYPE (this, "csMeshWrapper");
+
 //  movable.scfParent = this; //@TODO: CHECK THIS
   wor_bbox_movablenr = -1;
   movable.SetMeshWrapper (this);
@@ -158,12 +161,6 @@ csMeshWrapper::csMeshWrapper (csEngine* engine, iMeshObject *meshobj)
 
   last_camera = 0;
   last_frame_number = 0;
-
-  // Set creation time on the mesh
-  csRef<csShaderVariable> sv_creation_time;
-  sv_creation_time.AttachNew(new csShaderVariable(engine->id_creation_time));
-  sv_creation_time->SetValue((float)engine->virtualClock->GetCurrentTicks() / 1000.0f);
-  GetSVContext()->AddVariable(sv_creation_time);
 }
 
 void csMeshWrapper::SelfDestruct ()
@@ -204,7 +201,7 @@ iShadowCaster* csMeshWrapper::GetShadowCaster ()
 
     if (!meshobj) return 0;
     shadow_caster_valid = true;
-    shadow_caster = scfQueryInterface<iShadowCaster> (meshobj);
+    shadow_caster = SCF_QUERY_INTERFACE (meshobj, iShadowCaster);
   }
   return shadow_caster;
 }
@@ -263,8 +260,8 @@ void csMeshWrapper::SetMeshObject (iMeshObject *meshobj)
 
   if (meshobj)
   {
-    light_info = scfQueryInterface<iLightingInfo> (meshobj);
-    portal_container = scfQueryInterface<iPortalContainer> (meshobj);
+    light_info = SCF_QUERY_INTERFACE (meshobj, iLightingInfo);
+    portal_container = SCF_QUERY_INTERFACE (meshobj, iPortalContainer);
     AddToSectorPortalLists ();
   }
   else
@@ -1475,7 +1472,7 @@ csMeshList::~csMeshList ()
 void csMeshList::NameChanged (iObject* object, const char* oldname,
   	const char* newname)
 {
-  csRef<iMeshWrapper> mesh = scfQueryInterface<iMeshWrapper> (object);
+  csRef<iMeshWrapper> mesh = SCF_QUERY_INTERFACE (object, iMeshWrapper);
   CS_ASSERT (mesh != 0);
   if (oldname) meshes_hash.Delete (oldname, mesh);
   if (newname) meshes_hash.Put (newname, mesh);
@@ -1637,8 +1634,8 @@ csMeshFactoryList::~csMeshFactoryList ()
 void csMeshFactoryList::NameChanged (iObject* object, const char* oldname,
   	const char* newname)
 {
-  csRef<iMeshFactoryWrapper> mesh = 
-    scfQueryInterface<iMeshFactoryWrapper> (object);
+  csRef<iMeshFactoryWrapper> mesh = SCF_QUERY_INTERFACE (object,
+    iMeshFactoryWrapper);
   CS_ASSERT (mesh != 0);
   if (oldname) factories_hash.Delete (oldname, mesh);
   if (newname) factories_hash.Put (newname, mesh);

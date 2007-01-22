@@ -31,7 +31,7 @@
 
 #include "csutil/cfgacc.h"
 
-#include "cpi/docwrap.h"
+#include "docwrap.h"
 #include "shader.h"
 #include "xmlshader.h"
 
@@ -55,7 +55,7 @@ csXMLShaderCompiler::csXMLShaderCompiler(iBase* parent) :
   // Set up builtin constants
 #define BUILTIN_CONSTANT(Type, Value)					    \
   condConstants.AddConstant (#Value, (Type)Value);
-#include "cpi/condconstbuiltin.inc"
+#include "condconstbuiltin.inc"
 #undef BUILTIN_CONSTANT
 }
 
@@ -79,14 +79,14 @@ bool csXMLShaderCompiler::Initialize (iObjectRegistry* object_reg)
 
   wrapperFact = new csWrappedDocumentNodeFactory (this);
 
-  csRef<iPluginManager> plugin_mgr = 
-      csQueryRegistry<iPluginManager> (object_reg);
+  csRef<iPluginManager> plugin_mgr = CS_QUERY_REGISTRY (
+      object_reg, iPluginManager);
 
-  strings = csQueryRegistryTagInterface<iStringSet> (
-    object_reg, "crystalspace.shared.stringset");
+  strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    object_reg, "crystalspace.shared.stringset", iStringSet);
 
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  vfs = csQueryRegistry<iVFS> (object_reg);
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
+  vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
   
   synldr = csQueryRegistryOrLoad<iSyntaxService> (object_reg,
     "crystalspace.syntax.loader.service.text");
@@ -94,7 +94,7 @@ bool csXMLShaderCompiler::Initialize (iObjectRegistry* object_reg)
     return false;
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr) 
     do_verbose = verbosemgr->Enabled ("renderer.shader");
   else
@@ -138,8 +138,8 @@ csPtr<iShader> csXMLShaderCompiler::CompileShader (
   csRef<iDocumentNodeIterator> tagIt = templ->GetNodes ("key");
   while (tagIt->HasNext ())
   {
-    // @@@ FIXME: also keeps "editoronly" keys
-    csRef<iKeyValuePair> keyvalue = synldr->ParseKey (tagIt->Next ());
+    iKeyValuePair *keyvalue = 0;
+    synldr->ParseKey (tagIt->Next (), keyvalue);
     if (keyvalue)
       shader->QueryObject ()->ObjAdd (keyvalue->QueryObject ());
   }
@@ -168,7 +168,7 @@ csPtr<iShaderPriorityList> csXMLShaderCompiler::GetPriorities (
 	iDocumentNode* templ)
 {
   csRef<iShaderManager> shadermgr = 
-    csQueryRegistry<iShaderManager> (objectreg);
+    CS_QUERY_REGISTRY (objectreg, iShaderManager);
   CS_ASSERT (shadermgr); // Should be present - loads us, after all
 
   csShaderPriorityList* list = new csShaderPriorityList ();

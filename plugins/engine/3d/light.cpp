@@ -23,6 +23,7 @@
 #include "csgeom/polymesh.h"
 #include "csutil/csendian.h"
 #include "csutil/csmd5.h"
+#include "csutil/debug.h"
 #include "csutil/memfile.h"
 
 #include "engine.h"
@@ -187,7 +188,7 @@ void csLight::FindLSI ()
 {
   CleanupLSI ();
 
-  iSector* sector = GetFullSector ();
+  iSector* sector = GetSector ();
   if (!sector) return;
   const csVector3 center = GetFullCenter ();
 
@@ -525,7 +526,7 @@ iCrossHalo *csLight::CreateCrossHalo (float intensity, float cross)
   csCrossHalo *halo = new csCrossHalo (intensity, cross);
   SetHalo (halo);
 
-  csRef<iCrossHalo> ihalo (scfQueryInterface<iCrossHalo> (halo));
+  csRef<iCrossHalo> ihalo (SCF_QUERY_INTERFACE (halo, iCrossHalo));
   return ihalo; // DecRef is ok here.
 }
 
@@ -537,7 +538,7 @@ iNovaHalo *csLight::CreateNovaHalo (
   csNovaHalo *halo = new csNovaHalo (seed, num_spokes, roundness);
   SetHalo (halo);
 
-  csRef<iNovaHalo> ihalo (scfQueryInterface<iNovaHalo> (halo));
+  csRef<iNovaHalo> ihalo (SCF_QUERY_INTERFACE (halo, iNovaHalo));
   return ihalo; // DecRef is ok here.
 }
 
@@ -546,7 +547,7 @@ iFlareHalo *csLight::CreateFlareHalo ()
   csFlareHalo *halo = new csFlareHalo ();
   SetHalo (halo);
 
-  csRef<iFlareHalo> ihalo (scfQueryInterface<iFlareHalo> (halo));
+  csRef<iFlareHalo> ihalo (SCF_QUERY_INTERFACE (halo, iFlareHalo));
   return ihalo; // DecRef is ok here.
 }
 
@@ -566,25 +567,6 @@ static void object_light_func (iMeshWrapper *mesh, iFrustumView *lview,
 
   csMeshWrapper* cmw = (csMeshWrapper*)mesh;
   cmw->InvalidateRelevantLights ();
-}
-
-iSector* csLight::GetFullSector ()
-{
-  iSector* s = GetSector ();
-  if (s) return s;
-  iSceneNode* node = (iSceneNode*)this;
-  iSceneNode* parent = node->GetParent ();
-  while (parent)
-  {
-    iSectorList* sl = parent->GetMovable ()->GetSectors ();
-    if (sl && sl->GetCount () > 0)
-    {
-      return sl->Get (0);
-    }
-
-    parent = parent->GetParent ();
-  }
-  return 0;
 }
 
 void csLight::CalculateLighting ()
@@ -613,13 +595,10 @@ void csLight::CalculateLighting ()
   ctxt->SetNewLightFrustum (new csFrustum (GetFullCenter ()));
   ctxt->GetLightFrustum ()->MakeInfinite ();
 
-  iSector* sect = GetFullSector ();
-  if (!sect) return;	// Do nothing.
-
   if (dynamicType == CS_LIGHT_DYNAMICTYPE_DYNAMIC)
   {
     csRef<iMeshWrapperIterator> it = engine->GetNearbyMeshes (
-      sect, GetFullCenter (), GetCutoffDistance ());
+      GetSector (), GetFullCenter (), GetCutoffDistance ());
     while (it->HasNext ())
     {
       iMeshWrapper* m = it->Next ();
@@ -634,7 +613,7 @@ void csLight::CalculateLighting ()
   }
   else
   {
-    sect->CheckFrustum ((iFrustumView *) &lview);
+    GetSector ()->CheckFrustum ((iFrustumView *) &lview);
     lpi->FinalizeLighting ();
   }
 }
@@ -678,7 +657,7 @@ csLightList::~csLightList ()
 void csLightList::NameChanged (iObject* object, const char* oldname,
   	const char* newname)
 {
-  csRef<iLight> light = scfQueryInterface<iLight> (object);
+  csRef<iLight> light = SCF_QUERY_INTERFACE (object, iLight);
   CS_ASSERT (light != 0);
   if (oldname) lights_hash.Delete (oldname, light);
   if (newname) lights_hash.Put (newname, light);

@@ -65,18 +65,6 @@ public:
   /// Handle keyboard events.
   bool OnKeyboard (iEvent &event);
 
-  /// Capture mouse events.
-  void EnableMouseCapture ();
-
-  /// Don't capture mouse events.
-  void DisableMouseCapture ();
-
-  /// Capture keyboard events.
-  void EnableKeyboardCapture ();
-
-  /// Don't capture keyboard events.
-  void DisableKeyboardCapture ();
-
   CS_EVENTHANDLER_NAMES("crystalspace.cegui")
   CS_EVENTHANDLER_NIL_CONSTRAINTS
 private:
@@ -86,9 +74,6 @@ private:
   csRef<iKeyComposer> compose;
   csSet<utf32_char> caughtCharKeys;
   csEventID CanvasResize;
-
-  bool mouseCapture;
-  bool keyboardCapture;
 
   static CEGUI::MouseButton CSMBtoCEMB (uint button);
 };

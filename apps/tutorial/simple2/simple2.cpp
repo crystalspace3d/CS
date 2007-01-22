@@ -118,7 +118,7 @@ bool Simple::OnKeyboard(iEvent& ev)
       // main runloop to stop. To do that we get the event queue from
       // the object registry and then post the event.
       csRef<iEventQueue> q = 
-        csQueryRegistry<iEventQueue> (GetObjectRegistry());
+        CS_QUERY_REGISTRY(GetObjectRegistry(), iEventQueue);
       if (q.IsValid()) q->GetEventOutlet()->Broadcast(
 	  csevQuit(GetObjectRegistry()));
     }
@@ -182,19 +182,19 @@ bool Simple::SetupModules()
   // from the object registry. The RequestPlugins() call we did earlier
   // registered all loaded plugins with the object registry.
   // The virtual clock.
-  g3d = csQueryRegistry<iGraphics3D> (GetObjectRegistry());
+  g3d = CS_QUERY_REGISTRY(GetObjectRegistry(), iGraphics3D);
   if (!g3d) return ReportError("Failed to locate 3D renderer!");
 
-  engine = csQueryRegistry<iEngine> (GetObjectRegistry());
+  engine = CS_QUERY_REGISTRY(GetObjectRegistry(), iEngine);
   if (!engine) return ReportError("Failed to locate 3D engine!");
 
-  vc = csQueryRegistry<iVirtualClock> (GetObjectRegistry());
+  vc = CS_QUERY_REGISTRY(GetObjectRegistry(), iVirtualClock);
   if (!vc) return ReportError("Failed to locate Virtual Clock!");
 
-  kbd = csQueryRegistry<iKeyboardDriver> (GetObjectRegistry());
+  kbd = CS_QUERY_REGISTRY(GetObjectRegistry(), iKeyboardDriver);
   if (!kbd) return ReportError("Failed to locate Keyboard Driver!");
 
-  loader = csQueryRegistry<iLoader> (GetObjectRegistry());
+  loader = CS_QUERY_REGISTRY(GetObjectRegistry(), iLoader);
   if (!loader) return ReportError("Failed to locate Loader!");
 
   // We need a View to the virtual world.
@@ -285,7 +285,7 @@ void Simple::CreateSprites ()
   sprite->GetMovable ()->SetTransform (m);
   sprite->GetMovable ()->UpdateMove ();
   csRef<iSprite3DState> spstate (
-    scfQueryInterface<iSprite3DState> (sprite->GetMeshObject ()));
+    SCF_QUERY_INTERFACE (sprite->GetMeshObject (), iSprite3DState));
   spstate->SetAction ("default");
   //spstate->SetMixMode (CS_FX_SETALPHA (.5));
 

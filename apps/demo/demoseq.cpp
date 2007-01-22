@@ -56,7 +56,7 @@ DemoSequenceManager::DemoSequenceManager (Demo* demo)
   loader = 0;
   iObjectRegistry* object_reg = demo->object_reg;
   csRef<iPluginManager> plugin_mgr (
-  	csQueryRegistry<iPluginManager> (object_reg));
+  	CS_QUERY_REGISTRY (object_reg, iPluginManager));
   seqmgr = CS_LOAD_PLUGIN (plugin_mgr, "crystalspace.utilities.sequence",
   	iSequenceManager);
   if (!seqmgr)
@@ -643,7 +643,7 @@ void DemoSequenceManager::SetupRotatePart (iMeshWrapper* mesh,
 	float angle_speed, csTicks total_rotate_time, csTicks already_elapsed)
 {
   MeshRotation* mrot = new MeshRotation ();
-  mrot->particle = scfQueryInterface<iParticle> (mesh->GetMeshObject ());
+  mrot->particle = SCF_QUERY_INTERFACE (mesh->GetMeshObject (), iParticle);
   if (!mrot->particle)
   {
     delete mrot;

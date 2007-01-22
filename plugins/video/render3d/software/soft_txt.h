@@ -24,6 +24,7 @@
 #include "csplugincommon/render3d/txtmgr.h"
 #include "csplugincommon/softshader/texture.h"
 #include "csutil/blockallocator.h"
+#include "csutil/debug.h"
 #include "csutil/hashr.h"
 #include "igraphic/image.h"
 #include "ivideo/graph2d.h"
@@ -215,11 +216,8 @@ public:
    */
   virtual int GetTextureFormat ();
 
-  virtual csPtr<iTextureHandle> RegisterTexture (iImage* image, int flags,
-      iString* fail_reason = 0);
-  virtual csPtr<iTextureHandle> CreateTexture (int w, int h,
-      csImageType imagetype, const char* format, int flags,
-      iString* fail_reason = 0);
+  ///
+  virtual csPtr<iTextureHandle> RegisterTexture (iImage* image, int flags);
 
   virtual csPtr<iSuperLightmap> CreateSuperLightmap (int width, 
     int height);

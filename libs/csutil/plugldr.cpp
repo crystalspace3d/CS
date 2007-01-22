@@ -231,8 +231,8 @@ csPluginLoader::~csPluginLoader ()
 bool csPluginLoader::LoadPlugins ()
 {
   // Collect all options from command line
-  csRef<iCommandLineParser> CommandLine (
-  	csQueryRegistry<iCommandLineParser> (object_reg));
+  csRef<iCommandLineParser> CommandLine (CS_QUERY_REGISTRY (object_reg,
+  	iCommandLineParser));
   CS_ASSERT (CommandLine != 0);
 
   // The list of plugins
@@ -294,7 +294,7 @@ bool csPluginLoader::LoadPlugins ()
   }
 
   // Now load and initialize all plugins
-  csRef<iConfigManager> Config (csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> Config (CS_QUERY_REGISTRY (object_reg, iConfigManager));
   csRef<iConfigIterator> plugin_list (Config->Enumerate ("System.Plugins."));
   if (plugin_list)
   {
@@ -311,7 +311,7 @@ bool csPluginLoader::LoadPlugins ()
     }
   }
 
-  csRef<iVFS> VFS (csQueryRegistry<iVFS> (object_reg));
+  csRef<iVFS> VFS (CS_QUERY_REGISTRY (object_reg, iVFS));
 
   // Check all requested plugins and see if there is already
   // a plugin with that tag present. If not we add it.
@@ -344,7 +344,7 @@ bool csPluginLoader::LoadPlugins ()
   }
 
   csRef<iPluginManager> plugin_mgr (
-  	csQueryRegistry<iPluginManager> (object_reg));
+  	CS_QUERY_REGISTRY (object_reg, iPluginManager));
 
   // Load all plugins
   for (n = 0; n < PluginList.Length (); n++)

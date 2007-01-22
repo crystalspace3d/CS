@@ -39,7 +39,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -113,7 +112,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -185,7 +183,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -257,7 +254,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -309,20 +305,20 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\utilities\bugplug\bugplug.cpp">
+				RelativePath="..\..\plugins\bugplug\bugplug.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\utilities\bugplug\shadow.cpp">
+				RelativePath="..\..\plugins\bugplug\shadow.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\utilities\bugplug\bugplug.h">
+				RelativePath="..\..\plugins\bugplug\bugplug.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\utilities\bugplug\shadow.h">
+				RelativePath="..\..\plugins\bugplug\shadow.h">
 			</File>
 		</Filter>
 		<Filter
@@ -332,7 +328,7 @@
 				RelativePath="..\..\mk\msvc\plgbugplug.rc">
 			</File>
 			<File
-				RelativePath="..\..\plugins\utilities\bugplug\bugplug.csplugin">
+				RelativePath="..\..\plugins\bugplug\bugplug.csplugin">
 			</File>
 		</Filter>
 	</Files>

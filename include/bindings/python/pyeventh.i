@@ -21,16 +21,21 @@
 #ifndef CS_MICRO_SWIG
 
 #ifndef SWIGIMPORTED
-%template (csPyEventHandlerParent) scfImplementation1<_csPyEventHandler, iEventHandler>;
 %inline %{
 
-
-  struct _csPyEventHandler : public scfImplementation1<_csPyEventHandler, iEventHandler>
+  struct _csPyEventHandler : public iEventHandler
   {
-    _csPyEventHandler (PyObject * obj) : scfImplementationType(this), _pySelf(obj)
-    { }
+    SCF_DECLARE_IBASE;
+    _csPyEventHandler (PyObject * obj) : _pySelf(obj)
+    {
+      SCF_CONSTRUCT_IBASE(0);
+      IncRef();
+    }
     virtual ~_csPyEventHandler ()
-    { }
+    {
+      SCF_DESTRUCT_IBASE();
+      DecRef();
+    }
     virtual bool HandleEvent (iEvent & event)
     {
       PyObject * event_obj = SWIG_NewPointerObj(
@@ -76,6 +81,12 @@
     PyObject * _pySelf;
   };
 
+%}
+
+%{
+  SCF_IMPLEMENT_IBASE(_csPyEventHandler)
+    SCF_IMPLEMENTS_INTERFACE(iEventHandler)
+  SCF_IMPLEMENT_IBASE_END
 %}
 
 %pythoncode %{

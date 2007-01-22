@@ -405,7 +405,7 @@ csHazeMeshObject::csHazeMeshObject (csHazeMeshObjectFactory* factory) :
 {
   csHazeMeshObject::factory = factory;
   logparent = 0;
-  ifactory = scfQueryInterface<iMeshObjectFactory> (factory);
+  ifactory = SCF_QUERY_INTERFACE (factory, iMeshObjectFactory);
   material = factory->GetMaterialWrapper ();
   MixMode = factory->GetMixMode ();
   initialized = false;
@@ -429,8 +429,8 @@ csHazeMeshObject::csHazeMeshObject (csHazeMeshObjectFactory* factory) :
   }
 
   csRef<iStringSet> strings;
-  strings = csQueryRegistryTagInterface<iStringSet>
-    (factory->object_reg, "crystalspace.shared.stringset");
+  strings = CS_QUERY_REGISTRY_TAG_INTERFACE (factory->object_reg,
+    "crystalspace.shared.stringset", iStringSet);
 
   if ((vertex_name == csInvalidStringID) ||
     (texel_name == csInvalidStringID) ||
@@ -886,7 +886,7 @@ csHazeMeshObjectFactory::~csHazeMeshObjectFactory ()
 csPtr<iMeshObject> csHazeMeshObjectFactory::NewInstance ()
 {
   csHazeMeshObject* cm = new csHazeMeshObject (this);
-  csRef<iMeshObject> im (scfQueryInterface<iMeshObject> (cm));
+  csRef<iMeshObject> im (SCF_QUERY_INTERFACE (cm, iMeshObject));
   cm->DecRef ();
   return csPtr<iMeshObject> (im);
 }
@@ -908,7 +908,7 @@ csPtr<iMeshObjectFactory> csHazeMeshObjectType::NewFactory ()
 {
   csHazeMeshObjectFactory* cm = new csHazeMeshObjectFactory (this);
   csRef<iMeshObjectFactory> ifact (
-  	scfQueryInterface<iMeshObjectFactory> (cm));
+  	SCF_QUERY_INTERFACE (cm, iMeshObjectFactory));
   cm->DecRef ();
   return csPtr<iMeshObjectFactory> (ifact);
 }

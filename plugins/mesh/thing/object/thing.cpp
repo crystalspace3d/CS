@@ -32,6 +32,7 @@
 #include "csutil/csendian.h"
 #include "csutil/csmd5.h"
 #include "csutil/csstring.h"
+#include "csutil/debug.h"
 #include "csutil/dirtyaccessarray.h"
 #include "csutil/hash.h"
 #include "csutil/memfile.h"
@@ -169,7 +170,7 @@ csThingStatic::csThingStatic (iBase* parent, csThingObjectType* thing_type) :
 
   mixmode = (uint)~0;   // Just a marker meaning not set.
 
-  r3d = csQueryRegistry<iGraphics3D> (thing_type->object_reg);
+  r3d = CS_QUERY_REGISTRY (thing_type->object_reg, iGraphics3D);
 
   if ((texLightmapName == csInvalidStringID))
   {
@@ -2823,16 +2824,16 @@ csThingObjectType::~csThingObjectType ()
 bool csThingObjectType::Initialize (iObjectRegistry *object_reg)
 {
   csThingObjectType::object_reg = object_reg;
-  csRef<iEngine> e = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> e = CS_QUERY_REGISTRY (object_reg, iEngine);
   engine = e;   // We don't want a real ref here to avoid circular refs.
-  csRef<iGraphics3D> g = csQueryRegistry<iGraphics3D> (object_reg);
+  csRef<iGraphics3D> g = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   G3D = g;
   if (!g) return false;
 
   lightpatch_pool = new csLightPatchPool ();
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr)
     csThingObjectType::do_verbose = verbosemgr->Enabled ("thing");
 
@@ -2863,8 +2864,8 @@ bool csThingObjectType::Initialize (iObjectRegistry *object_reg)
     Notify ("Lightmapping enabled=%d", (int)csThing::lightmap_enabled);
   }
 
-  stringset = csQueryRegistryTagInterface<iStringSet> (
-    object_reg, "crystalspace.shared.stringset");
+  stringset = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    object_reg, "crystalspace.shared.stringset", iStringSet);
 
   shadermgr = csQueryRegistry<iShaderManager> (object_reg);
 
@@ -2880,8 +2881,8 @@ void csThingObjectType::Clear ()
 csPtr<iMeshObjectFactory> csThingObjectType::NewFactory ()
 {
   csThingStatic *cm = new csThingStatic (this, this);
-  csRef<iMeshObjectFactory> ifact (
-    scfQueryInterface<iMeshObjectFactory> (cm));
+  csRef<iMeshObjectFactory> ifact (SCF_QUERY_INTERFACE (
+      cm, iMeshObjectFactory));
   cm->DecRef ();
   return csPtr<iMeshObjectFactory> (ifact);
 }

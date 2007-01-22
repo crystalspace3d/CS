@@ -164,29 +164,6 @@ public:
 };
 
 /**
- * A helper template to use const pointers as keys for hashes.
- */
-template <typename T>
-class csConstPtrKey
-{
-  const T* ptr;
-public:
-  csConstPtrKey () : ptr(0) {}
-  csConstPtrKey (const T* ptr) : ptr(ptr) {}
-  csConstPtrKey (csConstPtrKey const& other) : ptr (other.ptr) {}
-
-  uint GetHash () const { return (uintptr_t)ptr; }
-  inline friend bool operator < (const csConstPtrKey& r1, const csConstPtrKey& r2)
-  { return r1.ptr < r2.ptr; }
-  operator const T* () const
-  { return ptr; }
-  const T* operator -> () const
-  { return ptr; }
-  csConstPtrKey& operator = (csConstPtrKey const& other)
-  { ptr = other.ptr; return *this; }
-};
-
-/**
  * Template that can be used as a base class for hash computers for 
  * string types (must support cast to const char*).
  * Example:
@@ -278,12 +255,6 @@ template <class T, class K = unsigned int,
   class ArrayMemoryAlloc = CS::Memory::AllocatorMalloc> 
 class csHash
 {
-public:
-  typedef csHash<T, K, ArrayMemoryAlloc> ThisType;
-  typedef T ValueType;
-  typedef K KeyType;
-  typedef ArrayMemoryAlloc AllocatorType;
-
 protected:
   struct Element
   {

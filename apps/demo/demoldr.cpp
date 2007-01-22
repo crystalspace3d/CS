@@ -106,7 +106,7 @@ DemoSequenceLoader::DemoSequenceLoader (Demo* demo,
   }
 
   csRef<iDocumentSystem> xml (
-  	csQueryRegistry<iDocumentSystem> (demo->object_reg));
+  	CS_QUERY_REGISTRY (demo->object_reg, iDocumentSystem));
   if (!xml) xml = csPtr<iDocumentSystem> (new csTinyDocumentSystem ());
   csRef<iDocument> doc = xml->CreateDocument ();
   const char* error = doc->Parse (buf, true);
@@ -514,7 +514,7 @@ csNamedPath* DemoSequenceLoader::LoadPath (iDocumentNode* node,
 	  exit (0);
 	}
 	csRef<iDocumentSystem> xml (
-		csQueryRegistry<iDocumentSystem> (demo->object_reg));
+		CS_QUERY_REGISTRY (demo->object_reg, iDocumentSystem));
 	if (!xml) xml = csPtr<iDocumentSystem> (new csTinyDocumentSystem ());
 	csRef<iDocument> doc = xml->CreateDocument ();
 	const char* error = doc->Parse (buf, true);

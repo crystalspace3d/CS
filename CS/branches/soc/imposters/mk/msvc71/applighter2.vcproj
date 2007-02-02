@@ -318,6 +318,9 @@
 				RelativePath="..\..\apps\tools\lighter2\kdtree.cpp">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\light.cpp">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\lighter.cpp">
 			</File>
 			<File
@@ -327,13 +330,13 @@
 				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radobject.cpp">
+				RelativePath="..\..\apps\tools\lighter2\object.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radobject_genmesh.cpp">
+				RelativePath="..\..\apps\tools\lighter2\object_genmesh.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radprimitive.cpp">
+				RelativePath="..\..\apps\tools\lighter2\primitive.cpp">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\raytracer.cpp">
@@ -361,6 +364,9 @@
 				RelativePath="..\..\apps\tools\lighter2\kdtree.h">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\light.h">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\lighter.h">
 			</File>
 			<File
@@ -376,22 +382,22 @@
 				RelativePath="..\..\apps\tools\lighter2\lightprop.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radobject.h">
+				RelativePath="..\..\apps\tools\lighter2\object.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radobject_genmesh.h">
+				RelativePath="..\..\apps\tools\lighter2\object_genmesh.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radpatch.h">
-			</File>
-			<File
-				RelativePath="..\..\apps\tools\lighter2\radprimitive.h">
+				RelativePath="..\..\apps\tools\lighter2\primitive.h">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\raygenerator.h">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\raytracer.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\sampler.h">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\scene.h">

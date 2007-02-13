@@ -71,6 +71,7 @@
 				TypeLibraryName="..\..\out\release8\build\plgemitldr\plgemitldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\release8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\emitldr.dll&quot; &quot;..\..\out\release8\bin\emitldr.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -142,6 +143,7 @@
 				TypeLibraryName="..\..\out\debug8\build\plgemitldr\plgemitldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\emitldr.dll&quot; &quot;..\..\out\debug8\bin\emitldr.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -213,6 +215,7 @@
 				TypeLibraryName="..\..\out\debug8\build\plgemitldr\plgemitldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\emitldr.dll&quot; &quot;..\..\out\debug8\bin\emitldr.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -284,6 +287,7 @@
 				TypeLibraryName="..\..\out\debug8\build\plgemitldr\plgemitldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\emitldr.dll&quot; &quot;..\..\out\debug8\bin\emitldr.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

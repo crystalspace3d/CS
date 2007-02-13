@@ -71,6 +71,7 @@
 				TypeLibraryName="..\..\out\release7\build\plgbezier\plgbezier.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\release7\bin&quot;&#x0D;&#x0A;copy &quot;..\..\bezier.dll&quot; &quot;..\..\out\release7\bin\bezier.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -142,6 +143,7 @@
 				TypeLibraryName="..\..\out\debug7\build\plgbezier\plgbezier.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug7\bin&quot;&#x0D;&#x0A;copy &quot;..\..\bezier.dll&quot; &quot;..\..\out\debug7\bin\bezier.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -213,6 +215,7 @@
 				TypeLibraryName="..\..\out\debug7\build\plgbezier\plgbezier.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug7\bin&quot;&#x0D;&#x0A;copy &quot;..\..\bezier.dll&quot; &quot;..\..\out\debug7\bin\bezier.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -284,6 +287,7 @@
 				TypeLibraryName="..\..\out\debug7\build\plgbezier\plgbezier.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug7\bin&quot;&#x0D;&#x0A;copy &quot;..\..\bezier.dll&quot; &quot;..\..\out\debug7\bin\bezier.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

@@ -507,6 +507,9 @@
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\shader\weavertypes.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\sndsys\convert.cpp">
 			</File>
 			<File
@@ -690,10 +693,16 @@
 				RelativePath="..\..\libs\csutil\csuctransform.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\deprecated_macros.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\dlmalloc.c">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\documentcommon.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\documenthelper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\event.cpp">
@@ -1216,6 +1225,12 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderprogram.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavercombiner.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavertypes.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\sndsys\convert.h">
 			</File>
 			<File
@@ -1367,6 +1382,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\bitarray.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\bitops.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\blockallocator.h">
@@ -1663,6 +1681,9 @@
 				RelativePath="..\..\libs\..\include\csutil\schedule.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\scopeddelete.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\scopedmutexlock.h">
 			</File>
 			<File
@@ -1700,6 +1721,18 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_ppc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_x86.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_msvc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_sparc.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">

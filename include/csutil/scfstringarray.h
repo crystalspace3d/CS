@@ -49,7 +49,7 @@ public:
   /// Get array length.
   virtual size_t GetSize () const
   {
-    return v.GetSize ();
+    return v.Length ();
   }
 
   /**

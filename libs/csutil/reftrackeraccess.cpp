@@ -91,10 +91,4 @@ void csRefTrackerAccess::SetDescription (void* obj, const char* description)
   TRACKER_CALL2 (SetDescription, obj, description);
 }
 
-void csRefTrackerAccess::SetDescriptionWeak (void* obj, 
-					      const char* description)
-{
-  TRACKER_CALL2 (SetDescriptionWeak, obj, description);
-}
-
 #endif // CS_REF_TRACKER

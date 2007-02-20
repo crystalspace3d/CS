@@ -12,7 +12,7 @@ AC_PREREQ([2.56])
 # cs_version_number
 #	Keep this value synchronized with CS/include/csver.h.
 #------------------------------------------------------------------------------
-m4_define([cs_version_number], [1.1])
+m4_define([cs_version_number], [1.0.1])
 
 
 
@@ -75,11 +75,6 @@ AS_IF([test -n "$SWIG"],
     [CS_CHECK_PROG_VERSION([swig], [$SWIG -version 2>&1], [1.3.21],
 	[9.9|.9], [CS_EMIT_BUILD_PROPERTY([CMD.SWIG], [$SWIG])])])
 
-CS_CHECK_PROGS([RSVG], [rsvg])
-CS_EMIT_BUILD_PROPERTY([CMD.RSVG], [$RSVG])
-
-CS_CHECK_PROGS([CONVERT], [convert])
-CS_EMIT_BUILD_PROPERTY([CMD.CONVERT], [$CONVERT])
 
 
 #------------------------------------------------------------------------------
@@ -589,6 +584,20 @@ CS_EMIT_BUILD_FLAGS([how to export all dynamic symbols],
 
 
 #------------------------------------------------------------------------------
+# Check whether the linker needs -Bsymbolic. This binds "references to global 
+# symbols to the definition within the shared library" (from man ld). If this
+# flag is not set, it can happen that symbols in plugins get bound against
+# symbols from other modules (including the application executable itself),
+# causing side-effects such as violating the "memory allocation and freeing in
+# the same module" rule.
+#------------------------------------------------------------------------------
+CS_EMIT_BUILD_FLAGS([for -Bsymbolic linker flag],
+    [cs_cv_prog_link_Bsymbolic], [CS_CREATE_TUPLE([-Wl,-Bsymbolic])],
+    [C++], [COMPILER.LFLAGS], [+])
+
+
+
+#------------------------------------------------------------------------------
 # Check if linker recognizes --kill-at which is needed to make csjava.dll
 # usable by JNI on Windows.  Without this, JNI is unable to find the exported
 # JNI glue functions in csjava.dll.
@@ -774,11 +783,9 @@ AS_IF([test $enable_cpu_specific_optimizations != no],
     [AC_CACHE_CHECK([for code generation flags], [cs_cv_prog_cxx_code_gen],
 	[cs_cv_prog_cxx_code_gen=no
 	AS_IF([test $enable_cpu_specific_optimizations = maximum],
-	    [CS_CHECK_CODE_GEN_FLAG([athlon], [-march=athlon -mtune=generic])
-	    CS_CHECK_CODE_GEN_FLAG([athlon], [-march=athlon])
+	    [CS_CHECK_CODE_GEN_FLAG([athlon], [-march=athlon])
 	    CS_CHECK_CODE_GEN_FLAG([athlon], [-mcpu=athlon -march=athlon])
 	    CS_CHECK_CODE_GEN_FLAG([athlon], [-mcpu=athlon])
-	    CS_CHECK_CODE_GEN_FLAG([*686], [-march=i686 -mtune=generic])
 	    CS_CHECK_CODE_GEN_FLAG([*686], [-march=i686])
 	    CS_CHECK_CODE_GEN_FLAG([*686], [-mcpu=pentiumpro -march=i686])
 	    CS_CHECK_CODE_GEN_FLAG([*686], [-mcpu=pentiumpro])
@@ -795,7 +802,6 @@ AS_IF([test $enable_cpu_specific_optimizations != no],
 	    CS_CHECK_CODE_GEN_FLAG([[*[3-9]86]], [-march=i686])])
 	CS_CHECK_CODE_GEN_FLAG([x86_64], [-march=k8])
 	CS_CHECK_CODE_GEN_FLAG([x86_64], [-mtune=k8])
-	CS_CHECK_CODE_GEN_FLAG([[*[5-6]86]], [-march=i586 -mtune=generic])
 	CS_CHECK_CODE_GEN_FLAG([[*[5-6]86]], [-march=i586])
 	CS_CHECK_CODE_GEN_FLAG([[*[5-6]86]], [-mcpu=pentium -march=i586])
 	CS_CHECK_CODE_GEN_FLAG([[*[5-6]86]], [-mcpu=pentium])
@@ -846,41 +852,6 @@ CS_CHECK_OPTIMIZE_FLAGS
 
 
 #------------------------------------------------------------------------------
-# Determine build mode; either "optimize", "debug", or "profile".
-#------------------------------------------------------------------------------
-AC_ARG_ENABLE([optimize], [AC_HELP_STRING([--enable-optimize],
-    [build with optimizations enabled (default YES);
-	same as --enable-mode=optimize])],
-    [test "$enableval" = "yes" && cs_build_mode=optimize])
-
-AC_ARG_ENABLE([debug], [AC_HELP_STRING([--enable-debug],
-    [build with debugging information (default NO);
-	same as --enable-mode=debug])],
-    [test "$enableval" = "yes" && cs_build_mode=debug])
-
-AC_ARG_ENABLE([profile], [AC_HELP_STRING([--enable-profile],
-    [build with profiling information (default NO);
-	same as --enable-mode=profile])],
-    [test "$enableval" = "yes" && cs_build_mode=profile])
-
-AC_ARG_ENABLE([mode], [AC_HELP_STRING([--enable-mode=mode],
-    [set build mode; recognized modes are `optimize', `debug', `profile'
-	(default OPTIMIZE)])],
-    [case $enableval in
-	optimize|debug|profile) cs_build_mode=$enableval ;;
-	*) CS_MSG_ERROR([m4_text_wrap(
-	    [unrecognized mode --enable-mode=$enableval;
-	    use `optimize', `debug', or `profile'], [    ], [[]], [60])]) ;;
-    esac])
-
-AC_MSG_CHECKING([build mode])
-AS_VAR_SET_IF([cs_build_mode], [], [cs_build_mode=optimize])
-AC_MSG_RESULT([$cs_build_mode])
-CS_EMIT_BUILD_PROPERTY([MODE], [$cs_build_mode])
-
-
-
-#------------------------------------------------------------------------------
 # Check for compiler debug flags.
 #------------------------------------------------------------------------------
 CS_CHECK_BINUTILS_2_17
@@ -889,14 +860,11 @@ AC_MSG_CHECKING([whether to split debug information])
 AC_ARG_ENABLE([separate-debug-info], 
     [AC_HELP_STRING([--enable-separate-debug-info],
         [split debug information into separate files. (default YES if 
-        binutils >= 2.17 and build mode not 'profile', 
-	otherwise default NO)])])
+        binutils >= 2.17, otherwise default NO)])])
 AS_IF([test -z "$enable_separate_debug_info"], 
-    [AS_IF([test "$cs_build_mode$" = "profile"],
-	[enable_separate_debug_info=no],
-	[AS_IF([test -z `uname | grep -i CYGWIN`],
-	    [enable_separate_debug_info=$cs_cv_binutils_2_17],
-	    [enable_separate_debug_info=$cs_cv_binutils_true_2_17])])])
+    AS_IF([test -z `uname | grep -i CYGWIN`],
+        [enable_separate_debug_info=$cs_cv_binutils_2_17],
+        [enable_separate_debug_info=$cs_cv_binutils_true_2_17]))
 AC_MSG_RESULT([$enable_separate_debug_info])
 
 CS_EMIT_BUILD_PROPERTY([LINK.DEBUG.INFO.SEPARATE],
@@ -1909,7 +1877,6 @@ AC_DEFUN([CS_CHECK_HOST_CPU],
     case $host_cpu in
 	[[Ii][3-9]86*|[Xx]86*]) cs_host_cpu=x86 ;;
 	powerpc*) cs_host_cpu=powerpc ;;
-	sparc*) cs_host_cpu=sparc ;;
 	*) cs_host_cpu=$host_cpu ;;
     esac
     cs_host_cpu_normalized="AS_TR_CPP([$cs_host_cpu])"])
@@ -2179,18 +2146,6 @@ CS_SYMBOL_QUALIFIER([how to declare pure functions],
 
 
 #------------------------------------------------------------------------------
-# Check if the "malloc" attribute is available.
-#------------------------------------------------------------------------------
-CS_SYMBOL_QUALIFIER([for "malloc" attribute],
-    [cs_cv_prog_c_attr_malloc],
-    [__attribute__((malloc))], [], [C])
-AS_IF([test $cs_cv_prog_c_attr_malloc != no],
-    [CS_HEADER_PROPERTY([CS_ATTRIBUTE_MALLOC],
-	[$cs_cv_prog_c_attr_malloc])])
-
-
-
-#------------------------------------------------------------------------------
 # CS_CHECK_QSQRT
 #	Check if compiler is able to understand the assembly code in csqsqrt.h.
 #	The MacOS/X PowerPC version of csQsqrt() requires the
@@ -2279,6 +2234,41 @@ AS_IF([test $enable_meta_info_embedding = yes],
     AC_CHECK_HEADERS([elf.h], [CS_HEADER_PROPERTY([CS_HAVE_ELF_H])])
     AS_IF([test "$cs_cv_libbfd_ok" = yes],
 	[CS_HEADER_PROPERTY([CS_HAVE_LIBBFD])])])
+
+
+
+#------------------------------------------------------------------------------
+# Determine build mode; either "optimize", "debug", or "profile".
+#------------------------------------------------------------------------------
+AC_ARG_ENABLE([optimize], [AC_HELP_STRING([--enable-optimize],
+    [build with optimizations enabled (default YES);
+	same as --enable-mode=optimize])],
+    [test "$enableval" = "yes" && cs_build_mode=optimize])
+
+AC_ARG_ENABLE([debug], [AC_HELP_STRING([--enable-debug],
+    [build with debugging information (default NO);
+	same as --enable-mode=debug])],
+    [test "$enableval" = "yes" && cs_build_mode=debug])
+
+AC_ARG_ENABLE([profile], [AC_HELP_STRING([--enable-profile],
+    [build with profiling information (default NO);
+	same as --enable-mode=profile])],
+    [test "$enableval" = "yes" && cs_build_mode=profile])
+
+AC_ARG_ENABLE([mode], [AC_HELP_STRING([--enable-mode=mode],
+    [set build mode; recognized modes are `optimize', `debug', `profile'
+	(default OPTIMIZE)])],
+    [case $enableval in
+	optimize|debug|profile) cs_build_mode=$enableval ;;
+	*) CS_MSG_ERROR([m4_text_wrap(
+	    [unrecognized mode --enable-mode=$enableval;
+	    use `optimize', `debug', or `profile'], [    ], [[]], [60])]) ;;
+    esac])
+
+AC_MSG_CHECKING([build mode])
+AS_VAR_SET_IF([cs_build_mode], [], [cs_build_mode=optimize])
+AC_MSG_RESULT([$cs_build_mode])
+CS_EMIT_BUILD_PROPERTY([MODE], [$cs_build_mode])
 
 
 

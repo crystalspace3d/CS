@@ -291,7 +291,7 @@ csEventError csEvent::Retrieve (const char *name, csRef<iEvent> &v) const
   if (object->type == csEventAttrEvent)
   {
     iBase *b = object->ibaseVal;
-    v = scfQueryInterface<iEvent> (b);
+    v = SCF_QUERY_INTERFACE(b, iEvent);
     return csEventErrNone;
   }
   else
@@ -388,7 +388,7 @@ bool csEvent::Print (int level)
     if (object->type == csEventAttrEvent)
     {
       IndentLevel(level); csPrintf(" Sub-Event Contents:\n");
-      csRef<csEvent> csev = scfQueryInterface<csEvent> (object->ibaseVal);
+      csRef<csEvent> csev = SCF_QUERY_INTERFACE (object->ibaseVal, csEvent);
       if (csev)
 	csev->Print(level+1);
       else

@@ -28,7 +28,7 @@
 #include "csutil/array.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/stringarray.h"
-#include "csutil/threading/mutex.h"
+#include "csutil/thread.h"
 
 /**
  * This is an implementation of iObjectRegistry.
@@ -38,7 +38,7 @@ class CS_CRYSTALSPACE_EXPORT csObjectRegistry :
   public scfImplementation1<csObjectRegistry, iObjectRegistry>
 {
 private:
-  CS::Threading::RecursiveMutex mutex;
+  csRef<csMutex> mutex;
   csArray<iBase*> registry;
   csStringArray tags;
   // True when this object is being cleared; prevents external changes.

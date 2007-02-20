@@ -179,11 +179,11 @@ public:
   virtual char const* GetName () const
   { return name; }
   /// Get total number of frames in this action
-  virtual int GetFrameCount () { return (int)frames.GetSize (); }
+  virtual int GetFrameCount () { return (int)frames.Length (); }
   /// Query the frame number f.
   csSpriteFrame* GetCsFrame (int f)
   {
-    return ((size_t)f < frames.GetSize ())
+    return ((size_t)f < frames.Length ())
     	? frames [f]
 	: (csSpriteFrame*)0;
 	}
@@ -193,20 +193,20 @@ public:
     if (!reverse_action)
     {
       f++;
-      return (size_t)f<frames.GetSize () ? frames[f] : frames[0];
+      return (size_t)f<frames.Length() ? frames[f] : frames[0];
     }
     else
     {
       f--;
       return f>=0
         ? frames[f]
-	: frames[frames.GetSize ()-1];
+	: frames[frames.Length()-1];
     }
   }
   /// Query the frame number f.
   virtual iSpriteFrame* GetFrame (int f)
   {
-    return (iSpriteFrame*)(((size_t)f < frames.GetSize ())
+    return (iSpriteFrame*)(((size_t)f < frames.Length ())
     	? frames [f]
 	: (csSpriteFrame*)0);
   }
@@ -216,7 +216,7 @@ public:
     if (!reverse_action)
     {
       f++;
-      return (iSpriteFrame*)((size_t)f<frames.GetSize ()
+      return (iSpriteFrame*)((size_t)f<frames.Length()
       	? frames[f]
 	: frames[0]);
     }
@@ -225,7 +225,7 @@ public:
       f--;
       return (iSpriteFrame*)(f>=0
       	? frames[f]
-	: frames[frames.GetSize ()-1]);
+	: frames[frames.Length()-1]);
     }
   }
   /// Get delay for frame number f
@@ -544,11 +544,11 @@ public:
   /// find a named frame into the sprite.
   iSpriteFrame* FindFrame (const char * name) const;
   /// Query the number of frames
-  int GetFrameCount () const { return (int)frames.GetSize (); }
+  int GetFrameCount () const { return (int)frames.Length (); }
   /// Query the frame number f
   iSpriteFrame* GetFrame (int f) const
   {
-    return ((size_t)f < frames.GetSize ())
+    return ((size_t)f < frames.Length ())
   	? (csSpriteFrame *)frames [f]
 	: (csSpriteFrame*)0;
   }
@@ -562,7 +562,7 @@ public:
   { return (csSpriteAction2 *)actions [0]; }
   /// Get number of actions in sprite
   int GetActionCount () const
-  { return (int)actions.GetSize (); }
+  { return (int)actions.Length (); }
   /// Get action number No
   iSpriteAction* GetAction (int No) const
   { return (csSpriteAction2 *)actions [No]; }
@@ -574,11 +574,11 @@ public:
   /// find a socked based on the sprite attached to it
   iSpriteSocket* FindSocket (iMeshWrapper *mesh) const;
   /// Query the number of sockets
-  int GetSocketCount () const { return (int)sockets.GetSize (); }
+  int GetSocketCount () const { return (int)sockets.Length (); }
   /// Query the socket number f
   iSpriteSocket* GetSocket (int f) const
   {
-    return ((size_t)f < sockets.GetSize ())
+    return ((size_t)f < sockets.Length ())
   	? (csSpriteSocket *)sockets [f]
 	: (csSpriteSocket*)0;
   }
@@ -1398,11 +1398,11 @@ public:
   /// find a socked based on the sprite attached to it
   iSpriteSocket* FindSocket (iMeshWrapper *mesh) const;
   /// Query the number of sockets
-  int GetSocketCount () const { return (int)sockets.GetSize (); }
+  int GetSocketCount () const { return (int)sockets.Length (); }
   /// Query the socket number f
   iSpriteSocket* GetSocket (int f) const
   {
-    return ((size_t)f < sockets.GetSize ())
+    return ((size_t)f < sockets.Length ())
   	? (csSpriteSocket *)sockets [f]
 	: (csSpriteSocket*)0;
   }
@@ -1411,8 +1411,8 @@ public:
    * @{ */
   virtual iMeshObjectFactory* GetFactory () const
   {
-    csRef<iMeshObjectFactory> ifact (
-    	scfQueryInterface<iMeshObjectFactory> (factory));
+    csRef<iMeshObjectFactory> ifact (SCF_QUERY_INTERFACE (factory,
+    	iMeshObjectFactory));
     return ifact;	// DecRef is ok here.
   }
   virtual csFlags& GetFlags () { return flags; }
@@ -1461,10 +1461,6 @@ public:
    */
   virtual void PositionChild (iMeshObject* child,csTicks current_time);
   /** @} */
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-          iDecalBuilder* decalBuilder)
-  {
-  }
 
   virtual iObjectModel* GetObjectModel () { return factory->GetObjectModel (); }
 

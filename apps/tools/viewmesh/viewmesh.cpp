@@ -225,7 +225,7 @@ bool ViewMesh::OnKeyboard(iEvent& ev)
     if (code == CSKEY_ESC)
     {
       csRef<iEventQueue> q = 
-        csQueryRegistry<iEventQueue> (GetObjectRegistry());
+        CS_QUERY_REGISTRY(GetObjectRegistry(), iEventQueue);
       if (q.IsValid())
 	q->GetEventOutlet()->Broadcast(csevQuit(GetObjectRegistry()));
     }
@@ -247,7 +247,7 @@ void ViewMesh::Help ()
 void ViewMesh::HandleCommandLine()
 {
   csRef<iCommandLineParser> cmdline =
-    csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
+    CS_QUERY_REGISTRY(GetObjectRegistry(), iCommandLineParser);
 
   const char* libname;
   for (int i=0; (libname=cmdline->GetOption("L",i)); i++)
@@ -356,28 +356,28 @@ bool ViewMesh::Application()
   if (!OpenApplication(GetObjectRegistry()))
     return ReportError("Error opening system!");
 
-  g3d = csQueryRegistry<iGraphics3D> (GetObjectRegistry());
+  g3d = CS_QUERY_REGISTRY(GetObjectRegistry(), iGraphics3D);
   if (!g3d) return ReportError("Failed to locate 3D renderer!");
 
-  engine = csQueryRegistry<iEngine> (GetObjectRegistry());
+  engine = CS_QUERY_REGISTRY(GetObjectRegistry(), iEngine);
   if (!engine) return ReportError("Failed to locate 3D engine!");
 
-  vc = csQueryRegistry<iVirtualClock> (GetObjectRegistry());
+  vc = CS_QUERY_REGISTRY(GetObjectRegistry(), iVirtualClock);
   if (!vc) return ReportError("Failed to locate Virtual Clock!");
 
-  vfs = csQueryRegistry<iVFS> (GetObjectRegistry());
+  vfs = CS_QUERY_REGISTRY(GetObjectRegistry(), iVFS);
   if (!vfs) return ReportError("Failed to locate Virtual FileSystem!");
 
-  kbd = csQueryRegistry<iKeyboardDriver> (GetObjectRegistry());
+  kbd = CS_QUERY_REGISTRY(GetObjectRegistry(), iKeyboardDriver);
   if (!kbd) return ReportError("Failed to locate Keyboard Driver!");
 
-  loader = csQueryRegistry<iLoader> (GetObjectRegistry());
+  loader = CS_QUERY_REGISTRY(GetObjectRegistry(), iLoader);
   if (!loader) return ReportError("Failed to locate Loader!");
 
-  saver = csQueryRegistry<iSaver> (GetObjectRegistry());
+  saver = CS_QUERY_REGISTRY(GetObjectRegistry(), iSaver);
   if (!saver) return ReportError("Failed to locate Saver!");
 
-  cegui = csQueryRegistry<iCEGUI> (GetObjectRegistry());
+  cegui = CS_QUERY_REGISTRY(GetObjectRegistry(), iCEGUI);
   if (!cegui) return ReportError("Failed to locate CEGUI plugin");
   
   view.AttachNew(new csView (engine, g3d));
@@ -712,7 +712,7 @@ void ViewMesh::LoadSprite (const char* filename)
   }
   else
   {
-    wrap = scfQueryInterface<iMeshFactoryWrapper> (result);
+    wrap = SCF_QUERY_INTERFACE (result,iMeshFactoryWrapper);
   }
 
   if (!wrap) return;
@@ -725,13 +725,13 @@ void ViewMesh::LoadSprite (const char* filename)
       csVector3 v(0, 0, 0);
       spritewrapper = engine->CreateMeshWrapper(wrap, "MySprite", room, v);
 
-      cal3dsprite = scfQueryInterface<iSpriteCal3DFactoryState> (fact);
-      sprite = scfQueryInterface<iSprite3DFactoryState> (fact);
+      cal3dsprite = SCF_QUERY_INTERFACE(fact, iSpriteCal3DFactoryState);
+      sprite = SCF_QUERY_INTERFACE(fact, iSprite3DFactoryState);
       if (cal3dsprite || sprite)
       {
         iMeshObject* mesh = spritewrapper->GetMeshObject();
-        cal3dstate = scfQueryInterface<iSpriteCal3DState> (mesh);
-        state = scfQueryInterface<iSprite3DState> (mesh);
+        cal3dstate = SCF_QUERY_INTERFACE(mesh, iSpriteCal3DState);
+        state = SCF_QUERY_INTERFACE(mesh, iSprite3DState);
       }
       if (cal3dstate)
       {
@@ -779,7 +779,7 @@ void ViewMesh::SaveSprite (const char* filename, bool binary)
     factNode->SetAttribute("name", name);
 
   csRef<iFactory> factory = 
-    scfQueryInterface<iFactory> (meshfact->GetMeshObjectType());
+    SCF_QUERY_INTERFACE(meshfact->GetMeshObjectType(), iFactory);
 
   const char* pluginname = factory->QueryClassID();
 
@@ -888,7 +888,7 @@ void ViewMesh::AttachMesh (const char* file)
   }
   else
   {
-    factory = scfQueryInterface<iMeshFactoryWrapper> (result);
+    factory = SCF_QUERY_INTERFACE (result,iMeshFactoryWrapper);
   }
 
   if (!factory) return;

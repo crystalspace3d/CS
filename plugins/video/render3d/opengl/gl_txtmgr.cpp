@@ -21,6 +21,7 @@
 #include "cssysdef.h"
 #include "csutil/array.h"
 #include "csutil/databuf.h"
+#include "csutil/debug.h"
 #include "csutil/util.h"
 #include "csgfx/bakekeycolor.h"
 #include "csgfx/imagecubemapmaker.h"
@@ -39,7 +40,7 @@
 #include "gl_render3d.h"
 #include "gl_txtmgr.h"
 
-CS_LEAKGUARD_IMPLEMENT(csGLBasicTextureHandle);
+CS_LEAKGUARD_IMPLEMENT(csGLTextureHandle);
 CS_LEAKGUARD_IMPLEMENT(csGLRendererLightmap);
 CS_LEAKGUARD_IMPLEMENT(csGLSuperLightmap);
 CS_LEAKGUARD_IMPLEMENT(csGLTextureManager);
@@ -56,17 +57,13 @@ CS_IMPLEMENT_STATIC_VAR (GetRLMAlloc, csRLMAlloc, ())
 
 //---------------------------------------------------------------------------
 
-csGLBasicTextureHandle::csGLBasicTextureHandle (
-    csImageType imagetype, int flags, csGLGraphics3D *iG3D) : 
-  scfImplementationType (this), uploadData(0), 
+csGLTextureHandle::csGLTextureHandle (iImage* image, int flags, 
+				      csGLGraphics3D *iG3D) : 
+  scfImplementationType (this), origName(0), uploadData(0), 
   texFormat((TextureBlitDataFormat)-1)
 {
-  G3D = iG3D;
-  txtmgr = G3D->txtmgr;
-  Handle = 0;
-  textureClass = txtmgr->GetTextureClassID ("default");
-
-  switch (imagetype)
+  this->image = image;
+  switch (image->GetImageType())
   {
     case csimgCube:
       target = CS_TEX_IMG_CUBEMAP;
@@ -78,6 +75,11 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (
       target = CS_TEX_IMG_2D;
       break;
   }
+  G3D = iG3D;
+  txtmgr = G3D->txtmgr;
+  Handle = 0;
+  textureClass = txtmgr->GetTextureClassID ("default");
+
   const uint npotsNeededFlags = (CS_TEXTURE_NOMIPMAPS | CS_TEXTURE_CLAMP);
   if (flags & CS_TEXTURE_NPOTS)
   {
@@ -87,38 +89,56 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (
       (G3D->ext->CS_GL_ARB_texture_rectangle
       || G3D->ext->CS_GL_EXT_texture_rectangle
       || G3D->ext->CS_GL_NV_texture_rectangle
-      || txtmgr->enableNonPowerOfTwo2DTextures
-      || G3D->ext->CS_GL_ARB_texture_non_power_of_two)
-      // Certain additional texture flags, unless we have ARB_tnpot
-      && (((flags & npotsNeededFlags) == npotsNeededFlags) 
-        || G3D->ext->CS_GL_ARB_texture_non_power_of_two))
-      // A 2D image, unless we have ARB_tnpot
-      && ((imagetype == csimg2D)
-        || G3D->ext->CS_GL_ARB_texture_non_power_of_two);
+      || txtmgr->enableNonPowerOfTwo2DTextures)
+      // Certain additional texture flags
+      && ((flags & npotsNeededFlags) == npotsNeededFlags))
+      // A 2D image
+      && (image->GetImageType() == csimg2D);
     if (!npotsValid)
     {
       flags &= ~CS_TEXTURE_NPOTS;
     }
-    else if (!txtmgr->enableNonPowerOfTwo2DTextures
-      && !G3D->ext->CS_GL_ARB_texture_non_power_of_two)
+    else if (!txtmgr->enableNonPowerOfTwo2DTextures)
       /* Note that 'enableNonPowerOfTwo2DTextures' is the flag for ATI's
        * support of non-POT _2D_ textures; that is, the textures, being
-       * NPOTS, need to go to the 2D target, not RECT. 
-       * Same when ARB_tnpot is available. */
+       * NPOTS, need to go to the 2D target, not RECT. */
       target = CS_TEX_IMG_RECT;
   }
   texFlags.Set (flagsPublicMask, flags);
 
   transp_color.red = transp_color.green = transp_color.blue = 0;
+  if (image->GetFormat () & CS_IMGFMT_ALPHA)
+    alphaType = csAlphaMode::alphaSmooth;
+  else if (image->HasKeyColor ())
+    alphaType = csAlphaMode::alphaBinary;
+  else
+    alphaType = csAlphaMode::alphaNone;
+
+  if (image->HasKeyColor())
+    SetTransp (true);
 }
 
-csGLBasicTextureHandle::~csGLBasicTextureHandle()
+csGLTextureHandle::csGLTextureHandle (int target, GLuint Handle, 
+				      csGLGraphics3D *iG3D) : 
+  scfImplementationType (this), origName(0), uploadData(0), 
+  texFormat((TextureBlitDataFormat)-1)
+{
+  G3D = iG3D;
+  txtmgr = G3D->txtmgr;
+  this->target = target;
+  csGLTextureHandle::Handle = Handle;
+  alphaType = csAlphaMode::alphaNone;
+  SetForeignHandle (true);
+}
+
+csGLTextureHandle::~csGLTextureHandle()
 {
   Clear ();
   txtmgr->UnregisterTexture (this);
+  delete[] origName;
 }
 
-void csGLBasicTextureHandle::Clear()
+void csGLTextureHandle::Clear()
 {
   if (uploadData != 0)
   {
@@ -128,12 +148,27 @@ void csGLBasicTextureHandle::Clear()
   Unload ();
 }
 
-int csGLBasicTextureHandle::GetFlags () const
+void csGLTextureHandle::FreeImage ()
+{
+  if (image.IsValid()) 
+  {
+    origName = csStrNew (image->GetName());
+    if (IsTransp() && !IsTranspSet())
+    {
+      int r,g,b;
+      image->GetKeyColor (r,g,b);
+      SetKeyColor (r, g, b);
+    }						 
+  }
+  image = 0;
+}
+
+int csGLTextureHandle::GetFlags () const
 {
   return texFlags.Get() & flagsPublicMask;
 }
 
-void csGLBasicTextureHandle::SetKeyColor (bool Enable)
+void csGLTextureHandle::SetKeyColor (bool Enable)
 {
   SetTransp (Enable);
   SetTexupdateNeeded (true);
@@ -143,7 +178,7 @@ void csGLBasicTextureHandle::SetKeyColor (bool Enable)
     alphaType = csAlphaMode::alphaNone;
 }
 
-void csGLBasicTextureHandle::SetKeyColor (uint8 red, uint8 green, uint8 blue)
+void csGLTextureHandle::SetKeyColor (uint8 red, uint8 green, uint8 blue)
 {
   transp_color.red = red;
   transp_color.green = green;
@@ -153,28 +188,43 @@ void csGLBasicTextureHandle::SetKeyColor (uint8 red, uint8 green, uint8 blue)
   texFlags.Set (flagTransp | flagTranspSet | flagTexupdateNeeded);
 }
 
-bool csGLBasicTextureHandle::GetKeyColor () const
+bool csGLTextureHandle::GetKeyColor () const
 {
   return IsTransp();
 }
 
-void csGLBasicTextureHandle::GetKeyColor (uint8 &red,
-	uint8 &green, uint8 &blue) const
+void csGLTextureHandle::GetKeyColor (uint8 &red, uint8 &green, uint8 &blue) const
 {
-  red = transp_color.red;
-  green = transp_color.green;
-  blue = transp_color.blue;
+  if (image.IsValid() && image->HasKeyColor() && !IsTranspSet ())
+  {
+    int r,g,b;
+    image->GetKeyColor (r,g,b);
+    red = r; green = g; blue = b;
+  }
+  else
+  {
+    red = transp_color.red;
+    green = transp_color.green;
+    blue = transp_color.blue;
+  }
 }
 
-bool csGLBasicTextureHandle::GetRendererDimensions (int &mw, int &mh)
+bool csGLTextureHandle::GetRendererDimensions (int &mw, int &mh)
 {
   AdjustSizePo2 ();
   mw = actual_width; mh = actual_height;
   return true;
 }
 
+void csGLTextureHandle::GetOriginalDimensions (int& mw, int& mh)
+{
+  AdjustSizePo2 ();
+  mw = orig_width;
+  mh = orig_height;
+}
+
 // Check the two below for correctness
-bool csGLBasicTextureHandle::GetRendererDimensions (int &mw, int &mh, int &md)
+bool csGLTextureHandle::GetRendererDimensions (int &mw, int &mh, int &md)
 {
   AdjustSizePo2 ();
   mw = actual_width;
@@ -183,12 +233,28 @@ bool csGLBasicTextureHandle::GetRendererDimensions (int &mw, int &mh, int &md)
   return true;
 }
 
-void *csGLBasicTextureHandle::GetPrivateObject ()
+void csGLTextureHandle::GetOriginalDimensions (int& mw, int& mh, int &md)
 {
-  return (csGLBasicTextureHandle *)this;
+  AdjustSizePo2 ();
+  mw = orig_width;
+  mh = orig_height;
+  md = orig_d;
 }
 
-bool csGLBasicTextureHandle::GetAlphaMap () 
+const char* csGLTextureHandle::GetImageName () const
+{
+  if (image.IsValid()) 
+    return image->GetName();
+  else
+    return origName;
+}
+
+void *csGLTextureHandle::GetPrivateObject ()
+{
+  return (csGLTextureHandle *)this;
+}
+
+bool csGLTextureHandle::GetAlphaMap () 
 {
   return (alphaType != csAlphaMode::alphaNone);
 }
@@ -215,664 +281,139 @@ static void ComputeNewPo2ImageSize (int texFlags,
     newdepth = max_tex_size;
 }
 
-csRef<iImage> csGLBasicTextureHandle::PrepareIntImage (
-    int actual_width, int actual_height, int actual_depth, iImage* srcimage,
-    csAlphaMode::AlphaType newAlphaType)
+void csGLTextureHandle::PrepareInt ()
 {
-  csRef<iImage> newImage;
-  if (actual_width != srcimage->GetWidth () || actual_height != srcimage->GetHeight () 
-      || actual_depth != srcimage->GetDepth ())
+  //@@@ Images may be lost if preparing twice. Some better way of solving it?
+  if (!image.IsValid()) return;
+  if (IsPrepared ()) return;
+  SetPrepared (true);
+
+  if (IsTransp() && !IsTranspSet())
   {
-    newImage = csImageManipulate::Rescale (srcimage, actual_width, 
-	actual_height, actual_depth);
-  }
-  if (IsTransp())
+    int r,g,b;
+    image->GetKeyColor (r,g,b);
+    SetKeyColor (r, g, b);
+  }						 
+
+  // In opengl all textures, even non-mipmapped textures are required
+  // to be powers of 2.
+  AdjustSizePo2 ();
+
+  csAlphaMode::AlphaType newAlphaType = csAlphaMode::alphaNone;
+
+  // Do any resizing, if needed
+  if (image->GetImageType() == csimgCube)
   {
-    if (!newImage.IsValid()) 
-      newImage.AttachNew (new csImageMemory (srcimage));
-    // Set the alpha of keycolored images to 0.
-    PrepareKeycolor (newImage, transp_color, newAlphaType);
+    // Handle cube map faces
+    csRef<csImageCubeMapMaker> newCube;
+    int faceCount = MIN (image->HasSubImages() + 1, 6);
+    for (int i = 0; i < faceCount; i++)
+    {
+      int newFaceW, newFaceH, newFaceD;
+      csRef<iImage> imgFace = image->GetSubImage (i);
+      ComputeNewPo2ImageSize (texFlags.Get(), 
+	imgFace->GetWidth(), imgFace->GetHeight(), 1,
+	newFaceW, newFaceH, newFaceD, txtmgr->max_tex_size);
+      csRef<iImage> newFace;
+      if (newFaceW != newFaceH) newFaceH = newFaceW;
+      if ((newFaceW != imgFace->GetWidth()) 
+	|| (newFaceH != imgFace->GetHeight()))
+      {
+	newFace = csImageManipulate::Rescale (imgFace, 
+	  newFaceW, newFaceH);
+      }
+      if (IsTransp())
+      {
+	if (!newFace.IsValid()) 
+	  newFace.AttachNew (new csImageMemory (imgFace));
+	// Set the alpha of keycolored images to 0.
+	PrepareKeycolor (newFace, transp_color, newAlphaType);
+      }
+      if (newFace.IsValid())
+      {
+	// Create a new cube if we needed to resize one face.
+	if (!newCube.IsValid()) 
+	{
+	  newCube.AttachNew (new csImageCubeMapMaker ());
+	  newCube->SetName (image->GetName());
+	}
+	newCube->SetSubImage (i, newFace);
+      }
+    }
+    if (faceCount < 6) // Ensure at least the 6 faces.
+    {
+      newCube.AttachNew (new csImageCubeMapMaker ());
+      newCube->SetName (image->GetName());
+    }
+    if (newCube.IsValid())
+    {
+      for (int i = 0; i < faceCount; i++)
+      {
+	if (!newCube->SubImageSet (i))
+	  newCube->SetSubImage (i, image->GetSubImage (i));
+      }
+      image = newCube;
+    }
   }
-#if 0
-  // Avoid accessing the image data until really needed
   else
-    /* Check all alpha values for the actual alpha type.  */
-    CheckAlpha  (image->GetWidth(), image->GetHeight(), 
+  {
+    csRef<iImage> newImage;
+    if (actual_width != orig_width || actual_height != orig_height 
+      || actual_d != orig_d)
+    {
+      newImage = csImageManipulate::Rescale (image, actual_width, 
+	actual_height, actual_d);
+    }
+    if (IsTransp())
+    {
+      if (!newImage.IsValid()) 
+	newImage.AttachNew (new csImageMemory (image));
+      // Set the alpha of keycolored images to 0.
+      PrepareKeycolor (newImage, transp_color, newAlphaType);
+    }
+  #if 0
+    // Avoid accessing the image data until really needed
+    else
+      /*
+	Check all alpha values for the actual alpha type.
+	*/
+      CheckAlpha  (image->GetWidth(), image->GetHeight(), 
 	(csRGBpixel*)image->GetImageData (), 0, newAlphaType);
-#endif
-  if (newImage.IsValid()) return newImage;
-  return 0;
+  #endif
+    if (newImage.IsValid()) image = newImage;
+  }
+  if (newAlphaType > alphaType) alphaType = newAlphaType;
+
+  CreateMipMaps ();
+  FreeImage ();
 }
 
-void csGLBasicTextureHandle::PrepareInt ()
+void csGLTextureHandle::AdjustSizePo2 ()
 {
-}
+  if (IsSizeAdjusted ()) return;
+  SetSizeAdjusted (true);
 
-GLenum csGLBasicTextureHandle::DetermineTargetFormat (GLenum defFormat, 
-						 bool allowCompress,
-						 const char* rawFormat, 
-						 bool& compressedFormat)
-{
-  GLenum targetFormat = defFormat;
-  compressedFormat = false;
+  //actual_d = orig_d = images->Length();
+  orig_width  = image->GetWidth();
+  orig_height = image->GetHeight();
+  orig_d = image->GetDepth();
 
-  if (rawFormat)
+  if (texFlags.Check (CS_TEXTURE_NPOTS)) 
   {
-    if (G3D->ext->CS_GL_EXT_texture_compression_s3tc 
-      && allowCompress)
-    {
-      if (strcmp (rawFormat, "*dxt1") == 0)
-      {
-	targetFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-	compressedFormat = true;
-      }
-      else if (strcmp (rawFormat, "*dxt1a") == 0)
-      {
-	targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-	compressedFormat = true;
-      }
-      else if (strcmp (rawFormat, "*dxt3") == 0)
-      {
-	targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-	compressedFormat = true;
-      }
-      else if (strcmp (rawFormat, "*dxt5") == 0)
-      {
-	targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-	compressedFormat = true;
-      }
-    }
-  }
-  return targetFormat;
-}
-
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_r8g8b8_i
-	= CS::TextureFormatStrings::ConvertStructured ("r8g8b8_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_b8g8r8_i
-	= CS::TextureFormatStrings::ConvertStructured ("b8g8r8_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_r5g6b5_i
-	= CS::TextureFormatStrings::ConvertStructured ("r5g6b5_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_a8r8g8b8_i
-	= CS::TextureFormatStrings::ConvertStructured ("a8r8g8b8_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_l8_i
-	= CS::TextureFormatStrings::ConvertStructured ("l8_i");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_dxt1
-	= CS::TextureFormatStrings::ConvertStructured ("*dxt1");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_dxt1a
-	= CS::TextureFormatStrings::ConvertStructured ("*dxt1a");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_dxt3
-	= CS::TextureFormatStrings::ConvertStructured ("*dxt3");
-CS::StructuredTextureFormat csGLBasicTextureHandle::fmt_dxt5
-	= CS::TextureFormatStrings::ConvertStructured ("*dxt5");
-
-bool csGLBasicTextureHandle::ConvertFormat2GL (const char* format,
-	csGLSource& src, GLenum& targetFormat, bool allowCompressed,
-	bool& compressed)
-{
-  CS::StructuredTextureFormat fmt = CS::TextureFormatStrings
-  	::ConvertStructured (format);
-  if (fmt == fmt_b8g8r8_i)
-  {
-    src.format = GL_RGB;
-    src.type = GL_UNSIGNED_BYTE;
-    return true;
-  }
-  if (fmt == fmt_l8_i)
-  {
-    src.format = GL_LUMINANCE;
-    src.type = GL_UNSIGNED_BYTE;
-    targetFormat = GL_LUMINANCE;
-    return true;
-  }
-  if (G3D->ext->CS_GL_version_1_2)
-  {
-    if (fmt == fmt_r8g8b8_i)
-    {
-      src.format = GL_BGR;
-      src.type = GL_UNSIGNED_BYTE;
-      return true;
-    }
-    else if (fmt == fmt_r5g6b5_i)
-    {
-      src.format = GL_RGB;
-      src.type = GL_UNSIGNED_SHORT_5_6_5;
-      return true;
-    }
-    else if (fmt == fmt_a8r8g8b8_i)
-    {
-      src.format = GL_BGRA;
-      src.type = GL_UNSIGNED_BYTE;
-      return true;
-    }
-  }
-  if (allowCompressed && G3D->ext->CS_GL_EXT_texture_compression_s3tc)
-  {
-   if (fmt == fmt_dxt1)
-    {
-      targetFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-      compressed = true;
-      return true;
-    }
-    else if (fmt == fmt_dxt1a)
-    {
-      targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-      compressed = true;
-      return true;
-    }
-    else if (fmt == fmt_dxt3)
-    {
-      targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      compressed = true;
-      return true;
-    }
-    else if (fmt == fmt_dxt3)
-    {
-      targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-      compressed = true;
-      return true;
-    }
-  }
-  return false;
-}
-
-bool csGLBasicTextureHandle::transform (bool allowCompressed, GLenum targetFormat, 
-				   iImage* Image, int mipNum, int imageNum)
-{
-  csGLUploadData& uploadData = this->uploadData->GetExtend (
-    this->uploadData->GetSize());
-  const char* rawFormat = Image->GetRawFormat();
-  if (rawFormat)
-  {
-    csRef<iDataBuffer> imageRaw = Image->GetRawData();
-    uploadData.dataRef = imageRaw;
-    if (ConvertFormat2GL (rawFormat, uploadData.source, targetFormat,
-	allowCompressed, uploadData.isCompressed))
-    {
-      uploadData.image_data = imageRaw->GetUint8();
-      if (uploadData.isCompressed)
-	uploadData.compressed.size = imageRaw->GetSize();
-    }
-  }
-
-  if (!uploadData.image_data)
-  {
-    if (csPackRGBA::IsRGBpixelSane())
-    {
-      uploadData.image_data = (uint8*)Image->GetImageData ();
-      uploadData.dataRef = Image;
-    }
-    else
-    {
-      const size_t numPix = 
-	Image->GetWidth() * Image->GetHeight() * Image->GetDepth();
-      csRef<csDataBuffer> newDataBuf;
-      newDataBuf.AttachNew (new csDataBuffer (numPix));
-      csPackRGBA::PackRGBpixelToRGBA (newDataBuf->GetUint8(),
-	(csRGBpixel*)Image->GetImageData(), numPix);
-      uploadData.image_data = newDataBuf->GetUint8();
-      uploadData.dataRef = newDataBuf;
-    }
-    //uploadData->size = n * 4;
-    uploadData.source.format = GL_RGBA;
-    uploadData.source.type = GL_UNSIGNED_BYTE;
-  }
-  uploadData.targetFormat = targetFormat;
-  uploadData.w = Image->GetWidth();
-  uploadData.h = Image->GetHeight();
-  uploadData.d = Image->GetDepth();
-  uploadData.mip = mipNum;
-  uploadData.imageNum = imageNum;
-  
-  //size += uploadData->size * d;
-  return true;
-}
-
-void csGLBasicTextureHandle::Blit (int x, int y, int width,
-    int height, unsigned char const* data, TextureBlitDataFormat format)
-{
-  // @@@ Keycolor not yet supported here!
-  
-  GLenum textarget = GetGLTextureTarget();
-  if ((textarget != GL_TEXTURE_2D) && (textarget != GL_TEXTURE_RECTANGLE_ARB))
+    actual_width = MIN(orig_width, G3D->maxNpotsTexSize);
+    actual_height = MIN(orig_height, G3D->maxNpotsTexSize);
+    actual_d = MIN(orig_d, G3D->maxNpotsTexSize);
     return;
-
-  // Activate the texture.
-  Precache ();
-  G3D->ActivateTexture (this);
-  GLuint textureFormat = (format == RGBA8888) ? GL_RGBA : GL_BGRA;
-  // Make sure mipmapping is ok.
-  if (!IsWasRenderTarget() || (texFormat != format))
-  {
-    texFormat = format;
-    bool isWholeImage = (x == 0) && (y == 0) && (width == actual_width)
-      && (height == actual_height);
-
-    // Pull texture data and set as RGBA/BGRA again, to prevent compression 
-    // (slooow) on subsequent glTexSubImage() calls.
-    if (!isWholeImage)
-    {
-      uint8* pixels = new uint8[actual_width * actual_height * 4];
-      glGetTexImage (textarget, 0, textureFormat, GL_UNSIGNED_BYTE, 
-	pixels);
-
-      if (!IsWasRenderTarget())
-      {
-	SetWasRenderTarget (true);
-	SetupAutoMipping();
-      }
-
-      glTexImage2D (textarget, 0, GL_RGBA8, actual_width, 
-	actual_height, 0, textureFormat, GL_UNSIGNED_BYTE, pixels);
-      delete[] pixels;
-    }
-    else
-    {
-      if (!IsWasRenderTarget())
-      {
-	SetWasRenderTarget (true);
-	SetupAutoMipping();
-      }
-
-      glTexImage2D (textarget, 0, GL_RGBA8, actual_width, 
-	actual_height, 0, textureFormat, GL_UNSIGNED_BYTE, data);
-      return;
-    }
   }
-  // Do the copy.
-  glTexSubImage2D (textarget, 0, x, y, 
-      width, height,
-      textureFormat, GL_UNSIGNED_BYTE, data);
-  //SetNeedMips (true);
-}
 
-void csGLBasicTextureHandle::SetupAutoMipping()
-{
-  // Set up mipmap generation
-  if ((!(texFlags.Get() & CS_TEXTURE_NOMIPMAPS))
-    /*&& (!G3D->ext->CS_GL_EXT_framebuffer_object)*/)
-  {
-    if (G3D->ext->CS_GL_SGIS_generate_mipmap)
-      glTexParameteri (GetGLTextureTarget(), GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-    else
-      glTexParameteri  (GetGLTextureTarget(), GL_TEXTURE_MIN_FILTER,
-	txtmgr->rstate_bilinearmap ? GL_LINEAR : GL_NEAREST);
-  }
-}
+  int newwidth, newheight, newd;
 
-void csGLBasicTextureHandle::Load ()
-{
-  if (Handle != 0) return;
+  ComputeNewPo2ImageSize (texFlags.Get(), orig_width, orig_height, orig_d, 
+    newwidth, newheight, newd, txtmgr->max_tex_size);
 
-  static const GLint textureMinFilters[3] = {GL_NEAREST_MIPMAP_NEAREST, 
-    GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR};
-  static const GLint textureMagFilters[3] = {GL_NEAREST, GL_LINEAR, 
-    GL_LINEAR};
-
-  glGenTextures (1, &Handle);
-
-  const int texFilter = texFlags.Check (CS_TEXTURE_NOFILTER) ? 0 : 
-    txtmgr->rstate_bilinearmap;
-  const GLint magFilter = textureMagFilters[texFilter];
-  const GLint minFilter = textureMinFilters[texFilter];
-  const GLint wrapMode = 
-    (texFlags.Check (CS_TEXTURE_CLAMP)) ? GL_CLAMP_TO_EDGE : GL_REPEAT;
-
-  if (target == CS_TEX_IMG_1D)
-  {
-    G3D->statecache->SetTexture (GL_TEXTURE_1D, Handle);
-    glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, wrapMode);
-    glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, magFilter);
-    glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, minFilter);
-
-    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
-    {
-      glTexParameterf (GL_TEXTURE_1D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-        txtmgr->texture_filter_anisotropy);
-    }
-
-    // @@@ Implement upload!
-  }
-  else if (target == CS_TEX_IMG_2D)
-  {
-    G3D->statecache->SetTexture (GL_TEXTURE_2D, Handle);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-      (texFlags.Check (CS_TEXTURE_NOMIPMAPS)) ? magFilter : minFilter);
-
-    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
-    {
-      glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-        txtmgr->texture_filter_anisotropy);
-    }
-
-    size_t i;
-    for (i = 0; i < uploadData->GetSize(); i++)
-    {
-      const csGLUploadData& uploadData = this->uploadData->Get (i);
-      if (uploadData.isCompressed)
-      {
-	G3D->ext->glCompressedTexImage2DARB (GL_TEXTURE_2D, uploadData.mip, 
-	  uploadData.targetFormat, uploadData.w, uploadData.h, 
-	  0, (GLsizei)uploadData.compressed.size, uploadData.image_data);
-      }
-      else
-      {
-	glTexImage2D (GL_TEXTURE_2D, uploadData.mip, 
-	  uploadData.targetFormat, 
-	  uploadData.w, uploadData.h, 0, uploadData.source.format, 
-	  uploadData.source.type, uploadData.image_data);
-      }
-    }
-  }
-  else if (target == CS_TEX_IMG_3D)
-  {
-    G3D->statecache->Enable_GL_TEXTURE_3D ();
-    G3D->statecache->SetTexture (GL_TEXTURE_3D, Handle);
-    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, wrapMode);
-    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, wrapMode);
-    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, wrapMode);
-
-    // @@@ Not sure if the following makes sense with 3D textures.
-    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, magFilter);
-    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER,
-      (texFlags.Check (CS_TEXTURE_NOMIPMAPS)) ? magFilter : minFilter);
-
-    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
-    {
-      glTexParameterf (GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-        txtmgr->texture_filter_anisotropy);
-    }
-
-    size_t i;
-    for (i = 0; i < uploadData->GetSize (); i++)
-    {
-      const csGLUploadData& uploadData = this->uploadData->Get (i);
-      if (uploadData.isCompressed)
-      {
-	G3D->ext->glCompressedTexImage3DARB (GL_TEXTURE_3D, uploadData.mip, 
-	  uploadData.targetFormat, uploadData.w, uploadData.h, 
-	  uploadData.d, 0, (GLsizei)uploadData.compressed.size, 
-	  uploadData.image_data);
-      }
-      else
-      {
-	G3D->ext->glTexImage3DEXT (GL_TEXTURE_3D, uploadData.mip, 
-	  uploadData.targetFormat, uploadData.w, uploadData.h, uploadData.d,
-	  0, uploadData.source.format, uploadData.source.type, 
-	  uploadData.image_data);
-      }
-    }
-  }
-  else if (target == CS_TEX_IMG_CUBEMAP)
-  {
-    G3D->statecache->SetTexture (GL_TEXTURE_CUBE_MAP, Handle);
-    // @@@ Temporarily force clamp, although I don't know if REPEAT
-    // makes sense with cubemaps.
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, 
-      GL_CLAMP_TO_EDGE/*wrapMode*/);
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, 
-      GL_CLAMP_TO_EDGE/*wrapMode*/);
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, 
-      GL_CLAMP_TO_EDGE/*wrapMode*/);
-
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, magFilter);
-
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER,
-      (texFlags.Check (CS_TEXTURE_NOMIPMAPS)) ? magFilter : minFilter);
-
-    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
-    {
-      glTexParameterf (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-        txtmgr->texture_filter_anisotropy);
-    }
-
-    size_t i;
-    for (i = 0; i < uploadData->GetSize (); i++)
-    {
-      const csGLUploadData& uploadData = this->uploadData->Get (i);
-
-      if (uploadData.isCompressed)
-      {
-	G3D->ext->glCompressedTexImage2DARB (
-	  GL_TEXTURE_CUBE_MAP_POSITIVE_X + uploadData.imageNum, 
-	  uploadData.mip, 
-	  uploadData.targetFormat, uploadData.w, uploadData.h, 
-	  0, (GLsizei)uploadData.compressed.size, uploadData.image_data);
-      }
-      else
-      {
-	glTexImage2D (GL_TEXTURE_CUBE_MAP_POSITIVE_X + uploadData.imageNum, 
-	  uploadData.mip, uploadData.targetFormat, 
-	  uploadData.w, uploadData.h,
-	  0, uploadData.source.format, uploadData.source.type,	
-	  uploadData.image_data);
-      }
-    }
-  }
-  else if (target == CS_TEX_IMG_RECT)
-  {
-    G3D->statecache->SetTexture (GL_TEXTURE_RECTANGLE_ARB, Handle);
-    glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, wrapMode);
-    glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, wrapMode);
-
-    glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, magFilter);
-    glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER,
-      (texFlags.Check (CS_TEXTURE_NOMIPMAPS)) ? magFilter : minFilter);
-
-    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
-    {
-      glTexParameterf (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-        txtmgr->texture_filter_anisotropy);
-    }
-
-    size_t i;
-    for (i = 0; i < uploadData->GetSize (); i++)
-    {
-      const csGLUploadData& uploadData = this->uploadData->Get (i);
-      if (uploadData.isCompressed)
-      {
-	G3D->ext->glCompressedTexImage2DARB (GL_TEXTURE_RECTANGLE_ARB, 
-          uploadData.mip, uploadData.targetFormat, uploadData.w, uploadData.h, 
-	  0, (GLsizei)uploadData.compressed.size, uploadData.image_data);
-      }
-      else
-      {
-	glTexImage2D (GL_TEXTURE_RECTANGLE_ARB, uploadData.mip, 
-	  uploadData.targetFormat, 
-	  uploadData.w, uploadData.h, 0, uploadData.source.format, 
-	  uploadData.source.type, uploadData.image_data);
-      }
-    }
-  }
-  delete uploadData; uploadData = 0;
-}
-
-void csGLBasicTextureHandle::Unload ()
-{
-  if ((Handle == 0) || IsForeignHandle()) return;
-  if (target == CS_TEX_IMG_1D)
-    csGLTextureManager::UnsetTexture (GL_TEXTURE_1D, Handle);
-  else if (target == CS_TEX_IMG_2D)
-    csGLTextureManager::UnsetTexture (GL_TEXTURE_2D, Handle);
-  else if (target == CS_TEX_IMG_3D)
-    csGLTextureManager::UnsetTexture (GL_TEXTURE_3D, Handle);
-  else if (target == CS_TEX_IMG_CUBEMAP)
-    csGLTextureManager::UnsetTexture (GL_TEXTURE_CUBE_MAP, Handle);
-  else if (target == CS_TEX_IMG_RECT)
-    csGLTextureManager::UnsetTexture (GL_TEXTURE_RECTANGLE_ARB, Handle);
-  glDeleteTextures (1, &Handle);
-  Handle = 0;
-}
-
-void csGLBasicTextureHandle::Precache ()
-{
-  PrepareInt ();
-  Load ();
-}
-
-void csGLBasicTextureHandle::SetTextureClass (const char* className)
-{
-  textureClass = txtmgr->GetTextureClassID (className ? className : "default");
-}
-
-const char* csGLBasicTextureHandle::GetTextureClass ()
-{
-  return txtmgr->GetTextureClassName (textureClass);
-}
-
-void csGLBasicTextureHandle::UpdateTexture ()
-{
-  Unload ();
-}
-
-GLuint csGLBasicTextureHandle::GetHandle ()
-{
-  Precache ();
-  if ((!(texFlags.Get() & CS_TEXTURE_NOMIPMAPS))
-    && (G3D->ext->CS_GL_EXT_framebuffer_object)
-    && IsNeedMips())
-  {
-    G3D->statecache->SetTexture (GL_TEXTURE_2D, Handle);
-    G3D->ext->glGenerateMipmapEXT (GL_TEXTURE_2D);
-    SetNeedMips (false);
-  }
-  return Handle;
-}
-
-GLenum csGLBasicTextureHandle::GetGLTextureTarget() const
-{
-  switch (target)
-  {
-    case CS_TEX_IMG_1D:
-      return GL_TEXTURE_1D;
-    case CS_TEX_IMG_2D:
-      return GL_TEXTURE_2D;
-    case CS_TEX_IMG_3D:
-      return GL_TEXTURE_3D;
-    case CS_TEX_IMG_CUBEMAP:
-      return GL_TEXTURE_CUBE_MAP;
-    case CS_TEX_IMG_RECT:
-      return GL_TEXTURE_RECTANGLE_ARB;
-    default:
-      return 0;
-  }
-}
-
-void csGLBasicTextureHandle::CheckAlpha (int w, int h, int d, csRGBpixel *src, 
-				    const csRGBpixel* transp_color, 
-				    csAlphaMode::AlphaType& alphaType)
-{
-  int count = w * h * d;
-  CS_ASSERT (count > 0);
-  while (count--)
-  {
-    const csRGBpixel &pix = *src++;
-    if ((!transp_color || !transp_color->eq (pix)) && pix.alpha)
-    {
-      if ((pix.alpha < 255) && (alphaType != csAlphaMode::alphaSmooth))
-	alphaType = csAlphaMode::alphaSmooth;
-    }
-    else
-    {
-      if (alphaType == csAlphaMode::alphaNone)
-	alphaType = transp_color ? csAlphaMode::alphaBinary : 
-          csAlphaMode::alphaSmooth;
-    }
-  }
-}
-
-
-void csGLBasicTextureHandle::PrepareKeycolor (csRef<iImage>& image,
-					 const csRGBpixel& transp_color,
-					 csAlphaMode::AlphaType& alphaType)
-{
-  int w = image->GetWidth();
-  int h = image->GetHeight ();
-  int d = image->GetDepth ();
-  csRGBpixel *_src = (csRGBpixel *)image->GetImageData ();
-  CheckAlpha (w, h, d, _src, &transp_color, alphaType);
-  if (alphaType == csAlphaMode::alphaNone) return; // Nothing to fix up
-  image = csBakeKeyColor::Image (image, transp_color);
-}
-
-//---------------------------------------------------------------------------
-
-csGLTextureHandle::csGLTextureHandle (iImage* image, int flags, 
-				      csGLGraphics3D *iG3D) : 
-  csGLBasicTextureHandle (image->GetImageType (), flags, iG3D),
-  origName(0)
-{
-//printf ("image='%s' format='%08x' rawformat='%s' type=%d\n",
-    //image->GetName (), image->GetFormat (), image->GetRawFormat (),
-    //image->GetImageType ()); fflush (stdout);
-  this->image = image;
-  if (image->GetFormat () & CS_IMGFMT_ALPHA)
-    alphaType = csAlphaMode::alphaSmooth;
-  else if (image->HasKeyColor ())
-    alphaType = csAlphaMode::alphaBinary;
-  else
-    alphaType = csAlphaMode::alphaNone;
-
-  if (image->HasKeyColor())
-    SetTransp (true);
-}
-
-csGLTextureHandle::csGLTextureHandle (int target, GLuint Handle, 
-				      csGLGraphics3D *iG3D) : 
-  csGLBasicTextureHandle (csimg2D, 0, iG3D),
-  origName(0)
-{
-  this->target = target;
-  csGLBasicTextureHandle::Handle = Handle;
-  alphaType = csAlphaMode::alphaNone;
-  SetForeignHandle (true);
-}
-
-csGLTextureHandle::~csGLTextureHandle()
-{
-  delete[] origName;
-}
-
-
-void csGLTextureHandle::FreeImage ()
-{
-  if (image.IsValid()) 
-  {
-    origName = csStrNew (image->GetName());
-    if (IsTransp() && !IsTranspSet())
-    {
-      int r,g,b;
-      image->GetKeyColor (r,g,b);
-      SetKeyColor (r, g, b);
-    }						 
-  }
-  image = 0;
-}
-
-void csGLTextureHandle::GetOriginalDimensions (int& mw, int& mh)
-{
-  AdjustSizePo2 ();
-  mw = orig_width;
-  mh = orig_height;
-}
-
-void csGLTextureHandle::GetOriginalDimensions (int& mw, int& mh, int &md)
-{
-  AdjustSizePo2 ();
-  mw = orig_width;
-  mh = orig_height;
-  md = orig_d;
-}
-
-const char* csGLTextureHandle::GetImageName () const
-{
-  if (image.IsValid()) 
-    return image->GetName();
-  else
-    return origName;
+  actual_width = newwidth;
+  actual_height = newheight;
+  actual_d = newd;
 }
 
 //#define MIPMAP_DEBUG
@@ -908,8 +449,8 @@ void csGLTextureHandle::CreateMipMaps()
     && textureSettings->allowDownsample;
   int mipskip = doReduce ? txtmgr->texture_downsample : 0;
   while (((actual_width >> mipskip) > txtmgr->max_tex_size)
-      || ((actual_height >> mipskip) > txtmgr->max_tex_size)
-      || ((actual_d >> mipskip) > txtmgr->max_tex_size))
+    || ((actual_height >> mipskip) > txtmgr->max_tex_size)
+    || ((actual_d >> mipskip) > txtmgr->max_tex_size))
     mipskip++;
 
   // Delete existing mipmaps, if any
@@ -992,123 +533,502 @@ void csGLTextureHandle::CreateMipMaps()
   }
 }
 
-void csGLTextureHandle::PrepareInt ()
+GLenum csGLTextureHandle::DetermineTargetFormat (GLenum defFormat, 
+						 bool allowCompress,
+						 const char* rawFormat, 
+						 bool& compressedFormat)
 {
-  //@@@ Images may be lost if preparing twice. Some better way of solving it?
-  if (!image.IsValid()) return;
-  if (IsPrepared ()) return;
-  SetPrepared (true);
+  GLenum targetFormat = defFormat;
+  compressedFormat = false;
 
-  if (IsTransp() && !IsTranspSet())
+  if (rawFormat)
   {
-    int r,g,b;
-    image->GetKeyColor (r,g,b);
-    SetKeyColor (r, g, b);
-  }						 
-
-  // In opengl all textures, even non-mipmapped textures are required
-  // to be powers of 2.
-  AdjustSizePo2 ();
-
-  csAlphaMode::AlphaType newAlphaType = csAlphaMode::alphaNone;
-
-  // Do any resizing, if needed
-  if (image->GetImageType() == csimgCube)
-  {
-    // Handle cube map faces
-    csRef<csImageCubeMapMaker> newCube;
-    int faceCount = MIN (image->HasSubImages() + 1, 6);
-    for (int i = 0; i < faceCount; i++)
+    if (G3D->ext->CS_GL_EXT_texture_compression_s3tc 
+      && allowCompress)
     {
-      int newFaceW, newFaceH, newFaceD;
-      csRef<iImage> imgFace = image->GetSubImage (i);
-      ComputeNewPo2ImageSize (texFlags.Get(), 
-	imgFace->GetWidth(), imgFace->GetHeight(), 1,
-	newFaceW, newFaceH, newFaceD, txtmgr->max_tex_size);
-      if (newFaceW != newFaceH) newFaceH = newFaceW;
-      csRef<iImage> newFace = PrepareIntImage (newFaceW, newFaceH,
-	imgFace->GetDepth (), imgFace, newAlphaType);
-      if (newFace.IsValid())
+      if (strcmp (rawFormat, "dxt1") == 0)
       {
-	// Create a new cube if we needed to resize one face.
-	if (!newCube.IsValid()) 
-	{
-	  newCube.AttachNew (new csImageCubeMapMaker ());
-	  newCube->SetName (image->GetName());
-	}
-	newCube->SetSubImage (i, newFace);
+	targetFormat = (alphaType != csAlphaMode::alphaNone) ?
+	  GL_COMPRESSED_RGBA_S3TC_DXT1_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+	compressedFormat = true;
+      }
+      else if (strcmp (rawFormat, "dxt3") == 0)
+      {
+	targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+	compressedFormat = true;
+      }
+      else if (strcmp (rawFormat, "dxt5") == 0)
+      {
+	targetFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+	compressedFormat = true;
       }
     }
-    if (faceCount < 6) // Ensure at least the 6 faces.
+  }
+  return targetFormat;
+}
+
+bool csGLTextureHandle::transform (bool allowCompressed, GLenum targetFormat, 
+				   iImage* Image, int mipNum, int imageNum)
+{
+  csGLUploadData& uploadData = this->uploadData->GetExtend (
+    this->uploadData->Length());
+  const char* rawFormat = Image->GetRawFormat();
+  if (rawFormat)
+  {
+    csRef<iDataBuffer> imageRaw = Image->GetRawData();
+    uploadData.dataRef = imageRaw;
+    if (strcmp (rawFormat, "r8g8b8") == 0)
     {
-      newCube.AttachNew (new csImageCubeMapMaker ());
-      newCube->SetName (image->GetName());
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_RGB;
+      uploadData.source.type = GL_UNSIGNED_BYTE;
     }
-    if (newCube.IsValid())
+    else if (G3D->ext->CS_GL_version_1_2
+      && (strcmp (rawFormat, "b8g8r8") == 0))
     {
-      for (int i = 0; i < faceCount; i++)
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_BGR;
+      uploadData.source.type = GL_UNSIGNED_BYTE;
+    }
+    else if (G3D->ext->CS_GL_version_1_2
+      && (strcmp (rawFormat, "r5g6b5") == 0))
+    {
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_RGB;
+      uploadData.source.type = GL_UNSIGNED_SHORT_5_6_5;
+    }
+    else if (G3D->ext->CS_GL_version_1_2
+      && (strcmp (rawFormat, "b8g8r8a8") == 0))
+    {
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_BGRA;
+      uploadData.source.type = GL_UNSIGNED_BYTE;
+    }
+    else if (strcmp (rawFormat, "l8") == 0)
+    {
+      uploadData.image_data = imageRaw->GetUint8();
+      uploadData.source.format = GL_LUMINANCE;
+      uploadData.source.type = GL_UNSIGNED_BYTE;
+      targetFormat = GL_LUMINANCE;
+    }
+    else 
+    {
+      bool isCompressedTarget;
+      /* Only use glCompressedTexImage if the target format matches
+       * exactly the one of mip 0. */
+      if ((DetermineTargetFormat (targetFormat, allowCompressed,
+	rawFormat, isCompressedTarget) == targetFormat) 
+	&& isCompressedTarget)
       {
-	if (!newCube->SubImageSet (i))
-	  newCube->SetSubImage (i, image->GetSubImage (i));
+	uploadData.image_data = imageRaw->GetUint8();
+	uploadData.isCompressed = true;
+	uploadData.compressed.size = imageRaw->GetSize();
       }
-      image = newCube;
     }
   }
-  else
-  {
-    csRef<iImage> newImage = PrepareIntImage (actual_width, actual_height,
-	actual_d, image, newAlphaType);
-    if (newImage.IsValid()) image = newImage;
-  }
-  if (newAlphaType > alphaType) alphaType = newAlphaType;
 
-  CreateMipMaps ();
-  FreeImage ();
+  if (!uploadData.image_data)
+  {
+    if (csPackRGBA::IsRGBpixelSane())
+    {
+      uploadData.image_data = (uint8*)Image->GetImageData ();
+      uploadData.dataRef = Image;
+    }
+    else
+    {
+      const size_t numPix = 
+	Image->GetWidth() * Image->GetHeight() * Image->GetDepth();
+      csRef<csDataBuffer> newDataBuf;
+      newDataBuf.AttachNew (new csDataBuffer (numPix));
+      csPackRGBA::PackRGBpixelToRGBA (newDataBuf->GetUint8(),
+	(csRGBpixel*)Image->GetImageData(), numPix);
+      uploadData.image_data = newDataBuf->GetUint8();
+      uploadData.dataRef = newDataBuf;
+    }
+    //uploadData->size = n * 4;
+    uploadData.source.format = GL_RGBA;
+    uploadData.source.type = GL_UNSIGNED_BYTE;
+  }
+  uploadData.targetFormat = targetFormat;
+  uploadData.w = Image->GetWidth();
+  uploadData.h = Image->GetHeight();
+  uploadData.d = Image->GetDepth();
+  uploadData.mip = mipNum;
+  uploadData.imageNum = imageNum;
+  
+  //size += uploadData->size * d;
+  return true;
 }
 
-void csGLTextureHandle::GetKeyColor (uint8 &red,
-	uint8 &green, uint8 &blue) const
+void csGLTextureHandle::Blit (int x, int y, int width,
+    int height, unsigned char const* data, TextureBlitDataFormat format)
 {
-  if (image.IsValid() && image->HasKeyColor() && !IsTranspSet ())
-  {
-    int r,g,b;
-    image->GetKeyColor (r,g,b);
-    red = r; green = g; blue = b;
-  }
-  else
-  {
-    red = transp_color.red;
-    green = transp_color.green;
-    blue = transp_color.blue;
-  }
-}
-
-void csGLTextureHandle::AdjustSizePo2 ()
-{
-  if (IsSizeAdjusted ()) return;
-  SetSizeAdjusted (true);
-
-  //actual_d = orig_d = images->GetSize ();
-  orig_width  = image->GetWidth();
-  orig_height = image->GetHeight();
-  orig_d = image->GetDepth();
-
-  if (texFlags.Check (CS_TEXTURE_NPOTS)) 
-  {
-    actual_width = MIN(orig_width, G3D->maxNpotsTexSize);
-    actual_height = MIN(orig_height, G3D->maxNpotsTexSize);
-    actual_d = MIN(orig_d, G3D->maxNpotsTexSize);
+  // @@@ Keycolor not yet supported here!
+  
+  GLenum textarget = GetGLTextureTarget();
+  if ((textarget != GL_TEXTURE_2D) && (textarget != GL_TEXTURE_RECTANGLE_ARB))
     return;
+
+  // Activate the texture.
+  Precache ();
+  G3D->ActivateTexture (this);
+  GLuint textureFormat = (format == RGBA8888) ? GL_RGBA : GL_BGRA;
+  // Make sure mipmapping is ok.
+  if (!IsWasRenderTarget() || (texFormat != format))
+  {
+    texFormat = format;
+    bool isWholeImage = (x == 0) && (y == 0) && (width == actual_width)
+      && (height == actual_height);
+
+    // Pull texture data and set as RGBA/BGRA again, to prevent compression 
+    // (slooow) on subsequent glTexSubImage() calls.
+    if (!isWholeImage)
+    {
+      uint8* pixels = new uint8[actual_width * actual_height * 4];
+      glGetTexImage (textarget, 0, textureFormat, GL_UNSIGNED_BYTE, 
+	pixels);
+
+      if (!IsWasRenderTarget())
+      {
+	SetWasRenderTarget (true);
+	SetupAutoMipping();
+      }
+
+      glTexImage2D (textarget, 0, GL_RGBA8, actual_width, 
+	actual_height, 0, textureFormat, GL_UNSIGNED_BYTE, pixels);
+      delete[] pixels;
+    }
+    else
+    {
+      if (!IsWasRenderTarget())
+      {
+	SetWasRenderTarget (true);
+	SetupAutoMipping();
+      }
+
+      glTexImage2D (textarget, 0, GL_RGBA8, actual_width, 
+	actual_height, 0, textureFormat, GL_UNSIGNED_BYTE, data);
+      return;
+    }
   }
+  // Do the copy.
+  glTexSubImage2D (textarget, 0, x, y, 
+      width, height,
+      textureFormat, GL_UNSIGNED_BYTE, data);
+  //SetNeedMips (true);
+}
 
-  int newwidth, newheight, newd;
+void csGLTextureHandle::SetupAutoMipping()
+{
+  // Set up mipmap generation
+  if ((!(texFlags.Get() & CS_TEXTURE_NOMIPMAPS))
+    /*&& (!G3D->ext->CS_GL_EXT_framebuffer_object)*/)
+  {
+    if (G3D->ext->CS_GL_SGIS_generate_mipmap)
+      glTexParameteri (GetGLTextureTarget(), GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+    else
+      glTexParameteri  (GetGLTextureTarget(), GL_TEXTURE_MIN_FILTER,
+	txtmgr->rstate_bilinearmap ? GL_LINEAR : GL_NEAREST);
+  }
+}
 
-  ComputeNewPo2ImageSize (texFlags.Get(), orig_width, orig_height, orig_d, 
-    newwidth, newheight, newd, txtmgr->max_tex_size);
+void csGLTextureHandle::Load ()
+{
+  if (Handle != 0) return;
 
-  actual_width = newwidth;
-  actual_height = newheight;
-  actual_d = newd;
+  static const GLint textureMinFilters[3] = {GL_NEAREST_MIPMAP_NEAREST, 
+    GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR};
+  static const GLint textureMagFilters[3] = {GL_NEAREST, GL_LINEAR, 
+    GL_LINEAR};
+
+  glGenTextures (1, &Handle);
+
+  const int texFilter = texFlags.Check (CS_TEXTURE_NOFILTER) ? 0 : 
+    txtmgr->rstate_bilinearmap;
+  const GLint magFilter = textureMagFilters[texFilter];
+  const GLint minFilter = textureMinFilters[texFilter];
+  const GLint wrapMode = 
+    (texFlags.Check (CS_TEXTURE_CLAMP)) ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+
+  if (target == CS_TEX_IMG_1D)
+  {
+    G3D->statecache->SetTexture (GL_TEXTURE_1D, Handle);
+    glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, wrapMode);
+    glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, minFilter);
+
+    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
+    {
+      glTexParameterf (GL_TEXTURE_1D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+        txtmgr->texture_filter_anisotropy);
+    }
+
+    // @@@ Implement upload!
+  }
+  else if (target == CS_TEX_IMG_2D)
+  {
+    G3D->statecache->SetTexture (GL_TEXTURE_2D, Handle);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+      (texFlags.Check (CS_TEXTURE_NOMIPMAPS)) ? magFilter : minFilter);
+
+    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
+    {
+      glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+        txtmgr->texture_filter_anisotropy);
+    }
+
+    size_t i;
+    for (i = 0; i < uploadData->Length(); i++)
+    {
+      const csGLUploadData& uploadData = this->uploadData->Get (i);
+      if (uploadData.isCompressed)
+      {
+	G3D->ext->glCompressedTexImage2DARB (GL_TEXTURE_2D, uploadData.mip, 
+	  uploadData.targetFormat, uploadData.w, uploadData.h, 
+	  0, (GLsizei)uploadData.compressed.size, uploadData.image_data);
+      }
+      else
+      {
+	glTexImage2D (GL_TEXTURE_2D, uploadData.mip, 
+	  uploadData.targetFormat, 
+	  uploadData.w, uploadData.h, 0, uploadData.source.format, 
+	  uploadData.source.type, uploadData.image_data);
+      }
+    }
+  }
+  else if (target == CS_TEX_IMG_3D)
+  {
+    G3D->statecache->Enable_GL_TEXTURE_3D ();
+    G3D->statecache->SetTexture (GL_TEXTURE_3D, Handle);
+    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, wrapMode);
+    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, wrapMode);
+    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, wrapMode);
+
+    // @@@ Not sure if the following makes sense with 3D textures.
+    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri (GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER,
+      (texFlags.Check (CS_TEXTURE_NOMIPMAPS)) ? magFilter : minFilter);
+
+    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
+    {
+      glTexParameterf (GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+        txtmgr->texture_filter_anisotropy);
+    }
+
+    size_t i;
+    for (i = 0; i < uploadData->Length(); i++)
+    {
+      const csGLUploadData& uploadData = this->uploadData->Get (i);
+      if (uploadData.isCompressed)
+      {
+	G3D->ext->glCompressedTexImage3DARB (GL_TEXTURE_3D, uploadData.mip, 
+	  uploadData.targetFormat, uploadData.w, uploadData.h, 
+	  uploadData.d, 0, (GLsizei)uploadData.compressed.size, 
+	  uploadData.image_data);
+      }
+      else
+      {
+	G3D->ext->glTexImage3DEXT (GL_TEXTURE_3D, uploadData.mip, 
+	  uploadData.targetFormat, uploadData.w, uploadData.h, uploadData.d,
+	  0, uploadData.source.format, uploadData.source.type, 
+	  uploadData.image_data);
+      }
+    }
+  }
+  else if (target == CS_TEX_IMG_CUBEMAP)
+  {
+    G3D->statecache->SetTexture (GL_TEXTURE_CUBE_MAP, Handle);
+    // @@@ Temporarily force clamp, although I don't know if REPEAT
+    // makes sense with cubemaps.
+    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, 
+      GL_CLAMP_TO_EDGE/*wrapMode*/);
+    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, 
+      GL_CLAMP_TO_EDGE/*wrapMode*/);
+    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, 
+      GL_CLAMP_TO_EDGE/*wrapMode*/);
+
+    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, magFilter);
+
+    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER,
+      (texFlags.Check (CS_TEXTURE_NOMIPMAPS)) ? magFilter : minFilter);
+
+    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
+    {
+      glTexParameterf (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+        txtmgr->texture_filter_anisotropy);
+    }
+
+    size_t i;
+    for (i = 0; i < uploadData->Length(); i++)
+    {
+      const csGLUploadData& uploadData = this->uploadData->Get (i);
+
+      if (uploadData.isCompressed)
+      {
+	G3D->ext->glCompressedTexImage2DARB (
+	  GL_TEXTURE_CUBE_MAP_POSITIVE_X + uploadData.imageNum, 
+	  uploadData.mip, 
+	  uploadData.targetFormat, uploadData.w, uploadData.h, 
+	  0, (GLsizei)uploadData.compressed.size, uploadData.image_data);
+      }
+      else
+      {
+	glTexImage2D (GL_TEXTURE_CUBE_MAP_POSITIVE_X + uploadData.imageNum, 
+	  uploadData.mip, uploadData.targetFormat, 
+	  uploadData.w, uploadData.h,
+	  0, uploadData.source.format, uploadData.source.type,	
+	  uploadData.image_data);
+      }
+    }
+  }
+  else if (target == CS_TEX_IMG_RECT)
+  {
+    G3D->statecache->SetTexture (GL_TEXTURE_RECTANGLE_ARB, Handle);
+    glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, wrapMode);
+    glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, wrapMode);
+
+    glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER,
+      (texFlags.Check (CS_TEXTURE_NOMIPMAPS)) ? magFilter : minFilter);
+
+    if (G3D->ext->CS_GL_EXT_texture_filter_anisotropic)
+    {
+      glTexParameterf (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+        txtmgr->texture_filter_anisotropy);
+    }
+
+    size_t i;
+    for (i = 0; i < uploadData->Length(); i++)
+    {
+      const csGLUploadData& uploadData = this->uploadData->Get (i);
+      if (uploadData.isCompressed)
+      {
+	G3D->ext->glCompressedTexImage2DARB (GL_TEXTURE_RECTANGLE_ARB, 
+          uploadData.mip, uploadData.targetFormat, uploadData.w, uploadData.h, 
+	  0, (GLsizei)uploadData.compressed.size, uploadData.image_data);
+      }
+      else
+      {
+	glTexImage2D (GL_TEXTURE_RECTANGLE_ARB, uploadData.mip, 
+	  uploadData.targetFormat, 
+	  uploadData.w, uploadData.h, 0, uploadData.source.format, 
+	  uploadData.source.type, uploadData.image_data);
+      }
+    }
+  }
+  delete uploadData; uploadData = 0;
+}
+
+void csGLTextureHandle::Unload ()
+{
+  if ((Handle == 0) || IsForeignHandle()) return;
+  if (target == CS_TEX_IMG_1D)
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_1D, Handle);
+  else if (target == CS_TEX_IMG_2D)
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_2D, Handle);
+  else if (target == CS_TEX_IMG_3D)
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_3D, Handle);
+  else if (target == CS_TEX_IMG_CUBEMAP)
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_CUBE_MAP, Handle);
+  else if (target == CS_TEX_IMG_RECT)
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_RECTANGLE_ARB, Handle);
+  glDeleteTextures (1, &Handle);
+  Handle = 0;
+}
+
+void csGLTextureHandle::Precache ()
+{
+  PrepareInt ();
+  Load ();
+}
+
+void csGLTextureHandle::SetTextureClass (const char* className)
+{
+  textureClass = txtmgr->GetTextureClassID (className ? className : "default");
+}
+
+const char* csGLTextureHandle::GetTextureClass ()
+{
+  return txtmgr->GetTextureClassName (textureClass);
+}
+
+void csGLTextureHandle::UpdateTexture ()
+{
+  Unload ();
+}
+
+GLuint csGLTextureHandle::GetHandle ()
+{
+  Precache ();
+  if ((!(texFlags.Get() & CS_TEXTURE_NOMIPMAPS))
+    && (G3D->ext->CS_GL_EXT_framebuffer_object)
+    && IsNeedMips())
+  {
+    G3D->statecache->SetTexture (GL_TEXTURE_2D, Handle);
+    G3D->ext->glGenerateMipmapEXT (GL_TEXTURE_2D);
+    SetNeedMips (false);
+  }
+  return Handle;
+}
+
+GLenum csGLTextureHandle::GetGLTextureTarget() const
+{
+  switch (target)
+  {
+    case CS_TEX_IMG_1D:
+      return GL_TEXTURE_1D;
+    case CS_TEX_IMG_2D:
+      return GL_TEXTURE_2D;
+    case CS_TEX_IMG_3D:
+      return GL_TEXTURE_3D;
+    case CS_TEX_IMG_CUBEMAP:
+      return GL_TEXTURE_CUBE_MAP;
+    case CS_TEX_IMG_RECT:
+      return GL_TEXTURE_RECTANGLE_ARB;
+    default:
+      return 0;
+  }
+}
+
+void csGLTextureHandle::CheckAlpha (int w, int h, int d, csRGBpixel *src, 
+				    const csRGBpixel* transp_color, 
+				    csAlphaMode::AlphaType& alphaType)
+{
+  int count = w * h * d;
+  CS_ASSERT (count > 0);
+  while (count--)
+  {
+    const csRGBpixel &pix = *src++;
+    if ((!transp_color || !transp_color->eq (pix)) && pix.alpha)
+    {
+      if ((pix.alpha < 255) && (alphaType != csAlphaMode::alphaSmooth))
+	alphaType = csAlphaMode::alphaSmooth;
+    }
+    else
+    {
+      if (alphaType == csAlphaMode::alphaNone)
+	alphaType = transp_color ? csAlphaMode::alphaBinary : 
+          csAlphaMode::alphaSmooth;
+    }
+  }
+}
+
+
+void csGLTextureHandle::PrepareKeycolor (csRef<iImage>& image,
+					 const csRGBpixel& transp_color,
+					 csAlphaMode::AlphaType& alphaType)
+{
+  int w = image->GetWidth();
+  int h = image->GetHeight ();
+  int d = image->GetDepth ();
+  csRGBpixel *_src = (csRGBpixel *)image->GetImageData ();
+  CheckAlpha (w, h, d, _src, &transp_color, alphaType);
+  if (alphaType == csAlphaMode::alphaNone) return; // Nothing to fix up
+  image = csBakeKeyColor::Image (image, transp_color);
 }
 
 //---------------------------------------------------------------------------
@@ -1332,12 +1252,12 @@ void csGLTextureManager::ReadTextureClasses (iConfigFile* config)
 void csGLTextureManager::Clear()
 {
   size_t i;
-  for (i=0; i < textures.GetSize (); i++)
+  for (i=0; i < textures.Length (); i++)
   {
-    csGLBasicTextureHandle* tex = textures[i];
+    csGLTextureHandle* tex = textures[i];
     if (tex != 0) tex->Clear ();
   }
-  for (i = 0; i < superLMs.GetSize (); i++)
+  for (i = 0; i < superLMs.Length(); i++)
   {
     superLMs[i]->DeleteTexture();
   }
@@ -1374,50 +1294,28 @@ void csGLTextureManager::UnsetTexture (GLenum target, GLuint texture)
 }
 
 csPtr<iTextureHandle> csGLTextureManager::RegisterTexture (iImage *image,
-	int flags, iString* fail_reason)
+	int flags)
 {
   if (!image)
   {
-    if (fail_reason) fail_reason->Replace (
-      "No image given to RegisterTexture!");
+    G3D->Report(CS_REPORTER_SEVERITY_BUG,
+      "BAAAAAAAD!!! csGLTextureManager::RegisterTexture with 0 image!");
     return 0;
   }
 
   if ((image->GetImageType() == csimgCube)
-      && !G3D->ext->CS_GL_ARB_texture_cube_map)
-  {
-    if (fail_reason) fail_reason->Replace (
-      "Cubemap images are not supported!");
+    && !G3D->ext->CS_GL_ARB_texture_cube_map)
     return 0;
-  }
   if ((image->GetImageType() == csimg3D)
-      && !G3D->ext->CS_GL_EXT_texture3D)
-  {
-    if (fail_reason) fail_reason->Replace (
-      "3D images are not supported!");
+    && !G3D->ext->CS_GL_EXT_texture3D)
     return 0;
-  }
 
   csGLTextureHandle *txt = new csGLTextureHandle (image, flags, G3D);
   textures.Push(txt);
   return csPtr<iTextureHandle> (txt);
 }
 
-csPtr<iTextureHandle> csGLTextureManager::CreateTexture (int w, int h,
-      csImageType imagetype, const char* format, int flags,
-      iString* fail_reason)
-{
-  (void)w;
-  (void)h;
-  (void)format;
-
-  csGLBasicTextureHandle *txt = new csGLBasicTextureHandle (
-      imagetype, flags, G3D);
-  textures.Push(txt);
-  return csPtr<iTextureHandle> (txt);
-}
-
-void csGLTextureManager::UnregisterTexture (csGLBasicTextureHandle* handle)
+void csGLTextureManager::UnregisterTexture (csGLTextureHandle* handle)
 {
   size_t const idx = textures.Find (handle);
   if (idx != csArrayItemNotFound) textures.DeleteIndexFast (idx);
@@ -1446,7 +1344,7 @@ void csGLTextureManager::DumpSuperLightmaps (iVFS* VFS, iImageIO* iio,
 					     const char* dir)
 {
   csString outfn;
-  for (size_t i = 0; i < superLMs.GetSize (); i++)
+  for (size_t i = 0; i < superLMs.Length(); i++)
   {
     csRef<iImage> img = superLMs[i]->Dump ();
     if (img)
@@ -1480,14 +1378,13 @@ void csGLTextureManager::DumpSuperLightmaps (iVFS* VFS, iImageIO* iio,
 
 void csGLRendererLightmap::DecRef ()
 {
-  csRefTrackerAccess::TrackDecRef (scfObject, scfRefCount);
-  scfRefCount--;							
-  if (scfRefCount == 0)							
+  if (scfRefCount == 1)							
   {									
     CS_ASSERT (slm != 0);
     slm->FreeRLM (this);
     return;								
   }									
+  scfRefCount--;							
 }
 
 csGLRendererLightmap::csGLRendererLightmap () : scfImplementationType (this)
@@ -1555,15 +1452,14 @@ void csGLRendererLightmap::SetLightCellSize (int size)
 
 void csGLSuperLightmap::DecRef ()
 {
-  csRefTrackerAccess::TrackDecRef (scfObject, scfRefCount);
-  scfRefCount--;							
-  if (scfRefCount == 0)							
+  if (scfRefCount == 1)							
   {
     if (txtmgr != 0)
       txtmgr->superLMs.Delete (this);
     delete this;
     return;								
   }									
+  scfRefCount--;							
 }
 
 csGLSuperLightmap::csGLSuperLightmap (csGLTextureManager* txtmgr, 
@@ -1655,7 +1551,6 @@ void csGLSuperLightmap::FreeRLM (csGLRendererLightmap* rlm)
   // Otherwise freeing the RLM could trigger our own destruction -
   // causing an assertion in block allocator (due to how BA frees items and
   // the safety assertions on BA destruction.)
-  csRefTrackerAccess::TrackIncRef (this, scfRefCount);
   scfRefCount++;
   GetRLMAlloc ()->Free (rlm);
   DecRef ();

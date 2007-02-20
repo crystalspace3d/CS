@@ -39,7 +39,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -72,6 +71,7 @@
 				TypeLibraryName="..\..\out\release7\build\plgsimpleformer\plgsimpleformer.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\release7\bin&quot;&#x0D;&#x0A;copy &quot;..\..\simpleformer.dll&quot; &quot;..\..\out\release7\bin\simpleformer.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -113,7 +113,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -144,6 +143,7 @@
 				TypeLibraryName="..\..\out\debug7\build\plgsimpleformer\plgsimpleformer.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug7\bin&quot;&#x0D;&#x0A;copy &quot;..\..\simpleformer.dll&quot; &quot;..\..\out\debug7\bin\simpleformer.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -185,7 +185,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -216,6 +215,7 @@
 				TypeLibraryName="..\..\out\debug7\build\plgsimpleformer\plgsimpleformer.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug7\bin&quot;&#x0D;&#x0A;copy &quot;..\..\simpleformer.dll&quot; &quot;..\..\out\debug7\bin\simpleformer.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -257,7 +257,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -288,6 +287,7 @@
 				TypeLibraryName="..\..\out\debug7\build\plgsimpleformer\plgsimpleformer.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug7\bin&quot;&#x0D;&#x0A;copy &quot;..\..\simpleformer.dll&quot; &quot;..\..\out\debug7\bin\simpleformer.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

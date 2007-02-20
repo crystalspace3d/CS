@@ -63,14 +63,14 @@ public:
   #ifdef CS_DEBUG
     CS_ASSERT(iSCF::SCF->object_reg);
     csRef<iImageIO> imgsaver =
-      csQueryRegistry<iImageIO> (iSCF::SCF->object_reg);
+      CS_QUERY_REGISTRY (iSCF::SCF->object_reg, iImageIO);
     if (!imgsaver) 
     {
       Report (CS_REPORTER_SEVERITY_ERROR, "No iImageIO");
       return;
     }
     csRef<iVFS> vfs =
-      csQueryRegistry<iVFS> (iSCF::SCF->object_reg);
+      CS_QUERY_REGISTRY (iSCF::SCF->object_reg, iVFS);
     if (!vfs) 
     {
       Report (CS_REPORTER_SEVERITY_ERROR, "No iVFS");

@@ -351,10 +351,6 @@ public:
    * does nothing.
    */
   virtual void PositionChild (iMeshObject* /*child*/, csTicks /*current_time*/) { }
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-          iDecalBuilder* decalBuilder)
-  {
-  }
 
   //------------------------- iHazeState implementation ----------------
   virtual void SetOrigin(const csVector3& pos) { this->origin = pos; }
@@ -363,7 +359,7 @@ public:
   { this->directional=pos;}
   virtual const csVector3& GetDirectional() const
   {return this->directional;}
-  virtual size_t GetLayerCount() const {return this->layers.GetSize ();}
+  virtual size_t GetLayerCount() const {return this->layers.Length();}
   virtual void AddLayer(iHazeHull *hull, float scale)
   {
     csHazeLayer *lay = new csHazeLayer(hull, scale);
@@ -443,7 +439,7 @@ public:
   { this->directional=pos;}
   virtual const csVector3& GetDirectional() const
   {return this->directional;}
-  virtual size_t GetLayerCount() const {return this->layers.GetSize ();}
+  virtual size_t GetLayerCount() const {return this->layers.Length();}
   virtual void AddLayer(iHazeHull *hull, float scale)
   {
     csHazeLayer *lay = new csHazeLayer(hull, scale);

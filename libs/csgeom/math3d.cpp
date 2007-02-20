@@ -561,39 +561,6 @@ bool csIntersect3::SegmentPlane (
   return true;
 }
 
-bool csIntersect3::SegmentPlane (
-  const csPlane3& plane,
-  csSegment3& segment)
-{
-  const csVector3& start = segment.Start ();
-  const csVector3& end = segment.End ();
-
-  csVector3 isec;
-  float dist;
-
-  if (SegmentPlane (start, end, plane, isec, dist))
-  {
-    // Have an intersection, update segment
-    const csVector3 d = end - start;
-    const float dd = d * plane.norm;
-
-    if (dd > 0)
-    {
-      // Plane pointing opposite to segment, update end
-      segment.SetEnd (isec);
-    }
-    else
-    {
-      segment.SetStart (isec);
-    }
-
-    return true;
-  }
-
-
-  return false;
-}
-
 bool csIntersect3::ThreePlanes (
   const csPlane3 &p1,
   const csPlane3 &p2,
@@ -877,10 +844,10 @@ bool csIntersect3::BoxFrustum (const csBox3& box, const csFrustum* frustum)
   csVector3 d = box.Max ()-m;		// Half-diagonal.
 
   const csVector3& origin = frustum->GetOrigin ();
-  size_t vtcount = frustum->GetVertexCount ();
+  int vtcount = frustum->GetVertexCount ();
   csVector3* vts = frustum->GetVertices ();
-  size_t i1 = vtcount-1;
-  size_t i;
+  int i1 = vtcount-1;
+  int i;
   for (i = 0 ; i < vtcount ; i++)
   {
     csPlane3 p (origin, vts[i], vts[i1]);

@@ -303,15 +303,15 @@ void csStencilShadowCacheEntry::ObjectModelChanged (iObjectModel* model)
 
     csHash<EdgeInfo*> edge_stack(new_triangle_count*3);
     csArray<EdgeInfo> edge_array;
-    edge_array.SetSize (new_triangle_count*3, EdgeInfo());
+    edge_array.SetLength (new_triangle_count*3, EdgeInfo());
     edge_count = 0;
     int NextEdge = 0;
     int TriIndex = 0;
 
-    face_normals.SetSize (new_triangle_count*3);
-    edge_indices.SetSize (new_triangle_count*9);
-    edge_normals.SetSize (new_triangle_count*3);
-    edge_midpoints.SetSize (new_triangle_count*3);
+    face_normals.SetLength (new_triangle_count*3);
+    edge_indices.SetLength(new_triangle_count*9);
+    edge_normals.SetLength(new_triangle_count*3);
+    edge_midpoints.SetLength(new_triangle_count*3);
 
     if (mesh->GetFlags ().Check (CS_POLYMESH_TRIANGLEMESH))
     {
@@ -420,8 +420,8 @@ void csStencilShadowStep::Report (int severity, const char* msg, ...)
 bool csStencilShadowStep::Initialize (iObjectRegistry* objreg)
 {
   object_reg = objreg;
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  shmgr = csQueryRegistry<iShaderManager> (object_reg);
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
+  shmgr = CS_QUERY_REGISTRY (object_reg, iShaderManager);
 
   const csGraphics3DCaps* caps = g3d->GetCaps();
   enableShadows = caps->StencilShadows;
@@ -431,8 +431,8 @@ bool csStencilShadowStep::Initialize (iObjectRegistry* objreg)
       "Renderer does not support stencil shadows");
   }
 
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet>
-    (object_reg, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg,
+    "crystalspace.shared.stringset", iStringSet);
   return true;
 }
 
@@ -523,7 +523,7 @@ void csStencilShadowStep::Perform (iRenderView* rview, iSector* sector,
   iShader* shadow;
   if (!enableShadows || ((shadow = type->GetShadow ()) == 0))
   {
-    for (size_t i = 0; i < steps.GetSize (); i++)
+    for (size_t i = 0; i < steps.Length (); i++)
     {
       steps[i]->Perform (rview, sector, light, stacks);
     }
@@ -607,7 +607,7 @@ void csStencilShadowStep::Perform (iRenderView* rview, iSector* sector,
   culler->VisTest (lightSphere, this);
 
   size_t numShadowMeshes;
-  if ((numShadowMeshes = shadowMeshes.GetSize ()) > 0)
+  if ((numShadowMeshes = shadowMeshes.Length ()) > 0)
   {
     csVector3 center;
     float maxRadius;
@@ -661,7 +661,7 @@ void csStencilShadowStep::Perform (iRenderView* rview, iSector* sector,
 
   g3d->SetShadowState (CS_SHADOW_VOLUME_USE);
 
-  for (size_t i = 0; i < steps.GetSize (); i++)
+  for (size_t i = 0; i < steps.Length (); i++)
   {
     steps[i]->Perform (rview, sector, light, stacks);
   }
@@ -672,7 +672,7 @@ void csStencilShadowStep::Perform (iRenderView* rview, iSector* sector,
 size_t csStencilShadowStep::AddStep (iRenderStep* step)
 {
   csRef<iLightRenderStep> lrs = 
-    scfQueryInterface<iLightRenderStep> (step);
+    SCF_QUERY_INTERFACE (step, iLightRenderStep);
   if (!lrs) return csArrayItemNotFound;
   return steps.Push (lrs);
 }
@@ -680,7 +680,7 @@ size_t csStencilShadowStep::AddStep (iRenderStep* step)
 bool csStencilShadowStep::DeleteStep (iRenderStep* step)
 {
   csRef<iLightRenderStep> lrs = 
-    scfQueryInterface<iLightRenderStep> (step);
+    SCF_QUERY_INTERFACE (step, iLightRenderStep);
   if (!lrs) return false;
   return steps.Delete(lrs);
 }
@@ -693,14 +693,14 @@ iRenderStep* csStencilShadowStep::GetStep (size_t n) const
 size_t csStencilShadowStep::Find (iRenderStep* step) const
 {
   csRef<iLightRenderStep> lrs = 
-    scfQueryInterface<iLightRenderStep> (step);
+    SCF_QUERY_INTERFACE (step, iLightRenderStep);
   if (!lrs) return csArrayItemNotFound;
   return steps.Find(lrs);
 }
 
 size_t csStencilShadowStep::GetStepCount () const
 {
-  return steps.GetSize ();
+  return steps.Length();
 }
 
 void csStencilShadowStep::ObjectVisible (
@@ -767,7 +767,7 @@ iShader* csStencilShadowType::GetShadow ()
     shadowLoaded = true;
 
     csRef<iPluginManager> plugin_mgr (
-      csQueryRegistry<iPluginManager> (object_reg));
+      CS_QUERY_REGISTRY (object_reg, iPluginManager));
 
     // Load the shadow vertex program 
     csRef<iShaderManager> shmgr = csQueryRegistryOrLoad<iShaderManager> (
@@ -776,11 +776,11 @@ iShader* csStencilShadowType::GetShadow ()
 
     csRef<iShaderCompiler> shcom (shmgr->GetCompiler ("XMLShader"));
     
-    csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
+    csRef<iVFS> vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
     csRef<iDataBuffer> buf = vfs->ReadFile ("/shader/shadow.xml");
     //csRef<iDataBuffer> buf = vfs->ReadFile ("/shader/shadowdebug.xml");
     csRef<iDocumentSystem> docsys (
-      csQueryRegistry<iDocumentSystem> (object_reg));
+      CS_QUERY_REGISTRY(object_reg, iDocumentSystem));
     if (docsys == 0)
     {
       docsys.AttachNew (new csTinyDocumentSystem ());
@@ -833,8 +833,8 @@ csPtr<iBase> csStencilShadowLoader::Parse (iDocumentNode* node,
 					   iLoaderContext* /*ldr_context*/,
 					   iBase* /*context*/)
 {
-  csRef<iPluginManager> plugin_mgr (
-  	csQueryRegistry<iPluginManager> (object_reg));
+  csRef<iPluginManager> plugin_mgr (CS_QUERY_REGISTRY (object_reg,
+  	iPluginManager));
   csRef<iRenderStepType> type (CS_LOAD_PLUGIN (plugin_mgr,
   	"crystalspace.renderloop.step.shadow.stencil.type", 
 	iRenderStepType));
@@ -843,7 +843,7 @@ csPtr<iBase> csStencilShadowLoader::Parse (iDocumentNode* node,
   csRef<iRenderStep> step = factory->Create ();
 
   csRef<iRenderStepContainer> steps =
-    scfQueryInterface<iRenderStepContainer> (step);
+    SCF_QUERY_INTERFACE (step, iRenderStepContainer);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())

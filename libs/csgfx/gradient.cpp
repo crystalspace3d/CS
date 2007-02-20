@@ -92,7 +92,7 @@ bool csGradient::Render (csRGBcolor* pal, size_t count,
 bool csGradient::Render (csRGBpixel* pal, size_t count,
 			 float begin, float end) const
 {
-  if (shades.GetSize () == 0) return false;
+  if (shades.Length() == 0) return false;
 
   // current color
   csColor4 color = shades[0].left;
@@ -109,12 +109,12 @@ bool csGradient::Render (csRGBpixel* pal, size_t count,
 
   for (size_t i = 0; i < count; i++)
   {
-    while (csi < shades.GetSize () && 
+    while (csi < shades.Length() && 
       (gradpos >= nextshade->position))
     {
       currshade = nextshade;
       csi++;
-      if (csi < shades.GetSize ())
+      if (csi < shades.Length())
       {
 	nextshade = &shades[csi];
       }

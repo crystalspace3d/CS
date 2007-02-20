@@ -24,7 +24,6 @@
 #include "csutil/array.h"
 #include "csutil/blockallocator.h"
 #include "csutil/callstack.h"
-#include "csutil/customallocated.h"
 #include "csutil/strset.h"
 
 #include "../callstack.h"
@@ -36,7 +35,6 @@ namespace CS
   {
   
     class CallStackNameResolverBfd : public iCallStackNameResolver
-				      public CS::Memory::CustomAllocated
     {
       csHash<BfdSymbols*, uint64> moduleBfds;
       

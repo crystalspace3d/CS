@@ -93,7 +93,7 @@ void csGLShader_PS1::Open()
 
   if (!ext) return;
 
-  csRef<iConfigManager> config (csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> config (CS_QUERY_REGISTRY (object_reg, iConfigManager));
   ext->InitGL_NV_register_combiners ();
   ext->InitGL_NV_register_combiners2 ();
   ext->InitGL_NV_texture_shader ();
@@ -143,9 +143,9 @@ void csGLShader_PS1::Open()
 bool csGLShader_PS1::Initialize(iObjectRegistry* reg)
 {
   object_reg = reg;
-  csRef<iGraphics3D> r = csQueryRegistry<iGraphics3D> (object_reg);
+  csRef<iGraphics3D> r = CS_QUERY_REGISTRY(object_reg,iGraphics3D);
 
-  csRef<iFactory> f = scfQueryInterface<iFactory> (r);
+  csRef<iFactory> f = SCF_QUERY_INTERFACE (r, iFactory);
   if (f != 0 && strcmp ("crystalspace.graphics3d.opengl", 
     f->QueryClassID ()) == 0)
     enable = true;
@@ -158,7 +158,7 @@ bool csGLShader_PS1::Initialize(iObjectRegistry* reg)
   if(!stateCache) return false;
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr) 
     doVerbose = verbosemgr->Enabled ("renderer.shader");
   else

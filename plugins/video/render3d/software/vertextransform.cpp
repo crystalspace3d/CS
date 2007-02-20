@@ -30,7 +30,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Soft3D)
 {
   VertexTransform::VertexTransform() : do_near_plane (false)
   {
-    bufferPtrs.SetSize (activeBufferCount);
+    bufferPtrs.SetLength (activeBufferCount);
   }
 
   inline void VertexLTNToVector3 (csVector3& out, const float* data)
@@ -95,16 +95,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(Soft3D)
       }
     }
 
-    CS::TriangleIndicesStream<int> triangles (inIndices, meshType, 
-      inIndexStart, inIndexEnd);
+    csRenderBufferLock<uint8> indices (inIndices, CS_BUF_LOCK_READ);
+
+    size_t stride = inIndices->GetElementDistance();
+    uint8* tri = indices + inIndexStart*stride;
+    const uint8* triEnd = indices + inIndexEnd*stride;
+
+    CS::TriangleIndicesStream<int> triangles;
+    triangles.BeginTriangulate (tri, triEnd, stride, 
+      inIndices->GetComponentType(), meshType);
     trisArray.Empty();
 
     if (do_near_plane)
     {
       inData = outBuffers.GetData ();
-      while (triangles.HasNext())
+      while (triangles.HasNextTri())
       {
-        CS::TriangleT<int> tri (triangles.Next ());
+        csTriangle tri;
+        triangles.NextTriangle (tri.a, tri.b, tri.c);
         const size_t Tri[3] = {tri.a, tri.b, tri.c};
 
         csVector3 inVert[3];
@@ -168,9 +176,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Soft3D)
     }
     else
     {
-      while (triangles.HasNext())
+      while (triangles.HasNextTri())
       {
-        CS::TriangleT<int> tri (triangles.Next ());
+        csTriangle tri;
+        triangles.NextTriangle (tri.a, tri.b, tri.c);
         trisArray.Push (tri);
       }
     }

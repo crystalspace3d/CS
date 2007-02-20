@@ -64,22 +64,22 @@ bool PySimple::OnInitialize (int /*argc*/, char* /*argv*/[])
 
 bool PySimple::Application()
 {
-  vc = csQueryRegistry<iVirtualClock> (GetObjectRegistry());
+  vc = CS_QUERY_REGISTRY (GetObjectRegistry(), iVirtualClock);
 
   // Find the pointer to engine plugin
-  engine = csQueryRegistry<iEngine> (GetObjectRegistry());
+  engine = CS_QUERY_REGISTRY (GetObjectRegistry(), iEngine);
   if (!engine)
     return ReportError ("No iEngine plugin!");
 
-  myG3D = csQueryRegistry<iGraphics3D> (GetObjectRegistry());
+  myG3D = CS_QUERY_REGISTRY (GetObjectRegistry(), iGraphics3D);
   if (!myG3D)
     return ReportError ("No iGraphics3D loader plugin!");
 
-  LevelLoader = csQueryRegistry<iLoader> (GetObjectRegistry());
+  LevelLoader = CS_QUERY_REGISTRY (GetObjectRegistry(), iLoader);
   if (!LevelLoader)
     return ReportError ("No iLoader plugin!");
 
-  kbd = csQueryRegistry<iKeyboardDriver> (GetObjectRegistry());
+  kbd = CS_QUERY_REGISTRY (GetObjectRegistry(), iKeyboardDriver);
   if (!kbd)
     return ReportError ("No iKeyboardDriver!");
 
@@ -103,7 +103,7 @@ bool PySimple::Application()
   iSector *room = engine->CreateSector ("room");
 
   csRef<iPluginManager> plugin_mgr (
-  	csQueryRegistry<iPluginManager> (GetObjectRegistry()));
+  	CS_QUERY_REGISTRY (GetObjectRegistry(), iPluginManager));
   // Initialize the python plugin.
   csRef<iScript> is (CS_LOAD_PLUGIN (plugin_mgr,
       "crystalspace.script.python", iScript));
@@ -111,7 +111,7 @@ bool PySimple::Application()
   {
     char const* module = "pysimp";
     csRef<iCommandLineParser> cmd =
-	csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
+	CS_QUERY_REGISTRY(GetObjectRegistry(), iCommandLineParser);
     if (cmd.IsValid())
     {
       char const* file = cmd->GetName(0);
@@ -211,7 +211,7 @@ bool PySimple::OnKeyboard (iEvent& Event)
   if ((Event.Name == KeyboardDown) &&
       (csKeyEventHelper::GetCookedCode (&Event) == CSKEY_ESC))
   {
-    csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (GetObjectRegistry()));
+    csRef<iEventQueue> q (CS_QUERY_REGISTRY (GetObjectRegistry(), iEventQueue));
     if (q)
       q->GetEventOutlet()->Broadcast (csevQuit (GetObjectRegistry()));
     return true;

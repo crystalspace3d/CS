@@ -164,7 +164,7 @@ bool csSimpleFormer::SetIntegerMap (csStringID type, iImage* map,
 {
   // First check if we already have an intmap of this type.
   size_t intmap_idx = (size_t)~0;
-  for(size_t i = 0; i < intmaps.GetSize (); i++)
+  for(size_t i = 0; i < intmaps.Length(); i++)
   {
     if (intmaps[i].type == type)
     {
@@ -233,13 +233,13 @@ bool csSimpleFormer::SetFloatMap (csStringID type, iImage* map,
                                   float scale, float offset)
 {
 
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    objectRegistry, "crystalspace.shared.stringset", iStringSet);
 
   // First check if we already have an floatmap of this type.
   size_t floatmap_idx = (size_t)~0;
 
-  for(size_t i = 0; i < floatmaps.GetSize (); i++)
+  for(size_t i = 0; i < floatmaps.Length(); i++)
   {
     if (floatmaps[i].type == type)
     {
@@ -319,7 +319,7 @@ void csSimpleFormer::SetHeightmap (float* data, unsigned int width,
 {
   size_t heightmap_idx = (size_t)~0;
 
-  for(size_t i = 0; i< floatmaps.GetSize (); i++)
+  for(size_t i = 0; i< floatmaps.Length(); i++)
   {
     if(floatmaps[i].type == stringHeights)
     {
@@ -346,7 +346,7 @@ void csSimpleFormer::SetHeightmap (iImage *heightmap)
 {
   size_t heightmap_idx = (size_t)~0;
 
-  for(size_t i = 0; i< floatmaps.GetSize (); i++)
+  for(size_t i = 0; i< floatmaps.Length(); i++)
   {
     if(floatmaps[i].type == stringHeights)
     {
@@ -451,8 +451,8 @@ bool csSimpleFormer::Initialize (iObjectRegistry* objectRegistry)
   csSimpleFormer::objectRegistry = objectRegistry;
 
   // Get the shared string repository
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    objectRegistry, "crystalspace.shared.stringset", iStringSet);
 
   // Grab string IDs
   stringVertices = strings->Request ("vertices");
@@ -490,7 +490,7 @@ bool csSimpleFormer::SampleFloat (csStringID type, float x, float z,
   {
     // Check if it is one of the float maps.
     size_t i;
-    for (i = 0 ; i < floatmaps.GetSize () ; i++)
+    for (i = 0 ; i < floatmaps.Length () ; i++)
     {
       if (floatmaps[i].type == type)
       {
@@ -539,7 +539,7 @@ bool csSimpleFormer::SampleInteger (csStringID type, float x, float z,
 {
 
   // Check if it is one of the int maps.
-  for (size_t i = 0 ; i < intmaps.GetSize () ; i++)
+  for (size_t i = 0 ; i < intmaps.Length () ; i++)
   {
     if (intmaps[i].type == type)
     {
@@ -561,8 +561,9 @@ bool csSimpleFormer::SampleInteger (csStringID type, float x, float z,
 csVector2 csSimpleFormer::GetIntegerMapSize (csStringID type)
 {
   // Get the shared string repository
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    objectRegistry, "crystalspace.shared.stringset",
+    iStringSet);
 
   csString typestring = csString(strings->Request(type));
 
@@ -575,7 +576,7 @@ csVector2 csSimpleFormer::GetIntegerMapSize (csStringID type)
   else if (typestring.Find("alphamap") == 0 ||
            type == strings->Request("materialmap"))
   {
-    for (uint i = 0; i < intmaps.GetSize (); i++)
+    for (uint i = 0; i < intmaps.Length(); i++)
     {
       if (intmaps[i].type == type)
         return csVector2(intmaps[i].width,intmaps[i].height);
@@ -946,8 +947,9 @@ const csVector3 *csSimpleSampler::SampleVector3 (csStringID type)
 const int *csSimpleSampler::SampleInteger (csStringID type)
 {
   // Get the shared string repository
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    terraFormer->objectRegistry, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    terraFormer->objectRegistry, "crystalspace.shared.stringset",
+    iStringSet);
 
   csString typestring = csString(strings->Request(type));
 
@@ -960,7 +962,7 @@ const int *csSimpleSampler::SampleInteger (csStringID type)
   else if (typestring.Find("alphamap") == 0 ||
            type == strings->Request("materialmap"))
   {
-    for (uint i = 0; i < terraFormer->intmaps.GetSize (); i++)
+    for (uint i = 0; i < terraFormer->intmaps.Length(); i++)
     {
       if (terraFormer->intmaps[i].type == type)
       {

@@ -283,9 +283,6 @@ private:
  
   void AddReftrackerAliases ()
   {
-#ifndef SCF_IMPL_EXT
-    AddReftrackerAlias<iBase>(this->scfObject);
-#endif
 #if SCF_IMPL_N >= 1
     AddReftrackerAlias<I1>(this->scfObject);
 #endif
@@ -320,9 +317,6 @@ private:
 
   void RemoveReftrackerAliases ()
   {
-#ifndef SCF_IMPL_EXT
-    RemoveReftrackerAlias<iBase>(this->scfObject);
-#endif
 #if SCF_IMPL_N >= 1
     RemoveReftrackerAlias<I1>(this->scfObject);
 #endif

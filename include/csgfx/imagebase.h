@@ -36,6 +36,7 @@
 
 #include "igraphic/image.h"
 
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**
  * Base class for iImage implementations. Cannot be instantiated itself.
@@ -74,8 +75,12 @@ public:
   virtual const uint8* GetAlpha () { return 0; }
 
   virtual bool HasKeyColor () const { return false; }
+  CS_DEPRECATED_METHOD virtual bool HasKeycolor () const
+  { return HasKeyColor(); }
 
   virtual void GetKeyColor (int & /*r*/, int & /*g*/, int & /*b*/) const { }
+  CS_DEPRECATED_METHOD virtual void GetKeycolor (int &r, int &g, int &b) const
+  { GetKeyColor (r, g, b); }
 
   virtual uint HasMipmaps () const { return 0; }
   virtual csRef<iImage> GetMipmap (uint num) 
@@ -88,6 +93,8 @@ public:
   virtual csRef<iImage> GetSubImage (uint num) 
   { return (num == 0) ? this : 0; }
 };
+
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /** @} */
 

@@ -20,6 +20,7 @@
 #include "csqint.h"
 #include "plugins/engine/3d/movable.h"
 #include "plugins/engine/3d/sector.h"
+#include "plugins/engine/3d/cscoll.h"
 #include "plugins/engine/3d/engine.h"
 #include "plugins/engine/3d/light.h"
 #include "plugins/engine/3d/meshobj.h"
@@ -52,8 +53,8 @@ bool csMovableSectorList::PrepareSector (iSector* sector)
   csLight *l = movable->GetCsLight ();
   if (l) l->OnSetSector (sector);
   // Make sure camera and light only is in one sector
-  CS_ASSERT (!(movable->GetCsLight () && GetSize () > 0));
-  CS_ASSERT (!(movable->GetCsCamera () && GetSize () > 0));
+  CS_ASSERT (!(movable->GetCsLight () && Length () > 0));
+  CS_ASSERT (!(movable->GetCsCamera () && Length () > 0));
   return true;
 }
 
@@ -104,7 +105,7 @@ csMovable::csMovable ()
 
 csMovable::~csMovable ()
 {
-  size_t i = listeners.GetSize ();
+  size_t i = listeners.Length ();
   while (i > 0)
   {
     i--;
@@ -137,7 +138,7 @@ void csMovable::Transform (const csMatrix3 &matrix)
 void csMovable::SetSector (iSector *sector)
 {
   if (parent != 0) return;
-  if (sectors.GetSize () == 1 && sector == sectors[0]) return ;
+  if (sectors.Length () == 1 && sector == sectors[0]) return ;
   ClearSectors ();
   if (sectors.PrepareSector (sector))
     sectors.Push (sector);
@@ -169,10 +170,10 @@ void csMovable::UpdateMove ()
   if (lightobject) lightobject->OnSetPosition ();
 
   size_t i;
-  for (i = 0 ; i < scene_children.GetSize () ; i++)
+  for (i = 0 ; i < scene_children.Length () ; i++)
     scene_children[i]->GetMovable ()->UpdateMove ();
 
-  i = listeners.GetSize ();
+  i = listeners.Length ();
   while (i > 0)
   {
     i--;

@@ -26,8 +26,7 @@
 #define SNDSYS_QUEUE_H
 
 
-#include "csutil/threading/mutex.h"
-#include "csutil/threading/condition.h"
+#include "csutil/thread.h"
 
 namespace CS
 {
@@ -101,7 +100,10 @@ namespace CS
     Queue() :
         m_pHead(0), m_pTail(0), m_EntryCount(0), m_bClosed(false), m_bDupeCheck(false)
     { 
-      
+      // A recursive mutex is used so that the duplicate entry check can hold a
+      // lock m_EntryCount of 2
+      m_pAccessMutex = csMutex::Create(true);
+      m_pEntryReadyCondition = csCondition::Create();
     } 
 
     ~Queue()
@@ -118,9 +120,7 @@ namespace CS
     void Clear()
     { 
       QEntry<T> *del;
-
-      CS::Threading::RecursiveMutexScopedLock lock (m_pAccessMutex);
-      
+      Lock(); 
       while (m_pHead)
       {
         del=m_pHead; 
@@ -130,24 +130,27 @@ namespace CS
       m_pTail=0;
 
       // Wake all waiting threads, queue is cleared
-      m_pEntryReadyCondition.NotifyAll ();
+      m_pEntryReadyCondition->Signal(true);
+      Unlock();
     }
 
     /// Add the specified pointer to the end of the queue
     QueueErrorType QueueEntry(T* pData)
     {
-      CS::Threading::RecursiveMutexScopedLock lock (m_pAccessMutex);
+      Lock();
 
       if (m_bClosed) return QUEUE_ERR_CLOSED;
 
       if (m_bDupeCheck && Find(pData))
       {
+        Unlock();
         return QUEUE_ERR_DUPE;
       }
 
       QEntry<T> *pNewEntry= new QEntry<T>();
       if (!pNewEntry)
       {
+        Unlock();
         return QUEUE_ERR_NOMEM;
       }
       pNewEntry->data=pData;
@@ -162,8 +165,9 @@ namespace CS
 
 
       // Signal one waiting thread to wake up
-      m_pEntryReadyCondition.NotifyOne ();
+      m_pEntryReadyCondition->Signal();
 
+      Unlock();
       return QUEUE_SUCCESS;
     }
 
@@ -181,11 +185,11 @@ namespace CS
       QEntry<T> *pRemoved;
       T* pData=0;
 
-      CS::Threading::RecursiveMutexScopedLock lock (m_pAccessMutex);
+      Lock();
 
       // Wait for an entry to be available if specified
       if (!m_pHead && bWait)
-        m_pEntryReadyCondition.Wait (m_pAccessMutex);
+        m_pEntryReadyCondition->Wait(m_pAccessMutex,0);
 
       // Remove the m_pHead entry from the queue, shift
       //  the head pointer to the next entry
@@ -203,7 +207,8 @@ namespace CS
         pData=pRemoved->data;
         // Delete the entry wrapper object
         delete pRemoved;
-      }      
+      }
+      Unlock();
       return pData;
     }
 
@@ -213,24 +218,27 @@ namespace CS
     /// Compares pointers, and not the objects they point to
     bool Find(T *data)
     {
-      CS::Threading::RecursiveMutexScopedLock lock (m_pAccessMutex);
+      Lock();
       QEntry<T> *cur=m_pHead;
       while (cur)
       {
         if (((cur->data)) == (data))
         {
+          Unlock();
           return true;
         }
         cur=cur->next;
       }
+      Unlock();
       return false;
     }
 
     /// Close the queue so that no further entries may be added
     void SetClosed(bool Closed)
     {
-      CS::Threading::RecursiveMutexScopedLock lock (m_pAccessMutex);
-      m_bClosed=Closed;      
+      Lock();
+      m_bClosed=Closed;
+      Unlock();
     }
 
     /// \brief This can be used to determine if the queue is closed. 
@@ -238,9 +246,9 @@ namespace CS
     bool GetClosed()
     {
       bool Closed;
-      CS::Threading::RecursiveMutexScopedLock lock (m_pAccessMutex);
+      Lock();
       Closed=m_bClosed;
-      
+      Unlock();
       return Closed;
     }
 
@@ -252,16 +260,18 @@ namespace CS
     ///   operation to perform a linear search of the queue.
     void SetDupecheck(bool Check)
     {
-      CS::Threading::RecursiveMutexScopedLock lock (m_pAccessMutex);
+      Lock();
       m_bDupeCheck=Check;
+      Unlock();
     }
 
     /// Retrieve the status of duplicate pointer checking.
     bool GetDupecheck()
     {
       bool val;
-      CS::Threading::RecursiveMutexScopedLock lock (m_pAccessMutex);
+      Lock();
       val=m_bClosed;
+      Unlock();
       return val;
     }
 
@@ -272,6 +282,20 @@ namespace CS
     QueueIterator<T>* GetIterator()
     {
       return new QueueIterator<T>(this);
+    }
+
+  protected:
+
+    /// Gain exclusive-access lock on queue operations
+    inline void Lock()
+    {
+      m_pAccessMutex->LockWait();
+    }
+
+    /// Release exclusive-access lock on queue operations
+    inline void Unlock()
+    {
+      m_pAccessMutex->Release();
     }
 
   protected:
@@ -287,13 +311,10 @@ namespace CS
     ///   times in this queue.
     volatile bool m_bDupeCheck;
 
-    // A recursive mutex is used so that the duplicate entry check can hold a
-    // lock m_EntryCount of 2
-
     /// The mutex which restricts access to all queue operations.
-    CS::Threading::RecursiveMutex m_pAccessMutex;
+    csRef<csMutex> m_pAccessMutex;
     /// The condition used for waiting on and signaling availability of entries.
-    CS::Threading::Condition m_pEntryReadyCondition;
+    csRef<csCondition> m_pEntryReadyCondition;
 
 
     friend class QueueIterator<T>;

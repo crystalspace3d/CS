@@ -17,6 +17,10 @@
 */
 
 #include "cssysdef.h"
+#if defined(CS_REF_TRACKER) && !defined(CS_REF_TRACKER_EXTENSIVE)
+  // Performance hack
+  #undef CS_REF_TRACKER
+#endif
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -489,9 +493,6 @@ csTinyXmlDocument::~csTinyXmlDocument ()
   while (pool)
   {
     csTinyXmlNode* n = pool->next_pool;
-    /* Since re-pooled nodes are signalled as "destructed" to the ref
-     * tracker (see Free()), simulate construction here. */
-    csRefTrackerAccess::TrackConstruction (pool);
     // The 'sys' member in pool should be 0 here.
     delete pool;
     pool = n;
@@ -599,9 +600,6 @@ csTinyXmlNode* csTinyXmlDocument::Alloc ()
   {
     csTinyXmlNode* n = pool;
     pool = n->next_pool;
-    /* Since re-pooled nodes are signalled as "destructed" to the ref
-     * tracker (see Free()), simulate construction here. */
-    csRefTrackerAccess::TrackConstruction (n);
     n->scfRefCount = 1;
     n->doc = this;	// Incref.
     return n;
@@ -622,9 +620,6 @@ csTinyXmlNode* csTinyXmlDocument::Alloc (CS::TiDocumentNode* node)
 
 void csTinyXmlDocument::Free (csTinyXmlNode* n)
 {
-  /* "Simulate" destruction so the pooled nodes won't cause false ref leaks
-   * in the ref tracker log. */
-  csRefTrackerAccess::TrackDestruction (n, n->scfRefCount);
   n->next_pool = pool;
   pool = n;
   n->doc = 0;	// Free ref.

@@ -77,7 +77,7 @@ void CallStackImpl::Free() { delete this; }
 
 size_t CallStackImpl::GetEntryCount ()
 {
-  return entries.GetSize ();
+  return entries.Length();
 }
 
 typedef iCallStackNameResolver* (*NameResolveGetter)();

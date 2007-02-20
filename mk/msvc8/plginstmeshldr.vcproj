@@ -39,7 +39,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -72,6 +71,7 @@
 				TypeLibraryName="..\..\out\release8\build\plginstmeshldr\plginstmeshldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\release8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\instmeshldr.dll&quot; &quot;..\..\out\release8\bin\instmeshldr.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -113,7 +113,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -144,6 +143,7 @@
 				TypeLibraryName="..\..\out\debug8\build\plginstmeshldr\plginstmeshldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\instmeshldr.dll&quot; &quot;..\..\out\debug8\bin\instmeshldr.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -185,7 +185,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -216,6 +215,7 @@
 				TypeLibraryName="..\..\out\debug8\build\plginstmeshldr\plginstmeshldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\instmeshldr.dll&quot; &quot;..\..\out\debug8\bin\instmeshldr.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -257,7 +257,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -288,6 +287,7 @@
 				TypeLibraryName="..\..\out\debug8\build\plginstmeshldr\plginstmeshldr.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\instmeshldr.dll&quot; &quot;..\..\out\debug8\bin\instmeshldr.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

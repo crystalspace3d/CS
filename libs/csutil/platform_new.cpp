@@ -42,17 +42,17 @@ void* operator new (size_t s, const CS::AllocPlatform&) throw ()
    * is non-trivial here. 
    * For now, solve the issue pragmatically and employ platform_malloc().
    */
-  return malloc (s);
+  return platform_malloc (s);
 }
 void* operator new[] (size_t s, const CS::AllocPlatform&) throw ()
 { 
-  return malloc (s);
+  return platform_malloc (s);
 }
 void operator delete (void* p, const CS::AllocPlatform&) throw ()
 { 
-  free (p);
+  platform_free (p);
 }
 void operator delete[] (void* p, const CS::AllocPlatform&) throw ()
 { 
-  free (p);
+  platform_free (p);
 }

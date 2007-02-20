@@ -605,14 +605,14 @@ int main (int argc, char *argv [])
 	CS_REQUEST_END))
     return -1;
 
-  VFS = csQueryRegistry<iVFS> (object_reg);
+  VFS = CS_QUERY_REGISTRY (object_reg, iVFS);
   if (!VFS)
   {
     csPrintfErr ("Cannot load iVFS plugin\n");
     return -1;
   }
 
-  Cfg = csQueryRegistry<iConfigManager> (object_reg);
+  Cfg = CS_QUERY_REGISTRY (object_reg, iConfigManager);
   if (!Cfg)
   {
     csPrintfErr ("Cannot load iConfigManager plugin\n");

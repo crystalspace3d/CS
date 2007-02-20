@@ -47,6 +47,7 @@
 #include "iengine/region.h"
 #include "iengine/texture.h"
 #include "iengine/material.h"
+#include "iengine/collectn.h"
 #include "iengine/sector.h"
 #include "iengine/movable.h"
 #include "iengine/halo.h"
@@ -246,8 +247,8 @@ iLight* StdLoaderContext::FindLight (const char *name)
 
 iShader* StdLoaderContext::FindShader (const char *name)
 {
-  csRef<iShaderManager> shaderMgr = 
-  	csQueryRegistry<iShaderManager> (loader->object_reg);
+  csRef<iShaderManager> shaderMgr = CS_QUERY_REGISTRY (
+  	loader->object_reg, iShaderManager);
   if (!shaderMgr) return 0;
   if (!curRegOnly || !region)
   {
@@ -259,7 +260,7 @@ iShader* StdLoaderContext::FindShader (const char *name)
 
   csRefArray<iShader> shaders = shaderMgr->GetShaders ();
   size_t i;
-  for (i = 0 ; i < shaders.GetSize () ; i++)
+  for (i = 0 ; i < shaders.Length () ; i++)
   {
     iShader* s = shaders[i];
     if (region->IsInRegion (s->QueryObject ())
@@ -433,14 +434,14 @@ iLight* ThreadedLoaderContext::FindLight (const char *name)
 
 iShader* ThreadedLoaderContext::FindShader (const char *name)
 {
-  csRef<iShaderManager> shaderMgr = 
-  	csQueryRegistry<iShaderManager> (loader->object_reg);
+  csRef<iShaderManager> shaderMgr = CS_QUERY_REGISTRY (
+  	loader->object_reg, iShaderManager);
   if (!shaderMgr) return 0;
   if (!curRegOnly || !region) return shaderMgr->GetShader (name);
 
   csRefArray<iShader> shaders = shaderMgr->GetShaders ();
   size_t i;
-  for (i = 0 ; i < shaders.GetSize () ; i++)
+  for (i = 0 ; i < shaders.Length () ; i++)
   {
     iShader* s = shaders[i];
     if (region->IsInRegion (s->QueryObject ())
@@ -550,7 +551,7 @@ bool csLoader::LoadStructuredDoc (const char* file, iDataBuffer* buf,
 	csRef<iDocument>& doc)
 {
   csRef<iDocumentSystem> docsys (
-      csQueryRegistry<iDocumentSystem> (object_reg));
+      CS_QUERY_REGISTRY (object_reg, iDocumentSystem));
   if (!docsys) docsys = csPtr<iDocumentSystem> (new csTinyDocumentSystem ());
   doc = docsys->CreateDocument ();
   const char* error = doc->Parse (buf, true);
@@ -572,7 +573,7 @@ bool csLoader::LoadStructuredDoc (const char* file, iFile* buf,
 	csRef<iDocument>& doc)
 {
   csRef<iDocumentSystem> docsys (
-      csQueryRegistry<iDocumentSystem> (object_reg));
+      CS_QUERY_REGISTRY (object_reg, iDocumentSystem));
   if (!docsys) docsys = csPtr<iDocumentSystem> (new csTinyDocumentSystem ());
   doc = docsys->CreateDocument ();
   const char* error = doc->Parse (buf, true);
@@ -974,20 +975,19 @@ void csLoader::AddToRegion (iLoaderContext* ldr_context, iObject* obj)
 }
 
 void csLoader::AddChildrenToRegion (iLoaderContext* ldr_context,
-                                    const iSceneNodeArray* children)
+	const csRefArray<iSceneNode>& children)
 {
   size_t i;
-  for (i = 0 ; i < children->GetSize(); i++)
+  for (i = 0 ; i < children.Length () ; i++)
   {
-    iSceneNode* sn = children->Get(i);
+    iSceneNode* sn = children[i];
     iObject* obj = 0;
     if (sn->QueryMesh ()) obj = sn->QueryMesh ()->QueryObject ();
     else if (sn->QueryLight ()) obj = sn->QueryLight ()->QueryObject ();
     //else if (sn->QueryCamera ()) obj = sn->QueryCamera ()->QueryObject ();
     if (obj)
       AddToRegion (ldr_context, obj);
-    const csRef<iSceneNodeArray> nodeChildren = sn->GetChildrenArray ();
-    AddChildrenToRegion (ldr_context, nodeChildren);
+    AddChildrenToRegion (ldr_context, sn->GetChildren ());
   }
 }
 
@@ -1123,11 +1123,11 @@ csLoader::~csLoader()
 }
 
 #define GET_PLUGIN(var, intf, msgname)				\
-  var = csQueryRegistry<intf> (object_reg);			\
+  var = CS_QUERY_REGISTRY(object_reg, intf);			\
   if (!var && do_verbose) ReportNotify ("Could not get " msgname);
 
 #define GET_CRITICAL_PLUGIN(var, intf, msgname)			\
-  var = csQueryRegistry<intf> (object_reg);			\
+  var = CS_QUERY_REGISTRY(object_reg, intf);			\
   if (!var) { ReportError ("crystalspace.maploader",		\
     "Failed to initialize loader: "				\
     "Could not get " msgname); return false; }
@@ -1137,16 +1137,16 @@ bool csLoader::Initialize (iObjectRegistry *object_Reg)
   csLoader::object_reg = object_Reg;
   loaded_plugins.SetObjectRegistry (object_reg);
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr) 
     do_verbose = verbosemgr->Enabled ("loader");
   else
     do_verbose = false;
 
   csRef<iPluginManager> plugin_mgr (
-  	csQueryRegistry<iPluginManager> (object_reg));
+  	CS_QUERY_REGISTRY (object_reg, iPluginManager));
 
-  Reporter = csQueryRegistry<iReporter> (object_reg);
+  Reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
 
   loaded_plugins.plugin_mgr = plugin_mgr;
 
@@ -1173,8 +1173,8 @@ bool csLoader::Initialize (iObjectRegistry *object_Reg)
 
   InitTokenTable (xmltokens);
 
-  stringSet = csQueryRegistryTagInterface<iStringSet> (
-    object_reg, "crystalspace.shared.stringset");
+  stringSet = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    object_reg, "crystalspace.shared.stringset", iStringSet);
 
   return true;
 }
@@ -1207,10 +1207,6 @@ bool csLoader::LoadMap (iLoaderContext* ldr_context, iDocumentNode* worldnode,
     csStringID id = xmltokens.Request (value);
     switch (id)
     {
-      case XMLTOKEN_SHADEREXPRESSIONS:
-	if (!LoadShaderExpressions (ldr_context, child))
-	  return false;
-        break;
       case XMLTOKEN_SETTINGS:
 	if (!LoadSettings (child))
 	  return false;
@@ -1277,6 +1273,13 @@ bool csLoader::LoadMap (iLoaderContext* ldr_context, iDocumentNode* worldnode,
         if (!ParseSector (ldr_context, child, ssource))
 	  return false;
         break;
+      case XMLTOKEN_COLLECTION:
+	ReportWarning (
+	        "crystalspace.maploader.parse.region",
+                child, "Collections are obsolete. Don't use them!");
+        if (!ParseCollection (ldr_context, child))
+	  return false;
+        break;
       case XMLTOKEN_SEQUENCES:
 	// Defer sequence parsing to later.
 	sequences = child;
@@ -1323,8 +1326,15 @@ bool csLoader::LoadMap (iLoaderContext* ldr_context, iDocumentNode* worldnode,
       }
       case XMLTOKEN_KEY:
       {
-        if (!ParseKey (child, Engine->QueryObject()))
-          return false;
+        iKeyValuePair* kvp = 0;
+        SyntaxService->ParseKey (child, kvp);
+        if (kvp)
+        {
+          Engine->QueryObject()->ObjAdd (kvp->QueryObject ());
+	  kvp->DecRef ();
+        }
+	else
+	  return false;
         break;
       }
       case XMLTOKEN_SHADERS:
@@ -1353,7 +1363,7 @@ bool csLoader::LoadLibraryFromNode (iLoaderContext* ldr_context,
 	iDocumentNode* child, iStreamSource* ssource,
 	iMissingLoaderData* missingdata)
 {
-  csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
+  csRef<iVFS> vfs = CS_QUERY_REGISTRY(object_reg, iVFS);
   const char* name = child->GetAttributeValue ("checkdupes");
   bool dupes = ldr_context->CheckDupes ();
   if (name)
@@ -1433,10 +1443,6 @@ bool csLoader::LoadLibrary (iLoaderContext* ldr_context, iDocumentNode* libnode,
     csStringID id = xmltokens.Request (value);
     switch (id)
     {
-      case XMLTOKEN_SHADEREXPRESSIONS:
-	if (!LoadShaderExpressions (ldr_context, child))
-	  return false;
-        break;
       case XMLTOKEN_LIBRARY:
       {
 	if (!LoadLibraryFromNode (ldr_context, child, ssource, missingdata))
@@ -1648,7 +1654,14 @@ bool csLoader::LoadSounds (iDocumentNode* node)
               {
                 case XMLTOKEN_KEY:
                   {
-                    if (!ParseKey (child2, snd->QueryObject()))
+                    iKeyValuePair *kvp = 0;
+                    SyntaxService->ParseKey (child2, kvp);
+                    if (kvp)
+                    {
+                      snd->QueryObject ()->ObjAdd (kvp->QueryObject ());
+                      kvp->DecRef ();
+                    }
+		    else
                       return false;
                   }
                   break;
@@ -2017,8 +2030,9 @@ bool csLoader::LoadMeshObjectFactory (iLoaderContext* ldr_context,
               child, "Please use 'params' before specifying LOD!");
 	    return false;
 	  }
-          csRef<iLODControl> lodctrl (scfQueryInterface<iLODControl> (
-	    	stemp->GetMeshObjectFactory ()));
+	  csRef<iLODControl> lodctrl (SCF_QUERY_INTERFACE (
+	    	stemp->GetMeshObjectFactory (),
+		iLODControl));
 	  if (!lodctrl)
 	  {
             SyntaxService->ReportError (
@@ -2032,8 +2046,14 @@ bool csLoader::LoadMeshObjectFactory (iLoaderContext* ldr_context,
         break;
       case XMLTOKEN_KEY:
         {
-          if (!ParseKey (child, stemp->QueryObject()))
-            return false;
+          iKeyValuePair* kvp = 0;
+          SyntaxService->ParseKey (child, kvp);
+	  if (kvp)
+          {
+            stemp->QueryObject()->ObjAdd (kvp->QueryObject ());
+	    kvp->DecRef ();
+          } else
+	    return false;
         }
         break;
       case XMLTOKEN_ADDON:
@@ -2099,8 +2119,8 @@ bool csLoader::LoadMeshObjectFactory (iLoaderContext* ldr_context,
 	  csBox3 b;
 	  if (!SyntaxService->ParseBox (child, b))
 	    return false;
-          csRef<iNullFactoryState> nullmesh = 
-            scfQueryInterface<iNullFactoryState> (fact);
+	  csRef<iNullFactoryState> nullmesh = SCF_QUERY_INTERFACE (
+		fact, iNullFactoryState);
 	  nullmesh->SetBoundingBox (b);
 	}
         break;
@@ -2126,8 +2146,8 @@ bool csLoader::LoadMeshObjectFactory (iLoaderContext* ldr_context,
 	  }
 	  else
 	  {
-	    csRef<iMeshObjectFactory> mof2 (
-	    	scfQueryInterface<iMeshObjectFactory> (mof));
+	    csRef<iMeshObjectFactory> mof2 (SCF_QUERY_INTERFACE (mof,
+	    	iMeshObjectFactory));
 	    if (!mof2)
 	    {
               SyntaxService->ReportError (
@@ -2182,8 +2202,8 @@ bool csLoader::LoadMeshObjectFactory (iLoaderContext* ldr_context,
 	  }
 	  else
 	  {
-	    csRef<iMeshObjectFactory> mof2 (
-	    	scfQueryInterface<iMeshObjectFactory> (mof));
+	    csRef<iMeshObjectFactory> mof2 (SCF_QUERY_INTERFACE (mof,
+	    	iMeshObjectFactory));
 	    if (!mof2)
 	    {
               SyntaxService->ReportError (
@@ -2660,8 +2680,9 @@ bool csLoader::HandleMeshParameter (iLoaderContext* ldr_context,
               child, "Mesh object is missing!");
 	  return false;
 	}
-        csRef<iLODControl> lodctrl (scfQueryInterface<iLODControl> (
-	    	mesh->GetMeshObject ()));
+	csRef<iLODControl> lodctrl (SCF_QUERY_INTERFACE (
+	    	mesh->GetMeshObject (),
+		iLODControl));
 	if (!lodctrl)
 	{
           SyntaxService->ReportError (
@@ -2839,11 +2860,11 @@ bool csLoader::HandleMeshParameter (iLoaderContext* ldr_context,
         //the meshes' hierarchy, starting from the 'mesh' mesh object.
         csRefArray<iMeshWrapper> meshesArray;
         CollectAllChildren (mesh, meshesArray);
-        size_t i, count = meshesArray.GetSize ();
+        size_t i, count = meshesArray.Length ();
         for (i = 0; i < count; i++)
         {
-          csRef<iVisibilityObject> visobj = 
-            scfQueryInterface<iVisibilityObject> (meshesArray[i]);
+          csRef<iVisibilityObject> visobj = SCF_QUERY_INTERFACE 
+            (meshesArray[i], iVisibilityObject);
           if (visobj)
             visobj->GetCullerFlags ().Set (CS_CULLER_HINT_BADOCCLUDER);
         }
@@ -2857,11 +2878,11 @@ bool csLoader::HandleMeshParameter (iLoaderContext* ldr_context,
         //the meshes' hierarchy, starting from the 'mesh' mesh object.
         csRefArray<iMeshWrapper> meshesArray;
         CollectAllChildren (mesh, meshesArray);
-        size_t i, count = meshesArray.GetSize ();
+        size_t i, count = meshesArray.Length ();
         for (i = 0; i < count; i++)
         {
-          csRef<iVisibilityObject> visobj = 
-            scfQueryInterface<iVisibilityObject> (meshesArray[i]);
+          csRef<iVisibilityObject> visobj = SCF_QUERY_INTERFACE 
+            (meshesArray[i], iVisibilityObject);
           if (visobj)
             visobj->GetCullerFlags ().Set (CS_CULLER_HINT_GOODOCCLUDER);
         }
@@ -2875,7 +2896,7 @@ bool csLoader::HandleMeshParameter (iLoaderContext* ldr_context,
         {
           csRefArray<iMeshWrapper> meshesArray;
           CollectAllChildren (mesh, meshesArray);
-          size_t i, count = meshesArray.GetSize ();
+          size_t i, count = meshesArray.Length ();
           for (i = 0; i < count; i++)
           {
             ClosedFlags (meshesArray[i]);
@@ -2893,7 +2914,7 @@ bool csLoader::HandleMeshParameter (iLoaderContext* ldr_context,
         {
           csRefArray<iMeshWrapper> meshesArray;
           CollectAllChildren (mesh, meshesArray);
-          size_t i, count = meshesArray.GetSize ();
+          size_t i, count = meshesArray.Length ();
           for (i = 0; i < count; i++)
           {
             ConvexFlags (meshesArray[i]);
@@ -2907,8 +2928,14 @@ bool csLoader::HandleMeshParameter (iLoaderContext* ldr_context,
       TEST_MISSING_MESH
       else
       {
-        if (!ParseKey (child, mesh->QueryObject()))
-          return false;
+        iKeyValuePair* kvp = 0;
+        SyntaxService->ParseKey (child, kvp);
+	if (kvp)
+        {
+          mesh->QueryObject()->ObjAdd (kvp->QueryObject ());
+	  kvp->DecRef ();
+        } else
+	  return false;
       }
       break;
     case XMLTOKEN_HARDMOVE:
@@ -2994,8 +3021,8 @@ bool csLoader::HandleMeshParameter (iLoaderContext* ldr_context,
       TEST_MISSING_MESH
       else
       {
-	csRef<iShaderVariableContext> svc = 
-		scfQueryInterface<iShaderVariableContext> (mesh);
+	csRef<iShaderVariableContext> svc = SCF_QUERY_INTERFACE (mesh,
+		iShaderVariableContext);
 	CS_ASSERT (svc.IsValid());
         //create a new variable
         const char* varname = child->GetAttributeValue ("name");
@@ -3071,8 +3098,8 @@ csRef<iMeshWrapper> csLoader::LoadMeshObjectFromFactory (iLoaderContext* ldr_con
 	  {
 	    AddToRegion (ldr_context, mesh->QueryObject ());
 	    // Now also add the child mesh objects to the region.
-            const csRef<iSceneNodeArray> children = 
-              mesh->QuerySceneNode ()->GetChildrenArray ();
+	    const csRefArray<iSceneNode>& children = mesh->QuerySceneNode ()->
+	    	GetChildren ();
 	    AddChildrenToRegion (ldr_context, children);
 	  }
 	}
@@ -3098,7 +3125,7 @@ csRef<iMeshWrapper> csLoader::LoadMeshObjectFromFactory (iLoaderContext* ldr_con
   {
     csRefArray<iMeshWrapper> meshesArray;
     CollectAllChildren (mesh, meshesArray);
-    size_t i, count = meshesArray.GetSize ();
+    size_t i, count = meshesArray.Length ();
     for (i = 0; i < count; i++)
     {
       iMeshWrapper* mesh = meshesArray[i];
@@ -3212,8 +3239,8 @@ bool csLoader::LoadPolyMeshInSector (iLoaderContext* ldr_context,
   if (shadows)
     objmodel->SetPolygonMeshShadows (polymesh);
 
-  csRef<iNullMeshState> nullmesh = scfQueryInterface<iNullMeshState> (
-    	mesh->GetMeshObject ());
+  csRef<iNullMeshState> nullmesh = SCF_QUERY_INTERFACE (
+    	mesh->GetMeshObject (), iNullMeshState);
   CS_ASSERT (nullmesh != 0);
   int i;
   csBox3 bbox;
@@ -3231,7 +3258,7 @@ bool csLoader::LoadPolyMeshInSector (iLoaderContext* ldr_context,
 bool csLoader::HandleMeshObjectPluginResult (iBase* mo, iDocumentNode* child,
 	iMeshWrapper* mesh, bool keepZbuf, bool keepPrio)
 {
-  csRef<iMeshObject> mo2 = scfQueryInterface<iMeshObject> (mo);
+  csRef<iMeshObject> mo2 = SCF_QUERY_INTERFACE (mo, iMeshObject);
   if (!mo2)
   {
     SyntaxService->ReportError (
@@ -3381,8 +3408,8 @@ bool csLoader::LoadMeshObject (iLoaderContext* ldr_context,
 	  csBox3 b;
 	  if (!SyntaxService->ParseBox (child, b))
 	    return false;
-          csRef<iNullMeshState> nullmesh = 
-            scfQueryInterface<iNullMeshState> (mo);
+	  csRef<iNullMeshState> nullmesh = SCF_QUERY_INTERFACE (
+		mo, iNullMeshState);
 	  if (nullmesh)
 	    nullmesh->SetBoundingBox (b);
 	}
@@ -3615,7 +3642,7 @@ bool csLoader::LoadMeshObject (iLoaderContext* ldr_context,
 
 bool csLoader::ParseImposterSettings (iMeshWrapper* mesh, iDocumentNode *node)
 {
-  csRef<iImposter> imposter = scfQueryInterface<iImposter> (mesh);
+  csRef<iImposter> imposter = SCF_QUERY_INTERFACE (mesh, iImposter);
   if (!imposter)
   {
     SyntaxService->ReportError (
@@ -3713,8 +3740,8 @@ bool csLoader::LoadMeshGenGeometry (iLoaderContext* ldr_context,
         uint resx = child->GetAttributeValueAsInt ("resx");
         uint resy = child->GetAttributeValueAsInt ("resy");
         
-        csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-          object_reg, "crystalspace.shared.stringset");
+        csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+          object_reg, "crystalspace.shared.stringset", iStringSet);
 
         geom->AddPositionsFromMap (map, csBox2 (min.x, min.y, max.x, max.y), 
           resx, resy, value, strings->Request ("heights"));
@@ -3733,8 +3760,8 @@ bool csLoader::LoadMeshGenGeometry (iLoaderContext* ldr_context,
           return false;
         }
         float factor = child->GetAttributeValueAsFloat ("factor");
-        csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-        object_reg, "crystalspace.shared.stringset");
+        csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+        object_reg, "crystalspace.shared.stringset", iStringSet);
         geom->SetDensityMap (map_tf, factor, strings->Request ("densitymap"));
       }
       break;
@@ -4164,8 +4191,8 @@ bool csLoader::LoadSettings (iDocumentNode* node)
 	    csRef<iMeshObjectType> type = csLoadPluginCheck<iMeshObjectType> (
 	    	object_reg, "crystalspace.mesh.object.thing");
 	    if (!type) return false;
-	    csRef<iThingEnvironment> te = 
-		scfQueryInterface<iThingEnvironment> (type);
+	    csRef<iThingEnvironment> te = SCF_QUERY_INTERFACE (type,
+		iThingEnvironment);
 	    te->SetLightmapCellSize (cellsize);
 	  }
 	  else
@@ -4219,6 +4246,132 @@ bool csLoader::LoadSettings (iDocumentNode* node)
   }
 
   return true;
+}
+
+iCollection* csLoader::ParseCollection (iLoaderContext* ldr_context,
+	iDocumentNode* node)
+{
+  iCollection* collection = Engine->GetCollections ()->NewCollection (
+		  node->GetAttributeValue ("name"));
+  AddToRegion (ldr_context, collection->QueryObject ());
+
+  csRef<iDocumentNodeIterator> it = node->GetNodes ();
+  while (it->HasNext ())
+  {
+    csRef<iDocumentNode> child = it->Next ();
+    if (child->GetType () != CS_NODE_ELEMENT) continue;
+    const char* value = child->GetValue ();
+    csStringID id = xmltokens.Request (value);
+    switch (id)
+    {
+      case XMLTOKEN_ADDON:
+	SyntaxService->ReportError (
+		"crystalspace.maploader.parse.collection",
+         	child, "'addon' not yet supported in collection!");
+	return 0;
+      case XMLTOKEN_META:
+	SyntaxService->ReportError (
+		"crystalspace.maploader.parse.collection",
+         	child, "'addon' not yet supported in collection!");
+	return 0;
+      case XMLTOKEN_KEY:
+	{
+          iKeyValuePair* kvp = 0;
+          SyntaxService->ParseKey (child, kvp);
+          if (kvp)
+          {
+            collection->QueryObject ()->ObjAdd (kvp->QueryObject ());
+	    kvp->DecRef ();
+          } else
+	    return 0;
+	}
+        break;
+      case XMLTOKEN_MESHOBJ:
+#if 0
+	SyntaxService->ReportError (
+		"crystalspace.maploader.parse.collection",
+         	child, "'meshobj' not yet supported in collection!");
+#endif
+        break;
+      case XMLTOKEN_LIGHT:
+        {
+	  const char* lightname = child->GetContentsValue ();
+	  iLight* l = 0;
+	  iSectorList* sl = Engine->GetSectors ();
+	  int i;
+	  for (i = 0 ; i < sl->GetCount () ; i++)
+	  {
+	    iSector* sect = sl->Get (i);
+	    if ((!ldr_context->GetRegion ()) ||
+	    	(!ldr_context->CurrentRegionOnly ()) ||
+	        ldr_context->GetRegion ()->IsInRegion (sect->QueryObject ()))
+	    {
+	      l = sect->GetLights ()->FindByName (lightname);
+	      if (l) break;
+	    }
+	  }
+          if (!l)
+	  {
+	    SyntaxService->ReportError (
+		"crystalspace.maploader.parse.collection",
+            	child, "Light '%s' not found!", lightname);
+	    return 0;
+	  }
+	  else
+	  {
+	    collection->AddObject (l->QueryObject ());
+	  }
+        }
+        break;
+      case XMLTOKEN_SECTOR:
+        {
+	  const char* sectname = child->GetContentsValue ();
+	  iSector* s = ldr_context->FindSector (sectname);
+          if (!s)
+	  {
+	    SyntaxService->ReportError (
+		"crystalspace.maploader.parse.collection",
+            	child, "Sector '%s' not found!", sectname);
+	    return 0;
+	  }
+	  else
+	  {
+            collection->AddObject (s->QueryObject ());
+	  }
+        }
+        break;
+      case XMLTOKEN_COLLECTION:
+        {
+	  ReportWarning (
+	        "crystalspace.maploader.parse.region",
+                child, "Collections are obsolete. Don't use them!");
+	  const char* colname = child->GetContentsValue ();
+	  iCollection* th;
+	  if (ldr_context->GetRegion () && ldr_context->CurrentRegionOnly ())
+	    th = ldr_context->GetRegion ()->FindCollection (colname);
+	  else
+            th = Engine->GetCollections ()->FindByName (colname);
+          if (!th)
+	  {
+	    SyntaxService->ReportError (
+		"crystalspace.maploader.parse.collection",
+            	child, "Collection '%s' not found!", colname);
+	    return 0;
+	  }
+	  else
+	  {
+            collection->AddObject (th->QueryObject());
+	  }
+        }
+        break;
+      default:
+	SyntaxService->ReportBadToken (child);
+	collection->DecRef ();
+	return 0;
+    }
+  }
+
+  return collection;
 }
 
 bool csLoader::ParseStart (iDocumentNode* node, iCameraPosition* campos)
@@ -4385,8 +4538,16 @@ iLight* csLoader::ParseStatlight (iLoaderContext* ldr_context,
 	}
         break;
       case XMLTOKEN_KEY:
-        if (!ParseKey (child, &Keys))
-          return false;
+	{
+          iKeyValuePair* kvp = 0;
+          SyntaxService->ParseKey (child, kvp);
+          if (kvp)
+          {
+            Keys.ObjAdd (kvp->QueryObject ());
+	    kvp->DecRef ();
+          } else
+	    return 0;
+	}
         break;
       case XMLTOKEN_HALO:
 	{
@@ -4657,7 +4818,7 @@ iLight* csLoader::ParseStatlight (iLoaderContext* ldr_context,
   l->SetType (type);
   l->SetSpotLightFalloff (spotfalloffInner, spotfalloffOuter);
 
-  for (size_t i = 0; i < shader_variables.GetSize (); i++)
+  for (size_t i = 0; i < shader_variables.Length(); i++)
   {
      l->GetSVContext()->AddVariable(shader_variables[i]);
   }
@@ -4761,8 +4922,16 @@ iMapNode* csLoader::ParseNode (iDocumentNode* node, iSector* sec)
         	child, "'meta' not yet supported in node!");
 	return 0;
       case XMLTOKEN_KEY:
-        if (!ParseKey (child, pNode->QueryObject()))
-          return false;
+        {
+          iKeyValuePair* kvp = 0;
+          SyntaxService->ParseKey (child, kvp);
+          if (kvp)
+          {
+            pNode->QueryObject ()->ObjAdd (kvp->QueryObject ());
+	    kvp->DecRef ();
+          } else
+	    return 0;
+	}
         break;
       case XMLTOKEN_POSITION:
 	if (!SyntaxService->ParseVector (child, pos))
@@ -4895,8 +5064,8 @@ bool csLoader::ParsePortal (iLoaderContext* ldr_context,
   if (container_mesh)
   {
     mesh = container_mesh;
-    csRef<iPortalContainer> pc = 
-    	scfQueryInterface<iPortalContainer> (mesh->GetMeshObject ());
+    csRef<iPortalContainer> pc = SCF_QUERY_INTERFACE (mesh->GetMeshObject (),
+    	iPortalContainer);
     CS_ASSERT (pc != 0);
     portal = pc->CreatePortal (poly.GetVertices (), (int)poly.GetVertexCount ());
     portal->SetSector (destSector);
@@ -4948,9 +5117,15 @@ bool csLoader::ParsePortal (iLoaderContext* ldr_context,
   }
 
   size_t i;
-  for (i = 0 ; i < key_nodes.GetSize () ; i++)
+  for (i = 0 ; i < key_nodes.Length () ; i++)
   {
-    if (!ParseKey (key_nodes[i], container_mesh->QueryObject()))
+    iKeyValuePair* kvp = 0;
+    SyntaxService->ParseKey (key_nodes[i], kvp);
+    if (kvp)
+    {
+      container_mesh->QueryObject()->ObjAdd (kvp->QueryObject ());
+      kvp->DecRef ();
+    } else
       return false;
   }
 
@@ -5258,8 +5433,17 @@ iSector* csLoader::ParseSector (iLoaderContext* ldr_context,
         }
         break;
       case XMLTOKEN_KEY:
-        if (!ParseKey (child, sector->QueryObject()))
-          return 0;
+        {
+          iKeyValuePair* kvp = 0;
+          SyntaxService->ParseKey (child, kvp);
+	  if (kvp)
+          {
+            sector->QueryObject()->ObjAdd (kvp->QueryObject ());
+	    kvp->DecRef ();
+          }
+	  else
+	    return 0;
+        }
         break;
       default:
 	SyntaxService->ReportBadToken (child);
@@ -5369,52 +5553,11 @@ bool csLoader::ParseSharedVariable (iLoaderContext* ldr_context,
 //========================================================================
 //========================================================================
 
-bool csLoader::LoadShaderExpressions (iLoaderContext* ldr_context,
-	iDocumentNode* node)
-{
-  csRef<iShaderManager> shaderMgr (
-    csQueryRegistry<iShaderManager> (csLoader::object_reg));
-
-  if(!shaderMgr)
-  {
-    ReportNotify ("iShaderManager not found, ignoring shader expressions!");
-    return true;
-  }
-
-  csRef<iDocumentNodeIterator> it = node->GetNodes ();
-  while (it->HasNext ())
-  {
-    csRef<iDocumentNode> child = it->Next ();
-    if (child->GetType () != CS_NODE_ELEMENT) continue;
-    const char* value = child->GetValue ();
-    csStringID id = xmltokens.Request (value);
-    switch (id)
-    {
-      case XMLTOKEN_SHADEREXPRESSION:
-      {
-	csRef<iShaderVariableAccessor> ac = SyntaxService->
-		ParseShaderVarExpr (child);
-        if (!ac) return false;
-	const char* name = child->GetAttributeValue ("name");
-	csRef<iObject> obj = scfQueryInterface<iObject> (ac);
-	if (obj)
-	{
-	  obj->SetName (name);
-	  AddToRegion (ldr_context, obj);
-	}
-	shaderMgr->RegisterShaderVariableAccessor (name, ac);
-      }
-      break;
-    }
-  }
-  return true;
-}
-
 bool csLoader::ParseShaderList (iLoaderContext* ldr_context,
 	iDocumentNode* node)
 {
   csRef<iShaderManager> shaderMgr (
-    csQueryRegistry<iShaderManager> (csLoader::object_reg));
+    CS_QUERY_REGISTRY (csLoader::object_reg, iShaderManager));
 
   if(!shaderMgr)
   {
@@ -5528,7 +5671,7 @@ bool csLoader::ParseShader (iLoaderContext* ldr_context,
   csRef<iDocumentNode> fileChild = node->GetNode ("file");
 
   csRef<iVFS> vfs;
-  vfs = csQueryRegistry<iVFS> (object_reg);
+  vfs = CS_QUERY_REGISTRY(object_reg, iVFS);
   csVfsDirectoryChanger dirChanger (vfs);
 
   if (fileChild)
@@ -5544,7 +5687,7 @@ bool csLoader::ParseShader (iLoaderContext* ldr_context,
     }
 
     csRef<iDocumentSystem> docsys =
-      csQueryRegistry<iDocumentSystem> (object_reg);
+      CS_QUERY_REGISTRY(object_reg, iDocumentSystem);
     if (docsys == 0)
       docsys.AttachNew (new csTinyDocumentSystem ());
     csRef<iDocument> shaderDoc = docsys->CreateDocument ();
@@ -5620,15 +5763,15 @@ void csLoader::CollectAllChildren (iMeshWrapper* meshWrapper,
   size_t lastMeshVisited = 0;
   meshesArray.Push (meshWrapper);
     
-  while (lastMeshVisited < meshesArray.GetSize ())
+  while (lastMeshVisited < meshesArray.Length ())
   {
     // Get the children of the current mesh (ie 'mesh').
-    const csRef<iSceneNodeArray> ml = 
-      meshesArray[lastMeshVisited++]->QuerySceneNode ()->GetChildrenArray ();
+    const csRefArray<iSceneNode>& ml = meshesArray[lastMeshVisited++]
+    	->QuerySceneNode ()->GetChildren ();
     size_t i;
-    for (i = 0; i < ml->GetSize(); i++)
+    for (i = 0; i < ml.Length (); i++)
     {
-      iMeshWrapper* m = ml->Get(i)->QueryMesh ();
+      iMeshWrapper* m = ml[i]->QueryMesh ();
       if (m)
         meshesArray.Push (m);
     }
@@ -5663,17 +5806,4 @@ void csLoader::ConvexFlags (iMeshWrapper* mesh)
   if (objmodel->GetPolygonMeshShadows ())
     objmodel->GetPolygonMeshShadows ()->GetFlags ().Set (
     CS_POLYMESH_CONVEX | CS_POLYMESH_NOTCONVEX, CS_POLYMESH_CONVEX);
-}
-
-bool csLoader::ParseKey (iDocumentNode* node, iObject* obj)
-{
-  csRef<iKeyValuePair> kvp = SyntaxService->ParseKey (node);
-  if (!kvp.IsValid())
-    return false;
-
-  bool editoronly = node->GetAttributeValueAsBool ("editoronly");
-  if (!editoronly || !Engine || Engine->GetSaveableFlag())
-    obj->ObjAdd (kvp->QueryObject ());
-
-  return true;
 }

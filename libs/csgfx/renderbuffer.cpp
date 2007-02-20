@@ -41,7 +41,7 @@ csRenderBuffer::csRenderBuffer (size_t size, csRenderBufferType type,
   bufferSize = size;
   if (props.doCopy) 
   {
-    buffer = (unsigned char*)cs_malloc (size);
+    buffer = new unsigned char[size];
     props.doDelete = true;
   }
 #if defined(CS_DEBUG) && defined(DEBUG_LOCKING)
@@ -58,11 +58,7 @@ csRenderBuffer::~csRenderBuffer ()
     lockStack->Free();
   }
 #endif
-  //Notify callback
-  if (callback.IsValid ())
-    callback->RenderBufferDestroyed (this);
-
-  if (props.doDelete) cs_free (buffer);
+  if (props.doDelete) delete[] buffer;
   buffer = 0;
 }
 

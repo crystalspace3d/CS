@@ -20,7 +20,6 @@
 #ifndef __CS_LIBS_CSUTIL_CALLSTACK_H__
 #define __CS_LIBS_CSUTIL_CALLSTACK_H__
 
-#include "csutil/customallocated.h"
 #include "csutil/dirtyaccessarray.h"
 
 namespace CS
@@ -80,8 +79,7 @@ public:
   virtual bool GetLineNumber (void* addr, csString& lineAndFile) = 0;
 };
 
-class CallStackImpl : public csCallStack,
-		       public CS::Memory::CustomAllocated
+class CallStackImpl : public csCallStack
 {
 public:
   csDirtyAccessArray<CallStackEntry> entries;

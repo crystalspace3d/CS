@@ -39,7 +39,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -72,6 +71,7 @@
 				TypeLibraryName="..\..\out\release71\build\plgcssaver\plgcssaver.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\release71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\cssaver.dll&quot; &quot;..\..\out\release71\bin\cssaver.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -113,7 +113,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -144,6 +143,7 @@
 				TypeLibraryName="..\..\out\debug71\build\plgcssaver\plgcssaver.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\cssaver.dll&quot; &quot;..\..\out\debug71\bin\cssaver.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -185,7 +185,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -216,6 +215,7 @@
 				TypeLibraryName="..\..\out\debug71\build\plgcssaver\plgcssaver.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\cssaver.dll&quot; &quot;..\..\out\debug71\bin\cssaver.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -257,7 +257,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -288,6 +287,7 @@
 				TypeLibraryName="..\..\out\debug71\build\plgcssaver\plgcssaver.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\cssaver.dll&quot; &quot;..\..\out\debug71\bin\cssaver.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

@@ -129,9 +129,9 @@ csPtr<iFont> csDefaultFontServer::LoadFont (const char *filename, float /*size*/
 	  numRanges++;
 	}
 	csDirtyAccessArray<csBitmapMetrics> bMetrics;
-	bMetrics.SetSize (numGlyphs);
+	bMetrics.SetLength (numGlyphs);
 	csDirtyAccessArray<csGlyphMetrics> gMetrics;
-	gMetrics.SetSize (numGlyphs);
+	gMetrics.SetLength (numGlyphs);
 
 	for (int j = 0; j < numGlyphs; j++)
 	{
@@ -192,7 +192,7 @@ void csDefaultFontServer::NotifyDelete (csDefaultFont *font)
 
 csDefaultFont *csDefaultFontServer::ReadFontFile(const char *file)
 {
-  csRef<iVFS> VFS (csQueryRegistry<iVFS> (object_reg));
+  csRef<iVFS> VFS (CS_QUERY_REGISTRY (object_reg, iVFS));
   csRef<iDataBuffer> fntfile (VFS->ReadFile (file, false));
   if (!fntfile)
   {
@@ -360,7 +360,7 @@ error:
 	  fontdef.Name);
 	return 0;
       }
-      ranges.SetSize (2);
+      ranges.SetLength (2);
       ranges[0].startChar = fontdefFirst;
       ranges[0].charCount = fontdefGlyphs;
       ranges[1].startChar = 0;
@@ -370,8 +370,8 @@ error:
 
     size_t bitmapSize = 0;
     size_t alphaSize = 0;
-    bMetrics.SetSize (numGlyphs);
-    aMetrics.SetSize (numGlyphs);
+    bMetrics.SetLength (numGlyphs);
+    aMetrics.SetLength (numGlyphs);
     if (hasBitmapMetrics)
     {
       int j;
@@ -432,7 +432,7 @@ error:
       binary += numGlyphs;
     }
 
-    gMetrics.SetSize (numGlyphs);
+    gMetrics.SetLength (numGlyphs);
     if (hasGlyphAdvance)
     {
       for (int j = 0; j < numGlyphs; j++)
@@ -482,9 +482,9 @@ error:
 
     uint8* individualWidths = (uint8*)binary;
     csDirtyAccessArray<csBitmapMetrics> bMetrics;
-    bMetrics.SetSize (fontdefGlyphs);
+    bMetrics.SetLength (fontdefGlyphs);
     csDirtyAccessArray<csGlyphMetrics> gMetrics;
-    gMetrics.SetSize (fontdefGlyphs);
+    gMetrics.SetLength (fontdefGlyphs);
     for (int j = 0; j < fontdefGlyphs; j++)
     {
       bMetrics[j].width = individualWidths[j];
@@ -604,7 +604,7 @@ csDefaultFont::csDefaultFont (csDefaultFontServer *parent, const char *name,
 
 csDefaultFont::~csDefaultFont ()
 {
-  size_t i = DeleteCallbacks.GetSize ();
+  size_t i = DeleteCallbacks.Length();
   while (i-- > 0)
   {
     iFontDeleteNotify* delnot = DeleteCallbacks[i];

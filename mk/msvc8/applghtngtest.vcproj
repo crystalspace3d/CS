@@ -40,7 +40,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -72,6 +71,7 @@
 				TypeLibraryName="..\..\out\release8\build\applghtngtest\applghtngtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\release8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\lghtngtest.exe&quot; &quot;..\..\out\release8\bin\lghtngtest.exe&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -114,7 +114,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -144,6 +143,7 @@
 				TypeLibraryName="..\..\out\debug8\build\applghtngtest\applghtngtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\lghtngtest.exe&quot; &quot;..\..\out\debug8\bin\lghtngtest.exe&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -186,7 +186,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -216,6 +215,7 @@
 				TypeLibraryName="..\..\out\debug8\build\applghtngtest\applghtngtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\lghtngtest.exe&quot; &quot;..\..\out\debug8\bin\lghtngtest.exe&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -258,7 +258,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -288,6 +287,7 @@
 				TypeLibraryName="..\..\out\debug8\build\applghtngtest\applghtngtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug8\bin&quot;&#x0D;&#x0A;copy &quot;..\..\lghtngtest.exe&quot; &quot;..\..\out\debug8\bin\lghtngtest.exe&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

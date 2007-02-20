@@ -38,7 +38,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -110,7 +109,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -180,7 +178,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -250,7 +247,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -456,9 +452,6 @@
 				RelativePath="..\..\libs\csgfx\shadervarframeholder.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csgfx\xorpat.cpp">
 			</File>
 			<File
@@ -505,9 +498,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\shader\weavertypes.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\sndsys\convert.cpp">
@@ -693,16 +683,13 @@
 				RelativePath="..\..\libs\csutil\csuctransform.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\deprecated_macros.cpp">
+				RelativePath="..\..\libs\csutil\debug.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\dlmalloc.c">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\documentcommon.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\documenthelper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\event.cpp">
@@ -792,6 +779,9 @@
 				RelativePath="..\..\libs\csutil\prfxcfg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\profile.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\ptmalloc\ptmalloc3.c">
 			</File>
 			<File
@@ -847,9 +837,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\syspath.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\threading\win32_thread.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\threadjobqueue.cpp">
@@ -961,10 +948,16 @@
 				RelativePath="..\..\libs\..\include\csgeom\chainhull2d.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgeom\cspoint.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgeom\csrect.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\csrectrg.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\fastsqrt.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\fixed.h">
@@ -1033,6 +1026,9 @@
 				RelativePath="..\..\libs\..\include\csgeom\polypool.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgeom\quaterni.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgeom\quaternion.h">
 			</File>
 			<File
@@ -1049,6 +1045,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\subrec.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\subrec2.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\tcovbuf.h">
@@ -1114,6 +1113,9 @@
 				RelativePath="..\..\libs\..\include\csgfx\lightsvcache.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgfx\memimage.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgfx\normalmaptools.h">
 			</File>
 			<File
@@ -1145,9 +1147,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\shadervarframeholder.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgfx\textureformatstrings.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\trianglestream.h">
@@ -1223,12 +1222,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderprogram.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavercombiner.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavertypes.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\sndsys\convert.h">
@@ -1384,9 +1377,6 @@
 				RelativePath="..\..\libs\..\include\csutil\bitarray.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\bitops.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\blockallocator.h">
 			</File>
 			<File
@@ -1486,9 +1476,6 @@
 				RelativePath="..\..\libs\..\include\csutil\custom_new_enable.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\customallocated.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\databuf.h">
 			</File>
 			<File
@@ -1537,10 +1524,16 @@
 				RelativePath="..\..\libs\..\include\csutil\fpu80x86.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\garray.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\getopt.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hash.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\hashhandlers.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hashr.h">
@@ -1582,13 +1575,13 @@
 				RelativePath="..\..\libs\..\include\csutil\nobjvec.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\noncopyable.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\nulcache.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\objiter.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\objpool.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\objreg.h">
@@ -1681,9 +1674,6 @@
 				RelativePath="..\..\libs\..\include\csutil\schedule.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\scopeddelete.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\scopedmutexlock.h">
 			</File>
 			<File
@@ -1720,42 +1710,6 @@
 				RelativePath="..\..\libs\..\include\csutil\thread.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_ppc.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_x86.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_msvc.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_sparc.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\mutex.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\thread.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\win32_apifuncs.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\win32_condition.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\win32_mutex.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\win32_thread.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">
 			</File>
 			<File
@@ -1787,9 +1741,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\weakrefarr.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\weakreferenced.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\callstack.h">

@@ -412,7 +412,7 @@ public:
   TrDocumentAttribute& GetAttributeRegistered (const char * reg_name);
 
   /// Get number of attributes.
-  size_t GetAttributeCount () const { return attributeSet.set.GetSize (); }
+  size_t GetAttributeCount () const { return attributeSet.set.Length (); }
   /// Get attribute.
   const TrDocumentAttribute& GetAttribute (size_t idx) const
   {

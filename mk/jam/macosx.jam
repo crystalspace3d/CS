@@ -55,16 +55,14 @@ rule ConstructApplicationTarget
 #    Constructs the static library target name.
 rule ConstructStaticLibraryTarget
 {
-  local libbase = [ LibraryBaseName $(<) ] ;
-  return lib$(libbase)$(SUFLIB) ;
+  return lib$(<)$(SUFLIB) ;
 }
 
 # ConstructSharedLibraryTarget target : options
 #    Constructs the shared library target name.
 rule ConstructSharedLibraryTarget
 {
-  local libbase = [ LibraryBaseName $(<) ] ;
-  return lib$(libbase).dylib ; 
+  return lib$(<).$(PACKAGE_VERSION).dylib ; 
 }
 
 # ConstructSharedLibraryLinkLib target : options
@@ -72,8 +70,7 @@ rule ConstructSharedLibraryTarget
 #    links.
 rule ConstructSharedLibraryLinkLib
 {
-  local libbase = [ LibraryBaseName $(<) ] ;
-  return lib$(libbase).dylib ; 
+  return lib$(<).$(PACKAGE_VERSION).dylib ; 
 }
 
 # ConstructPluginTarget target : options

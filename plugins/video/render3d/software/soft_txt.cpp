@@ -26,7 +26,6 @@
 #include "iutil/cfgfile.h"
 #include "iutil/event.h"
 #include "iutil/eventq.h"
-#include "iutil/string.h"
 #include "igraphic/image.h"
 #include "ivaria/reporter.h"
 #include "csqint.h"
@@ -306,32 +305,22 @@ uint32 csSoftwareTextureManager::encode_rgb (int r, int g, int b)
 }
 
 csPtr<iTextureHandle> csSoftwareTextureManager::RegisterTexture (iImage* image,
-  int flags, iString* fail_reason)
+  int flags)
 {
   if (!image)
   {
-    if (fail_reason) fail_reason->Replace (
-      "No image given to RegisterTexture!");
-    return 0;
+    G3D->Report(CS_REPORTER_SEVERITY_BUG,
+      "BAAAD!!! csSoftwareTextureManager::RegisterTexture with 0 image!");
+
+    csRef<iImage> im (csCreateXORPatternImage(32, 32, 5));
+    image = im;
+    im->IncRef ();	// Avoid smart pointer cleanup. @@@ UGLY
   }
 
   csSoftwareTextureHandle *txt = new csSoftwareTextureHandle (
   	this, image, flags);
   textures.Push (txt);
   return csPtr<iTextureHandle> (txt);
-}
-
-csPtr<iTextureHandle> csSoftwareTextureManager::CreateTexture (int w, int h,
-      csImageType imagetype, const char* format, int flags,
-      iString* fail_reason)
-{
-  (void)w;
-  (void)h;
-  (void)imagetype;
-  (void)format;
-  (void)flags;
-  if (fail_reason) fail_reason->Replace ("Not implemented yet!");
-  return 0;
 }
 
 void csSoftwareTextureManager::UnregisterTexture (

@@ -139,15 +139,6 @@ csColliderWrapper* csColliderWrapper::GetColliderWrapper (iObject* object)
   return w;	// This will DecRef() but that's ok in this case.
 }
 
-void csColliderWrapper::UpdateCollider (iPolygonMesh* mesh)
-{
-  collider = collide_system->CreateCollider (mesh);
-}
-
-void csColliderWrapper::UpdateCollider (iTerraFormer* terrain)
-{
-  collider = collide_system->CreateCollider (terrain);
-}
 //----------------------------------------------------------------------
 
 csColliderWrapper* csColliderHelper::InitializeCollisionWrapper (
@@ -442,7 +433,7 @@ float csColliderHelper::TraceBeam (iCollideSystem* cdsys, iSector* sector,
 	const csArray<csIntersectingTriangle>& tris = cdsys->
 		GetIntersectingTriangles ();
 	size_t i;
-	for (i = 0 ; i < tris.GetSize () ; i++)
+	for (i = 0 ; i < tris.Length () ; i++)
 	{
 	  csVector3 isect;
 	  csIntersectingTriangle tri;
@@ -961,7 +952,7 @@ bool csColliderActor::AdjustForCollisions (
   localvel -= maxmove - oldpos;
   csVector3 correctedVel(localvel);
 
-  for (i = 0; i < our_cd_contact.GetSize () ; i++ )
+  for (i = 0; i < our_cd_contact.Length () ; i++ )
   {
     csCollisionPair& cd = our_cd_contact[i];
     csPlane3 obstacle (cd.a2, cd.b2, cd.c2);
@@ -1031,15 +1022,13 @@ bool csColliderActor::AdjustForCollisions (
   while (hits > 0 && newpos.y < maxJump)
   {
     bool adjust = false;
-    for (i = 0; i < our_cd_contact.GetSize (); i++ )
+    for (i = 0; i < our_cd_contact.Length (); i++ )
     {
       csCollisionPair cd = our_cd_contact[i];
       csPlane3 obstacle (cd.a2, cd.b2, cd.c2);
       csVector3 normal = obstacle.Normal();
       float norm = normal.Norm ();
-
-      // Ensure this is a big-enough triangle to count as a collision.
-      if (fabs (norm) < 1e-4f ) continue;
+      if (fabs (norm) < SMALL_EPSILON) continue;
 
       csVector3 n = normal / norm;
 
@@ -1117,7 +1106,7 @@ bool csColliderActor::AdjustForCollisions (
     cd = 0;
 
   hits = 0;
-  for (i = 0; i < our_cd_contact.GetSize () ; i++ )
+  for (i = 0; i < our_cd_contact.Length () ; i++ )
   {
     csCollisionPair& cd = our_cd_contact[i];
     csPlane3 obstacle (cd.a2, cd.b2, cd.c2);

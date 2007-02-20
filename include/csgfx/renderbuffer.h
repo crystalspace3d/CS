@@ -27,7 +27,6 @@
 #include "csextern.h"
 #include "csutil/leakguard.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/weakref.h"
 #include "ivideo/rndbuf.h"
 
 /**\addtogroup gfx
@@ -139,11 +138,6 @@ public:
   { return rangeEnd; }
 
   virtual size_t GetElementCount() const;
-
-  virtual void SetCallback (iRenderBufferCallback *cb)
-  {
-    callback = cb;
-  }
   /** @} */
 
   /**\name Render buffer creation
@@ -302,9 +296,6 @@ protected:
   unsigned char *buffer; 
   
   csRef<iRenderBuffer> masterBuffer;
-
-  csWeakRef<iRenderBufferCallback> callback;
-
 #ifdef CS_DEBUG
   csCallStack* lockStack;
 #endif

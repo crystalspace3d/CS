@@ -24,7 +24,6 @@
 #include "csutil/array.h"
 #include "csutil/blockallocator.h"
 #include "csutil/callstack.h"
-#include "csutil/customallocated.h"
 #include "csutil/strset.h"
 
 #include "../callstack.h"
@@ -34,15 +33,13 @@ namespace CS
 namespace Debug
 {
 
-class CallStackCreatorDbgHelp : public iCallStackCreator,
-                                public CS::Memory::CustomAllocated
+class CallStackCreatorDbgHelp : public iCallStackCreator
 {
   virtual bool CreateCallStack (csDirtyAccessArray<CallStackEntry>& entries,
     csDirtyAccessArray<uintptr_t>& params, bool fast);
 };
 
-class CallStackNameResolverDbgHelp : public iCallStackNameResolver,
-                                     public CS::Memory::CustomAllocated
+class CallStackNameResolverDbgHelp : public iCallStackNameResolver
 {
   virtual bool GetAddressSymbol (void* addr, csString& sym);
   virtual void* OpenParamSymbols (void* addr);

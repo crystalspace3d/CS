@@ -27,7 +27,6 @@
 #include "csextern.h"
 
 #include "csutil/array.h"
-#include "csutil/customallocated.h"
 #include "csutil/reftrackeraccess.h"
 
 // Needs to have iBase etc
@@ -124,8 +123,7 @@ public:
  * weak references.
  */
 template<class Class>
-class CS_CRYSTALSPACE_EXPORT scfImplementation : public virtual iBase,
-  public CS::Memory::CustomAllocated
+class CS_CRYSTALSPACE_EXPORT scfImplementation : public virtual iBase
 {
 public:
   /**
@@ -235,7 +233,7 @@ protected:
     if (!scfWeakRefOwners)
       return;
 
-    for (size_t i = 0; i < scfWeakRefOwners->GetSize (); i++)
+    for (size_t i = 0; i < scfWeakRefOwners->Length (); i++)
     {
       void** p = (*scfWeakRefOwners)[i];
       *p = 0;

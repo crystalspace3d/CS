@@ -36,7 +36,7 @@
 #include "csutil/parray.h"
 #include "csutil/memfile.h"
 #include "csutil/scfstringarray.h"
-#include "csutil/threading/mutex.h"
+#include "csutil/scopedmutexlock.h"
 #include "csutil/strset.h"
 #include "csutil/util.h"
 #include "csutil/verbosity.h"
@@ -80,7 +80,7 @@ static class csSCF *PrivateSCF = 0;
 class csSCF : public iSCF
 {
 private:
-  mutable CS::Threading::RecursiveMutex mutex;
+  csRef<csMutex> mutex;
   unsigned int verbose;
 
   csStringSet contexts;
@@ -295,7 +295,7 @@ public:
   SCF_DECLARE_IBASE;
 
   // Class identifier
-  const char *ClassID;
+  char *ClassID;
   // Class description
   char *Description;
   // The dependency list
@@ -357,24 +357,15 @@ public:
 
 //----------------------------------------- Class factory implementation ----//
 
-static class csStringHash* classIDs = 0; 
-
 scfFactory::scfFactory (const char *iClassID, const char *iLibraryName,
   const char *iFactoryClass, scfFactoryFunc iCreate, const char *iDescription,
   const char *iDepend, csStringID context)
 {
   csRefTrackerAccess::SetDescription (this, CS_TYPENAME(*this));
-  csRefTrackerAccess::TrackConstruction (this);
   // Don't use SCF_CONSTRUCT_IBASE (0) since it will call IncRef()
   scfWeakRefOwners = 0;
   scfRefCount = 0; scfParent = 0;
-#ifdef CS_REF_TRACKER
-  /* Reftracker: make sure class ID string survives destruction of this 
-   * instance */
-  ClassID = classIDs->Register (iClassID);
-#else
   ClassID = csStrNew (iClassID);
-#endif
   Description = csStrNew (iDescription);
   Dependencies = csStrNew (iDepend);
   FactoryClass = csStrNew (iFactoryClass);
@@ -401,9 +392,7 @@ scfFactory::~scfFactory ()
   delete [] FactoryClass;
   delete [] Dependencies;
   delete [] Description;
-#ifndef CS_REF_TRACKER
   delete [] ClassID;
-#endif
 
   csRefTrackerAccess::TrackDestruction (this, scfRefCount);
 }
@@ -499,7 +488,6 @@ iBase *scfFactory::CreateInstance ()
     return 0;
 
   iBase *instance = CreateFunc(this);
-  csRefTrackerAccess::SetDescriptionWeak (instance, ClassID);
 
   // No matter whenever we succeeded or not, decrement the refcount
   DecRef ();
@@ -686,7 +674,7 @@ private:
   }
 public:
   ~StaticArrayWrapper() { delete array; }
-  size_t Length() { return array ? array->GetSize () : 0; }
+  size_t Length() { return array ? array->Length() : 0; }
   T& operator [] (size_t n) { return GetArray()[n]; }
   size_t Push (T const& what) { return GetArray().Push (what); }
 };
@@ -733,8 +721,6 @@ csSCF::csSCF (unsigned int v) : verbose(v),
 
 #ifdef CS_REF_TRACKER
   refTracker = new csRefTracker();
-  if (!classIDs)
-    classIDs = new csStringHash;
 #endif
 
   if (!ClassRegistry)
@@ -745,6 +731,8 @@ csSCF::csSCF (unsigned int v) : verbose(v),
   if (!libraryNames)
     libraryNames = new csStringSet;
 
+  // We need a recursive mutex.
+  mutex = csMutex::Create (true);
 
   staticContextID = contexts.Request (SCF_STATIC_CLASS_CONTEXT);
 
@@ -777,10 +765,10 @@ csSCF::~csSCF ()
   delete libraryNames;
   libraryNames = 0;
 
+  mutex = 0;
 #ifdef CS_REF_TRACKER
   refTracker->Report ();
   delete refTracker;
-  delete classIDs; classIDs = 0;
 #endif
 #ifdef LAZY_UNLOAD
   for (size_t i = 0; i < lazyUnloadLibs.GetSize(); i++)
@@ -895,7 +883,7 @@ void csSCF::Finish ()
 
 iBase *csSCF::CreateInstance (const char *iClassID)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
 
   // Pre-sort class registry for doing binary searches
   if (SortClassRegistry)
@@ -926,8 +914,8 @@ iBase *csSCF::CreateInstance (const char *iClassID)
 
 void csSCF::UnloadUnusedModules ()
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
-  for (size_t i = LibraryRegistry->GetSize (); i > 0; i--)
+  csScopedMutexLock lock (mutex);
+  for (size_t i = LibraryRegistry->Length (); i > 0; i--)
   {
     scfSharedLibrary *sl = (scfSharedLibrary *)LibraryRegistry->Get (i - 1);
     sl->TryUnload ();
@@ -946,7 +934,7 @@ bool csSCF::RegisterClass (const char *iClassID, const char *iLibraryName,
   const char *iFactoryClass, const char *iDesc, const char *Dependencies, 
   const char* context)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   size_t idx;
   csStringID contextID = 
     context ? contexts.Request (context) : csInvalidStringID;
@@ -999,7 +987,7 @@ bool csSCF::RegisterClass (const char *iClassID, const char *iLibraryName,
 bool csSCF::RegisterClass (scfFactoryFunc Func, const char *iClassID,
   const char *Desc, const char *Dependencies, const char* context)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   size_t idx;
   csStringID contextID = 
     context ? contexts.Request (context) : csInvalidStringID;
@@ -1051,8 +1039,8 @@ bool csSCF::RegisterClass (scfFactoryFunc Func, const char *iClassID,
 bool csSCF::RegisterFactoryFunc (scfFactoryFunc Func, const char *FactClass)
 {
   bool ok = false;
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
-  for (size_t i = 0, n = ClassRegistry->GetSize (); i < n; i++)
+  csScopedMutexLock lock (mutex);
+  for (size_t i = 0, n = ClassRegistry->Length(); i < n; i++)
   {
     scfFactory* fact = (scfFactory*)ClassRegistry->Get(i);
     if (fact->FactoryClass != 0 && strcmp(fact->FactoryClass, FactClass) == 0)
@@ -1076,7 +1064,7 @@ bool csSCF::RegisterFactoryFunc (scfFactoryFunc Func, const char *FactClass)
 
 bool csSCF::UnregisterClass (const char *iClassID)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
 
   // If we have no class registry, we aren't initialized (or were finalized)
   if (!ClassRegistry)
@@ -1120,7 +1108,7 @@ bool csSCF::RegisterPlugin (const char* path)
 
 const char *csSCF::GetClassDescription (const char *iClassID)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
 
   size_t idx = ClassRegistry->FindClass(iClassID);
   if (idx != (size_t)-1)
@@ -1134,7 +1122,7 @@ const char *csSCF::GetClassDescription (const char *iClassID)
 
 const char *csSCF::GetClassDependencies (const char *iClassID)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
 
   size_t idx = ClassRegistry->FindClass(iClassID);
   if (idx != (size_t)-1)
@@ -1149,7 +1137,7 @@ const char *csSCF::GetClassDependencies (const char *iClassID)
 csRef<iDocument> csSCF::GetPluginMetadata (char const *iClassID)
 {
   csRef<iDocument> metadata;
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   size_t idx = ClassRegistry->FindClass(iClassID);
   if (idx != (size_t)-1)
   {
@@ -1162,20 +1150,31 @@ csRef<iDocument> csSCF::GetPluginMetadata (char const *iClassID)
 
 bool csSCF::ClassRegistered (const char *iClassID)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   return (ClassRegistry->FindClass(iClassID) != csArrayItemNotFound);
 }
 
 
 char const* csSCF::GetInterfaceName (scfInterfaceID i) const
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  csScopedMutexLock lock (mutex);
   return InterfaceRegistry.Request(i);
 }
 
 scfInterfaceID csSCF::GetInterfaceID (const char *iInterface)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+#ifdef CS_REF_TRACKER
+  /*
+    Bit of a hack: when 'mutex' is assigned, this very function
+    is called (to get the iRefTracker id). So mutex is 0 in this
+    case, we need to test for that.
+   */
+  if (!mutex)
+  {
+    return (scfInterfaceID)InterfaceRegistry.Request (iInterface);
+  }
+#endif
+  csScopedMutexLock lock (mutex);
   return (scfInterfaceID)InterfaceRegistry.Request (iInterface);
 }
 
@@ -1183,8 +1182,8 @@ csRef<iStringArray> csSCF::QueryClassList (char const* pattern)
 {
   iStringArray* v = new scfStringArray();
 
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
-  size_t const rlen = ClassRegistry->GetSize ();
+  csScopedMutexLock lock (mutex);
+  size_t const rlen = ClassRegistry->Length();
   if (rlen != 0)
   {
     size_t const plen = (pattern ? strlen(pattern) : 0);

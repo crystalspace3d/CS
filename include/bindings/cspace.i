@@ -172,8 +172,6 @@
 // list. Please keep the list sorted alphabetically.
 #ifndef CS_MINI_SWIG
 %define APPLY_FOR_EACH_INTERFACE
-  INTERFACE_APPLY(iAws)
-  INTERFACE_APPLY(iAwsKey)
   INTERFACE_APPLY(iBase)
   INTERFACE_APPLY(iBinaryLoaderPlugin)
   INTERFACE_APPLY(iBodyGroup)
@@ -190,15 +188,10 @@
   INTERFACE_APPLY(iDataBuffer)
   INTERFACE_APPLY(iDebugHelper)
   INTERFACE_APPLY(iDocument)
-  INTERFACE_APPLY(iDocumentAttribute)
-  INTERFACE_APPLY(iDocumentAttributeIterator)
-  INTERFACE_APPLY(iDocumentNode)
-  INTERFACE_APPLY(iDocumentNodeIterator)
   INTERFACE_APPLY(iDocumentSystem)
   INTERFACE_APPLY(iDynamics)
   INTERFACE_APPLY(iDynamicSystem)
   INTERFACE_APPLY(iEngine)
-  INTERFACE_APPLY(iEngineSequenceManager)
   INTERFACE_APPLY(iEvent)
   INTERFACE_APPLY(iEventHandler)
   INTERFACE_APPLY(iEventQueue)
@@ -218,7 +211,6 @@
   INTERFACE_APPLY(iImage)
   INTERFACE_APPLY(iImageIO)
   INTERFACE_APPLY(iJoint)
-  INTERFACE_APPLY(iJoystickDriver)
   INTERFACE_APPLY(iODEDynamicState)
   INTERFACE_APPLY(iODEDynamicSystemState)
   INTERFACE_APPLY(iODEJointState)
@@ -503,8 +495,6 @@
 #define TYPEMAP_OUTARG_ARRAY_PTR_CNT(a,b,c)
 #define TYPEMAP_ARGOUT_PTR(T)
 #define APPLY_TYPEMAP_ARGOUT_PTR(T,Args)
-#define ITERATOR_FUNCTIONS(T)
-#define ARRAY_OBJECT_FUNCTIONS(classname,typename)
 
 #if defined(SWIGPYTHON)
   %include "bindings/python/pythpre.i"
@@ -690,6 +680,7 @@ SET_HELPER(csStringID)
 %ignore csStringBase;
 %ignore csStringBase::operator [] (size_t);
 %ignore csStringBase::operator [] (size_t) const;
+%ignore csStringFast;
 %ignore csString::csString (size_t);
 %ignore csString::csString (char);
 %ignore csString::csString (unsigned char);
@@ -892,17 +883,6 @@ template<typename T> struct csVector4T {
 %ignore csPoly3D::GetVertices (); // Non-const.
 %include "csgeom/poly3d.h"
 
-namespace CS
-{
-  template<typename T> struct TriangleT
-  { 
-    T a, b, c;
-    void Set (const T& _a, const T& _b, const T& _c);
-  };
-}
-%template(TriangleInt) CS::TriangleT<int >;
-%warnfilter(302) TriangleT; // redefined
-%ignore CS::TriangleT::operator[];
 %include "csgeom/tri.h"
 
 %ignore csRect::AddAdjanced; // Deprecated misspelling.
@@ -1004,17 +984,11 @@ iArrayChangeElements<csShaderVariable * >;
 %template(csPluginRequestArray) csArray<csPluginRequest>;
 
 #ifndef CS_MINI_SWIG
-%include "iaws/aws.h"
 
 %include "igeom/clip2d.h"
 %include "imesh/objmodel.h"
 %include "igeom/path.h"
 %template(scfPath) scfImplementation1<csPath,iPath >;
-#ifndef CS_SWIG_PUBLISH_IGENERAL_FACTORY_STATE_ARRAYS
-%ignore iPolygonMesh::GetTriangles;
-%ignore iPolygonMesh::GetVertices;
-%ignore iPolygonMesh::GetPolygons;
-#endif
 %include "igeom/polymesh.h"
 /*Ignore some deprecated functions*/
 %ignore csPath::GetPointCount;
@@ -1022,17 +996,7 @@ iArrayChangeElements<csShaderVariable * >;
 %ignore csPath::SetTimeValues;
 %ignore csPath::GetTimeValues;
 %include "csgeom/path.h"
-%template(pycsPolygonMesh) scfImplementation1<csPolygonMesh, iPolygonMesh>;
-%template(pycsPolygonMeshBox) scfImplementation1<csPolygonMeshBox, iPolygonMesh>;
 %include "csgeom/polymesh.h"
-
-%ignore csArray<csArray<int> >::Contains;
-%template(csIntArray) csArray<int>;
-%template(csIntArrayArray) csArray<csArray<int> >;
-ARRAY_OBJECT_FUNCTIONS(csArray<int>,int)
-ARRAY_OBJECT_FUNCTIONS(csArray<csArray<int> >,csArray<int>)
-%newobject csPolygonMeshTools::CalculateVertexConnections;
-%include "csgeom/pmtools.h"
 %include "csgeom/spline.h"
 
 %include "iengine/fview.h"
@@ -1077,19 +1041,6 @@ ARRAY_OBJECT_FUNCTIONS(csArray<csArray<int> >,csArray<int>)
 %include "iengine/viscull.h"
 %include "iengine/portal.h"
 %include "iengine/portalcontainer.h"
-
-%extend iVisibilityObjectIterator {
-  ITERATOR_FUNCTIONS(iVisibilityObjectIterator)
-}
-%extend iLightIterator {
-  ITERATOR_FUNCTIONS(iLightIterator)
-}
-%extend iSectorIterator {
-  ITERATOR_FUNCTIONS(iSectorIterator)
-}
-%extend iMeshWrapperIterator {
-  ITERATOR_FUNCTIONS(iMeshWrapperIterator)
-}
 
 #ifndef CS_SWIG_PUBLISH_IGENERAL_FACTORY_STATE_ARRAYS
 %ignore iGeneralFactoryState::GetVertices;
@@ -1144,7 +1095,6 @@ iArrayChangeElements<csSprite2DVertex>;
 %include "iutil/object.h"
 %include "iutil/strset.h"
 #endif // CS_MINI_SWIG
-%ignore CS_QUERY_REGISTRY_TAG_is_deprecated;
 %include "iutil/objreg.h"
 #ifndef CS_MINI_SWIG
 %include "iutil/virtclk.h"
@@ -1199,14 +1149,6 @@ APPLY_TYPEMAP_ARGOUT_PTR(csKeyModifiers,csKeyModifiers& modifiers)
 %include "iutil/evdefs.h"
 %include "iutil/eventq.h"
 %ignore csStrKey::operator const char*;
-%ignore csHash::ConstGlobalIterator;
-%ignore csHash::GlobalIterator;
-%ignore csHash::Iterator;
-%ignore csHash::PutFirst;
-%ignore csHash::GetIterator;
-%ignore csHash::DeleteElement;
-%ignore csHash::Get (const K& key, T& fallback);
-%ignore csHash::csHash (const csHash<T> &o);
 %include "csutil/hash.h"
 %include "iutil/eventnames.h"
 %include "csutil/eventnames.h"
@@ -1220,20 +1162,6 @@ APPLY_TYPEMAP_ARGOUT_PTR(csKeyModifiers,csKeyModifiers& modifiers)
 %include "iutil/cfgmgr.h"
 %include "iutil/stringarray.h"
 %include "iutil/document.h"
-
-%template(scfConfigFile) scfImplementation1<csConfigFile,iConfigFile >;
-%include "csutil/cfgfile.h"
-%include "csutil/radixsort.h"
-
-%extend iDocumentAttributeIterator
-{
-  ITERATOR_FUNCTIONS(iDocumentAttributeIterator)
-}
-
-%extend iDocumentNodeIterator
-{
-  ITERATOR_FUNCTIONS(iDocumentNodeIterator)
-}
 
 %include "csutil/xmltiny.h"
 
@@ -1325,21 +1253,17 @@ APPLY_TYPEMAP_ARGOUT_PTR(csKeyModifiers,csKeyModifiers& modifiers)
 %include "ivaria/simpleformer.h"
 %include "ivaria/terraform.h"
 
-%template(pycsObject) scfImplementation1<csObject,iObject >;
 %include "csutil/csobject.h"
 
 %ignore csColliderHelper::TraceBeam (iCollideSystem*, iSector*,
   const csVector3&, const csVector3&, bool, csIntersectingTriangle&,
   csVector3&, iMeshWrapper**);
-%template(pycsColliderWrapper) scfImplementationExt1<csColliderWrapper,csObject,scfFakeInterface<csColliderWrapper> >;
 %include "cstool/collider.h"
 %include "cstool/csview.h"
 %include "cstool/csfxscr.h"
 
 %include "cstool/cspixmap.h"
-%include "cstool/enginetools.h"
 
-%include "cstool/pen.h"
 #endif // CS_MINI_SWIG
 
 %define INTERFACE_POST(T)
@@ -1384,31 +1308,6 @@ APPLY_FOR_EACH_INTERFACE
   { return &(self->GetColors()[index]); }
 }
 
-%extend iPolygonMesh
-{
-  csVector3 *GetVertexByIndex(int index)
-  { return &(self->GetVertices()[index]); }
-
-  csMeshedPolygon *GetPolygonByIndex(int index)
-  { return &(self->GetPolygons()[index]); }
-
-  csTriangle *GetTriangleByIndex(int index)
-  { return &(self->GetTriangles()[index]); }
-}
-
-%extend csMeshedPolygon
-{
-  int GetVertexByIndex(int index)
-  { return self->vertices[index]; }
-}
-
-// iaws/aws.h
-%extend iAws
-{
-  bool SetupCanvas (iGraphics2D *g2d=0, iGraphics3D *g3d=0)
-  { return self->SetupCanvas(0, g2d, g3d); }
-}
-
 // iutil/csinput.h
 %extend iKeyboardDriver
 {
@@ -1449,24 +1348,6 @@ APPLY_FOR_EACH_INTERFACE
   }
 %}
 
-
-// iutil/evdefs.h
-#define _CSKEY_SHIFT_NUM(n) CSKEY_SHIFT_NUM(n)
-#undef CSKEY_SHIFT_NUM
-int CSKEY_SHIFT_NUM(int n);
-
-#define _CSKEY_SPECIAL(n) CSKEY_SPECIAL(n)
-#undef CSKEY_SPECIAL
-int CSKEY_SPECIAL(int n);
-
-#define _CSKEY_SPECIAL_NUM(code) CSKEY_SPECIAL_NUM(code)
-#undef CSKEY_SPECIAL_NUM
-int CSKEY_SPECIAL_NUM(int code);
-
-#define _CSKEY_MODIFIER(type,num) CSKEY_MODIFIER(type,num)
-#undef CSKEY_MODIFIER
-int CSKEY_MODIFIER(int type,int num);
-
 // csutil/eventnames.h
 #define _CS_IS_KEYBOARD_EVENT(reg,e) CS_IS_KEYBOARD_EVENT(reg,e)
 #undef CS_IS_KEYBOARD_EVENT
@@ -1480,7 +1361,6 @@ bool _CS_IS_JOYSTICK_EVENT (iObjectRegistry *,const iEvent &);
 #define _CS_IS_INPUT_EVENT(reg,e) CS_IS_INPUT_EVENT(reg,e)
 #undef CS_IS_INPUT_EVENT
 bool _CS_IS_INPUT_EVENT (iObjectRegistry *,const iEvent &);
-
 
 /*
  New Macros for to use instead of event type masks
@@ -1552,6 +1432,11 @@ csEventID _csevMouseMove (iObjectRegistry *,uint x);
 #undef csevJoystickEvent
 csEventID _csevJoystickEvent (iObjectRegistry *);
 
+// iutil/objreg.h
+#define _CS_QUERY_REGISTRY_TAG(a, b) CS_QUERY_REGISTRY_TAG(a, b)
+#undef CS_QUERY_REGISTRY_TAG
+csPtr<iBase> _CS_QUERY_REGISTRY_TAG (iObjectRegistry *, const char *);
+
 // iutil/plugin.h
 #define _CS_LOAD_PLUGIN_ALWAYS(a, b) CS_LOAD_PLUGIN_ALWAYS(a, b)
 #undef CS_LOAD_PLUGIN_ALWAYS
@@ -1584,7 +1469,7 @@ uint _CS_FX_SETALPHA_INT (uint);
   V operator - (const V & v) const { return *self - v; }
   float operator * (const V & v) const { return *self * v; }
   V operator * (float f) const { return *self * f; }
-  V operator / (float f) const { return *self / f; }
+  V operator / (float f) const { return *self * f; }
   bool operator == (const V & v) const { return *self == v; }
   bool operator != (const V & v) const { return *self != v; }
   bool operator < (float f) const { return *self < f; }
@@ -1704,19 +1589,6 @@ uint _CS_FX_SETALPHA_INT (uint);
   csQuaternion operator + (const csQuaternion& q) { return *self + q; }
   csQuaternion operator - (const csQuaternion& q) { return *self - q; }
   csQuaternion operator * (const csQuaternion& q) { return *self * q; }
-}
-
-%include "cstool/primitives.h"
-%extend csSimpleRenderMesh
-{
-  void SetWithGenmeshFactory(iGeneralFactoryState *factory) 
-  {
-    self->vertices = factory->GetVertices(); 
-    self->vertexCount = factory->GetVertexCount(); 
-    self->indices = (uint *)factory->GetTriangles();
-    self->indexCount = factory->GetTriangleCount()*3; 
-    self->texcoords = factory->GetTexels();
-  }
 }
 
 /* List Methods */

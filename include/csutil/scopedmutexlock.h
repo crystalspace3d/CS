@@ -26,8 +26,6 @@
 #include "csextern.h"
 #include "csutil/thread.h"
 
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 /**
  * This is a utility class for locking a Mutex. If A MutexLock class is
  * created it locks the mutex, when it is destroyed it unlocks the Mutex
@@ -67,8 +65,6 @@ public:
 
   T& lock;
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 #endif
 

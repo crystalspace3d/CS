@@ -317,7 +317,7 @@ csPtr<iBase> csProtoMeshLoader::Parse (iDocumentNode* node,
 	  }
 	  mesh = fact->GetMeshObjectFactory ()->NewInstance ();
 	  CS_ASSERT (mesh != 0);
-          meshstate = scfQueryInterface<iProtoMeshState> (mesh);
+          meshstate = SCF_QUERY_INTERFACE (mesh, iProtoMeshState);
 	  if (!meshstate)
 	  {
       	    synldr->ReportError (
@@ -391,7 +391,7 @@ bool csProtoMeshSaver::WriteDown (iBase* obj, iDocumentNode* parent,
   if (obj)
   {
     csRef<iProtoMeshState> gmesh = 
-      scfQueryInterface<iProtoMeshState> (obj);
+      SCF_QUERY_INTERFACE (obj, iProtoMeshState);
     csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (obj);
     if (!gmesh) return false;
     if (!mesh) return false;

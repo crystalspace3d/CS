@@ -27,7 +27,6 @@
 #include "csutil/dirtyaccessarray.h"
 #include "csutil/scanstr.h"
 #include "csutil/sysfunc.h"
-#include "csgfx/shadervar.h"
 
 #include "iengine/engine.h"
 #include "iengine/material.h"
@@ -70,10 +69,7 @@ enum
   XMLTOKEN_NOSHADOWS,
   XMLTOKEN_LOCALSHADOWS,
   XMLTOKEN_COMPRESS,
-  XMLTOKEN_INSTANCE,
-  XMLTOKEN_VARIABLE,
-  XMLTOKEN_MATRIX,
-  XMLTOKEN_VECTOR
+  XMLTOKEN_INSTANCE
 };
 
 SCF_IMPLEMENT_FACTORY (csInstFactoryLoader)
@@ -93,8 +89,8 @@ csInstFactoryLoader::~csInstFactoryLoader ()
 bool csInstFactoryLoader::Initialize (iObjectRegistry* object_reg)
 {
   csInstFactoryLoader::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
 
   xmltokens.Register ("box", XMLTOKEN_BOX);
   xmltokens.Register ("quad", XMLTOKEN_QUAD);
@@ -112,9 +108,6 @@ bool csInstFactoryLoader::Initialize (iObjectRegistry* object_reg)
   xmltokens.Register ("lighting", XMLTOKEN_LIGHTING);
   xmltokens.Register ("noshadows", XMLTOKEN_NOSHADOWS);
   xmltokens.Register ("localshadows", XMLTOKEN_LOCALSHADOWS);
-  xmltokens.Register ("variable",XMLTOKEN_VARIABLE);
-  xmltokens.Register ("matrix",XMLTOKEN_MATRIX);
-  xmltokens.Register ("vector",XMLTOKEN_VECTOR);
   return true;
 }
 
@@ -143,7 +136,7 @@ csPtr<iBase> csInstFactoryLoader::Parse (iDocumentNode* node,
   csRef<iInstancingFactoryState> state;
 
   fact = type->NewFactory ();
-  state = scfQueryInterface<iInstancingFactoryState> (fact);
+  state = SCF_QUERY_INTERFACE (fact, iInstancingFactoryState);
 
   bool auto_normals = false;
   bool auto_normals_nocompress = false;
@@ -367,8 +360,8 @@ csInstFactorySaver::~csInstFactorySaver ()
 bool csInstFactorySaver::Initialize (iObjectRegistry* object_reg)
 {
   csInstFactorySaver::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 
@@ -384,9 +377,9 @@ bool csInstFactorySaver::WriteDown (iBase* obj, iDocumentNode* parent,
   if (obj)
   {
     csRef<iInstancingFactoryState> gfact = 
-      scfQueryInterface<iInstancingFactoryState> (obj);
+      SCF_QUERY_INTERFACE (obj, iInstancingFactoryState);
     csRef<iMeshObjectFactory> meshfact = 
-      scfQueryInterface<iMeshObjectFactory> (obj);
+      SCF_QUERY_INTERFACE (obj, iMeshObjectFactory);
     if (!gfact) return false;
     if (!meshfact) return false;
 
@@ -516,8 +509,8 @@ csInstMeshLoader::~csInstMeshLoader ()
 bool csInstMeshLoader::Initialize (iObjectRegistry* object_reg)
 {
   csInstMeshLoader::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
 
   xmltokens.Register ("material", XMLTOKEN_MATERIAL);
   xmltokens.Register ("factory", XMLTOKEN_FACTORY);
@@ -528,7 +521,6 @@ bool csInstMeshLoader::Initialize (iObjectRegistry* object_reg)
   xmltokens.Register ("noshadows", XMLTOKEN_NOSHADOWS);
   xmltokens.Register ("localshadows", XMLTOKEN_LOCALSHADOWS);
   xmltokens.Register ("instance", XMLTOKEN_INSTANCE);
-  xmltokens.Register ("variable", XMLTOKEN_VARIABLE);
   return true;
 }
 
@@ -547,9 +539,6 @@ csPtr<iBase> csInstMeshLoader::Parse (iDocumentNode* node,
   csRef<iInstancingMeshState> meshstate;
   csRef<iInstancingFactoryState> factstate;
 
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (object_reg,
-    "crystalspace.shared.stringset");
-
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
   {
@@ -559,57 +548,27 @@ csPtr<iBase> csInstMeshLoader::Parse (iDocumentNode* node,
     csStringID id = xmltokens.Request (value);
     switch (id)
     {
-      case XMLTOKEN_VARIABLE:
-        {
-          csShaderVariable var (strings->Request (child->GetAttributeValue ("name")));
-          const char* type = child->GetAttributeValue ("type");
-          switch (xmltokens.Request (type))
-          {
-          case XMLTOKEN_VECTOR:
-            var.SetValue (csVector4 (0));
-            break;
-          case XMLTOKEN_MATRIX:
-            var.SetValue (csMatrix3 ());
-            break;
-          default:
-            synldr->ReportError (
-              "crystalspace.instmeshloader.parse.unknowntype",
-              child, "Wrong type name '%s'!", type);
-            return 0;
-          }
-          meshstate->AddInstancesVariable (var);
-        }
-        break;
-
       case XMLTOKEN_INSTANCE:
 	{
-    csReversibleTransform trans;
-    csRef<iDocumentNodeIterator> ch_it = child->GetNodes ("variable");
-    size_t inst_id = meshstate->AddInstance ();
-    while (ch_it->HasNext ())
-    {
-      csRef<iDocumentNode> var_node = ch_it->Next ();
-      csShaderVariable var (strings->Request (var_node->GetAttributeValue ("name")));
-      csRef<iDocumentNode> matrix_node = var_node->GetNode ("matrix");
-      if (matrix_node)
-      {
-        csMatrix3 m;
-        if (!synldr->ParseMatrix (matrix_node, m))
-          return false;
-        var.SetValue (m);
-      }
-      csRef<iDocumentNode> vector_node = child->GetNode ("v");
-      if (vector_node)
-      {
-        csVector3 v;
-        if (!synldr->ParseVector (vector_node, v))
-          return false;
-        var.SetValue (v);
-      }
-      meshstate->SetInstanceVariable (inst_id, var);
-    }
-    CHECK_MESH (meshstate);
-    
+	  csReversibleTransform trans;
+	  csRef<iDocumentNode> matrix_node = child->GetNode ("matrix");
+	  if (matrix_node)
+	  {
+	    csMatrix3 m;
+	    if (!synldr->ParseMatrix (matrix_node, m))
+	      return false;
+            trans.SetO2T (m);
+	  }
+	  csRef<iDocumentNode> vector_node = child->GetNode ("v");
+	  if (vector_node)
+	  {
+	    csVector3 v;
+	    if (!synldr->ParseVector (vector_node, v))
+	      return false;
+            trans.SetO2TTranslation (v);
+	  }
+	  CHECK_MESH (meshstate);
+	  meshstate->AddInstance (trans);
 	}
 	break;
       case XMLTOKEN_MANUALCOLORS:
@@ -662,8 +621,8 @@ csPtr<iBase> csInstMeshLoader::Parse (iDocumentNode* node,
 		child, "Couldn't find factory '%s'!", factname);
 	    return 0;
 	  }
-	  factstate =  
-	    scfQueryInterface<iInstancingFactoryState> (fact->GetMeshObjectFactory());
+	  factstate = SCF_QUERY_INTERFACE (fact->GetMeshObjectFactory(), 
+	    iInstancingFactoryState);
 	  if (!factstate)
 	  {
       	    synldr->ReportError (
@@ -674,7 +633,7 @@ csPtr<iBase> csInstMeshLoader::Parse (iDocumentNode* node,
 	  }
 	  mesh = fact->GetMeshObjectFactory ()->NewInstance ();
 	  CS_ASSERT (mesh != 0);
-          meshstate = scfQueryInterface<iInstancingMeshState> (mesh);
+          meshstate = SCF_QUERY_INTERFACE (mesh, iInstancingMeshState);
 	  if (!meshstate)
 	  {
       	    synldr->ReportError (
@@ -732,8 +691,8 @@ csInstMeshSaver::~csInstMeshSaver ()
 bool csInstMeshSaver::Initialize (iObjectRegistry* object_reg)
 {
   csInstMeshSaver::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 
@@ -749,8 +708,8 @@ bool csInstMeshSaver::WriteDown (iBase* obj, iDocumentNode* parent,
   if (obj)
   {
     csRef<iInstancingMeshState> gmesh = 
-      scfQueryInterface<iInstancingMeshState> (obj);
-    csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (obj);
+      SCF_QUERY_INTERFACE (obj, iInstancingMeshState);
+    csRef<iMeshObject> mesh = SCF_QUERY_INTERFACE (obj, iMeshObject);
     if (!gmesh) return false;
     if (!mesh) return false;
 

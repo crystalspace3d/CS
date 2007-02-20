@@ -118,18 +118,9 @@ namespace CS
 	  size_t GetMaterial () const { return material; }
 	};
 	/// Get number of meshes in this model.
-	size_t GetMeshCount () const { return meshes.GetSize (); }
+	size_t GetMeshCount () const { return meshes.Length(); }
 	/// Get a mesh.
 	const Mesh& GetMesh (size_t index) const { return meshes[index]; }
-        /// Type of this model
-        enum ModelType
-        {
-          /// Model is a mesh factory.
-          Factory,
-          /// Model is a mesh object.
-          Object
-        };
-        ModelType GetType () const { return type; }
 
 	~Model();
 	Model (const Model& other);
@@ -139,12 +130,11 @@ namespace CS
 	wchar_t* name;
 	ImportKitImpl::GluedModel* glueModel;
 	csArray<Mesh> meshes;
-        ModelType type;
 
-        Model () : type (Factory) {}
+	Model () {}
       };
       /// Return number of models.
-      size_t GetModelCount () const { return models.GetSize (); }
+      size_t GetModelCount () const { return models.Length(); }
       /// Get a model.
       const Model& GetModel (size_t index) const { return models[index]; }
     
@@ -174,7 +164,7 @@ namespace CS
 	Material (const Material& other);
       };
       /// Get number of materials.
-      size_t GetMaterialCount () { return materials.GetSize (); }
+      size_t GetMaterialCount () { return materials.Length(); }
       /// Get a material.
       const Material& GetMaterial (size_t index) { return materials[index]; }
     protected:

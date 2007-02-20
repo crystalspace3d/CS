@@ -34,6 +34,7 @@
 #include "csutil/weakref.h"
 #include "csutil/eventnames.h"
 #include "iengine/campos.h"
+#include "iengine/collectn.h"
 #include "iengine/engine.h"
 #include "iengine/renderloop.h"
 #include "igraphic/imageio.h"
@@ -123,6 +124,36 @@ private:
   /// Get light from iterator. Return 0 at end.
   iLight* FetchNext ();
 };
+
+#include "csutil/win32/msvc_deprecated_warn_off.h"
+
+/**
+ * List of collections for the engine. This class implements iCollectionList.
+ */
+class csCollectionList : public scfImplementation1<csCollectionList,
+                                                   iCollectionList>
+{
+public:
+  /// constructor
+  csCollectionList ();
+  virtual ~csCollectionList ();
+
+  //-- iCollectionList
+  virtual iCollection* NewCollection (const char* name);
+  virtual int GetCount () const;
+  virtual iCollection *Get (int n) const;
+  virtual int Add (iCollection *obj);
+  virtual bool Remove (iCollection *obj);
+  virtual bool Remove (int n);
+  virtual void RemoveAll ();
+  virtual int Find (iCollection *obj) const;
+  virtual iCollection *FindByName (const char *Name) const;
+
+private:
+  csRefArrayObject<iCollection> collections;
+};
+
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 struct csSectorPos
 {
@@ -531,12 +562,17 @@ public:
 
   virtual iSharedVariableList* GetVariableList () const;
 
+  virtual iCollectionList* GetCollections ()
+  { return &collections; }
+  
+  virtual iCollection* FindCollection (const char* name,
+  	iRegion* region = 0);
+
   virtual bool RemoveObject (iBase* object);
   virtual void DelayedRemoveObject (csTicks delay, iBase *object);
   virtual void RemoveDelayedRemoves (bool remove = false);
 
   virtual void DeleteAll ();
-  void DeleteAllForce ();
 
   virtual void ResetWorldSpecificSettings(); 
 
@@ -639,7 +675,8 @@ private:
   // Renderloop loading/creation
   csPtr<iRenderLoop> CreateDefaultRenderLoop ();
   void LoadDefaultRenderLoop (const char* fileName);
-  csRef<iShader> LoadShader (iDocumentSystem* docsys, const char* filename);
+  csRef<iShader> LoadShader (iDocumentSystem* docsys, iShaderCompiler* shcom,
+    const char* filename);
 
   /**
    * Setup for starting a Draw or DrawFunc.
@@ -737,12 +774,6 @@ public:
   csRef<iGraphics3D> G3D;
   /// Pointer to the shader manager
   csRef<iShaderManager> shaderManager;
-  
-  /// Store virtual clock to speed up time queries.
-  csRef<iVirtualClock> virtualClock;
-
-  /// Store engine shadervar names
-  csStringID id_creation_time;
   /**
    * This is the Virtual File System object where all the files
    * used by the engine live. Textures, models, data, everything -
@@ -780,6 +811,12 @@ private:
    * to add sectors to the engine.
    */
   csSectorList sectors;
+
+  /**
+   * List of all collections in the engine. This vector contains objects
+   * of type iCollection*.
+   */
+  csCollectionList collections;
 
   /**
    * List of mesh object factories. This vector contains objects of
@@ -847,6 +884,9 @@ private:
    * and warning messages.
    */
   csRef<iReporter> reporter;
+
+  /// Store virtual clock to speed up time queries.
+  csRef<iVirtualClock> virtualClock;
 
   /// Default render loop
   csRef<iRenderLoop> defaultRenderLoop;

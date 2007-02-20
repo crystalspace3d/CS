@@ -57,7 +57,7 @@ int main (int argc, char *argv[])
   }
 
   {
-    csRef<iScript> script = csQueryRegistry<iScript> (objreg);
+    csRef<iScript> script = CS_QUERY_REGISTRY (objreg, iScript);
     if (! script)
     {
       csFPrintf (stderr, "Failed to find perl5 plugin!\n");

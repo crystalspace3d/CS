@@ -106,7 +106,7 @@ void Simple::SetupFrame ()
 				   ((joy->GetLast (0,1)) / 32767.0) * speed);
     if (joy->GetLastButton (0,3))
     {
-      csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+      csRef<iEventQueue> q (CS_QUERY_REGISTRY (object_reg, iEventQueue));
       if (q) q->GetEventOutlet()->Broadcast (csevQuit (object_reg));
     }
   }
@@ -140,7 +140,7 @@ bool Simple::HandleEvent (iEvent& ev)
   else if ((ev.Name == KeyboardDown) &&
 	   (csKeyEventHelper::GetCookedCode (&ev) == CSKEY_ESC))
   {
-    csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+    csRef<iEventQueue> q (CS_QUERY_REGISTRY (object_reg, iEventQueue));
     if (q) q->GetEventOutlet()->Broadcast (csevQuit (object_reg));
     return true;
   }
@@ -167,7 +167,6 @@ bool Simple::Initialize ()
 	CS_REQUEST_LEVELLOADER,
 	CS_REQUEST_REPORTER,
 	CS_REQUEST_REPORTERLISTENER,
-	CS_REQUEST_PLUGIN ("crystalspace.device.joystick", iEventPlug),
 	CS_REQUEST_END))
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -201,14 +200,13 @@ bool Simple::Initialize ()
     return false;
   }
 
-  /// @@@ (ge) This is a redundant way to load a joystick.
   // Attempt to load a joystick plugin.
-  /*csRef<iStringArray> joystickClasses =
+  csRef<iStringArray> joystickClasses =
     iSCF::SCF->QueryClassList ("crystalspace.device.joystick.");
   if (joystickClasses.IsValid())
   {
-    csRef<iPluginManager> plugmgr = 
-      csQueryRegistry<iPluginManager> (object_reg);
+    csRef<iPluginManager> plugmgr = CS_QUERY_REGISTRY (object_reg,
+      iPluginManager);
     for (size_t i = 0; i < joystickClasses->Length (); i++)
     {
       const char* className = joystickClasses->Get (i);
@@ -219,10 +217,10 @@ bool Simple::Initialize ()
 	className, (b != 0) ? "successful" : "failed");
       if (b != 0) b->DecRef ();
     }
-  }*/
+  }
 
   // The virtual clock.
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  vc = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
   if (vc == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -232,7 +230,7 @@ bool Simple::Initialize ()
   }
 
   // Find the pointer to engine plugin
-  engine = csQueryRegistry<iEngine> (object_reg);
+  engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   if (engine == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -241,7 +239,7 @@ bool Simple::Initialize ()
     return false;
   }
 
-  loader = csQueryRegistry<iLoader> (object_reg);
+  loader = CS_QUERY_REGISTRY (object_reg, iLoader);
   if (loader == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -250,7 +248,7 @@ bool Simple::Initialize ()
     return false;
   }
 
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   if (g3d == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -259,7 +257,7 @@ bool Simple::Initialize ()
     return false;
   }
 
-  kbd = csQueryRegistry<iKeyboardDriver> (object_reg);
+  kbd = CS_QUERY_REGISTRY (object_reg, iKeyboardDriver);
   if (kbd == 0)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -267,7 +265,7 @@ bool Simple::Initialize ()
     	"No iKeyboardDriver plugin!");
     return false;
   }
-  joy= csQueryRegistry<iJoystickDriver> (object_reg);
+  joy= CS_QUERY_REGISTRY (object_reg,iJoystickDriver);
   if (joy==0)
   {
     csReport (object_reg,CS_REPORTER_SEVERITY_ERROR,
@@ -361,7 +359,7 @@ bool Simple::Initialize ()
   sprite->GetMovable ()->SetTransform (m);
   sprite->GetMovable ()->UpdateMove ();
   csRef<iSprite3DState> spstate (
-  	scfQueryInterface<iSprite3DState> (sprite->GetMeshObject ()));
+  	SCF_QUERY_INTERFACE (sprite->GetMeshObject (), iSprite3DState));
   spstate->SetAction ("default");
   //spstate->SetMixMode (CS_FX_SETALPHA (.5));
 

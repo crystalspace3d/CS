@@ -87,7 +87,7 @@ csPtr<iBase> csLightIterRSLoader::Parse (iDocumentNode* node,
   csRef<iLightIterRenderStep> step;
   step.AttachNew (new csLightIterRenderStep (object_reg));
   csRef<iRenderStepContainer> steps =
-    scfQueryInterface<iRenderStepContainer> (step);
+    SCF_QUERY_INTERFACE (step, iRenderStepContainer);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -160,10 +160,10 @@ void csLightIterRenderStep::Init ()
   {
     initialized = true;
 
-    g3d = csQueryRegistry<iGraphics3D> (object_reg);
+    g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
 
-    csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-      object_reg, "crystalspace.shared.stringset");
+    csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+      object_reg, "crystalspace.shared.stringset", iStringSet);
 
     csStringID posname = strings->Request ("light 0 position");
     csStringID poswname = strings->Request ("light 0 position world");
@@ -178,8 +178,8 @@ void csLightIterRenderStep::Init ()
     trw_inv_name = strings->Request ("light 0 transform inverse world");
     CS::ShaderVarName lightcountname (strings, "light count");
 
-    shadermgr = csQueryRegistry<iShaderManager> (object_reg);
-    lightmgr = csQueryRegistry<iLightManager> (object_reg);
+    shadermgr = CS_QUERY_REGISTRY (
+    	object_reg, iShaderManager);
 
     shvar_light_0_position = shadermgr->GetVariable (posname);
     if (!shvar_light_0_position)
@@ -292,18 +292,14 @@ void csLightIterRenderStep::Perform (iRenderView* rview, iSector* sector,
 
   // @@@ This code is ignoring dynamic lights. Perhaps we need a better
   // way to represent those.
-  //iLightList* lights = sector->GetLights();
-  //int nlights = lights->GetCount();
-  const csArray<iLightSectorInfluence*>& lights = lightmgr->GetRelevantLights (sector,
-      -1, false);
-  int nlights = lights.GetSize ();
+  iLightList* lights = sector->GetLights();
+  int nlights = lights->GetCount();
 
   csArray<iLight*> lightList (16);
 
   while (nlights-- > 0)
   {
-    //iLight* light = lights->Get (nlights);
-    iLight* light = lights.Get (nlights)->GetLight ();
+    iLight* light = lights->Get (nlights);
     const csVector3 lightPos = light->GetMovable ()->GetFullPosition ();
 
     /* 
@@ -353,7 +349,7 @@ void csLightIterRenderStep::Perform (iRenderView* rview, iSector* sector,
     if (rview->TestBSphere (camTransR, lightSphere))
     {
       size_t i;
-      for (i = 0; i < steps.GetSize (); i++)
+      for (i = 0; i < steps.Length(); i++)
       {
         steps[i]->Perform (rview, sector, light, stacks);
       }
@@ -364,7 +360,7 @@ void csLightIterRenderStep::Perform (iRenderView* rview, iSector* sector,
 size_t csLightIterRenderStep::AddStep (iRenderStep* step)
 {
   csRef<iLightRenderStep> lrs = 
-    scfQueryInterface<iLightRenderStep> (step);
+    SCF_QUERY_INTERFACE (step, iLightRenderStep);
   if (!lrs) return csArrayItemNotFound;
   return steps.Push (lrs);
 }
@@ -372,7 +368,7 @@ size_t csLightIterRenderStep::AddStep (iRenderStep* step)
 bool csLightIterRenderStep::DeleteStep (iRenderStep* step)
 {
   csRef<iLightRenderStep> lrs = 
-    scfQueryInterface<iLightRenderStep> (step);
+    SCF_QUERY_INTERFACE (step, iLightRenderStep);
   if (!lrs) return false;
   return steps.Delete(lrs);
 }
@@ -385,14 +381,14 @@ iRenderStep* csLightIterRenderStep::GetStep (size_t n) const
 size_t csLightIterRenderStep::Find (iRenderStep* step) const
 {
   csRef<iLightRenderStep> lrs = 
-    scfQueryInterface<iLightRenderStep> (step);
+    SCF_QUERY_INTERFACE (step, iLightRenderStep);
   if (!lrs) return csArrayItemNotFound;
   return steps.Find(lrs);
 }
 
 size_t csLightIterRenderStep::GetStepCount () const
 {
-  return steps.GetSize ();
+  return steps.Length();
 }
 
 csPtr<iTextureHandle> csLightIterRenderStep::GetAttenuationTexture (

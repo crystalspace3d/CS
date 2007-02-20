@@ -44,9 +44,14 @@ CS_MASTER_HEADER_REJECTS =
 # List of headers that should not appear in the master-headers because they 
 # are deprecated.
 CS_MASTER_HEADER_REJECTS +=
-  [ ConcatDirs csutil  debug.h        ]
-  [ ConcatDirs csutil  profile.h      ]
-  [ ConcatDirs iengine collectn.h     ]
+  [ ConcatDirs csgeom cspoint.h      ]
+  [ ConcatDirs csgeom fastsqrt.h     ]
+  [ ConcatDirs csgeom quaterni.h     ]
+  [ ConcatDirs csgeom subrec2.h      ]
+  [ ConcatDirs csgfx  memimage.h     ]
+  [ ConcatDirs csutil garray.h       ]
+  [ ConcatDirs csutil hashhandlers.h ]
+  [ ConcatDirs csutil objpool.h      ]
   ;
 
 {
@@ -152,7 +157,6 @@ CS_MASTER_HEADERS =
       csgfx
       csplugincommon
       cstool
-      iaws
       iengine
       igeom
       igraphic

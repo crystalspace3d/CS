@@ -73,7 +73,7 @@ csGLFontCache::~csGLFontCache ()
 
   statecache->SetTexture (GL_TEXTURE_2D, 0);
   size_t tex;
-  for (tex = 0; tex < textures.GetSize (); tex++)
+  for (tex = 0; tex < textures.Length (); tex++)
   {
     glDeleteTextures (1, &textures[tex].handle);
     if (!(afpText || multiTexText || intensityBlendText))
@@ -110,7 +110,7 @@ void csGLFontCache::Setup()
     "Video.OpenGL.FontCache.UseIntensityBlend", true);
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (G2D->object_reg));
+    CS_QUERY_REGISTRY (G2D->object_reg, iVerbosityManager));
   bool do_verbose = false;
   if (verbosemgr) 
     do_verbose = verbosemgr->Enabled ("renderer.fontcache");
@@ -245,7 +245,7 @@ csGLFontCache::GlyphCacheData* csGLFontCache::InternalCacheGlyph (
       ((bmetrics.height + glyphAlign - 1) / glyphAlign) * glyphAlign;
   }*/
   size_t tex = 0;
-  while (tex < textures.GetSize ())
+  while (tex < textures.Length ())
   {
     sr = textures[tex].glyphRects->Alloc (allocWidth, allocHeight, 
       texRect);
@@ -255,10 +255,10 @@ csGLFontCache::GlyphCacheData* csGLFontCache::InternalCacheGlyph (
     }
     tex++;
   }
-  if ((sr == 0) && (textures.GetSize () < maxTxts))
+  if ((sr == 0) && (textures.Length () < maxTxts))
   {
-    tex = textures.GetSize ();
-    textures.SetSize (textures.GetSize () + 1);
+    tex = textures.Length ();
+    textures.SetLength (textures.Length () + 1);
 
     textures[tex].InitRects (texSize);
 
@@ -944,7 +944,7 @@ void csGLFontCache::FlushText ()
 
 void csGLFontCache::DumpFontCache (csRefArray<iImage>& pages)
 {
-  for (size_t t = 0; t < textures.GetSize (); t++)
+  for (size_t t = 0; t < textures.Length(); t++)
   {
     csRef<csImageMemory> page;
     page.AttachNew (new csImageMemory (texSize, texSize, 

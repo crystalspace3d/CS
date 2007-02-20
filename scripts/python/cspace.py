@@ -256,6 +256,7 @@ class iCommandLineParser(iBase):
     __repr__ = _swig_repr
     def Initialize(*args): return _cspace.iCommandLineParser_Initialize(*args)
     def Reset(*args): return _cspace.iCommandLineParser_Reset(*args)
+    def GetOption(*args): return _cspace.iCommandLineParser_GetOption(*args)
     def GetName(*args): return _cspace.iCommandLineParser_GetName(*args)
     def AddOption(*args): return _cspace.iCommandLineParser_AddOption(*args)
     def AddName(*args): return _cspace.iCommandLineParser_AddName(*args)
@@ -266,7 +267,6 @@ class iCommandLineParser(iBase):
     def GetAppDir(*args): return _cspace.iCommandLineParser_GetAppDir(*args)
     def GetAppPath(*args): return _cspace.iCommandLineParser_GetAppPath(*args)
     def GetOptionName(*args): return _cspace.iCommandLineParser_GetOptionName(*args)
-    def GetOption(*args): return _cspace.iCommandLineParser_GetOption(*args)
     __swig_destroy__ = _cspace.delete_iCommandLineParser
     __del__ = lambda self : None;
     __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iCommandLineParser_scfGetVersion
@@ -297,7 +297,6 @@ class csColor(_object):
     def Set(*args): return _cspace.csColor_Set(*args)
     def Clamp(*args): return _cspace.csColor_Clamp(*args)
     def ClampDown(*args): return _cspace.csColor_ClampDown(*args)
-    def IsBlack(*args): return _cspace.csColor_IsBlack(*args)
     def assign(*args): return _cspace.csColor_assign(*args)
     def __iadd__(*args): return _cspace.csColor___iadd__(*args)
     def __isub__(*args): return _cspace.csColor___isub__(*args)
@@ -435,33 +434,10 @@ iString_swigregister = _cspace.iString_swigregister
 iString_swigregister(iString)
 iString_scfGetVersion = _cspace.iString_scfGetVersion
 
-class csStringParent(_object):
+class csString(_object):
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csStringParent, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csStringParent, name)
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _cspace.new_csStringParent(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csStringParent
-    __del__ = lambda self : None;
-    def assign(*args): return _cspace.csStringParent_assign(*args)
-    def GetData(*args): return _cspace.csStringParent_GetData(*args)
-    def GetCapacity(*args): return _cspace.csStringParent_GetCapacity(*args)
-    def ShrinkBestFit(*args): return _cspace.csStringParent_ShrinkBestFit(*args)
-    def Free(*args): return _cspace.csStringParent_Free(*args)
-    def Detach(*args): return _cspace.csStringParent_Detach(*args)
-csStringParent_swigregister = _cspace.csStringParent_swigregister
-csStringParent_swigregister(csStringParent)
-
-class csString(csStringParent):
-    __swig_setmethods__ = {}
-    for _s in [csStringParent]: __swig_setmethods__.update(_s.__swig_setmethods__)
     __setattr__ = lambda self, name, value: _swig_setattr(self, csString, name, value)
     __swig_getmethods__ = {}
-    for _s in [csStringParent]: __swig_getmethods__.update(_s.__swig_getmethods__)
     __getattr__ = lambda self, name: _swig_getattr(self, csString, name)
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -1452,7 +1428,6 @@ class csPoly3D(_object):
     def ComputePlane(*args): return _cspace.csPoly3D_ComputePlane(*args)
     def GetArea(*args): return _cspace.csPoly3D_GetArea(*args)
     def GetCenter(*args): return _cspace.csPoly3D_GetCenter(*args)
-    def InSphere(*args): return _cspace.csPoly3D_InSphere(*args)
     def __getitem__(*args): return _cspace.csPoly3D___getitem__(*args)
     def __setitem__ (self, i, v):
       own_v = self.__getitem__(i)
@@ -1517,46 +1492,27 @@ csVector3Array_swigregister = _cspace.csVector3Array_swigregister
 csVector3Array_swigregister(csVector3Array)
 csVector3Array_CompressVertices = _cspace.csVector3Array_CompressVertices
 
-class TriangleInt(_object):
+class csTriangle(_object):
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, TriangleInt, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, TriangleInt, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["a"] = _cspace.TriangleInt_a_set
-    __swig_getmethods__["a"] = _cspace.TriangleInt_a_get
-    if _newclass:a = property(_cspace.TriangleInt_a_get, _cspace.TriangleInt_a_set)
-    __swig_setmethods__["b"] = _cspace.TriangleInt_b_set
-    __swig_getmethods__["b"] = _cspace.TriangleInt_b_get
-    if _newclass:b = property(_cspace.TriangleInt_b_get, _cspace.TriangleInt_b_set)
-    __swig_setmethods__["c"] = _cspace.TriangleInt_c_set
-    __swig_getmethods__["c"] = _cspace.TriangleInt_c_get
-    if _newclass:c = property(_cspace.TriangleInt_c_get, _cspace.TriangleInt_c_set)
-    def Set(*args): return _cspace.TriangleInt_Set(*args)
-    def __init__(self, *args): 
-        this = _cspace.new_TriangleInt(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_TriangleInt
-    __del__ = lambda self : None;
-TriangleInt_swigregister = _cspace.TriangleInt_swigregister
-TriangleInt_swigregister(TriangleInt)
-
-class csTriangle(TriangleInt):
-    __swig_setmethods__ = {}
-    for _s in [TriangleInt]: __swig_setmethods__.update(_s.__swig_setmethods__)
     __setattr__ = lambda self, name, value: _swig_setattr(self, csTriangle, name, value)
     __swig_getmethods__ = {}
-    for _s in [TriangleInt]: __swig_getmethods__.update(_s.__swig_getmethods__)
     __getattr__ = lambda self, name: _swig_getattr(self, csTriangle, name)
     __repr__ = _swig_repr
+    __swig_setmethods__["a"] = _cspace.csTriangle_a_set
+    __swig_getmethods__["a"] = _cspace.csTriangle_a_get
+    if _newclass:a = property(_cspace.csTriangle_a_get, _cspace.csTriangle_a_set)
+    __swig_setmethods__["b"] = _cspace.csTriangle_b_set
+    __swig_getmethods__["b"] = _cspace.csTriangle_b_get
+    if _newclass:b = property(_cspace.csTriangle_b_get, _cspace.csTriangle_b_set)
+    __swig_setmethods__["c"] = _cspace.csTriangle_c_set
+    __swig_getmethods__["c"] = _cspace.csTriangle_c_get
+    if _newclass:c = property(_cspace.csTriangle_c_get, _cspace.csTriangle_c_set)
     def __init__(self, *args): 
         this = _cspace.new_csTriangle(*args)
         try: self.this.append(this)
         except: self.this = this
-    def __getitem__(*args): return _cspace.csTriangle___getitem__(*args)
-    def __setitem__(*args): return _cspace.csTriangle___setitem__(*args)
-    def __nonzero__(*args): return _cspace.csTriangle___nonzero__(*args)
+    def assign(*args): return _cspace.csTriangle_assign(*args)
+    def Set(*args): return _cspace.csTriangle_Set(*args)
     __swig_destroy__ = _cspace.delete_csTriangle
     __del__ = lambda self : None;
 csTriangle_swigregister = _cspace.csTriangle_swigregister
@@ -1648,7 +1604,6 @@ class csQuaternion(_object):
         this = _cspace.new_csQuaternion(*args)
         try: self.this.append(this)
         except: self.this = this
-    def Set(*args): return _cspace.csQuaternion_Set(*args)
     def SetIdentity(*args): return _cspace.csQuaternion_SetIdentity(*args)
     def __iadd__(*args): return _cspace.csQuaternion___iadd__(*args)
     def __isub__(*args): return _cspace.csQuaternion___isub__(*args)
@@ -1924,8 +1879,6 @@ class csBox3(_object):
     def Set(*args): return _cspace.csBox3_Set(*args)
     def SetMin(*args): return _cspace.csBox3_SetMin(*args)
     def SetMax(*args): return _cspace.csBox3_SetMax(*args)
-    def GetMin(*args): return _cspace.csBox3_GetMin(*args)
-    def GetMax(*args): return _cspace.csBox3_GetMax(*args)
     def Description(*args): return _cspace.csBox3_Description(*args)
     def Split(*args): return _cspace.csBox3_Split(*args)
     def TestSplit(*args): return _cspace.csBox3_TestSplit(*args)
@@ -2097,6 +2050,7 @@ class csShaderVariable(csRefCount):
     UNKNOWN = _cspace.csShaderVariable_UNKNOWN
     INT = _cspace.csShaderVariable_INT
     FLOAT = _cspace.csShaderVariable_FLOAT
+    COLOR = _cspace.csShaderVariable_COLOR
     TEXTURE = _cspace.csShaderVariable_TEXTURE
     RENDERBUFFER = _cspace.csShaderVariable_RENDERBUFFER
     VECTOR2 = _cspace.csShaderVariable_VECTOR2
@@ -2105,7 +2059,6 @@ class csShaderVariable(csRefCount):
     MATRIX = _cspace.csShaderVariable_MATRIX
     TRANSFORM = _cspace.csShaderVariable_TRANSFORM
     ARRAY = _cspace.csShaderVariable_ARRAY
-    COLOR = _cspace.csShaderVariable_COLOR
     def __init__(self, *args): 
         this = _cspace.new_csShaderVariable(*args)
         try: self.this.append(this)
@@ -2188,6 +2141,7 @@ class csShaderVariableArray(csShaderVariableArrayChangeElements):
     def DeleteIndex(*args): return _cspace.csShaderVariableArray_DeleteIndex(*args)
     def DeleteIndexFast(*args): return _cspace.csShaderVariableArray_DeleteIndexFast(*args)
     def Delete(*args): return _cspace.csShaderVariableArray_Delete(*args)
+    def DeleteFast(*args): return _cspace.csShaderVariableArray_DeleteFast(*args)
     __swig_destroy__ = _cspace.delete_csShaderVariableArray
     __del__ = lambda self : None;
 csShaderVariableArray_swigregister = _cspace.csShaderVariableArray_swigregister
@@ -2311,6 +2265,7 @@ class csPluginRequestArray(_object):
         try: self.this.append(this)
         except: self.this = this
     def GetSize(*args): return _cspace.csPluginRequestArray_GetSize(*args)
+    def Length(*args): return _cspace.csPluginRequestArray_Length(*args)
     def Get(*args): return _cspace.csPluginRequestArray_Get(*args)
     def Push(*args): return _cspace.csPluginRequestArray_Push(*args)
     def Pop(*args): return _cspace.csPluginRequestArray_Pop(*args)
@@ -2327,588 +2282,8 @@ class csPluginRequestArray(_object):
     def __eq__(*args): return _cspace.csPluginRequestArray___eq__(*args)
     def __ne__(*args): return _cspace.csPluginRequestArray___ne__(*args)
     def GetAllocator(*args): return _cspace.csPluginRequestArray_GetAllocator(*args)
-    def Length(*args): return _cspace.csPluginRequestArray_Length(*args)
 csPluginRequestArray_swigregister = _cspace.csPluginRequestArray_swigregister
 csPluginRequestArray_swigregister(csPluginRequestArray)
-
-class iAwsKey(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsKey, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsKey, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Type(*args): return _cspace.iAwsKey_Type(*args)
-    def Name(*args): return _cspace.iAwsKey_Name(*args)
-    __swig_destroy__ = _cspace.delete_iAwsKey
-    __del__ = lambda self : None;
-    __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iAwsKey_scfGetVersion
-    if _newclass:scfGetVersion = staticmethod(_cspace.iAwsKey_scfGetVersion)
-iAwsKey_swigregister = _cspace.iAwsKey_swigregister
-iAwsKey_swigregister(iAwsKey)
-aws_debug = cvar.aws_debug
-AWSF_AlwaysEraseWindows = cvar.AWSF_AlwaysEraseWindows
-AWSF_AlwaysRedrawWindows = cvar.AWSF_AlwaysRedrawWindows
-AWSF_RaiseOnMouseOver = cvar.AWSF_RaiseOnMouseOver
-AWSF_KeyboardControl = cvar.AWSF_KeyboardControl
-iAwsKey_scfGetVersion = _cspace.iAwsKey_scfGetVersion
-
-class iAwsIntKey(iAwsKey):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKey]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsIntKey, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKey]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsIntKey, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Value(*args): return _cspace.iAwsIntKey_Value(*args)
-    __swig_destroy__ = _cspace.delete_iAwsIntKey
-    __del__ = lambda self : None;
-iAwsIntKey_swigregister = _cspace.iAwsIntKey_swigregister
-iAwsIntKey_swigregister(iAwsIntKey)
-
-class iAwsFloatKey(iAwsKey):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKey]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsFloatKey, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKey]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsFloatKey, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Value(*args): return _cspace.iAwsFloatKey_Value(*args)
-    __swig_destroy__ = _cspace.delete_iAwsFloatKey
-    __del__ = lambda self : None;
-iAwsFloatKey_swigregister = _cspace.iAwsFloatKey_swigregister
-iAwsFloatKey_swigregister(iAwsFloatKey)
-
-class iAwsStringKey(iAwsKey):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKey]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsStringKey, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKey]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsStringKey, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Value(*args): return _cspace.iAwsStringKey_Value(*args)
-    __swig_destroy__ = _cspace.delete_iAwsStringKey
-    __del__ = lambda self : None;
-iAwsStringKey_swigregister = _cspace.iAwsStringKey_swigregister
-iAwsStringKey_swigregister(iAwsStringKey)
-
-class iAwsRectKey(iAwsKey):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKey]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsRectKey, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKey]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsRectKey, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Value(*args): return _cspace.iAwsRectKey_Value(*args)
-    __swig_destroy__ = _cspace.delete_iAwsRectKey
-    __del__ = lambda self : None;
-iAwsRectKey_swigregister = _cspace.iAwsRectKey_swigregister
-iAwsRectKey_swigregister(iAwsRectKey)
-
-class iAwsRGBKey(iAwsKey):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKey]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsRGBKey, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKey]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsRGBKey, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Value(*args): return _cspace.iAwsRGBKey_Value(*args)
-    __swig_destroy__ = _cspace.delete_iAwsRGBKey
-    __del__ = lambda self : None;
-iAwsRGBKey_swigregister = _cspace.iAwsRGBKey_swigregister
-iAwsRGBKey_swigregister(iAwsRGBKey)
-
-class iAwsPointKey(iAwsKey):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKey]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsPointKey, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKey]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsPointKey, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Value(*args): return _cspace.iAwsPointKey_Value(*args)
-    __swig_destroy__ = _cspace.delete_iAwsPointKey
-    __del__ = lambda self : None;
-iAwsPointKey_swigregister = _cspace.iAwsPointKey_swigregister
-iAwsPointKey_swigregister(iAwsPointKey)
-
-class iAwsConnectionKey(iAwsKey):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKey]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsConnectionKey, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKey]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsConnectionKey, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Sink(*args): return _cspace.iAwsConnectionKey_Sink(*args)
-    def Trigger(*args): return _cspace.iAwsConnectionKey_Trigger(*args)
-    def Signal(*args): return _cspace.iAwsConnectionKey_Signal(*args)
-    __swig_destroy__ = _cspace.delete_iAwsConnectionKey
-    __del__ = lambda self : None;
-iAwsConnectionKey_swigregister = _cspace.iAwsConnectionKey_swigregister
-iAwsConnectionKey_swigregister(iAwsConnectionKey)
-
-class iAwsKeyContainer(iAwsKey):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKey]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsKeyContainer, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKey]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsKeyContainer, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Find(*args): return _cspace.iAwsKeyContainer_Find(*args)
-    def Children(*args): return _cspace.iAwsKeyContainer_Children(*args)
-    def Add(*args): return _cspace.iAwsKeyContainer_Add(*args)
-    def GetAt(*args): return _cspace.iAwsKeyContainer_GetAt(*args)
-    def Length(*args): return _cspace.iAwsKeyContainer_Length(*args)
-    def Remove(*args): return _cspace.iAwsKeyContainer_Remove(*args)
-    def RemoveAll(*args): return _cspace.iAwsKeyContainer_RemoveAll(*args)
-    def Consume(*args): return _cspace.iAwsKeyContainer_Consume(*args)
-    __swig_destroy__ = _cspace.delete_iAwsKeyContainer
-    __del__ = lambda self : None;
-iAwsKeyContainer_swigregister = _cspace.iAwsKeyContainer_swigregister
-iAwsKeyContainer_swigregister(iAwsKeyContainer)
-
-class iAwsComponentNode(iAwsKeyContainer):
-    __swig_setmethods__ = {}
-    for _s in [iAwsKeyContainer]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsComponentNode, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsKeyContainer]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsComponentNode, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def ComponentTypeName(*args): return _cspace.iAwsComponentNode_ComponentTypeName(*args)
-    __swig_destroy__ = _cspace.delete_iAwsComponentNode
-    __del__ = lambda self : None;
-iAwsComponentNode_swigregister = _cspace.iAwsComponentNode_swigregister
-iAwsComponentNode_swigregister(iAwsComponentNode)
-
-class iAws(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAws, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAws, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def GetPrefMgr(*args): return _cspace.iAws_GetPrefMgr(*args)
-    def GetSinkMgr(*args): return _cspace.iAws_GetSinkMgr(*args)
-    def SetPrefMgr(*args): return _cspace.iAws_SetPrefMgr(*args)
-    def GetStringTable(*args): return _cspace.iAws_GetStringTable(*args)
-    def RegisterComponentFactory(*args): return _cspace.iAws_RegisterComponentFactory(*args)
-    def FindComponentFactory(*args): return _cspace.iAws_FindComponentFactory(*args)
-    def GetTopComponent(*args): return _cspace.iAws_GetTopComponent(*args)
-    def SetTopComponent(*args): return _cspace.iAws_SetTopComponent(*args)
-    def GetFocusedComponent(*args): return _cspace.iAws_GetFocusedComponent(*args)
-    def SetFocusedComponent(*args): return _cspace.iAws_SetFocusedComponent(*args)
-    def GetKeyboardFocusedComponent(*args): return _cspace.iAws_GetKeyboardFocusedComponent(*args)
-    def ComponentAt(*args): return _cspace.iAws_ComponentAt(*args)
-    def MouseInComponent(*args): return _cspace.iAws_MouseInComponent(*args)
-    def Print(*args): return _cspace.iAws_Print(*args)
-    def Redraw(*args): return _cspace.iAws_Redraw(*args)
-    def Mark(*args): return _cspace.iAws_Mark(*args)
-    def Unmark(*args): return _cspace.iAws_Unmark(*args)
-    def Erase(*args): return _cspace.iAws_Erase(*args)
-    def MaskEraser(*args): return _cspace.iAws_MaskEraser(*args)
-    def InvalidateUpdateStore(*args): return _cspace.iAws_InvalidateUpdateStore(*args)
-    def CaptureMouse(*args): return _cspace.iAws_CaptureMouse(*args)
-    def ReleaseMouse(*args): return _cspace.iAws_ReleaseMouse(*args)
-    def SetModal(*args): return _cspace.iAws_SetModal(*args)
-    def UnSetModal(*args): return _cspace.iAws_UnSetModal(*args)
-    def HandleEvent(*args): return _cspace.iAws_HandleEvent(*args)
-    def GetCanvas(*args): return _cspace.iAws_GetCanvas(*args)
-    def G2D(*args): return _cspace.iAws_G2D(*args)
-    def G3D(*args): return _cspace.iAws_G3D(*args)
-    def CreateWindowFrom(*args): return _cspace.iAws_CreateWindowFrom(*args)
-    def CreateEmbeddableComponent(*args): return _cspace.iAws_CreateEmbeddableComponent(*args)
-    def CreateParmList(*args): return _cspace.iAws_CreateParmList(*args)
-    def CreateTransition(*args): return _cspace.iAws_CreateTransition(*args)
-    def CreateTransitionEx(*args): return _cspace.iAws_CreateTransitionEx(*args)
-    def SetFlag(*args): return _cspace.iAws_SetFlag(*args)
-    def ClearFlag(*args): return _cspace.iAws_ClearFlag(*args)
-    def GetFlags(*args): return _cspace.iAws_GetFlags(*args)
-    def GetObjectRegistry(*args): return _cspace.iAws_GetObjectRegistry(*args)
-    def AllWindowsHidden(*args): return _cspace.iAws_AllWindowsHidden(*args)
-    def ComponentIsInTransition(*args): return _cspace.iAws_ComponentIsInTransition(*args)
-    def ComponentDestroyed(*args): return _cspace.iAws_ComponentDestroyed(*args)
-    def DeleteMarkedComponents(*args): return _cspace.iAws_DeleteMarkedComponents(*args)
-    def MarkToDeleteRecursively(*args): return _cspace.iAws_MarkToDeleteRecursively(*args)
-    __swig_setmethods__["PreProcess"] = _cspace.iAws_PreProcess_set
-    __swig_getmethods__["PreProcess"] = _cspace.iAws_PreProcess_get
-    if _newclass:PreProcess = property(_cspace.iAws_PreProcess_get, _cspace.iAws_PreProcess_set)
-    __swig_setmethods__["MouseDown"] = _cspace.iAws_MouseDown_set
-    __swig_getmethods__["MouseDown"] = _cspace.iAws_MouseDown_get
-    if _newclass:MouseDown = property(_cspace.iAws_MouseDown_get, _cspace.iAws_MouseDown_set)
-    __swig_setmethods__["MouseUp"] = _cspace.iAws_MouseUp_set
-    __swig_getmethods__["MouseUp"] = _cspace.iAws_MouseUp_get
-    if _newclass:MouseUp = property(_cspace.iAws_MouseUp_get, _cspace.iAws_MouseUp_set)
-    __swig_setmethods__["MouseClick"] = _cspace.iAws_MouseClick_set
-    __swig_getmethods__["MouseClick"] = _cspace.iAws_MouseClick_get
-    if _newclass:MouseClick = property(_cspace.iAws_MouseClick_get, _cspace.iAws_MouseClick_set)
-    __swig_setmethods__["MouseMove"] = _cspace.iAws_MouseMove_set
-    __swig_getmethods__["MouseMove"] = _cspace.iAws_MouseMove_get
-    if _newclass:MouseMove = property(_cspace.iAws_MouseMove_get, _cspace.iAws_MouseMove_set)
-    __swig_setmethods__["KeyboardDown"] = _cspace.iAws_KeyboardDown_set
-    __swig_getmethods__["KeyboardDown"] = _cspace.iAws_KeyboardDown_get
-    if _newclass:KeyboardDown = property(_cspace.iAws_KeyboardDown_get, _cspace.iAws_KeyboardDown_set)
-    __swig_setmethods__["KeyboardUp"] = _cspace.iAws_KeyboardUp_set
-    __swig_getmethods__["KeyboardUp"] = _cspace.iAws_KeyboardUp_get
-    if _newclass:KeyboardUp = property(_cspace.iAws_KeyboardUp_get, _cspace.iAws_KeyboardUp_set)
-    __swig_setmethods__["MouseEnter"] = _cspace.iAws_MouseEnter_set
-    __swig_getmethods__["MouseEnter"] = _cspace.iAws_MouseEnter_get
-    if _newclass:MouseEnter = property(_cspace.iAws_MouseEnter_get, _cspace.iAws_MouseEnter_set)
-    __swig_setmethods__["MouseExit"] = _cspace.iAws_MouseExit_set
-    __swig_getmethods__["MouseExit"] = _cspace.iAws_MouseExit_get
-    if _newclass:MouseExit = property(_cspace.iAws_MouseExit_get, _cspace.iAws_MouseExit_set)
-    __swig_setmethods__["LoseFocus"] = _cspace.iAws_LoseFocus_set
-    __swig_getmethods__["LoseFocus"] = _cspace.iAws_LoseFocus_get
-    if _newclass:LoseFocus = property(_cspace.iAws_LoseFocus_get, _cspace.iAws_LoseFocus_set)
-    __swig_setmethods__["GainFocus"] = _cspace.iAws_GainFocus_set
-    __swig_getmethods__["GainFocus"] = _cspace.iAws_GainFocus_get
-    if _newclass:GainFocus = property(_cspace.iAws_GainFocus_get, _cspace.iAws_GainFocus_set)
-    __swig_setmethods__["GroupOff"] = _cspace.iAws_GroupOff_set
-    __swig_getmethods__["GroupOff"] = _cspace.iAws_GroupOff_get
-    if _newclass:GroupOff = property(_cspace.iAws_GroupOff_get, _cspace.iAws_GroupOff_set)
-    __swig_setmethods__["FrameStart"] = _cspace.iAws_FrameStart_set
-    __swig_getmethods__["FrameStart"] = _cspace.iAws_FrameStart_get
-    if _newclass:FrameStart = property(_cspace.iAws_FrameStart_get, _cspace.iAws_FrameStart_set)
-    __swig_destroy__ = _cspace.delete_iAws
-    __del__ = lambda self : None;
-    __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iAws_scfGetVersion
-    if _newclass:scfGetVersion = staticmethod(_cspace.iAws_scfGetVersion)
-    def SetupCanvas(*args): return _cspace.iAws_SetupCanvas(*args)
-iAws_swigregister = _cspace.iAws_swigregister
-iAws_swigregister(iAws)
-iAws_scfGetVersion = _cspace.iAws_scfGetVersion
-
-class iAwsPrefManager(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsPrefManager, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsPrefManager, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Setup(*args): return _cspace.iAwsPrefManager_Setup(*args)
-    def Load(*args): return _cspace.iAwsPrefManager_Load(*args)
-    def NameToId(*args): return _cspace.iAwsPrefManager_NameToId(*args)
-    def SelectDefaultSkin(*args): return _cspace.iAwsPrefManager_SelectDefaultSkin(*args)
-    def LookupIntKey(*args): return _cspace.iAwsPrefManager_LookupIntKey(*args)
-    def LookupStringKey(*args): return _cspace.iAwsPrefManager_LookupStringKey(*args)
-    def LookupRectKey(*args): return _cspace.iAwsPrefManager_LookupRectKey(*args)
-    def LookupRGBKey(*args): return _cspace.iAwsPrefManager_LookupRGBKey(*args)
-    def LookupPointKey(*args): return _cspace.iAwsPrefManager_LookupPointKey(*args)
-    def GetInt(*args): return _cspace.iAwsPrefManager_GetInt(*args)
-    def GetFloat(*args): return _cspace.iAwsPrefManager_GetFloat(*args)
-    def GetRect(*args): return _cspace.iAwsPrefManager_GetRect(*args)
-    def GetString(*args): return _cspace.iAwsPrefManager_GetString(*args)
-    def GetRGB(*args): return _cspace.iAwsPrefManager_GetRGB(*args)
-    def FindWindowDef(*args): return _cspace.iAwsPrefManager_FindWindowDef(*args)
-    def FindSkinDef(*args): return _cspace.iAwsPrefManager_FindSkinDef(*args)
-    def RemoveWindowDef(*args): return _cspace.iAwsPrefManager_RemoveWindowDef(*args)
-    def RemoveAllWindowDefs(*args): return _cspace.iAwsPrefManager_RemoveAllWindowDefs(*args)
-    def RemoveSkinDef(*args): return _cspace.iAwsPrefManager_RemoveSkinDef(*args)
-    def RemoveAllSkinDefs(*args): return _cspace.iAwsPrefManager_RemoveAllSkinDefs(*args)
-    def SetColor(*args): return _cspace.iAwsPrefManager_SetColor(*args)
-    def GetColor(*args): return _cspace.iAwsPrefManager_GetColor(*args)
-    def FindColor(*args): return _cspace.iAwsPrefManager_FindColor(*args)
-    def GetDefaultFont(*args): return _cspace.iAwsPrefManager_GetDefaultFont(*args)
-    def GetFont(*args): return _cspace.iAwsPrefManager_GetFont(*args)
-    def GetTexture(*args): return _cspace.iAwsPrefManager_GetTexture(*args)
-    def SetTextureManager(*args): return _cspace.iAwsPrefManager_SetTextureManager(*args)
-    def SetFontServer(*args): return _cspace.iAwsPrefManager_SetFontServer(*args)
-    def SetDefaultFont(*args): return _cspace.iAwsPrefManager_SetDefaultFont(*args)
-    def SetWindowMgr(*args): return _cspace.iAwsPrefManager_SetWindowMgr(*args)
-    def SetupPalette(*args): return _cspace.iAwsPrefManager_SetupPalette(*args)
-    def RegisterConstant(*args): return _cspace.iAwsPrefManager_RegisterConstant(*args)
-    def ConstantExists(*args): return _cspace.iAwsPrefManager_ConstantExists(*args)
-    def GetConstantValue(*args): return _cspace.iAwsPrefManager_GetConstantValue(*args)
-    def CreateKeyFactory(*args): return _cspace.iAwsPrefManager_CreateKeyFactory(*args)
-    def CreateConnectionNodeFactory(*args): return _cspace.iAwsPrefManager_CreateConnectionNodeFactory(*args)
-    def AddCustomStringProperty(*args): return _cspace.iAwsPrefManager_AddCustomStringProperty(*args)
-    def GetCustomStringProperties(*args): return _cspace.iAwsPrefManager_GetCustomStringProperties(*args)
-    __swig_destroy__ = _cspace.delete_iAwsPrefManager
-    __del__ = lambda self : None;
-iAwsPrefManager_swigregister = _cspace.iAwsPrefManager_swigregister
-iAwsPrefManager_swigregister(iAwsPrefManager)
-
-class iAwsSinkManager(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsSinkManager, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsSinkManager, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Setup(*args): return _cspace.iAwsSinkManager_Setup(*args)
-    def RegisterSink(*args): return _cspace.iAwsSinkManager_RegisterSink(*args)
-    def RemoveSink(*args): return _cspace.iAwsSinkManager_RemoveSink(*args)
-    def FindSink(*args): return _cspace.iAwsSinkManager_FindSink(*args)
-    def CreateSink(*args): return _cspace.iAwsSinkManager_CreateSink(*args)
-    def CreateSlot(*args): return _cspace.iAwsSinkManager_CreateSlot(*args)
-    __swig_destroy__ = _cspace.delete_iAwsSinkManager
-    __del__ = lambda self : None;
-iAwsSinkManager_swigregister = _cspace.iAwsSinkManager_swigregister
-iAwsSinkManager_swigregister(iAwsSinkManager)
-
-class iAwsSink(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsSink, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsSink, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def GetTriggerID(*args): return _cspace.iAwsSink_GetTriggerID(*args)
-    def HandleTrigger(*args): return _cspace.iAwsSink_HandleTrigger(*args)
-    def RegisterTrigger(*args): return _cspace.iAwsSink_RegisterTrigger(*args)
-    def GetError(*args): return _cspace.iAwsSink_GetError(*args)
-    __swig_destroy__ = _cspace.delete_iAwsSink
-    __del__ = lambda self : None;
-iAwsSink_swigregister = _cspace.iAwsSink_swigregister
-iAwsSink_swigregister(iAwsSink)
-
-class iAwsSource(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsSource, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsSource, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def WindowManager(*args): return _cspace.iAwsSource_WindowManager(*args)
-    def GetComponent(*args): return _cspace.iAwsSource_GetComponent(*args)
-    def RegisterSlot(*args): return _cspace.iAwsSource_RegisterSlot(*args)
-    def UnregisterSlot(*args): return _cspace.iAwsSource_UnregisterSlot(*args)
-    def Broadcast(*args): return _cspace.iAwsSource_Broadcast(*args)
-    __swig_destroy__ = _cspace.delete_iAwsSource
-    __del__ = lambda self : None;
-iAwsSource_swigregister = _cspace.iAwsSource_swigregister
-iAwsSource_swigregister(iAwsSource)
-
-class iAwsSlot(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsSlot, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsSlot, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Connect(*args): return _cspace.iAwsSlot_Connect(*args)
-    def Disconnect(*args): return _cspace.iAwsSlot_Disconnect(*args)
-    def Emit(*args): return _cspace.iAwsSlot_Emit(*args)
-    __swig_destroy__ = _cspace.delete_iAwsSlot
-    __del__ = lambda self : None;
-iAwsSlot_swigregister = _cspace.iAwsSlot_swigregister
-iAwsSlot_swigregister(iAwsSlot)
-
-class iAwsLayoutManager(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsLayoutManager, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsLayoutManager, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def SetOwner(*args): return _cspace.iAwsLayoutManager_SetOwner(*args)
-    def AddComponent(*args): return _cspace.iAwsLayoutManager_AddComponent(*args)
-    def RemoveComponent(*args): return _cspace.iAwsLayoutManager_RemoveComponent(*args)
-    def LayoutComponents(*args): return _cspace.iAwsLayoutManager_LayoutComponents(*args)
-    __swig_destroy__ = _cspace.delete_iAwsLayoutManager
-    __del__ = lambda self : None;
-iAwsLayoutManager_swigregister = _cspace.iAwsLayoutManager_swigregister
-iAwsLayoutManager_swigregister(iAwsLayoutManager)
-
-class iAwsComponent(iAwsSource):
-    __swig_setmethods__ = {}
-    for _s in [iAwsSource]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsComponent, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iAwsSource]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsComponent, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Create(*args): return _cspace.iAwsComponent_Create(*args)
-    def Setup(*args): return _cspace.iAwsComponent_Setup(*args)
-    def HandleEvent(*args): return _cspace.iAwsComponent_HandleEvent(*args)
-    def GetProperty(*args): return _cspace.iAwsComponent_GetProperty(*args)
-    def SetProperty(*args): return _cspace.iAwsComponent_SetProperty(*args)
-    def Execute(*args): return _cspace.iAwsComponent_Execute(*args)
-    def Invalidate(*args): return _cspace.iAwsComponent_Invalidate(*args)
-    def Frame(*args): return _cspace.iAwsComponent_Frame(*args)
-    def ClientFrame(*args): return _cspace.iAwsComponent_ClientFrame(*args)
-    def Type(*args): return _cspace.iAwsComponent_Type(*args)
-    def SetFlag(*args): return _cspace.iAwsComponent_SetFlag(*args)
-    def ClearFlag(*args): return _cspace.iAwsComponent_ClearFlag(*args)
-    def Flags(*args): return _cspace.iAwsComponent_Flags(*args)
-    def WindowManager(*args): return _cspace.iAwsComponent_WindowManager(*args)
-    def Parent(*args): return _cspace.iAwsComponent_Parent(*args)
-    def Window(*args): return _cspace.iAwsComponent_Window(*args)
-    def Layout(*args): return _cspace.iAwsComponent_Layout(*args)
-    def SetParent(*args): return _cspace.iAwsComponent_SetParent(*args)
-    def SetLayout(*args): return _cspace.iAwsComponent_SetLayout(*args)
-    def AddToLayout(*args): return _cspace.iAwsComponent_AddToLayout(*args)
-    def getPreferredSize(*args): return _cspace.iAwsComponent_getPreferredSize(*args)
-    def setPreferredSize(*args): return _cspace.iAwsComponent_setPreferredSize(*args)
-    def clearPreferredSize(*args): return _cspace.iAwsComponent_clearPreferredSize(*args)
-    def getMinimumSize(*args): return _cspace.iAwsComponent_getMinimumSize(*args)
-    def getInsets(*args): return _cspace.iAwsComponent_getInsets(*args)
-    def Overlaps(*args): return _cspace.iAwsComponent_Overlaps(*args)
-    def isHidden(*args): return _cspace.iAwsComponent_isHidden(*args)
-    def SetFocusable(*args): return _cspace.iAwsComponent_SetFocusable(*args)
-    def Focusable(*args): return _cspace.iAwsComponent_Focusable(*args)
-    def isFocused(*args): return _cspace.iAwsComponent_isFocused(*args)
-    def IsMaximized(*args): return _cspace.iAwsComponent_IsMaximized(*args)
-    def Hide(*args): return _cspace.iAwsComponent_Hide(*args)
-    def Show(*args): return _cspace.iAwsComponent_Show(*args)
-    def SetFocus(*args): return _cspace.iAwsComponent_SetFocus(*args)
-    def UnsetFocus(*args): return _cspace.iAwsComponent_UnsetFocus(*args)
-    def Move(*args): return _cspace.iAwsComponent_Move(*args)
-    def MoveTo(*args): return _cspace.iAwsComponent_MoveTo(*args)
-    def Resize(*args): return _cspace.iAwsComponent_Resize(*args)
-    def ResizeTo(*args): return _cspace.iAwsComponent_ResizeTo(*args)
-    def Maximize(*args): return _cspace.iAwsComponent_Maximize(*args)
-    def UnMaximize(*args): return _cspace.iAwsComponent_UnMaximize(*args)
-    def LayoutChildren(*args): return _cspace.iAwsComponent_LayoutChildren(*args)
-    def isDeaf(*args): return _cspace.iAwsComponent_isDeaf(*args)
-    def SetDeaf(*args): return _cspace.iAwsComponent_SetDeaf(*args)
-    def GetID(*args): return _cspace.iAwsComponent_GetID(*args)
-    def SetID(*args): return _cspace.iAwsComponent_SetID(*args)
-    def FindChild(*args): return _cspace.iAwsComponent_FindChild(*args)
-    def DoFindChild(*args): return _cspace.iAwsComponent_DoFindChild(*args)
-    def ChildAt(*args): return _cspace.iAwsComponent_ChildAt(*args)
-    def AddChild(*args): return _cspace.iAwsComponent_AddChild(*args)
-    def RemoveChild(*args): return _cspace.iAwsComponent_RemoveChild(*args)
-    def GetChildCount(*args): return _cspace.iAwsComponent_GetChildCount(*args)
-    def GetTopChild(*args): return _cspace.iAwsComponent_GetTopChild(*args)
-    def ComponentAbove(*args): return _cspace.iAwsComponent_ComponentAbove(*args)
-    def ComponentBelow(*args): return _cspace.iAwsComponent_ComponentBelow(*args)
-    def SetComponentAbove(*args): return _cspace.iAwsComponent_SetComponentAbove(*args)
-    def SetComponentBelow(*args): return _cspace.iAwsComponent_SetComponentBelow(*args)
-    def AddToTabOrder(*args): return _cspace.iAwsComponent_AddToTabOrder(*args)
-    def TabNext(*args): return _cspace.iAwsComponent_TabNext(*args)
-    def TabPrev(*args): return _cspace.iAwsComponent_TabPrev(*args)
-    def GetTabLength(*args): return _cspace.iAwsComponent_GetTabLength(*args)
-    def GetTabComponent(*args): return _cspace.iAwsComponent_GetTabComponent(*args)
-    def GetFirstFocusableChild(*args): return _cspace.iAwsComponent_GetFirstFocusableChild(*args)
-    def Raise(*args): return _cspace.iAwsComponent_Raise(*args)
-    def Lower(*args): return _cspace.iAwsComponent_Lower(*args)
-    def HasChildren(*args): return _cspace.iAwsComponent_HasChildren(*args)
-    def SetRedrawTag(*args): return _cspace.iAwsComponent_SetRedrawTag(*args)
-    def RedrawTag(*args): return _cspace.iAwsComponent_RedrawTag(*args)
-    def OnDraw(*args): return _cspace.iAwsComponent_OnDraw(*args)
-    def OnMouseDown(*args): return _cspace.iAwsComponent_OnMouseDown(*args)
-    def OnMouseUp(*args): return _cspace.iAwsComponent_OnMouseUp(*args)
-    def OnMouseMove(*args): return _cspace.iAwsComponent_OnMouseMove(*args)
-    def OnMouseClick(*args): return _cspace.iAwsComponent_OnMouseClick(*args)
-    def OnMouseDoubleClick(*args): return _cspace.iAwsComponent_OnMouseDoubleClick(*args)
-    def OnMouseExit(*args): return _cspace.iAwsComponent_OnMouseExit(*args)
-    def OnMouseEnter(*args): return _cspace.iAwsComponent_OnMouseEnter(*args)
-    def OnKeyboard(*args): return _cspace.iAwsComponent_OnKeyboard(*args)
-    def OnLostFocus(*args): return _cspace.iAwsComponent_OnLostFocus(*args)
-    def OnGainFocus(*args): return _cspace.iAwsComponent_OnGainFocus(*args)
-    def OnFrame(*args): return _cspace.iAwsComponent_OnFrame(*args)
-    def OnAdded(*args): return _cspace.iAwsComponent_OnAdded(*args)
-    def OnResized(*args): return _cspace.iAwsComponent_OnResized(*args)
-    def OnChildMoved(*args): return _cspace.iAwsComponent_OnChildMoved(*args)
-    def OnRaise(*args): return _cspace.iAwsComponent_OnRaise(*args)
-    def OnLower(*args): return _cspace.iAwsComponent_OnLower(*args)
-    def OnChildHide(*args): return _cspace.iAwsComponent_OnChildHide(*args)
-    def OnChildShow(*args): return _cspace.iAwsComponent_OnChildShow(*args)
-    def OnSetFocus(*args): return _cspace.iAwsComponent_OnSetFocus(*args)
-    def OnUnsetFocus(*args): return _cspace.iAwsComponent_OnUnsetFocus(*args)
-    def Unlink(*args): return _cspace.iAwsComponent_Unlink(*args)
-    def LinkAbove(*args): return _cspace.iAwsComponent_LinkAbove(*args)
-    def LinkBelow(*args): return _cspace.iAwsComponent_LinkBelow(*args)
-    def SetTopChild(*args): return _cspace.iAwsComponent_SetTopChild(*args)
-    def MarkToDelete(*args): return _cspace.iAwsComponent_MarkToDelete(*args)
-    def GetMarkToDelete(*args): return _cspace.iAwsComponent_GetMarkToDelete(*args)
-    __swig_destroy__ = _cspace.delete_iAwsComponent
-    __del__ = lambda self : None;
-iAwsComponent_swigregister = _cspace.iAwsComponent_swigregister
-iAwsComponent_swigregister(iAwsComponent)
-
-class iAwsComponentFactory(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsComponentFactory, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsComponentFactory, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Create(*args): return _cspace.iAwsComponentFactory_Create(*args)
-    def Register(*args): return _cspace.iAwsComponentFactory_Register(*args)
-    def RegisterConstant(*args): return _cspace.iAwsComponentFactory_RegisterConstant(*args)
-    __swig_destroy__ = _cspace.delete_iAwsComponentFactory
-    __del__ = lambda self : None;
-iAwsComponentFactory_swigregister = _cspace.iAwsComponentFactory_swigregister
-iAwsComponentFactory_swigregister(iAwsComponentFactory)
-
-class iAwsKeyFactory(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsKeyFactory, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsKeyFactory, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Initialize(*args): return _cspace.iAwsKeyFactory_Initialize(*args)
-    def AddToWindowList(*args): return _cspace.iAwsKeyFactory_AddToWindowList(*args)
-    def AddFactory(*args): return _cspace.iAwsKeyFactory_AddFactory(*args)
-    def AddIntKey(*args): return _cspace.iAwsKeyFactory_AddIntKey(*args)
-    def AddStringKey(*args): return _cspace.iAwsKeyFactory_AddStringKey(*args)
-    def AddRectKey(*args): return _cspace.iAwsKeyFactory_AddRectKey(*args)
-    def AddRGBKey(*args): return _cspace.iAwsKeyFactory_AddRGBKey(*args)
-    def AddPointKey(*args): return _cspace.iAwsKeyFactory_AddPointKey(*args)
-    def AddConnectionKey(*args): return _cspace.iAwsKeyFactory_AddConnectionKey(*args)
-    def AddConnectionNode(*args): return _cspace.iAwsKeyFactory_AddConnectionNode(*args)
-    def GetThisNode(*args): return _cspace.iAwsKeyFactory_GetThisNode(*args)
-    __swig_destroy__ = _cspace.delete_iAwsKeyFactory
-    __del__ = lambda self : None;
-iAwsKeyFactory_swigregister = _cspace.iAwsKeyFactory_swigregister
-iAwsKeyFactory_swigregister(iAwsKeyFactory)
-
-class iAwsConnectionNodeFactory(iBase):
-    __swig_setmethods__ = {}
-    for _s in [iBase]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iAwsConnectionNodeFactory, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iBase]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, iAwsConnectionNodeFactory, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Initialize(*args): return _cspace.iAwsConnectionNodeFactory_Initialize(*args)
-    def AddConnectionKey(*args): return _cspace.iAwsConnectionNodeFactory_AddConnectionKey(*args)
-    def GetThisNode(*args): return _cspace.iAwsConnectionNodeFactory_GetThisNode(*args)
-    __swig_destroy__ = _cspace.delete_iAwsConnectionNodeFactory
-    __del__ = lambda self : None;
-iAwsConnectionNodeFactory_swigregister = _cspace.iAwsConnectionNodeFactory_swigregister
-iAwsConnectionNodeFactory_swigregister(iAwsConnectionNodeFactory)
 
 MAX_OUTPUT_VERTICES = _cspace.MAX_OUTPUT_VERTICES
 CS_CLIP_OUTSIDE = _cspace.CS_CLIP_OUTSIDE
@@ -3084,13 +2459,6 @@ class csMeshedPolygon(_object):
     __swig_setmethods__["vertices"] = _cspace.csMeshedPolygon_vertices_set
     __swig_getmethods__["vertices"] = _cspace.csMeshedPolygon_vertices_get
     if _newclass:vertices = property(_cspace.csMeshedPolygon_vertices_get, _cspace.csMeshedPolygon_vertices_set)
-    def GetVertexByIndex(*args): return _cspace.csMeshedPolygon_GetVertexByIndex(*args)
-    def __getitem__(*args): return _cspace.csMeshedPolygon___getitem__(*args)
-    def __len__(*args): return _cspace.csMeshedPolygon___len__(*args)
-    def content_iterator(self):
-            for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
-    def __iter__(self): return self.content_iterator()  
     def __init__(self, *args): 
         this = _cspace.new_csMeshedPolygon(*args)
         try: self.this.append(this)
@@ -3110,20 +2478,11 @@ class iPolygonMesh(iBase):
     def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def GetVertexCount(*args): return _cspace.iPolygonMesh_GetVertexCount(*args)
-    def GetVertices(self):
-      return CSMutableArrayHelper(self.GetVertexByIndex, self.GetVertexCount)
-
-
+    def GetVertices(*args): return _cspace.iPolygonMesh_GetVertices(*args)
     def GetPolygonCount(*args): return _cspace.iPolygonMesh_GetPolygonCount(*args)
-    def GetPolygons(self):
-      return CSMutableArrayHelper(self.GetPolygonByIndex, self.GetPolygonCount)
-
-
+    def GetPolygons(*args): return _cspace.iPolygonMesh_GetPolygons(*args)
     def GetTriangleCount(*args): return _cspace.iPolygonMesh_GetTriangleCount(*args)
-    def GetTriangles(self):
-      return CSMutableArrayHelper(self.GetTriangleByIndex, self.GetTriangleCount)
-
-
+    def GetTriangles(*args): return _cspace.iPolygonMesh_GetTriangles(*args)
     def Lock(*args): return _cspace.iPolygonMesh_Lock(*args)
     def Unlock(*args): return _cspace.iPolygonMesh_Unlock(*args)
     def GetFlags(*args): return _cspace.iPolygonMesh_GetFlags(*args)
@@ -3132,9 +2491,6 @@ class iPolygonMesh(iBase):
     __del__ = lambda self : None;
     __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iPolygonMesh_scfGetVersion
     if _newclass:scfGetVersion = staticmethod(_cspace.iPolygonMesh_scfGetVersion)
-    def GetVertexByIndex(*args): return _cspace.iPolygonMesh_GetVertexByIndex(*args)
-    def GetPolygonByIndex(*args): return _cspace.iPolygonMesh_GetPolygonByIndex(*args)
-    def GetTriangleByIndex(*args): return _cspace.iPolygonMesh_GetTriangleByIndex(*args)
 iPolygonMesh_swigregister = _cspace.iPolygonMesh_swigregister
 iPolygonMesh_swigregister(iPolygonMesh)
 iPolygonMesh_scfGetVersion = _cspace.iPolygonMesh_scfGetVersion
@@ -3155,9 +2511,11 @@ class csPath(scfPath):
     __del__ = lambda self : None;
     def Length(*args): return _cspace.csPath_Length(*args)
     def CalculateAtTime(*args): return _cspace.csPath_CalculateAtTime(*args)
+    def Calculate(*args): return _cspace.csPath_Calculate(*args)
     def GetCurrentIndex(*args): return _cspace.csPath_GetCurrentIndex(*args)
     def GetTime(*args): return _cspace.csPath_GetTime(*args)
     def SetTime(*args): return _cspace.csPath_SetTime(*args)
+    def SetTimeValue(*args): return _cspace.csPath_SetTimeValue(*args)
     def SetTimes(*args): return _cspace.csPath_SetTimes(*args)
     def GetTimes(*args): return _cspace.csPath_GetTimes(*args)
     def SetPositionVectors(*args): return _cspace.csPath_SetPositionVectors(*args)
@@ -3179,48 +2537,10 @@ class csPath(scfPath):
 csPath_swigregister = _cspace.csPath_swigregister
 csPath_swigregister(csPath)
 
-class pycsPolygonMesh(iPolygonMesh):
+class csPolygonMesh(_object):
     __swig_setmethods__ = {}
-    for _s in [iPolygonMesh]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, pycsPolygonMesh, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iPolygonMesh]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, pycsPolygonMesh, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def IncRef(*args): return _cspace.pycsPolygonMesh_IncRef(*args)
-    def DecRef(*args): return _cspace.pycsPolygonMesh_DecRef(*args)
-    def GetRefCount(*args): return _cspace.pycsPolygonMesh_GetRefCount(*args)
-    def QueryInterface(*args): return _cspace.pycsPolygonMesh_QueryInterface(*args)
-    def AddRefOwner(*args): return _cspace.pycsPolygonMesh_AddRefOwner(*args)
-    def RemoveRefOwner(*args): return _cspace.pycsPolygonMesh_RemoveRefOwner(*args)
-pycsPolygonMesh_swigregister = _cspace.pycsPolygonMesh_swigregister
-pycsPolygonMesh_swigregister(pycsPolygonMesh)
-
-class pycsPolygonMeshBox(iPolygonMesh):
-    __swig_setmethods__ = {}
-    for _s in [iPolygonMesh]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, pycsPolygonMeshBox, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iPolygonMesh]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, pycsPolygonMeshBox, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def IncRef(*args): return _cspace.pycsPolygonMeshBox_IncRef(*args)
-    def DecRef(*args): return _cspace.pycsPolygonMeshBox_DecRef(*args)
-    def GetRefCount(*args): return _cspace.pycsPolygonMeshBox_GetRefCount(*args)
-    def QueryInterface(*args): return _cspace.pycsPolygonMeshBox_QueryInterface(*args)
-    def AddRefOwner(*args): return _cspace.pycsPolygonMeshBox_AddRefOwner(*args)
-    def RemoveRefOwner(*args): return _cspace.pycsPolygonMeshBox_RemoveRefOwner(*args)
-pycsPolygonMeshBox_swigregister = _cspace.pycsPolygonMeshBox_swigregister
-pycsPolygonMeshBox_swigregister(pycsPolygonMeshBox)
-
-class csPolygonMesh(pycsPolygonMesh):
-    __swig_setmethods__ = {}
-    for _s in [pycsPolygonMesh]: __swig_setmethods__.update(_s.__swig_setmethods__)
     __setattr__ = lambda self, name, value: _swig_setattr(self, csPolygonMesh, name, value)
     __swig_getmethods__ = {}
-    for _s in [pycsPolygonMesh]: __swig_getmethods__.update(_s.__swig_getmethods__)
     __getattr__ = lambda self, name: _swig_getattr(self, csPolygonMesh, name)
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -3238,20 +2558,11 @@ class csPolygonMesh(pycsPolygonMesh):
     def SetPolygonCount(*args): return _cspace.csPolygonMesh_SetPolygonCount(*args)
     def ShapeChanged(*args): return _cspace.csPolygonMesh_ShapeChanged(*args)
     def GetVertexCount(*args): return _cspace.csPolygonMesh_GetVertexCount(*args)
-    def GetVertices(self):
-      return CSMutableArrayHelper(self.GetVertexByIndex, self.GetVertexCount)
-
-
+    def GetVertices(*args): return _cspace.csPolygonMesh_GetVertices(*args)
     def GetPolygonCount(*args): return _cspace.csPolygonMesh_GetPolygonCount(*args)
-    def GetPolygons(self):
-      return CSMutableArrayHelper(self.GetPolygonByIndex, self.GetPolygonCount)
-
-
+    def GetPolygons(*args): return _cspace.csPolygonMesh_GetPolygons(*args)
     def GetTriangleCount(*args): return _cspace.csPolygonMesh_GetTriangleCount(*args)
-    def GetTriangles(self):
-      return CSMutableArrayHelper(self.GetTriangleByIndex, self.GetTriangleCount)
-
-
+    def GetTriangles(*args): return _cspace.csPolygonMesh_GetTriangles(*args)
     def Lock(*args): return _cspace.csPolygonMesh_Lock(*args)
     def Unlock(*args): return _cspace.csPolygonMesh_Unlock(*args)
     def GetFlags(*args): return _cspace.csPolygonMesh_GetFlags(*args)
@@ -3259,12 +2570,10 @@ class csPolygonMesh(pycsPolygonMesh):
 csPolygonMesh_swigregister = _cspace.csPolygonMesh_swigregister
 csPolygonMesh_swigregister(csPolygonMesh)
 
-class csPolygonMeshBox(pycsPolygonMeshBox):
+class csPolygonMeshBox(_object):
     __swig_setmethods__ = {}
-    for _s in [pycsPolygonMeshBox]: __swig_setmethods__.update(_s.__swig_setmethods__)
     __setattr__ = lambda self, name, value: _swig_setattr(self, csPolygonMeshBox, name, value)
     __swig_getmethods__ = {}
-    for _s in [pycsPolygonMeshBox]: __swig_getmethods__.update(_s.__swig_getmethods__)
     __getattr__ = lambda self, name: _swig_getattr(self, csPolygonMeshBox, name)
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -3275,224 +2584,17 @@ class csPolygonMeshBox(pycsPolygonMeshBox):
     __del__ = lambda self : None;
     def SetBox(*args): return _cspace.csPolygonMeshBox_SetBox(*args)
     def GetVertexCount(*args): return _cspace.csPolygonMeshBox_GetVertexCount(*args)
-    def GetVertices(self):
-      return CSMutableArrayHelper(self.GetVertexByIndex, self.GetVertexCount)
-
-
+    def GetVertices(*args): return _cspace.csPolygonMeshBox_GetVertices(*args)
     def GetPolygonCount(*args): return _cspace.csPolygonMeshBox_GetPolygonCount(*args)
-    def GetPolygons(self):
-      return CSMutableArrayHelper(self.GetPolygonByIndex, self.GetPolygonCount)
-
-
+    def GetPolygons(*args): return _cspace.csPolygonMeshBox_GetPolygons(*args)
     def GetTriangleCount(*args): return _cspace.csPolygonMeshBox_GetTriangleCount(*args)
-    def GetTriangles(self):
-      return CSMutableArrayHelper(self.GetTriangleByIndex, self.GetTriangleCount)
-
-
+    def GetTriangles(*args): return _cspace.csPolygonMeshBox_GetTriangles(*args)
     def Lock(*args): return _cspace.csPolygonMeshBox_Lock(*args)
     def Unlock(*args): return _cspace.csPolygonMeshBox_Unlock(*args)
     def GetFlags(*args): return _cspace.csPolygonMeshBox_GetFlags(*args)
     def GetChangeNumber(*args): return _cspace.csPolygonMeshBox_GetChangeNumber(*args)
 csPolygonMeshBox_swigregister = _cspace.csPolygonMeshBox_swigregister
 csPolygonMeshBox_swigregister(csPolygonMeshBox)
-
-class csIntArray(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csIntArray, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csIntArray, name)
-    __repr__ = _swig_repr
-    __swig_destroy__ = _cspace.delete_csIntArray
-    __del__ = lambda self : None;
-    def __init__(self, *args): 
-        this = _cspace.new_csIntArray(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    def GetSize(*args): return _cspace.csIntArray_GetSize(*args)
-    def Get(*args): return _cspace.csIntArray_Get(*args)
-    def Put(*args): return _cspace.csIntArray_Put(*args)
-    def Push(*args): return _cspace.csIntArray_Push(*args)
-    def Pop(*args): return _cspace.csIntArray_Pop(*args)
-    def Top(*args): return _cspace.csIntArray_Top(*args)
-    def Insert(*args): return _cspace.csIntArray_Insert(*args)
-    def Contains(*args): return _cspace.csIntArray_Contains(*args)
-    def Truncate(*args): return _cspace.csIntArray_Truncate(*args)
-    def Empty(*args): return _cspace.csIntArray_Empty(*args)
-    def IsEmpty(*args): return _cspace.csIntArray_IsEmpty(*args)
-    def SetMinimalCapacity(*args): return _cspace.csIntArray_SetMinimalCapacity(*args)
-    def DeleteIndex(*args): return _cspace.csIntArray_DeleteIndex(*args)
-    def DeleteIndexFast(*args): return _cspace.csIntArray_DeleteIndexFast(*args)
-    def DeleteRange(*args): return _cspace.csIntArray_DeleteRange(*args)
-    def __eq__(*args): return _cspace.csIntArray___eq__(*args)
-    def __ne__(*args): return _cspace.csIntArray___ne__(*args)
-    def GetAllocator(*args): return _cspace.csIntArray_GetAllocator(*args)
-    def Length(*args): return _cspace.csIntArray_Length(*args)
-    def __getitem__(*args): return _cspace.csIntArray___getitem__(*args)
-    def __contains__(*args): return _cspace.csIntArray___contains__(*args)
-    def __delitem__(*args): return _cspace.csIntArray___delitem__(*args)
-    def __len__(*args): return _cspace.csIntArray___len__(*args)
-    def append(*args): return _cspace.csIntArray_append(*args)
-    def content_iterator(self):
-            for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
-    def __iter__(self): return self.content_iterator()  
-csIntArray_swigregister = _cspace.csIntArray_swigregister
-csIntArray_swigregister(csIntArray)
-
-class csIntArrayArray(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csIntArrayArray, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csIntArrayArray, name)
-    __repr__ = _swig_repr
-    __swig_destroy__ = _cspace.delete_csIntArrayArray
-    __del__ = lambda self : None;
-    def __init__(self, *args): 
-        this = _cspace.new_csIntArrayArray(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    def GetSize(*args): return _cspace.csIntArrayArray_GetSize(*args)
-    def Get(*args): return _cspace.csIntArrayArray_Get(*args)
-    def Put(*args): return _cspace.csIntArrayArray_Put(*args)
-    def Push(*args): return _cspace.csIntArrayArray_Push(*args)
-    def Pop(*args): return _cspace.csIntArrayArray_Pop(*args)
-    def Top(*args): return _cspace.csIntArrayArray_Top(*args)
-    def Insert(*args): return _cspace.csIntArrayArray_Insert(*args)
-    def Truncate(*args): return _cspace.csIntArrayArray_Truncate(*args)
-    def Empty(*args): return _cspace.csIntArrayArray_Empty(*args)
-    def IsEmpty(*args): return _cspace.csIntArrayArray_IsEmpty(*args)
-    def SetMinimalCapacity(*args): return _cspace.csIntArrayArray_SetMinimalCapacity(*args)
-    def DeleteIndex(*args): return _cspace.csIntArrayArray_DeleteIndex(*args)
-    def DeleteIndexFast(*args): return _cspace.csIntArrayArray_DeleteIndexFast(*args)
-    def DeleteRange(*args): return _cspace.csIntArrayArray_DeleteRange(*args)
-    def __eq__(*args): return _cspace.csIntArrayArray___eq__(*args)
-    def __ne__(*args): return _cspace.csIntArrayArray___ne__(*args)
-    def GetAllocator(*args): return _cspace.csIntArrayArray_GetAllocator(*args)
-    def Length(*args): return _cspace.csIntArrayArray_Length(*args)
-    def __getitem__(*args): return _cspace.csIntArrayArray___getitem__(*args)
-    def __contains__(*args): return _cspace.csIntArrayArray___contains__(*args)
-    def __delitem__(*args): return _cspace.csIntArrayArray___delitem__(*args)
-    def __len__(*args): return _cspace.csIntArrayArray___len__(*args)
-    def append(*args): return _cspace.csIntArrayArray_append(*args)
-    def content_iterator(self):
-            for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
-    def __iter__(self): return self.content_iterator()  
-csIntArrayArray_swigregister = _cspace.csIntArrayArray_swigregister
-csIntArrayArray_swigregister(csIntArrayArray)
-
-class csPolygonMeshEdge(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csPolygonMeshEdge, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csPolygonMeshEdge, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["vt1"] = _cspace.csPolygonMeshEdge_vt1_set
-    __swig_getmethods__["vt1"] = _cspace.csPolygonMeshEdge_vt1_get
-    if _newclass:vt1 = property(_cspace.csPolygonMeshEdge_vt1_get, _cspace.csPolygonMeshEdge_vt1_set)
-    __swig_setmethods__["vt2"] = _cspace.csPolygonMeshEdge_vt2_set
-    __swig_getmethods__["vt2"] = _cspace.csPolygonMeshEdge_vt2_get
-    if _newclass:vt2 = property(_cspace.csPolygonMeshEdge_vt2_get, _cspace.csPolygonMeshEdge_vt2_set)
-    __swig_setmethods__["poly1"] = _cspace.csPolygonMeshEdge_poly1_set
-    __swig_getmethods__["poly1"] = _cspace.csPolygonMeshEdge_poly1_get
-    if _newclass:poly1 = property(_cspace.csPolygonMeshEdge_poly1_get, _cspace.csPolygonMeshEdge_poly1_set)
-    __swig_setmethods__["poly2"] = _cspace.csPolygonMeshEdge_poly2_set
-    __swig_getmethods__["poly2"] = _cspace.csPolygonMeshEdge_poly2_get
-    if _newclass:poly2 = property(_cspace.csPolygonMeshEdge_poly2_get, _cspace.csPolygonMeshEdge_poly2_set)
-    __swig_setmethods__["active"] = _cspace.csPolygonMeshEdge_active_set
-    __swig_getmethods__["active"] = _cspace.csPolygonMeshEdge_active_get
-    if _newclass:active = property(_cspace.csPolygonMeshEdge_active_get, _cspace.csPolygonMeshEdge_active_set)
-    def __init__(self, *args): 
-        this = _cspace.new_csPolygonMeshEdge(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csPolygonMeshEdge
-    __del__ = lambda self : None;
-csPolygonMeshEdge_swigregister = _cspace.csPolygonMeshEdge_swigregister
-csPolygonMeshEdge_swigregister(csPolygonMeshEdge)
-
-class csTriangleMinMax(csTriangle):
-    __swig_setmethods__ = {}
-    for _s in [csTriangle]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csTriangleMinMax, name, value)
-    __swig_getmethods__ = {}
-    for _s in [csTriangle]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, csTriangleMinMax, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["minx"] = _cspace.csTriangleMinMax_minx_set
-    __swig_getmethods__["minx"] = _cspace.csTriangleMinMax_minx_get
-    if _newclass:minx = property(_cspace.csTriangleMinMax_minx_get, _cspace.csTriangleMinMax_minx_set)
-    __swig_setmethods__["maxx"] = _cspace.csTriangleMinMax_maxx_set
-    __swig_getmethods__["maxx"] = _cspace.csTriangleMinMax_maxx_get
-    if _newclass:maxx = property(_cspace.csTriangleMinMax_maxx_get, _cspace.csTriangleMinMax_maxx_set)
-    def __init__(self, *args): 
-        this = _cspace.new_csTriangleMinMax(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csTriangleMinMax
-    __del__ = lambda self : None;
-csTriangleMinMax_swigregister = _cspace.csTriangleMinMax_swigregister
-csTriangleMinMax_swigregister(csTriangleMinMax)
-
-class csPolygonMeshTools(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csPolygonMeshTools, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csPolygonMeshTools, name)
-    __repr__ = _swig_repr
-    __swig_getmethods__["CalculateNormals"] = lambda x: _cspace.csPolygonMeshTools_CalculateNormals
-    if _newclass:CalculateNormals = staticmethod(_cspace.csPolygonMeshTools_CalculateNormals)
-    __swig_getmethods__["CalculatePlanes"] = lambda x: _cspace.csPolygonMeshTools_CalculatePlanes
-    if _newclass:CalculatePlanes = staticmethod(_cspace.csPolygonMeshTools_CalculatePlanes)
-    __swig_getmethods__["CalculateEdges"] = lambda x: _cspace.csPolygonMeshTools_CalculateEdges
-    if _newclass:CalculateEdges = staticmethod(_cspace.csPolygonMeshTools_CalculateEdges)
-    __swig_getmethods__["CheckActiveEdges"] = lambda x: _cspace.csPolygonMeshTools_CheckActiveEdges
-    if _newclass:CheckActiveEdges = staticmethod(_cspace.csPolygonMeshTools_CheckActiveEdges)
-    __swig_getmethods__["CalculateOutline"] = lambda x: _cspace.csPolygonMeshTools_CalculateOutline
-    if _newclass:CalculateOutline = staticmethod(_cspace.csPolygonMeshTools_CalculateOutline)
-    __swig_getmethods__["IsMeshClosed"] = lambda x: _cspace.csPolygonMeshTools_IsMeshClosed
-    if _newclass:IsMeshClosed = staticmethod(_cspace.csPolygonMeshTools_IsMeshClosed)
-    __swig_getmethods__["IsMeshConvex"] = lambda x: _cspace.csPolygonMeshTools_IsMeshConvex
-    if _newclass:IsMeshConvex = staticmethod(_cspace.csPolygonMeshTools_IsMeshConvex)
-    __swig_getmethods__["CloseMesh"] = lambda x: _cspace.csPolygonMeshTools_CloseMesh
-    if _newclass:CloseMesh = staticmethod(_cspace.csPolygonMeshTools_CloseMesh)
-    __swig_getmethods__["Triangulate"] = lambda x: _cspace.csPolygonMeshTools_Triangulate
-    if _newclass:Triangulate = staticmethod(_cspace.csPolygonMeshTools_Triangulate)
-    __swig_getmethods__["Polygonize"] = lambda x: _cspace.csPolygonMeshTools_Polygonize
-    if _newclass:Polygonize = staticmethod(_cspace.csPolygonMeshTools_Polygonize)
-    __swig_getmethods__["SortTrianglesX"] = lambda x: _cspace.csPolygonMeshTools_SortTrianglesX
-    if _newclass:SortTrianglesX = staticmethod(_cspace.csPolygonMeshTools_SortTrianglesX)
-    __swig_getmethods__["PointInClosedMesh"] = lambda x: _cspace.csPolygonMeshTools_PointInClosedMesh
-    if _newclass:PointInClosedMesh = staticmethod(_cspace.csPolygonMeshTools_PointInClosedMesh)
-    __swig_getmethods__["LineInClosedMesh"] = lambda x: _cspace.csPolygonMeshTools_LineInClosedMesh
-    if _newclass:LineInClosedMesh = staticmethod(_cspace.csPolygonMeshTools_LineInClosedMesh)
-    __swig_getmethods__["BoxInClosedMesh"] = lambda x: _cspace.csPolygonMeshTools_BoxInClosedMesh
-    if _newclass:BoxInClosedMesh = staticmethod(_cspace.csPolygonMeshTools_BoxInClosedMesh)
-    __swig_getmethods__["CalculateVertexConnections"] = lambda x: _cspace.csPolygonMeshTools_CalculateVertexConnections
-    if _newclass:CalculateVertexConnections = staticmethod(_cspace.csPolygonMeshTools_CalculateVertexConnections)
-    def __init__(self, *args): 
-        this = _cspace.new_csPolygonMeshTools(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csPolygonMeshTools
-    __del__ = lambda self : None;
-csPolygonMeshTools_swigregister = _cspace.csPolygonMeshTools_swigregister
-csPolygonMeshTools_swigregister(csPolygonMeshTools)
-csPolygonMeshTools_CalculateNormals = _cspace.csPolygonMeshTools_CalculateNormals
-csPolygonMeshTools_CalculatePlanes = _cspace.csPolygonMeshTools_CalculatePlanes
-csPolygonMeshTools_CalculateEdges = _cspace.csPolygonMeshTools_CalculateEdges
-csPolygonMeshTools_CheckActiveEdges = _cspace.csPolygonMeshTools_CheckActiveEdges
-csPolygonMeshTools_CalculateOutline = _cspace.csPolygonMeshTools_CalculateOutline
-csPolygonMeshTools_IsMeshClosed = _cspace.csPolygonMeshTools_IsMeshClosed
-csPolygonMeshTools_IsMeshConvex = _cspace.csPolygonMeshTools_IsMeshConvex
-csPolygonMeshTools_CloseMesh = _cspace.csPolygonMeshTools_CloseMesh
-csPolygonMeshTools_Triangulate = _cspace.csPolygonMeshTools_Triangulate
-csPolygonMeshTools_Polygonize = _cspace.csPolygonMeshTools_Polygonize
-csPolygonMeshTools_SortTrianglesX = _cspace.csPolygonMeshTools_SortTrianglesX
-csPolygonMeshTools_PointInClosedMesh = _cspace.csPolygonMeshTools_PointInClosedMesh
-csPolygonMeshTools_LineInClosedMesh = _cspace.csPolygonMeshTools_LineInClosedMesh
-csPolygonMeshTools_BoxInClosedMesh = _cspace.csPolygonMeshTools_BoxInClosedMesh
-csPolygonMeshTools_CalculateVertexConnections = _cspace.csPolygonMeshTools_CalculateVertexConnections
 
 class iFrustumViewUserdata(iBase):
     __swig_setmethods__ = {}
@@ -3684,7 +2786,7 @@ class iLightList(iBase):
     def append(*args): return _cspace.iLightList_append(*args)
     def content_iterator(self):
             for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
+                    yield self.Get(idx)
     def __iter__(self): return self.content_iterator()  
     def __getitem__(*args): return _cspace.iLightList___getitem__(*args)
     def __contains__(*args): return _cspace.iLightList___contains__(*args)
@@ -3741,9 +2843,6 @@ class iLightIterator(iBase):
     def Next(*args): return _cspace.iLightIterator_Next(*args)
     def GetLastSector(*args): return _cspace.iLightIterator_GetLastSector(*args)
     def Reset(*args): return _cspace.iLightIterator_Reset(*args)
-    def __iter__(self):
-        while self.HasNext():
-            yield self.Next() 
     __swig_destroy__ = _cspace.delete_iLightIterator
     __del__ = lambda self : None;
 iLightIterator_swigregister = _cspace.iLightIterator_swigregister
@@ -3911,7 +3010,6 @@ class iSector(iBase):
     def AddLightVisibleCallback(*args): return _cspace.iSector_AddLightVisibleCallback(*args)
     def RemoveLightVisibleCallback(*args): return _cspace.iSector_RemoveLightVisibleCallback(*args)
     def GetSVContext(*args): return _cspace.iSector_GetSVContext(*args)
-    def PrecacheDraw(*args): return _cspace.iSector_PrecacheDraw(*args)
     __swig_destroy__ = _cspace.delete_iSector
     __del__ = lambda self : None;
     __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iSector_scfGetVersion
@@ -3945,7 +3043,7 @@ class iSectorList(iBase):
     def append(*args): return _cspace.iSectorList_append(*args)
     def content_iterator(self):
             for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
+                    yield self.Get(idx)
     def __iter__(self): return self.content_iterator()  
     def __getitem__(*args): return _cspace.iSectorList___getitem__(*args)
     def __contains__(*args): return _cspace.iSectorList___contains__(*args)
@@ -3966,9 +3064,6 @@ class iSectorIterator(iBase):
     def Next(*args): return _cspace.iSectorIterator_Next(*args)
     def GetLastPosition(*args): return _cspace.iSectorIterator_GetLastPosition(*args)
     def Reset(*args): return _cspace.iSectorIterator_Reset(*args)
-    def __iter__(self):
-        while self.HasNext():
-            yield self.Next() 
     __swig_destroy__ = _cspace.delete_iSectorIterator
     __del__ = lambda self : None;
 iSectorIterator_swigregister = _cspace.iSectorIterator_swigregister
@@ -4117,6 +3212,8 @@ class iEngine(iBase):
     def CreateFrustumView(*args): return _cspace.iEngine_CreateFrustumView(*args)
     def CreateObjectWatcher(*args): return _cspace.iEngine_CreateObjectWatcher(*args)
     def GetVariableList(*args): return _cspace.iEngine_GetVariableList(*args)
+    def GetCollections(*args): return _cspace.iEngine_GetCollections(*args)
+    def FindCollection(*args): return _cspace.iEngine_FindCollection(*args)
     def RemoveObject(*args): return _cspace.iEngine_RemoveObject(*args)
     def DelayedRemoveObject(*args): return _cspace.iEngine_DelayedRemoveObject(*args)
     def RemoveDelayedRemoves(*args): return _cspace.iEngine_RemoveDelayedRemoves(*args)
@@ -4246,7 +3343,7 @@ class iCameraPositionList(iBase):
     def append(*args): return _cspace.iCameraPositionList_append(*args)
     def content_iterator(self):
             for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
+                    yield self.Get(idx)
     def __iter__(self): return self.content_iterator()  
     def __getitem__(*args): return _cspace.iCameraPositionList___getitem__(*args)
     def __contains__(*args): return _cspace.iCameraPositionList___contains__(*args)
@@ -4332,7 +3429,7 @@ class iTextureList(iBase):
     def append(*args): return _cspace.iTextureList_append(*args)
     def content_iterator(self):
             for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
+                    yield self.Get(idx)
     def __iter__(self): return self.content_iterator()  
     def __getitem__(*args): return _cspace.iTextureList___getitem__(*args)
     def __contains__(*args): return _cspace.iTextureList___contains__(*args)
@@ -4401,7 +3498,7 @@ class iMaterialList(iBase):
     def append(*args): return _cspace.iMaterialList_append(*args)
     def content_iterator(self):
             for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
+                    yield self.Get(idx)
     def __iter__(self): return self.content_iterator()  
     def __getitem__(*args): return _cspace.iMaterialList___getitem__(*args)
     def __contains__(*args): return _cspace.iMaterialList___contains__(*args)
@@ -4613,10 +3710,6 @@ class iMeshWrapper(iBase):
     def AddMeshToStaticLOD(*args): return _cspace.iMeshWrapper_AddMeshToStaticLOD(*args)
     def RemoveMeshFromStaticLOD(*args): return _cspace.iMeshWrapper_RemoveMeshFromStaticLOD(*args)
     def GetSVContext(*args): return _cspace.iMeshWrapper_GetSVContext(*args)
-    def AddExtraRenderMesh(*args): return _cspace.iMeshWrapper_AddExtraRenderMesh(*args)
-    def GetExtraRenderMeshPriority(*args): return _cspace.iMeshWrapper_GetExtraRenderMeshPriority(*args)
-    def GetExtraRenderMeshZBufMode(*args): return _cspace.iMeshWrapper_GetExtraRenderMeshZBufMode(*args)
-    def RemoveExtraRenderMesh(*args): return _cspace.iMeshWrapper_RemoveExtraRenderMesh(*args)
     __swig_destroy__ = _cspace.delete_iMeshWrapper
     __del__ = lambda self : None;
     __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iMeshWrapper_scfGetVersion
@@ -4687,7 +3780,7 @@ class iMeshList(iBase):
     def append(*args): return _cspace.iMeshList_append(*args)
     def content_iterator(self):
             for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
+                    yield self.Get(idx)
     def __iter__(self): return self.content_iterator()  
     def __getitem__(*args): return _cspace.iMeshList___getitem__(*args)
     def __contains__(*args): return _cspace.iMeshList___contains__(*args)
@@ -4717,7 +3810,7 @@ class iMeshFactoryList(iBase):
     def append(*args): return _cspace.iMeshFactoryList_append(*args)
     def content_iterator(self):
             for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
+                    yield self.Get(idx)
     def __iter__(self): return self.content_iterator()  
     def __getitem__(*args): return _cspace.iMeshFactoryList___getitem__(*args)
     def __contains__(*args): return _cspace.iMeshFactoryList___contains__(*args)
@@ -4738,9 +3831,6 @@ class iMeshWrapperIterator(iBase):
     def Next(*args): return _cspace.iMeshWrapperIterator_Next(*args)
     def Reset(*args): return _cspace.iMeshWrapperIterator_Reset(*args)
     def HasNext(*args): return _cspace.iMeshWrapperIterator_HasNext(*args)
-    def __iter__(self):
-        while self.HasNext():
-            yield self.Next() 
     __swig_destroy__ = _cspace.delete_iMeshWrapperIterator
     __del__ = lambda self : None;
     __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iMeshWrapperIterator_scfGetVersion
@@ -4828,6 +3918,7 @@ class iRegion(iBase):
     def FindTexture(*args): return _cspace.iRegion_FindTexture(*args)
     def FindMaterial(*args): return _cspace.iRegion_FindMaterial(*args)
     def FindCameraPosition(*args): return _cspace.iRegion_FindCameraPosition(*args)
+    def FindCollection(*args): return _cspace.iRegion_FindCollection(*args)
     def IsInRegion(*args): return _cspace.iRegion_IsInRegion(*args)
     __swig_destroy__ = _cspace.delete_iRegion
     __del__ = lambda self : None;
@@ -4855,7 +3946,7 @@ class iRegionList(iBase):
     def append(*args): return _cspace.iRegionList_append(*args)
     def content_iterator(self):
             for idx in xrange(len(self)):
-                    yield self.__getitem__(idx)
+                    yield self.Get(idx)
     def __iter__(self): return self.content_iterator()  
     def __getitem__(*args): return _cspace.iRegionList___getitem__(*args)
     def __contains__(*args): return _cspace.iRegionList___contains__(*args)
@@ -4876,9 +3967,6 @@ class iVisibilityObjectIterator(iBase):
     def HasNext(*args): return _cspace.iVisibilityObjectIterator_HasNext(*args)
     def Next(*args): return _cspace.iVisibilityObjectIterator_Next(*args)
     def Reset(*args): return _cspace.iVisibilityObjectIterator_Reset(*args)
-    def __iter__(self):
-        while self.HasNext():
-            yield self.Next() 
     __swig_destroy__ = _cspace.delete_iVisibilityObjectIterator
     __del__ = lambda self : None;
 iVisibilityObjectIterator_swigregister = _cspace.iVisibilityObjectIterator_swigregister
@@ -5140,7 +4228,7 @@ class iGeneralFactoryState(iGeneralMeshCommonState):
 
 
     def GetColors(self):
-      return CSMutableArrayHelper(self.GetColorByIndex, self.GetVertexCount)
+      return CSMutableArrayHelper(self.GetNormalByIndex, self.GetVertexCount)
 
 
     def AddTriangle(*args): return _cspace.iGeneralFactoryState_AddTriangle(*args)
@@ -5690,6 +4778,7 @@ class csSprite2DVertexArrayChangeAll(csSprite2DVertexArrayChangeElements):
     def DeleteIndex(*args): return _cspace.csSprite2DVertexArrayChangeAll_DeleteIndex(*args)
     def DeleteIndexFast(*args): return _cspace.csSprite2DVertexArrayChangeAll_DeleteIndexFast(*args)
     def Delete(*args): return _cspace.csSprite2DVertexArrayChangeAll_Delete(*args)
+    def DeleteFast(*args): return _cspace.csSprite2DVertexArrayChangeAll_DeleteFast(*args)
     __swig_destroy__ = _cspace.delete_csSprite2DVertexArrayChangeAll
     __del__ = lambda self : None;
 csSprite2DVertexArrayChangeAll_swigregister = _cspace.csSprite2DVertexArrayChangeAll_swigregister
@@ -6205,7 +5294,6 @@ class iMeshObject(iBase):
     def GetMixMode(*args): return _cspace.iMeshObject_GetMixMode(*args)
     def InvalidateMaterialHandles(*args): return _cspace.iMeshObject_InvalidateMaterialHandles(*args)
     def PositionChild(*args): return _cspace.iMeshObject_PositionChild(*args)
-    def BuildDecal(*args): return _cspace.iMeshObject_BuildDecal(*args)
     __swig_destroy__ = _cspace.delete_iMeshObject
     __del__ = lambda self : None;
     __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iMeshObject_scfGetVersion
@@ -6435,6 +5523,7 @@ class csCharArrayArray(_object):
         try: self.this.append(this)
         except: self.this = this
     def GetSize(*args): return _cspace.csCharArrayArray_GetSize(*args)
+    def Length(*args): return _cspace.csCharArrayArray_Length(*args)
     def Get(*args): return _cspace.csCharArrayArray_Get(*args)
     def Put(*args): return _cspace.csCharArrayArray_Put(*args)
     def Push(*args): return _cspace.csCharArrayArray_Push(*args)
@@ -6452,7 +5541,6 @@ class csCharArrayArray(_object):
     def __eq__(*args): return _cspace.csCharArrayArray___eq__(*args)
     def __ne__(*args): return _cspace.csCharArrayArray___ne__(*args)
     def GetAllocator(*args): return _cspace.csCharArrayArray_GetAllocator(*args)
-    def Length(*args): return _cspace.csCharArrayArray_Length(*args)
 csCharArrayArray_swigregister = _cspace.csCharArrayArray_swigregister
 csCharArrayArray_swigregister(csCharArrayArray)
 
@@ -7676,7 +6764,6 @@ class iVFS(iBase):
     def WriteFile(*args): return _cspace.iVFS_WriteFile(*args)
     def DeleteFile(*args): return _cspace.iVFS_DeleteFile(*args)
     def Sync(*args): return _cspace.iVFS_Sync(*args)
-    def SymbolicLink(*args): return _cspace.iVFS_SymbolicLink(*args)
     def Mount(*args): return _cspace.iVFS_Mount(*args)
     def Unmount(*args): return _cspace.iVFS_Unmount(*args)
     def MountRoot(*args): return _cspace.iVFS_MountRoot(*args)
@@ -8651,11 +7738,8 @@ class iJoystickDriver(iBase):
     def DoMotion(*args): return _cspace.iJoystickDriver_DoMotion(*args)
     __swig_destroy__ = _cspace.delete_iJoystickDriver
     __del__ = lambda self : None;
-    __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iJoystickDriver_scfGetVersion
-    if _newclass:scfGetVersion = staticmethod(_cspace.iJoystickDriver_scfGetVersion)
 iJoystickDriver_swigregister = _cspace.iJoystickDriver_swigregister
 iJoystickDriver_swigregister(iJoystickDriver)
-iJoystickDriver_scfGetVersion = _cspace.iJoystickDriver_scfGetVersion
 
 class iConfigFile(iBase):
     __swig_setmethods__ = {}
@@ -8679,13 +7763,11 @@ class iConfigFile(iBase):
     def GetFloat(*args): return _cspace.iConfigFile_GetFloat(*args)
     def GetStr(*args): return _cspace.iConfigFile_GetStr(*args)
     def GetBool(*args): return _cspace.iConfigFile_GetBool(*args)
-    def GetTuple(*args): return _cspace.iConfigFile_GetTuple(*args)
     def GetComment(*args): return _cspace.iConfigFile_GetComment(*args)
     def SetStr(*args): return _cspace.iConfigFile_SetStr(*args)
     def SetInt(*args): return _cspace.iConfigFile_SetInt(*args)
     def SetFloat(*args): return _cspace.iConfigFile_SetFloat(*args)
     def SetBool(*args): return _cspace.iConfigFile_SetBool(*args)
-    def SetTuple(*args): return _cspace.iConfigFile_SetTuple(*args)
     def SetComment(*args): return _cspace.iConfigFile_SetComment(*args)
     def DeleteKey(*args): return _cspace.iConfigFile_DeleteKey(*args)
     def GetEOFComment(*args): return _cspace.iConfigFile_GetEOFComment(*args)
@@ -8717,7 +7799,6 @@ class iConfigIterator(iBase):
     def GetFloat(*args): return _cspace.iConfigIterator_GetFloat(*args)
     def GetStr(*args): return _cspace.iConfigIterator_GetStr(*args)
     def GetBool(*args): return _cspace.iConfigIterator_GetBool(*args)
-    def GetTuple(*args): return _cspace.iConfigIterator_GetTuple(*args)
     def GetComment(*args): return _cspace.iConfigIterator_GetComment(*args)
     __swig_destroy__ = _cspace.delete_iConfigIterator
     __del__ = lambda self : None;
@@ -8818,16 +7899,10 @@ class iDocumentAttributeIterator(iBase):
     __repr__ = _swig_repr
     def HasNext(*args): return _cspace.iDocumentAttributeIterator_HasNext(*args)
     def Next(*args): return _cspace.iDocumentAttributeIterator_Next(*args)
-    def __iter__(self):
-        while self.HasNext():
-            yield self.Next() 
     __swig_destroy__ = _cspace.delete_iDocumentAttributeIterator
     __del__ = lambda self : None;
-    __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iDocumentAttributeIterator_scfGetVersion
-    if _newclass:scfGetVersion = staticmethod(_cspace.iDocumentAttributeIterator_scfGetVersion)
 iDocumentAttributeIterator_swigregister = _cspace.iDocumentAttributeIterator_swigregister
 iDocumentAttributeIterator_swigregister(iDocumentAttributeIterator)
-iDocumentAttributeIterator_scfGetVersion = _cspace.iDocumentAttributeIterator_scfGetVersion
 
 class iDocumentAttribute(iBase):
     __swig_setmethods__ = {}
@@ -8849,11 +7924,8 @@ class iDocumentAttribute(iBase):
     def SetValueAsFloat(*args): return _cspace.iDocumentAttribute_SetValueAsFloat(*args)
     __swig_destroy__ = _cspace.delete_iDocumentAttribute
     __del__ = lambda self : None;
-    __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iDocumentAttribute_scfGetVersion
-    if _newclass:scfGetVersion = staticmethod(_cspace.iDocumentAttribute_scfGetVersion)
 iDocumentAttribute_swigregister = _cspace.iDocumentAttribute_swigregister
 iDocumentAttribute_swigregister(iDocumentAttribute)
-iDocumentAttribute_scfGetVersion = _cspace.iDocumentAttribute_scfGetVersion
 
 class iDocumentNodeIterator(iBase):
     __swig_setmethods__ = {}
@@ -8866,16 +7938,10 @@ class iDocumentNodeIterator(iBase):
     __repr__ = _swig_repr
     def HasNext(*args): return _cspace.iDocumentNodeIterator_HasNext(*args)
     def Next(*args): return _cspace.iDocumentNodeIterator_Next(*args)
-    def __iter__(self):
-        while self.HasNext():
-            yield self.Next() 
     __swig_destroy__ = _cspace.delete_iDocumentNodeIterator
     __del__ = lambda self : None;
-    __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iDocumentNodeIterator_scfGetVersion
-    if _newclass:scfGetVersion = staticmethod(_cspace.iDocumentNodeIterator_scfGetVersion)
 iDocumentNodeIterator_swigregister = _cspace.iDocumentNodeIterator_swigregister
 iDocumentNodeIterator_swigregister(iDocumentNodeIterator)
-iDocumentNodeIterator_scfGetVersion = _cspace.iDocumentNodeIterator_scfGetVersion
 
 class iDocumentNode(iBase):
     __swig_setmethods__ = {}
@@ -8914,11 +7980,8 @@ class iDocumentNode(iBase):
     def SetAttributeAsFloat(*args): return _cspace.iDocumentNode_SetAttributeAsFloat(*args)
     __swig_destroy__ = _cspace.delete_iDocumentNode
     __del__ = lambda self : None;
-    __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iDocumentNode_scfGetVersion
-    if _newclass:scfGetVersion = staticmethod(_cspace.iDocumentNode_scfGetVersion)
 iDocumentNode_swigregister = _cspace.iDocumentNode_swigregister
 iDocumentNode_swigregister(iDocumentNode)
-iDocumentNode_scfGetVersion = _cspace.iDocumentNode_scfGetVersion
 
 class iDocument(iBase):
     __swig_setmethods__ = {}
@@ -8960,85 +8023,6 @@ class iDocumentSystem(iBase):
 iDocumentSystem_swigregister = _cspace.iDocumentSystem_swigregister
 iDocumentSystem_swigregister(iDocumentSystem)
 iDocumentSystem_scfGetVersion = _cspace.iDocumentSystem_scfGetVersion
-
-class scfConfigFile(iConfigFile):
-    __swig_setmethods__ = {}
-    for _s in [iConfigFile]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, scfConfigFile, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iConfigFile]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, scfConfigFile, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def IncRef(*args): return _cspace.scfConfigFile_IncRef(*args)
-    def DecRef(*args): return _cspace.scfConfigFile_DecRef(*args)
-    def GetRefCount(*args): return _cspace.scfConfigFile_GetRefCount(*args)
-    def QueryInterface(*args): return _cspace.scfConfigFile_QueryInterface(*args)
-    def AddRefOwner(*args): return _cspace.scfConfigFile_AddRefOwner(*args)
-    def RemoveRefOwner(*args): return _cspace.scfConfigFile_RemoveRefOwner(*args)
-scfConfigFile_swigregister = _cspace.scfConfigFile_swigregister
-scfConfigFile_swigregister(scfConfigFile)
-
-class csConfigFile(scfConfigFile):
-    __swig_setmethods__ = {}
-    for _s in [scfConfigFile]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csConfigFile, name, value)
-    __swig_getmethods__ = {}
-    for _s in [scfConfigFile]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, csConfigFile, name)
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _cspace.new_csConfigFile(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csConfigFile
-    __del__ = lambda self : None;
-    def IsEmpty(*args): return _cspace.csConfigFile_IsEmpty(*args)
-    def GetFileName(*args): return _cspace.csConfigFile_GetFileName(*args)
-    def GetVFS(*args): return _cspace.csConfigFile_GetVFS(*args)
-    def SetFileName(*args): return _cspace.csConfigFile_SetFileName(*args)
-    def Load(*args): return _cspace.csConfigFile_Load(*args)
-    def LoadFromBuffer(*args): return _cspace.csConfigFile_LoadFromBuffer(*args)
-    def Save(*args): return _cspace.csConfigFile_Save(*args)
-    def Clear(*args): return _cspace.csConfigFile_Clear(*args)
-    def Enumerate(*args): return _cspace.csConfigFile_Enumerate(*args)
-    def KeyExists(*args): return _cspace.csConfigFile_KeyExists(*args)
-    def SubsectionExists(*args): return _cspace.csConfigFile_SubsectionExists(*args)
-    def GetInt(*args): return _cspace.csConfigFile_GetInt(*args)
-    def GetFloat(*args): return _cspace.csConfigFile_GetFloat(*args)
-    def GetStr(*args): return _cspace.csConfigFile_GetStr(*args)
-    def GetBool(*args): return _cspace.csConfigFile_GetBool(*args)
-    def GetTuple(*args): return _cspace.csConfigFile_GetTuple(*args)
-    def GetComment(*args): return _cspace.csConfigFile_GetComment(*args)
-    def SetStr(*args): return _cspace.csConfigFile_SetStr(*args)
-    def SetInt(*args): return _cspace.csConfigFile_SetInt(*args)
-    def SetFloat(*args): return _cspace.csConfigFile_SetFloat(*args)
-    def SetBool(*args): return _cspace.csConfigFile_SetBool(*args)
-    def SetTuple(*args): return _cspace.csConfigFile_SetTuple(*args)
-    def SetComment(*args): return _cspace.csConfigFile_SetComment(*args)
-    def DeleteKey(*args): return _cspace.csConfigFile_DeleteKey(*args)
-    def SetEOFComment(*args): return _cspace.csConfigFile_SetEOFComment(*args)
-    def GetEOFComment(*args): return _cspace.csConfigFile_GetEOFComment(*args)
-    def ParseCommandLine(*args): return _cspace.csConfigFile_ParseCommandLine(*args)
-csConfigFile_swigregister = _cspace.csConfigFile_swigregister
-csConfigFile_swigregister(csConfigFile)
-
-class csRadixSorter(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csRadixSorter, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csRadixSorter, name)
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _cspace.new_csRadixSorter(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csRadixSorter
-    __del__ = lambda self : None;
-    def Sort(*args): return _cspace.csRadixSorter_Sort(*args)
-    def GetRanks(*args): return _cspace.csRadixSorter_GetRanks(*args)
-csRadixSorter_swigregister = _cspace.csRadixSorter_swigregister
-csRadixSorter_swigregister(csRadixSorter)
 
 class csTinyDocumentSystem(_object):
     __swig_setmethods__ = {}
@@ -9501,7 +8485,6 @@ class csSimpleRenderMesh(_object):
         this = _cspace.new_csSimpleRenderMesh(*args)
         try: self.this.append(this)
         except: self.this = this
-    def SetWithGenmeshFactory(*args): return _cspace.csSimpleRenderMesh_SetWithGenmeshFactory(*args)
     __swig_destroy__ = _cspace.delete_csSimpleRenderMesh
     __del__ = lambda self : None;
 csSimpleRenderMesh_swigregister = _cspace.csSimpleRenderMesh_swigregister
@@ -9812,15 +8795,10 @@ class iShaderManager(iShaderVariableContext):
     __repr__ = _swig_repr
     def RegisterShader(*args): return _cspace.iShaderManager_RegisterShader(*args)
     def UnregisterShader(*args): return _cspace.iShaderManager_UnregisterShader(*args)
-    def UnregisterShaders(*args): return _cspace.iShaderManager_UnregisterShaders(*args)
     def GetShader(*args): return _cspace.iShaderManager_GetShader(*args)
     def GetShaders(*args): return _cspace.iShaderManager_GetShaders(*args)
     def RegisterCompiler(*args): return _cspace.iShaderManager_RegisterCompiler(*args)
     def GetCompiler(*args): return _cspace.iShaderManager_GetCompiler(*args)
-    def RegisterShaderVariableAccessor(*args): return _cspace.iShaderManager_RegisterShaderVariableAccessor(*args)
-    def UnregisterShaderVariableAccessor(*args): return _cspace.iShaderManager_UnregisterShaderVariableAccessor(*args)
-    def GetShaderVariableAccessor(*args): return _cspace.iShaderManager_GetShaderVariableAccessor(*args)
-    def UnregisterShaderVariableAcessors(*args): return _cspace.iShaderManager_UnregisterShaderVariableAcessors(*args)
     def GetShaderVariableStack(*args): return _cspace.iShaderManager_GetShaderVariableStack(*args)
     def SetTagOptions(*args): return _cspace.iShaderManager_SetTagOptions(*args)
     def GetTagOptions(*args): return _cspace.iShaderManager_GetTagOptions(*args)
@@ -10013,7 +8991,6 @@ class iTextureManager(iBase):
     def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def RegisterTexture(*args): return _cspace.iTextureManager_RegisterTexture(*args)
-    def CreateTexture(*args): return _cspace.iTextureManager_CreateTexture(*args)
     def GetTextureFormat(*args): return _cspace.iTextureManager_GetTextureFormat(*args)
     def CreateSuperLightmap(*args): return _cspace.iTextureManager_CreateSuperLightmap(*args)
     def GetMaxTextureSize(*args): return _cspace.iTextureManager_GetMaxTextureSize(*args)
@@ -10079,7 +9056,9 @@ class iImage(iBase):
     def GetPalette(*args): return _cspace.iImage_GetPalette(*args)
     def GetAlpha(*args): return _cspace.iImage_GetAlpha(*args)
     def HasKeyColor(*args): return _cspace.iImage_HasKeyColor(*args)
+    def HasKeycolor(*args): return _cspace.iImage_HasKeycolor(*args)
     def GetKeyColor(*args): return _cspace.iImage_GetKeyColor(*args)
+    def GetKeycolor(*args): return _cspace.iImage_GetKeycolor(*args)
     def HasMipmaps(*args): return _cspace.iImage_HasMipmaps(*args)
     def GetMipmap(*args): return _cspace.iImage_GetMipmap(*args)
     def GetRawFormat(*args): return _cspace.iImage_GetRawFormat(*args)
@@ -10130,7 +9109,9 @@ class csImageBase(csImageBaseBase):
     def GetPalette(*args): return _cspace.csImageBase_GetPalette(*args)
     def GetAlpha(*args): return _cspace.csImageBase_GetAlpha(*args)
     def HasKeyColor(*args): return _cspace.csImageBase_HasKeyColor(*args)
+    def HasKeycolor(*args): return _cspace.csImageBase_HasKeycolor(*args)
     def GetKeyColor(*args): return _cspace.csImageBase_GetKeyColor(*args)
+    def GetKeycolor(*args): return _cspace.csImageBase_GetKeycolor(*args)
     def HasMipmaps(*args): return _cspace.csImageBase_HasMipmaps(*args)
     def GetMipmap(*args): return _cspace.csImageBase_GetMipmap(*args)
     def GetRawFormat(*args): return _cspace.csImageBase_GetRawFormat(*args)
@@ -10180,8 +9161,6 @@ class csImageMemory(csImageMemoryBase):
     def GetWidth(*args): return _cspace.csImageMemory_GetWidth(*args)
     def GetHeight(*args): return _cspace.csImageMemory_GetHeight(*args)
     def GetDepth(*args): return _cspace.csImageMemory_GetDepth(*args)
-    def GetRawFormat(*args): return _cspace.csImageMemory_GetRawFormat(*args)
-    def GetRawData(*args): return _cspace.csImageMemory_GetRawData(*args)
     def GetFormat(*args): return _cspace.csImageMemory_GetFormat(*args)
     def GetPalette(*args): return _cspace.csImageMemory_GetPalette(*args)
     def GetAlpha(*args): return _cspace.csImageMemory_GetAlpha(*args)
@@ -10222,6 +9201,7 @@ class csImageIOFileFormatDescriptions(_object):
         try: self.this.append(this)
         except: self.this = this
     def GetSize(*args): return _cspace.csImageIOFileFormatDescriptions_GetSize(*args)
+    def Length(*args): return _cspace.csImageIOFileFormatDescriptions_Length(*args)
     def Get(*args): return _cspace.csImageIOFileFormatDescriptions_Get(*args)
     def Put(*args): return _cspace.csImageIOFileFormatDescriptions_Put(*args)
     def Push(*args): return _cspace.csImageIOFileFormatDescriptions_Push(*args)
@@ -10239,7 +9219,6 @@ class csImageIOFileFormatDescriptions(_object):
     def __eq__(*args): return _cspace.csImageIOFileFormatDescriptions___eq__(*args)
     def __ne__(*args): return _cspace.csImageIOFileFormatDescriptions___ne__(*args)
     def GetAllocator(*args): return _cspace.csImageIOFileFormatDescriptions_GetAllocator(*args)
-    def Length(*args): return _cspace.csImageIOFileFormatDescriptions_Length(*args)
 csImageIOFileFormatDescriptions_swigregister = _cspace.csImageIOFileFormatDescriptions_swigregister
 csImageIOFileFormatDescriptions_swigregister(csImageIOFileFormatDescriptions)
 
@@ -11407,11 +10386,8 @@ class iEngineSequenceManager(iBase):
     def DestroyTimedOperations(*args): return _cspace.iEngineSequenceManager_DestroyTimedOperations(*args)
     __swig_destroy__ = _cspace.delete_iEngineSequenceManager
     __del__ = lambda self : None;
-    __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iEngineSequenceManager_scfGetVersion
-    if _newclass:scfGetVersion = staticmethod(_cspace.iEngineSequenceManager_scfGetVersion)
 iEngineSequenceManager_swigregister = _cspace.iEngineSequenceManager_swigregister
 iEngineSequenceManager_swigregister(iEngineSequenceManager)
-iEngineSequenceManager_scfGetVersion = _cspace.iEngineSequenceManager_scfGetVersion
 
 class iMovieRecorder(iBase):
     __swig_setmethods__ = {}
@@ -11608,30 +10584,10 @@ iTerraSampler_swigregister = _cspace.iTerraSampler_swigregister
 iTerraSampler_swigregister(iTerraSampler)
 iTerraSampler_scfGetVersion = _cspace.iTerraSampler_scfGetVersion
 
-class pycsObject(iObject):
+class csObject(_object):
     __swig_setmethods__ = {}
-    for _s in [iObject]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, pycsObject, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iObject]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, pycsObject, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def IncRef(*args): return _cspace.pycsObject_IncRef(*args)
-    def DecRef(*args): return _cspace.pycsObject_DecRef(*args)
-    def GetRefCount(*args): return _cspace.pycsObject_GetRefCount(*args)
-    def QueryInterface(*args): return _cspace.pycsObject_QueryInterface(*args)
-    def AddRefOwner(*args): return _cspace.pycsObject_AddRefOwner(*args)
-    def RemoveRefOwner(*args): return _cspace.pycsObject_RemoveRefOwner(*args)
-pycsObject_swigregister = _cspace.pycsObject_swigregister
-pycsObject_swigregister(pycsObject)
-
-class csObject(pycsObject):
-    __swig_setmethods__ = {}
-    for _s in [pycsObject]: __swig_setmethods__.update(_s.__swig_setmethods__)
     __setattr__ = lambda self, name, value: _swig_setattr(self, csObject, name, value)
     __swig_getmethods__ = {}
-    for _s in [pycsObject]: __swig_getmethods__.update(_s.__swig_getmethods__)
     __getattr__ = lambda self, name: _swig_getattr(self, csObject, name)
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -11657,30 +10613,10 @@ class csObject(pycsObject):
 csObject_swigregister = _cspace.csObject_swigregister
 csObject_swigregister(csObject)
 
-class pycsColliderWrapper(csObject):
+class csColliderWrapper(_object):
     __swig_setmethods__ = {}
-    for _s in [csObject]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, pycsColliderWrapper, name, value)
-    __swig_getmethods__ = {}
-    for _s in [csObject]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, pycsColliderWrapper, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def IncRef(*args): return _cspace.pycsColliderWrapper_IncRef(*args)
-    def DecRef(*args): return _cspace.pycsColliderWrapper_DecRef(*args)
-    def GetRefCount(*args): return _cspace.pycsColliderWrapper_GetRefCount(*args)
-    def QueryInterface(*args): return _cspace.pycsColliderWrapper_QueryInterface(*args)
-    def AddRefOwner(*args): return _cspace.pycsColliderWrapper_AddRefOwner(*args)
-    def RemoveRefOwner(*args): return _cspace.pycsColliderWrapper_RemoveRefOwner(*args)
-pycsColliderWrapper_swigregister = _cspace.pycsColliderWrapper_swigregister
-pycsColliderWrapper_swigregister(pycsColliderWrapper)
-
-class csColliderWrapper(pycsColliderWrapper):
-    __swig_setmethods__ = {}
-    for _s in [pycsColliderWrapper]: __swig_setmethods__.update(_s.__swig_setmethods__)
     __setattr__ = lambda self, name, value: _swig_setattr(self, csColliderWrapper, name, value)
     __swig_getmethods__ = {}
-    for _s in [pycsColliderWrapper]: __swig_getmethods__.update(_s.__swig_getmethods__)
     __getattr__ = lambda self, name: _swig_getattr(self, csColliderWrapper, name)
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -11694,7 +10630,6 @@ class csColliderWrapper(pycsColliderWrapper):
     def Collide(*args): return _cspace.csColliderWrapper_Collide(*args)
     __swig_getmethods__["GetColliderWrapper"] = lambda x: _cspace.csColliderWrapper_GetColliderWrapper
     if _newclass:GetColliderWrapper = staticmethod(_cspace.csColliderWrapper_GetColliderWrapper)
-    def UpdateCollider(*args): return _cspace.csColliderWrapper_UpdateCollider(*args)
 csColliderWrapper_swigregister = _cspace.csColliderWrapper_swigregister
 csColliderWrapper_swigregister(csColliderWrapper)
 csColliderWrapper_GetColliderWrapper = _cspace.csColliderWrapper_GetColliderWrapper
@@ -11878,199 +10813,6 @@ class csSimplePixmap(csPixmap):
 csSimplePixmap_swigregister = _cspace.csSimplePixmap_swigregister
 csSimplePixmap_swigregister(csSimplePixmap)
 
-class csShortestDistanceResult(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csShortestDistanceResult, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csShortestDistanceResult, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["sqdistance"] = _cspace.csShortestDistanceResult_sqdistance_set
-    __swig_getmethods__["sqdistance"] = _cspace.csShortestDistanceResult_sqdistance_get
-    if _newclass:sqdistance = property(_cspace.csShortestDistanceResult_sqdistance_get, _cspace.csShortestDistanceResult_sqdistance_set)
-    __swig_setmethods__["direction"] = _cspace.csShortestDistanceResult_direction_set
-    __swig_getmethods__["direction"] = _cspace.csShortestDistanceResult_direction_get
-    if _newclass:direction = property(_cspace.csShortestDistanceResult_direction_get, _cspace.csShortestDistanceResult_direction_set)
-    def __init__(self, *args): 
-        this = _cspace.new_csShortestDistanceResult(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csShortestDistanceResult
-    __del__ = lambda self : None;
-csShortestDistanceResult_swigregister = _cspace.csShortestDistanceResult_swigregister
-csShortestDistanceResult_swigregister(csShortestDistanceResult)
-
-class csScreenTargetResult(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csScreenTargetResult, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csScreenTargetResult, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["mesh"] = _cspace.csScreenTargetResult_mesh_set
-    __swig_getmethods__["mesh"] = _cspace.csScreenTargetResult_mesh_get
-    if _newclass:mesh = property(_cspace.csScreenTargetResult_mesh_get, _cspace.csScreenTargetResult_mesh_set)
-    __swig_setmethods__["isect"] = _cspace.csScreenTargetResult_isect_set
-    __swig_getmethods__["isect"] = _cspace.csScreenTargetResult_isect_get
-    if _newclass:isect = property(_cspace.csScreenTargetResult_isect_get, _cspace.csScreenTargetResult_isect_set)
-    __swig_setmethods__["polygon_idx"] = _cspace.csScreenTargetResult_polygon_idx_set
-    __swig_getmethods__["polygon_idx"] = _cspace.csScreenTargetResult_polygon_idx_get
-    if _newclass:polygon_idx = property(_cspace.csScreenTargetResult_polygon_idx_get, _cspace.csScreenTargetResult_polygon_idx_set)
-    def __init__(self, *args): 
-        this = _cspace.new_csScreenTargetResult(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csScreenTargetResult
-    __del__ = lambda self : None;
-csScreenTargetResult_swigregister = _cspace.csScreenTargetResult_swigregister
-csScreenTargetResult_swigregister(csScreenTargetResult)
-
-class csEngineTools(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csEngineTools, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csEngineTools, name)
-    __repr__ = _swig_repr
-    __swig_getmethods__["FindShortestDistance"] = lambda x: _cspace.csEngineTools_FindShortestDistance
-    if _newclass:FindShortestDistance = staticmethod(_cspace.csEngineTools_FindShortestDistance)
-    __swig_getmethods__["FindScreenTarget"] = lambda x: _cspace.csEngineTools_FindScreenTarget
-    if _newclass:FindScreenTarget = staticmethod(_cspace.csEngineTools_FindScreenTarget)
-    def __init__(self, *args): 
-        this = _cspace.new_csEngineTools(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csEngineTools
-    __del__ = lambda self : None;
-csEngineTools_swigregister = _cspace.csEngineTools_swigregister
-csEngineTools_swigregister(csEngineTools)
-csEngineTools_FindShortestDistance = _cspace.csEngineTools_FindShortestDistance
-csEngineTools_FindScreenTarget = _cspace.csEngineTools_FindScreenTarget
-
-CS_PEN_TA_TOP = _cspace.CS_PEN_TA_TOP
-CS_PEN_TA_BOT = _cspace.CS_PEN_TA_BOT
-CS_PEN_TA_LEFT = _cspace.CS_PEN_TA_LEFT
-CS_PEN_TA_RIGHT = _cspace.CS_PEN_TA_RIGHT
-CS_PEN_TA_CENTER = _cspace.CS_PEN_TA_CENTER
-CS_PEN_FILL = _cspace.CS_PEN_FILL
-CS_PEN_SWAPCOLORS = _cspace.CS_PEN_SWAPCOLORS
-CS_PEN_TEXTURE_ONLY = _cspace.CS_PEN_TEXTURE_ONLY
-CS_PEN_TEXTURE = _cspace.CS_PEN_TEXTURE
-class iPen(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, iPen, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, iPen, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def SetFlag(*args): return _cspace.iPen_SetFlag(*args)
-    def ClearFlag(*args): return _cspace.iPen_ClearFlag(*args)
-    def SetMixMode(*args): return _cspace.iPen_SetMixMode(*args)
-    def SetColor(*args): return _cspace.iPen_SetColor(*args)
-    def SetTexture(*args): return _cspace.iPen_SetTexture(*args)
-    def SwapColors(*args): return _cspace.iPen_SwapColors(*args)
-    def SetPenWidth(*args): return _cspace.iPen_SetPenWidth(*args)
-    def ClearTransform(*args): return _cspace.iPen_ClearTransform(*args)
-    def PushTransform(*args): return _cspace.iPen_PushTransform(*args)
-    def PopTransform(*args): return _cspace.iPen_PopTransform(*args)
-    def SetOrigin(*args): return _cspace.iPen_SetOrigin(*args)
-    def Translate(*args): return _cspace.iPen_Translate(*args)
-    def DrawLine(*args): return _cspace.iPen_DrawLine(*args)
-    def DrawPoint(*args): return _cspace.iPen_DrawPoint(*args)
-    def DrawRect(*args): return _cspace.iPen_DrawRect(*args)
-    def DrawMiteredRect(*args): return _cspace.iPen_DrawMiteredRect(*args)
-    def DrawRoundedRect(*args): return _cspace.iPen_DrawRoundedRect(*args)
-    def DrawArc(*args): return _cspace.iPen_DrawArc(*args)
-    def DrawTriangle(*args): return _cspace.iPen_DrawTriangle(*args)
-    def Write(*args): return _cspace.iPen_Write(*args)
-    def WriteBoxed(*args): return _cspace.iPen_WriteBoxed(*args)
-    def _Rotate(*args): return _cspace.iPen__Rotate(*args)
-    def Rotate(self,a):
-         return _cspace.iPen__Rotate(a)
-
-iPen_swigregister = _cspace.iPen_swigregister
-iPen_swigregister(iPen)
-
-class csPen(iPen):
-    __swig_setmethods__ = {}
-    for _s in [iPen]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csPen, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iPen]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, csPen, name)
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _cspace.new_csPen(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csPen
-    __del__ = lambda self : None;
-    def SetFlag(*args): return _cspace.csPen_SetFlag(*args)
-    def ClearFlag(*args): return _cspace.csPen_ClearFlag(*args)
-    def SetMixMode(*args): return _cspace.csPen_SetMixMode(*args)
-    def SetColor(*args): return _cspace.csPen_SetColor(*args)
-    def SetTexture(*args): return _cspace.csPen_SetTexture(*args)
-    def SwapColors(*args): return _cspace.csPen_SwapColors(*args)
-    def SetPenWidth(*args): return _cspace.csPen_SetPenWidth(*args)
-    def ClearTransform(*args): return _cspace.csPen_ClearTransform(*args)
-    def PushTransform(*args): return _cspace.csPen_PushTransform(*args)
-    def PopTransform(*args): return _cspace.csPen_PopTransform(*args)
-    def SetOrigin(*args): return _cspace.csPen_SetOrigin(*args)
-    def Translate(*args): return _cspace.csPen_Translate(*args)
-    def DrawLine(*args): return _cspace.csPen_DrawLine(*args)
-    def DrawThickLine(*args): return _cspace.csPen_DrawThickLine(*args)
-    def DrawPoint(*args): return _cspace.csPen_DrawPoint(*args)
-    def DrawRect(*args): return _cspace.csPen_DrawRect(*args)
-    def DrawMiteredRect(*args): return _cspace.csPen_DrawMiteredRect(*args)
-    def DrawRoundedRect(*args): return _cspace.csPen_DrawRoundedRect(*args)
-    def DrawArc(*args): return _cspace.csPen_DrawArc(*args)
-    def DrawTriangle(*args): return _cspace.csPen_DrawTriangle(*args)
-    def Write(*args): return _cspace.csPen_Write(*args)
-    def WriteBoxed(*args): return _cspace.csPen_WriteBoxed(*args)
-csPen_swigregister = _cspace.csPen_swigregister
-csPen_swigregister(csPen)
-
-class csMemoryPen(iPen):
-    __swig_setmethods__ = {}
-    for _s in [iPen]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csMemoryPen, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iPen]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, csMemoryPen, name)
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _cspace.new_csMemoryPen(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csMemoryPen
-    __del__ = lambda self : None;
-    def Clear(*args): return _cspace.csMemoryPen_Clear(*args)
-    def Draw(*args): return _cspace.csMemoryPen_Draw(*args)
-    def SetFlag(*args): return _cspace.csMemoryPen_SetFlag(*args)
-    def ClearFlag(*args): return _cspace.csMemoryPen_ClearFlag(*args)
-    def SetMixMode(*args): return _cspace.csMemoryPen_SetMixMode(*args)
-    def SetColor(*args): return _cspace.csMemoryPen_SetColor(*args)
-    def SetTexture(*args): return _cspace.csMemoryPen_SetTexture(*args)
-    def SwapColors(*args): return _cspace.csMemoryPen_SwapColors(*args)
-    def SetPenWidth(*args): return _cspace.csMemoryPen_SetPenWidth(*args)
-    def ClearTransform(*args): return _cspace.csMemoryPen_ClearTransform(*args)
-    def PushTransform(*args): return _cspace.csMemoryPen_PushTransform(*args)
-    def PopTransform(*args): return _cspace.csMemoryPen_PopTransform(*args)
-    def SetOrigin(*args): return _cspace.csMemoryPen_SetOrigin(*args)
-    def Translate(*args): return _cspace.csMemoryPen_Translate(*args)
-    def DrawLine(*args): return _cspace.csMemoryPen_DrawLine(*args)
-    def DrawPoint(*args): return _cspace.csMemoryPen_DrawPoint(*args)
-    def DrawRect(*args): return _cspace.csMemoryPen_DrawRect(*args)
-    def DrawMiteredRect(*args): return _cspace.csMemoryPen_DrawMiteredRect(*args)
-    def DrawRoundedRect(*args): return _cspace.csMemoryPen_DrawRoundedRect(*args)
-    def DrawArc(*args): return _cspace.csMemoryPen_DrawArc(*args)
-    def DrawTriangle(*args): return _cspace.csMemoryPen_DrawTriangle(*args)
-    def Write(*args): return _cspace.csMemoryPen_Write(*args)
-    def WriteBoxed(*args): return _cspace.csMemoryPen_WriteBoxed(*args)
-csMemoryPen_swigregister = _cspace.csMemoryPen_swigregister
-csMemoryPen_swigregister(csMemoryPen)
-
-CSKEY_SHIFT_NUM = _cspace.CSKEY_SHIFT_NUM
-CSKEY_SPECIAL = _cspace.CSKEY_SPECIAL
-CSKEY_SPECIAL_NUM = _cspace.CSKEY_SPECIAL_NUM
-CSKEY_MODIFIER = _cspace.CSKEY_MODIFIER
 CS_IS_KEYBOARD_EVENT = _cspace.CS_IS_KEYBOARD_EVENT
 CS_IS_MOUSE_EVENT = _cspace.CS_IS_MOUSE_EVENT
 CS_IS_JOYSTICK_EVENT = _cspace.CS_IS_JOYSTICK_EVENT
@@ -12090,33 +10832,10 @@ csevMouseClick = _cspace.csevMouseClick
 csevMouseDoubleClick = _cspace.csevMouseDoubleClick
 csevMouseMove = _cspace.csevMouseMove
 csevJoystickEvent = _cspace.csevJoystickEvent
+CS_QUERY_REGISTRY_TAG = _cspace.CS_QUERY_REGISTRY_TAG
 CS_LOAD_PLUGIN_ALWAYS = _cspace.CS_LOAD_PLUGIN_ALWAYS
 CS_FX_SETALPHA = _cspace.CS_FX_SETALPHA
 CS_FX_SETALPHA_INT = _cspace.CS_FX_SETALPHA_INT
-class csPrimitives(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csPrimitives, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, csPrimitives, name)
-    __repr__ = _swig_repr
-    __swig_getmethods__["GenerateBox"] = lambda x: _cspace.csPrimitives_GenerateBox
-    if _newclass:GenerateBox = staticmethod(_cspace.csPrimitives_GenerateBox)
-    __swig_getmethods__["GenerateQuad"] = lambda x: _cspace.csPrimitives_GenerateQuad
-    if _newclass:GenerateQuad = staticmethod(_cspace.csPrimitives_GenerateQuad)
-    __swig_getmethods__["GenerateSphere"] = lambda x: _cspace.csPrimitives_GenerateSphere
-    if _newclass:GenerateSphere = staticmethod(_cspace.csPrimitives_GenerateSphere)
-    def __init__(self, *args): 
-        this = _cspace.new_csPrimitives(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_csPrimitives
-    __del__ = lambda self : None;
-csPrimitives_swigregister = _cspace.csPrimitives_swigregister
-csPrimitives_swigregister(csPrimitives)
-csPrimitives_GenerateBox = _cspace.csPrimitives_GenerateBox
-csPrimitives_GenerateQuad = _cspace.csPrimitives_GenerateQuad
-csPrimitives_GenerateSphere = _cspace.csPrimitives_GenerateSphere
-
 CS_QUERY_REGISTRY = _cspace.CS_QUERY_REGISTRY
 CS_QUERY_REGISTRY_TAG_INTERFACE = _cspace.CS_QUERY_REGISTRY_TAG_INTERFACE
 SCF_QUERY_INTERFACE = _cspace.SCF_QUERY_INTERFACE
@@ -12126,32 +10845,30 @@ CS_LOAD_PLUGIN = _cspace.CS_LOAD_PLUGIN
 CS_GET_CHILD_OBJECT = _cspace.CS_GET_CHILD_OBJECT
 CS_GET_NAMED_CHILD_OBJECT = _cspace.CS_GET_NAMED_CHILD_OBJECT
 CS_GET_FIRST_NAMED_CHILD_OBJECT = _cspace.CS_GET_FIRST_NAMED_CHILD_OBJECT
-class csPyEventHandlerParent(iEventHandler):
+class _csPyEventHandler(iEventHandler):
     __swig_setmethods__ = {}
     for _s in [iEventHandler]: __swig_setmethods__.update(_s.__swig_setmethods__)
-    __setattr__ = lambda self, name, value: _swig_setattr(self, csPyEventHandlerParent, name, value)
-    __swig_getmethods__ = {}
-    for _s in [iEventHandler]: __swig_getmethods__.update(_s.__swig_getmethods__)
-    __getattr__ = lambda self, name: _swig_getattr(self, csPyEventHandlerParent, name)
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def IncRef(*args): return _cspace.csPyEventHandlerParent_IncRef(*args)
-    def DecRef(*args): return _cspace.csPyEventHandlerParent_DecRef(*args)
-    def GetRefCount(*args): return _cspace.csPyEventHandlerParent_GetRefCount(*args)
-    def QueryInterface(*args): return _cspace.csPyEventHandlerParent_QueryInterface(*args)
-    def AddRefOwner(*args): return _cspace.csPyEventHandlerParent_AddRefOwner(*args)
-    def RemoveRefOwner(*args): return _cspace.csPyEventHandlerParent_RemoveRefOwner(*args)
-csPyEventHandlerParent_swigregister = _cspace.csPyEventHandlerParent_swigregister
-csPyEventHandlerParent_swigregister(csPyEventHandlerParent)
-
-class _csPyEventHandler(csPyEventHandlerParent):
-    __swig_setmethods__ = {}
-    for _s in [csPyEventHandlerParent]: __swig_setmethods__.update(_s.__swig_setmethods__)
     __setattr__ = lambda self, name, value: _swig_setattr(self, _csPyEventHandler, name, value)
     __swig_getmethods__ = {}
-    for _s in [csPyEventHandlerParent]: __swig_getmethods__.update(_s.__swig_getmethods__)
+    for _s in [iEventHandler]: __swig_getmethods__.update(_s.__swig_getmethods__)
     __getattr__ = lambda self, name: _swig_getattr(self, _csPyEventHandler, name)
     __repr__ = _swig_repr
+    __swig_setmethods__["scfRefCount"] = _cspace._csPyEventHandler_scfRefCount_set
+    __swig_getmethods__["scfRefCount"] = _cspace._csPyEventHandler_scfRefCount_get
+    if _newclass:scfRefCount = property(_cspace._csPyEventHandler_scfRefCount_get, _cspace._csPyEventHandler_scfRefCount_set)
+    __swig_setmethods__["scfWeakRefOwners"] = _cspace._csPyEventHandler_scfWeakRefOwners_set
+    __swig_getmethods__["scfWeakRefOwners"] = _cspace._csPyEventHandler_scfWeakRefOwners_get
+    if _newclass:scfWeakRefOwners = property(_cspace._csPyEventHandler_scfWeakRefOwners_get, _cspace._csPyEventHandler_scfWeakRefOwners_set)
+    def scfRemoveRefOwners(*args): return _cspace._csPyEventHandler_scfRemoveRefOwners(*args)
+    __swig_setmethods__["scfParent"] = _cspace._csPyEventHandler_scfParent_set
+    __swig_getmethods__["scfParent"] = _cspace._csPyEventHandler_scfParent_get
+    if _newclass:scfParent = property(_cspace._csPyEventHandler_scfParent_get, _cspace._csPyEventHandler_scfParent_set)
+    def IncRef(*args): return _cspace._csPyEventHandler_IncRef(*args)
+    def DecRef(*args): return _cspace._csPyEventHandler_DecRef(*args)
+    def GetRefCount(*args): return _cspace._csPyEventHandler_GetRefCount(*args)
+    def AddRefOwner(*args): return _cspace._csPyEventHandler_AddRefOwner(*args)
+    def RemoveRefOwner(*args): return _cspace._csPyEventHandler_RemoveRefOwner(*args)
+    def QueryInterface(*args): return _cspace._csPyEventHandler_QueryInterface(*args)
     def __init__(self, *args): 
         this = _cspace.new__csPyEventHandler(*args)
         try: self.this.append(this)
@@ -12294,10 +11011,7 @@ class CSMutableArrayHelper:
       raise IndexError('Length is ' + str(arrlen) + ', you asked for ' +
         str(key))
     return self.getFunc(key)
-  def content_iterator(self):
-    for idx in xrange(len(self)):
-      yield self.__getitem__(idx)
-  def __iter__(self): return self.content_iterator() 
+
   # We do not implement __setitem__ because the only legal action is to
   #  overwrite the object at the given location.  (The contents of the
   #  array are mutable, but the array is a single allocation of a single

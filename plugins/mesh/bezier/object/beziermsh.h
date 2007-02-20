@@ -447,7 +447,7 @@ public:
 
   /// Get the number of curves in this thing.
   int GetCurveCount () const
-  { return (int)curves.GetSize (); }
+  { return (int)curves.Length (); }
 
   /// Get the specified curve from this set.
   iCurve* GetCurve (int idx) const
@@ -720,10 +720,6 @@ public:
     * does nothing.
     */
   virtual void PositionChild (iMeshObject* /*child*/, csTicks /*current_time*/) { }
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-          iDecalBuilder* decalBuilder)
-  {
-  }
   /** @} */
 
   /** \name iMeshObjectFactory interface implementation

@@ -65,7 +65,7 @@ public:
   virtual int GetVertexCount ()
   {
     Setup ();
-    return (int)vertices->GetSize ();
+    return (int)vertices->Length ();
   }
   virtual csVector3* GetVertices ()
   {
@@ -216,7 +216,7 @@ public:
   //-------------------For iPortalContainer ----------------------------//
   virtual iPortal* CreatePortal (csVector3* vertices, int num);
   virtual void RemovePortal (iPortal* portal);
-  virtual int GetPortalCount () const { return (int)portals.GetSize () ; }
+  virtual int GetPortalCount () const { return (int)portals.Length () ; }
   virtual iPortal* GetPortal (int idx) const { return (iPortal*)portals[idx]; }
   virtual void Draw (iRenderView* rview)
   {

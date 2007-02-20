@@ -61,7 +61,7 @@ public:
   ///
   csTriangle& GetTriangle (int i) { return triangles[i]; }
   /// Query the number of triangles.
-  size_t GetTriangleCount () const { return triangles.GetSize (); }
+  size_t GetTriangleCount () const { return triangles.Length (); }
 
   /// Clear the mesh of triangles.
   void Clear ();

@@ -103,7 +103,7 @@ public:
   /// Override FreeMesh
   virtual void FreeMesh (iMeshWrapper*) { }
 
-  virtual int GetCount () const { return (int)list.GetSize () ; }
+  virtual int GetCount () const { return (int)list.Length () ; }
   virtual iMeshWrapper *Get (int n) const { return list.Get (n); }
   virtual int Add (iMeshWrapper *obj);
   virtual bool Remove (iMeshWrapper *obj);
@@ -158,7 +158,7 @@ public:
   virtual void PrepareFactory (iMeshFactoryWrapper*) { }
   virtual void FreeFactory (iMeshFactoryWrapper*) { }
 
-  virtual int GetCount () const { return (int)list.GetSize (); }
+  virtual int GetCount () const { return (int)list.Length (); }
   virtual iMeshFactoryWrapper *Get (int n) const { return list.Get (n); }
   virtual int Add (iMeshFactoryWrapper *obj);
   virtual bool Remove (iMeshFactoryWrapper *obj);
@@ -190,12 +190,6 @@ struct LSIAndDist
   // An indication of how powerful this light affects the object.
   // Higher values mean more influence.
   float influence;
-};
-
-struct ExtraRenderMeshData
-{
-    long            priority;
-    csZBufMode      zBufMode;
 };
 
 #include "csutil/win32/msvc_deprecated_warn_off.h"
@@ -246,10 +240,6 @@ protected:
   bool cast_hardware_shadow;
   /// For NR: should we draw last
   bool draw_after_fancy_stuff;
-
-  /// used to store extra rendermeshes that something might attach to this mesh (ie, for decals)
-  csDirtyAccessArray<csRenderMesh*> extraRenderMeshes;
-  csArray<ExtraRenderMeshData> extraRenderMeshData;
 
   /**
    * This value indicates the last time that was used to do animation.
@@ -491,7 +481,7 @@ public:
 
   virtual int GetDrawCallbackCount () const
   {
-    return (int)draw_cb_vector.GetSize ();
+    return (int)draw_cb_vector.Length ();
   }
 
   virtual iMeshDrawCallback* GetDrawCallback (int idx) const
@@ -531,37 +521,8 @@ public:
    * Draw the zpass for the object.  If this object doesn't use lighting
    * then it can be drawn fully here.
    */
-  virtual csRenderMesh** GetRenderMeshes (int& num, iRenderView* rview,
+  csRenderMesh** GetRenderMeshes (int& num, iRenderView* rview,
   	uint32 frustum_mask);
-  /**
-   * Adds a render mesh to the list of extra render meshes.
-   * This list is used for special cases (like decals) where additional
-   * things need to be renderered for the mesh in an abstract way.
-   */
-  virtual void AddExtraRenderMesh(csRenderMesh* renderMesh, long priority, 
-          csZBufMode zBufMode);
-
-  /**
-   * Grabs any additional render meshes this mesh might have on top
-   * of the normal rendermeshes through GetRenderMeshes.
-   */
-  virtual csRenderMesh** GetExtraRenderMeshes (size_t& num, iRenderView* rview,
-    uint32 frustum_mask);
-
-  /** 
-   * Gets the priority of a specific extra rendermesh.
-   */
-  virtual long GetExtraRenderMeshPriority(size_t idx) const;
-
-  /**
-   * Gets the z-buffer mode of a specific extra rendermesh
-   */
-  virtual csZBufMode GetExtraRenderMeshZBufMode(size_t idx) const;
-
-  /**
-   * Deletes a specific extra rendermesh
-   */
-  virtual void RemoveExtraRenderMesh(csRenderMesh* renderMesh);
 
   /**
    * Do a hard transform of this object.

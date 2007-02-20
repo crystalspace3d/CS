@@ -464,7 +464,7 @@ csSubRectangles::SubRect* csSubRectangles::Alloc (int w, int h, csRect &rect)
 {
   csSubRectangles::SubRect::AllocInfo ai;
 
-  for (size_t i = 0; i < leaves.GetSize (); i++)
+  for (size_t i = 0; i < leaves.Length(); i++)
   {
     leaves[i]->TestAlloc (w, h, ai);
     if (ai.res && (ai.d == 0)) break;
@@ -547,9 +547,9 @@ void csSubRectangles::Dump ()
   if (!iSCF::SCF->object_reg) return;
 
   csRef<iImageIO> imgsaver =
-    csQueryRegistry<iImageIO> (iSCF::SCF->object_reg);
+    CS_QUERY_REGISTRY (iSCF::SCF->object_reg, iImageIO);
   csRef<iVFS> vfs =
-    csQueryRegistry<iVFS> (iSCF::SCF->object_reg);
+    CS_QUERY_REGISTRY (iSCF::SCF->object_reg, iVFS);
 
   if (!imgsaver || !vfs) return;
   

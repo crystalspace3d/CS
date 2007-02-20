@@ -147,25 +147,10 @@ bool csVProcStandardProgram::UpdateSkinnedVertices (csRenderMeshModes& modes,
     }
   }
 
-  const size_t bones_count = _sv->GetArraySize ()/2;
-  struct csRotPos
-  {
-    csMatrix3 rot;
-    csVector3 pos;
-  };
-  CS_ALLOC_STACK_ARRAY(csRotPos,rotpos,bones_count);
-  for (size_t i = 0; i < bones_count; i++)
-  {
-    csQuaternion v;
-    _sv->GetArrayElement(i*2)->GetValue(v);
-    rotpos[i].rot = v.GetMatrix();
-    _sv->GetArrayElement(i*2 + 1)->GetValue(rotpos[i].pos);
-  }
-
-  csVertexListWalker<int> bones_indices_bufWalker (bones_indices_buf, 4);
-  csVertexListWalker<float> bones_weights_bufWalker (bones_weights_buf, 4);
   if (doVertexSkinning)
   {
+    csVertexListWalker<int> bones_indices_bufWalker (bones_indices_buf, 4);
+    csVertexListWalker<float> bones_weights_bufWalker (bones_weights_buf, 4);
     csVertexListWalker<float> vbufWalker (vbuf, 3);
     csRenderBufferLock<csVector3, iRenderBuffer*> tmpPos (spbuf);
     for (size_t i = 0; i < elements_count; i++)
@@ -180,15 +165,21 @@ bool csVProcStandardProgram::UpdateSkinnedVertices (csRenderMeshModes& modes,
       {
         if (d[k])
         {
-	  csRotPos& rp = rotpos[c[k]];
+          csVector4 v;
+          _sv->GetArrayElement(c[k]*2)->GetValue(v);
+          csQuaternion bone_rot;
+          bone_rot.v.x = v.x; bone_rot.v.y = v.y;
+          bone_rot.v.z = v.z; bone_rot.w = v.w;
+          csVector3 bone_pos;
+          _sv->GetArrayElement(c[k]*2 + 1)->GetValue(bone_pos);
           if (!skinned)
           {
-            tmpPos[i] = (rp.rot*origin_pos + rp.pos)*d[k];
+            tmpPos[i] = (bone_rot.Rotate(origin_pos) + bone_pos)*d[k];
             skinned =true;
           }
           else
           {
-            tmpPos[i] += (rp.rot*origin_pos + rp.pos)*d[k];
+            tmpPos[i] += (bone_rot.Rotate(origin_pos) + bone_pos)*d[k];
           }
         }
       }
@@ -208,8 +199,8 @@ bool csVProcStandardProgram::UpdateSkinnedVertices (csRenderMeshModes& modes,
 
   if (doNormalSkinning)
   {
-    bones_indices_bufWalker.ResetState();
-    bones_weights_bufWalker.ResetState();
+    csVertexListWalker<int> bones_indices_bufWalker (bones_indices_buf, 4);
+    csVertexListWalker<float> bones_weights_bufWalker (bones_weights_buf, 4);
     csVertexListWalker<float> nbufWalker (nbuf, 3);
     csRenderBufferLock<csVector3, iRenderBuffer*> tmpNorm (snbuf);
     for (size_t i = 0; i < elements_count; i++)
@@ -224,15 +215,21 @@ bool csVProcStandardProgram::UpdateSkinnedVertices (csRenderMeshModes& modes,
       {
         if (d[k])
         {
-	  csRotPos& rp = rotpos[c[k]];
+          csVector4 v;
+          _sv->GetArrayElement(c[k]*2)->GetValue(v);
+          csQuaternion bone_rot;
+          bone_rot.v.x = v.x; bone_rot.v.y = v.y;
+          bone_rot.v.z = v.z; bone_rot.w = v.w;
+          csVector3 bone_pos;
+          _sv->GetArrayElement(c[k]*2 + 1)->GetValue(bone_pos);
           if (!skinned)
           {
-            tmpNorm[i] = (rp.rot*origin_norm)*d[k];
+            tmpNorm[i] = (bone_rot.Rotate(origin_norm) + bone_pos)*d[k];
             skinned = true;
           }
           else
           {
-            tmpNorm[i] += (rp.rot*origin_norm)*d[k];
+            tmpNorm[i] += (bone_rot.Rotate(origin_norm) + bone_pos)*d[k];
           }
         }
       }
@@ -252,8 +249,8 @@ bool csVProcStandardProgram::UpdateSkinnedVertices (csRenderMeshModes& modes,
 
   if (doTangentSkinning)
   {
-    bones_indices_bufWalker.ResetState();
-    bones_weights_bufWalker.ResetState();
+    csVertexListWalker<int> bones_indices_bufWalker (bones_indices_buf, 4);
+    csVertexListWalker<float> bones_weights_bufWalker (bones_weights_buf, 4);
     csVertexListWalker<float> tbufWalker (tbuf, 3);
     csRenderBufferLock<csVector3, iRenderBuffer*> tmpTan (tnbuf);
     for (size_t i = 0; i < elements_count; i++)
@@ -268,15 +265,21 @@ bool csVProcStandardProgram::UpdateSkinnedVertices (csRenderMeshModes& modes,
       {
         if (d[k])
         {
-	  csRotPos& rp = rotpos[c[k]];
+          csVector4 v;
+          _sv->GetArrayElement(c[k]*2)->GetValue(v);
+          csQuaternion bone_rot;
+          bone_rot.v.x = v.x; bone_rot.v.y = v.y;
+          bone_rot.v.z = v.z; bone_rot.w = v.w;
+          csVector3 bone_pos;
+          _sv->GetArrayElement(c[k]*2 + 1)->GetValue(bone_pos);
           if (!skinned)
           {
-            tmpTan[i] = (rp.rot*origin_tang)*d[k];
+            tmpTan[i] = (bone_rot.Rotate(origin_tang) + bone_pos)*d[k];
             skinned = true;
           }
           else
           {
-            tmpTan[i] += (rp.rot*origin_tang)*d[k];
+            tmpTan[i] += (bone_rot.Rotate(origin_tang) + bone_pos)*d[k];
           }
         }
       }
@@ -296,8 +299,8 @@ bool csVProcStandardProgram::UpdateSkinnedVertices (csRenderMeshModes& modes,
 
   if (doBiTangentSkinning)
   {
-    bones_indices_bufWalker.ResetState();
-    bones_weights_bufWalker.ResetState();
+    csVertexListWalker<int> bones_indices_bufWalker (bones_indices_buf, 4);
+    csVertexListWalker<float> bones_weights_bufWalker (bones_weights_buf, 4);
     csVertexListWalker<float> btbufWalker (btbuf, 3);
     csRenderBufferLock<csVector3, iRenderBuffer*> tmpBiTan (btnbuf);
     for (size_t i = 0; i < elements_count; i++)
@@ -312,15 +315,21 @@ bool csVProcStandardProgram::UpdateSkinnedVertices (csRenderMeshModes& modes,
       {
         if (d[k])
         {
-	  csRotPos& rp = rotpos[c[k]];
+          csVector4 v;
+          _sv->GetArrayElement(c[k]*2)->GetValue(v);
+          csQuaternion bone_rot;
+          bone_rot.v.x = v.x; bone_rot.v.y = v.y;
+          bone_rot.v.z = v.z; bone_rot.w = v.w;
+          csVector3 bone_pos;
+          _sv->GetArrayElement(c[k]*2 + 1)->GetValue(bone_pos);
           if (!skinned)
           {
-            tmpBiTan[i] = (rp.rot*origin_bitang)*d[k];
+            tmpBiTan[i] = (bone_rot.Rotate(origin_bitang) + bone_pos)*d[k];
             skinned = true;
           }
           else
           {
-            tmpBiTan[i] += (rp.rot*origin_bitang)*d[k];
+            tmpBiTan[i] += (bone_rot.Rotate(origin_bitang) + bone_pos)*d[k];
           }
         }
       }

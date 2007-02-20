@@ -182,7 +182,7 @@ public:
       iMovable* movable);
 
   /// How many particles the system currently has.
-  inline size_t GetNumParticles () const { return particles.GetSize ();}
+  inline size_t GetNumParticles () const { return particles.Length();}
   /// Get a particle.
   inline iParticle* GetParticle (size_t idx) const
   { return particles[idx]; }
@@ -385,15 +385,6 @@ public:
    * does nothing.
    */
   virtual void PositionChild (iMeshObject* /*child*/,csTicks /*current_time*/) { }
-
-  /**
-   * see imesh/object.h for specification.  The default implementation
-   * does nothing.
-   */
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-	iDecalBuilder* decalBuilder)
-  {
-  }
 };
 
 /**

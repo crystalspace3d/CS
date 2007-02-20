@@ -56,10 +56,10 @@ public:
   	int* vertidx)
   {
     CS_ASSERT (secondary_vertidx == 0);
-    polys.SetCapacity (polys.GetSize () + polysToAdd.GetSize ());
+    polys.SetCapacity (polys.Length () + polysToAdd.Length ());
     secondary_vertidx = vertidx;
     size_t i;
-    for (i = 0; i < polysToAdd.GetSize (); i++)
+    for (i = 0; i < polysToAdd.Length (); i++)
     {
       polys.Push (polysToAdd[i]);
     }
@@ -73,19 +73,19 @@ public:
 
     int numVerts = polyMesh->GetVertexCount ();
     csVector3* oldVerts = polyMesh->GetVertices ();
-    verts.SetSize (numVerts);
+    verts.SetLength (numVerts);
     memcpy (verts.GetArray (), oldVerts, sizeof (csVector3) * numVerts);
 
     int numPolys = polyMesh->GetPolygonCount ();
     csMeshedPolygon* oldPolys = polyMesh->GetPolygons ();
-    polys.SetSize (numPolys);
+    polys.SetLength (numPolys);
 
     int i;
     // First count how many vertex indices we need.
     int totvertidx = 0;
     for (i = 0 ; i < numPolys ; i++)
       totvertidx += oldPolys[i].num_vertices;
-    vertidx.SetSize (totvertidx);
+    vertidx.SetLength (totvertidx);
     int* vertidx_p = vertidx.GetArray ();
 
     for (i = 0; i < numPolys; i++)
@@ -103,7 +103,7 @@ public:
 
   virtual int GetVertexCount () 
   { 
-    return (int)verts.GetSize (); 
+    return (int)verts.Length (); 
   }
   virtual csVector3* GetVertices () 
   { 
@@ -111,7 +111,7 @@ public:
   }
   virtual int GetPolygonCount () 
   { 
-    return (int)polys.GetSize (); 
+    return (int)polys.Length (); 
   }
   virtual csMeshedPolygon* GetPolygons () 
   { 

@@ -68,7 +68,7 @@ void csGLShader_CG::ErrorHandler (CGcontext context, CGerror error,
   iObjectRegistry* object_reg = (iObjectRegistry*)appData;
   bool doVerbose;
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr) 
     doVerbose = verbosemgr->Enabled ("renderer.shader");
   else
@@ -249,16 +249,16 @@ bool csGLShader_CG::Open()
 
   cgSetErrorHandler (ErrorHandler, object_reg);
 
-  csRef<iGraphics3D> r = csQueryRegistry<iGraphics3D> (object_reg);
+  csRef<iGraphics3D> r = CS_QUERY_REGISTRY(object_reg,iGraphics3D);
 
-  csRef<iFactory> f = scfQueryInterface<iFactory> (r);
+  csRef<iFactory> f = SCF_QUERY_INTERFACE (r, iFactory);
   if (f != 0 && strcmp ("crystalspace.graphics3d.opengl", 
 	f->QueryClassID ()) == 0)
     enable = true;
   else
     return false;
 
-  csRef<iConfigManager> config(csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> config(CS_QUERY_REGISTRY (object_reg, iConfigManager));
 
   r->GetDriver2D()->PerformExtension ("getextmanager", &ext);
   if (ext == 0)
@@ -435,7 +435,7 @@ bool csGLShader_CG::Initialize(iObjectRegistry* reg)
 {
   object_reg = reg;
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr) 
     doVerbose = verbosemgr->Enabled ("renderer.shader");
   else

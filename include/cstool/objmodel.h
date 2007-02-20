@@ -95,7 +95,7 @@ public:
   void FireListeners ()
   {
     size_t i;
-    for (i = 0 ; i < listeners.GetSize () ; i++)
+    for (i = 0 ; i < listeners.Length () ; i++)
       listeners[i]->ObjectModelChanged (this);
   }
 

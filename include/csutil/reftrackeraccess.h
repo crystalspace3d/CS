@@ -55,7 +55,6 @@ public:
   static void RemoveAlias (void*, void*) {}
 
   static void SetDescription (void*, const char*) {}
-  static void SetDescriptionWeak (void*, const char*) {}
 #else
   static void TrackIncRef (void* object, int refCount);
   static void TrackDecRef (void* object, int refCount);
@@ -69,7 +68,6 @@ public:
   static void RemoveAlias (void* obj, void* mapTo);
 
   static void SetDescription (void* obj, const char* description);
-  static void SetDescriptionWeak (void* obj, const char* description);
 #endif
 };
 

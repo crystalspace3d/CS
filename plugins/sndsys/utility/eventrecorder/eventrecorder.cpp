@@ -87,8 +87,8 @@ bool csSndSysBasicEventRecorder::Initialize(iObjectRegistry *pObjectRegistry)
 
 
   // Check for overriding sound event log from the command line
-  csRef<iCommandLineParser> cmdline (
-    csQueryRegistry<iCommandLineParser> (m_pObjectRegistry));
+  csRef<iCommandLineParser> cmdline (CS_QUERY_REGISTRY (m_pObjectRegistry,
+    iCommandLineParser));
 
   const char *output_location = cmdline->GetOption("soundeventlog");
   if (!output_location)
@@ -100,7 +100,7 @@ bool csSndSysBasicEventRecorder::Initialize(iObjectRegistry *pObjectRegistry)
   csReport(m_pObjectRegistry, CS_REPORTER_SEVERITY_DEBUG, QUALIFIED_PLUGIN_NAME,
     "Sound system events logging to [%s]", output_location);
 
-  m_pVFS = csQueryRegistry<iVFS> (m_pObjectRegistry);
+  m_pVFS = CS_QUERY_REGISTRY(m_pObjectRegistry, iVFS);
   if (!m_pVFS)
   {
     csReport(m_pObjectRegistry, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
@@ -117,7 +117,7 @@ bool csSndSysBasicEventRecorder::Initialize(iObjectRegistry *pObjectRegistry)
 
   // set event callback
   scfiEventHandler = new EventHandler (this);
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (m_pObjectRegistry));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY(m_pObjectRegistry, iEventQueue));
   m_evSystemOpen = csevSystemOpen(m_pObjectRegistry);
   m_evSystemClose = csevSystemClose(m_pObjectRegistry);
   m_evFrame = csevFrame(m_pObjectRegistry);

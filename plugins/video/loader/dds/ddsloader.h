@@ -38,7 +38,7 @@ enum csDDSRawDataType
 {
   csrawUnknown,
   csrawDXT1,
-  csrawR8G8B8,
+  csrawB8G8R8,
   csrawR5G6B5,
   csrawLum8,
 
@@ -48,12 +48,12 @@ enum csDDSRawDataType
   csrawDXT3,
   csrawDXT4,
   csrawDXT5,
-  csrawA8R8G8B8,
+  csrawB8G8R8A8,
 
   csrawUnsupported,
 
   csrawAlphaFirst = csrawUnknownAlpha,
-  csrawAlphaLast = csrawA8R8G8B8
+  csrawAlphaLast = csrawB8G8R8A8
 };
 
 class csDDSImageIO : 

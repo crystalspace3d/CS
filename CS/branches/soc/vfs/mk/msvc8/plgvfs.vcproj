@@ -59,11 +59,11 @@
 				ObjectFile="..\..\out\release8\build\plgvfs\"
 				ProgramDataBaseFileName="..\..\out\release8\build\plgvfs\vfs.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-				CompileAs="0"
-			/>
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				CompileAs="0"/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
@@ -162,11 +162,11 @@
 				ObjectFile="..\..\out\debug8\build\plgvfs\"
 				ProgramDataBaseFileName="..\..\out\debug8\build\plgvfs\vfs.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				CompileAs="0"
-			/>
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				CompileAs="0"/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
@@ -263,11 +263,11 @@
 				ObjectFile="..\..\out\debug8\build\plgvfs\"
 				ProgramDataBaseFileName="..\..\out\debug8\build\plgvfs\vfs.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				CompileAs="0"
-			/>
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				CompileAs="0"/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
@@ -364,11 +364,11 @@
 				ObjectFile="..\..\out\debug8\build\plgvfs\"
 				ProgramDataBaseFileName="..\..\out\debug8\build\plgvfs\vfs.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				CompileAs="0"
-			/>
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				CompileAs="0"/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>

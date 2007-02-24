@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="plgpartphys_simple"
-	ProjectGUID="{1A495A17-FB07-72D1-CA9E-F006D0CE4458}"
+	Name="apppartconv"
+	ProjectGUID="{FA55D508-A18B-C9E3-7607-EA6DBC5BC7E8}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,9 +13,10 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release71\build\plgpartphys_simple\"
-			IntermediateDirectory="..\..\out\release71\build\plgpartphys_simple\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release71\build\apppartconv\"
+			IntermediateDirectory="..\..\out\release71\build\apppartconv\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -31,10 +32,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\plgpartphys_simple\plgpartphys_simple.pch"
-				AssemblerListingLocation="..\..\out\release71\build\plgpartphys_simple\"
-				ObjectFile="..\..\out\release71\build\plgpartphys_simple\"
-				ProgramDataBaseFileName="..\..\out\release71\build\plgpartphys_simple\partphys_simple.pdb"
+				PrecompiledHeaderFile="..\..\out\release71\build\apppartconv\apppartconv.pch"
+				AssemblerListingLocation="..\..\out\release71\build\apppartconv\"
+				ObjectFile="..\..\out\release71\build\apppartconv\"
+				ProgramDataBaseFileName="..\..\out\release71\build\apppartconv\partconv.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -49,15 +50,14 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\partphys_simple.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release71\build\plgpartphys_simple\plgpartphys_simple.lib"
+				OutputFile="..\..\partconv.exe"
+				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\release71\build\plgpartphys_simple\partphys_simple.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\apppartconv\partconv.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -68,7 +68,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\plgpartphys_simple\plgpartphys_simple.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\apppartconv\apppartconv.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -88,9 +88,10 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgpartphys_simple\"
-			IntermediateDirectory="..\..\out\debug71\build\plgpartphys_simple\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\apppartconv\"
+			IntermediateDirectory="..\..\out\debug71\build\apppartconv\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -104,10 +105,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgpartphys_simple\"
-				ObjectFile="..\..\out\debug71\build\plgpartphys_simple\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgpartphys_simple\partphys_simple.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\apppartconv\apppartconv.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\apppartconv\"
+				ObjectFile="..\..\out\debug71\build\apppartconv\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\apppartconv\partconv.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -120,15 +121,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\partphys_simple.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.lib"
+				OutputFile="..\..\partconv.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgpartphys_simple\partphys_simple.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\apppartconv\partconv.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -139,7 +139,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\apppartconv\apppartconv.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -159,9 +159,10 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgpartphys_simple\"
-			IntermediateDirectory="..\..\out\debug71\build\plgpartphys_simple\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\apppartconv\"
+			IntermediateDirectory="..\..\out\debug71\build\apppartconv\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -175,10 +176,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgpartphys_simple\"
-				ObjectFile="..\..\out\debug71\build\plgpartphys_simple\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgpartphys_simple\partphys_simple.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\apppartconv\apppartconv.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\apppartconv\"
+				ObjectFile="..\..\out\debug71\build\apppartconv\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\apppartconv\partconv.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -191,15 +192,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\partphys_simple.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.lib"
+				OutputFile="..\..\partconv.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgpartphys_simple\partphys_simple.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\apppartconv\partconv.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -210,7 +210,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\apppartconv\apppartconv.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -230,9 +230,10 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgpartphys_simple\"
-			IntermediateDirectory="..\..\out\debug71\build\plgpartphys_simple\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\apppartconv\"
+			IntermediateDirectory="..\..\out\debug71\build\apppartconv\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -246,10 +247,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgpartphys_simple\"
-				ObjectFile="..\..\out\debug71\build\plgpartphys_simple\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgpartphys_simple\partphys_simple.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\apppartconv\apppartconv.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\apppartconv\"
+				ObjectFile="..\..\out\debug71\build\apppartconv\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\apppartconv\partconv.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -262,15 +263,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\partphys_simple.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.lib"
+				OutputFile="..\..\partconv.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgpartphys_simple\partphys_simple.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\apppartconv\partconv.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -281,7 +281,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgpartphys_simple\plgpartphys_simple.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\apppartconv\apppartconv.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -305,24 +305,21 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\mesh\particles\physics\simple\simplephys.cpp">
+				RelativePath="..\..\apps\tools\partconv\partconv.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\mesh\particles\physics\simple\simplephys.h">
+				RelativePath="..\..\apps\tools\partconv\partconv.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgpartphys_simple.rc">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\particles\physics\simple\partphys_simple.csplugin">
+				RelativePath="..\..\mk\msvc\apppartconv.rc">
 			</File>
 		</Filter>
 	</Files>

@@ -26,6 +26,11 @@ static char const metainfo_joywin[] =
 "        <implementation>csWindowsJoystick</implementation>"
 "        <description>Crystal Space Joystick plugin for Windows</description>"
 "      </class>"
+"      <class>"
+"        <name>crystalspace.device.joystick</name>"
+"        <implementation>csWindowsJoystick</implementation>"
+"        <description>Crystal Space Joystick plugin for Windows</description>"
+"      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
@@ -34,10 +39,18 @@ static char const metainfo_joywin[] =
   #define csWindowsJoystick_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csWindowsJoystick) 
   #endif
+  #ifndef csWindowsJoystick_FACTORY_REGISTER_DEFINED 
+  #define csWindowsJoystick_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csWindowsJoystick) 
+  #endif
 
 class joywin
 {
 SCF_REGISTER_STATIC_LIBRARY(joywin,metainfo_joywin)
+  #ifndef csWindowsJoystick_FACTORY_REGISTERED 
+  #define csWindowsJoystick_FACTORY_REGISTERED 
+    csWindowsJoystick_StaticInit csWindowsJoystick_static_init__; 
+  #endif
   #ifndef csWindowsJoystick_FACTORY_REGISTERED 
   #define csWindowsJoystick_FACTORY_REGISTERED 
     csWindowsJoystick_StaticInit csWindowsJoystick_static_init__; 

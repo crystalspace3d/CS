@@ -1569,6 +1569,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libgmeshanimpdl_staticreg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanimpdl_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanimpdl_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanimpdl_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanimpdl_staticreg.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libgmeshldr_staticreg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -3240,6 +3267,33 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libtlfunc_staticreg.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libtrans_std_staticreg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\mk_msvc_libtrans_std_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libtrans_std_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libtrans_std_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libtrans_std_staticreg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -8508,6 +8562,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\genmesh\animpdl\gmeshanimpdl.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_animpdl_gmeshanimpdl.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_animpdl_gmeshanimpdl.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_animpdl_gmeshanimpdl.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_animpdl_gmeshanimpdl.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\genmesh\object\genmesh.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -10854,6 +10935,60 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_terraformer_simpleformer_simpleformer.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\translator\standard\trans.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_translator_standard_trans.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_translator_standard_trans.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_translator_standard_trans.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_translator_standard_trans.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\translator\standard\transldr_xml.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_translator_standard_transldr_xml.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_translator_standard_transldr_xml.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_translator_standard_transldr_xml.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_translator_standard_transldr_xml.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -13816,6 +13951,9 @@
 				RelativePath="..\..\plugins\mesh\genmesh\anim\gmeshanim.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\genmesh\animpdl\gmeshanimpdl.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\genmesh\object\genmesh.h">
 			</File>
 			<File
@@ -14081,6 +14219,12 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\terraformer\simpleformer\simpleformer.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\translator\standard\trans.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\translator\standard\transldr_xml.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\canvas\caca\cscaca.h">

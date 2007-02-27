@@ -507,6 +507,9 @@
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\shader\weavertypes.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\sndsys\convert.cpp">
 			</File>
 			<File
@@ -697,6 +700,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\documentcommon.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\documenthelper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\event.cpp">
@@ -1219,6 +1225,12 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderprogram.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavercombiner.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavertypes.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\sndsys\convert.h">
 			</File>
 			<File
@@ -1370,6 +1382,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\bitarray.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\bitops.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\blockallocator.h">

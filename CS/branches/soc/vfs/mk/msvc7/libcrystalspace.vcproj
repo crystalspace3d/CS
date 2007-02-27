@@ -690,6 +690,9 @@
 				RelativePath="..\..\libs\csutil\csuctransform.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\deprecated_macros.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\dlmalloc.c">
 			</File>
 			<File
@@ -1663,6 +1666,9 @@
 				RelativePath="..\..\libs\..\include\csutil\schedule.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\scopeddelete.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\scopedmutexlock.h">
 			</File>
 			<File
@@ -1700,6 +1706,18 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_ppc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_x86.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_msvc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_sparc.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">

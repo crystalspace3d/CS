@@ -1029,6 +1029,33 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libdecal_staticreg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\mk_msvc_libdecal_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libdecal_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libdecal_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libdecal_staticreg.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libdsplex_staticreg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -5049,6 +5076,87 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_culling_frustvis_frustvis.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\decal\decal.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_decal_decal.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decal.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decal.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decal.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\decal\decalmanager.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_decal_decalmanager.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decalmanager.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decalmanager.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decalmanager.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\decal\decaltemplate.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_decal_decaltemplate.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decaltemplate.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decaltemplate.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_decal_decaltemplate.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -13549,6 +13657,15 @@
 				RelativePath="..\..\plugins\culling\frustvis\frustvis.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\decal\decal.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\decal\decalmanager.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\decal\decaltemplate.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\device\joystick\windows\csjoywin.h">
 			</File>
 			<File
@@ -14339,6 +14456,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\loader\jng\jng.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\loader\jpg\jpegcxxwrapper.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\loader\jpg\jpgimage.h">

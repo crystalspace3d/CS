@@ -1855,10 +1855,16 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFont.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFont_implData.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFont_xmlHandler.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFontManager.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIFontManager_implData.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIForwardRefs.h">
@@ -1936,6 +1942,18 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRefCounted.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRefPtr.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderableElement.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderableFrame.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderableImage.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIRenderCache.h">
 			</File>
 			<File
@@ -1981,6 +1999,9 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUITextUtils.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUITinyXMLParser.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIUDim.h">
 			</File>
 			<File
@@ -2015,6 +2036,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIWindowRendererModule.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIXercesParser.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\CEGUIXMLAttributes.h">
@@ -2080,6 +2104,9 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\jerror.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\jinclude.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\jmorecfg.h">
 			</File>
 			<File
@@ -2089,10 +2116,67 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\libmng.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_chunk_descr.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_chunk_io.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_chunk_prc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_chunks.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_cms.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\libmng_conf.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_data.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_display.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_dither.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_error.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_filter.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_jpeg.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_memory.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_object_prc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_objects.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_pixels.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_read.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_trace.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\libmng_types.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_write.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\libmng_zlib.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\Maths.h">
@@ -2102,6 +2186,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\Memory2.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\win32\mikmod.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\minidump.h">

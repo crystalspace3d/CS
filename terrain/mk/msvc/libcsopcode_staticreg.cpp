@@ -27,7 +27,7 @@ static char const metainfo_csopcode[] =
 "        <description>Crystal Space OPCODE CD System</description>"
 "      </class>"
 "      <class>"
-"        <name>crystalspace.mesh.object.terrainimproved.collider</name>"
+"        <name>crystalspace.mesh.object.terrain2.collider</name>"
 "        <implementation>csTerrainCollider</implementation>"
 "        <description>Terrain collider</description>"
 "      </class>"

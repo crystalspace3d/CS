@@ -35,16 +35,16 @@ static char const metainfo_csjngimg[] =
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csJNGImageIO) 
   #endif
 
-class csjngimg
+class 
 {
-SCF_REGISTER_STATIC_LIBRARY(csjngimg,metainfo_csjngimg)
+SCF_REGISTER_STATIC_LIBRARY(,metainfo_)
   #ifndef csJNGImageIO_FACTORY_REGISTERED 
   #define csJNGImageIO_FACTORY_REGISTERED 
     csJNGImageIO_StaticInit csJNGImageIO_static_init__; 
   #endif
 public:
- csjngimg();
+ ();
 };
-csjngimg::csjngimg() {}
+::() {}
 
 }

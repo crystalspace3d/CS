@@ -15,39 +15,39 @@
 
 namespace csStaticPluginInit
 {
-static char const metainfo_terrainimproved[] =
+static char const metainfo_terrain2[] =
 "<?xml version=\"1.0\"?>"
 "<!-- terrainimproved.csplugin -->"
 "<plugin>"
 "  <scf>"
 "    <classes>"
 "      <class>"
-"        <name>crystalspace.mesh.object.terrainimproved.bruteblockrenderer</name>"
+"        <name>crystalspace.mesh.object.terrain2.bruteblockrenderer</name>"
 "        <implementation>csTerrainBruteBlockRenderer</implementation>"
 "        <description>Bruteblock terrain renderer</description>"
 "      </class>"
 "      <class>"
-"        <name>crystalspace.mesh.object.terrainimproved.simplerenderer</name>"
+"        <name>crystalspace.mesh.object.terrain2.simplerenderer</name>"
 "        <implementation>csTerrainSimpleRenderer</implementation>"
 "        <description>Simple terrain renderer</description>"
 "      </class>"
 "      <class>"
-"        <name>crystalspace.mesh.object.terrainimproved.terraformerdatafeeder</name>"
+"        <name>crystalspace.mesh.object.terrain2.terraformerdatafeeder</name>"
 "        <implementation>csTerrainTerraFormerDataFeeder</implementation>"
 "        <description>Terraformer-based data feeder</description>"
 "      </class>"
 "      <class>"
-"        <name>crystalspace.mesh.object.terrainimproved.threadeddatafeeder</name>"
+"        <name>crystalspace.mesh.object.terrain2.threadeddatafeeder</name>"
 "        <implementation>csTerrainThreadedDataFeeder</implementation>"
 "        <description>Terrain multithreaded data feeder</description>"
 "      </class>"
 "      <class>"
-"        <name>crystalspace.mesh.object.terrainimproved.simpledatafeeder</name>"
+"        <name>crystalspace.mesh.object.terrain2.simpledatafeeder</name>"
 "        <implementation>csTerrainSimpleDataFeeder</implementation>"
 "        <description>Terrain simple data feeder</description>"
 "      </class>"
 "      <class>"
-"        <name>crystalspace.mesh.object.terrainimproved</name>"
+"        <name>crystalspace.mesh.object.terrain2</name>"
 "        <implementation>csTerrainMeshObjectType</implementation>"
 "        <description>Terrain mesh type</description>"
 "      </class>"
@@ -80,9 +80,9 @@ static char const metainfo_terrainimproved[] =
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csTerrainMeshObjectType) 
   #endif
 
-class terrainimproved
+class terrain2
 {
-SCF_REGISTER_STATIC_LIBRARY(terrainimproved,metainfo_terrainimproved)
+SCF_REGISTER_STATIC_LIBRARY(terrain2,metainfo_terrain2)
   #ifndef csTerrainBruteBlockRenderer_FACTORY_REGISTERED 
   #define csTerrainBruteBlockRenderer_FACTORY_REGISTERED 
     csTerrainBruteBlockRenderer_StaticInit csTerrainBruteBlockRenderer_static_init__; 
@@ -108,8 +108,8 @@ SCF_REGISTER_STATIC_LIBRARY(terrainimproved,metainfo_terrainimproved)
     csTerrainMeshObjectType_StaticInit csTerrainMeshObjectType_static_init__; 
   #endif
 public:
- terrainimproved();
+ terrain2();
 };
-terrainimproved::terrainimproved() {}
+terrain2::terrain2() {}
 
 }

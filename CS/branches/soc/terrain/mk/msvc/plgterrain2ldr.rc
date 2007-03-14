@@ -19,7 +19,7 @@ FILEFLAGS 0x0
       VALUE "ProductVersion", "1.1"
       VALUE "FileVersion", "1.1"
       VALUE "LegalCopyright", "Copyright (C)1998-2006 Jorrit Tyberghein and others"
-      VALUE "FileDescription", "OPCODE collision detection plugin"
+      VALUE "FileDescription", "Improved terrain mesh object loader"
 #ifdef CS_DEBUG
       VALUE "Comments", "Debug build"
 #else
@@ -34,19 +34,19 @@ FILEFLAGS 0x0
 17485 RCDATA 
 {
   "<?xml version=""1.0""?>",
-  "<!-- csopcode.csplugin -->",
+  "<!-- loader.csplugin -->",
   "<plugin>",
   "  <scf>",
   "    <classes>",
   "      <class>",
-  "        <name>crystalspace.collisiondetection.opcode</name>",
-  "        <implementation>csOPCODECollideSystem</implementation>",
-  "        <description>Crystal Space OPCODE CD System</description>",
+  "        <name>crystalspace.mesh.loader.factory.terrain2</name>",
+  "        <implementation>csTerrainFactoryLoader</implementation>",
+  "        <description>Terrain Factory Loader</description>",
   "      </class>",
   "      <class>",
-  "        <name>crystalspace.mesh.object.terrain2.collider</name>",
-  "        <implementation>csTerrainCollider</implementation>",
-  "        <description>Terrain collider</description>",
+  "        <name>crystalspace.mesh.loader.terrain2</name>",
+  "        <implementation>csTerrainObjectLoader</implementation>",
+  "        <description>Terrain Object Loader</description>",
   "      </class>",
   "    </classes>",
   "  </scf>",

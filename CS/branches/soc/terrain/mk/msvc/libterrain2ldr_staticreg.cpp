@@ -15,19 +15,19 @@
 
 namespace csStaticPluginInit
 {
-static char const metainfo_terrainimprovedldr[] =
+static char const metainfo_terrain2ldr[] =
 "<?xml version=\"1.0\"?>"
 "<!-- loader.csplugin -->"
 "<plugin>"
 "  <scf>"
 "    <classes>"
 "      <class>"
-"        <name>crystalspace.mesh.loader.factory.terrainimproved</name>"
+"        <name>crystalspace.mesh.loader.factory.terrain2</name>"
 "        <implementation>csTerrainFactoryLoader</implementation>"
 "        <description>Terrain Factory Loader</description>"
 "      </class>"
 "      <class>"
-"        <name>crystalspace.mesh.loader.terrainimproved</name>"
+"        <name>crystalspace.mesh.loader.terrain2</name>"
 "        <implementation>csTerrainObjectLoader</implementation>"
 "        <description>Terrain Object Loader</description>"
 "      </class>"
@@ -44,9 +44,9 @@ static char const metainfo_terrainimprovedldr[] =
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csTerrainObjectLoader) 
   #endif
 
-class terrainimprovedldr
+class terrain2ldr
 {
-SCF_REGISTER_STATIC_LIBRARY(terrainimprovedldr,metainfo_terrainimprovedldr)
+SCF_REGISTER_STATIC_LIBRARY(terrain2ldr,metainfo_terrain2ldr)
   #ifndef csTerrainFactoryLoader_FACTORY_REGISTERED 
   #define csTerrainFactoryLoader_FACTORY_REGISTERED 
     csTerrainFactoryLoader_StaticInit csTerrainFactoryLoader_static_init__; 
@@ -56,8 +56,8 @@ SCF_REGISTER_STATIC_LIBRARY(terrainimprovedldr,metainfo_terrainimprovedldr)
     csTerrainObjectLoader_StaticInit csTerrainObjectLoader_static_init__; 
   #endif
 public:
- terrainimprovedldr();
+ terrain2ldr();
 };
-terrainimprovedldr::terrainimprovedldr() {}
+terrain2ldr::terrain2ldr() {}
 
 }

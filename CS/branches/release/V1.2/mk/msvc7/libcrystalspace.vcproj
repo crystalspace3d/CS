@@ -516,9 +516,6 @@
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csplugincommon\shader\weavertypes.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csplugincommon\sndsys\convert.cpp">
 			</File>
 			<File
@@ -1244,12 +1241,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderprogram.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavercombiner.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavertypes.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\sndsys\convert.h">

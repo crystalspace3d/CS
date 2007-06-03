@@ -13,11 +13,11 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			OutputDirectory="..\..\out\debug71\build\plgcollada"
+			IntermediateDirectory="..\..\out\debug71\build\plgcollada"
+			ConfigurationType="2"
 			CharacterSet="2"
-			ManagedExtensions="TRUE">
+			ManagedExtensions="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -26,7 +26,7 @@
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				WarningLevel="3"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -106,11 +106,20 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			<File
+				RelativePath="..\..\plugins\colladaconvert\csColladaConvertor.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="..\..\include\iutil\collada.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\colladaconvert\csColladaConvertor.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

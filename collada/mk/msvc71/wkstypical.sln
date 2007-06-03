@@ -1394,6 +1394,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgcollada", "plgcollada.vc
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "appcolladaconvert", "appcolladaconvert.vcproj", "{03E0D7F2-953F-4704-83CB-66F20642018A}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -2850,6 +2854,14 @@ Global
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.RefTracker.Build.0 = Release|Win32
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.Release.ActiveCfg = Release|Win32
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.Release.Build.0 = Release|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.Debug.ActiveCfg = Debug|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.Debug.Build.0 = Debug|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.MemoryTracker.ActiveCfg = Release|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.MemoryTracker.Build.0 = Release|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.RefTracker.ActiveCfg = Release|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.RefTracker.Build.0 = Release|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.Release.ActiveCfg = Release|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

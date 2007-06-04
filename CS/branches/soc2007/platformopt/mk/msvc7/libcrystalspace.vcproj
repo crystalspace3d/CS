@@ -1648,9 +1648,6 @@
 				RelativePath="..\..\libs\..\include\csutil\processorspecdetection.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\processorspecdetection_nonwin_gcc_x86.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\profile.h">
 			</File>
 			<File

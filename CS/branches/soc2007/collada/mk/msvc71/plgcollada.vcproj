@@ -21,20 +21,34 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG"
-				MinimalRebuild="FALSE"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
+				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
+				ForceConformanceInForLoopScope="TRUE"
+				RuntimeTypeInfo="TRUE"
+				AssemblerListingLocation="..\..\out\debug71\build\plgcollada\"
+				ObjectFile="..\..\out\debug71\build\plgcollada\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgcollada\collada"
 				WarningLevel="3"
-				DebugInformationFormat="4"/>
+				DebugInformationFormat="4"
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				IgnoreImportLibrary="TRUE"
+				OutputFile="..\..\collada.dll"
 				LinkIncremental="2"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				GenerateDebugInformation="TRUE"
-				AssemblyDebug="1"/>
+				AssemblyDebug="0"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgcollada\collada.pdb"
+				ImportLibrary="..\..\out\debug71\build\plgcollada\collada.lib"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -107,7 +121,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\plugins\colladaconvert\csColladaConvertor.cpp">
+				RelativePath="..\..\plugins\utilities\cscolladaconvertor\csColladaConvertor.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -115,16 +129,19 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\include\iutil\collada.h">
+				RelativePath="..\..\include\ivaria\collada.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\colladaconvert\csColladaConvertor.h">
+				RelativePath="..\..\plugins\utilities\cscolladaconvertor\csColladaConvertor.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+			<File
+				RelativePath="..\..\plugins\utilities\cscolladaconvertor\cscolladaconvertor.csplugin">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

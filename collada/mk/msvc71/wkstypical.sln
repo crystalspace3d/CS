@@ -1392,10 +1392,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgxmltiny", "plgxmltiny.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgcollada", "plgcollada.vcproj", "{8D1C878E-E2AC-463D-B6EE-754708C655A9}"
 	ProjectSection(ProjectDependencies) = postProject
+		{94434FE9-3277-7608-522B-0BEBB7690B41} = {94434FE9-3277-7608-522B-0BEBB7690B41}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "appcolladaconvert", "appcolladaconvert.vcproj", "{03E0D7F2-953F-4704-83CB-66F20642018A}"
 	ProjectSection(ProjectDependencies) = postProject
+		{8D1C878E-E2AC-463D-B6EE-754708C655A9} = {8D1C878E-E2AC-463D-B6EE-754708C655A9}
+		{94434FE9-3277-7608-522B-0BEBB7690B41} = {94434FE9-3277-7608-522B-0BEBB7690B41}
 	EndProjectSection
 EndProject
 Global
@@ -2847,6 +2850,7 @@ Global
 		{8FAC4F5F-57D4-2C3D-DF91-96615B86B725}.Release.ActiveCfg = Release|Win32
 		{8FAC4F5F-57D4-2C3D-DF91-96615B86B725}.Release.Build.0 = Release|Win32
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.Debug.ActiveCfg = Debug|Win32
+		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.Debug.Build.0 = Debug|Win32
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.MemoryTracker.ActiveCfg = Release|Win32
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.MemoryTracker.Build.0 = Release|Win32
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.RefTracker.ActiveCfg = Release|Win32
@@ -2854,6 +2858,7 @@ Global
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.Release.ActiveCfg = Release|Win32
 		{8D1C878E-E2AC-463D-B6EE-754708C655A9}.Release.Build.0 = Release|Win32
 		{03E0D7F2-953F-4704-83CB-66F20642018A}.Debug.ActiveCfg = Debug|Win32
+		{03E0D7F2-953F-4704-83CB-66F20642018A}.Debug.Build.0 = Debug|Win32
 		{03E0D7F2-953F-4704-83CB-66F20642018A}.MemoryTracker.ActiveCfg = Release|Win32
 		{03E0D7F2-953F-4704-83CB-66F20642018A}.MemoryTracker.Build.0 = Release|Win32
 		{03E0D7F2-953F-4704-83CB-66F20642018A}.RefTracker.ActiveCfg = Release|Win32

@@ -843,6 +843,9 @@
 				RelativePath="..\..\libs\csutil\schedule.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\simd.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\snprintf.cpp">
 			</File>
 			<File

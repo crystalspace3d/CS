@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space: C.1.2 iEvent Changes</title>
+<title>Crystal Space 1.0.2: C.1.2 iEvent Changes</title>
 
-<meta name="description" content="Crystal Space: C.1.2 iEvent Changes">
-<meta name="keywords" content="Crystal Space: C.1.2 iEvent Changes">
+<meta name="description" content="Crystal Space 1.0.2: C.1.2 iEvent Changes">
+<meta name="keywords" content="Crystal Space 1.0.2: C.1.2 iEvent Changes">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -60,7 +60,7 @@ ul.toc {list-style: none}
 </tr></table>
 <h3 class="subsection"> C.1.2 <code>iEvent</code> Changes </h3>
 
-<a name="SEC750"></a>
+<a name="SEC752"></a>
 <h4 class="subsubheading"> Property Bags </h4>
 
 <p>The <code>iEvent::Find()</code> method was renamed to <code>Retrieve()</code> and exhibits
@@ -87,7 +87,7 @@ if (ev-&gt;Find(...))
   ...
 }
 </pre></td></tr></table>
-<a name="SEC751"></a>
+<a name="SEC753"></a>
 <h4 class="subsubheading"> Mouse, Joystick, and Command event properties </h4>
 
 <p>The <samp>`union'</samp> containing the <samp>`Mouse'</samp>, <samp>`Joystick'</samp>, and <samp>`Command'</samp>
@@ -109,14 +109,14 @@ let X = csMouseEventHelper::GetX(ev);
 
 <p>See the <small>API</small> documentation for details.
 </p>
-<a name="SEC752"></a>
+<a name="SEC754"></a>
 <h4 class="subsubheading"> Multiple mice </h4>
 
 <p>There is now support for handling input from more than one mouse.
 You can retrieve the identity (basis 0) of the mouse producing a 
 mouse event with <code>csMouseEventHelper::GetNumber()</code>.
 </p>
-<a name="SEC753"></a>
+<a name="SEC755"></a>
 <h4 class="subsubheading"> Joystick and Mouse axes </h4>
 
 <p>Joysticks can now have up to <samp>`CS_MAX_JOYSTICK_AXES'</samp> axes,

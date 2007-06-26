@@ -1489,9 +1489,6 @@
 				RelativePath="..\..\libs\..\include\csutil\csppulse.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\csprocessorcap.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\csshlib.h">
 			</File>
 			<File

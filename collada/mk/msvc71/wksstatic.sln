@@ -1,11 +1,9 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
+Microsoft Visual Studio Solution File, Format Version 
 # Visual C++ Express 2005
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Release
 		ConfigName.1 = Debug
-		ConfigName.2 = MemoryTracker
-		ConfigName.3 = RefTracker
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection

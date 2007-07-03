@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.walktest_static"
+    name="crystalspace.walktest_static" 
     type="win32"
 />
-<description>WalkTest demo (static build)</description>
+<description>WalkTest demo (static build)</description> 
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

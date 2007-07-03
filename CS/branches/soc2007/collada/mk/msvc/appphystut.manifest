@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.phystut"
+    name="crystalspace.phystut" 
     type="win32"
 />
-<description>physics tutorial</description>
+<description>physics tutorial</description> 
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

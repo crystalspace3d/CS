@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="libcrystalspace_directx"
-	ProjectGUID="{0C3A0010-DB63-0D22-B292-C2A563508FC8}"
+	Name=""
+	ProjectGUID="{D41D8CD9-8F00-B204-E980-0998ECF8427E}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,9 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release8\build\libcrystalspace_directx\"
-			IntermediateDirectory="..\..\out\release8\build\libcrystalspace_directx\"
-			ConfigurationType="4"
+			OutputDirectory="\out\release\build\\"
+			IntermediateDirectory="\out\release\build\\"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -26,14 +25,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB;WIN32"
+				PreprocessorDefinitions="NDEBUG;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release8\build\libcrystalspace_directx\libcrystalspace_directx.pch"
-				AssemblerListingLocation="..\..\out\release8\build\libcrystalspace_directx\"
-				ObjectFile="..\..\out\release8\build\libcrystalspace_directx\"
-				ProgramDataBaseFileName="..\..\out\release8\build\libcrystalspace_directx\crystalspace_directx.pdb"
+				AdditionalIncludeDirectories="."
+				PrecompiledHeaderFile="\out\release\build\\.pch"
+				AssemblerListingLocation="\out\release\build\\"
+				ObjectFile="\out\release\build\\"
+				ProgramDataBaseFileName="\out\release\build\\.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -50,23 +49,22 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
+				AdditionalDependencies=""
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\release8\build\libcrystalspace_directx\crystalspace_directx.pdb"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile="\out\release\build\\.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\release8\libs\libcrystalspace_directx.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB"
+				PreprocessorDefinitions="NDEBUG"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\libcrystalspace_directx\libcrystalspace_directx.tlb"/>
+				TypeLibraryName="\out\release\build\\.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -76,8 +74,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\libs\csplugincommon\directx;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;PROJECTGEN_VERSION="
+				AdditionalIncludeDirectories=".;\"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -86,9 +84,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
-			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
-			ConfigurationType="4"
+			OutputDirectory="\out\debug\build\\"
+			IntermediateDirectory="\out\debug\build\\"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -99,14 +96,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB;WIN32"
+				PreprocessorDefinitions="_DEBUG;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace_directx\libcrystalspace_directx.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace_directx\"
-				ObjectFile="..\..\out\debug8\build\libcrystalspace_directx\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\libcrystalspace_directx\crystalspace_directx.pdb"
+				AdditionalIncludeDirectories="."
+				PrecompiledHeaderFile="\out\debug\build\\.pch"
+				AssemblerListingLocation="\out\debug\build\\"
+				ObjectFile="\out\debug\build\\"
+				ProgramDataBaseFileName="\out\debug\build\\.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -121,23 +118,22 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
+				AdditionalDependencies=""
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_directx\crystalspace_directx.pdb"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile="\out\debug\build\\.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug8\libs\libcrystalspace_directx_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB"
+				PreprocessorDefinitions="_DEBUG"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\libcrystalspace_directx\libcrystalspace_directx.tlb"/>
+				TypeLibraryName="\out\debug\build\\.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -147,150 +143,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\libs\csplugincommon\directx;..\..;..\..\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-		<Configuration
-			Name="MemoryTracker|Win32"
-			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
-			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				DebugInformationFormat="4"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace_directx\libcrystalspace_directx.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace_directx\"
-				ObjectFile="..\..\out\debug8\build\libcrystalspace_directx\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\libcrystalspace_directx\crystalspace_directx.pdb"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				AdditionalOptions=" "
-				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
-				IgnoreImportLibrary="TRUE"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_directx\crystalspace_directx.pdb"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug8\libs\libcrystalspace_directx_d.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\libcrystalspace_directx\libcrystalspace_directx.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\libs\csplugincommon\directx;..\..;..\..\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-		<Configuration
-			Name="RefTracker|Win32"
-			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
-			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				DebugInformationFormat="4"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\libcrystalspace_directx\libcrystalspace_directx.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\libcrystalspace_directx\"
-				ObjectFile="..\..\out\debug8\build\libcrystalspace_directx\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\libcrystalspace_directx\crystalspace_directx.pdb"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				AdditionalOptions=" "
-				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
-				IgnoreImportLibrary="TRUE"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_directx\crystalspace_directx.pdb"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug8\libs\libcrystalspace_directx_d.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\libcrystalspace_directx\libcrystalspace_directx.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CSPLUGINCOMMON_DX_LIB;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\libs\csplugincommon\directx;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;PROJECTGEN_VERSION="
+				AdditionalIncludeDirectories=".;\"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -299,38 +153,6 @@
 		</Configuration>
 	</Configurations>
 	<Files>
-		<Filter
-			Name="Source Files"
-			Filter="">
-			<File
-				RelativePath="..\..\libs\csplugincommon\directx\directdetection.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\directx\error.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\directx\guids.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\directx\staticvarcleanup.cpp">
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="">
-			<File
-				RelativePath="..\..\libs\csplugincommon\directx\..\..\..\include\csplugincommon\directx\csextern_dx.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\directx\..\..\..\include\csplugincommon\directx\directdetection.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\directx\..\..\..\include\csplugincommon\directx\error.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\directx\..\..\..\include\csplugincommon\directx\guids.h">
-			</File>
-		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

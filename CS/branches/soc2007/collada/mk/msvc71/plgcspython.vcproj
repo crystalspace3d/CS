@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="plgcspython"
-	ProjectGUID="{7AE90617-EC88-D17B-85CE-79C08827DD6A}"
+	Name=""
+	ProjectGUID="{D41D8CD9-8F00-B204-E980-0998ECF8427E}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,10 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release71\build\plgcspython\"
-			IntermediateDirectory="..\..\out\release71\build\plgcspython\"
-			ConfigurationType="2"
-			WholeProgramOptimization="1"
+			OutputDirectory="\out\release\build\\"
+			IntermediateDirectory="\out\release\build\\"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -27,14 +25,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;WIN32"
+				PreprocessorDefinitions="NDEBUG;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\plgcspython\plgcspython.pch"
-				AssemblerListingLocation="..\..\out\release71\build\plgcspython\"
-				ObjectFile="..\..\out\release71\build\plgcspython\"
-				ProgramDataBaseFileName="..\..\out\release71\build\plgcspython\cspython.pdb"
+				AdditionalIncludeDirectories="."
+				PrecompiledHeaderFile="\out\release\build\\.pch"
+				AssemblerListingLocation="\out\release\build\\"
+				ObjectFile="\out\release\build\\"
+				ProgramDataBaseFileName="\out\release\build\\.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -50,26 +48,23 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\cspython.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release71\build\plgcspython\plgcspython.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies=""
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\release71\build\plgcspython\cspython.pdb"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile="\out\release\build\\.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="NDEBUG"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\plgcspython\plgcspython.tlb"/>
+				TypeLibraryName="\out\release\build\\.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -79,8 +74,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\cspython;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;PROJECTGEN_VERSION="
+				AdditionalIncludeDirectories=".;\"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -89,9 +84,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgcspython\"
-			IntermediateDirectory="..\..\out\debug71\build\plgcspython\"
-			ConfigurationType="2"
+			OutputDirectory="\out\debug\build\\"
+			IntermediateDirectory="\out\debug\build\\"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -102,14 +96,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;WIN32"
+				PreprocessorDefinitions="_DEBUG;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgcspython\plgcspython.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgcspython\"
-				ObjectFile="..\..\out\debug71\build\plgcspython\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgcspython\cspython.pdb"
+				AdditionalIncludeDirectories="."
+				PrecompiledHeaderFile="\out\debug\build\\.pch"
+				AssemblerListingLocation="\out\debug\build\\"
+				ObjectFile="\out\debug\build\\"
+				ProgramDataBaseFileName="\out\debug\build\\.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -123,26 +117,23 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cspython.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgcspython\plgcspython.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies=""
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgcspython\cspython.pdb"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile="\out\debug\build\\.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgcspython\plgcspython.tlb"/>
+				TypeLibraryName="\out\debug\build\\.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -152,154 +143,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\cspython;..\..;..\..\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-		<Configuration
-			Name="MemoryTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgcspython\"
-			IntermediateDirectory="..\..\out\debug71\build\plgcspython\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				DebugInformationFormat="4"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgcspython\plgcspython.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgcspython\"
-				ObjectFile="..\..\out\debug71\build\plgcspython\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgcspython\cspython.pdb"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cspython.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgcspython\plgcspython.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				IgnoreImportLibrary="TRUE"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgcspython\cspython.pdb"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgcspython\plgcspython.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\cspython;..\..;..\..\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-		<Configuration
-			Name="RefTracker|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgcspython\"
-			IntermediateDirectory="..\..\out\debug71\build\plgcspython\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				DebugInformationFormat="4"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgcspython\plgcspython.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgcspython\"
-				ObjectFile="..\..\out\debug71\build\plgcspython\"
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgcspython\cspython.pdb"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cspython.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgcspython\plgcspython.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				IgnoreImportLibrary="TRUE"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgcspython\cspython.pdb"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgcspython\plgcspython.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\cspython;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;PROJECTGEN_VERSION="
+				AdditionalIncludeDirectories=".;\"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -308,36 +153,6 @@
 		</Configuration>
 	</Configurations>
 	<Files>
-		<Filter
-			Name="Source Files"
-			Filter="">
-			<File
-				RelativePath="..\..\plugins\cscript\cspython\cspython.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\cscript\cspython\pytocs.cpp">
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="">
-			<File
-				RelativePath="..\..\plugins\cscript\cspython\cspython.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\cscript\cspython\pytocs.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="">
-			<File
-				RelativePath="..\..\mk\msvc\plgcspython.rc">
-			</File>
-			<File
-				RelativePath="..\..\plugins\cscript\cspython\cspython.csplugin">
-			</File>
-		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

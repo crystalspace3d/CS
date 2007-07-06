@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.csimagetool" 
+    name="crystalspace.csimagetool"
     type="win32"
 />
-<description>image manipulator</description> 
+<description>image manipulator</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

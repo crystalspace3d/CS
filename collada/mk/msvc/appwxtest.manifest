@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.wxtest" 
+    name="crystalspace.wxtest"
     type="win32"
 />
-<description>WxWidgets Canvas Test</description> 
+<description>WxWidgets Canvas Test</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

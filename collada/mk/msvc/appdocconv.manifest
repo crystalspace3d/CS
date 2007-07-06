@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.docconv" 
+    name="crystalspace.docconv"
     type="win32"
 />
-<description>Document Converter</description> 
+<description>Document Converter</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

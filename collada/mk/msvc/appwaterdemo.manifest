@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.waterdemo" 
+    name="crystalspace.waterdemo"
     type="win32"
 />
-<description>water surface shader demonstration</description> 
+<description>water surface shader demonstration</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

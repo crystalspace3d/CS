@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.mdl2spr" 
+    name="crystalspace.mdl2spr"
     type="win32"
 />
-<description>Quake model MDL conversion tool</description> 
+<description>Quake model MDL conversion tool</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

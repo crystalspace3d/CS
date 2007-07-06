@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.ceguitest" 
+    name="crystalspace.ceguitest"
     type="win32"
 />
-<description>CEGUI Test Application</description> 
+<description>CEGUI Test Application</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

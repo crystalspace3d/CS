@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.basemapgen" 
+    name="crystalspace.basemapgen"
     type="win32"
 />
-<description>Terrain basemap generator</description> 
+<description>Terrain basemap generator</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.maya2spr" 
+    name="crystalspace.maya2spr"
     type="win32"
 />
-<description>Maya to CS Sprite convertor</description> 
+<description>Maya to CS Sprite convertor</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

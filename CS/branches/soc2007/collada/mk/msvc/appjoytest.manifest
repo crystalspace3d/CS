@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.3.0.0"
     processorArchitecture="X86"
-    name="crystalspace.joytest" 
+    name="crystalspace.joytest"
     type="win32"
 />
-<description>Joystick Test</description> 
+<description>Joystick Test</description>
 <dependency>
     <dependentAssembly>
 	  <assemblyIdentity

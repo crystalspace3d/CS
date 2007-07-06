@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name=""
-	ProjectGUID="{D41D8CD9-8F00-B204-E980-0998ECF8427E}"
+	Name="appwaterdemo"
+	ProjectGUID="{3C96613B-E80C-9B02-A424-3CA11542E186}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,8 +13,11 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\out\release\build\\"
-			IntermediateDirectory="\out\release\build\\"
+			OutputDirectory="..\..\out\release8\build\appwaterdemo\"
+			IntermediateDirectory="..\..\out\release8\build\appwaterdemo\"
+			ConfigurationType="1"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -25,14 +28,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				PreprocessorDefinitions="NDEBUG;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories="."
-				PrecompiledHeaderFile="\out\release\build\\.pch"
-				AssemblerListingLocation="\out\release\build\\"
-				ObjectFile="\out\release\build\\"
-				ProgramDataBaseFileName="\out\release\build\\.pdb"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\release8\build\appwaterdemo\appwaterdemo.pch"
+				AssemblerListingLocation="..\..\out\release8\build\appwaterdemo\"
+				ObjectFile="..\..\out\release8\build\appwaterdemo\"
+				ProgramDataBaseFileName="..\..\out\release8\build\appwaterdemo\waterdemo.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -48,23 +51,25 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				OutputFile="..\..\waterdemo.exe"
+				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies=""
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
-				ProgramDatabaseFile="\out\release\build\\.pdb"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\release8\build\appwaterdemo\waterdemo.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="\out\release\build\\.tlb"/>
+				TypeLibraryName="..\..\out\release8\build\appwaterdemo\appwaterdemo.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -74,8 +79,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;PROJECTGEN_VERSION="
-				AdditionalIncludeDirectories=".;\"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\waterdemo;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -84,8 +89,10 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\out\debug\build\\"
-			IntermediateDirectory="\out\debug\build\\"
+			OutputDirectory="..\..\out\debug8\build\appwaterdemo\"
+			IntermediateDirectory="..\..\out\debug8\build\appwaterdemo\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -96,14 +103,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				PreprocessorDefinitions="_DEBUG;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories="."
-				PrecompiledHeaderFile="\out\debug\build\\.pch"
-				AssemblerListingLocation="\out\debug\build\\"
-				ObjectFile="\out\debug\build\\"
-				ProgramDataBaseFileName="\out\debug\build\\.pdb"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appwaterdemo\appwaterdemo.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appwaterdemo\"
+				ObjectFile="..\..\out\debug8\build\appwaterdemo\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appwaterdemo\waterdemo.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -117,23 +124,25 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\waterdemo.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies=""
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=""
-				ProgramDatabaseFile="\out\debug\build\\.pdb"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug8\build\appwaterdemo\waterdemo.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="\out\debug\build\\.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\appwaterdemo\appwaterdemo.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -143,8 +152,154 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;PROJECTGEN_VERSION="
-				AdditionalIncludeDirectories=".;\"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\waterdemo;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+		<Configuration
+			Name="MemoryTracker|Win32"
+			OutputDirectory="..\..\out\debug8\build\appwaterdemo\"
+			IntermediateDirectory="..\..\out\debug8\build\appwaterdemo\"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appwaterdemo\appwaterdemo.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appwaterdemo\"
+				ObjectFile="..\..\out\debug8\build\appwaterdemo\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appwaterdemo\waterdemo.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\waterdemo.exe"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				IgnoreImportLibrary="TRUE"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug8\build\appwaterdemo\waterdemo.pdb"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\appwaterdemo\appwaterdemo.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\waterdemo;..\..;..\..\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+		<Configuration
+			Name="RefTracker|Win32"
+			OutputDirectory="..\..\out\debug8\build\appwaterdemo\"
+			IntermediateDirectory="..\..\out\debug8\build\appwaterdemo\"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appwaterdemo\appwaterdemo.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appwaterdemo\"
+				ObjectFile="..\..\out\debug8\build\appwaterdemo\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appwaterdemo\waterdemo.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\waterdemo.exe"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				IgnoreImportLibrary="TRUE"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug8\build\appwaterdemo\waterdemo.pdb"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\appwaterdemo\appwaterdemo.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\waterdemo;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -153,6 +308,30 @@
 		</Configuration>
 	</Configurations>
 	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="">
+			<File
+				RelativePath="..\..\apps\waterdemo\waterdemo.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="">
+			<File
+				RelativePath="..\..\apps\waterdemo\waterdemo.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="">
+			<File
+				RelativePath="..\..\mk\msvc\appwaterdemo.manifest">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\appwaterdemo.rc">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

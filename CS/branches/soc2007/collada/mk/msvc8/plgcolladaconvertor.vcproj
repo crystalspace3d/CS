@@ -312,12 +312,18 @@
 			Name="Source Files"
 			Filter="">
 			<File
+				RelativePath="..\..\plugins\utilities\colladaconvertor\csColladaClasses.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\utilities\colladaconvertor\csColladaConvertor.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
+			<File
+				RelativePath="..\..\plugins\utilities\colladaconvertor\csColladaClasses.h">
+			</File>
 			<File
 				RelativePath="..\..\plugins\utilities\colladaconvertor\csColladaConvertor.h">
 			</File>

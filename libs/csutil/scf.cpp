@@ -101,9 +101,6 @@ private:
 
   friend void scfInitialize (csPathsList const*, unsigned int);
 
-  virtual size_t GetInterfaceMetadataCount () const { return 0;}
-  virtual void FillInterfaceMetadata (size_t n) {;}
-
   virtual void *QueryInterface (scfInterfaceID iInterfaceID,
     scfInterfaceVersion iVersion);
 
@@ -351,7 +348,6 @@ protected:
   virtual int GetRefCount ();
   virtual void AddRefOwner (void** ref_owner);
   virtual void RemoveRefOwner (void** ref_owner);
-  scfInterfaceMetadataList* GetInterfaceMetadata () { return 0; }
   virtual void *QueryInterface (scfInterfaceID iInterfaceID, int iVersion);
 };
 

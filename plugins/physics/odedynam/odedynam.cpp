@@ -772,8 +772,9 @@ csRef<iDynamicsSystemCollider> csODEDynamicSystem::CreateCollider ()
 {
   csODECollider *odec = new csODECollider (this, this);
   odec->AddToSpace (spaceID);
-  colliders.Push ((csODECollider *) odec);  
-  return odec;
+  csRef<csODECollider> c = (csPtr<csODECollider>) odec;
+  colliders.Push (c);  
+  return c;
 }
 void csODEDynamicSystem::AttachCollider (iDynamicsSystemCollider* collider)
 {

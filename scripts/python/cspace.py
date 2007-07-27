@@ -128,53 +128,6 @@ csArrayCapacityDefault_swigregister = _cspace.csArrayCapacityDefault_swigregiste
 csArrayCapacityDefault_swigregister(csArrayCapacityDefault)
 
 scfCompatibleVersion = _cspace.scfCompatibleVersion
-class scfInterfaceMetadata(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, scfInterfaceMetadata, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, scfInterfaceMetadata, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["interfaceName"] = _cspace.scfInterfaceMetadata_interfaceName_set
-    __swig_getmethods__["interfaceName"] = _cspace.scfInterfaceMetadata_interfaceName_get
-    if _newclass:interfaceName = property(_cspace.scfInterfaceMetadata_interfaceName_get, _cspace.scfInterfaceMetadata_interfaceName_set)
-    __swig_setmethods__["interfaceID"] = _cspace.scfInterfaceMetadata_interfaceID_set
-    __swig_getmethods__["interfaceID"] = _cspace.scfInterfaceMetadata_interfaceID_get
-    if _newclass:interfaceID = property(_cspace.scfInterfaceMetadata_interfaceID_get, _cspace.scfInterfaceMetadata_interfaceID_set)
-    __swig_setmethods__["interfaceVersion"] = _cspace.scfInterfaceMetadata_interfaceVersion_set
-    __swig_getmethods__["interfaceVersion"] = _cspace.scfInterfaceMetadata_interfaceVersion_get
-    if _newclass:interfaceVersion = property(_cspace.scfInterfaceMetadata_interfaceVersion_get, _cspace.scfInterfaceMetadata_interfaceVersion_set)
-    def __init__(self, *args): 
-        this = _cspace.new_scfInterfaceMetadata(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_scfInterfaceMetadata
-    __del__ = lambda self : None;
-scfInterfaceMetadata_swigregister = _cspace.scfInterfaceMetadata_swigregister
-scfInterfaceMetadata_swigregister(scfInterfaceMetadata)
-cvar = _cspace.cvar
-csArrayItemNotFound = cvar.csArrayItemNotFound
-
-class scfInterfaceMetadataList(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, scfInterfaceMetadataList, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, scfInterfaceMetadataList, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["metadata"] = _cspace.scfInterfaceMetadataList_metadata_set
-    __swig_getmethods__["metadata"] = _cspace.scfInterfaceMetadataList_metadata_get
-    if _newclass:metadata = property(_cspace.scfInterfaceMetadataList_metadata_get, _cspace.scfInterfaceMetadataList_metadata_set)
-    __swig_setmethods__["metadataCount"] = _cspace.scfInterfaceMetadataList_metadataCount_set
-    __swig_getmethods__["metadataCount"] = _cspace.scfInterfaceMetadataList_metadataCount_get
-    if _newclass:metadataCount = property(_cspace.scfInterfaceMetadataList_metadataCount_get, _cspace.scfInterfaceMetadataList_metadataCount_set)
-    def __init__(self, *args): 
-        this = _cspace.new_scfInterfaceMetadataList(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cspace.delete_scfInterfaceMetadataList
-    __del__ = lambda self : None;
-scfInterfaceMetadataList_swigregister = _cspace.scfInterfaceMetadataList_swigregister
-scfInterfaceMetadataList_swigregister(scfInterfaceMetadataList)
-
 class iBase(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, iBase, name, value)
@@ -188,11 +141,12 @@ class iBase(_object):
     def QueryInterface(*args): return _cspace.iBase_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.iBase_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.iBase_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.iBase_GetInterfaceMetadata(*args)
     __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iBase_scfGetVersion
     if _newclass:scfGetVersion = staticmethod(_cspace.iBase_scfGetVersion)
 iBase_swigregister = _cspace.iBase_swigregister
 iBase_swigregister(iBase)
+cvar = _cspace.cvar
+csArrayItemNotFound = cvar.csArrayItemNotFound
 iBase_scfGetVersion = _cspace.iBase_scfGetVersion
 
 class iSCF(iBase):
@@ -2678,7 +2632,6 @@ class scfPath(iPath):
     def QueryInterface(*args): return _cspace.scfPath_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.scfPath_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.scfPath_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.scfPath_GetInterfaceMetadata(*args)
 scfPath_swigregister = _cspace.scfPath_swigregister
 scfPath_swigregister(scfPath)
 
@@ -2848,7 +2801,6 @@ class pycsPolygonMesh(iPolygonMesh):
     def QueryInterface(*args): return _cspace.pycsPolygonMesh_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.pycsPolygonMesh_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.pycsPolygonMesh_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.pycsPolygonMesh_GetInterfaceMetadata(*args)
 pycsPolygonMesh_swigregister = _cspace.pycsPolygonMesh_swigregister
 pycsPolygonMesh_swigregister(pycsPolygonMesh)
 
@@ -2867,7 +2819,6 @@ class pycsPolygonMeshBox(iPolygonMesh):
     def QueryInterface(*args): return _cspace.pycsPolygonMeshBox_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.pycsPolygonMeshBox_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.pycsPolygonMeshBox_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.pycsPolygonMeshBox_GetInterfaceMetadata(*args)
 pycsPolygonMeshBox_swigregister = _cspace.pycsPolygonMeshBox_swigregister
 pycsPolygonMeshBox_swigregister(pycsPolygonMeshBox)
 
@@ -2886,7 +2837,6 @@ class pycsTriangleMesh(iTriangleMesh):
     def QueryInterface(*args): return _cspace.pycsTriangleMesh_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.pycsTriangleMesh_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.pycsTriangleMesh_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.pycsTriangleMesh_GetInterfaceMetadata(*args)
 pycsTriangleMesh_swigregister = _cspace.pycsTriangleMesh_swigregister
 pycsTriangleMesh_swigregister(pycsTriangleMesh)
 
@@ -2905,7 +2855,6 @@ class pycsTriangleMeshBox(iTriangleMesh):
     def QueryInterface(*args): return _cspace.pycsTriangleMeshBox_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.pycsTriangleMeshBox_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.pycsTriangleMeshBox_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.pycsTriangleMeshBox_GetInterfaceMetadata(*args)
 pycsTriangleMeshBox_swigregister = _cspace.pycsTriangleMeshBox_swigregister
 pycsTriangleMeshBox_swigregister(pycsTriangleMeshBox)
 
@@ -8928,7 +8877,6 @@ class scfConfigFile(iConfigFile):
     def QueryInterface(*args): return _cspace.scfConfigFile_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.scfConfigFile_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.scfConfigFile_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.scfConfigFile_GetInterfaceMetadata(*args)
 scfConfigFile_swigregister = _cspace.scfConfigFile_swigregister
 scfConfigFile_swigregister(scfConfigFile)
 
@@ -9284,7 +9232,6 @@ CS_VATTRIB_14 = _cspace.CS_VATTRIB_14
 CS_VATTRIB_15 = _cspace.CS_VATTRIB_15
 CS_MIXMODE_TYPE_AUTO = _cspace.CS_MIXMODE_TYPE_AUTO
 CS_MIXMODE_TYPE_BLENDOP = _cspace.CS_MIXMODE_TYPE_BLENDOP
-CS_MIXMODE_FLAG_BLENDOP_ALPHA = _cspace.CS_MIXMODE_FLAG_BLENDOP_ALPHA
 CS_MIXMODE_TYPE_MESH = _cspace.CS_MIXMODE_TYPE_MESH
 CS_MIXMODE_TYPE_MASK = _cspace.CS_MIXMODE_TYPE_MASK
 CS_MIXMODE_FACT_ZERO = _cspace.CS_MIXMODE_FACT_ZERO
@@ -9910,12 +9857,6 @@ class iTextureHandle(iBase):
     def SetTextureClass(*args): return _cspace.iTextureHandle_SetTextureClass(*args)
     def GetTextureClass(*args): return _cspace.iTextureHandle_GetTextureClass(*args)
     def SetAlphaType(*args): return _cspace.iTextureHandle_SetAlphaType(*args)
-    texType1D = _cspace.iTextureHandle_texType1D
-    texType2D = _cspace.iTextureHandle_texType2D
-    texType3D = _cspace.iTextureHandle_texType3D
-    texTypeCube = _cspace.iTextureHandle_texTypeCube
-    texTypeRect = _cspace.iTextureHandle_texTypeRect
-    def GetTextureType(*args): return _cspace.iTextureHandle_GetTextureType(*args)
     __swig_getmethods__["scfGetVersion"] = lambda x: _cspace.iTextureHandle_scfGetVersion
     if _newclass:scfGetVersion = staticmethod(_cspace.iTextureHandle_scfGetVersion)
     __swig_destroy__ = _cspace.delete_iTextureHandle
@@ -10071,7 +10012,6 @@ class csImageBaseBase(iImage):
     def QueryInterface(*args): return _cspace.csImageBaseBase_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.csImageBaseBase_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.csImageBaseBase_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.csImageBaseBase_GetInterfaceMetadata(*args)
 csImageBaseBase_swigregister = _cspace.csImageBaseBase_swigregister
 csImageBaseBase_swigregister(csImageBaseBase)
 
@@ -10118,7 +10058,6 @@ class csImageMemoryBase(csImageBase):
     def QueryInterface(*args): return _cspace.csImageMemoryBase_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.csImageMemoryBase_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.csImageMemoryBase_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.csImageMemoryBase_GetInterfaceMetadata(*args)
 csImageMemoryBase_swigregister = _cspace.csImageMemoryBase_swigregister
 csImageMemoryBase_swigregister(csImageMemoryBase)
 
@@ -11645,7 +11584,6 @@ class pycsObject(iObject):
     def QueryInterface(*args): return _cspace.pycsObject_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.pycsObject_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.pycsObject_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.pycsObject_GetInterfaceMetadata(*args)
 pycsObject_swigregister = _cspace.pycsObject_swigregister
 pycsObject_swigregister(pycsObject)
 
@@ -11695,7 +11633,6 @@ class pycsColliderWrapper(csObject):
     def QueryInterface(*args): return _cspace.pycsColliderWrapper_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.pycsColliderWrapper_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.pycsColliderWrapper_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.pycsColliderWrapper_GetInterfaceMetadata(*args)
 pycsColliderWrapper_swigregister = _cspace.pycsColliderWrapper_swigregister
 pycsColliderWrapper_swigregister(pycsColliderWrapper)
 
@@ -12170,7 +12107,6 @@ class csPyEventHandlerParent(iEventHandler):
     def QueryInterface(*args): return _cspace.csPyEventHandlerParent_QueryInterface(*args)
     def AddRefOwner(*args): return _cspace.csPyEventHandlerParent_AddRefOwner(*args)
     def RemoveRefOwner(*args): return _cspace.csPyEventHandlerParent_RemoveRefOwner(*args)
-    def GetInterfaceMetadata(*args): return _cspace.csPyEventHandlerParent_GetInterfaceMetadata(*args)
 csPyEventHandlerParent_swigregister = _cspace.csPyEventHandlerParent_swigregister
 csPyEventHandlerParent_swigregister(csPyEventHandlerParent)
 

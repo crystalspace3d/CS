@@ -167,7 +167,7 @@ class csReversibleTransform;
  * This callback is used by:
  * - iMeshWrapper
  */
-struct iMeshDrawCallback : public virtual iBase
+struct iMeshDrawCallback : public iBase
 {
   SCF_INTERFACE (iMeshDrawCallback, 0, 0, 1);
 

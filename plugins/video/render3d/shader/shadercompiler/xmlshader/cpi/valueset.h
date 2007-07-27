@@ -213,7 +213,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       }
     };
     typedef csArray<Interval, IntervalElementHandler,
-      CS::Memory::LocalBufferAllocator<Interval, arrayGrow, TempHeapAlloc, true>,
+      CS::Memory::LocalBufferAllocator<Interval, arrayGrow, TempHeapAlloc>,
       csArrayCapacityLinear<csArrayThresholdFixed<arrayGrow> > > IntervalArray;
     IntervalArray intervals;
   public:

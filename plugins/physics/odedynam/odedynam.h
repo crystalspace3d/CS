@@ -429,8 +429,6 @@ public:
   bool BodyInGroup (iRigidBody *body);
 };
 
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 class csODECollider : public scfImplementation1<csODECollider,
                                                 iDynamicsSystemCollider>
 {
@@ -503,8 +501,6 @@ private:
   void KillGeoms ();
 
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 struct GeomData 
 {

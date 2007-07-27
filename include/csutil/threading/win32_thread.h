@@ -59,8 +59,6 @@ namespace Implementation
       csSleep (0);
     }
 
-    static CS::Threading::ThreadID GetThreadID ();
-
   private:
     csRef<Runnable> runnable;
 

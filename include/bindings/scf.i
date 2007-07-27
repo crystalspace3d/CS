@@ -19,7 +19,6 @@
 	virtual void *QueryInterface (scfInterfaceID iInterfaceID, int iVersion);
 	virtual void AddRefOwner (void** ref_owner);
 	virtual void RemoveRefOwner (void** ref_owner);
-        scfInterfaceMetadataList* GetInterfaceMetadata ();
 %enddef
 
 template <class T,class K> class scfImplementation1 : public K

@@ -6,25 +6,6 @@ each new day's entries appears before the previous day's entries.  The
 individual changes for each given day, however, are in normal (ascending)
 chronological order.
 
-26-Jul-2007
-	- res fixed some undefined type issues that occured when building 
-	  libraries as DLLs with MSVC.
-	- res fixed the GUIDs in libcrystalspace_directx to be properly
-	  exported when built as a DLL with MSVC.
-	- res fixed a couple of linking issues for DLLs with MSVC: marking
-	  all-inline or as "exported" give problems on MSVC since VC tries to
-	  even import members that are inline. Also, "exported" templates 
-	  classes are not a good idea either since VC will attempt to import
-	  instantiations of it (which fails in most cases).
-	- res suppressed some warnings about mixing dllexported and 
-	  non-dllexported classes in MSVC.
-	- res added a small shell script to regenerate 
-	  include/csutil/scf_implgen_p.h (and also regenerated that file).
-	- res slightly changed how CS_DEBUG_BREAK is realized: the actual
-	  debugging break functionality is now provided by the function
-	  CS::Debug::DebugBreak() and is also available in optimize builds;
-	  CS_DEBUG_BREAK now just wraps around that. (Note that CS_DEBUG_BREAK
-	  still resolves to a no-op in optimize builds.)
 23-Jul-2007
 	- res fixed crystal.m4 to use the right test order when a development
 	  resp. stable version is requested (previously, the orders actually
@@ -46,8 +27,6 @@ chronological order.
 	  CS::TriangleIndicesStream.
 	- Eric Sunshine eliminated compilation warnings from various plugin
 	  modules.
-	- res updated scripts/jamtemplate/cel.m4 with the latest version from
-	  the CEL repository.
 22-Jul-2007
 	- Vincent committed res' patch for incremental shared linking support
 	  on Unix, which fixes 'LinkSharedLibrary actions too long' build error
@@ -58,33 +37,12 @@ chronological order.
 	- Eric Sunshine rewrote the plugin loader for Mac OS X to fully employ
 	  the "two-level" namespace dynamic-library model introduced in OSX
 	  10.1. The deprecated "flat" namespace model is no longer supported.
-21-Jul-2007
-	- Vincent updated rpm/cs.spec for items moved to CSExtra, lighter2
-	  addition, and versioned files & directories.
-20-Jul-2007
-	- Marten added a CS::Threading::Thread::GetThreadID function and
-	  backend implementations.
-	- Marten removed the only usage we had of dynamic_cast and fixed 
-	  trac #192.
-	- Marten fixed event constraint in viewmesh between viewmesh itself
-	  and CEGUI. Solves trac #332.
 19-Jul-2007
 	- Eric Sunshine eliminated several compilation and deprecation warnings
 	  on Mac OS X.
 	- Eric Sunshine removed some outdated entries from vfs.cfg and
 	  vfs.cfg.template which referred to items moved to CSEXTRA.
-	- res changed CS::Memory::LocalBufferAllocator to support multiple
-	  allocations. (The old but miniscully more memory-efficient behaviour
-	  can be enabled with a template argument.)
 18-Jul-2007
-	- res changed the default CS_PLUGINDIR and CS_CONFIGDIR values used
-	  by libs/unix/instpath.cpp to contain version numbers.
-	- res fixed the cs-csconfig-X.Y scripts to use the right CRYSTAL_x_y
-	  variable (due a bug in the Jam code it currently used CRYSTAL_x_x).
-	- Andres really made the python wrapper work (escape regex meta chars)
-	  and fixes the longstanding, though propably harmless, typo in 
-	  checkpython.m4. Also corrects CS_CHECK_TOOL into CS_CHECK_TOOLS 
-	  (thanks to Eric).
 	- res changed the cs-config wrapper to emit a better error message
 	  when no cs-config-* scripts are found. Also, the directory from
 	  which the wrapper was started is now searched as well.
@@ -92,16 +50,8 @@ chronological order.
 	  wrapper with a custom (but portable) function, as suggested by Eric.
 	  Also made the "no cs-config-* ..." error message output to stderr
 	  instead of stdout.
-	- res added a (still empty) appendix for the 1.2 to 1.4 API changes.
 16-Jul-2007
 	- Jorrit fixed two problems in csSpline as reported by valgrind.
-	- Andres changed the python detection code to look for a 
-	  ${hosttype}-python as well in order to make cross-compiling with
-	  python support more automatic/possible. He also added
-	  CS/bin to the search path in configure, and added a python wrapper
-	  (prefixed with hosttype i586-mingw32msvc) which calls the windows 
-	  python via wine and changes all paths to unix paths.
-	- Andres updated svn:ignore of the CS directory to reflect new binaries.
 12-Jul-2007
 	- Jorrit fixed a rather big bug in
 	  csKeyEventHelper::GetModifiersBits(). It was declared using
@@ -113,36 +63,10 @@ chronological order.
 11-Jul-2007
         - Mike Gist added a #define to enable GNU C extensions in dlmalloc.
 10-Jul-2007
-	- Jorrit unbreaks CS on mingw by commenting the CS_DEPRECATED_TYPE
-	  after the CS_TEX_IMG enum.
-9-Jul-2007
-	- res made the following changes to csList<>:
-	    - Added ability to specify custom memory allocator.
-	    - Added convenience methods to move an item to the front/back of
-	      the list.
-	- res relaxed the "no copy" restriction for csFixedSizeAllocator<> a 
-	  bit: it's now	allowed to copy an empty allocator (which basically 
-	  only copies the block sizes). Useful for some initialization cases.
-	- res improved FBO support: 
-	    - Now, multiple FBOs for different sizes are cached - this is 
-	      necessary to support different render target dimensions, as all
-	      buffers (color, depth, stencil) must have the same dimensions.
-	      Previously, only one FBO was kept, with the result that as soon
-	      as differently sized render targets were used the FBO code would
-	      detect an error and fall back to the frame buffer.
-	    - The depth and stencil format to be used is automatically 
-	      detected: stencil buffer support is used when available.
-	- res deprecated iTextureHandle::GetTextureTarget() in favor of the
-	  more intuitively named GetTextureType().
-	- res made a method for the (more than once occuring) "ensure 
-	  uncompressed texture" logic in gl3d.
 	- Marten made another OSX fix, still untested.
 	- Eric Sunshine fixed csQsqrt() check in configure.ac which was broken
 	  due to use of CS_FORCEINLINE in csqsqrt.h, causing the test to fail
 	  unconditionally.
-	- res changed csProcTexture to allow overriding of the actual texture 
-	  wrapper creation.
-	- res added support for float textures to gl3d CreateTexture().
 8-Jul-2007
 	- Genjix removed qualifier for LightmapMask destructor due to failing
 	  to compile on linux.
@@ -160,9 +84,6 @@ chronological order.
 	      enough to break layouting in tight situations.
 	    - Made the lightmap masks used for postprocessing swappables.
 	    - Some layouting tweaks.
-	- res declared the offscreen canvas stuff deprecated.
-	- res added support for separate blending modes (ie RGB and alpha
-	  factors can be specifies separately).
 	- res changed the engine to not reload the standard shaders when
 	  closing.
 5-Jul-2007
@@ -175,9 +96,6 @@ chronological order.
 	  result that the "factory" layouting would return a set of primitives
 	  that the "object" layouting actually failed to layout onto one
 	  lightmap.
-1-Jul-2007
-	- res made csGLGraphics3D::DrawSimpleMesh () do a "forceful fixed
-	  function enable" when drawing without shaders.
 30-Jun-2007
 	- Marten fixed compilation on MSVC after Oktals additions.
 29-Jun-2007
@@ -196,7 +114,6 @@ chronological order.
 	- Jorrit converted a few remaining interfaces to using SCF_INTERFACE
 	  instead of SCF_VERSION.
 24-Jun-2007
-        - Piotr made small bugfix in odedynam colliders ref handling.
 	- Eric Sunshine corrected "camera movement" documentation bug.
 	  Fixes #348.
 	- res made "jam install" install not just "history.txt" but
@@ -250,8 +167,7 @@ chronological order.
 9-Jun-2007
 	- Marten made some fixes for compilation on OSX
 6-Jun-2007
-	- caedes fixed scripting bindings for latest scf changes.
-	- res fixed the configure javac detection to quote the Java directory
+	- res fixed thee configure javac detection to quote the Java directory
 	  (so directories with spaces work).
 4-Jun-2007
 	- Oktal fixed a mistake made during Marten's SCF clean-up, that broke
@@ -262,9 +178,6 @@ chronological order.
 	- res changed the cs-config wrapper script to use shell built-ins
 	  instead of external utilities to construct the initial list of
 	  cs-config-* scripts.
-31-May-2007
-	- Marten reverted some of the changes and did some more fixes to make
-	  CS compile on GCC again after the SCF improvements.
 30-May-2007
 	- Marten made some cleanups to scfImplementation(Ext)N to reduce the 
 	  source size and hopefully speed up compilation a tiny bit.
@@ -272,8 +185,6 @@ chronological order.
 	- Marten updated version of iBase which was previously forgotten.
 	- Marten removed the last usage of SCF_DECLARE_IBASE and 
 	  SCF_IMPLEMENT_IBASE and companions.
-	- Marten removed the highly unfinished and previously wrongly added
-	  pvs culler plugin.
 	- res made the manual and API docs include the version number in their
 	  respective titles.  One idea is to make the different versions more
 	  distinguishable in e.g. search results.
@@ -295,19 +206,12 @@ chronological order.
 	  CSEXTRA.
 28-May-2007
 	- res wrote the lighter2 "Developer's Manual".
-	- Marten fixed master include headers w.r.t. csutil/threading.
 25-May-2007
 	- Jorrit cleaned up several old unused (and/or broken) walktest
 	  commands. Also removed them from the key bindings.
-	- Jorrit fixed mesh selection in walktest.
-	- Jorrit added support for mesh movement. This helps to reposition
-	  objects on a terrain (for example).
-	- Jorrit changed the hotkeys for split-view and related (now
-	  equal to 'v', 'shift-'v, and 'alt-v').
 24-May-2007
 	- Jorrit fixed a bug in the socket docs.
-	- Jorrit created 1.2 branch and bumped version of trunk from 1.1
-	  to 1.3.
+	- Jorrit created the 1.2 branch and marked that version as 1.2rc1.
 22-May-2007
 	- Genjix correct SCF Test example.
 21-May-2007
@@ -2713,6 +2617,7 @@ chronological order.
 	- mdmkolbe fixed searching of Cygwin paths.
 	- mdmkolbe added CS_CONFIGDIR to configuration search paths on Cygwin.
 	- Marten added a "outward spiral" term to spiral particle effector.
+>>>>>>> .merge-right.r26425
 9-Oct-2006
 	- res fixed a problem in the iConfigIterator::HasNext() which
 	  manifested itself in scrambled "could not load plugin" messages

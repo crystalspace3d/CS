@@ -42,7 +42,7 @@ namespace CS
 	if (msg) fprintf (stderr, 
 	  "Message:          %s\n", msg);
 	fflush (stderr);
-	CS::Debug::DebugBreak();
+	CS_DEBUG_BREAK;
 	return;
       }
       
@@ -70,7 +70,7 @@ namespace CS
       const char* ignoreEnv = getenv ("CS_ASSERT_IGNORE");
       if (!ignoreEnv || (atoi (ignoreEnv) == 0))
       {
-	CS::Debug::DebugBreak();
+	CS_DEBUG_BREAK;
       }
     }
     

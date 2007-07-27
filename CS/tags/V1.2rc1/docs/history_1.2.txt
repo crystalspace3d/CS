@@ -1,0 +1,69 @@
+1.2 branch log.
+
+24-Jul-2007
+	- Jorrit merged r27290:27292 into 1.2 (MacOS/X warning fixes).
+	- Jorrit merged r27297:27303 into 1.2 (warnings, OpenGL, MacOS/X).
+	- Jorrit merged r27118 into 1.2 (new SCF).
+23-Jul-2007
+	- res merged r27294 into 1.2 (crystal.m4 fix).
+	- res updated scripts/jamtemplate/cel.m4 with the latest version from
+	  the CEL repository.
+22-Jul-2007
+	- Vincent merged r27282 into 1.2 (#278 fix).
+20-Jul-2007
+	- Vincent merged r27224 into 1.2 (csQsqrt() configure check fix).
+	- Vincent merged r27263 into 1.2 (Mac OS X compilation and deprecation
+	  warnings fixes).
+	- Vincent merged r27264:27265 into 1.2 (Remove outdated entries from
+	  vfs.cfg and vfs.cfg.template).
+19-Jul-2007
+	- Vincent merged r27038 into 1.2 (xextf86vm & xextshm SCF fixes).
+18-Jul-2007
+	- Jorrit merged r26988 into 1.2 (SCF stuff).
+	- Jorrit merged r27072:27074 into 1.2 (MacOS/X fixes).
+	- Jorrit merged r27211 into 1.2 (SCF stuff).
+	- Jorrit merged r27222:27223 into 1.2 (MacOS/X fixes).
+	- Jorrit merged r27232 into 1.2 (csKeyEventHelper::GetModifierBits()).
+	- Jorrit merged r27235 into 1.2 (csSpline fixes).
+	- Jorrit merged r27231 into 1.2 (enable GNU C extensions/dmalloc).
+	- res merged r27251, r27255 into 1.2 (cs-config wrapper improvements).
+	- res reverted some breaking and undesireable changes that crept in
+	  via r26988 and merged r27005, r27006 (SCF fixes).
+	- res merged r27181, r27183, r27186, r27189, r27190, r27195, 
+	  r27211:27213 (lighter2 fixes and improvements + related 
+	  CS::SubRectangles changes).
+	- res merged r27193 into 1.2 (don't reload shaders on engine close).
+1-Jul-2007
+	- Vincent merged r27167:27169 into 1.2 (portable replacements for
+	  isnan() and isnormal()).
+27-Jun-2007
+	- Jorrit merged r27079 into 1.2 (walktest recording crasher).
+	- Jorrit merged r27080, r27087:27089, r27093:r27094, and r27096
+	  into 1.2 (CollideRay).
+	- Jorrit merged r27048 into 1.2 (javac detection fix).
+	- Jorrit merged r27090 into 1.2 (windows joystick).
+	- Jorrit merged r27153 into 1.2 (gmeshanim/socket leak).
+24-Jun-2007
+	- Eric Sunshine merged r27108 into 1.2 (#348 fix).
+	- res merged r27110:27112 into 1.2 (install branch history).
+23-Jun-2007
+	- res merged r27099 into 1.2 (#347 fix).
+6-Jun-2007
+	- res merged r26991 into 1.2 (docs tweak).
+	- res merged r27009 into 1.2 (cs-config wrapper fixes).
+1-Jun-2007
+	- res removed weaver-based shaders.
+31-May-2007
+	- Jorrit merged r26971 into 1.2 (lighter2 docs).
+	- Jorrit merged r26982 into 1.2 (threading doc fix).
+	- Jorrit merged r26983 into 1.2 (lighter2 factory fix).
+	- Jorrit merged r26984 into 1.2 (csString fix).
+	- Jorrit merged r26986 into 1.2 (leftover AWS stuff).
+	- Jorrit merged r26990 into 1.2 (CS version in doc titles).
+29-May-2007
+	- Jorrit removed shaderweaver from 1.2 (#307).
+	- Jorrit disabled imposters because they are currently
+	  not working yet.
+25-May-2007
+	- Jorrit merged r26967 into 1.2 (small walktest cleanup).
+

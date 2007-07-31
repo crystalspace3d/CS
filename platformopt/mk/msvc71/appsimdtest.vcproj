@@ -315,12 +315,18 @@
 				RelativePath="..\..\apps\tests\simdtest\simdtest.cpp">
 			</File>
 			<File
+				RelativePath="..\..\apps\tests\simdtest\simdtestAV.cpp">
+			</File>
+			<File
 				RelativePath="..\..\apps\tests\simdtest\simdtestSSE.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
+			<File
+				RelativePath="..\..\apps\tests\simdtest\simdfunc.h">
+			</File>
 			<File
 				RelativePath="..\..\apps\tests\simdtest\simdtest.h">
 			</File>

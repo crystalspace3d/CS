@@ -315,10 +315,7 @@
 				RelativePath="..\..\apps\tests\simdtest\simdtest.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\tests\simdtest\simdtestAV.cpp">
-			</File>
-			<File
-				RelativePath="..\..\apps\tests\simdtest\simdtestSSE.cpp">
+				RelativePath="..\..\apps\tests\simdtest\simdtestAVSSE.cpp">
 			</File>
 		</Filter>
 		<Filter

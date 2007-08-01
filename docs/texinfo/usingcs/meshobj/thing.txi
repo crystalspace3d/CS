@@ -19,8 +19,7 @@ This mesh object represents a 'thing' which is a very often used
 geometry object in Crystal Space. Things are often used to mark the bounding
 geometry of a sector so that it represents a closed space. Things are not
 very dynamic in nature (although you can have things that move) so they
-are most often used for static geometry. Things are considered deprecated
-and you should use 'genmesh' instead. @xref{MeshObject Genmesh}.
+are most often used for static geometry.
 
 Things support general polygons (as opposed to only supporting triangles).
 
@@ -211,7 +210,8 @@ Using this you can set the alpha transparency factor of this polygon.
 This is a value between 0 and 100.
 @item <mixmode><mode /></mixmode>
 With this you can control more blending options for the polygon.
-@pxref{XMLServices Mixmode}.
+One of @samp{add}, @samp{alpha}, @samp{copy}, @samp{keycolor},
+@samp{multiply2}, @samp{multiply}, or @samp{transparent}.
 @item len(scale) FIXME: obsolete ?
 This is similar to the @samp{texlen} command in the part and also to the
 @samp{len} command in the texture definition but it is repeated here

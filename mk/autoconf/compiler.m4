@@ -88,9 +88,6 @@ AC_DEFUN([CS_PROG_LINK],[
 	[CS_EMIT_BUILD_PROPERTY([CMD.LINK], [AS_ESCAPE([$(CMD.C++)])])],
 	[CS_EMIT_BUILD_PROPERTY([CMD.LINK], [AS_ESCAPE([$(CMD.CC)])])])
 
-    CS_CHECK_TOOLS([LD], [ld])
-    CS_EMIT_BUILD_PROPERTY([CMD.LD], [$LD])
-    
     CS_EMIT_BUILD_PROPERTY([COMPILER.LFLAGS], [$LDFLAGS], [+])
 
     # Check if compiler/linker recognizes -shared directive which is needed for
@@ -132,9 +129,9 @@ AC_DEFUN([CS_PROG_LINK],[
 	[AC_HELP_STRING([--enable-as-needed],
 	    [Utilize --as-needed linker flag, if supported by linker and if
 	    the used binutils version is recent enough to support it properly
-	    (default YES)])])
+	    (default NO)])])
     AS_IF([test -z "$enable_as_needed"], 
-	[enable_as_needed=yes])
+	[enable_as_needed=no])
     AS_IF([test "$enable_as_needed" != "no"],
 	[AC_REQUIRE([CS_CHECK_BINUTILS_2_17])
 	AS_IF([test "$cs_cv_binutils_2_17" = "yes"],

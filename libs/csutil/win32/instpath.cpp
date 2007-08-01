@@ -17,7 +17,6 @@
 */
 
 #include "cssysdef.h"
-#include "csver.h"
 #include "csutil/sysfunc.h"
 #include "csutil/syspath.h"
 #include "shellstuff.h"
@@ -29,9 +28,6 @@
 
 #include "csutil/util.h"
 
-#define VERSION_STR         CS_VERSION_MAJOR "_" CS_VERSION_MINOR
-#define VERSION_STR_DOTTED  CS_VERSION_MAJOR "." CS_VERSION_MINOR
-
 static inline bool GetRegistryInstallPath (const HKEY parentKey, 
 					   char *oInstallPath, 
 					   DWORD iBufferSize)
@@ -42,14 +38,8 @@ static inline bool GetRegistryInstallPath (const HKEY parentKey,
   HKEY m_pKey;
   LONG result;
 
-  result = RegOpenKeyEx (parentKey, 
-    "Software\\CrystalSpace\\" VERSION_STR_DOTTED,
+  result = RegOpenKeyEx (parentKey, "Software\\CrystalSpace",
     0, KEY_READ, &m_pKey);
-  if (result == ERROR_SUCCESS)
-  {
-    result = RegOpenKeyEx (parentKey, "Software\\CrystalSpace",
-      0, KEY_READ, &m_pKey);
-  }
   if (result == ERROR_SUCCESS)
   {
     result = RegQueryValueEx(
@@ -90,14 +80,8 @@ static inline bool GetRegistryInstallPath (const HKEY parentKey,
   HKEY m_pKey;
   LONG result;
 
-  result = RegOpenKeyEx (parentKey, 
-    "Software\\CrystalSpace\\" VERSION_STR_DOTTED,
+  result = RegOpenKeyEx (parentKey, "Software\\CrystalSpace",
     0, KEY_READ, &m_pKey);
-  if (result == ERROR_SUCCESS)
-  {
-    result = RegOpenKeyEx (parentKey, "Software\\CrystalSpace",
-      0, KEY_READ, &m_pKey);
-  }
   if (result == ERROR_SUCCESS)
   {
     result = RegQueryValueEx(
@@ -177,9 +161,7 @@ static inline char* FindConfigPath ()
   // the shared systemwide registry strategy; this is the best approach unless
   // someone implements a SetInstallPath() to override it before Open() is
   // called.
-  char *envpath = getenv ("CRYSTAL_" VERSION_STR);
-  if (!envpath || !*envpath)
-    envpath = getenv ("CRYSTAL");
+  char *envpath = getenv ("CRYSTAL");
   if (envpath && *envpath)
   {
     // Multiple paths. Take first one...
@@ -243,14 +225,14 @@ static inline char* FindConfigPath ()
       size_t maxLen = MIN(sizeof(programpath), 1024-30);
       memcpy (path, programpath, maxLen);
       path[maxLen] = 0;
-      strcat (path, "\\" CS_PACKAGE_NAME " " VERSION_STR_DOTTED);
+      strcat (path, "\\" CS_PACKAGE_NAME);
       return csStrNew (path);
     }
   }
 
   // nothing helps, use default
   // which is "C:\Program Files\CrystalSpace"
-  strcpy (path, "C:\\Program Files\\" CS_PACKAGE_NAME " " VERSION_STR_DOTTED);
+  strcpy (path, "C:\\Program Files\\" CS_PACKAGE_NAME);
 
   return csStrNew (path);
 }
@@ -292,9 +274,7 @@ csPathsList* csInstallationPathsHelper::GetPlatformInstallationPaths()
   // the shared systemwide registry strategy; this is the best approach unless
   // someone implements a SetInstallPath() to override it before Open() is
   // called.
-  const char *envpath = getenv ("CRYSTAL_" VERSION_STR);
-  if (!envpath || !*envpath)
-    envpath = getenv ("CRYSTAL");
+  const char *envpath = getenv ("CRYSTAL");
   if (envpath && *envpath)
   {
     // Multiple paths, split.
@@ -341,13 +321,12 @@ csPathsList* csInstallationPathsHelper::GetPlatformInstallationPaths()
     csString path;
     if (GetShellFolderPath (CSIDL_PROGRAM_FILES, path))
     {
-      path << CS_PATH_SEPARATOR << CS_PACKAGE_NAME " " VERSION_STR_DOTTED;
+      path << CS_PATH_SEPARATOR << CS_PACKAGE_NAME;
       paths->AddUniqueExpanded (path);
     }
   }
 
-  paths->AddUniqueExpanded (
-    "C:\\Program Files\\" CS_PACKAGE_NAME " " VERSION_STR_DOTTED);
+  paths->AddUniqueExpanded ("C:\\Program Files\\" CS_PACKAGE_NAME);
 
   return paths;
 }

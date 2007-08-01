@@ -43,11 +43,8 @@ public:
   /// Initialize a color object (contents undefined)
   csColor () { }
   /// Initialize a color object with given R,G,B components
-  csColor (float r, float g, float b) : red (r), green (g), blue (b)
-  {}
-  /// Initialize a color object with same content in R,G,B components
-  csColor (float v) : red (v), green (v), blue (v)
-  {}
+  csColor (float r, float g, float b)
+  { red = r; green = g; blue = b; }
   /// Initialize a color object with an existing color
   csColor (const csColor& c)
   { red = c.red; green = c.green; blue = c.blue; }
@@ -70,16 +67,6 @@ public:
     if (red < 0) red = 0;
     if (green < 0) green = 0;
     if (blue < 0) blue = 0;
-  }
-  /// Check if color is all black (red green and blue all 0)
-  bool IsBlack () const
-  {
-    return (red == 0 && green == 0 && blue == 0);
-  }
-  /// Check if color is all black (red green and blue all below threshold)
-  bool IsBlack (float threshold) const
-  {
-    return (red < threshold && green < threshold && blue < threshold);
   }
   /// Assign one color object to another.
   csColor& operator= (const csColor& c)
@@ -117,9 +104,6 @@ public:
   /// Subtract given R,G,B components from color.
   void Subtract (float r, float g, float b)
   { red -= r; green -= g; blue -= b; }
-  /// Return luminance of pixel (assuming sRGB color space)
-  float Luminance() const
-  { return red*0.2126f + green*0.7152f + blue*0.0722f; }
 };
 
 /// Divide a color by a scalar.

@@ -34,15 +34,11 @@ struct iMaterialWrapper;
 struct iMeshFactoryWrapper;
 struct iObject;
 struct iTextureWrapper;
-struct iThingFactoryState;
-struct iMeshWrapper;
 
 namespace CS
 {
-namespace Utility
-{ 
-  namespace Implementation
-  {
+  namespace ImportKitImpl 
+  { 
     struct GluedModel
     {
       csDirtyAccessArray<csVector3> allVertices;
@@ -56,7 +52,7 @@ namespace Utility
     {
       iObjectRegistry* objectReg;
       csRef<iVFS> vfs;
-      csBlockAllocator<GluedModel> glueModelPool;
+      csBlockAllocator<ImportKitImpl::GluedModel> glueModelPool;
       csHash<size_t, csPtrKey<iMaterialWrapper> > material2texture;
       csHash<size_t, csPtrKey<iTextureWrapper> > texture2id;
       size_t texId;
@@ -105,14 +101,6 @@ namespace Utility
       /// Check whether an engine object is a Thing factory and handle if so
       bool ProbeThingFactory (ImportKit::Container& container, 
 	iMeshFactoryWrapper* fact, const char* name);
-      /// Convert thing factory geometry into importkit Mesh geometry
-      bool HandleThingFactory (ImportKit::Container::Model& newModel,
-        iThingFactoryState* thingFact);
-      /// Check whether an engine object is a mesh object and handle if so
-      bool ProbeMeshObject (ImportKit::Container& container, iObject* obj);
-      /// Check whether an engine object is a Thing object and handle if so
-      bool ProbeThingObject (ImportKit::Container& container, 
-	iMeshWrapper* wrap, const char* name);
     public:
       Glue (iObjectRegistry* objectReg);
       ~Glue();
@@ -121,8 +109,7 @@ namespace Utility
 	const char* path, ImportKit::Container& container);
     };
 
-  } // namespace Implementation
-} // namespace Utility
+  } // namespace ImportKitImpl 
 } // namespace CS
 
 #endif // __CS_LIBS_CSTOOL_IMPORTKIT_GLUE_H__

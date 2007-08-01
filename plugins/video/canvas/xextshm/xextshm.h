@@ -21,7 +21,7 @@
 #define __CS_XESTSHM_H__
 
 #include <stdarg.h>
-#include "csutil/scf_implementation.h"
+#include "csutil/scf.h"
 #include "iutil/eventh.h"
 #include "iutil/comp.h"
 #include "plugins/video/canvas/xwindowcommon/xextshm.h"
@@ -40,9 +40,7 @@ extern "C" {
 #  include <sys/shm.h>
 }
 
-class csXExtSHM : public scfImplementation2<csXExtSHM, 
-                                            iXExtSHM,
-                                            iComponent>
+class csXExtSHM : public iXExtSHM
 {
   /// The Object Registry
   iObjectRegistry *object_reg;
@@ -57,6 +55,7 @@ class csXExtSHM : public scfImplementation2<csXExtSHM,
   int Width, Height;
 
 public:
+  SCF_DECLARE_IBASE;
 
   csXExtSHM (iBase*);
   virtual ~csXExtSHM ();
@@ -69,6 +68,12 @@ public:
   virtual void DestroyMemory ();
   virtual void Print (Window window, GC gc, csRect const* area);
 
+  struct eiComponent : public iComponent
+  {
+    SCF_DECLARE_EMBEDDED_IBASE(csXExtSHM);
+    virtual bool Initialize (iObjectRegistry *o)
+    { return scfParent->Initialize(o); }
+  } scfiComponent;
 
 };
 

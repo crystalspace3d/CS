@@ -187,10 +187,10 @@ void MD32spr::Main()
   bool head = false, torso = false, leg = false;
   //csString baseName;
 
-  cmdline = csQueryRegistry<iCommandLineParser> (object_reg);
+  cmdline = CS_QUERY_REGISTRY(object_reg, iCommandLineParser);
 
-  vfs = csQueryRegistry<iVFS> (object_reg);
-  out = csQueryRegistry<iVFS> (object_reg);
+  vfs = CS_QUERY_REGISTRY(object_reg, iVFS);
+  out = CS_QUERY_REGISTRY(object_reg, iVFS);
   /*
      Currently we handle only .zip files. Because of the difficulty in
      accessing and reading directories consistently across platforms.
@@ -378,7 +378,7 @@ void MD32spr::Main()
     }
   }
 
-  if (weaponDir && !generic.GetSize ())
+  if (weaponDir && !generic.Length())
     ReportError
       ("Fatal Error: Weapon Directory \"%s\" not found or error allocating memory",
        weaponDir.GetData());
@@ -672,9 +672,9 @@ void MD32spr::Write()
 
   if (!player && !weaponDir)
   {
-    if (generic.GetSize ())
+    if (generic.Length())
     {
-      for (i = 0; i < generic.GetSize (); i++)
+      for (i = 0; i < generic.Length(); i++)
       {
         md3Model *mdl = generic.Get(i);
         mdlName = new char[strlen(mdl->GetFileName()) + 1];
@@ -756,7 +756,7 @@ void MD32spr::Write()
     }
     if (weaponDir)
     {
-      for (i = 0; i < generic.GetSize (); i++)
+      for (i = 0; i < generic.Length(); i++)
       {
 	md3Model *mdl = generic.Get(i);
 	csRef < iDocumentSystem > xml(csPtr < iDocumentSystem >

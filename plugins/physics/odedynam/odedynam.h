@@ -24,7 +24,6 @@
 #include "csgeom/transfrm.h"
 #include "csgeom/vector3.h"
 #include "csutil/dirtyaccessarray.h"
-#include "csutil/weakrefarr.h"
 #include "csutil/nobjvec.h"
 #include "csutil/refarr.h"
 #include "csutil/csstring.h"
@@ -52,9 +51,6 @@ struct iMeshWrapper;
 struct iODEFrameUpdateCallback;
 struct iObjectRegistry;
 struct iVirtualClock;
-
-CS_PLUGIN_NAMESPACE_BEGIN(odedynam)
-{
 
 ////////////////////////////////////////////
 // NOTE
@@ -101,26 +97,11 @@ struct MeshInfo
 
 typedef csDirtyAccessArray<ContactEntry> csContactList;
 
-class csODECollider;
-
-// Helper base for classes that can contain multiple colliders
-struct ColliderContainer
-{
-  virtual bool DoFullInertiaRecalculation () const = 0;
-  virtual void RecalculateFullInertia (csODECollider* thisCol) = 0;
-};
-
 /**
  * This is the implementation for the actual plugin.
  * It is responsible for creating iDynamicSystem.
  */
-class csODEDynamics : 
-  public scfImplementation3<csODEDynamics,
-                            iDynamics,
-                            iComponent,
-                            iODEDynamicState>
-
-
+class csODEDynamics : public iDynamics
 {
 private:
   iObjectRegistry* object_reg;
@@ -139,8 +120,6 @@ private:
   float total_elapsed;
   csRefArrayObject<iODEFrameUpdateCallback> updates;
 
-  csWeakRefArray<iDynamicsStepCallback> step_callbacks;
-
   bool stepfast;
   int sfiter;
   bool quickstep;
@@ -149,6 +128,8 @@ private:
 
   csEventID PreProcess;
 public:
+  SCF_DECLARE_IBASE;
+
   csODEDynamics (iBase* parent);
   virtual ~csODEDynamics ();
   bool Initialize (iObjectRegistry* object_reg);
@@ -161,11 +142,6 @@ public:
   virtual void RemoveSystems ();
 
   virtual void Step (float stepsize);
-
-  void AddStepCallback (iDynamicsStepCallback *callback)
-  {step_callbacks.Push (callback);}
-  void RemoveStepCallback (iDynamicsStepCallback *callback)
-  {step_callbacks.Delete (callback);}
 
   static void NearCallback (void *data, dGeomID o1, dGeomID o2);
   static int CollideMeshMesh (dGeomID mesh1, dGeomID mesh2, int flags,
@@ -216,17 +192,84 @@ public:
   void EnableFastObjects (bool enable) { fastobjects = enable; }
   bool FastObjectsEnabled () { return false; }
 
+  struct ODEDynamicState : public iODEDynamicState
+  {
+    SCF_DECLARE_EMBEDDED_IBASE (csODEDynamics);
+    void SetGlobalERP (float erp)
+    { scfParent->SetGlobalERP (erp); }
+    float GlobalERP ()
+    { return scfParent->GlobalERP (); }
+    void SetGlobalCFM (float cfm)
+    { scfParent->SetGlobalCFM (cfm); }
+    float GlobalCFM ()
+    { return scfParent->GlobalCFM (); }
+    void EnableStepFast (bool enable)
+    { scfParent->EnableStepFast (enable); }
+    bool StepFastEnabled ()
+    { return scfParent->StepFastEnabled (); }
+    void SetStepFastIterations (int iter)
+    { scfParent->SetStepFastIterations (iter); }
+    int StepFastIterations ()
+    { return scfParent->StepFastIterations (); }
+    void EnableQuickStep (bool enable)
+    { scfParent->EnableQuickStep (enable); }
+    bool QuickStepEnabled ()
+    { return scfParent->QuickStepEnabled (); }
+    void SetQuickStepIterations (int iter)
+    { scfParent->SetQuickStepIterations (iter); }
+    int QuickStepIterations ()
+    { return scfParent->QuickStepIterations (); }
+    void EnableFrameRate (bool enable)
+    { scfParent->EnableFrameRate (enable); }
+    bool FrameRateEnabled ()
+    { return scfParent->FrameRateEnabled (); }
+    void SetFrameRate (float hz)
+    { scfParent->SetFrameRate (hz); }
+    float FrameRate ()
+    { return scfParent->FrameRate (); }
+    void SetFrameLimit (float hz)
+    { scfParent->SetFrameLimit (hz); }
+    float FrameLimit ()
+    { return scfParent->FrameLimit (); }
+    void AddFrameUpdateCallback (iODEFrameUpdateCallback *cb)
+    { scfParent->AddFrameUpdateCallback (cb); }
+    void RemoveFrameUpdateCallback (iODEFrameUpdateCallback *cb)
+    { scfParent->RemoveFrameUpdateCallback (cb); }
+    void EnableEventProcessing (bool enable)
+    { scfParent->EnableEventProcessing (enable); }
+    bool EventProcessingEnabled ()
+    { return scfParent->EventProcessingEnabled (); }
+    void EnableFastObjects (bool enable)
+    { scfParent->EnableFastObjects (enable); }
+    bool FastObjectsEnabled ()
+    { return scfParent->FastObjectsEnabled (); }
+  } scfiODEDynamicState;
+
+  struct Component : public iComponent
+  {
+    SCF_DECLARE_EMBEDDED_IBASE (csODEDynamics);
+    virtual bool Initialize (iObjectRegistry* object_reg)
+    {
+      return scfParent->Initialize (object_reg);
+    }
+  } scfiComponent;
+
   bool HandleEvent (iEvent& Event);
-  struct EventHandler : public scfImplementation1<EventHandler, iEventHandler>
+  struct EventHandler : public iEventHandler
   {
   private:
-    csWeakRef<csODEDynamics> parent;
+    csODEDynamics* parent;
   public:
-    EventHandler (csODEDynamics* parent) : scfImplementationType (this),
-      parent (parent) { }
-    virtual ~EventHandler () { }
+    SCF_DECLARE_IBASE;
+    EventHandler (csODEDynamics* parent)
+    {
+      SCF_CONSTRUCT_IBASE (0);
+      EventHandler::parent = parent;
+    }
+    virtual ~EventHandler ()
+    { SCF_DESTRUCT_IBASE (); }
     virtual bool HandleEvent (iEvent& ev)
-    { return parent ? parent->HandleEvent (ev) : false; }
+    { return parent->HandleEvent (ev); }
     CS_EVENTHANDLER_NAMES("crystalspace.dynamics.ode")
     CS_EVENTHANDLER_NIL_CONSTRAINTS
   };
@@ -235,7 +278,6 @@ public:
 
 class csODEBodyGroup;
 class csODEJoint;
-class csODECollider;
 struct csStrictODEJoint;
 
 /**
@@ -244,12 +286,7 @@ struct csStrictODEJoint;
  * It also handles collision response.
  * Collision detection is done in another plugin.
  */
-class csODEDynamicSystem : 
-  public scfImplementationExt2<csODEDynamicSystem,
-                               csObject,
-                               iDynamicSystem,
-                               iODEDynamicSystemState>,
-  public ColliderContainer
+class csODEDynamicSystem : public csObject
 {
 private:
   dWorldID worldID;
@@ -264,11 +301,7 @@ private:
   csRefArray<csODEJoint> joints;
   csRefArray<csStrictODEJoint> strict_joints;
   //here are all colliders
-  csRefArray<csODECollider> colliders;
-
-  // For getting collision mesh data.
-  csStringID base_id;
-  csStringID colldet_id;
+  csRefArray<iDynamicsSystemCollider> colliders;
 
   bool rateenabled;
   float steptime, limittime;
@@ -281,11 +314,98 @@ private:
   int qsiter;
   bool fastobjects;
   bool autodisable;
-  bool correctInertiaWorkAround;
 
 public:
-  csStringID GetBaseID () const { return base_id; }
-  csStringID GetColldetID () const { return colldet_id; }
+  SCF_DECLARE_IBASE_EXT (csObject);
+
+  struct DynamicSystem : public iDynamicSystem {
+    SCF_DECLARE_EMBEDDED_IBASE (csODEDynamicSystem);
+    iObject *QueryObject ()
+    { return scfParent; }
+    void SetGravity (const csVector3 &v)
+    { scfParent->SetGravity (v); }
+    const csVector3 GetGravity () const
+    { return scfParent->GetGravity (); }
+    void SetLinearDampener (float d)
+    { scfParent->SetLinearDampener (d); }
+    float GetLinearDampener () const
+    { return scfParent->GetLinearDampener (); }
+    void SetRollingDampener (float d)
+    { scfParent->SetRollingDampener (d); }
+    float GetRollingDampener () const
+    { return scfParent->GetRollingDampener (); }
+    void EnableAutoDisable (bool enable)
+    { scfParent->EnableAutoDisable (enable); }
+    bool AutoDisableEnabled ()
+    { return scfParent->AutoDisableEnabled (); }
+    void SetAutoDisableParams (float linear, float angular, int steps,
+    	float time)
+    { scfParent->SetAutoDisableParams (linear, angular, steps, time); }
+    void Step (float stepsize)
+    { scfParent->Step (stepsize); }
+    csPtr<iRigidBody> CreateBody ()
+    { return scfParent->CreateBody (); }
+    void RemoveBody (iRigidBody *body)
+    { scfParent->RemoveBody (body); }
+    iRigidBody *FindBody (const char *name)
+    { return scfParent->FindBody (name); }
+    iRigidBody *GetBody (unsigned int index)
+    {return scfParent->GetBody (index);}
+    int GetBodysCount ()
+    {return scfParent->GetBodysCount ();}
+    csPtr<iBodyGroup> CreateGroup ()
+    { return scfParent->CreateGroup (); }
+    void RemoveGroup (iBodyGroup *group)
+    { scfParent->RemoveGroup (group); }
+    csPtr<iJoint> CreateJoint ()
+    { return scfParent->CreateJoint (); }
+    void RemoveJoint (iJoint *joint)
+    { scfParent->RemoveJoint (joint); }
+    iDynamicsMoveCallback* GetDefaultMoveCallback ()
+    { return scfParent->GetDefaultMoveCallback (); }
+    bool AttachColliderMesh (iMeshWrapper* mesh, const csOrthoTransform& trans,
+            float friction, float elasticity, float softness)
+    { return scfParent->AttachColliderMesh (mesh, trans, friction, elasticity,
+    	softness); }
+    bool AttachColliderCylinder (float length, float radius,
+            const csOrthoTransform& trans, float friction, float elasticity,
+	    float softness)
+    {
+      return scfParent->AttachColliderCylinder (length, radius, trans,
+      	friction, elasticity, softness);
+    }
+    bool AttachColliderBox (const csVector3 &size, const csOrthoTransform&
+            trans, float friction, float elasticity, float softness)
+    {
+      return scfParent->AttachColliderBox (size, trans, friction, elasticity,
+    	softness);
+    }
+    bool AttachColliderSphere (float radius, const csVector3 &offset,
+      float friction, float elasticity, float softness)
+    {
+      return scfParent->AttachColliderSphere (radius, offset, friction,
+      	elasticity, softness);
+    }
+    bool AttachColliderPlane (const csPlane3 &plane, float friction,
+      float elasticity, float softness)
+    {
+      return scfParent->AttachColliderPlane (plane, friction, elasticity,
+        softness);
+    }
+    csRef<iDynamicsSystemCollider> GetCollider (unsigned int index)
+    {return scfParent->GetCollider (index);}
+    int GetColliderCount ()
+    {return scfParent->GetColliderCount ();}
+    csRef<iDynamicsSystemCollider> CreateCollider ()
+    {return scfParent->CreateCollider ();}
+    void DestroyColliders ()
+    {scfParent->DestroyColliders ();}
+    void DestroyCollider (iDynamicsSystemCollider* collider) 
+    {scfParent->DestroyCollider (collider);}
+    void AttachCollider (iDynamicsSystemCollider* collider)
+    {scfParent->AttachCollider (collider);}
+  } scfiDynamicSystem;
+  friend struct DynamicSystem;
 
   void SetERP (float erp) { dWorldSetERP (worldID, erp); }
   float ERP () { return dWorldGetERP (worldID); }
@@ -323,21 +443,102 @@ public:
   float GetContactMaxCorrectingVel ();
   void SetContactSurfaceLayer (float depth);
   float GetContactSurfaceLayer ();
-  void EnableOldInertia (bool enable)
-  { correctInertiaWorkAround = enable; }
-  bool IsOldInertiaEnabled () const
-  { return correctInertiaWorkAround; }
 
-  csODEDynamicSystem (iObjectRegistry* object_reg, float erp, float cfm);
+  struct ODEDynamicSystemState : public iODEDynamicSystemState
+  {
+    SCF_DECLARE_EMBEDDED_IBASE (csODEDynamicSystem);
+    void SetERP (float erp)
+    { scfParent->SetERP (erp); }
+    float ERP ()
+    { return scfParent->ERP (); }
+    void SetCFM (float cfm)
+    { scfParent->SetCFM (cfm); }
+    float CFM ()
+    { return scfParent->CFM (); }
+    void EnableStepFast (bool enable)
+    { scfParent->EnableStepFast (enable); }
+    bool StepFastEnabled ()
+    { return scfParent->StepFastEnabled (); }
+    void SetStepFastIterations (int iter)
+    { scfParent->SetStepFastIterations (iter); }
+    int StepFastIterations ()
+    { return scfParent->StepFastIterations (); }
+    void EnableQuickStep (bool enable)
+    { scfParent->EnableQuickStep (enable); }
+    bool QuickStepEnabled ()
+    { return scfParent->QuickStepEnabled (); }
+    void SetQuickStepIterations (int iter)
+    { scfParent->SetQuickStepIterations (iter); }
+    int QuickStepIterations ()
+    { return scfParent->QuickStepIterations (); }
+    void EnableFrameRate (bool enable)
+    { scfParent->EnableFrameRate (enable); }
+    bool FrameRateEnabled ()
+    { return scfParent->FrameRateEnabled (); }
+    void SetFrameRate (float hz)
+    { scfParent->SetFrameRate (hz); }
+    float FrameRate ()
+    { return scfParent->FrameRate (); }
+    void SetFrameLimit (float hz)
+    { scfParent->SetFrameLimit (hz); }
+    float FrameLimit ()
+    { return scfParent->FrameLimit (); }
+    void AddFrameUpdateCallback (iODEFrameUpdateCallback *cb)
+    { scfParent->AddFrameUpdateCallback (cb); }
+    void RemoveFrameUpdateCallback (iODEFrameUpdateCallback *cb)
+    { scfParent->RemoveFrameUpdateCallback (cb); }
+    void EnableFastObjects (bool enable)
+    { scfParent->EnableFastObjects (enable); }
+    bool FastObjectsEnabled ()
+    { return scfParent->FastObjectsEnabled (); }
+    void EnableAutoDisable (bool enable)
+    { scfParent->EnableAutoDisable (enable); }
+    bool AutoDisableEnabled ()
+    { return scfParent->AutoDisableEnabled (); }
+    void SetAutoDisableParams (float linear, float angular, int steps,
+    	float time)
+    { scfParent->SetAutoDisableParams (linear, angular, steps, time); }
+    csPtr<iODEBallJoint> CreateBallJoint ()
+    { return scfParent->CreateBallJoint (); }
+    csPtr<iODEUniversalJoint> CreateUniversalJoint ()
+    { return scfParent->CreateUniversalJoint (); }
+    csPtr<iODEAMotorJoint> CreateAMotorJoint ()
+    { return scfParent->CreateAMotorJoint (); }
+    csPtr<iODEHingeJoint> CreateHingeJoint ()
+    { return scfParent->CreateHingeJoint (); }
+    csPtr<iODEHinge2Joint> CreateHinge2Joint ()
+    { return scfParent->CreateHinge2Joint (); }
+    csPtr<iODESliderJoint> CreateSliderJoint ()
+    { return scfParent->CreateSliderJoint (); }
+    void RemoveJoint (iODEBallJoint *joint)
+    { scfParent->RemoveJoint (joint); }
+    void RemoveJoint (iODEAMotorJoint *joint)
+    { scfParent->RemoveJoint (joint); }
+    void RemoveJoint (iODEHingeJoint *joint)
+    { scfParent->RemoveJoint (joint); }
+    void RemoveJoint (iODEHinge2Joint *joint)
+    { scfParent->RemoveJoint (joint); }
+    void RemoveJoint (iODEUniversalJoint *joint)
+    { scfParent->RemoveJoint (joint); }
+    void RemoveJoint (iODESliderJoint *joint)
+    { scfParent->RemoveJoint (joint); }
+    void SetContactMaxCorrectingVel (float v)
+    { scfParent->SetContactMaxCorrectingVel(v); }
+    float GetContactMaxCorrectingVel ()
+    { return scfParent->GetContactMaxCorrectingVel(); }
+    void SetContactSurfaceLayer (float depth)
+    { scfParent->SetContactSurfaceLayer(depth); }
+    float GetContactSurfaceLayer ()
+    { return scfParent->GetContactSurfaceLayer(); }
+  } scfiODEDynamicSystemState;
+
+
+  csODEDynamicSystem (float erp, float cfm);
   virtual ~csODEDynamicSystem ();
 
   dWorldID GetWorldID() { return worldID; }
   dSpaceID GetSpaceID() { return spaceID; }
   iCollideSystem* GetCollideSystem() { return collidesys; }
-
-  /**\name iDynamicSystem implementation
-   * @{ */
-  iObject* QueryObject () { return this; }
 
   virtual void SetGravity (const csVector3& v);
   virtual const csVector3 GetGravity () const;
@@ -394,15 +595,9 @@ public:
   void DestroyColliders () {colliders.DeleteAll ();};
   void DestroyCollider (iDynamicsSystemCollider* collider)
   {
-    colliders.Delete ((csODECollider*)collider);
+    colliders.Delete (collider);
   }
   void AttachCollider (iDynamicsSystemCollider* collider);
-  /** @} */
-
-  virtual bool DoFullInertiaRecalculation () const
-  { return !correctInertiaWorkAround; }
-  virtual void RecalculateFullInertia (csODECollider* thisCol) {/*Only static stuff, nothing to recalc*/}
-
 };
 
 class csODERigidBody;
@@ -412,15 +607,15 @@ class csODERigidBody;
  * variable inside the body which will be compared against
  * inside NearCallback
  */
-class csODEBodyGroup : 
-  public scfImplementation1<csODEBodyGroup,
-                            iBodyGroup>
+class csODEBodyGroup : public iBodyGroup
 {
-  csWeakRefArray<iRigidBody> bodies;
+  csRefArrayObject<iRigidBody> bodies;
 
   csODEDynamicSystem* system;
 
 public:
+  SCF_DECLARE_IBASE;
+
   csODEBodyGroup (csODEDynamicSystem *sys);
   virtual ~csODEBodyGroup ();
 
@@ -428,34 +623,29 @@ public:
   void RemoveBody (iRigidBody *body);
   bool BodyInGroup (iRigidBody *body);
 };
-
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
-class csODECollider : public scfImplementation1<csODECollider,
-                                                iDynamicsSystemCollider>
+class csODECollider : public iDynamicsSystemCollider
 {
-  csODEDynamicSystem* dynsys;
   csColliderGeometryType geom_type;
   dGeomID geomID;
   dGeomID transformID;
   dSpaceID spaceID; 
-  ColliderContainer* container;
   float density;
   csRef<iDynamicsColliderCollisionCallback> coll_cb;
   float surfacedata[3];
   bool is_static;
 
 public:
-  csODECollider (csODEDynamicSystem* dynsys, ColliderContainer* container);
+
+  SCF_DECLARE_IBASE;
+
+  csODECollider ();
   virtual ~csODECollider (); 
   
   bool CreateSphereGeometry (const csSphere& sphere);
   bool CreatePlaneGeometry (const csPlane3& plane);
   bool CreateMeshGeometry (iMeshWrapper *mesh);
   bool CreateBoxGeometry (const csVector3& box_size);
-  bool CreateCCylinderGeometry (float length, float radius) 
-  {return CreateCapsuleGeometry (length, radius);}
-  bool CreateCapsuleGeometry (float length, float radius); 
+  bool CreateCCylinderGeometry (float length, float radius);
   bool GetBoxGeometry (csVector3& size); 
   bool GetSphereGeometry (csSphere& sphere);
   bool GetPlaneGeometry (csPlane3& box); 
@@ -492,19 +682,15 @@ public:
   void MakeDynamic ();
   bool IsStatic ();
 
-  void AddMassToBody (bool doSet);
-
 private:
 
   inline void CS2ODEMatrix (const csMatrix3& csmat, dMatrix3& odemat);
   inline void ODE2CSMatrix (const dReal* odemat, csMatrix3& csmat);
-  void MassUpdate ();
+  void MassCorrection ();
   void ClearContents ();
   void KillGeoms ();
 
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 struct GeomData 
 {
@@ -520,17 +706,13 @@ struct GeomData
  * It can also be attached to a movable,
  * to automatically update it.
  */
-class csODERigidBody : 
-  public scfImplementationExt1<csODERigidBody,
-                               csObject,
-                               iRigidBody>, 
-  public ColliderContainer
+class csODERigidBody : public csObject
 {
 private:
   dBodyID bodyID;
   dSpaceID groupID;
   dJointID statjoint;
-  csRefArray<csODECollider> colliders;
+  csRefArray<iDynamicsSystemCollider> colliders;
 
   /* these must be ptrs to avoid circular referencing */
   iBodyGroup* collision_group;
@@ -543,12 +725,157 @@ private:
   csRef<iDynamicsCollisionCallback> coll_cb;
 
 public:
+
+  SCF_DECLARE_IBASE_EXT (csObject);
+
+  struct RigidBody : public iRigidBody
+  {
+    SCF_DECLARE_EMBEDDED_IBASE (csODERigidBody);
+    iObject *QueryObject ()
+    { return scfParent; }
+    bool MakeStatic (void)
+    { return scfParent->MakeStatic (); }
+    bool MakeDynamic (void)
+    { return scfParent->MakeDynamic (); }
+    bool IsStatic (void)
+    { return scfParent->IsStatic (); }
+    bool Disable (void)
+    { return scfParent->Disable (); }
+    bool Enable (void)
+    { return scfParent->Enable (); }
+    bool IsEnabled (void)
+    { return scfParent->IsEnabled (); }
+    csRef<iBodyGroup> GetGroup (void)
+    { return scfParent->GetGroup (); }
+    bool AttachColliderMesh (iMeshWrapper* mesh, const csOrthoTransform& trans,
+        float friction, float density, float elasticity, float softness)
+    {
+      return scfParent->AttachColliderMesh (mesh, trans, friction, density,
+      	elasticity, softness);
+    }
+    bool AttachColliderCylinder (float length, float radius,
+        const csOrthoTransform& trans, float friction, float density,
+	float elasticity, float softness)
+    {
+      return scfParent->AttachColliderCylinder (length, radius, trans,
+      	friction, density, elasticity, softness);
+    }
+    bool AttachColliderBox (const csVector3 &size,
+        const csOrthoTransform& trans, float friction, float density,
+	float elasticity, float softness)
+    {
+      return scfParent->AttachColliderBox (size, trans, friction, density,
+        elasticity, softness);
+    }
+    bool AttachColliderSphere (float radius, const csVector3 &offset,
+        float friction, float density, float elasticity, float softness)
+    {
+      return scfParent->AttachColliderSphere (radius, offset, friction,
+      	density, elasticity, softness);
+    }
+    bool AttachColliderPlane (const csPlane3 &plane, float friction,
+    float density, float elasticity, float softness)
+    {
+      return scfParent->AttachColliderPlane (plane, friction, density,
+        elasticity, softness);
+    }
+    void SetPosition (const csVector3& trans)
+    { scfParent->SetPosition (trans); }
+    const csVector3 GetPosition () const
+    { return scfParent->GetPosition (); }
+    void SetOrientation (const csMatrix3& trans)
+    { scfParent->SetOrientation (trans); }
+    const csMatrix3 GetOrientation () const
+    { return scfParent->GetOrientation (); }
+    void SetTransform (const csOrthoTransform& trans)
+    { scfParent->SetTransform (trans); }
+    const csOrthoTransform GetTransform () const
+    { return scfParent->GetTransform (); }
+    void SetLinearVelocity (const csVector3& vel)
+    { scfParent->SetLinearVelocity (vel); }
+    const csVector3 GetLinearVelocity () const
+    { return scfParent->GetLinearVelocity(); }
+    void SetAngularVelocity (const csVector3& vel)
+    { scfParent->SetAngularVelocity (vel); }
+    const csVector3 GetAngularVelocity () const
+    { return scfParent->GetAngularVelocity (); }
+    void SetProperties (float mass, const csVector3& center,
+    	const csMatrix3& inertia)
+    { scfParent->SetProperties (mass, center, inertia); }
+    void GetProperties (float* mass, csVector3* center, csMatrix3* inertia)
+    { scfParent->GetProperties (mass, center, inertia); }
+    float GetMass ()
+    { return scfParent->GetMass (); }
+    csVector3 GetCenter ()
+    { return scfParent->GetCenter (); }
+    csMatrix3 GetInertia ()
+    { return scfParent->GetInertia (); }
+    void AdjustTotalMass (float targetmass)
+    { scfParent->AdjustTotalMass (targetmass); }
+    void AddForce (const csVector3& force)
+    { scfParent->AddForce (force); }
+    void AddTorque (const csVector3& force)
+    { scfParent->AddTorque (force); }
+    void AddRelForce (const csVector3& force)
+    { scfParent->AddRelForce (force); }
+    void AddRelTorque (const csVector3& force)
+    { scfParent->AddRelTorque (force); }
+    void AddForceAtPos (const csVector3& force, const csVector3& pos)
+    { scfParent->AddForceAtPos (force, pos); }
+    void AddForceAtRelPos (const csVector3& force,
+        const csVector3& pos)
+    { scfParent->AddForceAtRelPos (force, pos); }
+    void AddRelForceAtPos (const csVector3& force,
+        const csVector3& pos)
+    { scfParent->AddRelForceAtPos (force, pos); }
+    void AddRelForceAtRelPos (const csVector3& force,
+        const csVector3& pos)
+    { scfParent->AddRelForceAtRelPos (force, pos); }
+    const csVector3 GetForce () const
+    { return scfParent->GetForce (); }
+    const csVector3 GetTorque () const
+    { return scfParent->GetTorque (); }
+
+    void AttachMesh (iMeshWrapper* mesh)
+    { scfParent->AttachMesh (mesh); }
+    iMeshWrapper* GetAttachedMesh ()
+    { return scfParent->GetAttachedMesh (); }
+    void AttachLight (iLight* light)
+    { scfParent->AttachLight (light); }
+    iLight* GetAttachedLight ()
+    { return scfParent->GetAttachedLight (); }
+    void AttachCamera (iCamera* camera)
+    { scfParent->AttachCamera (camera); }
+    iCamera* GetAttachedCamera ()
+    { return scfParent->GetAttachedCamera (); }
+
+    void SetMoveCallback (iDynamicsMoveCallback* cb)
+    { scfParent->SetMoveCallback (cb); }
+    void SetCollisionCallback (iDynamicsCollisionCallback* cb)
+    { scfParent->SetCollisionCallback (cb); }
+    void Collision (iRigidBody *other, const csVector3& pos,
+	const csVector3& normal, float depth)
+    { scfParent->Collision (other, pos, normal, depth); }
+    void Update ()
+    { scfParent->Update (); }
+    csRef<iDynamicsSystemCollider> GetCollider (unsigned int index)
+    {return scfParent->GetCollider (index);}
+    int GetColliderCount () 
+    {return scfParent->GetColliderCount ();}
+    void AttachCollider (iDynamicsSystemCollider* collider)
+    {scfParent->AttachCollider (collider);}
+    void DestroyColliders ()
+    {scfParent->DestroyColliders ();}
+    void DestroyCollider (iDynamicsSystemCollider* collider)
+    {scfParent->DestroyCollider (collider);}
+  } scfiRigidBody;
+  friend struct RigidBody;
+
   csODERigidBody (csODEDynamicSystem* sys);
   virtual ~csODERigidBody ();
 
   inline dBodyID GetID() { return bodyID; }
 
-  iObject* QueryObject () { return this; }
   bool MakeStatic (void);
   bool IsStatic (void) { return statjoint != 0; }
   bool MakeDynamic (void);
@@ -579,7 +906,7 @@ public:
   void DestroyColliders () {colliders.DeleteAll ();};
   void DestroyCollider (iDynamicsSystemCollider* collider)
   {
-    colliders.Delete ((csODECollider*)collider);
+    colliders.Delete (collider);
   }
 
   void SetPosition (const csVector3& trans);
@@ -634,21 +961,17 @@ public:
 
   csRef<iDynamicsSystemCollider> GetCollider (unsigned int index);
   int GetColliderCount () {return (int)colliders.GetSize ();};
-
-  virtual bool DoFullInertiaRecalculation () const
-  { return !dynsys->IsOldInertiaEnabled (); }
-  virtual void RecalculateFullInertia (csODECollider* thisCol);
 };
 
 
-struct csStrictODEJoint : public scfImplementation0<csStrictODEJoint>
+struct csStrictODEJoint : public iBase
 {
   dJointID jointID;
   csRef<iRigidBody> body[2];
   dBodyID bodyID[2];
   dJointFeedback *feedback;
 
-  csStrictODEJoint () : scfImplementationType (this), feedback (0) {}
+  csStrictODEJoint () {feedback = 0;}
   virtual ~csStrictODEJoint () {}
 
   void Attach (iRigidBody *body1, iRigidBody *body2);
@@ -670,12 +993,10 @@ private:
 * This implements the slider joint.  It does this by strict copying
 * ODEs interface.
 */
-struct ODESliderJoint : 
-  public scfImplementationExt2<ODESliderJoint,
-                               csStrictODEJoint, 
-                               iODESliderJoint,
-                               scfFakeInterface<iODEGeneralJointState> >
+struct ODESliderJoint : public csStrictODEJoint, iODESliderJoint
 {
+  SCF_DECLARE_IBASE;
+
   ODESliderJoint (dWorldID w_id);
   virtual ~ODESliderJoint ();
 
@@ -828,12 +1149,10 @@ struct ODESliderJoint :
   }
 };
 
-struct ODEUniversalJoint : 
-  public scfImplementationExt2<ODEUniversalJoint,
-                               csStrictODEJoint, 
-                               iODEUniversalJoint,
-                               scfFakeInterface<iODEGeneralJointState> >
+struct ODEUniversalJoint : public csStrictODEJoint, iODEUniversalJoint
 {
+  SCF_DECLARE_IBASE;
+
   ODEUniversalJoint (dWorldID w_id);
   virtual ~ODEUniversalJoint ();
 
@@ -992,11 +1311,10 @@ struct ODEUniversalJoint :
   }
 };
 
-struct ODEBallJoint : 
-  public scfImplementationExt1<ODEBallJoint,
-                               csStrictODEJoint, 
-                               iODEBallJoint>
+struct ODEBallJoint : public csStrictODEJoint, iODEBallJoint
 {
+  SCF_DECLARE_IBASE;
+
   ODEBallJoint (dWorldID w_id);
 
   void SetBallAnchor (const csVector3 &pos)
@@ -1035,12 +1353,10 @@ struct ODEBallJoint :
   }
 };
 
-struct ODEAMotorJoint : 
-  public scfImplementationExt2<ODEAMotorJoint,
-                               csStrictODEJoint, 
-                               iODEAMotorJoint,
-                               scfFakeInterface<iODEGeneralJointState> >
+struct ODEAMotorJoint : public csStrictODEJoint, iODEAMotorJoint
 {
+  SCF_DECLARE_IBASE;
+
   ODEAMotorJoint (dWorldID w_id);
   virtual ~ODEAMotorJoint ();
 
@@ -1215,12 +1531,10 @@ struct ODEAMotorJoint :
   }
 };
 
-struct ODEHinge2Joint : 
-  public scfImplementationExt2<ODEHinge2Joint,
-                               csStrictODEJoint, 
-                               iODEHinge2Joint,
-                               scfFakeInterface<iODEGeneralJointState> >
+struct ODEHinge2Joint : public csStrictODEJoint, iODEHinge2Joint
 {
+  SCF_DECLARE_IBASE;
+
   ODEHinge2Joint (dWorldID w_id);
   virtual ~ODEHinge2Joint ();
 
@@ -1383,12 +1697,10 @@ struct ODEHinge2Joint :
   }
 };
 
-struct ODEHingeJoint : 
-  public scfImplementationExt2<ODEHingeJoint,
-                               csStrictODEJoint, 
-                               iODEHingeJoint,
-                               scfFakeInterface<iODEGeneralJointState> >
+struct ODEHingeJoint : public csStrictODEJoint, iODEHingeJoint
 {
+  SCF_DECLARE_IBASE;
+
   ODEHingeJoint (dWorldID w_id);
   virtual ~ODEHingeJoint ();
 
@@ -1559,6 +1871,7 @@ class csODEJoint : public scfImplementation2<
   dBodyID bodyID[2];
 
   int transConstraint[3], rotConstraint[3];
+  csVector3 maxTrans, minTrans, maxAngle, minAngle;
   csVector3 lo_stop, hi_stop, vel, fmax, fudge_factor, bounce,
     cfm, stop_erp, stop_cfm, suspension_cfm, suspension_erp;
 
@@ -1605,13 +1918,13 @@ public:
   void SetBounce (const csVector3 & bounce )
   { 
     csODEJoint::bounce = bounce;
-    ApplyJointProperty (dParamBounce, bounce); 
+    ApplyJointProperty (dParamLoStop, bounce); 
   }
   csVector3 GetBounce (){return bounce;}
   void SetDesiredVelocity (const csVector3 & velocity )
   { 
     vel = velocity;
-    ApplyJointProperty (dParamVel, velocity); 
+    ApplyJointProperty (dParamBounce, velocity); 
   }
   csVector3 GetDesiredVelocity (){return vel;}
   void SetMaxForce (const csVector3 & maxForce )
@@ -1692,9 +2005,10 @@ private:
   void ApplyJointProperty (int parameter, const csVector3 &values);
   csVector3 GetParam (int parameter);
 
-  void BuildHinge (const csVector3 &axis);
-  void BuildHinge2 (const csVector3 &axis1,const csVector3 &axis2);
-  void BuildSlider (const csVector3 &axis);
+  void BuildHinge (const csVector3 &axis, float min, float max);
+  void BuildHinge2 (const csVector3 &axis1, float min1, float max1,
+         const csVector3 &axis2, float min2, float max2);
+  void BuildSlider (const csVector3 &axis, float min, float max);
   void BuildJoint ();
 
 };
@@ -1703,14 +2017,14 @@ private:
  * This is the implementation for a default dynamics move callback.
  * It can update mesh.
  */
-class csODEDefaultMoveCallback : 
-  public scfImplementation1<csODEDefaultMoveCallback,
-                            iDynamicsMoveCallback>
+class csODEDefaultMoveCallback : public iDynamicsMoveCallback
 {
 private:
   void Execute (iMovable* movable, csOrthoTransform& t);
 
 public:
+  SCF_DECLARE_IBASE;
+
   csODEDefaultMoveCallback ();
   virtual ~csODEDefaultMoveCallback ();
 
@@ -1719,8 +2033,5 @@ public:
   virtual void Execute (iCamera* camera, csOrthoTransform& t);
   virtual void Execute (csOrthoTransform& t);
 };
-
-}
-CS_PLUGIN_NAMESPACE_END(odedynam)
 
 #endif // __CS_ODEDYNAMICS_H__

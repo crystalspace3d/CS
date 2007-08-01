@@ -49,8 +49,8 @@ void csRenderMeshList::AddRenderMeshes (csRenderMesh** meshes, int num,
   renderMeshListInfo* entry;
 
   //check if we have rp or need to add it
-  if ((size_t)(renderPriority + 1) > renderList.GetSize () || 
-      renderList.Get ((uint32)renderPriority) == 0)
+  if ((size_t)(renderPriority + 1) > renderList.Length () || renderList.Get
+    ((uint32)renderPriority) == 0)
   {
     entry = new renderMeshListInfo;
     entry->renderPriority = renderPriority;
@@ -182,7 +182,7 @@ size_t csRenderMeshList::SortMeshLists (iRenderView* rview )
     {
       listEnt->meshList.Sort (SortMeshMaterial);
     }
-    numObjects += listEnt->meshList.GetSize ();
+    numObjects += listEnt->meshList.Length ();
   }
   return numObjects;
 }
@@ -196,7 +196,7 @@ void csRenderMeshList::GetSortedMeshes (csRenderMesh** meshes,
     renderMeshListInfo* listEnt = it.Next ();
     if (listEnt)
     {
-      size_t numObjects = listEnt->meshList.GetSize ();
+      size_t numObjects = listEnt->meshList.Length ();
       for (size_t j = 0 ; j < numObjects ; j++)
       {
 	*meshes++ = listEnt->meshList[j].rm;

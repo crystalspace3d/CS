@@ -234,6 +234,12 @@ public:
 
   virtual void CheckFrustum (iFrustumView* lview);
   
+  virtual iMeshWrapper* HitBeamPortals (const csVector3& start,
+  	const csVector3& end, csVector3& isect, int* polygon_idx,
+	iSector** final_sector = 0);
+
+  virtual iMeshWrapper* HitBeam (const csVector3& start, const csVector3& end,
+    csVector3& intersect, int* polygon_idx, bool accurate = false);
 
   virtual csSectorHitBeamResult HitBeamPortals (const csVector3& start,
   	const csVector3& end);
@@ -254,7 +260,7 @@ public:
   { sectorCallbackList.Delete (cb); }
 
   virtual int GetSectorCallbackCount () const 
-  { return (int) sectorCallbackList.GetSize (); }
+  { return (int) sectorCallbackList.Length (); }
 
   virtual iSectorCallback* GetSectorCallback (int idx) const
   { return sectorCallbackList.Get (idx); }
@@ -283,11 +289,6 @@ public:
   void AddLSI (csLightSectorInfluence* inf);
   void RemoveLSI (csLightSectorInfluence* inf);
   const csLightSectorInfluences& GetLSI () const { return influences; }
-  /**
-   * Get the array of relevant lights for this sector.
-   */
-  const csArray<iLightSectorInfluence*>& GetRelevantLights (
-  	int maxLights, bool desireSorting);
   /** @} */
 
   /**\name Mesh generators
@@ -295,7 +296,7 @@ public:
   iMeshGenerator* CreateMeshGenerator (const char* name);
   size_t GetMeshGeneratorCount () const
   {
-    return meshGenerators.GetSize ();
+    return meshGenerators.Length ();
   }
   iMeshGenerator* GetMeshGenerator (size_t idx)
   {
@@ -313,9 +314,6 @@ public:
 
   virtual iShaderVariableContext* GetSVContext()
   { return static_cast<iShaderVariableContext*> (this); }
-
-  virtual void PrecacheDraw ();
-
 private:
   // -- PRIVATE METHODS
 
@@ -475,12 +473,6 @@ private:
 
   /// List of light/sector influences.
   csLightSectorInfluences influences;
-  /**
-   * Array of lights affecting this mesh object. This is calculated
-   * by the csLightManager class.
-   */
-  csDirtyAccessArray<iLightSectorInfluence*> relevant_lights;
-  bool relevant_lights_dirty;
 
   /**
    * The visibility culler for this sector or 0 if none.
@@ -592,7 +584,7 @@ public:
   /// Override FreeSector.
   virtual void FreeSector (iSector* item);
 
-  virtual int GetCount () const { return (int)list.GetSize (); }
+  virtual int GetCount () const { return (int)list.Length (); }
   virtual iSector *Get (int n) const { return list.Get (n); }
   virtual int Add (iSector *obj);
   virtual bool Remove (iSector *obj);

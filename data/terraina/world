@@ -27,7 +27,8 @@
       <file>/lev/terrain/grass.png</file>
     </texture>
     <texture name="materialmap_base.png">
-      <file>materialmap_base.png</file>
+      <!--<file>/lev/terrain/materialmap_base.png</file>-->
+      <file>/lib/stdtex/green.jpg</file>
     </texture>
   </textures>
 

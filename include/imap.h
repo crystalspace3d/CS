@@ -26,7 +26,6 @@
 #include "imap/loader.h"
 #include "imap/modelload.h"
 #include "imap/reader.h"
-#include "imap/renderbufferpersistence.h"
 #include "imap/saver.h"
 #include "imap/saverfile.h"
 #include "imap/saverref.h"

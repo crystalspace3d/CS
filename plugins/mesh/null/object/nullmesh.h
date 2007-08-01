@@ -115,6 +115,8 @@ public:
   virtual csPtr<iMeshObject> Clone () { return 0; }
   virtual void SetVisibleCallback (iMeshObjectDrawCallback* cb)
   {
+    if (cb) cb->IncRef ();
+    if (vis_cb) vis_cb->DecRef ();
     vis_cb = cb;
   }
   virtual iMeshObjectDrawCallback* GetVisibleCallback () const
@@ -152,17 +154,13 @@ public:
   * does nothing.
   */
   virtual void PositionChild (iMeshObject* /*child*/, csTicks /*current_time*/) { }
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-          iDecalBuilder* decalBuilder)
-  {
-  }
 
 
 private:
   iMeshObjectFactory* factory;
   iMeshObjectType* nullmesh_type;
   iMeshWrapper* logparent;
-  csRef<iMeshObjectDrawCallback> vis_cb;
+  iMeshObjectDrawCallback* vis_cb;
   float radius;
   csBox3 box;
   csFlags object_flags;

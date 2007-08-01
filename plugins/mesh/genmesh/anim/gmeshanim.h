@@ -283,7 +283,7 @@ class csGenmeshAnimationControl :
 private:
   csGenmeshAnimationControlFactory* factory;
 
-  csPDelArray<csAnimControlRunnable> running_animations;
+  csPDelArray<csAnimControlRunnable> running_scripts;
 
   int num_animated_verts;
   csVector3* animated_verts;

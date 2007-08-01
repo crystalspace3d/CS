@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2003-2006 by Jorrit Tyberghein
-	      (C) 2003-2007 by Frank Richter
+	      (C) 2003-2006 by Frank Richter
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,38 +20,44 @@
 #ifndef __CS_PTPDLIGHT_H__
 #define __CS_PTPDLIGHT_H__
 
-#include "iengine/light.h"
-#include "imesh/lighting.h"
-
 #include "csgeom/csrect.h"
-#include "csgfx/rgbpixel.h"
-#include "csutil/bitarray.h"
+#include "csgfx/imageautoconvert.h"
 #include "csutil/dirtyaccessarray.h"
 #include "csutil/flags.h"
-#include "csutil/set.h"
+#include "csutil/scf_implementation.h"
 #include "csutil/weakref.h"
 #include "cstool/proctex.h"
+#include "iutil/comp.h"
+#include "iutil/plugin.h"
+#include "imap/reader.h"
+#include "imesh/lighting.h"
+#include "igraphic/image.h"
+
+class csProcTexture;
 
 CS_PLUGIN_NAMESPACE_BEGIN(PTPDLight)
 {
 
-class TileHelper
+class ProctexPDLightLoader :
+  public scfImplementation2<ProctexPDLightLoader,
+                            iLoaderPlugin, 
+                            iComponent>
 {
-  int w, h, tx;
+protected:
+  iObjectRegistry* object_reg;
+
+  void Report (int severity, iDocumentNode* node, const char* msg, ...);
+
 public:
-  // The texture data is uploaded in tiles of this size
-  // @@@ Make configurable?
-  static const int tileSizeX = 128;
-  static const int tileSizeY = 128;
+  ProctexPDLightLoader (iBase *p);
+  virtual ~ProctexPDLightLoader ();
 
-  TileHelper (int w, int h);
+  virtual bool Initialize(iObjectRegistry *object_reg);
 
-  size_t ComputeTileCount () const;
-  void MarkTilesBits (const csRect& r, csBitArray& bits) const;
-  void GetTileRect (size_t n, csRect& r) const;
-};
-
-class ProctexPDLightLoader;
+  virtual csPtr<iBase> Parse (iDocumentNode* node,
+  	iStreamSource*, iLoaderContext* ldr_context,
+  	iBase* context);
+};  
 
 class ProctexPDLight : 
   public scfImplementationExt1<ProctexPDLight, 
@@ -61,45 +67,32 @@ class ProctexPDLight :
 public:
   struct Lumel
   {
-    union
-    {
-      struct
-      {
-        uint8 blue, green, red, alpha;
-      } c;
-      uint32 ui;
-    };
-  };
-  struct LumelBufferBase : public csRefCount
-  {
-  private:
-    bool gray;
-  protected:
-    LumelBufferBase (bool gray) : gray (gray) {}
-  public:
-    bool IsGray() const { return gray; }
-  };
+    uint8 blue, green, red, alpha;
 
-  struct LumelBufferRGB : public LumelBufferBase
-  {
-    static CS_FORCEINLINE size_t LumelAlign (size_t n)
+    void UnsafeAdd (int R, int G, int B)
     {
-      static const size_t align = sizeof (Lumel);
-      return ((n + align - 1) / align) * align;
+      red   = (unsigned char)(red   + R);
+      green = (unsigned char)(green + G);
+      blue  = (unsigned char)(blue  + B);
     }
-  public:
-    LumelBufferRGB () : LumelBufferBase (false) {}
-    CS_FORCEINLINE Lumel* GetData ()
-    { 
-      return reinterpret_cast<Lumel*> (
-        (reinterpret_cast<uint8*> (this)) + LumelAlign (sizeof (*this))); 
+    void SafeAdd (int R, int G, int B)
+    {
+      int color = red + R;
+      red   = (unsigned char)(color > 255 ? 255 : color);
+      color = green + G;
+      green = (unsigned char)(color > 255 ? 255 : color);
+      color = blue + B;
+      blue  = (unsigned char)(color > 255 ? 255 : color);
     }
+  };
+  struct LumelBuffer : public csRefCount
+  {
+    Lumel data[1];
     
     inline void* operator new (size_t n, size_t lumels)
     { 
-      CS_ASSERT (n == sizeof (LumelBufferRGB));
-      size_t allocSize = 
-        LumelAlign (sizeof (LumelBufferRGB)) + lumels * sizeof (Lumel);
+      CS_ASSERT (n == sizeof (LumelBuffer));
+      size_t allocSize = offsetof (LumelBuffer, data) + lumels * sizeof (Lumel);
       return cs_malloc (allocSize);
     }
     inline void operator delete (void* p, size_t lumels) 
@@ -108,142 +101,64 @@ public:
     }
     inline void operator delete (void* p) 
     {
+      LumelBuffer* lb = static_cast<LumelBuffer*> (p);
+      lb->~LumelBuffer ();
       cs_free (p);
     }
 
   };
-
-  struct LumelBufferGray : public LumelBufferBase
-  {
-  public:
-    LumelBufferGray () : LumelBufferBase (true) {}
-    CS_FORCEINLINE uint8* GetData ()
-    { 
-      return (reinterpret_cast<uint8*> (this)) + sizeof (*this); 
-    }
-    
-    inline void* operator new (size_t n, size_t lumels)
-    { 
-      CS_ASSERT (n == sizeof (LumelBufferGray));
-      size_t allocSize = 
-        sizeof (LumelBufferGray) + lumels;
-      return cs_malloc (allocSize);
-    }
-    inline void operator delete (void* p, size_t lumels) 
-    {
-      cs_free (p);
-    }
-    inline void operator delete (void* p) 
-    {
-      cs_free (p);
-    }
-
-  };
-
   class PDMap
   {
     friend class ProctexPDLight;
+    void ComputeValueBounds ();
+    void ComputeValueBounds (const csRect& area);
 
-    csPtr<LumelBufferRGB> CropLumels (LumelBufferRGB* lumels, 
-      const csRect& lumelsRect, const csRect& cropRect);
-
-    void ComputeValueBounds (const csRect& area, 
-      csRGBcolor& maxValue, csRect& nonNullArea);
-    void ComputeValueBounds (const TileHelper& tiles);
-    void ComputeValueBounds (const TileHelper& tiles, const csRect& area);
+    void SetImage (iImage* img);
   public:
-    csArray<csRGBcolor> maxValues;
-    csBitArray tileNonNull;
-    csArray<csRect> nonNullAreas;
-    int imageX, imageY, imageW, imageH;
-    csRef<LumelBufferBase> imageData;
+    csRGBcolor maxValue;
+    csRect nonNullArea;
+    int imageW, imageH;
+    csRef<LumelBuffer> imageData;
 
-    PDMap (size_t tilesNum) : imageX (0), imageY (0), imageW (0), imageH (0),
-      imageData (0) 
-    { 
-      maxValues.SetSize (tilesNum, csRGBcolor (0, 0, 0));
-      tileNonNull.SetSize (tilesNum);
-      nonNullAreas.SetSize (tilesNum, 
-        csRect (INT_MAX, INT_MAX, INT_MIN, INT_MIN));
+    PDMap () : imageW (0), imageH (0), imageData (0) { ComputeValueBounds (); }
+    PDMap (iImage* img) : imageData (0)
+    { SetImage (img); }
+
+    PDMap& operator=(iImage* image)
+    {
+      SetImage (image);
+      return *this;
     }
-    PDMap (size_t tilesNum, const TileHelper& tiles, iImage* img) : 
-      imageX (0), imageY (0), imageData (0)
-    { 
-      tileNonNull.SetSize (tilesNum);
-      SetImage (tiles, img); 
-    }
-    void SetImage (const TileHelper& tiles, iImage* img);
-    void Crop ();
-    void GetMaxValue (csRGBcolor& maxValue);
   };
   struct MappedLight
   {
     PDMap map;
-    char* lightId;
+    csString* lightId;
     csWeakRef<iLight> light;
-
-    MappedLight (size_t tilesNum, const TileHelper& tiles, iImage* img) : 
-      map (tilesNum, tiles, img), lightId (0) {}
-    MappedLight (const MappedLight& other) : map (other.map), light (other.light)
-    {
-      if (other.lightId != 0)
-      {
-        lightId = new char[16];
-        memcpy (lightId, other.lightId, 16);
-      }
-      else
-        lightId = 0;
-    }
-    ~MappedLight() { delete[] lightId; }
   };
 private:
   typedef csDirtyAccessArray<Lumel> LightmapScratch;
   CS_DECLARE_STATIC_CLASSVAR_REF(lightmapScratch, GetScratch, LightmapScratch);
+  size_t lightmapSize;
 
-  csRef<ProctexPDLightLoader> loader;
-  TileHelper tiles;
-  csBitArray tilesDirty;
-  csRGBcolor baseColor;
   PDMap baseMap;
-  csSafeCopyArray<MappedLight> lights;
-  csBitArray lightBits;
-  csSet<csConstPtrKey<iLight> > dirtyLights;
+  csArray<MappedLight> lights;
+  csRect totalAffectedAreas;
   enum
   {
-    stateDirty = 1 << 0,
-    statePrepared = 1 << 1,
+    stateAffectedAreaDirty = 1 << 0,
+    stateDirty = 1 << 1,
+    statePrepared = 1 << 2,
   };
   csFlags state;
-  struct LightColorState
-  {
-    // Color at the time the PT texture was last updated.
-    csColor lastColor;
-    /* Minimum difference of light color to lastColor before the "texture
-     * dirty" flag is set. */
-    csColor minChangeThresh;
-  };
-  csHash<LightColorState, csConstPtrKey<iLight> > lightColorStates;
 
   void Report (int severity, const char* msg, ...);
+  bool HexToLightID (char* lightID, const csString& lightIDHex);
+  void UpdateAffectedArea ();
 public:
   const char* AddLight (const MappedLight& light);
-  void FinishLoad()
-  {
-    lights.ShrinkBestFit();
-  }
-  void SetBaseColor (csRGBcolor col)
-  {
-    baseColor = col;
-  }
-  void SetTexFlags (int flags)
-  {
-    texFlags = flags;
-  }
-  MappedLight NewLight (iImage* img) const
-  { return MappedLight (tilesDirty.GetSize(), tiles, img); }
 
-  ProctexPDLight (ProctexPDLightLoader* loader, iImage* img);
-  ProctexPDLight (ProctexPDLightLoader* loader, int w, int h);
+  ProctexPDLight (iImage* img);
   virtual ~ProctexPDLight ();
 
   virtual bool PrepareAnim ();
@@ -252,9 +167,13 @@ public:
 
   /**\name iLightingInfo implementation
    * @{ */
-  void DisconnectAllLights ();
+  void DisconnectAllLights ()
+  { 
+    lights.DeleteAll(); 
+    state.Set (stateAffectedAreaDirty);
+  }
   void InitializeDefault (bool /*clear*/) {}
-  void LightChanged (iLight* light);
+  void LightChanged (iLight* /*light*/) { state.Set (stateDirty); }
   void LightDisconnect (iLight* light);
   void PrepareLighting () {}
   bool ReadFromCache (iCacheManager* /*cache_mgr*/) { return true; }

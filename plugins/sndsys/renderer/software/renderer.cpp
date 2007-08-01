@@ -90,7 +90,7 @@ csSndSysRendererSoftware::~csSndSysRendererSoftware()
   RecordEvent(SSEL_DEBUG, "Sound system destructing.");
   if (weakEventHandler)
   {
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (m_pObjectRegistry);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (m_pObjectRegistry, iEventQueue);
     if (q)
       CS::RemoveWeakListener (q, weakEventHandler);
   }
@@ -249,15 +249,15 @@ bool csSndSysRendererSoftware::Initialize (iObjectRegistry *obj_reg)
 
   // Get an interface for the plugin manager
   csRef<iPluginManager> plugin_mgr (
-    csQueryRegistry<iPluginManager> (m_pObjectRegistry));
+    CS_QUERY_REGISTRY (m_pObjectRegistry, iPluginManager));
 
 
   // read the config file
   m_Config.AddConfig(m_pObjectRegistry, "/config/sound.cfg");
 
   // check for optional sound driver from the commandline
-  csRef<iCommandLineParser> cmdline (
-  	csQueryRegistry<iCommandLineParser> (m_pObjectRegistry));
+  csRef<iCommandLineParser> cmdline (CS_QUERY_REGISTRY (m_pObjectRegistry,
+  	iCommandLineParser));
   const char *drv = cmdline->GetOption ("sounddriver");
   if (!drv)
   {
@@ -328,7 +328,7 @@ bool csSndSysRendererSoftware::Initialize (iObjectRegistry *obj_reg)
 
 
   // set event callback
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (m_pObjectRegistry));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY(m_pObjectRegistry, iEventQueue));
   evSystemOpen = csevSystemOpen(m_pObjectRegistry);
   evSystemClose = csevSystemClose(m_pObjectRegistry);
   evFrame = csevFrame(m_pObjectRegistry);
@@ -396,7 +396,7 @@ bool csSndSysRendererSoftware::Open ()
 
 
   // Setup the listener settings
-  m_pListener.AttachNew (new SndSysListenerSoftware());
+  m_pListener = new SndSysListenerSoftware();
 
   // TEST - Create the sound normalizer/compressor
   m_pSoundCompressor=new csSoundCompressor(m_PlaybackFormat.Freq * m_PlaybackFormat.Channels / 100);
@@ -614,7 +614,7 @@ void csSndSysRendererSoftware::GarbageCollection()
     SourceRemoved(sourceptr);
 
     // Remove this source from the Filter list as well
-    m_DispatchSources.Delete(static_cast<iSndSysSourceSoftware *>(sourceptr));
+    m_DispatchSources.Delete(dynamic_cast<iSndSysSourceSoftware *>(sourceptr));
 
     sourceptr->DecRef();
   }
@@ -710,7 +710,7 @@ void csSndSysRendererSoftware::ProcessPendingSources()
   }
 
   // Empty the queue of source removal requests
-  while ((src=static_cast<iSndSysSourceSoftware *> (m_SourceRemoveQueue.DequeueEntry())))
+  while ((src=dynamic_cast<iSndSysSourceSoftware *> (m_SourceRemoveQueue.DequeueEntry())))
   {
     // We don't know that the application has queued a pointer to a source that's
     //  active.  If the Delete() fails, then the source is not even in our active list.

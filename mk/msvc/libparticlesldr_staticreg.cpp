@@ -31,16 +31,6 @@ static char const metainfo_particlesldr[] =
 "        <implementation>ParticlesObjectLoader</implementation>"
 "        <description>Crystal Space Particles Mesh Loader</description>"
 "      </class>"
-"      <class>"
-"        <name>crystalspace.mesh.saver.factory.particles</name>"
-"        <implementation>ParticlesFactorySaver</implementation>"
-"        <description>Crystal Space Particles Factory Saver</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.mesh.saver.particles</name>"
-"        <implementation>ParticlesObjectSaver</implementation>"
-"        <description>Crystal Space Particles Mesh Saver</description>"
-"      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
@@ -53,14 +43,6 @@ static char const metainfo_particlesldr[] =
   #define ParticlesObjectLoader_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(ParticlesObjectLoader) 
   #endif
-  #ifndef ParticlesFactorySaver_FACTORY_REGISTER_DEFINED 
-  #define ParticlesFactorySaver_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(ParticlesFactorySaver) 
-  #endif
-  #ifndef ParticlesObjectSaver_FACTORY_REGISTER_DEFINED 
-  #define ParticlesObjectSaver_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(ParticlesObjectSaver) 
-  #endif
 
 class particlesldr
 {
@@ -72,14 +54,6 @@ SCF_REGISTER_STATIC_LIBRARY(particlesldr,metainfo_particlesldr)
   #ifndef ParticlesObjectLoader_FACTORY_REGISTERED 
   #define ParticlesObjectLoader_FACTORY_REGISTERED 
     ParticlesObjectLoader_StaticInit ParticlesObjectLoader_static_init__; 
-  #endif
-  #ifndef ParticlesFactorySaver_FACTORY_REGISTERED 
-  #define ParticlesFactorySaver_FACTORY_REGISTERED 
-    ParticlesFactorySaver_StaticInit ParticlesFactorySaver_static_init__; 
-  #endif
-  #ifndef ParticlesObjectSaver_FACTORY_REGISTERED 
-  #define ParticlesObjectSaver_FACTORY_REGISTERED 
-    ParticlesObjectSaver_StaticInit ParticlesObjectSaver_static_init__; 
   #endif
 public:
  particlesldr();

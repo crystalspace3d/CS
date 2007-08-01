@@ -41,20 +41,18 @@ struct iODEDynamicSystem;
 
 enum csBoneTransformType
 {
-  CS_BTT_NONE = 0,
-  CS_BTT_SCRIPT,
-  CS_BTT_RIGID_BODY
+	CS_BTT_NONE = 0,
+	CS_BTT_SCRIPT,
+	CS_BTT_RIGID_BODY
 };
 
 enum csBoneGeomType
 {
-  CS_BGT_NONE = 0,
-  CS_BGT_BOX,
-  CS_BGT_SPHERE,
-  CS_BGT_CYLINDER
+	CS_BGT_NONE = 0,
+	CS_BGT_BOX,
+	CS_BGT_SPHERE,
+	CS_BGT_CYLINDER
 };
-
-class csReversibleTransform;
 
 /**
  * The skeleton bone class.
@@ -84,14 +82,14 @@ struct iSkeletonBone : public virtual iBase
   virtual void SetTransform (const csReversibleTransform &transform) = 0;
 
   /**
-   * Get full transform of the bone.
+   * Set full transform of the bone.
    */
   virtual csReversibleTransform &GetFullTransform () = 0;
 
   /**
    * Set parent bone.
    */
-  virtual void SetParent (iSkeletonBone *parent) = 0;
+  virtual  void SetParent (iSkeletonBone *parent) = 0;
 
   /**
    * Get parent bone
@@ -101,7 +99,7 @@ struct iSkeletonBone : public virtual iBase
   /**
    * Get number of children bones.
    */
-  virtual size_t GetChildrenCount () = 0;
+  virtual int GetChildrenCount () = 0;
 
   /**
    * Set child bone by index.
@@ -121,12 +119,12 @@ struct iSkeletonBone : public virtual iBase
   /**
    * Set skin bbox (usefull for creating collider or ragdoll object).
    */
-  virtual void SetSkinBox (csBox3 &box) = 0;
+  virtual void SetSkinBox (csBox3 & box) = 0;
 
   /**
    * Get skin bbox.
    */
-  virtual csBox3 &GetSkinBox () = 0;
+  virtual csBox3 & GetSkinBox () = 0;
 
   /**
    * Set callback to the bone. By default there
@@ -160,26 +158,23 @@ struct iSkeletonBone : public virtual iBase
   //virtual iODEJoint *GetJoint() = 0;
 };
 
+SCF_VERSION  (iSkeletonBoneUpdateCallback, 0, 0, 1);
+
 /**
  * This callback fires every time when bone changes it's transform.
  */
 struct iSkeletonBoneUpdateCallback : public virtual iBase
 {
-  SCF_INTERFACE  (iSkeletonBoneUpdateCallback, 0, 0, 1);
-
-  virtual void UpdateTransform(iSkeletonBone *bone,
-      const csReversibleTransform & transform) = 0;
+	virtual void UpdateTransform(iSkeletonBone *bone, const csReversibleTransform & transform) = 0;
 };
-
-class csQuaternion;
 
 /**
  * The script key frame contains all bones that will be transformed in 
  * a specific time of a skeleton script.
  */
-struct iSkeletonAnimationKeyFrame : public virtual iBase
+struct iSkeletonScriptKeyFrame : public virtual iBase
 {
-  SCF_INTERFACE (iSkeletonAnimationKeyFrame, 1, 0, 0);
+  SCF_INTERFACE (iSkeletonScriptKeyFrame, 1, 0, 0);
 
   /**
    * Get name of the key frame.
@@ -209,129 +204,109 @@ struct iSkeletonAnimationKeyFrame : public virtual iBase
   /**
    * Add new bone transform to the key frame.
    */
-  virtual void AddTransform (iSkeletonBoneFactory *bone, 
-    csReversibleTransform &transform, bool relative = false) = 0;
+  virtual void AddTransform(iSkeletonBoneFactory *bone, 
+	  csReversibleTransform &transform, bool relative = false) = 0;
 
   /**
    * Get the transform of a bone.
-   * \deprecated GetTransform (iSkeletonBoneFactory *bone) is deprecated, use 
-   * GetTransform (iSkeletonBoneFactory *bone, csReversibleTransform &dst_trans) instead
    */
-  CS_DEPRECATED_METHOD_MSG("GetTransform (iSkeletonBoneFactory *bone) is deprecated, use GetTransform"
-    "(iSkeletonBoneFactory *bone, csReversibleTransform &dst_trans) instead")
-  virtual csReversibleTransform & GetTransform (iSkeletonBoneFactory *bone) = 0;
-
-  /**
-   * Get the transform of a bone. Returns 'false' when there won't be 
-   * any transform data for given bone.
-   */
-  virtual bool GetTransform (iSkeletonBoneFactory *bone,
-      csReversibleTransform &dst_trans) = 0;
+  virtual csReversibleTransform & GetTransform(iSkeletonBoneFactory *bone) = 0;
 
   /**
    * Set the transform of a bone.
    */
   virtual void SetTransform(iSkeletonBoneFactory *bone, 
-    csReversibleTransform &transform) = 0;
+	  csReversibleTransform &transform) = 0;
 
   /**
-   * Get key frame specific data. Returns false when frame don't have
-   * data for given bone.
+   * Get key frame specific data.
    */
-  virtual bool GetKeyFrameData (iSkeletonBoneFactory *bone_fact, 
-    csQuaternion & rot, csVector3 & pos, csQuaternion & tangent,
-    bool & relative) = 0;
+  virtual void GetKeyFrameData(iSkeletonBoneFactory *bone_fact, 
+	  csQuaternion & rot, csVector3 & pos, csQuaternion & tangent,
+       bool & relative) = 0;
 };
 
-CS_DEPRECATED_METHOD_MSG("iSkeletonScriptKeyFrame is deprecated, use iSkeletonAnimationKeyFrame instead")
-typedef iSkeletonAnimationKeyFrame iSkeletonScriptKeyFrame;
-
 /**
- * This interface provides animation of a skeleton.
+ * Skeleton script is the interface that provides animation of a skeleton.
  */
-struct iSkeletonAnimation : public virtual iBase
+struct iSkeletonScript : public virtual iBase
 {
-  SCF_INTERFACE (iSkeletonAnimation, 1, 0, 0);
+  SCF_INTERFACE (iSkeletonScript, 1, 0, 0);
 
   /**
-   * Get animation name.
+   * Get script name.
    */
   virtual const char* GetName () const = 0;
 
   /**
-   * Set animation name.
+   * Set script name.
    */
   virtual void SetName (const char* name) = 0;
 
   /**
-   * Get animation duration.
+   * Get script duration.
    */
   virtual csTicks GetTime () = 0;
 
   /**
-   * Set animation duration.
+   * Set script duration.
    */
   virtual void SetTime (csTicks time) = 0;
 
   /**
-   * Get animation speed.
+   * Get script speed.
    */
   virtual float GetSpeed () = 0;
 
   /**
-   * Set animation speed (default = 1.0).
+   * Set script speed (default = 1.0).
    */
   virtual void SetSpeed (float speed) = 0;
 
   /**
-   * Set animation factor.
+   * Set script factor.
    */
   virtual void SetFactor (float factor) = 0;
 
   /**
-   * Get animation factor.
+   * Get script factor.
    */
   virtual float GetFactor () = 0;
 
   /**
-   * Set animation loop value.
+   * Set script loop value.
    */
   virtual void SetLoop (bool loop) = 0;
 
   /**
-   * Get animation loop value.
+   * Get script loop value.
    */
   virtual bool GetLoop () = 0;
 
   /**
    * Create new key frame.
    */
-  virtual iSkeletonAnimationKeyFrame *CreateFrame (const char* name) = 0;
+  virtual iSkeletonScriptKeyFrame *CreateFrame(const char* name) = 0;
 
   /**
-   * Get number of frames in the animation.
+   * Get number of frames in the script.
    */
-  virtual size_t GetFramesCount () = 0;
+  virtual size_t GetFramesCount() = 0;
 
   /**
    * Get key frame by index.
    */
-  virtual iSkeletonAnimationKeyFrame *GetFrame (size_t i) = 0;
+  virtual iSkeletonScriptKeyFrame *GetFrame(size_t i) = 0;
 
   /**
    * Find key frame by name.
    */
-  virtual size_t FindFrameIndex (const char *name) = 0;
+  virtual size_t FindFrameIndex(const char *name) = 0;
 
   /**
    * Remove frame by index.
    */
-  virtual void RemoveFrame (size_t i) = 0;
-
-  /**
-   * Remove all frames.
-   */
-  virtual void RemoveAllFrames () = 0;
+  virtual void RemoveFrame(size_t i) = 0;
 
   /**
    * Recalculates spline for bones rotations.
@@ -341,30 +316,24 @@ struct iSkeletonAnimation : public virtual iBase
   virtual void RecalcSpline () = 0;
 };
 
-CS_DEPRECATED_METHOD_MSG("iSkeletonScript is deprecated, use iSkeletonAnimation instead")
-typedef iSkeletonAnimation iSkeletonScript;
-
 /**
- * This is a callback function of an animation.
- * It is called every time when animation is started or finished.
+ * This is a callback function of an animation script.
+ * It is called every time when script is started or finished.
  */
-struct iSkeletonAnimationCallback : public virtual iBase
+struct iSkeletonScriptCallback : public virtual iBase
 {
-  SCF_INTERFACE (iSkeletonAnimationCallback, 1, 0, 0);
+    SCF_INTERFACE (iSkeletonScriptCallback, 1, 0, 0);
 
-  /**
-   * On execute action.
-   */
-  virtual void Execute(iSkeletonAnimation *animation, size_t frame_idx) = 0;
+    /**
+     * On execute action.
+     */
+	virtual void Execute(iSkeletonScript *script, size_t frame_idx) = 0;
 
-  /**
-   * On finish action.
-   */
-  virtual void OnFinish(iSkeletonAnimation *animation) = 0;
+    /**
+     * On finish action.
+     */
+	virtual void OnFinish(iSkeletonScript *script) = 0;
 };
-
-CS_DEPRECATED_METHOD_MSG("iSkeletonScriptCallback is deprecated, use iSkeletonAnimationCallback instead")
-typedef iSkeletonAnimationCallback iSkeletonScriptCallback;
 
 /**
  * This is a callback function of a skeleton.
@@ -373,50 +342,12 @@ typedef iSkeletonAnimationCallback iSkeletonScriptCallback;
 
 struct iSkeletonUpdateCallback : public virtual iBase
 {
-  SCF_INTERFACE (iSkeletonUpdateCallback, 1, 0, 0);
+    SCF_INTERFACE (iSkeletonUpdateCallback, 1, 0, 0);
 
-  /**
-   * General skeleon update callback.
-   */
-  virtual void Execute(iSkeleton *skeleton, const csTicks & current_ticks) = 0;
-};
-
-/**
- * This interface provides played animation instance of a skeleton. 
- */
-struct iSkeletonAnimationInstance : public virtual iBase
-{
-  SCF_INTERFACE (iSkeletonAnimationInstance, 1, 0, 0);
-
-  /**
-   * Get animation speed.
-   */
-  virtual float GetSpeed () = 0;
-
-  /**
-   * Set animation speed (default = 1.0).
-   */
-  virtual void SetSpeed (float speed) = 0;
-
-  /**
-   * Set animation factor.
-   */
-  virtual void SetFactor (float factor) = 0;
-
-  /**
-   * Get animation factor.
-   */
-  virtual float GetFactor () = 0;
-
-  /**
-   * Get animation instance duration.
-   */
-  virtual csTicks GetDuration () = 0;
-
-  /**
-   * Set animation instance duration.
-   */
-  virtual void SetDuration (csTicks time) = 0;
+    /**
+     * General skeleon update callback.
+     */
+	virtual void Execute(iSkeleton *skeleton, const csTicks & current_ticks) = 0;
 };
 
 /**
@@ -424,13 +355,13 @@ struct iSkeletonAnimationInstance : public virtual iBase
  * of a skeleton animation. It holds bones, sockets and scripts.
  * Skeleton is an independend object and it is not realted to a mesh.
  * Genmesh Skelton Animation 2 plugin makes the connection between
- * mesh and skeleton. Users can query the iSkeleton from genmeshes as follows:
+ * mesh and skeleton.Users can query the iSkeleton from genmeshes as follows:
  *
  *   csRef<iGeneralMeshState> genmesh_state (
- *     scfQueryInterface<iGeneralMeshState> (mesh_wrapper->GetMeshObject ()));
+ *     SCF_QUERY_INTERFACE (mesh_wrapper->GetMeshObject (), iGeneralMeshState));
  *   csRef<iGenMeshSkeletonControlState> animcontrol (
- *     scfQueryInterface<iGenMeshSkeletonControlState> (
- *     genmesh_state->GetAnimationControl ()));
+ *     SCF_QUERY_INTERFACE (genmesh_state->GetAnimationControl (), 
+ *           iGenMeshSkeletonControlState));
  *   iSkeleton* skeleton = animcontrol->GetSkeleton ();
  */
 struct iSkeleton : public virtual iBase
@@ -468,72 +399,34 @@ struct iSkeleton : public virtual iBase
   virtual size_t FindBoneIndex (const char *name) = 0;
 
   /**
-   * Execute specific animation.
+   * Execute specific script.
    */
-  virtual iSkeletonAnimation* Execute (const char *animation_name) = 0;
+  virtual iSkeletonScript* Execute (const char *scriptname) = 0;
 
   /**
-   * Append animation for execution.
+   * Append script for execution.
    */
-  virtual iSkeletonAnimation* Append (const char *animation_name) = 0;
+  virtual iSkeletonScript* Append (const char *scriptname) = 0;
 
   /**
-   * Play specific animation. Returns played animation instance.
+   * Clear scripts for execution.
    */
-  virtual iSkeletonAnimationInstance *Play (const char *animation_name) = 0;
-
-  /**
-   * Stop animation. 
-   */
-  virtual void Stop (iSkeletonAnimationInstance *anim_instance) = 0;
-
-  /**
-   * Clear animations for execution.
-   */
-  virtual void ClearPendingAnimations () = 0;
-
-  /**
-   * Clear animations for execution.
-   * \deprecated ClearPendingScripts is deprecated, use ClearPendingAnimations instead.
-   */
-  CS_DEPRECATED_METHOD_MSG("ClearPendingScripts is deprecated, use ClearPendingAnimations instead")
   virtual void ClearPendingScripts () = 0;
 
   /**
-   * Get number of running animations.
+   * Get number of available scripts.
    */
-  virtual size_t GetAnimationsCount () = 0;
-
-  /**
-   * Get number of running animations.
-   * \deprecated GetScriptsCount is deprecated, use GetAnimationsCount instead.
-   */
-  CS_DEPRECATED_METHOD_MSG("GetScriptsCount is deprecated, use GetAnimationsCount instead")
   virtual size_t GetScriptsCount () = 0;
 
   /**
-   * Get animation by index.
+   * General script by index.
    */
-  virtual iSkeletonAnimation* GetAnimation (size_t i) = 0;
+  virtual iSkeletonScript* GetScript (size_t i) = 0;
 
   /**
-   * Get animation by index.
-   * \deprecated GetScript is deprecated, use GetAnimation instead.
+   * Find script by name.
    */
-  CS_DEPRECATED_METHOD_MSG("GetScript is deprecated, use GetAnimation instead")
-  virtual iSkeletonAnimation* GetScript (size_t i) = 0;
-
-  /**
-   * Find animation by name.
-   */
-  virtual iSkeletonAnimation* FindAnimation (const char *animation_name) = 0;
-
-  /**
-   * Find animation by name.
-   * \deprecated FindScript is deprecated, use FindAnimation instead.
-   */
-  CS_DEPRECATED_METHOD_MSG("FindScript is deprecated, use FindAnimation instead")
-  virtual iSkeletonAnimation* FindScript (const char *animation_name) = 0;
+  virtual iSkeletonScript* FindScript (const char *scriptname) = 0;
 
   /**
    * Find socket by name.
@@ -541,32 +434,24 @@ struct iSkeleton : public virtual iBase
   virtual iSkeletonSocket* FindSocket (const char *socketname) = 0;
 
   /**
-   * Stop all executed animations.
+   * Stop all executed scripts.
    */
   virtual void StopAll () = 0;
 
   /**
-   * Stop executed animation by name.
+   * Stop executed script by name.
    */
-  virtual void Stop (const char* animation_name) = 0;
+  virtual void Stop (const char* scriptname) = 0;
 
   /**
    * Get skeleton factory.
    */
-  virtual iSkeletonFactory *GetFactory () = 0;
+  virtual iSkeletonFactory *GetFactory() = 0;
 
   /**
-   * Set animation callback.
+   * Get script callback.
    */
-  virtual void SetScriptCallback (iSkeletonAnimationCallback *cb) = 0;
-
-  /**
-   * Set animation callback.
-   * \deprecated SetScriptCallback is deprecated, use SetAnimationCallback
-   * instead.
-   */
-  CS_DEPRECATED_METHOD_MSG("SetScriptCallback is deprecated, use SetAnimationCallback instead")
-  virtual void SetAnimationCallback (iSkeletonAnimationCallback *cb) = 0;
+  virtual void SetScriptCallback(iSkeletonScriptCallback *cb) = 0;
 
   //virtual void CreateRagdoll(iODEDynamicSystem *dyn_sys, csReversibleTransform & transform) = 0;
   //virtual void DestroyRagdoll() = 0;
@@ -574,13 +459,12 @@ struct iSkeleton : public virtual iBase
   /**
    * Adds skeleton update callback.
    */
-  virtual size_t AddUpdateCallback (
-      iSkeletonUpdateCallback *update_callback) = 0;
+  virtual size_t AddUpdateCallback(iSkeletonUpdateCallback *update_callback) = 0;
 
   /**
    * Get number of skeleton callbacks.
    */
-  virtual size_t GetUpdateCallbacksCount () = 0;
+  virtual size_t GetUpdateCallbacksCount() = 0;
 
   /**
    * Get callback by index.
@@ -590,21 +474,7 @@ struct iSkeleton : public virtual iBase
   /**
    * Remove skelton callback by index.
    */
-  virtual void RemoveUpdateCallback (size_t callback_idx) = 0;
-
-  /**
-   * Update animations state. Returns 'false' when no update
-   * was aplied.
-   */
-  virtual bool UpdateAnimation (csTicks current_time) = 0;
-
-  /**
-   * Update skeleton bones. Normaly you won't ever need to call this
-   * method by yourself (updating bones is done via 'UpdateAnimation'),
-   * but you will need to use it too see changes after direct pose changes
-   * when you are not updating animations for some reason.
-   */
-  virtual void UpdateBones () = 0;
+  virtual void RemoveUpdateCallback(size_t callback_idx) = 0;
 };
 
 /**
@@ -758,7 +628,7 @@ struct iSkeletonBoneFactory : public virtual iBase
   /**
    * Get number of children factories.
    */
-  virtual size_t GetChildrenCount () = 0;
+  virtual int GetChildrenCount () = 0;
 
   /**
    * Get factory child by index.
@@ -856,41 +726,17 @@ struct iSkeletonFactory : public virtual iBase
   /**
    * Create new bone factory.
    */
-  virtual iSkeletonBoneFactory *CreateBone (const char *name) = 0;
+  virtual iSkeletonBoneFactory *CreateBone(const char *name) = 0;
 
   /**
-   * Create new animation.
+   * Create new animation script.
    */
-  virtual iSkeletonAnimation *CreateAnimation (const char *name) = 0;
-
-  /**
-   * Create new animation.
-   * \deprecated CreateScript is deprecated, use CreateAnimation instead.
-   */
-  CS_DEPRECATED_METHOD_MSG("CreateScript is deprecated, use CreateAnimation instead")
-  virtual iSkeletonAnimation *CreateScript(const char *name) = 0;
-
-  /**
-   * Find animation by name.
-   */
-  virtual iSkeletonAnimation *FindAnimation (const char *name) = 0;
-
-  /**
-   * Get number of available animations.
-   */
-  virtual size_t GetAnimationsCount () = 0;
-
-  /**
-   * Get animation by index.
-   */
-  virtual iSkeletonAnimation *GetAnimation (size_t idx) = 0;
+  virtual iSkeletonScript *CreateScript(const char *name) = 0;
 
   /**
    * Find script by name.
-   * \deprecated FindScript is deprecated, use FindAnimation instead.
    */
-  CS_DEPRECATED_METHOD_MSG("FindScript is deprecated, use FindAnimation instead")
-  virtual iSkeletonAnimation *FindScript (const char *name) = 0;
+  virtual iSkeletonScript *FindScript(const char *name) = 0;
 
   /**
    * Find bone factory by name.
@@ -920,8 +766,7 @@ struct iSkeletonFactory : public virtual iBase
   /**
    * Create new socket factory.
    */
-  virtual iSkeletonSocketFactory *CreateSocket(const char *name,
-      iSkeletonBoneFactory *bone) = 0;
+  virtual iSkeletonSocketFactory *CreateSocket(const char *name, iSkeletonBoneFactory *bone) = 0;
 
   /**
    * Find socket factory by name.
@@ -977,28 +822,7 @@ struct iSkeletonGraveyard : public virtual iBase
   /**
    * Create skeleton from specific factory.
    */
-  virtual iSkeleton *CreateSkeleton(iSkeletonFactory *fact,
-      const char *name = 0) = 0;
-
-  /**
-   * Set manual updates handling mode.
-   */
-  virtual void SetManualUpdates (bool man_updates) = 0;
-
-  /**
-   * Set manual updates handling mode.
-   */
-  virtual void Update (csTicks time) = 0;
-
-  /**
-   * Add skeleton that will be updated by this graveyard. 
-   */
-  virtual void AddSkeleton (iSkeleton *skeleton) = 0;
-
-  /**
-   * Remove a skeleton again.
-   */
-  virtual void RemoveSkeleton (iSkeleton* skeleton) = 0;
+  virtual iSkeleton *CreateSkeleton(iSkeletonFactory *fact, const char *name = 0) = 0;
 };
 
 #endif //__CS_ISKELETON_H__

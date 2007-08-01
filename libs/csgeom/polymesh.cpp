@@ -21,7 +21,6 @@
 #include "csgeom/polymesh.h"
 #include "csgeom/pmtools.h"
 
-#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 void csPolygonMesh::Triangulate ()
 {
@@ -37,4 +36,3 @@ csTriangle* csPolygonMeshBox::GetTriangles ()
   return triangles;
 }
 
-#include "csutil/win32/msvc_deprecated_warn_on.h"

@@ -28,7 +28,6 @@
 #include "csutil/eventnames.h"
 #include "csutil/ref.h"
 #include "csutil/scf.h"
-#include "csutil/callstack.h"
 #include "iengine/engine.h"
 #include "iengine/material.h"
 #include "iengine/texture.h"
@@ -56,8 +55,6 @@ CS_IMPLEMENT_PLUGIN
 CS_PLUGIN_NAMESPACE_BEGIN(ShaderManager)
 {
 
-CS_LEAKGUARD_IMPLEMENT (csNullShader);
-
 SCF_IMPLEMENT_FACTORY (csShaderManager)
 
 void csNullShader::SelfDestruct ()
@@ -83,7 +80,7 @@ csShaderManager::~csShaderManager()
   shaders.DeleteAll ();
   if (weakEventHandler)
   {
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (objectreg);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (objectreg, iEventQueue);
     if (q)
       RemoveWeakListener (q, weakEventHandler);
   }
@@ -101,11 +98,11 @@ void csShaderManager::Report (int severity, const char* msg, ...)
 bool csShaderManager::Initialize(iObjectRegistry *objreg)
 {
   objectreg = objreg;
-  vc = csQueryRegistry<iVirtualClock> (objectreg);
-  txtmgr = csQueryRegistry<iTextureManager> (objectreg);
+  vc = CS_QUERY_REGISTRY (objectreg, iVirtualClock);
+  txtmgr = CS_QUERY_REGISTRY (objectreg, iTextureManager);
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (objectreg));
+    CS_QUERY_REGISTRY (objectreg, iVerbosityManager));
   if (verbosemgr) 
     do_verbose = verbosemgr->Enabled ("renderer.shader");
   else
@@ -119,7 +116,7 @@ bool csShaderManager::Initialize(iObjectRegistry *objreg)
     csQueryRegistry<iEventHandlerRegistry> (objectreg);
   eventSucc[0] = handlerReg->GetGenericID ("crystalspace.graphics3d");
 
-  csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (objectreg);
+  csRef<iEventQueue> q = CS_QUERY_REGISTRY (objectreg, iEventQueue);
   if (q)
   {
     csEventID events[] = { PreProcess, SystemOpen, SystemClose, 
@@ -127,11 +124,11 @@ bool csShaderManager::Initialize(iObjectRegistry *objreg)
     RegisterWeakListener (q, this, events, weakEventHandler);
   }
 
-  csRef<iPluginManager> plugin_mgr = 
-	csQueryRegistry<iPluginManager> (objectreg);
+  csRef<iPluginManager> plugin_mgr = CS_QUERY_REGISTRY  (objectreg,
+	iPluginManager);
 
-  strings = csQueryRegistryTagInterface<iStringSet> (
-    objectreg, "crystalspace.shared.stringset");
+  strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    objectreg, "crystalspace.shared.stringset", iStringSet);
 
   {
     csRef<csNullShader> nullShader;
@@ -229,29 +226,6 @@ void csShaderManager::Close ()
 {
 }
 
-void csShaderManager::RegisterShaderVariableAccessor (const char* name,
-      iShaderVariableAccessor* accessor)
-{
-  sva_hash.Put (name, accessor);
-}
-
-void csShaderManager::UnregisterShaderVariableAccessor (const char* name,
-      iShaderVariableAccessor* accessor)
-{
-  sva_hash.Delete (name, accessor);
-}
-
-iShaderVariableAccessor* csShaderManager::GetShaderVariableAccessor (
-      const char* name)
-{
-  return sva_hash.Get (name, (iShaderVariableAccessor*)0);
-}
-
-void csShaderManager::UnregisterShaderVariableAcessors ()
-{
-  sva_hash.DeleteAll ();
-}
-
 bool csShaderManager::HandleEvent(iEvent& event)
 {
   if (event.Name == PreProcess)
@@ -298,15 +272,6 @@ void csShaderManager::UnregisterShader (iShader* shader)
       csArrayCmp<iShader*, iShader*> (shader, &ShaderCompare));
     if (index != csArrayItemNotFound) shaders.DeleteIndex (index);
   }
-}
-
-void csShaderManager::UnregisterShaders ()
-{
-  shaders.DeleteAll ();
-  csRef<csNullShader> nullShader;
-  nullShader.AttachNew (new csNullShader (this));
-  nullShader->SetName ("*null");
-  RegisterShader (nullShader);
 }
 
 static int ShaderCompareName (iShader* const& s1,

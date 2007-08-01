@@ -93,12 +93,7 @@ struct iTextureWrapper : public virtual iBase
    * the new texture and the iImage to 0.
    */
   virtual void SetTextureHandle (iTextureHandle *tex) = 0;
-  /**
-   * Get the texture handle.
-   * A texture handle will be available after one of Register() or
-   * iEngine::Prepare() was called or a handle set manually with 
-   * SetTextureHandle().
-   */
+  /// Get the texture handle.
   virtual iTextureHandle* GetTextureHandle () = 0;
 
   /// Set the transparent color.
@@ -111,10 +106,7 @@ struct iTextureWrapper : public virtual iBase
   /// Return the flags which are used to register the texture
   virtual int GetFlags () const = 0;
 
-  /**
-   * Register the texture with the texture manager, making a texture handle
-   * available.
-   */
+  /// Register the texture with the texture manager
   virtual void Register (iTextureManager *txtmng) = 0;
 
   /**

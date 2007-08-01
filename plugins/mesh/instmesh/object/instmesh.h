@@ -39,7 +39,6 @@
 #include "iengine/lightmgr.h"
 #include "iengine/shadcast.h"
 #include "igeom/polymesh.h"
-#include "igeom/trimesh.h"
 #include "imesh/instmesh.h"
 #include "imesh/lighting.h"
 #include "imesh/object.h"
@@ -85,8 +84,6 @@ public:
     delete[] shadowmap;
   }
 };
-
-#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 struct csInstance
 {
@@ -319,10 +316,6 @@ public:
    * does nothing.
    */
   virtual void PositionChild (iMeshObject* /*child*/, csTicks /*current_time*/) { }
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-          iDecalBuilder* decalBuilder)
-  {
-  }
 
   /// Calculate bounding box and radius.
   void CalculateBBoxRadius ();
@@ -369,31 +362,6 @@ public:
   csRef<PolyMesh> polygonMesh;
   friend struct PolyMesh;
 
-  //------------------ iTriangleMesh interface implementation ----------------//
-  struct TriMesh : public scfImplementation1<TriMesh, iTriangleMesh>
-  {
-  private:
-    csFlags flags;
-    csInstmeshMeshObject* parent;
-  public:
-    virtual size_t GetVertexCount ();
-    virtual csVector3* GetVertices ();
-    virtual size_t GetTriangleCount ();
-    virtual csTriangle* GetTriangles ();
-    virtual void Lock () { }
-    virtual void Unlock () { }
-    
-    virtual csFlags& GetFlags () { return flags;  }
-    virtual uint32 GetChangeNumber() const { return 0; }
-
-    TriMesh (csInstmeshMeshObject* parent) : scfImplementationType (this),
-      parent (parent)
-    {
-    }
-    virtual ~TriMesh () { }
-  };
-  friend struct TriMesh;
-
   class RenderBufferAccessor : 
     public scfImplementation1<RenderBufferAccessor, iRenderBufferAccessor>
   {
@@ -418,8 +386,6 @@ public:
 
   void PreGetBuffer (csRenderBufferHolder* holder, csRenderBufferName buffer);
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * Factory for general meshes.
@@ -497,7 +463,7 @@ public:
   void AddVertex (const csVector3& v,
       const csVector2& uv, const csVector3& normal,
       const csColor4& color);
-  size_t GetVertexCount () const { return fact_vertices.GetSize (); }
+  size_t GetVertexCount () const { return fact_vertices.Length (); }
   const csVector3* GetVertices ()
   {
     return fact_vertices.GetArray ();
@@ -519,7 +485,7 @@ public:
   {
     fact_triangles.Push (tri);
   }
-  size_t GetTriangleCount () const { return fact_triangles.GetSize (); }
+  size_t GetTriangleCount () const { return fact_triangles.Length (); }
   const csTriangle* GetTriangles () { return fact_triangles.GetArray (); }
 
   void CalculateNormals (bool compress);

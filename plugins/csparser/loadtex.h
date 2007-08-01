@@ -108,18 +108,6 @@ public:
   	iBase* context);
 };
 
-/// Error-texture loader pseudo-plugin
-class csMissingTextureLoader :
-  public scfImplementationExt0<csMissingTextureLoader, csBaseTextureLoader>
-{
-public:
-  csMissingTextureLoader (iBase *p);
-
-  virtual csPtr<iBase> Parse (iDocumentNode* node,
-    iStreamSource*, iLoaderContext* ldr_context,
-    iBase* context);
-};
-
 /// Cubemap texture loader pseudo-plugin
 class csCubemapTextureLoader :
   public scfImplementationExt0<csCubemapTextureLoader, csBaseTextureLoader>

@@ -21,12 +21,10 @@
 
 #include "csgeom/frustum.h"
 #include "csgeom/math3d.h"
-#include "csutil/pooledscfclass.h"
 #include "csutil/scf_implementation.h"
 #include "iengine/engine.h"
 #include "iengine/rview.h"
 #include "plugins/engine/3d/camera.h"
-#include "cstool/rviewclipper.h"
 
 class csMatrix3;
 class csVector3;
@@ -37,16 +35,12 @@ struct iGraphics2D;
 struct iSector;
 struct iClipper2D;
 
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 /**
  * This structure represents all information needed for drawing
  * a scene. It is modified while rendering according to
  * portals/warping portals and such.
  */
-class csRenderView : 
-  public scfImplementationPooled<scfImplementation1<csRenderView, 
-                                                    iRenderView> >
+class csRenderView : public scfImplementation1<csRenderView, iRenderView>
 {
 private:
   /**
@@ -77,6 +71,14 @@ private:
    */
   void UpdateFrustum ();
 
+  /**
+   * Given a csRenderContext (with frustum) and a bounding sphere calculate if
+   * the sphere is fully inside and fully outside that frustum.
+   * Works in world space.
+   */
+  static void TestSphereFrustumWorld (csRenderContext* frust,
+    const csVector3& center, float radius, bool& inside, bool& outside);
+
 public:
   ///
   csRenderView ();
@@ -85,8 +87,6 @@ public:
   ///
   csRenderView (iCamera* c, iClipper2D* v, iGraphics3D* ig3d,
     iGraphics2D* ig2d);
-  /// Copy constructor.
-  csRenderView (const csRenderView& other);
 
   virtual ~csRenderView ();
 
@@ -98,6 +98,9 @@ public:
   void SetOriginalCamera (iCamera* camera);
   /// Get the original camera.
   virtual iCamera* GetOriginalCamera () const { return original_camera; }
+
+  /// Setup the clip planes for the current context and camera (in world space).
+  void SetupClipPlanes ();
 
   /// Get the current render context.
   csRenderContext* GetCsRenderContext () const { return ctxt; }
@@ -220,17 +223,13 @@ public:
    * Check if the given bounding sphere (in camera and world space coordinates)
    * is visibile in this render view. If the sphere is visible this
    * function will also initialize the clip_plane, clip_z_plane, and
-   * clip_portal fields which can be used for the renderer.
+   * clip_portal fields which can be used for DrawTriangleMesh or
+   * DrawPolygonMesh.
    */
   bool ClipBSphere (
 	const csSphere &cam_sphere,
 	const csSphere &world_sphere,
-	int& clip_portal, int& clip_plane, int& clip_z_plane)
-  {
-    return CS::RenderViewClipper::CullBSphere (ctxt,
-	cam_sphere, world_sphere, clip_portal, clip_plane,
-	clip_z_plane);
-  }
+	int& clip_portal, int& clip_plane, int& clip_z_plane);
 
   /// Get the current render context.
   virtual csRenderContext* GetRenderContext () { return ctxt; }
@@ -267,32 +266,16 @@ public:
    * transform world to camera space.
    */
   virtual bool TestBSphere (const csReversibleTransform& w2c,
-    const csSphere& sphere)
-  {
-    return CS::RenderViewClipper::TestBSphere (ctxt, w2c, sphere);
-  }
+    const csSphere& sphere);
 
   virtual void CalculateClipSettings (uint32 frustum_mask,
-    int &clip_portal, int &clip_plane, int &clip_z_plane)
-  {
-    CS::RenderViewClipper::CalculateClipSettings (ctxt,
-	frustum_mask, clip_portal, clip_plane, clip_z_plane);
-  }
+    int &clip_portal, int &clip_plane, int &clip_z_plane);
 
-  virtual bool ClipBBox (const csPlane3* planes, uint32& frustum_mask,
+  virtual bool ClipBBox (csPlane3* planes, uint32& frustum_mask,
   	const csBox3& obox,
-        int& clip_portal, int& clip_plane, int& clip_z_plane)
-  {
-    return CS::RenderViewClipper::CullBBox (ctxt, planes, frustum_mask,
-	obox, clip_portal, clip_plane, clip_z_plane);
-  }
-
+        int& clip_portal, int& clip_plane, int& clip_z_plane);
   virtual void SetupClipPlanes (const csReversibleTransform& tr_o2c,
-  	csPlane3* planes, uint32& frustum_mask)
-  {
-    CS::RenderViewClipper::SetupClipPlanes (ctxt, tr_o2c,
-	planes, frustum_mask);
-  }
+  	csPlane3* planes, uint32& frustum_mask);
 
   /**
    * Get current sector.
@@ -310,7 +293,5 @@ public:
   /// Get the number of the current frame.
   virtual uint GetCurrentFrameNumber () const;
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 #endif // __CS_RVIEW_H__

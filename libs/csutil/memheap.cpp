@@ -36,7 +36,6 @@ namespace CS
       void mspace_free(mspace msp, void* mem);
       void* mspace_realloc(mspace msp, void* mem, size_t newsize);
       int mspace_trim(mspace msp, size_t pad);
-      size_t mspace_footprint(mspace msp);
     };
     
     Heap::Heap()
@@ -66,10 +65,6 @@ namespace CS
     void Heap::Trim (size_t pad)
     {
       mspace_trim (mspace, pad);
-    }
-    size_t Heap::Footprint ()
-    {
-      return mspace_footprint (mspace);
     }
   } // namespace Memory
 } // namespace CS

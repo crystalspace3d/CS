@@ -21,7 +21,6 @@
 #define SNDSYS_SOFTWARE_DRIVER_Jackasyn_H
 
 #include "csutil/cfgacc.h"
-#include "csutil/threading/thread.h"
 #include "iutil/eventh.h"
 #include "iutil/comp.h"
 
@@ -38,27 +37,37 @@ CS_PLUGIN_NAMESPACE_BEGIN(SndSysJACKASYN)
 
 class SndSysDriverJackasyn;
 
-class SndSysDriverRunnable : public CS::Threading::Runnable
+class SndSysDriverRunnable : public csRunnable
 {
 private:
   SndSysDriverJackasyn* parent;
+  int ref_count;
 
 public:
   SndSysDriverRunnable (SndSysDriverJackasyn* parent) :
-      parent (parent)
-      { }
+  	parent (parent), ref_count (1) { }
   virtual ~SndSysDriverRunnable () { }
 
   virtual void Run ();
+  virtual void IncRef() { ++ref_count; }
+  /// Decrement reference count.
+  virtual void DecRef()
+  {
+    --ref_count;
+    if (ref_count <= 0)
+      delete this;
+  }
 
+  /// Get reference count.
+  virtual int GetRefCount() { return ref_count; }
 };
 
 
-class SndSysDriverJackasyn : public scfImplementation2<SndSysDriverJackasyn,
-                                                       iSndSysSoftwareDriver,
-                                                       iComponent>
+class SndSysDriverJackasyn : public iSndSysSoftwareDriver
 {
 public:
+  SCF_DECLARE_IBASE;
+
   SndSysDriverJackasyn(iBase *piBase);
   virtual ~SndSysDriverJackasyn();
 
@@ -97,7 +106,7 @@ protected:
   // We don't really need to synchronize access to this since a delay in
   // recognizing a change isn't a big deal.
   volatile bool running;
-  csRef<CS::Threading::Thread> bgthread;
+  csRef<csThread> bgthread;
 
 protected:
   void ClearBuffer();
@@ -113,6 +122,15 @@ public:
 
   // iComponent
   virtual bool Initialize (iObjectRegistry *obj_reg);
+
+
+  struct eiComponent : public iComponent
+  {
+    SCF_DECLARE_EMBEDDED_IBASE(SndSysDriverJackasyn);
+    virtual bool Initialize (iObjectRegistry* p)
+    { return scfParent->Initialize(p); }
+  } scfiComponent;
+
 };
 
 }

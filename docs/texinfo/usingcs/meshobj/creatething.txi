@@ -5,9 +5,7 @@
 @cindex @code{iThingState}
 @cindex thing mesh
 
-This section describes how to create a thing mesh. Note that the thing
-mesh is considered deprecated in favor of @samp{GenMesh}.
-@xref{MeshObject Genmesh}.
+This section describes how to create a thing mesh.
 
 @subsubheading What are Things?
 

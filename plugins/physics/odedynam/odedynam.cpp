@@ -24,8 +24,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csgeom/plane3.h"
 #include "csgeom/sphere.h"
 #include "csgeom/pmtools.h"
-#include "csgeom/trimeshtools.h"
-#include "csgeom/trimesh.h"
 #include "cstool/collider.h"
 #include "csutil/event.h"
 #include "csutil/eventnames.h"
@@ -63,19 +61,99 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 CS_IMPLEMENT_PLUGIN
 
-CS_PLUGIN_NAMESPACE_BEGIN(odedynam)
-{
+SCF_IMPLEMENT_IBASE (csODEDynamics)
+SCF_IMPLEMENTS_INTERFACE (iDynamics)
+SCF_IMPLEMENTS_EMBEDDED_INTERFACE (iODEDynamicState)
+SCF_IMPLEMENTS_EMBEDDED_INTERFACE (iComponent)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE (csODEDynamics::ODEDynamicState)
+SCF_IMPLEMENTS_INTERFACE (iODEDynamicState)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE (csODEDynamics::Component)
+SCF_IMPLEMENTS_INTERFACE (iComponent)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+SCF_IMPLEMENT_IBASE (csODEDynamics::EventHandler)
+SCF_IMPLEMENTS_INTERFACE (iEventHandler)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_IBASE_EXT (csODEDynamicSystem)
+SCF_IMPLEMENTS_EMBEDDED_INTERFACE (iDynamicSystem)
+SCF_IMPLEMENTS_EMBEDDED_INTERFACE (iODEDynamicSystemState);
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE (csODEDynamicSystem::DynamicSystem)
+SCF_IMPLEMENTS_INTERFACE (iDynamicSystem)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE (csODEDynamicSystem::ODEDynamicSystemState)
+SCF_IMPLEMENTS_INTERFACE (iODEDynamicSystemState)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+SCF_IMPLEMENT_IBASE (csODEBodyGroup)
+SCF_IMPLEMENTS_INTERFACE (iBodyGroup)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_IBASE_EXT (csODERigidBody)
+SCF_IMPLEMENTS_EMBEDDED_INTERFACE (iRigidBody)
+SCF_IMPLEMENT_IBASE_EXT_END
+
+SCF_IMPLEMENT_IBASE (csODECollider)
+SCF_IMPLEMENTS_INTERFACE (iDynamicsSystemCollider)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE (csODERigidBody::RigidBody)
+SCF_IMPLEMENTS_INTERFACE (iRigidBody)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+SCF_IMPLEMENT_IBASE (ODEBallJoint)
+SCF_IMPLEMENTS_INTERFACE (iODEBallJoint)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_IBASE (ODESliderJoint)
+SCF_IMPLEMENTS_INTERFACE (iODESliderJoint)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_IBASE (ODEHingeJoint)
+SCF_IMPLEMENTS_INTERFACE (iODEHingeJoint)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_IBASE (ODEHinge2Joint)
+SCF_IMPLEMENTS_INTERFACE (iODEHinge2Joint)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_IBASE (ODEAMotorJoint)
+SCF_IMPLEMENTS_INTERFACE (iODEAMotorJoint)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_IBASE (ODEUniversalJoint)
+SCF_IMPLEMENTS_INTERFACE (iODEUniversalJoint)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_IBASE (csODEDefaultMoveCallback)
+SCF_IMPLEMENTS_INTERFACE (iDynamicsMoveCallback)
+SCF_IMPLEMENT_IBASE_END
 
 SCF_IMPLEMENT_FACTORY (csODEDynamics)
 
-//static void DestroyGeoms( csGeomList & geoms );
+
+void DestroyGeoms( csGeomList & geoms );
+
 
 int csODEDynamics::geomclassnum = 0;
 dJointGroupID csODEDynamics::contactjoints = dJointGroupCreate (0);
 
-csODEDynamics::csODEDynamics (iBase* parent) : 
-  scfImplementationType (this, parent), object_reg (0), process_events (0)
+csODEDynamics::csODEDynamics (iBase* parent)
 {
+  SCF_CONSTRUCT_IBASE (parent);
+  SCF_CONSTRUCT_EMBEDDED_IBASE (scfiComponent);
+  SCF_CONSTRUCT_EMBEDDED_IBASE (scfiODEDynamicState);
+  object_reg = 0;
+  scfiEventHandler = 0;
+  process_events = false;
+
   // Initialize the colliders so that the class isn't overwritten
   dGeomID id = dCreateSphere (0, 1);
   dGeomDestroy (id);
@@ -107,17 +185,20 @@ csODEDynamics::~csODEDynamics ()
 {
   if (scfiEventHandler)
   {
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (object_reg, iEventQueue);
     if (q)
       q->RemoveListener (scfiEventHandler);
   }
+  SCF_DESTRUCT_EMBEDDED_IBASE (scfiODEDynamicState);
+  SCF_DESTRUCT_EMBEDDED_IBASE (scfiComponent);
+  SCF_DESTRUCT_IBASE();
 }
 
 bool csODEDynamics::Initialize (iObjectRegistry* object_reg)
 {
   csODEDynamics::object_reg = object_reg;
 
-  clock = csQueryRegistry<iVirtualClock> (object_reg);
+  clock = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
   if (!clock)
     return false;
 
@@ -128,12 +209,13 @@ bool csODEDynamics::Initialize (iObjectRegistry* object_reg)
 
 csPtr<iDynamicSystem> csODEDynamics::CreateSystem ()
 {
-  csRef<csODEDynamicSystem> system;
-  system.AttachNew (new csODEDynamicSystem (object_reg, erp, cfm));
-  systems.Push (system);
+  csODEDynamicSystem* system = new csODEDynamicSystem (erp, cfm);
+  csRef<iDynamicSystem> isystem (SCF_QUERY_INTERFACE (system, iDynamicSystem));
+  systems.Push (isystem);
+  isystem->DecRef ();
   if(stepfast) system->EnableStepFast(true);
   else if(quickstep) system->EnableQuickStep(true);
-  return csPtr<iDynamicSystem> (system);
+  return csPtr<iDynamicSystem> (isystem);
 }
 
 void csODEDynamics::RemoveSystem (iDynamicSystem* system)
@@ -171,21 +253,14 @@ void csODEDynamics::Step (float elapsed_time)
   }
   total_elapsed += elapsed_time;
 
-  //step callbacks
-  step_callbacks.Compact ();
-  for (size_t i = 0; i < step_callbacks.GetSize (); i++)
-  {
-    step_callbacks[i]->Step (elapsed_time);
-  }
-
   // TODO handle fractional total_remaining (interpolate render)
   while (total_elapsed > stepsize)
   {
     total_elapsed -= stepsize;
-    for (size_t i=0; i<systems.GetSize (); i++)
+    for (size_t i=0; i<systems.Length(); i++)
     {
       systems.Get (i)->Step (stepsize);
-      for (size_t j = 0; j < updates.GetSize (); j ++)
+      for (size_t j = 0; j < updates.Length(); j ++)
       {
         updates[i]->Execute (stepsize);
       }
@@ -254,17 +329,17 @@ void csODEDynamics::NearCallback (void *data, dGeomID o1, dGeomID o2)
     /* there is only 1 actual body per set */
     if (b1)
     {
-      b1->Collision (b2, pos, normal, depth);
+      b1->Collision ((b2) ? &b2->scfiRigidBody : 0, pos, normal, depth);
       if (!b2)
         ((GeomData *)dGeomGetData (o2))->collider->Collision (
-		b1, pos, -normal, depth);
+		&b1->scfiRigidBody, pos, -normal, depth);
     }
     if (b2)
     {
-      b2->Collision (b1, pos, -normal, depth);
+      b2->Collision ((b1) ? &b1->scfiRigidBody : 0, pos, -normal, depth);
       if (!b1)
         ((GeomData *)dGeomGetData (o1))->collider->Collision (
-		b2, pos, normal, depth);
+		&b2->scfiRigidBody, pos, normal, depth);
     }
 
     for( int i=0; i<a; i++ )
@@ -324,10 +399,10 @@ void csODEDynamics::SetGlobalERP (float erp)
 {
   csODEDynamics::erp = erp;
 
-  for (size_t i = 0; i < systems.GetSize (); i ++)
+  for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->SetERP (erp);
   }
 }
@@ -335,10 +410,10 @@ void csODEDynamics::SetGlobalERP (float erp)
 void csODEDynamics::SetGlobalCFM (float cfm)
 {
   csODEDynamics::cfm = cfm;
-  for (size_t i = 0; i < systems.GetSize (); i ++)
+  for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->SetCFM (cfm);
   }
 }
@@ -348,10 +423,10 @@ void csODEDynamics::EnableStepFast (bool enable)
   stepfast = enable;
   quickstep = false;
 
-  for (size_t i = 0; i < systems.GetSize (); i ++)
+  for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->EnableStepFast (enable);
   }
 }
@@ -360,10 +435,10 @@ void csODEDynamics::SetStepFastIterations (int iter)
 {
   sfiter = iter;
 
-  for (size_t i = 0; i < systems.GetSize (); i ++)
+  for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->SetStepFastIterations (iter);
   }
 }
@@ -373,10 +448,10 @@ void csODEDynamics::EnableQuickStep (bool enable)
   quickstep = enable;
   stepfast = false;
 
-  for (size_t i = 0; i < systems.GetSize (); i ++)
+  for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->EnableQuickStep (enable);
   }
 }
@@ -385,10 +460,10 @@ void csODEDynamics::SetQuickStepIterations (int iter)
 {
   qsiter = iter;
 
-  for (size_t i = 0; i < systems.GetSize (); i ++)
+  for (size_t i = 0; i < systems.Length(); i ++)
   {
-    csRef<iODEDynamicSystemState> sys = 
-      scfQueryInterface<iODEDynamicSystemState> (systems[i]);
+    csRef<iODEDynamicSystemState> sys = SCF_QUERY_INTERFACE (systems[i],
+      iODEDynamicSystemState);
     sys->SetQuickStepIterations (iter);
   }
 }
@@ -401,7 +476,7 @@ void csODEDynamics::EnableEventProcessing (bool enable)
 
     if (!scfiEventHandler)
       scfiEventHandler = csPtr<EventHandler> (new EventHandler (this));
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (object_reg, iEventQueue);
     if (q)
       q->RegisterListener (scfiEventHandler, PreProcess);
   }
@@ -411,7 +486,7 @@ void csODEDynamics::EnableEventProcessing (bool enable)
 
     if (scfiEventHandler)
     {
-      csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+      csRef<iEventQueue> q = CS_QUERY_REGISTRY (object_reg, iEventQueue);
       if (q)
         q->RemoveListener (scfiEventHandler);
       scfiEventHandler = 0;
@@ -432,10 +507,10 @@ bool csODEDynamics::HandleEvent (iEvent& Event)
     while (total_elapsed > stepsize)
     {
       total_elapsed -= stepsize;
-      for (size_t i=0; i<systems.GetSize (); i++)
+      for (size_t i=0; i<systems.Length(); i++)
       {
         systems.Get (i)->Step (stepsize);
-        for (size_t j = 0; j < updates.GetSize (); j ++)
+        for (size_t j = 0; j < updates.Length(); j ++)
         {
           updates[i]->Execute (stepsize);
         }
@@ -447,11 +522,11 @@ bool csODEDynamics::HandleEvent (iEvent& Event)
   return false;
 }
 
-//---------------------------------------------------------------------------
-
-csODEDynamicSystem::csODEDynamicSystem (iObjectRegistry* object_reg,
-    float erp, float cfm) : scfImplementationType (this)
+csODEDynamicSystem::csODEDynamicSystem (float erp, float cfm)
 {
+  SCF_CONSTRUCT_EMBEDDED_IBASE (scfiDynamicSystem);
+  SCF_CONSTRUCT_EMBEDDED_IBASE (scfiODEDynamicSystemState);
+
   //TODO: QUERY for collidesys
 
   worldID = dWorldCreate ();
@@ -472,13 +547,7 @@ csODEDynamicSystem::csODEDynamicSystem (iObjectRegistry* object_reg,
   qsiter = 10;
   fastobjects = false;
   autodisable = true;
-  correctInertiaWorkAround = false; 
   dWorldSetAutoDisableFlag (worldID, autodisable);
-
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-      object_reg, "crystalspace.shared.stringset");
-  base_id = strings->Request ("base");
-  colldet_id = strings->Request ("colldet");
 }
 
 csODEDynamicSystem::~csODEDynamicSystem ()
@@ -492,16 +561,18 @@ csODEDynamicSystem::~csODEDynamicSystem ()
 
   dSpaceDestroy (spaceID);
   dWorldDestroy (worldID);
+
+  SCF_DESTRUCT_EMBEDDED_IBASE (scfiODEDynamicSystemState);
+  SCF_DESTRUCT_EMBEDDED_IBASE (scfiDynamicSystem);
 }
 
 
 csPtr<iRigidBody> csODEDynamicSystem::CreateBody ()
 {
-  csRef<csODERigidBody> body;
-  body.AttachNew (new csODERigidBody (this));
-  bodies.Push (body);
-  body->SetMoveCallback(move_cb);
-  return csPtr<iRigidBody> (body);
+  csODERigidBody* body = new csODERigidBody (this);
+  bodies.Push (&body->scfiRigidBody);
+  body->scfiRigidBody.SetMoveCallback(move_cb);
+  return &body->scfiRigidBody;
 }
 
 
@@ -656,7 +727,7 @@ void csODEDynamicSystem::Step (float elapsed_time)
     {
       dWorldStepFast1 (worldID, stepsize, sfiter);
     }
-    for (size_t i = 0; i < bodies.GetSize (); i ++)
+    for (size_t i = 0; i < bodies.Length(); i ++)
     {
       iRigidBody *b = bodies.Get(i);
       // only do this if the body is enabled
@@ -666,13 +737,13 @@ void csODEDynamicSystem::Step (float elapsed_time)
         b->SetLinearVelocity (b->GetLinearVelocity () * lin_damp);
       }
     }
-    for (size_t j = 0; j < updates.GetSize (); j ++)
+    for (size_t j = 0; j < updates.Length(); j ++)
     {
       updates[j]->Execute (stepsize);
     }
   }
 
-  for (size_t i=0; i<bodies.GetSize (); i++)
+  for (size_t i=0; i<bodies.Length(); i++)
   {
     iRigidBody *b = bodies.Get(i);
     b->Update ();
@@ -684,7 +755,7 @@ bool csODEDynamicSystem::AttachColliderMesh (iMeshWrapper* mesh,
 					     float friction, float elasticity,
 					     float softness)
 {
-  csODECollider *odec = new csODECollider (this, this);
+  csODECollider *odec = new csODECollider ();
   odec->SetElasticity (elasticity);
   odec->SetFriction (friction);
   odec->SetSoftness (softness);
@@ -702,11 +773,11 @@ bool csODEDynamicSystem::AttachColliderCylinder (float length, float radius,
 						 float elasticity,
 						 float softness)
 {
-  csODECollider *odec = new csODECollider (this, this);
+  csODECollider *odec = new csODECollider ();
   odec->SetElasticity (elasticity);
   odec->SetFriction (friction);
   odec->SetSoftness (softness);
-  odec->CreateCapsuleGeometry (length, radius);
+  odec->CreateCCylinderGeometry (length, radius);
   odec->SetTransform (trans);
   odec->AddToSpace (spaceID);
   colliders.Push (odec);
@@ -717,7 +788,7 @@ bool csODEDynamicSystem::AttachColliderCylinder (float length, float radius,
 bool csODEDynamicSystem::AttachColliderBox (const csVector3 &size,
                                             const csOrthoTransform& trans, float friction, float elasticity, float softness)
 {
-  csODECollider *odec = new csODECollider (this, this);
+  csODECollider *odec = new csODECollider ();
   //odec->SetElasticity (elasticity);
   //odec->SetFriction (friction);
   //odec->SetSoftness (softness);
@@ -736,7 +807,7 @@ bool csODEDynamicSystem::AttachColliderSphere (float radius,
 {
   if (radius > 0) //otherwise ODE will treat radius as a 'bad argument'
   {
-    csODECollider *odec = new csODECollider (this, this);
+    csODECollider *odec = new csODECollider ();
     odec->SetElasticity (elasticity);
     odec->SetFriction (friction);
     odec->SetSoftness (softness);
@@ -750,7 +821,7 @@ bool csODEDynamicSystem::AttachColliderSphere (float radius,
 bool csODEDynamicSystem::AttachColliderPlane (const csPlane3 &plane,
                                               float friction, float elasticity, float softness)
 {
-  csODECollider *odec = new csODECollider (this, this);
+  csODECollider *odec = new csODECollider ();
   odec->SetElasticity (elasticity);
   odec->SetFriction (friction);
   odec->SetSoftness (softness);
@@ -770,15 +841,16 @@ csRef<iDynamicsSystemCollider> csODEDynamicSystem::GetCollider (
 }
 csRef<iDynamicsSystemCollider> csODEDynamicSystem::CreateCollider ()
 {
-  csODECollider *odec = new csODECollider (this, this);
+  csODECollider *odec = new csODECollider ();
   odec->AddToSpace (spaceID);
-  colliders.Push ((csODECollider *) odec);  
-  return odec;
+  csRef<iDynamicsSystemCollider> c = (csPtr<iDynamicsSystemCollider>) odec;
+  colliders.Push (c);
+  return c;
 }
 void csODEDynamicSystem::AttachCollider (iDynamicsSystemCollider* collider)
 {
   ((csODECollider*)collider)->AddToSpace (spaceID);
-  colliders.Push ((csODECollider*)collider);
+  colliders.Push (collider);
 }
 void csODEDynamicSystem::EnableAutoDisable (bool enable)
 {
@@ -815,20 +887,20 @@ float csODEDynamicSystem::GetContactSurfaceLayer ()
   return dWorldGetContactSurfaceLayer(worldID);
 }
 
-//---------------------------------------------------------------------------
 
-csODEBodyGroup::csODEBodyGroup (csODEDynamicSystem* sys) : 
-  scfImplementationType (this), system (sys)
+csODEBodyGroup::csODEBodyGroup (csODEDynamicSystem* sys)
 {
+  SCF_CONSTRUCT_IBASE (0);
+  system = sys;
 }
 
 csODEBodyGroup::~csODEBodyGroup ()
 {
-  bodies.Compact ();
-  for (size_t i = 0; i < bodies.GetSize (); i ++)
+  for (size_t i = 0; i < bodies.Length(); i ++)
   {
     ((csODERigidBody *)(iRigidBody*)bodies[i])->UnsetGroup ();
   }
+  SCF_DESTRUCT_IBASE();
 }
 
 void csODEBodyGroup::AddBody (iRigidBody *body)
@@ -849,11 +921,9 @@ bool csODEBodyGroup::BodyInGroup (iRigidBody *body)
 }
 
 //--------------------------csODECollider-------------------------------------
-
-csODECollider::csODECollider (csODEDynamicSystem* dynsys,
-  ColliderContainer* container) : scfImplementationType (this),
-  dynsys (dynsys)
+csODECollider::csODECollider ()
 {
+  SCF_CONSTRUCT_IBASE (0);
   surfacedata[0] = 0;
   surfacedata[1] = 0;
   surfacedata[2] = 0;
@@ -865,7 +935,6 @@ csODECollider::csODECollider (csODEDynamicSystem* dynsys,
   dGeomTransformSetCleanup (transformID, 1);
   geom_type =  NO_GEOMETRY;
   is_static = true;
-  this->container = container;
 }
 void csODECollider::SetCollisionCallback (
 	iDynamicsColliderCollisionCallback* cb)
@@ -890,6 +959,7 @@ void csODECollider::KillGeoms ()
 csODECollider::~csODECollider ()
 {
   KillGeoms ();
+  SCF_DESTRUCT_IBASE();
 }
 
 void csODECollider::MakeStatic ()
@@ -928,19 +998,7 @@ void csODECollider::ClearContents ()
   geom_type =  NO_GEOMETRY;
 }
 
-void csODECollider::MassUpdate ()
-{
-  if (container->DoFullInertiaRecalculation ())
-  {
-    container->RecalculateFullInertia (this);
-  }
-  else
-  {
-    AddMassToBody (false);
-  }
-}
-
-void csODECollider::AddMassToBody (bool doSet)
+void csODECollider::MassCorrection ()
 {
   if (density > 0 && dGeomGetBody (transformID) && geomID)
   {
@@ -992,15 +1050,11 @@ void csODECollider::AddMassToBody (bool doSet)
     dMassRotate (&m, dGeomGetRotation (geomID));
 
     dBodyID bodyID = dGeomGetBody (transformID);
-    if (!doSet)
-    {
-      dBodyGetMass (bodyID, &om);
-      dMassAdd (&m, &om);
-    }
-    dBodySetMass (bodyID, &m);
+    dBodyGetMass (bodyID, &om);
+    dMassAdd (&om, &m);
+    dBodySetMass (bodyID, &om);
   }
 }
-
 void csODECollider::AttachBody (dBodyID bodyID)
 {
   if (geom_type != PLANE_COLLIDER_GEOMETRY)
@@ -1008,20 +1062,17 @@ void csODECollider::AttachBody (dBodyID bodyID)
     dGeomSetBody (transformID, bodyID);
     if (geomID)
     {
-      MassUpdate ();
+      MassCorrection ();
     }
   }
 }
-
 void csODECollider::SetDensity (float density)
 {
   csODECollider::density = density;
-  MassUpdate ();
+  MassCorrection ();
 }
-
 bool csODECollider::CreateMeshGeometry (iMeshWrapper *mesh)
 {
-  csOrthoTransform transform = GetLocalTransform ();
   dBodyID b = dGeomGetBody (transformID);
   ClearContents ();
 
@@ -1029,59 +1080,45 @@ bool csODECollider::CreateMeshGeometry (iMeshWrapper *mesh)
 
   // From Eroroman & Marc Rochel with modifications by Mike Handverger and Piotr Obrzut
 
-  iObjectModel* objmodel = mesh->GetMeshObject ()->GetObjectModel ();
+  iPolygonMesh* p = mesh->GetMeshObject()->GetObjectModel()
+  	->GetPolygonMeshColldet();
 
-  csRef<iTriangleMesh> trimesh;
-  bool use_trimesh = objmodel->IsTriangleDataSet (dynsys->GetBaseID ());
-  if (use_trimesh)
+  if (!p || p->GetVertexCount () == 0 || p->GetTriangleCount () == 0)
   {
-    if (objmodel->IsTriangleDataSet (dynsys->GetColldetID ()))
-      trimesh = objmodel->GetTriangleData (dynsys->GetColldetID ());
-    else
-      trimesh = objmodel->GetTriangleData (dynsys->GetBaseID ());
-  }
-  else
-  {
-    trimesh.AttachNew (new csTriangleMeshPolyMesh (
-	  objmodel->GetPolygonMeshColldet ()));
-  }
-
-  if (!trimesh || trimesh->GetVertexCount () == 0
-      || trimesh->GetTriangleCount () == 0)
-  {
-    csFPrintf(stderr, "csODECollider: No collision polygons, triangles or vertices on %s\n",
-      mesh->QueryObject()->GetName());
+    csFPrintf(stderr, "csODECollider: No collision polygons, triangles or vertices on %s\n",mesh->QueryObject()->GetName());
     return false;
   }
 
-  csTriangle *c_triangle = trimesh->GetTriangles();
-  size_t tr_num = trimesh->GetTriangleCount();
+  csTriangle *c_triangle = p->GetTriangles();
+  int tr_num = p->GetTriangleCount();
   // Slight problem here is that we need to keep vertices and indices around
   // since ODE only uses the pointers. I am not sure if ODE cleans them up
-  // on exit or not. If not, we need some way to keep track of all mesh
-  // colliders and clean them up on destruct.
-  float *vertices = new float[trimesh->GetVertexCount()*3];
+  // on exit or not. If not, we need some way to keep track of all mesh colliders
+  // and clean them up on destruct.
+  float *vertices = new float[p->GetVertexCount()*3];
   int *indeces = new int[tr_num*3];
-  csVector3 *c_vertex = trimesh->GetVertices();
+  csVector3 *c_vertex = p->GetVertices();
   //csFPrintf(stderr, "vertex count: %d\n", p->GetVertexCount());
   //csFPrintf(stderr, "triangles count: %d\n", tr_num);
-  size_t i, j;
-  for (i=0, j=0; i < trimesh->GetVertexCount(); i++)
+  int i=0, j=0;
+  for (i=0, j=0; i < p->GetVertexCount(); i++)
   {
     vertices[j++] = c_vertex[i].x;
     vertices[j++] = c_vertex[i].y;
     vertices[j++] = c_vertex[i].z;
+    //csFPrintf(stderr, "vertex %d coords -> x=%.1f, y=%.1f, z=%.1f\n", i,c_vertex[i].x, c_vertex[i].y, c_vertex[i].z);
   }
   for (i=0, j=0; i < tr_num; i++)
   {
     indeces[j++] = c_triangle[i].a;
     indeces[j++] = c_triangle[i].b;
     indeces[j++] = c_triangle[i].c;
+    //csFPrintf(stderr, "triangle %d -> a=%d, b=%d, c=%d\n", i,c_triangle[i].a, c_triangle[i].b, c_triangle[i].c);
   }
   dTriMeshDataID TriData = dGeomTriMeshDataCreate();
 
   dGeomTriMeshDataBuildSingle(TriData, vertices, 3*sizeof(float),
-    trimesh->GetVertexCount(), indeces, 3*tr_num, 3*sizeof(int));
+    p->GetVertexCount(), indeces, 3*tr_num, 3*sizeof(int));
 
   geomID = dCreateTriMesh(0, TriData, 0, 0, 0);
 
@@ -1094,22 +1131,17 @@ bool csODECollider::CreateMeshGeometry (iMeshWrapper *mesh)
   {
     AddTransformToSpace (spaceID);
     dGeomSetBody (transformID, b);
-    MassUpdate ();
-  }
-  else if (spaceID)
-    AddToSpace (spaceID);
-
-  SetTransform (transform);
+    MassCorrection ();
+  } else if (spaceID) AddToSpace (spaceID);
 
   return true;
 }
-bool csODECollider::CreateCapsuleGeometry (float length, float radius)
+bool csODECollider::CreateCCylinderGeometry (float length, float radius)
 {
-  csOrthoTransform transform = GetLocalTransform ();
   dBodyID b = dGeomGetBody (transformID);
   ClearContents ();
 
-  geom_type = CAPSULE_COLLIDER_GEOMETRY;
+  geom_type = CYLINDER_COLLIDER_GEOMETRY;
   geomID = dCreateCCylinder (0, radius, length);
 
   GeomData *gd = new GeomData ();
@@ -1121,10 +1153,9 @@ bool csODECollider::CreateCapsuleGeometry (float length, float radius)
   {
     AddTransformToSpace (spaceID);
     dGeomSetBody (transformID, b);
-    MassUpdate ();
+    MassCorrection ();
   } else if (spaceID) AddToSpace (spaceID);
 
-  SetTransform (transform);
   return true;
 }
 bool csODECollider::CreatePlaneGeometry (const csPlane3& plane)
@@ -1144,7 +1175,7 @@ bool csODECollider::CreatePlaneGeometry (const csPlane3& plane)
   {
     AddTransformToSpace (spaceID);
     dGeomSetBody (transformID, b);
-    MassUpdate ();
+    MassCorrection ();
   } else if (spaceID) AddToSpace (spaceID);
 
   return true;
@@ -1153,7 +1184,6 @@ bool csODECollider::CreateSphereGeometry (const csSphere& sphere)
 {
   if (sphere.GetRadius () > 0) //otherwise ODE will treat radius as a 'bad argument'
   {
-    csOrthoTransform transform = GetLocalTransform ();
     dBodyID b = dGeomGetBody (transformID);
     ClearContents ();
 
@@ -1172,10 +1202,9 @@ bool csODECollider::CreateSphereGeometry (const csSphere& sphere)
     {
       if (spaceID) AddTransformToSpace (spaceID);
       dGeomSetBody (transformID, b);
-      MassUpdate ();
+      MassCorrection ();
     } else if (spaceID) AddToSpace (spaceID);
 
-    SetTransform (transform);
     return true;
   }
 
@@ -1183,7 +1212,6 @@ bool csODECollider::CreateSphereGeometry (const csSphere& sphere)
 }
 bool csODECollider::CreateBoxGeometry (const csVector3& size)
 {
-  csOrthoTransform transform = GetLocalTransform ();
   dBodyID b = dGeomGetBody (transformID);
   ClearContents ();
 
@@ -1199,10 +1227,8 @@ bool csODECollider::CreateBoxGeometry (const csVector3& size)
   {
     AddTransformToSpace (spaceID);
     dGeomSetBody (transformID, b);
-    MassUpdate ();
+    MassCorrection ();
   } else if (spaceID) AddToSpace (spaceID);
-
-  SetTransform (transform);
 
   return true;
 }
@@ -1230,12 +1256,10 @@ void csODECollider::SetTransform (const csOrthoTransform& transform)
   dGeomSetRotation (geomID, rot);
 
   if (dGeomGetBody (transformID))
-    MassUpdate ();
+    MassCorrection ();
 }
 csOrthoTransform csODECollider::GetLocalTransform ()
 {
-  if (!geomID)
-    return csOrthoTransform ();
   const dReal *tv = dGeomGetPosition (geomID);
   csVector3 t_pos (tv[0], tv[1], tv[2]);
 
@@ -1246,8 +1270,6 @@ csOrthoTransform csODECollider::GetLocalTransform ()
 }
 csOrthoTransform csODECollider::GetTransform ()
 {
-  if (!geomID)
-    return csOrthoTransform ();
   const dReal *tv = dGeomGetPosition (transformID);
   csVector3 t_pos (tv[0], tv[1], tv[2]);
 
@@ -1267,7 +1289,7 @@ csOrthoTransform csODECollider::GetTransform ()
   csMatrix3 g_rot;
   ODE2CSMatrix (dGeomGetRotation (geomID), g_rot);
 
-  return csOrthoTransform (g_rot, g_pos) * t_transf;
+  return t_transf * csOrthoTransform (g_rot, g_pos);
 }
 void csODECollider::AddTransformToSpace (dSpaceID spaceID)
 {
@@ -1361,18 +1383,6 @@ void csODECollider::FillWithColliderGeometry (csRef<iGeneralFactoryState> genmes
       genmesh_fact->GenerateSphere (sphere, 30);
       genmesh_fact->CalculateNormals ();
     }
-    break;
-  case CAPSULE_COLLIDER_GEOMETRY:
-    {
-      dReal r, l;
-      dGeomCCylinderGetParams (geomID, &r, &l);
-      genmesh_fact->GenerateCapsule (l, r, 10);
-      csRef<iMeshObjectFactory> collider_fact = 
-        scfQueryInterface<iMeshObjectFactory> (genmesh_fact);
-      collider_fact->HardTransform (
-        csReversibleTransform (csYRotMatrix3 (PI/2), csVector3 (0)));
-    }
-    break;
   case PLANE_COLLIDER_GEOMETRY:
     {
       //dVector4 plane;
@@ -1405,12 +1415,13 @@ void csODECollider::FillWithColliderGeometry (csRef<iGeneralFactoryState> genmes
     break;
   }
 }
-
 //--------------------------csODERigidBody-------------------------------------
-
-csODERigidBody::csODERigidBody (csODEDynamicSystem* sys) : 
-  scfImplementationType (this), dynsys (sys)
+csODERigidBody::csODERigidBody (csODEDynamicSystem* sys)
 {
+  SCF_CONSTRUCT_EMBEDDED_IBASE (scfiRigidBody);
+
+  dynsys = sys;
+
   bodyID = dBodyCreate (dynsys->GetWorldID());
   dBodySetData (bodyID, this);
   groupID = dSimpleSpaceCreate (dynsys->GetSpaceID ());
@@ -1423,16 +1434,17 @@ csODERigidBody::~csODERigidBody ()
   colliders.DeleteAll ();
   dSpaceDestroy (groupID);
   dBodyDestroy (bodyID);
+
+  SCF_DESTRUCT_EMBEDDED_IBASE (scfiRigidBody);
 }
 
 
-#if 0
-static void DestroyGeoms( csGeomList & geoms )
+void DestroyGeoms( csGeomList & geoms )
 {
   dGeomID tempID;
   size_t i=0;
 
-  for (;i < geoms.GetSize (); i++)
+  for (;i < geoms.Length(); i++)
   {
     tempID = geoms[i];
     if (dGeomGetClass (geoms[i]) == dGeomTransformClass)
@@ -1451,7 +1463,6 @@ static void DestroyGeoms( csGeomList & geoms )
     dGeomDestroy (geoms[i]);
   }
 }
-#endif
 
 
 bool csODERigidBody::MakeStatic ()
@@ -1498,7 +1509,7 @@ void csODERigidBody::SetGroup(iBodyGroup *group)
 {
   if (collision_group)
   {
-    collision_group->RemoveBody (this);
+    collision_group->RemoveBody (&scfiRigidBody);
   }
   collision_group = group;
 }
@@ -1508,7 +1519,7 @@ bool csODERigidBody::AttachColliderMesh (iMeshWrapper *mesh,
 					 float friction, float density,
                                          float elasticity, float softness)
 {
-  csODECollider *odec = new csODECollider (dynsys, this);
+  csODECollider *odec = new csODECollider ();
   odec->SetElasticity (elasticity);
   odec->SetFriction (friction);
   odec->SetSoftness (softness);
@@ -1528,12 +1539,12 @@ bool csODERigidBody::AttachColliderCylinder (float length, float radius,
 					     float friction, float density,
                                              float elasticity, float softness)
 {
-  csODECollider *odec = new csODECollider (dynsys, this);
+  csODECollider *odec = new csODECollider ();
   odec->SetElasticity (elasticity);
   odec->SetFriction (friction);
   odec->SetSoftness (softness);
   odec->SetDensity (density);
-  odec->CreateCapsuleGeometry (length, radius);
+  odec->CreateCCylinderGeometry (length, radius);
   odec->SetTransform (trans);
   odec->AttachBody (bodyID);
   odec->AddTransformToSpace (groupID);
@@ -1548,7 +1559,7 @@ bool csODERigidBody::AttachColliderBox (const csVector3 &size,
 					float friction, float density,
                                         float elasticity, float softness)
 {
-  csODECollider *odec = new csODECollider (dynsys, this);
+  csODECollider *odec = new csODECollider ();
   odec->SetElasticity (elasticity);
   odec->SetFriction (friction);
   odec->SetSoftness (softness);
@@ -1570,7 +1581,7 @@ bool csODERigidBody::AttachColliderSphere (float radius,
 {
   if (radius > 0) //otherwise ODE will treat radius as a 'bad argument'
   {
-    csODECollider *odec = new csODECollider (dynsys, this);
+    csODECollider *odec = new csODECollider ();
     odec->SetElasticity (elasticity);
     odec->SetFriction (friction);
     odec->SetSoftness (softness);
@@ -1590,7 +1601,7 @@ bool csODERigidBody::AttachColliderPlane (const csPlane3& plane,
                                           float friction, float density,
 					  float elasticity, float softness)
 {
-  csODECollider *odec = new csODECollider (dynsys, this);
+  csODECollider *odec = new csODECollider ();
   odec->SetElasticity (elasticity);
   odec->SetFriction (friction);
   odec->SetSoftness (softness);
@@ -1607,7 +1618,6 @@ bool csODERigidBody::AttachColliderPlane (const csPlane3& plane,
 
 void csODERigidBody::AttachCollider (iDynamicsSystemCollider* collider)
 {
-  colliders.Push ((csODECollider*)collider);
   dynsys->DestroyCollider (collider);
   if (collider->GetGeometryType () == PLANE_COLLIDER_GEOMETRY)
     ((csODECollider*) collider)->AddToSpace (dynsys->GetSpaceID());
@@ -1616,6 +1626,7 @@ void csODERigidBody::AttachCollider (iDynamicsSystemCollider* collider)
 
   ((csODECollider*) collider)->AttachBody (bodyID);
   collider->MakeDynamic ();
+  colliders.Push (collider);
 }
 
 void csODERigidBody::SetPosition (const csVector3& pos)
@@ -1837,7 +1848,7 @@ void csODERigidBody::SetCollisionCallback (iDynamicsCollisionCallback* cb)
 void csODERigidBody::Collision (iRigidBody *other,
     const csVector3& pos, const csVector3& normal, float depth)
 {
-  if (coll_cb) coll_cb->Execute (this, other,
+  if (coll_cb) coll_cb->Execute (&scfiRigidBody, other,
       pos, normal, depth);
 }
 
@@ -1860,25 +1871,7 @@ csRef<iDynamicsSystemCollider> csODERigidBody::GetCollider (unsigned int index)
     return csRef<iDynamicsSystemCollider> (colliders[index]);
   else return 0;
 }
-
-void csODERigidBody::RecalculateFullInertia (csODECollider* thisCol)
-{
-  if (bodyID)
-  {
-    // Set using this collider
-    thisCol->AddMassToBody (true);
-
-    // Add all other
-    for (size_t i = 0; i < colliders.GetSize (); ++i)
-    {
-      if (thisCol != colliders[i])
-        colliders[i]->AddMassToBody (false); 
-    } 
-  }
-}
-
 //-----------------------csStrictODEJoint-------------------------------------
-
 void csStrictODEJoint::Attach (iRigidBody *b1, iRigidBody *b2)
 {
   if (b1)
@@ -2172,13 +2165,14 @@ csVector3 csStrictODEJoint::GetFeedbackTorque2 ()
 }
 
 //-------------------------------------------------------------------------------
-
-ODESliderJoint::ODESliderJoint (dWorldID w_id) : scfImplementationType (this)
+ODESliderJoint::ODESliderJoint (dWorldID w_id)
 {
+  SCF_CONSTRUCT_IBASE (0);
   jointID = dJointCreateSlider (w_id, 0);
 }
 ODESliderJoint::~ODESliderJoint ()
 {
+  SCF_DESTRUCT_IBASE();
   dJointDestroy (jointID);
 }
 csVector3 ODESliderJoint::GetSliderAxis ()
@@ -2187,15 +2181,15 @@ csVector3 ODESliderJoint::GetSliderAxis ()
   dJointGetSliderAxis (jointID, pos);
   return csVector3 (pos[0], pos[1], pos[2]);
 }
-
 //-------------------------------------------------------------------------------
-
-ODEUniversalJoint::ODEUniversalJoint (dWorldID w_id) : scfImplementationType (this)
+ODEUniversalJoint::ODEUniversalJoint (dWorldID w_id)
 {
+  SCF_CONSTRUCT_IBASE (0);
   jointID = dJointCreateUniversal (w_id, 0);
 }
 ODEUniversalJoint::~ODEUniversalJoint ()
 {
+  SCF_DESTRUCT_IBASE();
   dJointDestroy (jointID);
 }
 csVector3 ODEUniversalJoint::GetUniversalAnchor1 ()
@@ -2222,16 +2216,17 @@ csVector3 ODEUniversalJoint::GetUniversalAxis2 ()
   dJointGetUniversalAxis2 (jointID, pos);
   return csVector3 (pos[0], pos[1], pos[2]);
 }
-
 //-------------------------------------------------------------------------------
 
-ODEAMotorJoint::ODEAMotorJoint (dWorldID w_id) : scfImplementationType (this)
+ODEAMotorJoint::ODEAMotorJoint (dWorldID w_id)
 {
+  SCF_CONSTRUCT_IBASE (0);
   jointID = dJointCreateAMotor (w_id, 0);
 }
 
 ODEAMotorJoint::~ODEAMotorJoint ()
 {
+  SCF_DESTRUCT_IBASE();
   dJointDestroy (jointID);
 }
 
@@ -2265,13 +2260,15 @@ csVector3 ODEAMotorJoint::GetAMotorAxis (int axis_num)
 }
 //-------------------------------------------------------------------------------
 
-ODEHinge2Joint::ODEHinge2Joint (dWorldID w_id) : scfImplementationType (this)
+ODEHinge2Joint::ODEHinge2Joint (dWorldID w_id)
 {
+  SCF_CONSTRUCT_IBASE (0);
   jointID = dJointCreateHinge2 (w_id, 0);
 }
 
 ODEHinge2Joint::~ODEHinge2Joint ()
 {
+  SCF_DESTRUCT_IBASE();
   dJointDestroy (jointID);
 }
 
@@ -2318,13 +2315,15 @@ csVector3 ODEHinge2Joint::GetAnchorError ()
 
 //-------------------------------------------------------------------------------
 
-ODEHingeJoint::ODEHingeJoint (dWorldID w_id) : scfImplementationType (this)
+ODEHingeJoint::ODEHingeJoint (dWorldID w_id)
 {
+  SCF_CONSTRUCT_IBASE (0);
   jointID = dJointCreateHinge (w_id, 0);
 }
 
 ODEHingeJoint::~ODEHingeJoint ()
 {
+  SCF_DESTRUCT_IBASE();
   dJointDestroy (jointID);
 }
 
@@ -2364,13 +2363,15 @@ csVector3 ODEHingeJoint::GetAnchorError ()
 
 //-------------------------------------------------------------------------------
 
-ODEBallJoint::ODEBallJoint (dWorldID w_id) : scfImplementationType (this)
+ODEBallJoint::ODEBallJoint (dWorldID w_id)
 {
+  SCF_CONSTRUCT_IBASE (0);
   jointID = dJointCreateBall (w_id, 0);
 }
 
 ODEBallJoint::~ODEBallJoint ()
 {
+  SCF_DESTRUCT_IBASE();
   dJointDestroy (jointID);
 }
 
@@ -2408,6 +2409,7 @@ csODEJoint::csODEJoint (csODEDynamicSystem *sys) : scfImplementationType (this, 
 {
   jointID = 0;
   motor_jointID = 0;
+  custom_aconstraint_axis = false;
 
   body[0] = body[1] = 0;
   bodyID[0] = bodyID[1] = 0;
@@ -2419,11 +2421,13 @@ csODEJoint::csODEJoint (csODEDynamicSystem *sys) : scfImplementationType (this, 
   rotConstraint[1] = 1;
   rotConstraint[2] = 1;
 
-  aconstraint_axis[0] = csVector3 (0,1,0);
-  aconstraint_axis[1] = csVector3 (0,0,1);
+  maxTrans.Set (0, 0, 0);
+  minTrans.Set (0, 0, 0);
+  maxAngle.Set (0, 0, 0);
+  minAngle.Set (0, 0, 0);
 
-  lo_stop = csVector3 (dInfinity, dInfinity, dInfinity);
-  hi_stop = csVector3 (-dInfinity, -dInfinity, -dInfinity); 
+  lo_stop = csVector3 (-dInfinity, -dInfinity, -dInfinity);
+  hi_stop = csVector3 (dInfinity, dInfinity, dInfinity); 
   vel = csVector3 (0);
   fmax = csVector3 (0);
   fudge_factor = csVector3 (1);
@@ -2433,7 +2437,6 @@ csODEJoint::csODEJoint (csODEDynamicSystem *sys) : scfImplementationType (this, 
   stop_cfm = csVector3 (9.9999997e-006f);
   suspension_erp = csVector3 (0.0f);
   suspension_cfm = csVector3 (0.0f);
-  custom_aconstraint_axis = false;
 
   dynsys = sys;
 }
@@ -2482,37 +2485,6 @@ void csODEJoint::SetTransform (const csOrthoTransform &trans)
 
 csOrthoTransform csODEJoint::GetTransform ()
 {
-  switch (GetType ())
-  {
-  case CS_ODE_JOINT_TYPE_BALL:
-    {
-      dVector3 result;
-      dJointGetBallAnchor (jointID, result);
-      transform.SetOrigin (csVector3 (result[0], result[1], result[2]));
-    }
-    break;
-  case CS_ODE_JOINT_TYPE_HINGE:
-    {
-      dVector3 result;
-      dJointGetHingeAnchor (jointID, result);
-      transform.SetOrigin (csVector3 (result[0], result[1], result[2]));
-    }
-    break;
-  case CS_ODE_JOINT_TYPE_HINGE2:
-    {
-      dVector3 result;
-      dJointGetHinge2Anchor (jointID, result);
-      transform.SetOrigin (csVector3 (result[0], result[1], result[2]));
-    }
-    break;
-  case CS_ODE_JOINT_TYPE_UNIVERSAL:
-    {
-      dVector3 result;
-      dJointGetUniversalAnchor (jointID, result);
-      transform.SetOrigin (csVector3 (result[0], result[1], result[2]));
-    }
-    break;
-  };  
   return transform;
 }
 
@@ -2527,29 +2499,21 @@ void csODEJoint::SetTransConstraints (bool X, bool Y, bool Z)
 
 void csODEJoint::SetMinimumDistance (const csVector3 &min)
 {
-  int transcount = transConstraint[0] + transConstraint[1] + transConstraint[2];
-  if (transcount != 0)
-  {
-    lo_stop = min;
-    BuildJoint ();
-  }
+  minTrans = min;
+  BuildJoint ();
 }
 csVector3 csODEJoint::GetMinimumDistance ()
 {
-  return lo_stop;
+  return minTrans;
 }
 void csODEJoint::SetMaximumDistance (const csVector3 &max)
 {
-  int transcount = transConstraint[0] + transConstraint[1] + transConstraint[2];
-  if (transcount != 0)
-  {
-    hi_stop = max;
-    BuildJoint ();
-  }
+  maxTrans = max;
+  BuildJoint ();
 }
 csVector3 csODEJoint::GetMaximumDistance ()
 {
-  return hi_stop;
+  return maxTrans;
 }
 
 void csODEJoint::SetRotConstraints (bool X, bool Y, bool Z)
@@ -2562,37 +2526,40 @@ void csODEJoint::SetRotConstraints (bool X, bool Y, bool Z)
 }
 void csODEJoint::SetMinimumAngle (const csVector3 &min)
 {
-  int transcount = transConstraint[0] + transConstraint[1] + transConstraint[2];
-  if (transcount == 0)
-  {
-    lo_stop = min;
-    BuildJoint ();
-  }
+  minAngle = min;
+  BuildJoint ();
 }
 csVector3 csODEJoint::GetMinimumAngle ()
 {
-  return lo_stop;
+  return minAngle;
 }
 void csODEJoint::SetMaximumAngle (const csVector3 &max)
 {
-  int transcount = transConstraint[0] + transConstraint[1] + transConstraint[2];
-  if (transcount == 0)
-  {
-    hi_stop = max;
-    BuildJoint ();
-  }
+  maxAngle = max;
+  BuildJoint ();
 }
 csVector3 csODEJoint::GetMaximumAngle ()
 {
-  return hi_stop;
+  return maxAngle;
 }
 
-void csODEJoint::BuildHinge (const csVector3 &axis)
+void csODEJoint::BuildHinge (const csVector3 &axis, float min, float max)
 {
   dJointSetHingeAxis (jointID, axis.x, axis.y, axis.z);
+  if (max > min)
+  {
+    dJointSetHingeParam (jointID, dParamLoStop, min);
+    dJointSetHingeParam (jointID, dParamHiStop, max);
+  }
+  else
+  {
+    dJointSetHingeParam (jointID, dParamLoStop, -dInfinity);
+    dJointSetHingeParam (jointID, dParamHiStop, dInfinity);
+  }
 }
 
-void csODEJoint::BuildHinge2 (const csVector3 &axis1, const csVector3 &axis2)
+void csODEJoint::BuildHinge2 (const csVector3 &axis1, float min1, float max1,
+                              const csVector3 &axis2, float min2, float max2)
 {
   if (custom_aconstraint_axis)
   {
@@ -2605,17 +2572,47 @@ void csODEJoint::BuildHinge2 (const csVector3 &axis1, const csVector3 &axis2)
     dJointSetHinge2Axis1 (jointID, axis1.x, axis1.y, axis1.z);
     dJointSetHinge2Axis2 (jointID, axis2.x, axis2.y, axis2.z);
   }
+  if (max1 > min1)
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop, min1);
+    dJointSetHinge2Param (jointID, dParamHiStop, max1);
+  }
+  else
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop, -dInfinity);
+    dJointSetHinge2Param (jointID, dParamHiStop, dInfinity);
+  }
+  if (max2 > min2)
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop2, min2);
+    dJointSetHinge2Param (jointID, dParamHiStop2, max2);
+  }
+  else
+  {
+    dJointSetHinge2Param (jointID, dParamLoStop2, -dInfinity);
+    dJointSetHinge2Param (jointID, dParamHiStop2, dInfinity);
+  }
 }
 
-void csODEJoint::BuildSlider (const csVector3 &axis)
+void csODEJoint::BuildSlider (const csVector3 &axis, float min, float max)
 {
   dJointSetSliderAxis (jointID, axis.x, axis.y, axis.z);
+  if (max > min)
+  {
+    dJointSetSliderParam (jointID, dParamLoStop, min);
+    dJointSetSliderParam (jointID, dParamHiStop, max);
+  }
+  else
+  {
+    dJointSetSliderParam (jointID, dParamLoStop, -dInfinity);
+    dJointSetSliderParam (jointID, dParamHiStop, dInfinity);
+  }
 }
 
 void csODEJoint::SetAngularConstraintAxis (const csVector3 &axis, int body)
 {
-  custom_aconstraint_axis = true;
   aconstraint_axis[body] = axis; 
+  custom_aconstraint_axis = true;
   BuildJoint ();
 }
 csVector3 csODEJoint::GetAngularConstraintAxis (int body)
@@ -2665,14 +2662,14 @@ void csODEJoint::ApplyJointProperty (int parameter, const csVector3 &values)
     dJointSetHinge2Param (jointID, parameter, values.x);
     dJointSetHinge2Param (jointID, parameter + dParamGroup, values.y);
     //dParamXi = dParamX + dParamGroup * (i-1)
-  case dJointTypeBall:       
-    if (motor_jointID)
-    {
-      dJointSetAMotorParam (motor_jointID, parameter, values.x);
-      //We use only euler mode, se we only need to setup parameter for 2 axes
-      dJointSetAMotorParam (motor_jointID, parameter + 2*dParamGroup, values.z);
-    }
   default:
+    case dJointTypeBall:       
+      if (motor_jointID)
+      {
+        dJointSetAMotorParam (motor_jointID, parameter, values.x);
+        //We use only euler mode, se we only need to setup parameter for 2 axes
+        dJointSetAMotorParam (motor_jointID, parameter + 2*dParamGroup, values.z);
+      }
     //case dJointTypeAMotor:     // not supported here
     //case dJointTypeUniversal:  // not sure if that's supported in here
     break;
@@ -2706,7 +2703,6 @@ void csODEJoint::BuildJoint ()
   if (motor_jointID)
   {
     dJointDestroy (motor_jointID);
-    motor_jointID = 0;
   }
   if (jointID)
   {
@@ -2736,15 +2732,15 @@ void csODEJoint::BuildJoint ()
       rot = transform.GetO2T();
       if (rotConstraint[0])
       {
-        BuildHinge (rot.Col1());
+        BuildHinge (rot.Col1(), minAngle.x, maxAngle.x);
       }
       else if (rotConstraint[1])
       {
-        BuildHinge (rot.Col2());
+        BuildHinge (rot.Col2(), minAngle.y, maxAngle.y);
       }
       else if (rotConstraint[2])
       {
-        BuildHinge (rot.Col3());
+        BuildHinge (rot.Col3(), minAngle.z, maxAngle.z);
       }
       // TODO: insert some mechanism for bounce, erp and cfm
       break;
@@ -2760,34 +2756,37 @@ void csODEJoint::BuildJoint ()
       {
         if (rotConstraint[1])
         {
-          BuildHinge2 (rot.Col2(), rot.Col1());
+          BuildHinge2 (rot.Col2(), minAngle.y, maxAngle.y,
+            rot.Col1(), minAngle.x, maxAngle.x);
         }
         else
         {
-          BuildHinge2 (rot.Col3(), rot.Col1());
+          BuildHinge2 (rot.Col3(), minAngle.z, maxAngle.z,
+            rot.Col1(), minAngle.x, maxAngle.x);
         }
       }
       else
       {
-        BuildHinge2 (rot.Col2(), rot.Col3());
+        BuildHinge2 (rot.Col2(), minAngle.y, maxAngle.y,
+          rot.Col3(), minAngle.z, maxAngle.z);
       }
       break;
     case 3:
       jointID = dJointCreateBall (dynsys->GetWorldID(), 0);
+      SetStopAndMotorsParams ();
       dJointAttach (jointID, bodyID[0], bodyID[1]);
       pos = transform.GetOrigin();
       dJointSetBallAnchor (jointID, pos.x, pos.y, pos.z);
-      if (hi_stop.x > lo_stop.x || hi_stop.y > lo_stop.y || hi_stop.z > lo_stop.z )
+      if (custom_aconstraint_axis)
       {
         motor_jointID = dJointCreateAMotor (dynsys->GetWorldID(), 0);
-        dJointAttach (motor_jointID, bodyID[0], bodyID[1]);
+        dJointAttach (jointID, bodyID[0], bodyID[1]);
         dJointSetAMotorMode (motor_jointID, dAMotorEuler);
         dJointSetAMotorAxis (motor_jointID, 0, 1,
           aconstraint_axis[0].x, aconstraint_axis[0].y, aconstraint_axis[0].z);
         dJointSetAMotorAxis (motor_jointID, 2, 2,
           aconstraint_axis[1].x, aconstraint_axis[1].y, aconstraint_axis[1].z);
       }
-      SetStopAndMotorsParams ();
       break;
     }
   }
@@ -2803,15 +2802,15 @@ void csODEJoint::BuildJoint ()
       rot = transform.GetO2T();
       if (transConstraint[0])
       {
-        BuildSlider (rot.Col1());
+        BuildSlider (rot.Col1(), minTrans.x, maxTrans.x);
       }
       else if (transConstraint[1])
       {
-        BuildSlider (rot.Col2());
+        BuildSlider (rot.Col2(), minTrans.y, maxTrans.y);
       }
       else
       {
-        BuildSlider (rot.Col3());
+        BuildSlider (rot.Col3(), minTrans.z, maxTrans.z);
       }
       break;
     case 2:
@@ -2859,13 +2858,14 @@ csVector3 csODEJoint::GetParam (int parameter)
   //}
 }
 
-csODEDefaultMoveCallback::csODEDefaultMoveCallback () : 
-  scfImplementationType (this)
+csODEDefaultMoveCallback::csODEDefaultMoveCallback ()
 {
+  SCF_CONSTRUCT_IBASE (0);
 }
 
 csODEDefaultMoveCallback::~csODEDefaultMoveCallback ()
 {
+  SCF_DESTRUCT_IBASE();
 }
 
 void csODEDefaultMoveCallback::Execute (iMovable* movable,
@@ -2913,5 +2913,3 @@ void csODEDefaultMoveCallback::Execute (csOrthoTransform& /*t*/)
   /* do nothing by default */
 }
 
-}
-CS_PLUGIN_NAMESPACE_END(odedynam)

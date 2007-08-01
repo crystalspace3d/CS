@@ -21,15 +21,11 @@
 
 //---------------------------------------------------------------------------
 
-csTriangleMesh::csTriangleMesh (const csTriangleMesh& mesh) :
-  scfImplementationType (this), change_nr (0)
+csTriangleMesh::csTriangleMesh (const csTriangleMesh& mesh)
 {
-  triangles.SetSize (mesh.GetTriangleCount ());
+  triangles.SetLength (mesh.GetTriangleCount ());
   memcpy (triangles.GetArray (), mesh.GetTriangles (),
   	sizeof (csTriangle)*mesh.GetTriangleCount ());
-  vertices.SetSize (mesh.GetVertexCount ());
-  memcpy (vertices.GetArray (), mesh.GetVertices (),
-  	sizeof (csVector3)*mesh.GetVertexCount ());
 }
 
 csTriangleMesh::~csTriangleMesh ()
@@ -38,23 +34,17 @@ csTriangleMesh::~csTriangleMesh ()
 
 void csTriangleMesh::Clear ()
 {
-  triangles.SetSize (0);
-  vertices.SetSize (0);
+  triangles.SetLength (0);
 }
 
 void csTriangleMesh::SetSize (int count)
 {
-  triangles.SetSize (count);
-}
-
-void csTriangleMesh::AddVertex (const csVector3& v)
-{
-  vertices.Push (v);
+  triangles.SetLength (count);
 }
 
 void csTriangleMesh::SetTriangles (csTriangle const* trigs, int count)
 {
-  triangles.SetSize (count);
+  triangles.SetLength (count);
   memcpy (triangles.GetArray (), trigs, sizeof(csTriangle) * count);
 }
 
@@ -101,7 +91,7 @@ csTriangleVertices::csTriangleVertices (csTriangleMesh* mesh,
   {
     vertices[i].pos = verts[i];
     vertices[i].idx = i;
-    for (j = 0 ; j < vertices[i].con_triangles.GetSize () ; j++)
+    for (j = 0 ; j < vertices[i].con_triangles.Length () ; j++)
     {
       size_t triidx = vertices[i].con_triangles[j];
       if (triangles[triidx].a != i) vertices[i].AddVertex (triangles[triidx].a);

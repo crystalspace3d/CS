@@ -26,7 +26,7 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -38,7 +38,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -50,7 +49,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc7.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib cal3d-vc7.lib ode.lib bullet-vc7.lib bulletdynamics-vc7.lib bulletphysicsinterfacecommon-vc7.lib bulletccdphysics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7.lib lib3ds.lib cal3d-vc7.lib ode.lib bullet-vc7.lib bulletdynamics-vc7.lib bulletphysicsinterfacecommon-vc7.lib bulletccdphysics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -62,7 +61,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -76,8 +75,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -98,8 +97,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -111,7 +109,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -121,7 +118,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc7_d.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -133,7 +130,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -147,8 +144,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -169,8 +166,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -182,7 +178,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -192,7 +187,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc7_d.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -204,7 +199,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -218,8 +213,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -240,8 +235,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
@@ -253,7 +247,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -263,7 +256,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc7_d.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bullet-vc7_d.lib bulletdynamics-vc7_d.lib bulletphysicsinterfacecommon-vc7_d.lib bulletccdphysics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
@@ -275,7 +268,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -289,8 +282,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;SWIG_GLOBAL;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_STATIC_LINKED;CS_CRYSTALSPACE_LIB;CS_CSPLUGINCOMMON_DX_LIB;CS_CSPLUGINCOMMON_GL_LIB;CS_CSPLUGINCOMMON_WIN_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -302,33 +295,6 @@
 		<Filter
 			Name="Source Files"
 			Filter="">
-			<File
-				RelativePath="..\..\mk\msvc\lib_pycscegui_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_lib_pycscegui_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_lib_pycscegui_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_lib_pycscegui_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_lib_pycscegui_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libbezier_staticreg.cpp">
 				<FileConfiguration
@@ -978,33 +944,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\mk\msvc\libdecal_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libdecal_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libdecal_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libdecal_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libdecal_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\mk\msvc\libdsplex_staticreg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1056,33 +995,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libdynavis_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libembedgl_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libembedgl_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libembedgl_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libembedgl_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libembedgl_staticreg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -1542,33 +1454,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanim_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libgmeshanimpdl_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanimpdl_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanimpdl_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanimpdl_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libgmeshanimpdl_staticreg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -2166,33 +2051,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\mk\msvc\libprofiler_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libprofiler_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libprofiler_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libprofiler_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libprofiler_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\mk\msvc\libprotomesh_staticreg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -2325,6 +2183,33 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_librendloop_loader_staticreg.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\librendstep_fatrl_staticreg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_librendstep_fatrl_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_librendstep_fatrl_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_librendstep_fatrl_staticreg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_librendstep_fatrl_staticreg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -2487,33 +2372,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libshadermgr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libshaderweaver_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libshaderweaver_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libshaderweaver_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libshaderweaver_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libshaderweaver_staticreg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -3165,60 +3023,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\mk\msvc\libterrain2_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libterrain2_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libterrain2_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libterrain2_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libterrain2_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libterrain2ldr_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libterrain2ldr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libterrain2ldr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libterrain2ldr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libterrain2ldr_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\mk\msvc\libterrainldr_staticreg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -3324,33 +3128,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libtlfunc_staticreg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libtrans_std_staticreg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libtrans_std_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libtrans_std_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libtrans_std_staticreg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libtrans_std_staticreg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -3486,6 +3263,60 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libxmltiny_staticreg.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\bugplug\bugplug.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_bugplug_bugplug.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_bugplug_bugplug.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_bugplug_bugplug.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_bugplug_bugplug.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\bugplug\shadow.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_bugplug_shadow.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_bugplug_shadow.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_bugplug_shadow.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_bugplug_shadow.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -4542,33 +4373,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\terraincollider.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_collide_opcode_terraincollider.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_collide_opcode_terraincollider.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_collide_opcode_terraincollider.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_collide_opcode_terraincollider.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\console\input\standard\csconin.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -4674,60 +4478,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_console_output_standard_csconout.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\cscript\pycscegui\ceguimod.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_cscript_pycscegui_ceguimod.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_cscript_pycscegui_ceguimod.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_cscript_pycscegui_ceguimod.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_cscript_pycscegui_ceguimod.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\cscript\pycscegui\cs_cegui.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_cscript_pycscegui_cs_cegui.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_cscript_pycscegui_cs_cegui.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_cscript_pycscegui_cs_cegui.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_cscript_pycscegui_cs_cegui.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -4920,33 +4670,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\csparser\services\renderbuffer.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_csparser_services_renderbuffer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_csparser_services_renderbuffer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_csparser_services_renderbuffer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_csparser_services_renderbuffer.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\csparser\services\syntxldr.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -5136,87 +4859,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\decal\decal.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_decal_decal.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decal.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decal.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decal.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\decal\decalmanager.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_decal_decalmanager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decalmanager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decalmanager.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decalmanager.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\decal\decaltemplate.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_decal_decaltemplate.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decaltemplate.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decaltemplate.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_decal_decaltemplate.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\device\joystick\windows\csjoywin.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -5322,33 +4964,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_documentsystem_dsplex_dsplex.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\documentsystem\xmlread\characters.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_documentsystem_xmlread_characters.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_documentsystem_xmlread_characters.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_documentsystem_xmlread_characters.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_documentsystem_xmlread_characters.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -5538,6 +5153,33 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_campos.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\3d\cscoll.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_engine_3d_cscoll.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_cscoll.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_cscoll.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_cscoll.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -5808,33 +5450,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_material.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\engine\3d\meshfact.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_engine_3d_meshfact.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_meshfact.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_meshfact.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_meshfact.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -6186,6 +5801,87 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_texture.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\renderloop\fatrl\fatloop.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_fatloop.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_fatloop.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_fatloop.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_fatloop.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\renderloop\fatrl\meshnode.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_meshnode.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_meshnode.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_meshnode.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_meshnode.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\renderloop\fatrl\portalnode.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_portalnode.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_portalnode.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_portalnode.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_renderloop_fatrl_portalnode.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -6969,33 +6665,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_anim_gmeshanim.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\genmesh\animpdl\gmeshanimpdl.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_animpdl_gmeshanimpdl.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_animpdl_gmeshanimpdl.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_animpdl_gmeshanimpdl.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_animpdl_gmeshanimpdl.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -7890,303 +7559,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\persist\terrain2\loader.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_loader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_loader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_loader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_loader.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\bruteblockrenderer.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_bruteblockrenderer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_bruteblockrenderer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_bruteblockrenderer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_bruteblockrenderer.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\cell.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_cell.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_cell.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_cell.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_cell.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\factory.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_factory.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_factory.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_factory.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_factory.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\feederhelper.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_feederhelper.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_feederhelper.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_feederhelper.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_feederhelper.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\meshobjecttype.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_meshobjecttype.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_meshobjecttype.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_meshobjecttype.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_meshobjecttype.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\simpledatafeeder.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_simpledatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_simpledatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_simpledatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_simpledatafeeder.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\terraformerdatafeeder.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terraformerdatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terraformerdatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terraformerdatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terraformerdatafeeder.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\terrain.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terrain.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terrain.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terrain.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terrain.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\terrainsystem.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terrainsystem.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terrainsystem.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terrainsystem.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_terrainsystem.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\threadeddatafeeder.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_threadeddatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_threadeddatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_threadeddatafeeder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_terrain_terrain2_threadeddatafeeder.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\thing\object\lghtmap.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -8403,6 +7775,141 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\movierecorder\minilzo.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_movierecorder_minilzo.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_minilzo.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_minilzo.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_minilzo.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\movierecorder.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_movierecorder_movierecorder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_movierecorder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_movierecorder.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_movierecorder.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\nuppelwriter.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_movierecorder_nuppelwriter.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_nuppelwriter.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_nuppelwriter.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_nuppelwriter.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\rgb2yuv420.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_movierecorder_rgb2yuv420.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_rgb2yuv420.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_rgb2yuv420.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_rgb2yuv420.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\rtjpeg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_movierecorder_rtjpeg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_rtjpeg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_rtjpeg.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_movierecorder_rtjpeg.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics\bullet\bullet.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -8535,33 +8042,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight_loader.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight_loader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight_loader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight_loader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_proctex_ptpdlight_ptpdlight_loader.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -9537,276 +9017,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\translator\standard\trans.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_translator_standard_trans.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_translator_standard_trans.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_translator_standard_trans.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_translator_standard_trans.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\translator\standard\transldr_xml.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_translator_standard_transldr_xml.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_translator_standard_transldr_xml.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_translator_standard_transldr_xml.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_translator_standard_transldr_xml.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\bugplug\bugplug.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_utilities_bugplug_bugplug.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_bugplug_bugplug.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_bugplug_bugplug.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_bugplug_bugplug.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\bugplug\shadow.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_utilities_bugplug_shadow.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_bugplug_shadow.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_bugplug_shadow.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_bugplug_shadow.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\minilzo.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_minilzo.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_minilzo.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_minilzo.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_minilzo.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\movierecorder.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_movierecorder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_movierecorder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_movierecorder.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_movierecorder.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\nuppelwriter.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_nuppelwriter.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_nuppelwriter.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_nuppelwriter.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_nuppelwriter.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\rgb2yuv420.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_rgb2yuv420.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_rgb2yuv420.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_rgb2yuv420.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_rgb2yuv420.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\rtjpeg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_rtjpeg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_rtjpeg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_rtjpeg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_movierecorder_rtjpeg.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\profiler\profiler.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_utilities_profiler_profiler.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_profiler_profiler.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_profiler_profiler.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_utilities_profiler_profiler.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\video\canvas\caca\cscaca.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -9858,33 +9068,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_canvas_ddraw_g2d.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\canvas\embedgl\embedgl2d.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_canvas_embedgl_embedgl2d.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_canvas_embedgl_embedgl2d.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_canvas_embedgl_embedgl2d.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_canvas_embedgl_embedgl2d.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -10860,489 +10043,165 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_basictex.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condeval.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_basictex.cpp.obj"/>
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_condeval.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_basictex.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_condeval.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_basictex.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_condeval.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_basictex.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_condeval.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_formats.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condition.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_formats.cpp.obj"/>
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_condition.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_formats.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_condition.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_formats.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_condition.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_formats.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_condition.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_imagetex.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_imagetex.cpp.obj"/>
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_docwrap.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_imagetex.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_docwrap.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_imagetex.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_docwrap.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_imagetex.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_docwrap.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_lightmap.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap_replacer.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_lightmap.cpp.obj"/>
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_docwrap_replacer.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_lightmap.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_docwrap_replacer.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_lightmap.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_docwrap_replacer.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_opengl_gl_txtmgr_lightmap.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_docwrap_replacer.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\combiner_default.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\expparser.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_combiner_default.cpp.obj"/>
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_expparser.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_combiner_default.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_expparser.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_combiner_default.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_expparser.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_combiner_default.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_expparser.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\docnodes.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\mybitarray.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_docnodes.cpp.obj"/>
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_mybitarray.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_docnodes.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_mybitarray.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="MemoryTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_docnodes.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_mybitarray.cpp.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="RefTracker|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_docnodes.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\shader.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_shader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_shader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_shader.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_shader.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\snippet.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_snippet.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_snippet.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_snippet.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_snippet.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\synth.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_synth.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_synth.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_synth.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_synth.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\weaver.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_weaver.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_weaver.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_weaver.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_weaver_weaver.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_condeval.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_condeval.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_condeval.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_condeval.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condition.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_condition.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_condition.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_condition.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_condition.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_docwrap.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_docwrap.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_docwrap.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_docwrap.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap_replacer.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_docwrap_replacer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_docwrap_replacer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_docwrap_replacer.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_docwrap_replacer.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\expparser.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_expparser.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_expparser.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_expparser.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_expparser.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\mybitarray.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_mybitarray.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_mybitarray.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_mybitarray.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_mybitarray.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\tempheap.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_tempheap.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_tempheap.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_tempheap.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_tempheap.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\valueset.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_valueset.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_valueset.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_valueset.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_cpi_valueset.cpp.obj"/>
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_mybitarray.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -11397,6 +10256,60 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_shadertech.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tempheap.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_tempheap.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_tempheap.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_tempheap.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_tempheap.cpp.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\valueset.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_valueset.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_valueset.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MemoryTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_valueset.cpp.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RefTracker|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadercompiler_xmlshader_valueset.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -11532,33 +10445,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_arb_glshader_avp.cpp.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\combiner_cg.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_combiner_cg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_combiner_cg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MemoryTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_combiner_cg.cpp.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RefTracker|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_combiner_cg.cpp.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -12403,6 +11289,12 @@
 			Name="Header Files"
 			Filter="">
 			<File
+				RelativePath="..\..\plugins\bugplug\bugplug.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\bugplug\shadow.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\collide\opcode\CSopcode.h">
 			</File>
 			<File
@@ -12589,13 +11481,7 @@
 				RelativePath="..\..\plugins\collide\opcode\Opcode.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\segmentcell.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\collide\opcode\Stdafx.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\terraincollider.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\console\input\standard\csconin.h">
@@ -12640,15 +11526,6 @@
 				RelativePath="..\..\plugins\culling\frustvis\frustvis.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\decal\decal.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\decal\decalmanager.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\decal\decaltemplate.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\device\joystick\windows\csjoywin.h">
 			</File>
 			<File
@@ -12679,6 +11556,9 @@
 				RelativePath="..\..\plugins\engine\3d\campos.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\engine\3d\cscoll.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\engine\3d\engine.h">
 			</File>
 			<File
@@ -12704,9 +11584,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\material.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\engine\3d\meshfact.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\meshgen.h">
@@ -12751,19 +11628,31 @@
 				RelativePath="..\..\plugins\engine\3d\texture.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\engine\renderloop\fatrl\fatloop.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\renderloop\fatrl\meshnode.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\renderloop\fatrl\portalnode.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\renderloop\fatrl\rendernode.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\engine\renderloop\loader\rlloader.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil\polymesh.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil\stencil.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil\trimesh.h">
+				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil2\polymesh.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil2\stencil2.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil2\trimesh.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\renderloop\stdsteps\fullquad.h">
@@ -12854,9 +11743,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\genmesh\anim\gmeshanim.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\genmesh\animpdl\gmeshanimpdl.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\genmesh\object\genmesh.h">
@@ -12958,36 +11844,6 @@
 				RelativePath="..\..\plugins\mesh\terrain\persist\standard\terrainldr.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\persist\terrain2\loader.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\bruteblockrenderer.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\cell.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\factory.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\feederhelper.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\meshobjecttype.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\simpledatafeeder.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\terraformerdatafeeder.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\terrainsystem.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\threadeddatafeeder.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\thing\object\lghtmap.h">
 			</File>
 			<File
@@ -13012,6 +11868,27 @@
 				RelativePath="..\..\plugins\mesh\thing\persist\standard\thingldr.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\movierecorder\lzoconf.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\minilzo.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\mmx.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\movierecorder.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\nuppelvideo.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\nuppelwriter.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\movierecorder\rtjpeg.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics\bullet\bullet.h">
 			</File>
 			<File
@@ -13025,9 +11902,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight_loader.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\proctex\standard\dots.h">
@@ -13138,49 +12012,10 @@
 				RelativePath="..\..\plugins\terraformer\simpleformer\simpleformer.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\translator\standard\trans.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\translator\standard\transldr_xml.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\bugplug\bugplug.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\bugplug\shadow.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\lzoconf.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\minilzo.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\mmx.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\movierecorder.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\nuppelvideo.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\nuppelwriter.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\movierecorder\rtjpeg.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\utilities\profiler\profiler.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\video\canvas\caca\cscaca.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\canvas\ddraw\g2d.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\canvas\embedgl\embedgl2d.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\canvas\memory\memory.h">
@@ -13211,9 +12046,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\loader\dds\ddsutil.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\loader\dds\dxt.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\loader\dds\ImageLib\ccDoubleHeap.h">
@@ -13300,70 +12132,40 @@
 				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_basictex.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condeval.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_imagetex.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condition.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_lightmap.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\basiciter.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap_replacer.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\combiner_default.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\expparser.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\docnodes.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\logic3.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\shader.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\snippet.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\synth.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\weaver.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condition.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap_replacer.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\expparser.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\logic3.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\mybitarray.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\tempheap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\tokenhelper.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\valueset.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\mybitarray.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shader.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tempheap.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tokenhelper.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\valueset.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.h">
@@ -13382,9 +12184,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_arb\glshader_avp.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\combiner_cg.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cg.h">

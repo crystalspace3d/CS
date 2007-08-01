@@ -4,7 +4,7 @@
 @cindex MeshObject
 @cindex @code{iConfig}
 @cindex @code{iParticle}
-@cindex @code{iTriangleMesh}
+@cindex @code{iPolygonMesh}
 @cindex @code{iMeshObject}
 @cindex @code{iMeshWrapper}
 @cindex @code{iMeshObjectFactory}

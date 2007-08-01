@@ -33,7 +33,6 @@ public:
   ~csEngineProcTex ();
 
   bool LoadLevel ();
-  iTextureWrapper* CreateTexture (iObjectRegistry* object_reg);
   virtual bool PrepareAnim ();
   virtual void Animate (csTicks current_time);
 };

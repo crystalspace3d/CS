@@ -40,8 +40,6 @@
 #include "csutil/util.h"
 #include "csutil/xmltiny.h"
 #include "iutil/document.h"
-
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #include "csutil/win32/wintools.h"
@@ -158,7 +156,7 @@ bool csUnloadLibrary (csLibraryHandle Handle)
 void csPrintLibraryError (const char* /*iModule*/)
 {
   char *str;
-  while (ErrorMessages.GetSize () > 0)
+  while (ErrorMessages.Length () > 0)
   {
     str = (char*)ErrorMessages.Pop();
     if (str != 0) csPrintfErr ("  %s\n", str);

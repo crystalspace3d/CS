@@ -50,7 +50,7 @@ void csGraphics2DGLX::Report (int severity, const char* msg, ...)
 {
   va_list arg;
   va_start (arg, msg);
-  csRef<iReporter> rep (csQueryRegistry<iReporter> (object_reg));
+  csRef<iReporter> rep (CS_QUERY_REGISTRY (object_reg, iReporter));
   if (rep)
     rep->ReportV (severity, "crystalspace.canvas.glx2d", msg, arg);
   else
@@ -86,7 +86,7 @@ bool csGraphics2DGLX::Initialize (iObjectRegistry *object_reg)
   }
 
   csRef<iPluginManager> plugin_mgr (
-  	csQueryRegistry<iPluginManager> (object_reg));
+  	CS_QUERY_REGISTRY (object_reg, iPluginManager));
   if ((strDriver = config->GetStr ("Video.OpenGL.Display.Driver", 0)))
   {
     dispdriver = CS_LOAD_PLUGIN (plugin_mgr, strDriver, iOpenGLDisp);
@@ -123,7 +123,7 @@ bool csGraphics2DGLX::Initialize (iObjectRegistry *object_reg)
   pfmt.PixelBytes = 0;
 
   // Create the event outlet
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY(object_reg, iEventQueue));
   if (q != 0)
     EventOutlet = q->CreateEventOutlet (this);
 
@@ -243,7 +243,7 @@ bool csGraphics2DGLX::ChooseVisual ()
 {
   bool do_verbose = false;
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (object_reg));
+    CS_QUERY_REGISTRY (object_reg, iVerbosityManager));
   if (verbosemgr) 
     do_verbose = verbosemgr->Enabled ("renderer.x.visual");
     

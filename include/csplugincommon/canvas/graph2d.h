@@ -249,7 +249,9 @@ public:
   virtual void Write (iFont *font , int x, int y, int fg, int bg,
     const char *text, uint flags = 0);
   virtual void Write (iFont *font , int x, int y, int fg, int bg,
-    const wchar_t* text, uint flags = 0);  
+    const wchar_t* text, uint flags = 0);
+  virtual void WriteBaseline (iFont *font , int x, int y, int fg, int bg,
+    const char *text);
   //@}
   /// (*) Get address of video RAM at given x,y coordinates
   unsigned char* (*_GetPixelAt) (csGraphics2D *This, int x, int y);

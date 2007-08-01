@@ -21,10 +21,7 @@
 #include "csutil/util.h"
 #include "csutil/sysfunc.h"
 
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <tlhelp32.h>
-
 #include "detectdriver.h"
 
 #include "csutil/win32/wintools.h"
@@ -62,10 +59,16 @@ typedef MONITORINFOEXA* LPMONITORINFOEXA;
 csDetectDriver::csDetectDriver()
 {
   MultiMon::IncRef();
+
+  DriverDLL = 0;
+  DriverVersion = 0;
 }
 
 csDetectDriver::~csDetectDriver()
 {
+  delete[] DriverDLL;
+  delete[] DriverVersion;
+
   MultiMon::DecRef();
 }
 
@@ -194,60 +197,16 @@ void csDetectDriver::DetermineDriver (const char* monitorName)
   }
   if (!glDllName.IsEmpty())
   {
-    DriverDLL = glDllName;
+    DriverDLL = csStrNew (glDllName);
     if (verbose)
-      csPrintf ("%s: found DLL '%s'\n", CS_FUNCTION_NAME, DriverDLL.GetData());
-  }
-}
-
-void csDetectDriver::ScanForDriver ()
-{
-  csString glDllName;
-  HANDLE ms; 
-  MODULEENTRY32 me;
- 
-  // Initialize the modules list
-  ms = CreateToolhelp32Snapshot (TH32CS_SNAPMODULE, GetCurrentProcessId());
-  if (ms != INVALID_HANDLE_VALUE)
-  {
-    memset (&me, 0, sizeof (me));
-    me.dwSize = sizeof (me); 
-
-    // Iterate over modules
-    if (Module32First (ms, &me)) 
-    { 
-      do 
-      { // Check if the module exports an ICD API function
-	if (GetProcAddress (me.hModule, "DrvGetProcAddress"))
-	{
-	  // ICD module found, remember its filename
-	  glDllName.Replace(me.szModule);
-	  break;
-	}
-      } while (Module32Next (ms, &me)); 
-    }
-
-    CloseHandle (ms);
-
-    if (!glDllName.IsEmpty())
-    {
-      DriverDLL = glDllName;
-      if (verbose)
-        csPrintf ("%s: found DLL '%s'\n", CS_FUNCTION_NAME, 
-          DriverDLL.GetData());
-    }
+      csPrintf ("csDetectDriver: found DLL '%s'\n", DriverDLL);
   }
 }
 
 void csDetectDriver::DetermineDriverVersion()
 {
   DWORD dummy;
-  /* The const_casts are needed as w32api from MinGW doesn't declare some 
-     string parameters as 'const', whereas e.g. Windows SDK 6.0 does. 
-     (w32api is probably not the only offender, older Platform SDKs aren't
-     always const-friendly, too.) */
-  DWORD verInfoSize = GetFileVersionInfoSizeA (
-    const_cast<char*> (DriverDLL.GetData()), &dummy);
+  DWORD verInfoSize = GetFileVersionInfoSizeA (DriverDLL, &dummy);
   if (verInfoSize == 0)
   {
     // Try appending ".dll"
@@ -259,8 +218,7 @@ void csDetectDriver::DetermineDriverVersion()
   if (verInfoSize != 0)
   {
     uint8* buffer = new uint8[verInfoSize];
-    if (GetFileVersionInfoA (
-      const_cast<char*> (DriverDLL.GetData()), 0, verInfoSize, buffer))
+    if (GetFileVersionInfoA (DriverDLL, 0, verInfoSize, buffer))
     {
       void* data;
       UINT dataLen;
@@ -273,7 +231,7 @@ void csDetectDriver::DetermineDriverVersion()
 	  (uint)(ffi.dwFileVersionMS & 0xffff), 
 	  (uint)(ffi.dwFileVersionLS >> 16), 
 	  (uint)(ffi.dwFileVersionLS & 0xffff));
-	DriverVersion = verString.GetData();
+	DriverVersion = csStrNew (verString.GetData());
       }
     }
     delete[] buffer;
@@ -282,8 +240,8 @@ void csDetectDriver::DetermineDriverVersion()
 
 void csDetectDriver::DoDetection (HWND window, HDC dc)
 {
-  DriverDLL.Empty();
-  DriverVersion.Empty();
+  delete[] DriverDLL; DriverDLL = 0;
+  delete[] DriverVersion; DriverVersion = 0;
 
   int pixfmt = GetPixelFormat (dc);
   bool isAccelerated = false;
@@ -296,49 +254,38 @@ void csDetectDriver::DoDetection (HWND window, HDC dc)
 
   if (isAccelerated)
   {
-    if (cswinIsWinNT())
-    {
-      /* The approach DetermineDriverVersion() does at least not work on 
-         Vista. It's not entirely robust anyway. Instead, scan the loaded
-         DLLs for the one that's probably the OpenGL ICD.
-       */
-      ScanForDriver();
-    }
-    else
-    {
-      /*
-        Don't even bother if no acceleration (and thus likely no driver)
-        is present
-       */
-      csString screenDevice;
+    /*
+      Don't even bother if no acceleration (and thus likely no driver)
+      is present
+     */
+    csString screenDevice;
 
-      // Determine the monitor we're on
-      if (MultiMon::MultiMonAvailable())
+    // Determine the monitor we're on
+    if (MultiMon::MultiMonAvailable())
+    {
+      MONITORINFOEXA mi;
+
+      HMONITOR monitor = MultiMon::MonitorFromWindow (window,
+	MONITOR_DEFAULTTONEAREST);
+
+      if (monitor != 0)
       {
-        MONITORINFOEXA mi;
-
-        HMONITOR monitor = MultiMon::MonitorFromWindow (window,
-	  MONITOR_DEFAULTTONEAREST);
-
-        if (monitor != 0)
-        {
-	  memset (&mi, 0, sizeof (mi));
-	  mi.cbSize = sizeof (mi);
-	  if (MultiMon::GetMonitorInfoA (monitor, &mi))
-	  {
-	    screenDevice.Replace (mi.szDevice);
-	  }
-        }
+	memset (&mi, 0, sizeof (mi));
+	mi.cbSize = sizeof (mi);
+	if (MultiMon::GetMonitorInfoA (monitor, &mi))
+	{
+	  screenDevice.Replace (mi.szDevice);
+	}
       }
-
-      if (verbose)
-        csPrintf ("csDetectDriver: monitor name is '%s'\n", screenDevice.GetData ());
-      
-      // Try to determine the driver
-      DetermineDriver (screenDevice.GetData ());
     }
 
-    if (!DriverDLL.IsEmpty())
+    if (verbose)
+      csPrintf ("csDetectDriver: monitor name is '%s'\n", screenDevice.GetData ());
+    
+    // Try to determine the driver
+    DetermineDriver (screenDevice.GetData ());
+
+    if (DriverDLL != 0)
     {
       DetermineDriverVersion();
     }

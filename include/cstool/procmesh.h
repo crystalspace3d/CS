@@ -89,7 +89,7 @@ public:
    * the texture.
    */
   bool Render (iMeshWrapper* mesh, iTextureHandle* handle,
-      bool persistent = false, int color = -1);
+      bool persistent = false);
 };
 
 #endif // __CS_PROCMESH_H__

@@ -285,9 +285,7 @@ csStringBase &csStringBase::Append (const csStringBase &iStr, size_t iCount)
 
 csStringBase &csStringBase::Append (const char *iStr, size_t iCount)
 {
-  /* Since "" is not the same as 0, make an empty string if a non-null 
-     empty string is appended to a 0 string. */
-  if (iStr == 0 || ((iCount == 0) && (Size != 0)))
+  if (iStr == 0 || iCount == 0)
     return *this;
   if (iCount == (size_t)-1)
     iCount = strlen (iStr);
@@ -304,9 +302,7 @@ csStringBase &csStringBase::Append (const char *iStr, size_t iCount)
 
 csStringBase& csStringBase::Append (const wchar_t* Str, size_t Count)
 {
-  /* Since "" is not the same as 0, make an empty string if a non-null 
-     empty string is appended to a 0 string. */
-  if (Str == 0 || ((Count == 0) && (Size != 0)))
+  if (Str == 0 || Count == 0)
     return *this;
   if (Count == (size_t)-1)
     Count = wcslen (Str);
@@ -531,15 +527,15 @@ namespace
   };
 }
 
-csStringBase& csStringBase::Downcase (uint flags)
+csStringBase& csStringBase::Downcase ()
 {
-  MapHelper<Map_ToLower>::Map (*this, GetDataMutable(), flags);
+  MapHelper<Map_ToLower>::Map (*this, GetDataMutable(), csUcMapSimple);
   return *this;
 }
 
-csStringBase& csStringBase::Upcase (uint flags)
+csStringBase& csStringBase::Upcase ()
 {
-  MapHelper<Map_ToUpper>::Map (*this, GetDataMutable(), flags);
+  MapHelper<Map_ToUpper>::Map (*this, GetDataMutable(), csUcMapSimple);
   return *this;
 }
 

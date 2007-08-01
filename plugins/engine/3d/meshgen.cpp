@@ -147,7 +147,7 @@ void csMeshGeneratorGeometry::AddFactory (iMeshFactoryWrapper* factory,
   if (fs != 0)
   {
     int cell_dim = generator->GetCellCount ();
-    factories[idx].instmeshes.SetSize (cell_dim * cell_dim);
+    factories[idx].instmeshes.SetLength (cell_dim * cell_dim);
   }
 
   if (maxdist > total_max_dist) total_max_dist = maxdist;
@@ -178,7 +178,7 @@ csPtr<iMeshWrapper> csMeshGeneratorGeometry::AllocMesh (
 
   csMGGeom& geom = factories[lod];
   // First check if the geometry is for instmesh.
-  if (geom.instmeshes.GetSize () > 0)
+  if (geom.instmeshes.Length () > 0)
   {
     csMGGeomInstMesh& geominst = geom.instmeshes[cidx];
     if (!geominst.instmesh)
@@ -195,7 +195,7 @@ csPtr<iMeshWrapper> csMeshGeneratorGeometry::AllocMesh (
       geominst.instmesh_state = scfQueryInterface<iInstancingMeshState> (
         geominst.instmesh->GetMeshObject ());
     }
-    if (geominst.inst_setaside.GetSize () > 0)
+    if (geominst.inst_setaside.Length () > 0)
       instance_id = geominst.inst_setaside.Pop ();
     else
       instance_id = geominst.instmesh_state->AddInstance (
@@ -204,12 +204,12 @@ csPtr<iMeshWrapper> csMeshGeneratorGeometry::AllocMesh (
     return (iMeshWrapper*)geominst.instmesh;
   }
   // See if we have some mesh ready in the setaside or normal cache.
-  else if (geom.mesh_setaside.GetSize () > 0)
+  else if (geom.mesh_setaside.Length () > 0)
   {
     instance_id = csArrayItemNotFound;
     return geom.mesh_setaside.Pop ();
   }
-  else if (geom.mesh_cache.GetSize () > 0)
+  else if (geom.mesh_cache.Length () > 0)
   {
     instance_id = csArrayItemNotFound;
     return geom.mesh_cache.Pop ();
@@ -247,7 +247,7 @@ void csMeshGeneratorGeometry::SetAsideMesh (int cidx, iMeshWrapper* mesh,
                                             size_t lod, size_t instance_id)
 {
   csMGGeom& geom = factories[lod];
-  if (geom.instmeshes.GetSize () > 0)
+  if (geom.instmeshes.Length () > 0)
   {
     csMGGeomInstMesh& geominst = geom.instmeshes[cidx];
     geominst.inst_setaside.Push (instance_id);
@@ -262,10 +262,10 @@ void csMeshGeneratorGeometry::SetAsideMesh (int cidx, iMeshWrapper* mesh,
 void csMeshGeneratorGeometry::FreeSetAsideMeshes ()
 {
   size_t lod;
-  for (lod = 0 ; lod < factories.GetSize () ; lod++)
+  for (lod = 0 ; lod < factories.Length () ; lod++)
   {
     csMGGeom& geom = factories[lod];
-    while (geom.mesh_setaside.GetSize () > 0)
+    while (geom.mesh_setaside.Length () > 0)
     {
       csRef<iMeshWrapper> mesh = geom.mesh_setaside.Pop ();
       mesh->GetMovable ()->ClearSectors ();
@@ -276,7 +276,7 @@ void csMeshGeneratorGeometry::FreeSetAsideMeshes ()
     while (it.HasNext ())
     {
       csMGGeomInstMesh* geominst = it.Next ();
-      while (geominst->inst_setaside.GetSize () > 0)
+      while (geominst->inst_setaside.Length () > 0)
       {
         size_t instance_id = geominst->inst_setaside.Pop ();
         geominst->instmesh_state->RemoveInstance (instance_id);
@@ -290,7 +290,7 @@ void csMeshGeneratorGeometry::FreeSetAsideMeshes ()
 size_t csMeshGeneratorGeometry::GetLODLevel (float sqdist)
 {
   size_t i;
-  for (i = 0 ; i < factories.GetSize () ; i++)
+  for (i = 0 ; i < factories.Length () ; i++)
   {
     csMGGeom& geom = factories[i];
     if (sqdist <= geom.sqmaxdistance)
@@ -304,7 +304,7 @@ size_t csMeshGeneratorGeometry::GetLODLevel (float sqdist)
 bool csMeshGeneratorGeometry::IsRightLOD (float sqdist, size_t current_lod)
 {
   // With only one lod level we are always right.
-  if (factories.GetSize () <= 1) return true;
+  if (factories.Length () <= 1) return true;
   if (current_lod == 0)
     return (sqdist <= factories[0].sqmaxdistance);
   else
@@ -377,7 +377,7 @@ float csMeshGenerator::GetTotalMaxDist ()
   {
     total_max_dist = 0.0f;
     size_t i;
-    for (i = 0 ; i < geometries.GetSize () ; i++)
+    for (i = 0 ; i < geometries.Length () ; i++)
     {
       float md = geometries[i]->GetTotalMaxDist ();
       if (md > total_max_dist) total_max_dist = md;
@@ -511,7 +511,7 @@ void csMeshGenerator::SetupSampleBox ()
       idx++;
     }
   }
-  for (size_t g = 0 ; g < geometries.GetSize () ; g++)
+  for (size_t g = 0 ; g < geometries.Length () ; g++)
     geometries[g]->ResetManualPositions (cell_dim);
 }
 
@@ -532,7 +532,7 @@ size_t csMeshGenerator::CountPositions (int cidx, csMGCell& cell)
   float box_area = box.Area ();
 
   size_t i, j, g;
-  for (g = 0 ; g < geometries.GetSize () ; g++)
+  for (g = 0 ; g < geometries.Length () ; g++)
   {
     float density = geometries[g]->GetDensity ();
     size_t count = size_t (density * box_area);
@@ -544,7 +544,7 @@ size_t csMeshGenerator::CountPositions (int cidx, csMGCell& cell)
       csVector3 end = start;
       end.y = samplebox.MinY ();
       bool hit = false;
-      for (i = 0 ; i < cell.meshes.GetSize () ; i++)
+      for (i = 0 ; i < cell.meshes.Length () ; i++)
       {
         csHitBeamResult rc = cell.meshes[i]->HitBeam (start, end);
         if (rc.hit)
@@ -589,7 +589,7 @@ void csMeshGenerator::GeneratePositions (int cidx, csMGCell& cell,
   float box_area = box.Area ();
 
   size_t i, j, g;
-  for (g = 0 ; g < geometries.GetSize () ; g++)
+  for (g = 0 ; g < geometries.Length () ; g++)
   {
     csMGPosition pos;
     pos.geom_type = g;
@@ -603,7 +603,7 @@ void csMeshGenerator::GeneratePositions (int cidx, csMGCell& cell,
       = geometries[g]->GetDensityMaterialFactors ();
     float default_material_factor
       = geometries[g]->GetDefaultDensityMaterialFactor ();
-    bool do_material = mftable.GetSize () > 0;
+    bool do_material = mftable.Length () > 0;
     for (j = 0 ; j < count ; j++)
     {
       float pos_factor;
@@ -631,7 +631,7 @@ void csMeshGenerator::GeneratePositions (int cidx, csMGCell& cell,
         end.y = samplebox.MinY ();
         bool hit = false;
         iMaterialWrapper* hit_material = 0;
-        for (i = 0 ; i < cell.meshes.GetSize () ; i++)
+        for (i = 0 ; i < cell.meshes.Length () ; i++)
         {
           csHitBeamResult rc = cell.meshes[i]->HitBeam (start, end,
             do_material);
@@ -650,7 +650,7 @@ void csMeshGenerator::GeneratePositions (int cidx, csMGCell& cell,
             // We use material density tables.
             float factor = default_material_factor;
             size_t mi;
-            for (mi = 0 ; mi < mftable.GetSize () ; mi++)
+            for (mi = 0 ; mi < mftable.Length () ; mi++)
               if (mftable[mi].material == hit_material)
               {
                 factor = mftable[mi].factor;
@@ -698,7 +698,7 @@ void csMeshGenerator::AllocateBlock (int cidx, csMGCell& cell)
       inuse_blocks = block;
     }
   }
-  else if (cache_blocks.GetSize () > 0)
+  else if (cache_blocks.Length () > 0)
   {
     // We need a new block and one is available in the cache.
     csMGPositionBlock* block = cache_blocks.Pop ();
@@ -789,7 +789,7 @@ void csMeshGenerator::AllocateMeshes (int cidx, csMGCell& cell,
   csArray<csMGPosition>& positions = cell.block->positions;
   GetTotalMaxDist ();
   size_t i;
-  for (i = 0 ; i < positions.GetSize () ; i++)
+  for (i = 0 ; i < positions.Length () ; i++)
   {
     csMGPosition& p = positions[i];
 
@@ -821,17 +821,6 @@ void csMeshGenerator::AllocateMeshes (int cidx, csMGCell& cell,
             p.last_mixmode = ~0;
             geometries[p.geom_type]->MoveMesh (cidx, mesh, p.lod,
               p.instance_id, p.position, rotation_matrices[p.rotation]);
-
-/*
-  csRef<iImposter> imposter = SCF_QUERY_INTERFACE (mesh, iImposter);
-    imposter->SetImposterActive (true);
-  iSharedVariable *var = engine->GetVariableList()->FindByName 
-    ("Std Thing Range");
-  imposter->SetMinDistance (var);
-  var = engine->GetVariableList()->FindByName
-    ("Std Thing Angle");
-  imposter->SetRotationTolerance (var);
-*/
           }
         }
       }
@@ -851,17 +840,6 @@ void csMeshGenerator::AllocateMeshes (int cidx, csMGCell& cell,
             p.last_mixmode = ~0;
             geometries[p.geom_type]->MoveMesh (cidx, mesh, p.lod, p.instance_id,
               p.position, rotation_matrices[p.rotation]);
-/*
-printf("case 2\n");
-  csRef<iImposter> imposter = SCF_QUERY_INTERFACE (mesh, iImposter);
-    imposter->SetImposterActive (true);
-  iSharedVariable *var = engine->GetVariableList()->FindByName 
-    ("Std Thing Range");
-  imposter->SetMinDistance (var);
-  var = engine->GetVariableList()->FindByName
-    ("Std Thing Angle");
-  imposter->SetRotationTolerance (var);
-*/
           }
         }
       }
@@ -994,7 +972,7 @@ void csMeshGenerator::AllocateBlocks (const csVector3& pos)
 
   // Now really free the meshes we didn't reuse.
   size_t i;
-  for (i = 0 ; i < geometries.GetSize () ; i++)
+  for (i = 0 ; i < geometries.Length () ; i++)
     geometries[i]->FreeSetAsideMeshes ();
 }
 
@@ -1004,12 +982,12 @@ void csMeshGenerator::FreeMeshesInBlock (int cidx, csMGCell& cell)
   {
     csArray<csMGPosition>& positions = cell.block->positions;
     size_t i;
-    for (i = 0 ; i < positions.GetSize () ; i++)
+    for (i = 0 ; i < positions.Length () ; i++)
     {
       if (positions[i].mesh)
       {
         CS_ASSERT (positions[i].geom_type >= 0);
-        CS_ASSERT (positions[i].geom_type < geometries.GetSize ());
+        CS_ASSERT (positions[i].geom_type < geometries.Length ());
         geometries[positions[i].geom_type]->SetAsideMesh (cidx,
           positions[i].mesh, positions[i].lod, positions[i].instance_id);
         positions[i].mesh = 0;

@@ -20,11 +20,9 @@
 #include "cstool/importkit.h"
 #include "importkit_glue.h"
 
-using namespace CS::Utility::Implementation;
+using namespace CS::ImportKitImpl;
 
 namespace CS
-{
-namespace Utility
 {
 
   ImportKit::Container::Model::~Model()
@@ -38,7 +36,6 @@ namespace Utility
     name = csStrNewW (other.name);
     glueModel = other.glueModel;
     meshes = other.meshes;
-    type = other.type;
   }
 
   //-------------------------------------------------------------------------
@@ -80,5 +77,4 @@ namespace Utility
     return cnt;
   }
 
-} // Namespace Utility
 } // namespace CS

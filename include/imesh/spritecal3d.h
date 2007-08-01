@@ -354,8 +354,6 @@ struct csSpriteCal3DActiveAnim
   float weight;
 };
 
-struct iSkeleton;
-
 /**
  * This interface describes the API for changing the Cal3D sprite 
  * mesh object's animations playing and other current traits.
@@ -613,9 +611,6 @@ struct iSpriteCal3DState : public virtual iBase
    */
   virtual iShaderVariableContext* GetCoreMeshShaderVarContext (
     const char* meshName) = 0;
-
-  /// Get model skeleton.
-  virtual csPtr<iSkeleton> GetSkeleton () = 0;
 
   /**\name Direct Cal3d model manipulation
    * You can get access to the internal Cal3d Model class which sprcal3d

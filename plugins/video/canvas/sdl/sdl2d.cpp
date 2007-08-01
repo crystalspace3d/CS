@@ -185,7 +185,7 @@ void csGraphics2DSDL::Report (int severity, const char* msg, ...)
 {
   va_list arg;
   va_start (arg, msg);
-  csRef<iReporter> rep = csQueryRegistry<iReporter> (object_reg);
+  csRef<iReporter> rep = CS_QUERY_REGISTRY (object_reg, iReporter);
   if (rep)
     rep->ReportV (severity, "crystalspace.canvas.sdl", msg, arg);
   else
@@ -383,7 +383,7 @@ bool csGraphics2DSDL::Open()
   csEventID PreProcess = csevPreProcess (object_reg);
   csEventID PostProcess = csevPostProcess (object_reg);
 
-  csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+  csRef<iEventQueue> q = CS_QUERY_REGISTRY(object_reg, iEventQueue);
   if (q != 0)
   {
     csEventID events[] = { PreProcess, PostProcess, CS_EVENTLIST_END };

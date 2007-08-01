@@ -25,11 +25,8 @@
  */
 
 #include "csextern.h"
-#include "csutil/csstring.h"
 #include "csutil/leakguard.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/weakref.h"
-#include "imap/renderbufferpersistence.h"
 #include "ivideo/rndbuf.h"
 
 /**\addtogroup gfx
@@ -64,7 +61,7 @@ protected:
    */
   csRenderBuffer (size_t size, csRenderBufferType type, 
     csRenderBufferComponentType componentType, uint componentCount, 
-    size_t rangeStart, size_t rangeEnd, bool copy = true);
+    size_t rangeStart, size_t rangeEnd, bool copy);
 public:
   CS_LEAKGUARD_DECLARE (csRenderBuffer);
 
@@ -122,7 +119,7 @@ public:
     return version;
   }
 
-  bool IsMasterBuffer ()
+  virtual bool IsMasterBuffer ()
   {
     return !masterBuffer.IsValid();
   }
@@ -141,12 +138,6 @@ public:
   { return rangeEnd; }
 
   virtual size_t GetElementCount() const;
-
-  virtual void SetCallback (iRenderBufferCallback *cb)
-  {
-    callback = cb;
-  }
-  virtual void SetData (const void *data);
   /** @} */
 
   /**\name Render buffer creation
@@ -168,14 +159,7 @@ public:
    */
   static csRef<csRenderBuffer> CreateRenderBuffer (size_t elementCount, 
     csRenderBufferType type, csRenderBufferComponentType componentType, 
-    uint componentCount);
-    
-  CS_DEPRECATED_METHOD_MSG("Using the 'copy' flag is deprecated; "
-    "use SetData() instead if data copying is not desired") 
-  static csRef<csRenderBuffer> CreateRenderBuffer (size_t elementCount, 
-    csRenderBufferType type, csRenderBufferComponentType componentType, 
-    uint componentCount, bool copy);
-    
+    uint componentCount, bool copy = true);
   /**
    * Create an index buffer.
    * \param elementCount Number of elements in the buffer.
@@ -195,14 +179,7 @@ public:
    */
   static csRef<csRenderBuffer> CreateIndexRenderBuffer (size_t elementCount, 
     csRenderBufferType type, csRenderBufferComponentType componentType,
-    size_t rangeStart, size_t rangeEnd);
-
-  CS_DEPRECATED_METHOD_MSG("Using the 'copy' flag is deprecated; "
-    "use SetData() instead of data copying is not desired") 
-  static csRef<csRenderBuffer> CreateIndexRenderBuffer (size_t elementCount, 
-    csRenderBufferType type, csRenderBufferComponentType componentType,
-    size_t rangeStart, size_t rangeEnd, bool copy);
-    
+    size_t rangeStart, size_t rangeEnd, bool copy = true);
   /**
    * Create an interleaved renderbuffer (You would use this then set stride to
    * determine offset and stride of the interleaved buffer
@@ -301,7 +278,7 @@ protected:
       uint componentCount, bool copy) : bufferType (type), 
       comptype (componentType), compCount (componentCount), stride(0), 
       offset (0), doCopy (copy), doDelete (false), isLocked (false), 
-      isIndex (false), lastLock (0)
+      isIndex (false), lastLock (CS_BUF_LOCK_NOLOCK)
     {
       CS_ASSERT(componentCount <= 255); // Just to be sure...
     }
@@ -319,79 +296,11 @@ protected:
   unsigned char *buffer; 
   
   csRef<iRenderBuffer> masterBuffer;
-
-  csWeakRef<iRenderBufferCallback> callback;
-
 #ifdef CS_DEBUG
   csCallStack* lockStack;
 #endif
 };
 
 /** @} */
-
-namespace CS
-{
-  /**\addtogroup gfx
-   * @{ 
-   */
-
-  /// Render buffer wrapper with additional persistence information.
-  class RenderBufferPersistent : 
-    public scfImplementation2<RenderBufferPersistent,
-                              iRenderBuffer,
-                              iRenderBufferPersistence>
-  {
-    csRef<iRenderBuffer> wrappedBuffer;
-    csString filename;
-  public:
-    RenderBufferPersistent (iRenderBuffer* wrappedBuffer) : 
-      scfImplementationType (this), wrappedBuffer (wrappedBuffer) {}
-
-    void SetFileName (const char* filename) { this->filename = filename; }
-    const char* GetFileName () { return filename; }
-
-    /**\name iRenderBuffer implementation
-     * @{ */
-    void* Lock (csRenderBufferLockType lockType)
-    { return wrappedBuffer->Lock (lockType); }
-    void Release() { wrappedBuffer->Release (); }
-    void CopyInto (const void *data, size_t elementCount,
-      size_t elemOffset = 0) 
-    { wrappedBuffer->CopyInto (data, elementCount, elemOffset); }
-    int GetComponentCount () const
-    { return wrappedBuffer->GetComponentCount(); }
-    csRenderBufferComponentType GetComponentType () const 
-    { return wrappedBuffer->GetComponentType(); }
-    csRenderBufferType GetBufferType() const
-    { return wrappedBuffer->GetBufferType(); }
-    size_t GetSize() const
-    { return wrappedBuffer->GetSize(); }
-    size_t GetStride() const 
-    { return wrappedBuffer->GetStride(); }
-    size_t GetElementDistance() const
-    { return wrappedBuffer->GetElementDistance(); }
-    size_t GetOffset() const
-    { return wrappedBuffer->GetOffset(); }
-    uint GetVersion ()
-    { return wrappedBuffer->GetVersion (); }
-    iRenderBuffer* GetMasterBuffer () const
-    { return wrappedBuffer->GetMasterBuffer (); }
-    bool IsIndexBuffer() const
-    { return wrappedBuffer->IsIndexBuffer (); }
-    size_t GetRangeStart() const
-    { return wrappedBuffer->GetRangeStart (); }
-    size_t GetRangeEnd() const
-    { return wrappedBuffer->GetRangeEnd (); }
-    size_t GetElementCount() const
-    { return wrappedBuffer->GetElementCount (); }
-    void SetCallback (iRenderBufferCallback *cb)
-    { wrappedBuffer->SetCallback (cb); }
-    void SetData (const void *data)
-    { wrappedBuffer->SetData (data); }
-    /** @} */
-  };
-
-  /** @} */
-} // namespace CS
 
 #endif // __CS_CSGFX_RENDERBUFFER_H__

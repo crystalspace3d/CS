@@ -59,7 +59,7 @@ class csLightningMeshObject :
   csRef<iMaterialWrapper> material;
   uint MixMode;
   bool initialized;
-  csRef<iMeshObjectDrawCallback> vis_cb;
+  iMeshObjectDrawCallback* vis_cb;
   float length;  
   float wildness;
   float vibration;
@@ -87,7 +87,6 @@ public:
   void SetObjectBoundingBox (const csBox3& bbox);
   void GetRadius (float& rad, csVector3& cent);
   virtual iTerraFormer* GetTerraFormerColldet () { return 0; }
-  virtual iTerrainSystem* GetTerrainColldet () { return 0; }
 
   ///--------------------- iMeshObject implementation ------------------------
   virtual iMeshObjectFactory* GetFactory () const { return ifactory; }
@@ -97,6 +96,8 @@ public:
     iMovable*, uint32);
   virtual void SetVisibleCallback (iMeshObjectDrawCallback* cb)
   {
+    if (cb) cb->IncRef ();
+    if (vis_cb) vis_cb->DecRef ();
     vis_cb = cb;
   }
   virtual iMeshObjectDrawCallback* GetVisibleCallback () const
@@ -129,10 +130,6 @@ public:
    * does nothing.
    */
   virtual void PositionChild (iMeshObject* /*child*/, csTicks /*current_time*/) { }
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-          iDecalBuilder* decalBuilder)
-  {
-  }
 
   //------------------------- iLightningState implementation ----------------
   virtual void SetOrigin(const csVector3& pos) { this->origin = pos; }
@@ -228,7 +225,8 @@ public:
   {     
     if (GenMeshFact)
     {
-      GenFactState = scfQueryInterface<iGeneralFactoryState> (GenMeshFact);      
+      GenFactState = SCF_QUERY_INTERFACE(
+          GenMeshFact, iGeneralFactoryState);      
       GenFactState->SetVertexCount(MaxPoints * 2);
       GenFactState->SetTriangleCount((MaxPoints - 1) * 2);
             

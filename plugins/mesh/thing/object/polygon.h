@@ -141,41 +141,40 @@ public:
   ~csPolygon3DStatic ();
 
   ///
-  bool MappingSetTextureSpace (const csVector3& v_orig,
+  void MappingSetTextureSpace (const csVector3& v_orig,
 			const csVector3& v1, float len1,
 			const csVector3& v2, float len2);
   ///
-  bool MappingSetTextureSpace (const csPlane3& plane_wor,
+  void MappingSetTextureSpace (const csPlane3& plane_wor,
   			float xo, float yo, float zo,
 			float x1, float y1, float z1,
 			float len);
   ///
-  bool MappingSetTextureSpace (const csPlane3& plane_wor,
+  void MappingSetTextureSpace (const csPlane3& plane_wor,
   			const csVector3& v_orig,
   			const csVector3& v1, float len);
   ///
-  bool MappingSetTextureSpace (const csVector3& v_orig,
+  void MappingSetTextureSpace (const csVector3& v_orig,
   			const csVector3& v_u,
 			const csVector3& v_v);
   ///
-  bool MappingSetTextureSpace (float xo, float yo, float zo,
+  void MappingSetTextureSpace (float xo, float yo, float zo,
 			float xu, float yu, float zu,
 			float xv, float yv, float zv);
   ///
-  bool MappingSetTextureSpace (float xo, float yo, float zo,
+  void MappingSetTextureSpace (float xo, float yo, float zo,
 			float xu, float yu, float zu,
 			float xv, float yv, float zv,
 			float xw, float yw, float zw);
   ///
-  bool MappingSetTextureSpace (const csMatrix3& tx_matrix,
+  void MappingSetTextureSpace (const csMatrix3& tx_matrix,
   			const csVector3& tx_vector);
 
   /// Get the transformation from object to texture space.
-  bool MappingGetTextureSpace (csMatrix3& tx_matrix, csVector3& tx_vector)
+  void MappingGetTextureSpace (csMatrix3& tx_matrix, csVector3& tx_vector)
   {
     tx_matrix = polygon_data.tmapping->GetO2T ();
     tx_vector = polygon_data.tmapping->GetO2TTranslation ();
-    return true;
   }
 
   /**
@@ -385,7 +384,7 @@ public:
    * I hope this explanation is clear since I can't seem to make it
    * any clearer :-)
    */
-  bool SetTextureSpace (const csVector3& v_orig,
+  void SetTextureSpace (const csVector3& v_orig,
     const csVector3& v1, float len1);
 
   /**
@@ -397,7 +396,7 @@ public:
    * u-axis. The length of the u-axis and the v-axis is given as the 'len1'
    * parameter.
    */
-  bool SetTextureSpace (
+  void SetTextureSpace (
     float xo, float yo, float zo,
     float x1, float y1, float z1, float len1);
 
@@ -405,7 +404,7 @@ public:
    * Calculate the matrix using 'v1' and 'len1' for the u-axis and
    * 'v2' and 'len2' for the v-axis.
    */
-  bool SetTextureSpace (
+  void SetTextureSpace (
     const csVector3& v_orig,
     const csVector3& v1, float len1,
     const csVector3& v2, float len2);
@@ -413,7 +412,7 @@ public:
   /**
    * The same but all in floats.
    */
-  bool SetTextureSpace (
+  void SetTextureSpace (
     float xo, float yo, float zo,
     float x1, float y1, float z1, float len1,
     float x2, float y2, float z2, float len2);
@@ -422,7 +421,7 @@ public:
    * The most general function. With these you provide the matrix
    * directly.
    */
-  bool SetTextureSpace (const csMatrix3&, const csVector3&);
+  void SetTextureSpace (const csMatrix3&, const csVector3&);
   /**
    * Get txt mapping info.
    */
@@ -506,11 +505,6 @@ public:
    * Test happens in object space.
    */
   bool PointOnPolygon (const csVector3& v);
-
-  /**
-   * Test if any part of this polygon is inside a sphere.
-   */
-  bool InSphere (const csVector3& center, float radius);
 
   /// Get the material handle for the texture manager.
   iMaterial* GetMaterial ();

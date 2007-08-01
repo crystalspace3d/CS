@@ -49,6 +49,8 @@ extern WalkTest* Sys;
 
 csKeyMap* mapping = 0;
 
+iMeshWrapper *FindNextClosestMesh (iMeshWrapper *baseMesh, iCamera *camera, csVector2 *screenCoord);
+
 //===========================================================================
 // Everything for key mapping and binding.
 //===========================================================================
@@ -578,23 +580,12 @@ void WalkTest::MouseClick2Handler(iEvent &Event)
     Sys->selected_polygon = sel;
 
     iMeshObject* obj = mesh->GetMeshObject ();
-    csRef<iObject> psobj = 
-    	scfQueryInterface<iObject> (obj->GetMeshWrapper ());
+    csRef<iObject> psobj = SCF_QUERY_INTERFACE (obj->GetMeshWrapper (),
+    	iObject);
     Sys->Report (CS_REPORTER_SEVERITY_DEBUG, "Hit polygon '%s/%s'",
     	psobj ? psobj->GetName () : "<null>",
 	ps ? ps->GetPolygonName (sel) : "<null>");
     //Dumper::dump (sel);
-  }
-  else if (mesh)
-  {
-    csRef<iObject> psobj = 
-    	scfQueryInterface<iObject> (mesh->GetMeshObject ()->GetMeshWrapper ());
-    Sys->Report (CS_REPORTER_SEVERITY_DEBUG, "Hit mesh '%s'",
-    	psobj ? psobj->GetName () : "<null>");
-  }
-  else
-  {
-    Sys->Report (CS_REPORTER_SEVERITY_DEBUG, "No hit");
   }
 
   extern csVector2 coord_check_vector;
@@ -611,12 +602,11 @@ void WalkTest::MouseClick2Handler(iEvent &Event)
 void WalkTest::MouseClick3Handler(iEvent &Event)
 {
   csVector2   screenPoint;
+  iMeshWrapper *closestMesh;
 
   screenPoint.x = csMouseEventHelper::GetX(&Event);
   screenPoint.y = csMouseEventHelper::GetY(&Event);
-  csScreenTargetResult st = csEngineTools::FindScreenTarget (
-      screenPoint, 100.0f, view->GetCamera ());
-  closestMesh = st.mesh;
+  closestMesh = FindNextClosestMesh (0, view->GetCamera(), &screenPoint);
   if (closestMesh)
     Sys->Report (CS_REPORTER_SEVERITY_NOTIFY,
     	"Selected mesh %s", closestMesh->
@@ -712,3 +702,53 @@ bool WalkTest::WalkHandleEvent (iEvent &Event)
   return false;
 }
 
+iMeshWrapper *FindNextClosestMesh (iMeshWrapper *baseMesh,
+	iCamera *camera, csVector2 *screenCoord)
+{
+  int meshIndex;
+  float thisZLocation;
+  float closestZLocation;
+  iMeshWrapper *closestMesh;
+  iMeshWrapper *nextMesh;
+  csBox2 screenBoundingBox;
+  csBox3 bbox3;
+
+  if (baseMesh)
+  {
+    closestMesh = baseMesh;
+    csScreenBoxResult box = baseMesh->GetScreenBoundingBox
+    	(camera);
+    closestZLocation = box.distance; 
+    // if the baseMesh isn't in front of the camera, return
+    if (closestZLocation < 0)
+      return 0;
+  }
+  else
+  {
+    closestMesh = 0;
+    closestZLocation = 32000;
+  }
+
+  // @@@ This routine ignores 2D meshes for the moment.
+  iMeshList* meshes = Sys->Engine->GetMeshes ();
+  for (meshIndex = 0; meshIndex < meshes->GetCount (); meshIndex++)
+  {
+    nextMesh = meshes->Get (meshIndex);
+
+    if (nextMesh != baseMesh)
+    {
+      csScreenBoxResult nextBox = nextMesh->GetScreenBoundingBox(camera);
+      thisZLocation = nextBox.distance;
+      if ((thisZLocation > 0) && (thisZLocation < closestZLocation))
+      {
+        if (screenBoundingBox.In(screenCoord->x, screenCoord->y))
+        {
+          closestZLocation = thisZLocation;
+          closestMesh = nextMesh;
+        }
+      }
+    }
+  }
+
+  return closestMesh;
+}

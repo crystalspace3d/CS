@@ -18,8 +18,7 @@ Everyone is permitted to copy and distribute verbatim copies
 of this license document, but changing it is not allowed.
 @end display
 
-@c @appendixsubsec Preamble
-@subheading Preamble
+@appendixsubsec Preamble
 
   The licenses for most software are designed to take away your
 freedom to share and change it.  By contrast, the GNU General Public
@@ -70,12 +69,10 @@ patent must be licensed for everyone's free use or not licensed at all.
 modification follow.
 
 @iftex
-@c @appendixsubsec TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-@subheading TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+@appendixsubsec TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 @end iftex
 @ifhtml
-@c @appendixsubsec TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-@subheading TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+@appendixsubsec TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 @end ifhtml
 @ifinfo
 @center GNU GENERAL PUBLIC LICENSE
@@ -344,8 +341,7 @@ POSSIBILITY OF SUCH DAMAGES.
 @end ifinfo
 
 @page
-@c @appendixsubsec Appendix: How to Apply These Terms to Your New Programs
-@subheading Appendix: How to Apply These Terms to Your New Programs
+@appendixsubsec Appendix: How to Apply These Terms to Your New Programs
 
   If you develop a new program, and you want it to be of the greatest
 possible use to the public, the best way to achieve this is to make it

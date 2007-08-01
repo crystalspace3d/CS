@@ -58,11 +58,11 @@ struct iReporter;
 CS_PLUGIN_NAMESPACE_BEGIN(SndSysCOREAUDIO)
 {
 
-class csSndSysDriverCoreAudio : public scfImplementation2<csSndSysDriverCoreAudio,
-                                                          iSndSysSoftwareDriver,
-                                                          iComponent>
+class csSndSysDriverCoreAudio : public iSndSysSoftwareDriver
 {
 public:
+  SCF_DECLARE_IBASE;
+
   csSndSysDriverCoreAudio(iBase *piBase);
   virtual ~csSndSysDriverCoreAudio();
 
@@ -105,6 +105,14 @@ protected:
 public:
   /// Initialize the module.
   virtual bool Initialize (iObjectRegistry*);
+
+  // iComponent implementation.
+  struct eiComponent : public iComponent
+  {
+    SCF_DECLARE_EMBEDDED_IBASE(csSndSysDriverCoreAudio);
+    virtual bool Initialize (iObjectRegistry* p)
+    { return scfParent->Initialize(p); }
+  } scfiComponent;
 };
 
 }

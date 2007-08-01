@@ -24,8 +24,6 @@
 
 #include "csplugincommon/win32/customcursor.h"
 #include "csplugincommon/canvas/cursorconvert.h"
-
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #include "csutil/win32/wintools.h"
@@ -43,7 +41,7 @@ csWin32CustomCursors::~csWin32CustomCursors ()
     else
       DestroyCursor (cur.cursor);
   }
-  for (size_t i = 0; i < blindCursors.GetSize (); i++)
+  for (size_t i = 0; i < blindCursors.Length(); i++)
   {
     CachedCursor& cur = blindCursors[i];
     if (cur.destroyAsIcon)

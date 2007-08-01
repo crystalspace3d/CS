@@ -40,18 +40,15 @@ rule ConstructApplicationTarget
 }
 rule ConstructStaticLibraryTarget
 {
-  local libbase = [ LibraryBaseName $(<) ] ;
-  return lib$(libbase)$(SUFLIB) ;
+  return lib$(<)$(SUFLIB) ;
 }
 rule ConstructSharedLibraryTarget
 {
-  local libbase = [ LibraryBaseName $(<) ] ;
-  return lib$(libbase).so ; 
+  return lib$(<).so.$(PACKAGE_VERSION) ; 
 }
 rule ConstructSharedLibraryLinkLib
 {
-  local libbase = [ LibraryBaseName $(<) ] ;
-  return lib$(libbase).so ; 
+  return lib$(<).so.$(PACKAGE_VERSION) ; 
 }
 rule ConstructPluginTarget
 {
@@ -146,9 +143,7 @@ rule SystemLinkSharedLibrary
   }
   else
   {
-    LinkSharedLibraryFirst $(<) : $(>[1]) ;
-    LinkSharedLibraryIncremental $(<) : $(>[2-]) ;
-    LinkSharedLibraryFinal $(<) ;
+    LinkSharedLibrary $(<) : $(>) ;
   }
 
   Clean clean : $(<) ;
@@ -176,22 +171,10 @@ else
   }
 }
 
-actions piecemeal together LinkSharedLibraryFirst bind NEEDLIBS bind EXTRAOBJECTS
+actions LinkSharedLibrary bind NEEDLIBS bind EXTRAOBJECTS
 {
-  $(CMD.LD) -r -o $(<).il $(>)
-}
-
-actions piecemeal together LinkSharedLibraryIncremental bind NEEDLIBS bind EXTRAOBJECTS
-{
-  $(CMD.LD) -r -o $(<).il.new $(<).il $(>)
-  $(MV) $(<).il.new $(<).il
-}
-
-actions LinkSharedLibraryFinal bind NEEDLIBS bind EXTRAOBJECTS
-{
-  $(CMD.LINK) -shared -o $(<) $(<).il $(EXTRAOBJECTS) $(NEEDLIBS) $(LINKLIBS) \
+  $(CMD.LINK) -shared -o $(<) $(>) $(EXTRAOBJECTS) $(NEEDLIBS) $(LINKLIBS) \
     -Wl,-soname,$(<:BS)
-  $(RM) $(<).il
 }
 
 actions LinkSharedLibraryRsp bind NEEDLIBS bind EXTRAOBJECTS

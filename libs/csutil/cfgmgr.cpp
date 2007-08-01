@@ -21,7 +21,6 @@
 #include "csutil/cfgmgr.h"
 #include "csutil/csstring.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/scfstringarray.h"
 #include "csutil/strhash.h"
 #include "csutil/sysfunc.h"
 #include "csutil/util.h"
@@ -193,7 +192,7 @@ public:
 
   virtual const char *GetKey(bool Local) const
   {
-    return currentKey ? currentKey + (Local ? Subsection.Length () : 0) : 0;
+    return currentKey ? currentKey + (Local ? Subsection.Length() : 0) : 0;
   }
   virtual int GetInt() const
   {
@@ -214,37 +213,6 @@ public:
      strcasecmp(currentValue, "yes" ) == 0 ||
      strcasecmp(currentValue, "on"  ) == 0 ||
      strcasecmp(currentValue, "1"   ) == 0));
-  }
-  virtual csPtr<iStringArray> GetTuple() const
-  {
-    if (!currentValue)
-      return 0;
-
-    scfStringArray *items = new scfStringArray;		// the output list
-    csString item;
-
-    const char *sinp = currentValue;
-    const char *comp;
-    size_t len;
-    bool finished = false;
-
-    while (!finished)
-    {
-      comp = strchr (sinp, ',');
-      if (!comp)
-      {
-        finished = true;
-        comp = &sinp [strlen (sinp)];
-      }
-      len = strlen (sinp) - strlen (comp);
-      item = csString (sinp, len);
-      item.Trim ();
-      sinp = comp + 1;
-      items->Push (item);
-    }
-
-    csPtr<iStringArray> v(items);
-    return v;
   }
   virtual const char *GetComment() const
   {
@@ -292,7 +260,7 @@ void csConfigManager::CleanUp ()
   }
   // every iterator holds a reference to this object, so when this is
   // deleted there shouldn't be any iterators left.
-  CS_ASSERT(Iterators.GetSize () == 0);
+  CS_ASSERT(Iterators.Length() == 0);
 }
 
 void csConfigManager::AddDomain(iConfigFile *Config, int Priority)
@@ -507,14 +475,6 @@ bool csConfigManager::GetBool(const char *Key, bool Def) const
   return Def;
 }
 
-csPtr<iStringArray> csConfigManager::GetTuple(const char *Key) const
-{
-  for (csConfigDomain *d=LastDomain; d!=0; d=d->Prev)
-    if (d->Cfg && d->Cfg->KeyExists(Key))
-      return d->Cfg->GetTuple(Key);
-  return 0;
-}
-
 const char *csConfigManager::GetComment(const char *Key) const
 {
   for (csConfigDomain *d=LastDomain; d!=0; d=d->Prev) {
@@ -546,12 +506,6 @@ void csConfigManager::SetFloat (const char *Key, float Value)
 void csConfigManager::SetBool (const char *Key, bool Value)
 {
   DynamicDomain->Cfg->SetBool(Key, Value);
-  ClearKeyAboveDynamic(Key);
-}
-
-void csConfigManager::SetTuple (const char *Key, iStringArray* Value)
-{
-  DynamicDomain->Cfg->SetTuple(Key, Value);
   ClearKeyAboveDynamic(Key);
 }
 
@@ -634,7 +588,7 @@ void csConfigManager::FlushRemoved(size_t n)
 
 size_t csConfigManager::FindRemoved(const char *Name) const
 {
-  for (size_t i=0; i<Removed.GetSize (); i++)
+  for (size_t i=0; i<Removed.Length(); i++)
   {
     iConfigFile *cfg = Removed[i];
     if (cfg->GetFileName())

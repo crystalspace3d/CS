@@ -78,7 +78,7 @@ csRef<iDocumentNode> csXmlReadDocWrapper::GetRoot ()
 
 const char* csXmlReadDocWrapper::Parse (iFile* file, bool collapse)
 {
-  char *buf = (char*)cs_malloc (file->GetSize()+1);
+  char *buf = new char[file->GetSize()+1];
   file->Read (buf, file->GetSize());
   buf[file->GetSize ()] = 0;
   const char *ret = ParseInPlace (buf, collapse);
@@ -122,7 +122,7 @@ const char* csXmlReadDocWrapper::ParseInPlace (char* buf, bool collapse)
   }
   else
   {
-    cs_free (buf);
+    delete[] buf;
     return "Data does not seem to be XML.";
   }
 }

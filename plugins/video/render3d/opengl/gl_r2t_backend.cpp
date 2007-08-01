@@ -21,9 +21,6 @@
 
 #include "gl_r2t_backend.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
-{
-
 csGLRender2TextureBackend::csGLRender2TextureBackend (csGLGraphics3D* G3D) 
   : G3D (G3D)
 {
@@ -32,6 +29,3 @@ csGLRender2TextureBackend::csGLRender2TextureBackend (csGLGraphics3D* G3D)
 csGLRender2TextureBackend::~csGLRender2TextureBackend()
 {
 }
-
-}
-CS_PLUGIN_NAMESPACE_END(gl3d)

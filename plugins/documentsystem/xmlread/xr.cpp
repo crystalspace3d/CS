@@ -45,6 +45,8 @@ const char* TrXmlBase::errorString[ TIXML_ERROR_STRING_COUNT ] =
   "Error document empty."
 };
 
+bool TrXmlBase::condenseWhiteSpace = true;
+
 TrDocumentNode::TrDocumentNode( )
 {
   parent = 0;
@@ -70,7 +72,7 @@ TrDocumentNode* TrDocumentNode::NextSibling( const char * value ) const
 }
 
 
-TrDocumentNode* TrDocumentNodeChildren::Identify (const ParseInfo& parse,
+TrDocumentNode* TrDocumentNodeChildren::Identify (TrDocument* document,
 	const char* p)
 {
   TrDocumentNode* returnNode = 0;
@@ -102,9 +104,10 @@ TrDocumentNode* TrDocumentNodeChildren::Identify (const ParseInfo& parse,
   {
     returnNode = new TrXmlDeclaration();
   }
-  else if (parse.IsNameStart (p+1))
+  else if (isalpha (*(p+1))
+        || *(p+1) == '_' )
   {
-    returnNode = parse.document->blk_element.Alloc ();
+    returnNode = document->blk_element.Alloc ();
   }
   else if (StringEqual (p, commentHeader))
   {
@@ -123,7 +126,7 @@ TrDocumentNode* TrDocumentNodeChildren::Identify (const ParseInfo& parse,
   }
   else
   {
-    parse.document->SetError( TIXML_ERROR_OUT_OF_MEMORY );
+    document->SetError( TIXML_ERROR_OUT_OF_MEMORY );
   }
   return returnNode;
 }
@@ -275,7 +278,7 @@ TrDocument::~TrDocument ()
   // Call explicit clear so that all children are destroyed
   // before 'blk_element' and 'blk_text' are destroyed.
   Clear ();
-  if (input_data != 0) cs_free (input_data);
+  delete[] input_data;
 }
 
 const int TrDocumentAttribute::IntValue() const
@@ -305,7 +308,7 @@ TrXmlDeclaration::TrXmlDeclaration( const char * _version,
 size_t TrDocumentAttributeSet::Find (const char * name) const
 {
   size_t i;
-  for (i = 0 ; i < set.GetSize () ; i++)
+  for (i = 0 ; i < set.Length () ; i++)
   {
     if (strcmp (set[i].name, name) == 0) return i;
   }
@@ -315,7 +318,7 @@ size_t TrDocumentAttributeSet::Find (const char * name) const
 size_t TrDocumentAttributeSet::FindExact (const char * reg_name) const
 {
   size_t i;
-  for (i = 0 ; i < set.GetSize () ; i++)
+  for (i = 0 ; i < set.Length () ; i++)
   {
     if (set[i].name == reg_name) return i;
   }

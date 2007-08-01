@@ -82,7 +82,7 @@ csPtr<iBase> csTargetRSLoader::Parse (iDocumentNode* node,
   newstep.AttachNew (step);
 
   csRef<iRenderStepContainer> steps =
-    scfQueryInterface<iRenderStepContainer> (step);
+    SCF_QUERY_INTERFACE (step, iRenderStepContainer);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -168,7 +168,7 @@ csTargetRenderStep::csTargetRenderStep (
   iObjectRegistry* object_reg) :
   scfImplementationType (this)
 {
-  engine = csQueryRegistry<iEngine> (object_reg);
+  engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   doCreate = false;
   persistent = false;
 }
@@ -197,19 +197,17 @@ void csTargetRenderStep::Perform (iRenderView* rview, iSector* sector,
     oldcontext = engine->GetContext ();
     engine->SetContext (tex->GetTextureHandle ());
   }
-  int oldflags = g3d->GetCurrentDrawFlags();
-  g3d->BeginDraw (CSDRAW_3DGRAPHICS | CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER);
-  for (size_t i = 0; i < steps.GetSize (); i++)
+  //g3d->BeginDraw (CSDRAW_3DGRAPHICS | CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER);
+  for (size_t i = 0; i < steps.Length(); i++)
   {
     steps[i]->Perform (rview, sector, stacks);
   }
   
   if (tex != 0)
   {
-    g3d->FinishDraw ();
+    //g3d->FinishDraw ();
     engine->SetContext (oldcontext);
   }
-  g3d->BeginDraw (oldflags);
 }
 
 size_t csTargetRenderStep::AddStep (iRenderStep* step)
@@ -235,5 +233,5 @@ size_t csTargetRenderStep::Find (iRenderStep* step) const
 
 size_t csTargetRenderStep::GetStepCount () const
 {
-  return steps.GetSize ();
+  return steps.Length();
 }

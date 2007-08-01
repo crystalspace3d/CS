@@ -40,7 +40,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -72,6 +71,7 @@
 				TypeLibraryName="..\..\out\release71\build\appviewmesh\appviewmesh.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\release71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\viewmesh.exe&quot; &quot;..\..\out\release71\bin\viewmesh.exe&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -102,7 +102,6 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
@@ -115,7 +114,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -145,6 +143,7 @@
 				TypeLibraryName="..\..\out\debug71\build\appviewmesh\appviewmesh.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\viewmesh.exe&quot; &quot;..\..\out\debug71\bin\viewmesh.exe&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -153,7 +152,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -175,7 +174,6 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
@@ -188,7 +186,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -218,6 +215,7 @@
 				TypeLibraryName="..\..\out\debug71\build\appviewmesh\appviewmesh.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\viewmesh.exe&quot; &quot;..\..\out\debug71\bin\viewmesh.exe&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -226,7 +224,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -248,7 +246,6 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
@@ -261,7 +258,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -291,6 +287,7 @@
 				TypeLibraryName="..\..\out\debug71\build\appviewmesh\appviewmesh.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\viewmesh.exe&quot; &quot;..\..\out\debug71\bin\viewmesh.exe&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -299,7 +296,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>

@@ -52,9 +52,8 @@ csStringID const csInvalidStringID = (csStringID) ~0;
  *
  * \code
  * iObjectRegistry* object_reg = ...;
- * csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
- *   object_reg, "crystalspace.shared.stringset");
- * csStringID myid = strings->Request ("crystalspace.mygame.mystring");
+ * csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE(
+ *   object_reg, "crystalspace.shared.stringset", iStringSet);
  * \endcode
  *
  * \sa csStringHash

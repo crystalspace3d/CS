@@ -81,7 +81,7 @@ bool csBulletDynamics::Initialize (iObjectRegistry* object_reg)
 csPtr<iDynamicSystem> csBulletDynamics::CreateSystem ()
 {
   csBulletDynamicsSystem* system = new csBulletDynamicsSystem ();
-  csRef<iDynamicSystem> isystem (scfQueryInterface<iDynamicSystem> (system));
+  csRef<iDynamicSystem> isystem (SCF_QUERY_INTERFACE (system, iDynamicSystem));
   systems.Push (system);
   isystem->DecRef ();
 
@@ -108,12 +108,6 @@ void csBulletDynamics::Step (float stepsize)
   for (size_t i = 0; i < systems.GetSize (); i++)
   {
     systems[i]->Step (stepsize);
-  }
-  //step callbacks
-  step_callbacks.Compact ();
-  for (size_t i = 0; i < step_callbacks.GetSize (); i++)
-  {
-    step_callbacks[i]->Step (stepsize);
   }
 }
 //-------------------------------csBulletDynamicsSystem----------------------------------------------//
@@ -178,7 +172,7 @@ csPtr<iRigidBody> csBulletDynamicsSystem::CreateBody ()
   csBulletRigidBody *b = new csBulletRigidBody (this);
   bullet_sys->addCcdPhysicsController (b->GetBulletBody ());
 
-  csRef<iRigidBody> ib = scfQueryInterface<iRigidBody> (b);
+  csRef<iRigidBody> ib = SCF_QUERY_INTERFACE (b, iRigidBody);
   bodies.Push (ib);
   ib->DecRef ();
 
@@ -738,7 +732,7 @@ bool csBulletCollider::CreateBoxGeometry (const csVector3& size)
 
   return true;
 }
-bool csBulletCollider::CreateCapsuleGeometry (float /*length*/,
+bool csBulletCollider::CreateCCylinderGeometry (float /*length*/,
   float /*radius*/)
 {
   return false;

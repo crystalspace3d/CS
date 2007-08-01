@@ -69,8 +69,6 @@ WalkTest::WalkTest () :
 
   do_edges = false;
   do_show_coord = false;
-  do_object_move = false;
-  object_move_speed = 1.0f;
   busy_perf_test = false;
   do_show_z = false;
   do_show_palette = false;
@@ -143,19 +141,28 @@ void WalkTest::Report (int severity, const char* msg, ...)
 {
   va_list arg;
   va_start (arg, msg);
-  csReportV(object_reg, severity, "crystalspace.system", msg, arg);
+  csRef<iReporter> rep (CS_QUERY_REGISTRY (object_reg, iReporter));
+  if (rep)
+  {
+    rep->ReportV (severity, "crystalspace.system", msg, arg);
+  }
+  else
+  {
+    csPrintfV (msg, arg);
+    csPrintf ("\n");
+  }
   va_end (arg);
 }
 
 void WalkTest::SetDefaults ()
 {
-  csRef<iConfigManager> Config (csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> Config (CS_QUERY_REGISTRY (object_reg, iConfigManager));
   bool do_cd = Config->GetBool ("Walktest.Settings.Colldet", true);
   collider_actor.SetCD (do_cd);
   do_logo = Config->GetBool ("Walktest.Settings.DrawLogo", true);
 
-  csRef<iCommandLineParser> cmdline (
-  	csQueryRegistry<iCommandLineParser> (object_reg));
+  csRef<iCommandLineParser> cmdline (CS_QUERY_REGISTRY (object_reg,
+  	iCommandLineParser));
 
   const char *val;
   if (!(val = cmdline->GetName ()))
@@ -232,7 +239,7 @@ void WalkTest::SetDefaults ()
 
 void WalkTest::Help ()
 {
-  csRef<iConfigManager> cfg (csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> cfg (CS_QUERY_REGISTRY (object_reg, iConfigManager));
   csPrintf ("Options for WalkTest:\n");
   csPrintf ("  -exec=<script>     execute given script at startup\n");
   csPrintf ("  -[no]colldet       collision detection system (default '%scolldet')\n", collider_actor.HasCD () ? "" : "no");
@@ -260,7 +267,7 @@ void WalkTest::SetupFrame ()
   {
     // Emit recorded commands directly to the CommandHandler
     if (cfg_playrecording > 0 &&
-	recording.GetSize () > 0)
+	recording.Length () > 0)
     {
       csRecordedCamera* reccam = (csRecordedCamera*)recording[
       	cfg_playrecording];
@@ -332,12 +339,12 @@ void WalkTest::MoveSystems (csTicks elapsed_time, csTicks current_time)
   size_t i;
   busy_vector.DeleteAll ();
   csWalkEntity* wentity;
-  for (i = 0 ; i < busy_entities.GetSize () ; i++)
+  for (i = 0 ; i < busy_entities.Length () ; i++)
   {
     wentity = busy_entities[i];
     busy_vector.Push (wentity);
   }
-  for (i = 0 ; i < busy_vector.GetSize () ; i++)
+  for (i = 0 ; i < busy_vector.Length () ; i++)
   {
     wentity = busy_vector[i];
     wentity->NextFrame (elapsed_time);
@@ -407,6 +414,13 @@ void WalkTest::DrawFrameDebug ()
     extern void DrawPalette ();
     DrawPalette ();
   }
+  //if (selected_polygon || selected_light)
+    //view->GetEngine ()->DrawFunc (view->GetCamera (),
+      //view->GetClipper (), draw_edges, (void*)1);
+  if (cfg_debug_check_frustum)
+  {
+    // @@@
+  }
   if (do_show_debug_boxes)
   {
     extern void DrawDebugBoxes (iCamera* cam, bool do3d);
@@ -449,19 +463,6 @@ void WalkTest::DrawFrameConsole ()
     int fw, fh;
     Font->GetMaxSize (fw, fh);
 
-    if (do_object_move || closestMesh)
-    {
-      csString buffer;
-      if (closestMesh)
-        buffer.Format ("[%s%s]", do_object_move ? "O:" : "",
-	    closestMesh->QueryObject ()->GetName ());
-      else
-        buffer.Format ("[%s]", do_object_move ? "O:" : "");
-      GfxWrite ( FRAME_WIDTH / 3, FRAME_HEIGHT - fh - 3, 0, -1, 
-                 "%s", buffer.GetData ());
-      GfxWrite ( FRAME_WIDTH / 3, FRAME_HEIGHT - fh - 3, fgcolor_stats, -1, 
-                 "%s", buffer.GetData ());
-    }
     if (do_show_coord)
     {
       csString buffer;
@@ -571,7 +572,7 @@ void WalkTest::DrawFrame3D (int drawflags, csTicks /*current_time*/)
 
   // Apply lighting BEFORE the very first frame
   size_t i;
-  for (i = 0 ; i < dynamic_lights.GetSize () ; i++)
+  for (i = 0 ; i < dynamic_lights.Length () ; i++)
   {
     iLight* dyn = dynamic_lights[i];
     extern bool HandleDynLight (iLight*, iEngine*);
@@ -672,12 +673,12 @@ void WalkTest::DrawFrame (csTicks elapsed_time, csTicks current_time)
       recorded_cmd = recorded_arg = 0;
       recording.Push (reccam);
     }
-    if (cfg_playrecording >= 0 && recording.GetSize () > 0)
+    if (cfg_playrecording >= 0 && recording.Length () > 0)
     {
       csRecordedCamera* reccam = (csRecordedCamera*)recording[cfg_playrecording];
       cfg_playrecording++;
       record_frame_count++;
-      if ((size_t)cfg_playrecording >= recording.GetSize ())
+      if ((size_t)cfg_playrecording >= recording.Length ())
       {
 	csTicks t1 = record_start_time;
 	csTicks t2 = csGetTicks ();
@@ -757,19 +758,13 @@ void WalkTest::PrepareFrame (csTicks elapsed_time, csTicks /*current_time*/)
 
   int shift, ctrl;
   float speed = 1;
-  object_move_speed = .01;
 
   ctrl = kbd->GetKeyState (CSKEY_CTRL);
   shift = kbd->GetKeyState (CSKEY_SHIFT);
   if (ctrl)
-  {
     speed = .5;
-  }
   if (shift)
-  {
     speed = 2;
-    object_move_speed = 1.0;
-  }
 
   float delta = float (elapsed_time) / 1000.0f;
   collider_actor.Move (delta, speed, velocity, angle_velocity);
@@ -784,7 +779,7 @@ void perf_test (int num)
   int i;
   for (i = 0 ; i < num ; i++)
   {
-    if (Sys->cfg_playrecording >= 0 && Sys->recording.GetSize () > 0)
+    if (Sys->cfg_playrecording >= 0 && Sys->recording.Length () > 0)
     {
       Sys->record_frame_count++;
     }
@@ -910,6 +905,45 @@ bool WalkTest::SetMapDir (const char* map_dir)
   return true;
 }
 
+#if 0
+
+#include "csutil/thread.h"
+#include "csutil/sysfunc.h"
+#include "iutil/document.h"
+
+class MyThread : public csRunnable
+{
+private:
+  int ref;
+
+public:
+  csRef<iDocument> doc;
+  csRef<iDataBuffer> buf;
+
+public:
+  MyThread () : ref (1) { }
+  virtual ~MyThread () { }
+  virtual void Run ()
+  {
+    csSleep (2000);
+    csPrintf ("================ START PARSING!\n"); fflush (stdout);
+    const char* error = doc->Parse (buf, true);
+    if (error != 0)
+    {
+      csPrintf ("Document system error for file '%s'!", error);
+    }
+    csPrintf ("================ END PARSING!\n"); fflush (stdout);
+  }
+  virtual void IncRef () { ref++; }
+  virtual void DecRef () { ref--; if (ref <= 0) delete this; }
+};
+
+static csRef<csThread> thread1;
+static csRef<csThread> thread2;
+static csRef<csThread> thread3;
+
+#endif
+
 bool WalkTest::Initialize (int argc, const char* const argv[],
 	const char *iConfigName)
 {
@@ -928,7 +962,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
     return false;
   }
 
-  csRef<iConfigManager> cfg (csQueryRegistry<iConfigManager> (object_reg));
+  csRef<iConfigManager> cfg (CS_QUERY_REGISTRY (object_reg, iConfigManager));
 #if defined(CS_PLATFORM_WIN32)
   const bool mdumpDefault =
 #if defined(CS_COMPILER_MSVC)
@@ -979,31 +1013,31 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
     exit (0);
   }
 
-  plugin_mgr = csQueryRegistry<iPluginManager> (object_reg);
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  plugin_mgr = CS_QUERY_REGISTRY (object_reg, iPluginManager);
+  vc = CS_QUERY_REGISTRY (object_reg, iVirtualClock);
 
-  myG3D = csQueryRegistry<iGraphics3D> (object_reg);
+  myG3D = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   if (!myG3D)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iGraphics3D plugin!");
     return false;
   }
 
-  myG2D = csQueryRegistry<iGraphics2D> (object_reg);
+  myG2D = CS_QUERY_REGISTRY (object_reg, iGraphics2D);
   if (!myG2D)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iGraphics2D plugin!");
     return false;
   }
 
-  myVFS = csQueryRegistry<iVFS> (object_reg);
+  myVFS = CS_QUERY_REGISTRY (object_reg, iVFS);
   if (!myVFS)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iVFS plugin!");
     return false;
   }
 
-  kbd = csQueryRegistry<iKeyboardDriver> (object_reg);
+  kbd = CS_QUERY_REGISTRY (object_reg, iKeyboardDriver);
   if (!kbd)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iKeyboardDriver!");
@@ -1014,8 +1048,8 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   CanvasExposed = csevCanvasExposed (name_reg, myG2D);
   CanvasResize = csevCanvasResize (name_reg, myG2D);
 
-  myConsole = csQueryRegistry<iConsoleOutput> (object_reg);
-  mySound = csQueryRegistry<iSndSysRenderer> (object_reg);
+  myConsole = CS_QUERY_REGISTRY (object_reg, iConsoleOutput);
+  mySound = CS_QUERY_REGISTRY (object_reg, iSndSysRenderer);
 
   // Some commercials...
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Crystal Space version %s (%s).", CS_VERSION, CS_RELEASE_DATE);
@@ -1088,7 +1122,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   start_console ();
 
   // Find the engine plugin and query the csEngine object from it...
-  Engine = csQueryRegistry<iEngine> (object_reg);
+  Engine = CS_QUERY_REGISTRY (object_reg, iEngine);
   if (!Engine)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No iEngine plugin!");
@@ -1097,7 +1131,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   Engine->SetSaveableFlag (doSave);
 
   // Find the level loader plugin
-  LevelLoader = csQueryRegistry<iLoader> (object_reg);
+  LevelLoader = CS_QUERY_REGISTRY (object_reg, iLoader);
   if (!LevelLoader)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No level loader plugin!");
@@ -1221,8 +1255,8 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
       	first_map->map_dir);
 
     // Check if we have to load every separate map in a separate region.
-    csRef<iCommandLineParser> cmdline = 
-    	csQueryRegistry<iCommandLineParser> (object_reg);
+    csRef<iCommandLineParser> cmdline = CS_QUERY_REGISTRY (object_reg,
+    	iCommandLineParser);
     bool do_regions = false;
     if (cmdline->GetOption ("regions"))
       do_regions = true;
@@ -1318,7 +1352,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
 	  cp->Load(views[1]->GetCamera (), Engine))
 	camok = true;
     }
-    if (!camok)
+    if (!camok) 
     {
       iSector* room = Engine->GetSectors ()->FindByName ("room");
       if (room)
@@ -1357,7 +1391,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   {
     myConsole->SetVisible (false);
     myConsole->AutoUpdate (false);
-    ConsoleInput = csQueryRegistry<iConsoleInput> (object_reg);
+    ConsoleInput = CS_QUERY_REGISTRY (object_reg, iConsoleInput);
     if (ConsoleInput)
     {
       ConsoleInput->Bind (myConsole);
@@ -1407,7 +1441,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
 #if 0
 {
   csRef<iDocumentSystem> xml (
-      csQueryRegistry<iDocumentSystem> (object_reg));
+      CS_QUERY_REGISTRY (object_reg, iDocumentSystem));
 
   MyThread* t1 = new MyThread ();
   MyThread* t2 = new MyThread ();

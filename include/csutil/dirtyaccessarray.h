@@ -42,29 +42,21 @@
  * to the internal array that is in this class. This can be useful
  * if you want to access some external module (like OpenGL).
  */
-template <class T,
-	  class ElementHandler = csArrayElementHandler<T>,
-          class MemoryAllocator = CS::Memory::AllocatorMalloc,
-          class CapacityHandler = csArrayCapacityDefault>
-class csDirtyAccessArray : 
-  public csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>
+template <class T, class ElementHandler = csArrayElementHandler<T> >
+class csDirtyAccessArray : public csArray<T, ElementHandler>
 {
 public:
   /**
-   * Initialize object to have initial capacity of \c in_capacity elements.
-   * The storage increase depends on the specified capacity handler. The
-   * default capacity handler accepts a threshold parameter by which the 
-   * storage is increased each time the upper bound is exceeded.
+   * Initialize object to hold initially 'ilimit' elements, and increase
+   * storage by 'ithreshold' each time the upper bound is exceeded.
    */
-  csDirtyAccessArray (size_t in_capacity = 0,
-    const CapacityHandler& ch = CapacityHandler())
-    : csArray<T, ElementHandler, MemoryAllocator, CapacityHandler> (
-      in_capacity, ch) {}
+  csDirtyAccessArray (int ilimit = 0, int ithreshold = 0)
+  	: csArray<T, ElementHandler> (ilimit, ithreshold) {}
 
   /// Get the pointer to the start of the array.
   T* GetArray ()
   {
-    if (this->GetSize () > 0) // see *1*
+    if (this->Length () > 0) // see *1*
       return &this->Get (0);
     else
       return 0;
@@ -73,7 +65,7 @@ public:
   /// Get the pointer to the start of the array.
   const T* GetArray () const
   {
-    if (this->GetSize () > 0) // see *1*
+    if (this->Length () > 0) // see *1*
       return &this->Get (0);
     else
       return 0;
@@ -88,8 +80,8 @@ public:
   {
     if (this->Length () > 0) // see *1*
     {
-      T* copy = new T [this->GetSize ()];
-      memcpy (copy, &this->Get (0), sizeof (T) * this->GetSize ());
+      T* copy = new T [this->Length ()];
+      memcpy (copy, &this->Get (0), sizeof (T) * this->Length ());
       return copy;
     }
     else

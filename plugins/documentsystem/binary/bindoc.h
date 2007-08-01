@@ -368,8 +368,6 @@ public:
 
   virtual bool HasNext ();
   virtual csRef<iDocumentNode> Next ();
-  size_t GetNextPosition ();
-  size_t GetEndPosition ();
 };
 
 struct csBdNode : public bdNode

@@ -136,7 +136,7 @@ const char* csPS1xTo14Converter::GetTempReg (int oldReg, size_t instrIndex,
 
   // Determine timespan the original temp reg was used.
   size_t firstNeeded = instrIndex + 1, lastNeeded = firstNeeded;
-  while ((lastNeeded < neededRegs.GetSize ()) && 
+  while ((lastNeeded < neededRegs.Length()) && 
     (neededRegs[lastNeeded] & TEMPREG_BIT(oldReg, usedBits)))
     lastNeeded++;
 
@@ -441,7 +441,7 @@ const char* csPS1xTo14Converter::CollectUsage (
     that prolly needs to be reflected somehow.
    */
 
-  for (i = 0; i < instrs->GetSize (); i++)
+  for (i = 0; i < instrs->Length(); i++)
   {
     const csPSProgramInstruction& instr = instrs->Get (i);
     int j;
@@ -517,13 +517,13 @@ const char* csPS1xTo14Converter::CollectUsage (
     for (reg = 1; reg < 2; reg++)
     {
       const uint mask = ~TEMPREG_BIT (reg, bit);
-      size_t j = instrs->GetSize ();
+      size_t j = instrs->Length();
       while (--j != lastTempUse[reg][m]) neededRegs[j] &= mask;
     }				  
     for (reg = 0; reg < 4; reg++)
     {
       const uint mask = ~TEXREG_BIT (reg, bit);
-      size_t j = instrs->GetSize ();
+      size_t j = instrs->Length();
       while (--j != lastTexUse[reg][m]) neededRegs[j] &= mask;
     }
   }
@@ -540,7 +540,7 @@ const char* csPS1xTo14Converter::GetNewInstructions (
   if ((err = CollectUsage (instrs)) != 0)
     return err;
 
-  for (size_t i = 0; i < instrs->GetSize (); i++)
+  for (size_t i = 0; i < instrs->Length(); i++)
   {
     if ((err = AddInstruction (instrs->Get (i), i)) != 0)
       return err;

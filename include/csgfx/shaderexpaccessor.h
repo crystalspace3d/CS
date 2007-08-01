@@ -30,8 +30,6 @@
 #include "csutil/scf.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/weakref.h"
-#include "csutil/csobject.h"
-#include "iutil/selfdestruct.h"
 
 struct iObjectRegistry;
 
@@ -46,8 +44,7 @@ class csShaderExpression;
  * value is queried.
  */
 class CS_CRYSTALSPACE_EXPORT csShaderExpressionAccessor : 
-  public scfImplementationExt2<csShaderExpressionAccessor, csObject,
-  	iShaderVariableAccessor, iSelfDestruct>
+  public scfImplementation1<csShaderExpressionAccessor, iShaderVariableAccessor>
 {
 private:
   iObjectRegistry* object_reg;
@@ -66,9 +63,6 @@ public:
   virtual ~csShaderExpressionAccessor();
 
   virtual void PreGetValue (csShaderVariable *variable);
-
-  // ------------------------- For iSelfDestruct -------------------------------
-  virtual void SelfDestruct ();
 };
  
 /** @} */

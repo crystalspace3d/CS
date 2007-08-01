@@ -131,7 +131,7 @@ struct iODESliderJoint;
  */
 struct iODEDynamicSystemState : public virtual iBase
 {
-  SCF_INTERFACE(iODEDynamicSystemState, 2, 1, 0);
+  SCF_INTERFACE(iODEDynamicSystemState, 2, 0, 0);
 
   /**
    * Sets ODE's Error Resolution Parameter (see ode docs for details)
@@ -301,13 +301,6 @@ struct iODEDynamicSystemState : public virtual iBase
    * \return the distance two bodies are allowed to interpenetrate
    */
   virtual float GetContactSurfaceLayer () = 0;
-
-  /**
-   * Set the code to use previous and broken inertia calculation. Use only
-   * if you know you need it
-   */
-  virtual void EnableOldInertia (bool enable) = 0;
-  virtual bool IsOldInertiaEnabled () const = 0;
 };
 
 /**
@@ -578,9 +571,9 @@ struct iODEGeneralJointState : public virtual iBase
 
 };
 
-struct iODESliderJoint : public virtual iODEGeneralJointState
+struct iODESliderJoint : public iODEGeneralJointState
 {
-  SCF_INTERFACE(iODESliderJoint, 2, 1, 0);
+  SCF_INTERFACE(iODESliderJoint, 2, 0, 0);
 
   ///Set the slider axis.
   virtual void SetSliderAxis (float x, float y, float z) = 0;
@@ -606,9 +599,9 @@ struct iODESliderJoint : public virtual iODEGeneralJointState
  * perpendicular. In other words, rotation of the two bodies about the
  * direction perpendicular to the two axes will be equal.
  */
-struct iODEUniversalJoint : public virtual iODEGeneralJointState
+struct iODEUniversalJoint : public iODEGeneralJointState
 {
-  SCF_INTERFACE(iODEUniversalJoint, 2, 1, 0);
+  SCF_INTERFACE(iODEUniversalJoint, 2, 0, 0);
 
   /// Set universal anchor.
   virtual void SetUniversalAnchor (float x, float y, float z) = 0;
@@ -662,9 +655,9 @@ enum ODEAMotorMode
  * AMotor with a ball joint, simply attach it to the same two bodies
  * that the ball joint is attached to.
  */
-struct iODEAMotorJoint : public virtual iODEGeneralJointState
+struct iODEAMotorJoint : public iODEGeneralJointState
 {
-  SCF_INTERFACE(iODEAMotorJoint, 2, 1, 0);
+  SCF_INTERFACE(iODEAMotorJoint, 2, 0, 0);
 
   /**
    * Set the angular motor mode. The mode parameter must be one of the
@@ -760,9 +753,9 @@ struct iODEAMotorJoint : public virtual iODEGeneralJointState
  * ODE hinge 2 joint. The hinge-2 joint is the same as two hinges connected 
  * in series, with different hinge axe.
  */
-struct iODEHinge2Joint : public virtual iODEGeneralJointState
+struct iODEHinge2Joint : public iODEGeneralJointState
 {
-  SCF_INTERFACE(iODEHinge2Joint, 2, 1, 0);
+  SCF_INTERFACE(iODEHinge2Joint, 2, 0, 0);
 
   /**
    * Set the joint anchor point. The joint will try to keep this point
@@ -831,9 +824,9 @@ struct iODEHinge2Joint : public virtual iODEGeneralJointState
 /**
  * ODE hinge joint (contrainted translation and 1 free rotation axis).
  */
-struct iODEHingeJoint : public virtual iODEGeneralJointState
+struct iODEHingeJoint : public iODEGeneralJointState
 {
-  SCF_INTERFACE(iODEHingeJoint, 2, 1, 0);
+  SCF_INTERFACE(iODEHingeJoint, 2, 0, 0);
 
   /**
    * Set the joint anchor point. The joint will try to keep this point

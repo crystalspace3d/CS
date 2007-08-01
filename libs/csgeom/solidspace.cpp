@@ -18,9 +18,9 @@
 #include "cssysdef.h"
 #include "csutil/sysfunc.h"
 #include "csgeom/solidspace.h"
-#include "csgeom/trimeshtools.h"
+#include "csgeom/pmtools.h"
 #include "csgeom/plane3.h"
-#include "igeom/trimesh.h"
+#include "igeom/polymesh.h"
 
 //---------------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ bool csSolidSpace::CheckBox (const csBox3& bbox, csSolidSpaceNode* node,
   // If node is already completely solid we don't have to proceed.
   if (node->bits == (uint32)~0) return true;
 
-  bool box_intersects = !csTriangleMeshTools::BoxInClosedMesh (
+  bool box_intersects = !csPolygonMeshTools::BoxInClosedMesh (
   	bbox, vertices, tris, tri_count, planes);
 
   // If the box intersects with the mesh we don't have sufficient
@@ -145,7 +145,7 @@ bool csSolidSpace::CheckBox (const csBox3& bbox, csSolidSpaceNode* node,
   // test if a single point of the box is inside the mesh. If so then
   // we know the entire box is in the mesh and the box can be marked
   // as solid.
-  bool point_closed = csTriangleMeshTools::PointInClosedMesh (
+  bool point_closed = csPolygonMeshTools::PointInClosedMesh (
   	bbox.Min (), vertices, tris, tri_count, planes);
   if (point_closed)
   {
@@ -161,12 +161,12 @@ bool csSolidSpace::CheckBox (const csBox3& bbox, csSolidSpaceNode* node,
   return false;
 }
 
-void csSolidSpace::AddClosedObject (iTriangleMesh* object)
+void csSolidSpace::AddClosedObject (iPolygonMesh* object)
 {
   csTriangleMinMax* tris;
-  size_t tri_count;
+  int tri_count;
   csPlane3* planes;
-  csTriangleMeshTools::SortTrianglesX (object, tris, tri_count, planes);
+  csPolygonMeshTools::SortTrianglesX (object, tris, tri_count, planes);
 
   CheckBox (root_bbox, root, object->GetVertices (),
   	tris, tri_count, planes);

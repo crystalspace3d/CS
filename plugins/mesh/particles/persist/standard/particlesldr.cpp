@@ -42,8 +42,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
 {
   SCF_IMPLEMENT_FACTORY(ParticlesFactoryLoader);
   SCF_IMPLEMENT_FACTORY(ParticlesObjectLoader);
-  SCF_IMPLEMENT_FACTORY(ParticlesFactorySaver);
-  SCF_IMPLEMENT_FACTORY(ParticlesObjectSaver);
 
   ParticlesBaseLoader::ParticlesBaseLoader (iBase* parent)
     : scfImplementationType (this, parent), objectRegistry (0)
@@ -388,7 +386,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
         coneAngle = child->GetContentsValueAsFloat ();
         break;
       case XMLTOKEN_BOX:
-        if (!synldr->ParseBox (child, box))
+        if (!synldr->ParseBox (node, box))
         {
           return 0;
         }
@@ -792,8 +790,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
 
             return 0;
           }
-          meshObj->SetMaterialWrapper(fact->GetMeshObjectFactory ()
-	  	->GetMaterialWrapper ());
+          meshObj->SetMaterialWrapper(fact->GetMeshObjectFactory ()->GetMaterialWrapper ());
           meshObj->SetMixMode(fact->GetMeshObjectFactory()->GetMixMode());
         }
         break;

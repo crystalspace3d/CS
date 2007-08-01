@@ -147,15 +147,15 @@ csObjectWatcher::~csObjectWatcher ()
 void csObjectWatcher::Reset ()
 {
   size_t i;
-  for (i = 0 ; i < movables.GetSize () ; i++)
+  for (i = 0 ; i < movables.Length () ; i++)
   {
     movables[i]->RemoveListener (movable_listener);
   }
-  for (i = 0 ; i < lights.GetSize () ; i++)
+  for (i = 0 ; i < lights.Length () ; i++)
   {
     lights[i]->RemoveLightCallback (light_callback);
   }
-  for (i = 0 ; i < sectors.GetSize () ; i++)
+  for (i = 0 ; i < sectors.Length () ; i++)
   {
     if (sectors[i])
       sectors[i]->RemoveSectorMeshCallback (sector_listener);
@@ -174,7 +174,7 @@ void csObjectWatcher::ReportOperation (int op, iMovable* movable)
   last_sector = 0;
   last_mesh = 0;
   updatenr++;
-  size_t i = listeners.GetSize ();
+  size_t i = listeners.Length ();
   while (i-- > 0)
   {
     iObjectWatcherListener* l = listeners[i];
@@ -190,7 +190,7 @@ void csObjectWatcher::ReportOperation (int op, iLight* light)
   last_sector = 0;
   last_mesh = 0;
   updatenr++;
-  size_t i = listeners.GetSize ();
+  size_t i = listeners.Length ();
   while (i-- > 0)
   {
     iObjectWatcherListener* l = listeners[i];
@@ -206,7 +206,7 @@ void csObjectWatcher::ReportOperation (int op, iSector* sector, iMeshWrapper* me
   last_sector = sector;
   last_mesh = mesh;
   updatenr++;
-  size_t i = listeners.GetSize ();
+  size_t i = listeners.Length ();
   while (i-- > 0)
   {
     iObjectWatcherListener* l = listeners[i];
@@ -223,7 +223,7 @@ void csObjectWatcher::WatchLight (iLight* light)
 void csObjectWatcher::RemoveLight (iLight* light)
 {
   size_t i;
-  for (i = 0 ; i < lights.GetSize () ; i++)
+  for (i = 0 ; i < lights.Length () ; i++)
   {
     if (lights[i] == light)
     {
@@ -236,7 +236,7 @@ void csObjectWatcher::RemoveLight (iLight* light)
 
 iLight* csObjectWatcher::GetLight (int idx)
 {
-  CS_ASSERT (idx >= 0 && (size_t)idx < lights.GetSize ());
+  CS_ASSERT (idx >= 0 && (size_t)idx < lights.Length ());
   return lights[idx];
 }
 
@@ -249,7 +249,7 @@ void csObjectWatcher::WatchMovable (iMovable* movable)
 void csObjectWatcher::RemoveMovable (iMovable* movable)
 {
   size_t i;
-  for (i = 0 ; i < movables.GetSize () ; i++)
+  for (i = 0 ; i < movables.Length () ; i++)
   {
     if (movables[i] == movable)
     {
@@ -262,7 +262,7 @@ void csObjectWatcher::RemoveMovable (iMovable* movable)
 
 iMovable* csObjectWatcher::GetMovable (int idx)
 {
-  CS_ASSERT (idx >= 0 && (size_t)idx < movables.GetSize ());
+  CS_ASSERT (idx >= 0 && (size_t)idx < movables.Length ());
   return movables[idx];
 }
 
@@ -274,7 +274,7 @@ void csObjectWatcher::WatchSector (iSector* sector)
 
 void csObjectWatcher::RemoveSector (iSector* sector)
 {
-  size_t i = sectors.GetSize ();
+  size_t i = sectors.Length ();
   while (i > 0)
   {
     i--;
@@ -292,7 +292,7 @@ void csObjectWatcher::RemoveSector (iSector* sector)
 
 iSector* csObjectWatcher::GetSector (int idx)
 {
-  CS_ASSERT (idx >= 0 && (size_t)idx < sectors.GetSize ());
+  CS_ASSERT (idx >= 0 && (size_t)idx < sectors.Length ());
   return sectors[idx];
 }
 

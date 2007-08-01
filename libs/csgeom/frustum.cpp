@@ -24,15 +24,11 @@
 
 // --------------------------------------------------------------------------
 
-namespace {
-
 struct vecar3 { csVector3 ar[3]; };
 struct vecar4 { csVector3 ar[4]; };
 struct vecar5 { csVector3 ar[5]; };
 struct vecar6 { csVector3 ar[6]; };
 struct vecar10 { csVector3 ar[10]; };
-
-#include "csutil/custom_new_disable.h"
 
 class csVertexArrayAlloc
 {
@@ -55,7 +51,7 @@ public:
     delete blk_vecar10;
   }
 
-  csVector3* GetVertexArray (size_t n)
+  csVector3* GetVertexArray (int n)
   {
     if (!n) return 0;
     switch (n)
@@ -72,17 +68,14 @@ public:
 	}
         else
 	{
-          csVector3* p = 
-            static_cast<csVector3*> (cs_malloc (sizeof (csVector3) * n));
-          for (size_t v = 0; v < n; v++) new (p + v) csVector3;
-	  return p;
+	  return new csVector3[n];
         }
     }
     return 0;
   }
 
   /// Free an array of n vertices.
-  void FreeVertexArray (csVector3* ar, size_t n)
+  void FreeVertexArray (csVector3* ar, int n)
   {
     if (!n) return;
     switch (n)
@@ -95,20 +88,14 @@ public:
         if (n <= 10)
 	  blk_vecar10->Free ((vecar10*)ar);
         else
-        {
-          for (size_t v = 0; v < n; v++) ar[v].~csVector3();
-	  cs_free (ar);
-        }
+	  delete[] ar;
         break;
     }
   }
 };
 
-#include "csutil/custom_new_enable.h"
-
 CS_IMPLEMENT_STATIC_VAR (GetVertexArrayAlloc, csVertexArrayAlloc, ())
 
-} // anonymous namespace
 
 // OpenStep compiler generates corrupt assembly output (with unresolveable
 // symbols) when this method is defined inline in the interface, so it is
@@ -126,7 +113,7 @@ void csClipInfo::Clear ()
 csFrustum::csFrustum (
   const csVector3 &o,
   csVector3 *verts,
-  size_t num_verts,
+  int num_verts,
   csPlane3 *backp)
 {
   origin = o;
@@ -149,7 +136,7 @@ csFrustum::csFrustum (
 
 csFrustum::csFrustum (
   const csVector3 &o,
-  size_t num_verts,
+  int num_verts,
   csPlane3 *backp)
 {
   origin = o;
@@ -185,29 +172,8 @@ csFrustum::csFrustum (const csFrustum &copy)
 
 csFrustum::~csFrustum ()
 {
+  CS_ASSERT (ref_count == 1);
   Clear ();
-}
-
-const csFrustum& csFrustum::operator= (const csFrustum& copy)
-{
-  Clear ();
-  origin = copy.origin;
-  num_vertices = copy.num_vertices;
-  max_vertices = copy.max_vertices;
-  wide = copy.wide;
-  mirrored = copy.mirrored;
-
-  if (copy.vertices)
-  {
-    vertices = GetVertexArrayAlloc ()->GetVertexArray (max_vertices);
-    memcpy (vertices, copy.vertices, sizeof (csVector3) * num_vertices);
-  }
-  else
-    vertices = 0;
-
-  backplane = copy.backplane ? new csPlane3 (*copy.backplane) : 0;
-
-  return *this;
 }
 
 void csFrustum::Clear ()
@@ -233,7 +199,7 @@ void csFrustum::RemoveBackPlane ()
   backplane = 0;
 }
 
-void csFrustum::ExtendVertexArray (size_t num)
+void csFrustum::ExtendVertexArray (int num)
 {
   csVector3 *new_vertices = GetVertexArrayAlloc ()->GetVertexArray (
   	max_vertices + num);
@@ -268,7 +234,7 @@ void csFrustum::MakeEmpty ()
 
 void csFrustum::Transform (csTransform *trans)
 {
-  size_t i;
+  int i;
   origin = trans->Other2This (origin);
   for (i = 0; i < num_vertices; i++)
     vertices[i] = trans->Other2ThisRelative (vertices[i]);
@@ -279,10 +245,10 @@ void csFrustum::ClipPolyToPlane (csPlane3 *plane)
 {
   // First classify all vertices of the current polygon with regards to this
   // plane.
-  size_t i, i1;
+  int i, i1;
 
   bool front[100];              // @@@ Hard coded limit.
-  size_t count_front = 0;
+  int count_front = 0;
   for (i = 0; i < num_vertices; i++)
   {
     front[i] = csMath3::Visible (vertices[i], *plane);
@@ -307,7 +273,7 @@ void csFrustum::ClipPolyToPlane (csPlane3 *plane)
   // need to do real clipping.
   bool zs, z1s;
   csVector3 clipped_verts[100]; // @@@ Hard coded limit.
-  size_t num_clipped_verts = 0;
+  int num_clipped_verts = 0;
 
   float r;
   i1 = num_vertices - 1;
@@ -365,12 +331,12 @@ void csFrustum::ClipPolyToPlane (csPlane3 *plane)
 
 void csFrustum::ClipToPlane (csVector3 &v1, csVector3 &v2)
 {
-  size_t cw_offset = (size_t)~0;
-  size_t ccw_offset;
+  int cw_offset = -1;
+  int ccw_offset;
   bool first_vertex_side;
   csVector3 isect_cw, isect_ccw;
   csVector3 Plane_Normal;
-  size_t i;
+  int i;
 
   // Make sure that we have space in the array for at least three extra
   // vertices.
@@ -395,7 +361,7 @@ void csFrustum::ClipToPlane (csVector3 &v1, csVector3 &v2)
     }
   }
 
-  if (cw_offset == (size_t)~0)
+  if (cw_offset == -1)
   {
     // Return, if there is no intersection.
     if (first_vertex_side)
@@ -403,18 +369,15 @@ void csFrustum::ClipToPlane (csVector3 &v1, csVector3 &v2)
     return ;
   }
 
-  //for (ccw_offset = num_vertices - 2; ccw_offset >= 0; ccw_offset--)
-  for (ccw_offset = num_vertices - 1; ccw_offset-- > 0; )
+  for (ccw_offset = num_vertices - 2; ccw_offset >= 0; ccw_offset--)
   {
     if ((Plane_Normal * vertices[ccw_offset] > 0) != first_vertex_side)
       break;
   }
 
   // Calculate the intersection points.
-  if (cw_offset == 0)
-    i = num_vertices - 1;
-  else
-    i = cw_offset - 1;
+  i = cw_offset - 1;
+  if (i < 0) i = num_vertices - 1;
 
   float dummy;
   csIntersect3::SegmentPlane (
@@ -444,16 +407,11 @@ void csFrustum::ClipToPlane (csVector3 &v1, csVector3 &v2)
   else
   {
     if (cw_offset + 1 < ccw_offset)
-    {
       for (i = 0; i < num_vertices - ccw_offset - 1; i++)
         vertices[cw_offset + 2 + i] = vertices[ccw_offset + 1 + i];
-    }
     else if (cw_offset + 1 > ccw_offset)
-    {
-      //for (i = num_vertices - 2 - ccw_offset; i-- > 0; )
-      for (i = num_vertices - 1 - ccw_offset; i-- > 0; )
+      for (i = num_vertices - 2 - ccw_offset; i >= 0; i--)
         vertices[cw_offset + 2 + i] = vertices[ccw_offset + 1 + i];
-    }
 
     vertices[cw_offset] = isect_cw;
     vertices[cw_offset + 1] = isect_ccw;
@@ -463,15 +421,15 @@ void csFrustum::ClipToPlane (csVector3 &v1, csVector3 &v2)
 
 void csFrustum::ClipToPlane (
   csVector3 *vertices,
-  size_t &num_vertices,
+  int &num_vertices,
   csClipInfo *clipinfo,
   const csPlane3 &plane)
 {
-  size_t cw_offset = (size_t)~0;
-  size_t ccw_offset;
+  int cw_offset = -1;
+  int ccw_offset;
   bool first_vertex_side;
   csVector3 isect_cw, isect_ccw;
-  size_t i;
+  int i;
 
   // On which side is the first vertex?
   first_vertex_side = (plane.Classify (vertices[num_vertices - 1]) > 0);
@@ -485,7 +443,7 @@ void csFrustum::ClipToPlane (
     }
   }
 
-  if (cw_offset == (size_t)~0)
+  if (cw_offset == -1)
   {
     // Return, if there is no intersection.
     if (first_vertex_side)
@@ -495,18 +453,15 @@ void csFrustum::ClipToPlane (
     return ;
   }
 
-  //for (ccw_offset = num_vertices - 2; ccw_offset >= 0; ccw_offset--)
-  for (ccw_offset = num_vertices - 1; ccw_offset-- > 0; )
+  for (ccw_offset = num_vertices - 2; ccw_offset >= 0; ccw_offset--)
   {
     if ((plane.Classify (vertices[ccw_offset]) > 0) != first_vertex_side)
       break;
   }
 
   // Calculate the intersection points.
-  if (cw_offset == 0)
-    i = num_vertices - 1;
-  else
-    i = cw_offset - 1;
+  i = cw_offset - 1;
+  if (i < 0) i = num_vertices - 1;
 
   float dist_cw, dist_ccw;
   csIntersect3::SegmentPlane (
@@ -590,8 +545,7 @@ void csFrustum::ClipToPlane (
     }
     else if (cw_offset + 1 > ccw_offset)
     {
-      //for (i = num_vertices - 2 - ccw_offset; i-- > 0; )
-      for (i = num_vertices - 1 - ccw_offset; i-- > 0; )
+      for (i = num_vertices - 2 - ccw_offset; i >= 0; i--)
       {
         vertices[cw_offset + 2 + i] = vertices[ccw_offset + 1 + i];
         clipinfo[cw_offset + 2 + i].Copy (clipinfo[ccw_offset + 1 + i]);
@@ -608,17 +562,17 @@ void csFrustum::ClipToPlane (
 
 void csFrustum::ClipToPlane (
   csVector3 *vertices,
-  size_t &num_vertices,
+  int &num_vertices,
   csClipInfo *clipinfo,
   const csVector3 &v1,
   const csVector3 &v2)
 {
-  size_t cw_offset = ~0;
-  size_t ccw_offset;
+  int cw_offset = -1;
+  int ccw_offset;
   bool first_vertex_side;
   csVector3 isect_cw, isect_ccw;
   csVector3 Plane_Normal;
-  size_t i;
+  int i;
 
   // Do the check only once at the beginning.
   Plane_Normal = v1 % v2;
@@ -635,7 +589,7 @@ void csFrustum::ClipToPlane (
     }
   }
 
-  if (cw_offset == (size_t)~0)
+  if (cw_offset == -1)
   {
     // Return, if there is no intersection.
     if (first_vertex_side)
@@ -645,18 +599,15 @@ void csFrustum::ClipToPlane (
     return ;
   }
 
-  //for (ccw_offset = num_vertices - 2; ccw_offset >= 0; ccw_offset--)
-  for (ccw_offset = num_vertices - 1; ccw_offset-- > 0; )
+  for (ccw_offset = num_vertices - 2; ccw_offset >= 0; ccw_offset--)
   {
     if ((Plane_Normal * vertices[ccw_offset] > 0) != first_vertex_side)
       break;
   }
 
   // Calculate the intersection points.
-  if (cw_offset == 0)
-    i = num_vertices - 1;
-  else
-    i = cw_offset - 1;
+  i = cw_offset - 1;
+  if (i < 0) i = num_vertices - 1;
 
   float dist_cw, dist_ccw;
   csIntersect3::SegmentPlane (
@@ -742,8 +693,7 @@ void csFrustum::ClipToPlane (
     }
     else if (cw_offset + 1 > ccw_offset)
     {
-      //for (i = num_vertices - 2 - ccw_offset; i-- > 0; )
-      for (i = num_vertices - 1 - ccw_offset; i-- > 0; )
+      for (i = num_vertices - 2 - ccw_offset; i >= 0; i--)
       {
         vertices[cw_offset + 2 + i] = vertices[ccw_offset + 1 + i];
         clipinfo[cw_offset + 2 + i].Copy (clipinfo[ccw_offset + 1 + i]);
@@ -763,9 +713,8 @@ csPtr<csFrustum> csFrustum::Intersect (const csFrustum &other) const
   if (other.IsEmpty ()) return 0;
   if (other.IsInfinite ())
   {
-    csRef<csFrustum> f;
-    f.AttachNew (new csFrustum (*this));
-    return csPtr<csFrustum> (f);
+    csFrustum *f = new csFrustum (*this);
+    return f;
   }
 
   return Intersect (other.vertices, other.num_vertices);
@@ -774,22 +723,22 @@ csPtr<csFrustum> csFrustum::Intersect (const csFrustum &other) const
 csPtr<csFrustum> csFrustum::Intersect (
   const csVector3 &frust_origin,
   csVector3 *frust,
-  size_t num_frust,
+  int num_frust,
   const csVector3 &v1,
   const csVector3 &v2,
   const csVector3 &v3)
 {
-  csRef<csFrustum> new_frustum;
+  csFrustum *new_frustum;
 
   // General case. Create a new frustum from the given polygon with
   // the origin of this frustum and clip it to every plane from this
   // frustum.
-  new_frustum.AttachNew (new csFrustum (frust_origin));
+  new_frustum = new csFrustum (frust_origin);
   new_frustum->AddVertex (v1);
   new_frustum->AddVertex (v2);
   new_frustum->AddVertex (v3);
 
-  size_t i, i1;
+  int i, i1;
   i1 = num_frust - 1;
   for (i = 0; i < num_frust; i++)
   {
@@ -797,30 +746,31 @@ csPtr<csFrustum> csFrustum::Intersect (
     if (new_frustum->IsEmpty ())
     {
       // Intersection has become empty. Return 0.
+      delete new_frustum;
       return 0;
     }
 
     i1 = i;
   }
 
-  return csPtr<csFrustum> (new_frustum);
+  return new_frustum;
 }
 
 csPtr<csFrustum> csFrustum::Intersect (
   const csVector3 &frust_origin,
   csVector3 *frust,
-  size_t num_frust,
+  int num_frust,
   csVector3 *poly,
-  size_t num)
+  int num)
 {
-  csRef<csFrustum> new_frustum;
+  csFrustum *new_frustum;
 
   // General case. Create a new frustum from the given polygon with
   // the origin of this frustum and clip it to every plane from this
   // frustum.
-  new_frustum.AttachNew (new csFrustum (frust_origin, poly, num));
+  new_frustum = new csFrustum (frust_origin, poly, num);
 
-  size_t i, i1;
+  int i, i1;
   i1 = num_frust - 1;
   for (i = 0; i < num_frust; i++)
   {
@@ -828,23 +778,24 @@ csPtr<csFrustum> csFrustum::Intersect (
     if (new_frustum->IsEmpty ())
     {
       // Intersection has become empty. Return 0.
+      delete new_frustum;
       return 0;
     }
 
     i1 = i;
   }
 
-  return csPtr<csFrustum> (new_frustum);
+  return new_frustum;
 }
 
-csPtr<csFrustum> csFrustum::Intersect (csVector3 *poly, size_t num) const
+csPtr<csFrustum> csFrustum::Intersect (csVector3 *poly, int num) const
 {
-  csRef<csFrustum> new_frustum;
+  csFrustum *new_frustum;
   if (IsInfinite ())
   {
     // If this frustum is infinite then the intersection of this
     // frustum with the other is equal to the other.
-    new_frustum.AttachNew (new csFrustum (origin, poly, num));
+    new_frustum = new csFrustum (origin, poly, num);
     new_frustum->SetMirrored (IsMirrored ());
   }
   else if (IsEmpty ())
@@ -858,10 +809,10 @@ csPtr<csFrustum> csFrustum::Intersect (csVector3 *poly, size_t num) const
     // General case. Create a new frustum from the given polygon with
     // the origin of this frustum and clip it to every plane from this
     // frustum.
-    new_frustum.AttachNew (new csFrustum (GetOrigin (), poly, num));
+    new_frustum = new csFrustum (GetOrigin (), poly, num);
     new_frustum->SetMirrored (IsMirrored ());
 
-    size_t i, i1;
+    int i, i1;
     i1 = num_vertices - 1;
     for (i = 0; i < num_vertices; i++)
     {
@@ -869,6 +820,7 @@ csPtr<csFrustum> csFrustum::Intersect (csVector3 *poly, size_t num) const
       if (new_frustum->IsEmpty ())
       {
         // Intersection has become empty. Return 0.
+        delete new_frustum;
         return 0;
       }
 
@@ -883,69 +835,13 @@ csPtr<csFrustum> csFrustum::Intersect (csVector3 *poly, size_t num) const
       if (new_frustum->IsEmpty ())
       {
         // Intersection has become empty. Return 0.
+        delete new_frustum;
         return 0;
       }
     }
   }
 
-  return csPtr<csFrustum> (new_frustum);
-}
-
-bool csFrustum::Intersect (csSegment3& segment)
-{
-  // Any segment is part of an infinite frustum
-  if (IsInfinite ())
-    return true;
-
-  csSegment3 newSegment (segment.Start () - origin, segment.End () - origin);
-
-  if (backplane)
-  {
-    //Handle backplane
-    bool startB = (backplane->Classify (newSegment.Start ()) < 0);
-    bool endB = (backplane->Classify (newSegment.End ()) < 0);
-
-    if (startB || endB)
-    {
-      // Either in front, no modification, we do intersect
-      csIntersect3::SegmentPlane (*backplane, newSegment);
-    }
-    else
-    {
-      // Both behind, no intersection, no modification
-      return false; 
-    }
-  }
-
-  // Now intersect all the others
-  // Loop through all planes that makes the frustum
-  for (size_t fv = 0, fvp = num_vertices - 1; fv < num_vertices; fvp = fv++)
-  {
-    const csVector3 &v1 = vertices[fvp];
-    const csVector3 &v2 = vertices[fv];
-    
-    /// Clip segment against plane origo,v1,v2
-    const csPlane3 pl (v1, v2);
-
-    bool startPl = (pl.Classify (newSegment.Start ()) < 0);
-    bool endPl = (pl.Classify (newSegment.End ()) < 0);
-
-    if (startPl || endPl)
-    {
-      // Either in front, no modification, we do intersect
-      if (!startPl || !endPl)
-        csIntersect3::SegmentPlane (pl, newSegment);
-    }
-    else
-    {
-      // Both behind, no intersection, no modification
-      return false;
-    }
-  }
-
-  segment = csSegment3 (newSegment.Start ()+origin, newSegment.End ()+origin);
-
-  return true;
+  return new_frustum;
 }
 
 bool csFrustum::Contains (const csVector3 &point)
@@ -957,10 +853,10 @@ bool csFrustum::Contains (const csVector3 &point)
 
 bool csFrustum::Contains (
   csVector3 *frustum,
-  size_t num_frust,
+  int num_frust,
   const csVector3 &point)
 {
-  size_t i, i1;
+  int i, i1;
   i1 = num_frust - 1;
   for (i = 0; i < num_frust; i++)
   {
@@ -974,13 +870,13 @@ bool csFrustum::Contains (
 
 bool csFrustum::Contains (
   csVector3 *frustum,
-  size_t num_frust,
+  int num_frust,
   const csPlane3 &plane,
   const csVector3 &point)
 {
   if (!csMath3::Visible (point, plane)) return false;
 
-  size_t i, i1;
+  int i, i1;
   i1 = num_frust - 1;
   for (i = 0; i < num_frust; i++)
   {
@@ -994,15 +890,15 @@ bool csFrustum::Contains (
 
 int csFrustum::Classify (
   csVector3 *frustum,
-  size_t num_frust,
+  int num_frust,
   csVector3 *poly,
-  size_t num_poly)
+  int num_poly)
 {
   // All poly vertices are inside frustum?
   bool all_inside = true;
 
   // Loop through all planes that makes the frustum
-  size_t fv, fvp, pv, pvp;
+  int fv, fvp, pv, pvp;
   for (fv = 0, fvp = num_frust - 1; fv < num_frust; fvp = fv++)
   {
     // Find the equation of the Nth plane
@@ -1063,7 +959,7 @@ int csFrustum::Classify (
   // Note: except if this first vertex happens to coincide with polygon.
   // In that case we need to select another vertex. If all vertices
   // coincide with the polygon then we have COVERED too.
-  size_t test_point = 0;
+  int test_point = 0;
   bool stop = true;
   while (test_point < num_frust)
   {
@@ -1095,15 +991,15 @@ int csFrustum::Classify (
 int csFrustum::BatchClassify (
   csVector3 *frustum,
   csVector3 *frustumNormals,
-  size_t num_frust,
+  int num_frust,
   csVector3 *poly,
-  size_t num_poly)
+  int num_poly)
 {
   // All poly vertices are inside frustum?
   bool all_inside = true;
 
   // Loop through all planes that makes the frustum
-  size_t fv, fvp, pv, pvp;
+  int fv, fvp, pv, pvp;
   for (fv = 0, fvp = num_frust - 1; fv < num_frust; fvp = fv++)
   {
     csVector3 &v1 = frustum[fvp];
@@ -1156,7 +1052,7 @@ int csFrustum::BatchClassify (
   // Note: except if this first vertex happens to coincide with polygon.
   // In that case we need to select another vertex. If all vertices
   // coincide with the polygon then we have COVERED too.
-  size_t test_point = 0;
+  int test_point = 0;
   bool stop = true;
   while (test_point < num_frust)
   {

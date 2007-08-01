@@ -35,23 +35,40 @@ typedef void* OSXAssistantHandle;
 #define NSD_PROTO(RET,FUNC) extern "C" RET OSXAssistant_##FUNC
 #define NSD_ASSIST(HANDLE) ((iOSXAssistant*)(HANDLE))
 
+SCF_IMPLEMENT_IBASE(OSXAssistant)
+  SCF_IMPLEMENTS_INTERFACE(iOSXAssistant)
+  SCF_IMPLEMENTS_INTERFACE(iOSXAssistantLocal)
+  SCF_IMPLEMENTS_EMBEDDED_INTERFACE(iEventPlug)
+  SCF_IMPLEMENTS_EMBEDDED_INTERFACE(iEventHandler)
+SCF_IMPLEMENT_IBASE_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE(OSXAssistant::eiEventPlug)
+  SCF_IMPLEMENTS_INTERFACE(iEventPlug)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
+
+SCF_IMPLEMENT_EMBEDDED_IBASE(OSXAssistant::eiEventHandler)
+  SCF_IMPLEMENTS_INTERFACE(iEventHandler)
+SCF_IMPLEMENT_EMBEDDED_IBASE_END
 
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-OSXAssistant::OSXAssistant(iObjectRegistry* r) 
-  : scfImplementationType (this), registry(r),event_queue(0), event_outlet(0), 
-  virtual_clock(0), should_shutdown(false)
+OSXAssistant::OSXAssistant(iObjectRegistry* r) : registry(r),
+  event_queue(0), event_outlet(0), virtual_clock(0), should_shutdown(false)
 {
-  controller = OSXDelegate_startup(static_cast<iOSXAssistant*>(this));
+  SCF_CONSTRUCT_IBASE(0);
+  SCF_CONSTRUCT_EMBEDDED_IBASE(scfiEventPlug);
+  SCF_CONSTRUCT_EMBEDDED_IBASE(scfiEventHandler);
+
+  controller = OSXDelegate_startup(this);
 
   run_always = false;
-  quitEventID = csevQuit(registry);
+  scfiEventHandler.Quit = csevQuit(registry);
   csRef<iEventQueue> q = get_event_queue();
   if (q.IsValid())
   {
-    event_outlet = q->CreateEventOutlet(this);
-    q->RegisterListener(this, csevQuit(registry));
+    event_outlet = q->CreateEventOutlet(&scfiEventPlug);
+    q->RegisterListener(&scfiEventHandler, csevQuit(registry));
   }
 }
 
@@ -64,7 +81,11 @@ OSXAssistant::~OSXAssistant()
   OSXDelegate_shutdown(controller);
 
   if (event_queue.IsValid())
-    event_queue->RemoveListener(this);
+    event_queue->RemoveListener(&scfiEventHandler);
+
+  SCF_DESTRUCT_EMBEDDED_IBASE(scfiEventHandler);
+  SCF_DESTRUCT_EMBEDDED_IBASE(scfiEventPlug);
+  SCF_DESTRUCT_IBASE();
 }
 
 
@@ -74,7 +95,7 @@ OSXAssistant::~OSXAssistant()
 csRef<iEventQueue> OSXAssistant::get_event_queue()
 {
   if (!event_queue.IsValid() && registry != 0)
-    event_queue = csQueryRegistry<iEventQueue> (registry);
+    event_queue = CS_QUERY_REGISTRY(registry, iEventQueue);
   return event_queue;
 }
 
@@ -85,7 +106,7 @@ csRef<iEventQueue> OSXAssistant::get_event_queue()
 csRef<iVirtualClock> OSXAssistant::get_virtual_clock()
 {
   if (!virtual_clock.IsValid() && registry != 0)
-    virtual_clock = csQueryRegistry<iVirtualClock> (registry);
+    virtual_clock = CS_QUERY_REGISTRY(registry, iVirtualClock);
   return virtual_clock;
 }
 
@@ -111,14 +132,14 @@ void OSXAssistant::init_menu(iConfigFile* macosx_config)
 void OSXAssistant::init_runmode()
 {
   csRef<iCommandLineParser> parser = 
-    csQueryRegistry<iCommandLineParser> (registry);
+    CS_QUERY_REGISTRY(registry, iCommandLineParser);
   char const* s = parser->GetOption("alwaysruns");
   if (s != 0)
     run_always = 1;
   else
   {
     // Query whether to pause on loss of focus.
-    csRef<iConfigManager> cfg = csQueryRegistry<iConfigManager> (registry);
+    csRef<iConfigManager> cfg = CS_QUERY_REGISTRY(registry, iConfigManager);
     if (cfg.IsValid())
       run_always = cfg->GetBool("System.RunWhenNotFocused");
   }
@@ -272,19 +293,19 @@ NSD_PROTO(void,application_unhidden)(OSXAssistantHandle h)
 //=============================================================================
 // iEventPlug Implementation
 //=============================================================================
-uint OSXAssistant::GetPotentiallyConflictingEvents()
+uint OSXAssistant::eiEventPlug::GetPotentiallyConflictingEvents()
   { return (CSEVTYPE_Keyboard | CSEVTYPE_Mouse); }
-uint OSXAssistant::QueryEventPriority(uint)
+uint OSXAssistant::eiEventPlug::QueryEventPriority(uint)
   { return 150; }
 
 
 //=============================================================================
 // iEventHandler Implementation
 //=============================================================================
-bool OSXAssistant::HandleEvent(iEvent& e)
+bool OSXAssistant::eiEventHandler::HandleEvent(iEvent& e)
 {
-  if (e.Name == quitEventID)
-    should_shutdown = true;
+  if (e.Name == Quit)
+    scfParent->should_shutdown = true;
   return false;
 }
 
@@ -300,11 +321,11 @@ bool OSXAssistant::HandleEvent(iEvent& e)
 bool csDefaultRunLoop(iObjectRegistry* r)
 {
   bool ok = false;
-  csRef<iOSXAssistant> a = csQueryRegistry<iOSXAssistant> (r);
+  csRef<iOSXAssistant> a = CS_QUERY_REGISTRY(r, iOSXAssistant);
   if (a.IsValid())
   {
     csRef<iOSXAssistantLocal> al =
-      scfQueryInterface<iOSXAssistantLocal> (a);
+      SCF_QUERY_INTERFACE(a, iOSXAssistantLocal);
     if (al.IsValid())
     {
       al->start_event_loop();
@@ -335,7 +356,7 @@ bool csPlatformStartup(iObjectRegistry* r)
 //-----------------------------------------------------------------------------
 bool csPlatformShutdown(iObjectRegistry* r)
 {
-  csRef<iOSXAssistant> a = csQueryRegistry<iOSXAssistant> (r);
+  csRef<iOSXAssistant> a = CS_QUERY_REGISTRY(r, iOSXAssistant);
   if (a.IsValid())
     r->Unregister(a, "OSXAssistant"); // DecRefs() assistant as a side-effect.
   return true;

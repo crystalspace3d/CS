@@ -92,14 +92,10 @@ class CS_CRYSTALSPACE_EXPORT csCommonImageFileLoader :
 protected:
   /// Format of the image
   int Format;
-  /**
-   * Buffer with raw data.
-   * Really only used for rdtR8G8B8.
-   */
+  /// Buffer with raw data.
   csRef<iDataBuffer> rawData;
   /// The type of image data this loader provides.
   csLoaderDataType dataType;
-  /* rgbaData and indexData are sent to the image when it needs to be filled. */
   /// Pointer to RGBA data (if dataType == rdtRGBpixel)
   csRGBpixel* rgbaData;
   /// Pointer to indexed data (if dataType == rdtIndexed)
@@ -163,10 +159,9 @@ protected:
 
 #ifdef THREADED_LOADING
   /// Reference to the job for loading this image.
-  // This and jobQueue are mutable so MakeImageData() can be called.
-  mutable csRef<LoaderJob> loadJob;
+  csRef<LoaderJob> loadJob;
   /// Reference to job queue.
-  mutable csRef<iJobQueue> jobQueue;
+  csRef<iJobQueue> jobQueue;
 #else
   csRef<iImageFileLoader> currentLoader;
 #endif
@@ -188,8 +183,7 @@ protected:
   /// Wait for the current image loading job to finish.
   void WaitForJob() const;
   /// Convert data from the loader to actual image data.
-  // const so it can be called from GetRaw*().
-  void MakeImageData() const;
+  void MakeImageData();
 
   virtual const void *GetImageData ();
   virtual const csRGBpixel* GetPalette ();

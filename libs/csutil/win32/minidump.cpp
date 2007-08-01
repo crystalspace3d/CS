@@ -38,7 +38,6 @@
 
 #include "cachedll.h"
 
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tlhelp32.h>
 
@@ -410,9 +409,9 @@ const char* cswinMinidumpWriter::WriteWrappedMinidump (
 
     if (object_reg)  
     {
-      csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
-      csRef<iStandardReporterListener> stdrep = 
-	csQueryRegistry<iStandardReporterListener> (object_reg);
+      csRef<iVFS> vfs = CS_QUERY_REGISTRY (object_reg, iVFS);
+      csRef<iStandardReporterListener> stdrep = CS_QUERY_REGISTRY (object_reg,
+	iStandardReporterListener);
       if (vfs && stdrep)
       {
 	csRef<iDataBuffer> realConPath = 

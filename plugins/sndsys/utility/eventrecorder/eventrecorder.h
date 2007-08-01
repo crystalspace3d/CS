@@ -30,13 +30,10 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 using namespace CS::SndSys;
 
-class csSndSysBasicEventRecorder : 
-  public scfImplementation3<csSndSysBasicEventRecorder,
-                            iSndSysEventRecorder,
-                            iEventHandler,
-                            iComponent>
+class csSndSysBasicEventRecorder : public iSndSysEventRecorder
 {
-  public:   
+  public:
+    SCF_DECLARE_IBASE;
   
     csSndSysBasicEventRecorder(iBase *piBase);
     virtual ~csSndSysBasicEventRecorder();
@@ -122,8 +119,35 @@ public:
 
   // iEventHandler
   virtual bool HandleEvent (iEvent &e);
-  CS_EVENTHANDLER_NAMES("crystalspace.sndsys.utility.eventrecorder")
-  CS_EVENTHANDLER_NIL_CONSTRAINTS
+
+  struct eiComponent : public iComponent
+  {
+    SCF_DECLARE_EMBEDDED_IBASE(csSndSysBasicEventRecorder);
+    virtual bool Initialize (iObjectRegistry* p)
+    { return scfParent->Initialize(p); }
+  } scfiComponent;
+
+
+  struct EventHandler : public iEventHandler
+  {
+  private:
+    csSndSysBasicEventRecorder* parent;
+  public:
+    SCF_DECLARE_IBASE;
+    EventHandler (csSndSysBasicEventRecorder* parent)
+    {
+      SCF_CONSTRUCT_IBASE (0);
+      EventHandler::parent = parent;
+    }
+    virtual ~EventHandler ()
+    {
+      SCF_DESTRUCT_IBASE();
+    }
+    virtual bool HandleEvent (iEvent& e) { return parent->HandleEvent(e); }
+    CS_EVENTHANDLER_NAMES("crystalspace.sndsys.utility.eventrecorder")
+      CS_EVENTHANDLER_NIL_CONSTRAINTS
+  } * scfiEventHandler;
+
 
 };
 

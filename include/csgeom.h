@@ -62,7 +62,6 @@
 #include "csgeom/triangulate.h"
 #include "csgeom/trimesh.h"
 #include "csgeom/trimeshlod.h"
-#include "csgeom/trimeshtools.h"
 #include "csgeom/vector2.h"
 #include "csgeom/vector3.h"
 #include "csgeom/vector4.h"

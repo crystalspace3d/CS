@@ -94,7 +94,7 @@ class csXWindow :
   /// A empty pixmap
   Pixmap EmptyPixmap;
   /// List of image-based cursors
-  csHash<Cursor, csString> cachedCursors;
+  csHash<Cursor, csStrKey> cachedCursors;
   //------------------------------------------------------------
   
   typedef int (*XErrorHandler)(Display*, XErrorEvent*);

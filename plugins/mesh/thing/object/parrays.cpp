@@ -34,7 +34,7 @@ csPolygonStaticArray::~csPolygonStaticArray ()
 void csPolygonStaticArray::FreeAll ()
 {
   size_t i;
-  for (i = 0 ; i < GetSize () ; i++)
+  for (i = 0 ; i < Length () ; i++)
   {
     FreeItem (Get (i));
   }

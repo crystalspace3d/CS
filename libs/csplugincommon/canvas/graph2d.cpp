@@ -70,7 +70,7 @@ csGraphics2D::~csGraphics2D ()
 {
   if (weakEventHandler != 0)
   {
-    csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+    csRef<iEventQueue> q (CS_QUERY_REGISTRY(object_reg, iEventQueue));
     if (q != 0)
       CS::RemoveWeakListener (q, weakEventHandler);
   }
@@ -82,7 +82,7 @@ bool csGraphics2D::Initialize (iObjectRegistry* r)
 {
   CS_ASSERT (r != 0);
   object_reg = r;
-  plugin_mgr = csQueryRegistry<iPluginManager> (object_reg);
+  plugin_mgr = CS_QUERY_REGISTRY (object_reg, iPluginManager);
   // Get the system parameters
   config.AddConfig (object_reg, "/config/video.cfg");
   Width = config->GetInt ("Video.ScreenWidth", Width);
@@ -96,7 +96,7 @@ bool csGraphics2D::Initialize (iObjectRegistry* r)
   // Get the font server: A missing font server is NOT an error
   if (!FontServer)
   {
-    FontServer = csQueryRegistry<iFontServer> (object_reg);
+    FontServer = CS_QUERY_REGISTRY (object_reg, iFontServer);
   }
 #ifdef CS_DEBUG
   if (!FontServer)
@@ -125,7 +125,7 @@ bool csGraphics2D::Initialize (iObjectRegistry* r)
     Palette [i].blue = 0;
   }
 
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+  csRef<iEventQueue> q (CS_QUERY_REGISTRY(object_reg, iEventQueue));
   if (q != 0)
   {
     csEventID events[3] = { csevSystemOpen (object_reg), 
@@ -136,15 +136,12 @@ bool csGraphics2D::Initialize (iObjectRegistry* r)
   return true;
 }
 
-// For iOffscreenCanvasCallback
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 bool csGraphics2D::Initialize (iObjectRegistry* r, int width, int height,
     int depth, void* memory, iOffscreenCanvasCallback* ofscb)
 {
   CS_ASSERT (r != 0);
   object_reg = r;
-  plugin_mgr = csQueryRegistry<iPluginManager> (object_reg);
+  plugin_mgr = CS_QUERY_REGISTRY (object_reg, iPluginManager);
   // Get the system parameters
   config.AddConfig (object_reg, "/config/video.cfg");
   Width = width;
@@ -156,7 +153,7 @@ bool csGraphics2D::Initialize (iObjectRegistry* r, int width, int height,
   // Get the font server: A missing font server is NOT an error
   if (!FontServer)
   {
-    FontServer = csQueryRegistry<iFontServer> (object_reg);
+    FontServer = CS_QUERY_REGISTRY (object_reg, iFontServer);
   }
 
   // Initialize pointers to default drawing methods
@@ -216,8 +213,6 @@ bool csGraphics2D::Initialize (iObjectRegistry* r, int width, int height,
 
   return true;
 }
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 void csGraphics2D::ChangeDepth (int d)
 {
@@ -313,17 +308,12 @@ bool csGraphics2D::BeginDraw ()
   return true;
 }
 
-// For iOffscreenCanvasCallback
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 void csGraphics2D::FinishDraw ()
 {
   if (FrameBufferLocked)
     FrameBufferLocked--;
   if (ofscb) ofscb->FinishDraw (this);
 }
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 void csGraphics2D::Clear(int color)
 {
@@ -799,9 +789,6 @@ void csGraphics2D::FreeArea (csImageArea *Area)
   } /* endif */
 }
 
-// For iOffscreenCanvasCallback
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 void csGraphics2D::SetRGB (int i, int r, int g, int b)
 {
   Palette[i].red = r;
@@ -810,8 +797,6 @@ void csGraphics2D::SetRGB (int i, int r, int g, int b)
   PaletteAlloc[i] = true;
   if (ofscb) ofscb->SetRGB (this, i, r, g, b);
 }
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 void csGraphics2D::GetRGB (int color, int& r, int& g, int& b)
 {
@@ -847,6 +832,12 @@ void csGraphics2D::Write (iFont *font, int x, int y, int fg, int bg,
 { 
   if (!text || !*text) return;
   fontCache->WriteString (font, x, y, fg, bg, text, true, flags);
+}
+
+void csGraphics2D::WriteBaseline (iFont *font, int x, int y, int fg, int bg, 
+				  const char *text) 
+{ 
+  Write (font, x, y, fg, bg, text, CS_WRITE_BASELINE);
 }
 
 unsigned char *csGraphics2D::GetPixelAt8 (csGraphics2D *This, int x, int y)
@@ -1128,9 +1119,6 @@ int csGraphics2D::FindRGBPalette (int r, int g, int b)
   return best_idx;
 }
 
-// For iOffscreenCanvasCallback
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 csPtr<iGraphics2D> csGraphics2D::CreateOffscreenCanvas (
     void* memory, int width, int height, int depth,
     iOffscreenCanvasCallback* ofscb)
@@ -1147,8 +1135,6 @@ csPtr<iGraphics2D> csGraphics2D::CreateOffscreenCanvas (
     return 0;
   }
 }
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 bool csGraphics2D::DebugCommand (const char* /*cmd*/)
 {

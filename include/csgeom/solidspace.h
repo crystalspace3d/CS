@@ -30,7 +30,7 @@
  * @{ */
 
 class csSolidSpaceNode;
-struct iTriangleMesh;
+struct iPolygonMesh;
 
 /**
  * This structure keeps track of solid space. Basically it represents
@@ -61,7 +61,7 @@ public:
    * Add a closed object as solid space. This polygon mesh
    * must be closed. This function will not check for that.
    */
-  void AddClosedObject (iTriangleMesh* object);
+  void AddClosedObject (iPolygonMesh* object);
 };
 
 /** @} */

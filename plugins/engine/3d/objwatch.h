@@ -83,20 +83,20 @@ public:
 
   virtual void WatchLight (iLight* light);
   virtual void RemoveLight (iLight* light);
-  virtual int GetWatchedLightCount () const { return (int)lights.GetSize (); }
+  virtual int GetWatchedLightCount () const { return (int)lights.Length (); }
   virtual iLight* GetLight (int idx);
 
   virtual void WatchMovable (iMovable* movable);
   virtual void RemoveMovable (iMovable* movable);
   virtual int GetWatchedMovableCount () const
   {
-    return (int)movables.GetSize ();
+    return (int)movables.Length ();
   }
   virtual iMovable* GetMovable (int idx);
 
   virtual void WatchSector (iSector* sector);
   virtual void RemoveSector (iSector* sector);
-  virtual int GetWatchedSectorCount () const { return (int)sectors.GetSize (); }
+  virtual int GetWatchedSectorCount () const { return (int)sectors.Length (); }
   virtual iSector* GetSector (int idx);
 
   virtual void Reset ();

@@ -73,7 +73,7 @@ csGLFontCache::~csGLFontCache ()
 
   statecache->SetTexture (GL_TEXTURE_2D, 0);
   size_t tex;
-  for (tex = 0; tex < textures.GetSize (); tex++)
+  for (tex = 0; tex < textures.Length (); tex++)
   {
     glDeleteTextures (1, &textures[tex].handle);
     if (!(afpText || multiTexText || intensityBlendText))
@@ -110,7 +110,7 @@ void csGLFontCache::Setup()
     "Video.OpenGL.FontCache.UseIntensityBlend", true);
 
   csRef<iVerbosityManager> verbosemgr (
-    csQueryRegistry<iVerbosityManager> (G2D->object_reg));
+    CS_QUERY_REGISTRY (G2D->object_reg, iVerbosityManager));
   bool do_verbose = false;
   if (verbosemgr) 
     do_verbose = verbosemgr->Enabled ("renderer.fontcache");
@@ -216,7 +216,7 @@ csGLFontCache::GlyphCacheData* csGLFontCache::InternalCacheGlyph (
     return cacheData;
   }
   csRect texRect;
-  CS::SubRectangles::SubRect* sr = 0;
+  csSubRect* sr = 0;
 
   csBitmapMetrics bmetrics;
   csRef<iDataBuffer> alphaData;
@@ -245,7 +245,7 @@ csGLFontCache::GlyphCacheData* csGLFontCache::InternalCacheGlyph (
       ((bmetrics.height + glyphAlign - 1) / glyphAlign) * glyphAlign;
   }*/
   size_t tex = 0;
-  while (tex < textures.GetSize ())
+  while (tex < textures.Length ())
   {
     sr = textures[tex].glyphRects->Alloc (allocWidth, allocHeight, 
       texRect);
@@ -255,10 +255,10 @@ csGLFontCache::GlyphCacheData* csGLFontCache::InternalCacheGlyph (
     }
     tex++;
   }
-  if ((sr == 0) && (textures.GetSize () < maxTxts))
+  if ((sr == 0) && (textures.Length () < maxTxts))
   {
-    tex = textures.GetSize ();
-    textures.SetSize (textures.GetSize () + 1);
+    tex = textures.Length ();
+    textures.SetLength (textures.Length () + 1);
 
     textures[tex].InitRects (texSize);
 
@@ -435,9 +435,7 @@ void csGLFontCache::CopyGlyphData (iFont* /*font*/, utf32_char /*glyph*/, size_t
 	  {
 	    const uint8 val = (byte & 0x80) ? 0xff : 0;
 	    *dest++ = valXor ^ val;
-	    if (((x & 7) == 7) &&
-                ((y < bmetrics.height-1) ||
-                 (x < bmetrics.width-1))) // Skip src read on last iteration
+	    if ((x & 7) == 7)
 	    {
 	      byte = *src++;
 	    }
@@ -446,11 +444,7 @@ void csGLFontCache::CopyGlyphData (iFont* /*font*/, utf32_char /*glyph*/, size_t
 	      byte <<= 1;
 	    }
 	  }
-
-          
-	  if (((bmetrics.width & 7) != 0)  && 
-              (y < bmetrics.height-1)) // Don't do last iteration
-            byte = *src++;
+	  if ((bmetrics.width & 7) != 0) byte = *src++;
 	  dest += padX;
 	}
       }
@@ -950,7 +944,7 @@ void csGLFontCache::FlushText ()
 
 void csGLFontCache::DumpFontCache (csRefArray<iImage>& pages)
 {
-  for (size_t t = 0; t < textures.GetSize (); t++)
+  for (size_t t = 0; t < textures.Length(); t++)
   {
     csRef<csImageMemory> page;
     page.AttachNew (new csImageMemory (texSize, texSize, 

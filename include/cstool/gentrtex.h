@@ -34,14 +34,11 @@ struct iImage;
 
 struct csRGBpixel;
 
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 /**
  * A base class which represents a value that can be computed
  * for blending purposes for each pixel.
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageValue
+class CS_CRYSTALSPACE_EXPORT csGenerateImageValue
 {
 public:
   /// delete it
@@ -53,9 +50,8 @@ public:
 /**
  * A base class which represents a texture that can be displayed
  * on the terrain. It has a colour for each pixel
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageTexture
+class CS_CRYSTALSPACE_EXPORT csGenerateImageTexture
 {
 public:
   /// delete it
@@ -74,9 +70,8 @@ public:
  * at certain heights, the whole texture is computed. At each
  * pixel the base textures are blended together, based on the
  * height.
- * \deprecated
- */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImage
+*/
+class CS_CRYSTALSPACE_EXPORT csGenerateImage
 {
 private:
   /// the texture to show
@@ -108,9 +103,8 @@ public:
 /**
  * This class is used to store the layers of textures per value. Used in the
  * Blend class.
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageLayer
+class CS_CRYSTALSPACE_EXPORT csGenerateImageLayer
 {
 public:
   /// the value where this texture should show
@@ -123,9 +117,8 @@ public:
 
 /**
  * A class for a solid coloured texture.
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageTextureSolid : 
+class CS_CRYSTALSPACE_EXPORT csGenerateImageTextureSolid : 
   public csGenerateImageTexture
 {
 public:
@@ -139,9 +132,8 @@ public:
 
 /**
  * A class for a single texture.
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageTextureSingle : 
+class CS_CRYSTALSPACE_EXPORT csGenerateImageTextureSingle : 
   public csGenerateImageTexture
 {
 public:
@@ -167,9 +159,8 @@ public:
 /**
  * a class for a texture that is made by blending together other textures
  * based on a value. It has a set of layers to blend between.
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageTextureBlend : 
+class CS_CRYSTALSPACE_EXPORT csGenerateImageTextureBlend : 
   public csGenerateImageTexture
 {
 public:
@@ -190,9 +181,8 @@ public:
 /**
  * This class represents a function for csGenerateImageValueFunc. Expects
  * values for dx and dy between 0 and 1 and returns a height or slope.
- * \deprecated
  */
-struct CS_DEPRECATED_TYPE iGenerateImageFunction : public virtual iBase
+struct iGenerateImageFunction : public virtual iBase
 {
   SCF_INTERFACE (iGenerateImageFunction, 2, 0, 0);
   /// Get height or slope.
@@ -203,9 +193,8 @@ struct CS_DEPRECATED_TYPE iGenerateImageFunction : public virtual iBase
 /**
  * This class will generate a value using a given function. For heights
  * or slopes.
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageValueFunc
+class CS_CRYSTALSPACE_EXPORT csGenerateImageValueFunc
 	: public csGenerateImageValue
 {
 private:
@@ -232,9 +221,8 @@ public:
 
 /**
  * This class will generate a constant value.
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageValueFuncConst : 
+class CS_CRYSTALSPACE_EXPORT csGenerateImageValueFuncConst : 
   public csGenerateImageValue
 {
 public:
@@ -247,9 +235,8 @@ public:
 /**
  * This class will generate a value using a texture. The average of the
  * rgb values will be returned.
- * \deprecated
  */
-class CS_DEPRECATED_TYPE CS_CRYSTALSPACE_EXPORT csGenerateImageValueFuncTex : 
+class CS_CRYSTALSPACE_EXPORT csGenerateImageValueFuncTex : 
   public csGenerateImageValue
 {
 public:
@@ -261,7 +248,6 @@ public:
   virtual float GetValue(float x, float y);
 };
 
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 #endif // __CS_GENTERTEX_H__
 

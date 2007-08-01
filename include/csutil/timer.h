@@ -69,7 +69,7 @@ public:
   virtual void RemoveTimerEvent (iTimerEvent* ev);
   virtual void RemoveAllTimerEvents ();
 
-  virtual size_t GetEventCount () const { return timerevents.GetSize (); }
+  virtual size_t GetEventCount () const { return timerevents.Length (); }
   virtual csTicks GetTimeLeft (size_t idx) const;
 
   /**

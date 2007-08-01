@@ -49,8 +49,6 @@
 #include "ivaria/reporter.h"
 #include "ivaria/view.h"
 #include "ivideo/graph3d.h"
-#include "ivaria/decal.h"
-#include "ivideo/material.h"
 
 #include "bot.h"
 #include "command.h"
@@ -268,21 +266,21 @@ void add_particles_fire (iSector* sector, char* matname, int num,
   sphemit->SetInitialVelocity (csVector3 (0, velocity, 0),
       csVector3 (0));
 
-  csRef<iParticleBuiltinEffectorLinColor> lincol = eff_factory->
-    CreateLinColor ();
-  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 2.0000f);
-  lincol->AddColor (csColor4 (1.00f, 0.35f, 0.00f, 0.00f), 1.5000f);
-  lincol->AddColor (csColor4 (1.00f, 0.22f, 0.00f, 0.10f), 1.3125f);
-  lincol->AddColor (csColor4 (1.00f, 0.12f, 0.00f, 0.30f), 1.1250f);
-  lincol->AddColor (csColor4 (0.80f, 0.02f, 0.00f, 0.80f), 0.9375f);
-  lincol->AddColor (csColor4 (0.60f, 0.00f, 0.00f, 0.90f), 0.7500f);
-  lincol->AddColor (csColor4 (0.40f, 0.00f, 0.00f, 0.97f), 0.5625f);
-  lincol->AddColor (csColor4 (0.20f, 0.00f, 0.00f, 1.00f), 0.3750f);
-  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.1875f);
-  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.0000f);
+  csRef<iParticleBuiltinEffectorLinColor> lincol = 
+    eff_factory->CreateLinColor ();
+  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1), 2);
+  lincol->AddColor (csColor4 (1.00f, 0.35f, 0.00f, 0), 1.5f);
+  lincol->AddColor (csColor4 (1.00f, 0.22f, 0.00f, .1f), 1.3125f);
+  lincol->AddColor (csColor4 (1.00f, 0.12f, 0.00f, .3f), 1.125f);
+  lincol->AddColor (csColor4 (0.80f, 0.02f, 0.00f, .8f), 0.9375f);
+  lincol->AddColor (csColor4 (0.60f, 0.00f, 0.00f, .9f), 0.75f);
+  lincol->AddColor (csColor4 (0.40f, 0.00f, 0.00f, .97f), 0.5625f);
+  lincol->AddColor (csColor4 (0.20f, 0.00f, 0.00f, 1), 0.375f);
+  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1), 0.1875f);
+  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1), 0);
 
-  csRef<iParticleBuiltinEffectorForce> force = eff_factory->
-    CreateForce ();
+  csRef<iParticleBuiltinEffectorForce> force = 
+    eff_factory->CreateForce ();
   force->SetRandomAcceleration (csVector3 (1.5f, 1.5f, 1.5f));
 
   csRef<iParticleSystem> partstate =
@@ -454,7 +452,7 @@ void WalkTest::add_bot (float size, iSector* where, csVector3 const& pos,
   botWrapper->GetMovable ()->SetTransform (m);
   
   botWrapper->GetMovable ()->UpdateMove ();
-  csRef<iSprite3DState> state (scfQueryInterface<iSprite3DState> (botmesh));
+  csRef<iSprite3DState> state (SCF_QUERY_INTERFACE (botmesh, iSprite3DState));
   state->SetAction ("default");
   
   Bot* bot = new Bot (Sys->view->GetEngine(), botWrapper);
@@ -471,12 +469,12 @@ void WalkTest::del_bot (bool manual)
 {
   if (manual)
   {
-    if (manual_bots.GetSize () > 0)
+    if (manual_bots.Length () > 0)
       manual_bots.DeleteIndex (0);
   }
   else
   {
-    if (bots.GetSize () > 0)
+    if (bots.Length () > 0)
       bots.DeleteIndex (0);
   }
 }
@@ -484,7 +482,7 @@ void WalkTest::del_bot (bool manual)
 void WalkTest::move_bots (csTicks elapsed_time)
 {
   size_t i;
-  for (i = 0; i < bots.GetSize (); i++)
+  for (i = 0; i < bots.Length(); i++)
   {
     bots[i]->move (elapsed_time);
   }
@@ -670,8 +668,8 @@ bool HandleDynLight (iLight* dyn, iEngine* engine)
 
 void show_lightning ()
 {
-  csRef<iEngineSequenceManager> seqmgr(
-  	csQueryRegistry<iEngineSequenceManager> (Sys->object_reg));
+  csRef<iEngineSequenceManager> seqmgr(CS_QUERY_REGISTRY (Sys->object_reg,
+  	iEngineSequenceManager));
   if (seqmgr)
   {
     // This finds the light L1 (the colored light over the stairs) and
@@ -750,87 +748,6 @@ void fire_missile ()
     sp->GetMovable ()->SetTransform (m);
     sp->GetMovable ()->UpdateMove ();
   }
-}
-
-void test_decal ()
-{
-  csRef<iDecalManager> decalMgr = csLoadPluginCheck<iDecalManager> (
-  	Sys->object_reg, "crystalspace.decal.manager");
-  if (!decalMgr)
-    return;
-
-  iMaterialWrapper * material = 
-    Sys->view->GetEngine()->GetMaterialList()->FindByName("decal");
-  if (!material)
-  {
-    csRef<iLoader> loader = csQueryRegistry<iLoader>(Sys->object_reg);
-    if (!loader)
-    {
-      Sys->Report(CS_REPORTER_SEVERITY_NOTIFY, "Couldn't find iLoader");
-      return; 
-    }
-
-    if (!loader->LoadTexture ("decal", "/lib/std/cslogo2.png"))
-      Sys->Report(CS_REPORTER_SEVERITY_NOTIFY, 
-                  "Couldn't load decal texture!");
-
-    material = Sys->view->GetEngine()->GetMaterialList()->FindByName("decal");
-    if (!material)
-    {
-      Sys->Report(CS_REPORTER_SEVERITY_NOTIFY, 
-                  "Error finding decal material");
-      return;
-    }
-  }
-
-  // create a template for our new decal
-  csRef<iDecalTemplate> decalTemplate = 
-      decalMgr->CreateDecalTemplate(material);
-  decalTemplate->SetTimeToLive(5.0f);
-  
-  csVector3 start = Sys->view->GetCamera()->GetTransform().GetOrigin();
-
-  csVector3 normal = 
-    Sys->view->GetCamera()->GetTransform().This2OtherRelative(csVector3(0,0,-1));
-
-  csVector3 end = start - normal * 10000.0f;
-
-  csSectorHitBeamResult result = Sys->view->GetCamera()->GetSector()->HitBeamPortals(start, end);
-  if (!result.mesh)
-      return;
-      
-/*
-  // figure out the starting point
-  csRef<iCollideSystem> cdsys = csQueryRegistry<iCollideSystem>(Sys->object_reg);
-  if (!cdsys)
-  {
-    Sys->Report(CS_REPORTER_SEVERITY_NOTIFY, "Couldn't find iCollideSystem");
-    return;
-  }
-
-
-  // intersect with world to get a decal position
-  csVector3 iSect;
-  csIntersectingTriangle closestTri;
-  iMeshWrapper * selMesh;
-  if (csColliderHelper::TraceBeam(cdsys, Sys->view->GetCamera()->GetSector(), 
-        start, end, true, closestTri, iSect, &selMesh) <= 0.0f)
-  {
-      printf("No Decal Tracebeam\n");
-      return;
-  }
-
-  start = iSect;
-*/
-
-  // make the up direction of the decal the same as the camera
-  csVector3 up =
-    Sys->view->GetCamera()->GetTransform().This2OtherRelative(
-	csVector3(0,1,0));
-
-  // create the decal
-  decalMgr->CreateDecal(decalTemplate, result.final_sector,
-	  result.isect, up, normal, 1.0f, 0.5f);
 }
 
 void AttachRandomLight (iLight* light)
@@ -1024,8 +941,8 @@ static csPtr<iMeshWrapper> CreatePortalThing (const char* name, iSector* room,
   thing_fact_state->SetPolygonMaterial (CS_POLYRANGE_ALL, tm);
   thing_fact_state->SetPolygonFlags (CS_POLYRANGE_ALL, CS_POLY_COLLDET);
 
-  csRef<iLightingInfo> linfo (
-    scfQueryInterface<iLightingInfo> (thing->GetMeshObject ()));
+  csRef<iLightingInfo> linfo (SCF_QUERY_INTERFACE (thing->GetMeshObject (),
+    iLightingInfo));
   linfo->InitializeDefault (true);
   room->ShineLights (thing);
   linfo->PrepareLighting ();

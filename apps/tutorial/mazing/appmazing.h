@@ -57,12 +57,6 @@ private:
   csRef<iVirtualClock> vc;
 
   /**
-   * The string registry. This is used for common constants in
-   * Crystal Space.
-   */
-  csRef<iStringSet> strings;
-
-  /**
    * Set up everything that needs to be rendered on screen.  This routine is
    * called from the event handler in response to a cscmdProcess broadcast
    * message.
@@ -98,7 +92,6 @@ public:
   iCamera* GetCamera () const { return view->GetCamera (); }
   iEngine* GetEngine () const { return engine; }
   iLoader* GetLoader () const { return loader; }
-  iStringSet* GetStrings () const { return strings; }
   iCollideSystem* GetCollisionDetectionSystem () const { return cdsys; }
   Game& GetGame () { return game; }
 

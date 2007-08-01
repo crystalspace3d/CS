@@ -14,7 +14,7 @@ AC_PREREQ([2.56])
 #       Also, mk/autoconf/crystal.m4 should be updated with the current version
 #         number.
 #------------------------------------------------------------------------------
-m4_define([cs_version_number], [1.3])
+m4_define([cs_version_number], [1.0.2])
 
 
 
@@ -77,7 +77,7 @@ AS_IF([test -n "$SWIG"],
     [CS_CHECK_PROG_VERSION([swig], [$SWIG -version 2>&1], [1.3.21],
 	[9.9|.9], [CS_EMIT_BUILD_PROPERTY([CMD.SWIG], [$SWIG])])])
 
-CS_CHECK_COMMON_TOOLS_ICONS
+
 
 #------------------------------------------------------------------------------
 # In order to avoid alienating users by forcing them to install and use Jam,
@@ -246,7 +246,7 @@ CS_EMIT_BUILD_PROPERTY([PERL5], [$PERL])
 CS_EMIT_BUILD_PROPERTY([PERL], [$PERL])
 CS_EMIT_BUILD_PROPERTY([CMD.PERL5], [$PERL])
 
-# csperl5 is experimental/testing so default is NO for now.
+# csperl5 fails to build on many platforms, so default is NO for now.
 AC_ARG_WITH([perl], [AC_HELP_STRING([--with-perl],
     [use Perl5 scripting interface (default NO)])])
 AS_IF([test -z "$with_perl"], [with_perl=no])
@@ -345,8 +345,8 @@ AC_DEFUN([CS_JAVA_FLAGS],
 	[AS_IF([test -n "$JAVA_HOME"],
 	    [$1_dir="$JAVA_HOME"],
 	    [AS_IF([test -n "$2"],
-		[$1_dir=`AS_DIRNAME(["$2"])`
-		$1_dir=`AS_DIRNAME(["$$1_dir"])`],
+		[$1_dir=`AS_DIRNAME([$2])`
+		$1_dir=`AS_DIRNAME([$$1_dir])`],
 		[$1_dir=''])])
 	AS_IF([test -n "$$1_dir"],
 	    [$1_cflags="-I$$1_dir/include"
@@ -491,6 +491,27 @@ CS_EMIT_BUILD_FLAGS([how to enforce C++ standards conformance],
 
 
 #------------------------------------------------------------------------------
+# Check if the linker recognizes "-multiply_defined suppress".  This is
+# required for MacOS/X 10.1 to avoid warning messages when linking a program
+# with "-framework Foundation" if that program does not actually employ any
+# Objective-C. Note that we first attempt the uglier equivalent
+# "-Wl,-multiply_defined,suppress" in order to make life simpler for external
+# projects using cs-config (which reports this linker option in response to
+# --libs) in conjunction with GNU libtool. The problem with "-multiply_defined
+# suppress" for GNU libtool users is that libtool re-orders linker arguments,
+# not realizing that "suppress" must follow immediately after
+# "-multiply_defined". The uglier equivalent does not suffer from this problem
+# in the hands of libtool since it contains no whitespace.
+#------------------------------------------------------------------------------
+CS_EMIT_BUILD_FLAGS([if -multiply_defined suppress is needed],
+    [cs_cv_prog_link_suppress_multiple],
+    [CS_CREATE_TUPLE([], [-Wl,-multiply_defined,suppress]) \
+    CS_CREATE_TUPLE([], [-multiply_defined suppress])],
+    [], [COMPILER.LFLAGS], [+])
+
+
+
+#------------------------------------------------------------------------------
 # Check if the linker recognizes "-force_cpusubtype_ALL".  This is required on
 # MacOS/X since the Crystal Space's PowerPC implementation of csQsqrt() uses
 # the `frsqrte' instruction which is only valid when the -force_cpusubtype_ALL
@@ -565,6 +586,20 @@ CS_EMIT_BUILD_FLAGS([how to export all dynamic symbols],
 
 
 #------------------------------------------------------------------------------
+# Check whether the linker needs -Bsymbolic. This binds "references to global 
+# symbols to the definition within the shared library" (from man ld). If this
+# flag is not set, it can happen that symbols in plugins get bound against
+# symbols from other modules (including the application executable itself),
+# causing side-effects such as violating the "memory allocation and freeing in
+# the same module" rule.
+#------------------------------------------------------------------------------
+CS_EMIT_BUILD_FLAGS([for -Bsymbolic linker flag],
+    [cs_cv_prog_link_Bsymbolic], [CS_CREATE_TUPLE([-Wl,-Bsymbolic])],
+    [C++], [COMPILER.LFLAGS], [+])
+
+
+
+#------------------------------------------------------------------------------
 # Check if linker recognizes --kill-at which is needed to make csjava.dll
 # usable by JNI on Windows.  Without this, JNI is unable to find the exported
 # JNI glue functions in csjava.dll.
@@ -583,11 +618,11 @@ CS_CHECK_BUILD([if --kill-at is accepted], [cs_cv_prog_link_kill_at], [],
 #------------------------------------------------------------------------------
 CS_EMIT_BUILD_FLAGS([if reporting missing symbols is supported], 
     [cs_cv_prog_link_z_defs], [CS_CREATE_TUPLE([],[-Wl,-z,defs])], 
-    [C++], [COMPILER.LFLAGS.PRIVATE], [+])
+    [C++], [COMPILER.LFLAGS], [+])
 CS_EMIT_BUILD_FLAGS([if missing symbols can be reported as warnings], 
     [cs_cv_prog_link_warn_unresolved_symbols], 
     [CS_CREATE_TUPLE([],[-Wl,--warn-unresolved-symbols])], 
-    [C++], [COMPILER.LFLAGS.PRIVATE], [+])
+    [C++], [COMPILER.LFLAGS], [+])
 
 
 
@@ -610,7 +645,7 @@ CS_EMIT_BUILD_FLAGS([how to disable function inlining],
 #
 # IMPLEMENTATION NOTES
 #
-# There is an obscure bug in gcc 3.4.x and at least up to 4.1.1 where
+# There is an obscure bug in gcc 3.4.x and 4.0.x where
 # -fvisibility-inlines-hidden on AMD64 in combination with -fPIC and -shared
 # flags causes the linker to fail with a bogus error stating that the target
 # library needs to be built with -fPIC even when it has been built using that
@@ -621,13 +656,12 @@ CS_EMIT_BUILD_FLAGS([how to disable function inlining],
 # -fvisibility-inlines-hidden if the test program fails to link, however,
 # practical experience has shown that this test is not 100% reliable for all
 # such installations. Instead, for simplicity, we disable this flag presently
-# for gcc on AMD64.  References:
+# for all versions of gcc on AMD64.  References:
 #
 #     http://dev.gentoo.org/~kugelfang/pappy-visibility.txt
 #     http://www.gnu.org/software/gcc/gcc-4.0/changes.html#visibility
 #     http://www.nedprod.com/programs/gccvisibility.html
 #     http://bugs.gentoo.org/show_bug.cgi?id=78720
-#     http://trac.crystalspace3d.org/trac/CS/ticket/333
 #
 # Furthermore, there seems to be a bug on MacOS/X with gcc 4.0.x where use of
 # -fvisibility-inlines-hidden causes link problems with external clients which
@@ -644,17 +678,10 @@ CS_CHECK_BUILD_FLAGS([for inline visibility flag],
     [CS_CREATE_TUPLE([-fvisibility-inlines-hidden])],[C++])
 
 AS_IF([test -n "$cs_cv_prog_cxx_visibility_inlines_hidden"],
-    [# The test below can be uncommented and adjusted once a non-buggy gcc 
-    # version is found.
-    #CS_CHECK_PROG_VERSION([g++], [$CXX --version], [4.1], [9.9|.9],
-    #   [cs_cv_gxx_version_buggy=no],
-    #   [cs_cv_gxx_version_buggy=yes])
-    cs_cv_gxx_version_buggy=yes
-    AC_CACHE_CHECK([if $cs_cv_prog_cxx_visibility_inlines_hidden is buggy],
+    [AC_CACHE_CHECK([if $cs_cv_prog_cxx_visibility_inlines_hidden is buggy],
 	[cs_cv_prog_cxx_visibility_inlines_hidden_buggy],
 	[AS_IF([test $ac_compiler_gnu = yes],
-	    [AS_IF([test \( $host_cpu = x86_64 -a cs_cv_gxx_version_buggy = yes \) \
-		    || test x$cs_host_macosx = xyes],
+	    [AS_IF([test $host_cpu = x86_64 || test x$cs_host_macosx = xyes],
 		[cs_cv_prog_cxx_visibility_inlines_hidden_buggy=yes],
 		[cs_cv_prog_cxx_visibility_inlines_hidden_buggy=no])],
 	    [cs_cv_prog_cxx_visibility_inlines_hidden_buggy=no])])],
@@ -758,11 +785,9 @@ AS_IF([test $enable_cpu_specific_optimizations != no],
     [AC_CACHE_CHECK([for code generation flags], [cs_cv_prog_cxx_code_gen],
 	[cs_cv_prog_cxx_code_gen=no
 	AS_IF([test $enable_cpu_specific_optimizations = maximum],
-	    [CS_CHECK_CODE_GEN_FLAG([athlon], [-march=athlon -mtune=generic])
-	    CS_CHECK_CODE_GEN_FLAG([athlon], [-march=athlon])
+	    [CS_CHECK_CODE_GEN_FLAG([athlon], [-march=athlon])
 	    CS_CHECK_CODE_GEN_FLAG([athlon], [-mcpu=athlon -march=athlon])
 	    CS_CHECK_CODE_GEN_FLAG([athlon], [-mcpu=athlon])
-	    CS_CHECK_CODE_GEN_FLAG([*686], [-march=i686 -mtune=generic])
 	    CS_CHECK_CODE_GEN_FLAG([*686], [-march=i686])
 	    CS_CHECK_CODE_GEN_FLAG([*686], [-mcpu=pentiumpro -march=i686])
 	    CS_CHECK_CODE_GEN_FLAG([*686], [-mcpu=pentiumpro])
@@ -779,7 +804,6 @@ AS_IF([test $enable_cpu_specific_optimizations != no],
 	    CS_CHECK_CODE_GEN_FLAG([[*[3-9]86]], [-march=i686])])
 	CS_CHECK_CODE_GEN_FLAG([x86_64], [-march=k8])
 	CS_CHECK_CODE_GEN_FLAG([x86_64], [-mtune=k8])
-	CS_CHECK_CODE_GEN_FLAG([[*[5-6]86]], [-march=i586 -mtune=generic])
 	CS_CHECK_CODE_GEN_FLAG([[*[5-6]86]], [-march=i586])
 	CS_CHECK_CODE_GEN_FLAG([[*[5-6]86]], [-mcpu=pentium -march=i586])
 	CS_CHECK_CODE_GEN_FLAG([[*[5-6]86]], [-mcpu=pentium])
@@ -830,41 +854,6 @@ CS_CHECK_OPTIMIZE_FLAGS
 
 
 #------------------------------------------------------------------------------
-# Determine build mode; either "optimize", "debug", or "profile".
-#------------------------------------------------------------------------------
-AC_ARG_ENABLE([optimize], [AC_HELP_STRING([--enable-optimize],
-    [build with optimizations enabled (default YES);
-	same as --enable-mode=optimize])],
-    [test "$enableval" = "yes" && cs_build_mode=optimize])
-
-AC_ARG_ENABLE([debug], [AC_HELP_STRING([--enable-debug],
-    [build with debugging information (default NO);
-	same as --enable-mode=debug])],
-    [test "$enableval" = "yes" && cs_build_mode=debug])
-
-AC_ARG_ENABLE([profile], [AC_HELP_STRING([--enable-profile],
-    [build with profiling information (default NO);
-	same as --enable-mode=profile])],
-    [test "$enableval" = "yes" && cs_build_mode=profile])
-
-AC_ARG_ENABLE([mode], [AC_HELP_STRING([--enable-mode=mode],
-    [set build mode; recognized modes are `optimize', `debug', `profile'
-	(default OPTIMIZE)])],
-    [case $enableval in
-	optimize|debug|profile) cs_build_mode=$enableval ;;
-	*) CS_MSG_ERROR([m4_text_wrap(
-	    [unrecognized mode --enable-mode=$enableval;
-	    use `optimize', `debug', or `profile'], [    ], [[]], [60])]) ;;
-    esac])
-
-AC_MSG_CHECKING([build mode])
-AS_VAR_SET_IF([cs_build_mode], [], [cs_build_mode=optimize])
-AC_MSG_RESULT([$cs_build_mode])
-CS_EMIT_BUILD_PROPERTY([MODE], [$cs_build_mode])
-
-
-
-#------------------------------------------------------------------------------
 # Check for compiler debug flags.
 #------------------------------------------------------------------------------
 CS_CHECK_BINUTILS_2_17
@@ -873,14 +862,11 @@ AC_MSG_CHECKING([whether to split debug information])
 AC_ARG_ENABLE([separate-debug-info], 
     [AC_HELP_STRING([--enable-separate-debug-info],
         [split debug information into separate files. (default YES if 
-        binutils >= 2.17 and build mode not 'profile', 
-	otherwise default NO)])])
+        binutils >= 2.17, otherwise default NO)])])
 AS_IF([test -z "$enable_separate_debug_info"], 
-    [AS_IF([test "$cs_build_mode$" = "profile"],
-	[enable_separate_debug_info=no],
-	[AS_IF([test -z `uname | grep -i CYGWIN`],
-	    [enable_separate_debug_info=$cs_cv_binutils_2_17],
-	    [enable_separate_debug_info=$cs_cv_binutils_true_2_17])])])
+    AS_IF([test -z `uname | grep -i CYGWIN`],
+        [enable_separate_debug_info=$cs_cv_binutils_2_17],
+        [enable_separate_debug_info=$cs_cv_binutils_true_2_17]))
 AC_MSG_RESULT([$enable_separate_debug_info])
 
 CS_EMIT_BUILD_PROPERTY([LINK.DEBUG.INFO.SEPARATE],
@@ -1526,7 +1512,7 @@ AS_IF([test $cs_cv_libwx = yes],
 	    #endif
 	    #include "wx/glcanvas.h"
 	    ]],
-	    [wxGLCanvas* f = new wxGLCanvas(0, wxID_ANY, wxPoint()); glVertex3f(0,0,0)])],
+	    [wxGLCanvas* f = new wxGLCanvas(0, wxID_ANY); glVertex3f(0,0,0)])],
 	[CS_CREATE_TUPLE(
 	    [$cs_cv_libwx_cflags],
 	    [$cs_cv_libwx_lflags],
@@ -1601,10 +1587,11 @@ AS_IF([test $cs_host_family != windows],
 # Check for Cg shader package.
 #
 # A note on the 'log()' call: on Linux, libCg.so itself doesn't depend on
-# the libm's shared object. However, if the --as-needed flag is used in 
+# the libmy's shared object. However, if the --as-needed flag is used in 
 # LDFLAGS, and the app itself doesn't use a function from libm, it's symbols 
 # won't be available, causing problems. Normally any app calls some libm
-# function. However, the default test program doesn't, so the link test fails.
+# function. However, the default test program doesn't, so a call to log() was 
+# added explicitly.
 # And the same applies to pthread, too.
 # The workaround is to explicitly strip -Wl,--as-needed from LDFLAGS.
 #------------------------------------------------------------------------------
@@ -1706,6 +1693,21 @@ CS_CHECK_LIB_WITH([caca],
     [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcaca], [LIBCACA])], [], [], [], [],
     [libcaca])
 
+
+
+#------------------------------------------------------------------------------
+# Check for SpiderMonkey JavaScript library.
+#------------------------------------------------------------------------------
+case $cs_host_family in
+    windows) cs_spidermonkey_platform='XP_WIN' ;;
+    *) cs_spidermonkey_platform='XP_UNIX' ;;
+esac
+
+CS_CHECK_LIB_WITH([js],
+    [AC_LANG_PROGRAM([[#include <js/jsapi.h>]], 
+    [JS_NewRuntime(0)])],
+    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libjs], [JS])], [], 
+    [-D$cs_spidermonkey_platform])
 
 
 
@@ -1877,7 +1879,6 @@ AC_DEFUN([CS_CHECK_HOST_CPU],
     case $host_cpu in
 	[[Ii][3-9]86*|[Xx]86*]) cs_host_cpu=x86 ;;
 	powerpc*) cs_host_cpu=powerpc ;;
-	sparc*) cs_host_cpu=sparc ;;
 	*) cs_host_cpu=$host_cpu ;;
     esac
     cs_host_cpu_normalized="AS_TR_CPP([$cs_host_cpu])"])
@@ -2147,18 +2148,6 @@ CS_SYMBOL_QUALIFIER([how to declare pure functions],
 
 
 #------------------------------------------------------------------------------
-# Check if the "malloc" attribute is available.
-#------------------------------------------------------------------------------
-CS_SYMBOL_QUALIFIER([for "malloc" attribute],
-    [cs_cv_prog_c_attr_malloc],
-    [__attribute__((malloc))], [], [C])
-AS_IF([test $cs_cv_prog_c_attr_malloc != no],
-    [CS_HEADER_PROPERTY([CS_ATTRIBUTE_MALLOC],
-	[$cs_cv_prog_c_attr_malloc])])
-
-
-
-#------------------------------------------------------------------------------
 # CS_CHECK_QSQRT
 #	Check if compiler is able to understand the assembly code in csqsqrt.h.
 #	The MacOS/X PowerPC version of csQsqrt() requires the
@@ -2178,7 +2167,6 @@ AC_DEFUN([CS_CHECK_QSQRT],
 		    [[#define CS_PROCESSOR_$cs_host_cpu_normalized
 		    #define CS_COMPILER_GCC
 		    #define __CS_CSSYSDEF_H__
-		    #define CS_FORCEINLINE
 		    #include <csqsqrt.h>]],
 		    [float n = csQsqrt(1.0f); (void)n;])],
 		[CS_CREATE_TUPLE([-I$srcdir/include])], [C++],
@@ -2193,12 +2181,10 @@ AS_IF([test $cs_cv_cxx_qsqrt_ok = no],
 
 
 #------------------------------------------------------------------------------
-# Check how to determine whether a floating point value is finite or nan.
+# Check how to determine whether a floating point value is finite.
 #------------------------------------------------------------------------------
-# CS_CHECK_SPECIAL_FLOAT(FUNCTION)
-# CS_CHECK_STD_SPECIAL_FLOAT(FUNCTION)
-
-AC_DEFUN([CS_CHECK_SPECIAL_FLOAT],
+# CS_CHECK_FINITE(FUNCTION)
+AC_DEFUN([CS_CHECK_FINITE],
     [CS_CHECK_BUILD([for $1], [cs_cv_func_$1],
 	[AC_LANG_PROGRAM(
 	    [[#if HAVE_CMATH
@@ -2211,39 +2197,28 @@ AC_DEFUN([CS_CHECK_SPECIAL_FLOAT],
 	    #include <ieeefp.h>
 	    #endif]],
 	    [float f; $1(f)])],
-	[], [C++], [CS_HEADER_PROPERTY(AS_TR_CPP([CS_HAVE_$1]))],
-	[], [], [$cs_cv_prog_cxx_enable_pedantic])])
+	[], [C++], [CS_HEADER_PROPERTY(AS_TR_CPP([CS_HAVE_$1]))], [], [],
+	[$cs_cv_prog_cxx_enable_pedantic])])
 
-AC_DEFUN([CS_CHECK_STD_SPECIAL_FLOAT],
-    [CS_CHECK_BUILD([for std::$1], [cs_cv_func_std__$1],
-	[AC_LANG_PROGRAM(
-	    [[#if HAVE_CMATH
-	    #include <cmath>
-	    #endif
-	    #if HAVE_MATH_H
-	    #include <math.h>
-	    #endif
-	    #if HAVE_IEEEFP_H
-	    #include <ieeefp.h>
-	    #endif]],
-	    [float f; std::$1(f)])],
-	[], [C++], [CS_HEADER_PROPERTY(AS_TR_CPP([CS_HAVE_STD__$1]))],
-	[], [], [$cs_cv_prog_cxx_enable_pedantic])])
+CS_CHECK_BUILD([for std::isfinite], [cs_cv_func_std__isfinite],
+    [AC_LANG_PROGRAM(
+	[[#if HAVE_CMATH
+	#include <cmath>
+	#endif
+	#if HAVE_MATH_H
+	#include <math.h>
+	#endif
+	#if HAVE_IEEEFP_H
+	#include <ieeefp.h>
+	#endif]],
+	[float f; std::isfinite(f)])],
+    [], [C++], [CS_HEADER_PROPERTY(AS_TR_CPP([CS_HAVE_STD__ISFINITE]))],
+    [], [], [$cs_cv_prog_cxx_enable_pedantic])
 
-CS_CHECK_SPECIAL_FLOAT([isfinite])
-CS_CHECK_SPECIAL_FLOAT([finitef])
-CS_CHECK_SPECIAL_FLOAT([finite])
-CS_CHECK_SPECIAL_FLOAT([_finite])
-CS_CHECK_STD_SPECIAL_FLOAT([isfinite])
-
-CS_CHECK_SPECIAL_FLOAT([isnan])
-CS_CHECK_SPECIAL_FLOAT([isnanf])
-CS_CHECK_SPECIAL_FLOAT([_isnan])
-CS_CHECK_STD_SPECIAL_FLOAT([isnan])
-
-CS_CHECK_SPECIAL_FLOAT([isnormal])
-CS_CHECK_SPECIAL_FLOAT([normalf])
-CS_CHECK_STD_SPECIAL_FLOAT([isnormal])
+CS_CHECK_FINITE([isfinite])
+CS_CHECK_FINITE([finitef])
+CS_CHECK_FINITE([finite])
+CS_CHECK_FINITE([_finite])
 
 
 
@@ -2261,6 +2236,41 @@ AS_IF([test $enable_meta_info_embedding = yes],
     AC_CHECK_HEADERS([elf.h], [CS_HEADER_PROPERTY([CS_HAVE_ELF_H])])
     AS_IF([test "$cs_cv_libbfd_ok" = yes],
 	[CS_HEADER_PROPERTY([CS_HAVE_LIBBFD])])])
+
+
+
+#------------------------------------------------------------------------------
+# Determine build mode; either "optimize", "debug", or "profile".
+#------------------------------------------------------------------------------
+AC_ARG_ENABLE([optimize], [AC_HELP_STRING([--enable-optimize],
+    [build with optimizations enabled (default YES);
+	same as --enable-mode=optimize])],
+    [test "$enableval" = "yes" && cs_build_mode=optimize])
+
+AC_ARG_ENABLE([debug], [AC_HELP_STRING([--enable-debug],
+    [build with debugging information (default NO);
+	same as --enable-mode=debug])],
+    [test "$enableval" = "yes" && cs_build_mode=debug])
+
+AC_ARG_ENABLE([profile], [AC_HELP_STRING([--enable-profile],
+    [build with profiling information (default NO);
+	same as --enable-mode=profile])],
+    [test "$enableval" = "yes" && cs_build_mode=profile])
+
+AC_ARG_ENABLE([mode], [AC_HELP_STRING([--enable-mode=mode],
+    [set build mode; recognized modes are `optimize', `debug', `profile'
+	(default OPTIMIZE)])],
+    [case $enableval in
+	optimize|debug|profile) cs_build_mode=$enableval ;;
+	*) CS_MSG_ERROR([m4_text_wrap(
+	    [unrecognized mode --enable-mode=$enableval;
+	    use `optimize', `debug', or `profile'], [    ], [[]], [60])]) ;;
+    esac])
+
+AC_MSG_CHECKING([build mode])
+AS_VAR_SET_IF([cs_build_mode], [], [cs_build_mode=optimize])
+AC_MSG_RESULT([$cs_build_mode])
+CS_EMIT_BUILD_PROPERTY([MODE], [$cs_build_mode])
 
 
 

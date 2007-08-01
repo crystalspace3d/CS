@@ -248,8 +248,6 @@ public:
 	a = 1.0f;
 	parent.attn (distance, a);
       }
-      else
-	a = 0.0f;
     }
     bool IsLit() const { return vertexLit; }
     float Attenuation() const { return a; }
@@ -300,11 +298,6 @@ public:
         float distance = csQsqrt(direction.SquaredNorm ());
         invDistance = 1.0f/distance;
 	parent.attn (distance, a);
-      }
-      else
-      {
-	invDistance = 0.0f;
-	a = 0.0f;
       }
     }
     bool IsLit() const { return vertexLit; }
@@ -371,19 +364,9 @@ public:
 	  a = 1.0f;
 	  parent.attn (distance, a);
 	}
-	else
-	{
-	  invDistance = 0.0f;
-	  a = 0.0f;
-	}
       }
       else
-      {
-	invDistance = 0.0f;
-	a = 0.0f;
-	cosfact = 0.0f;
         vertexLit = false;
-      }
     }
     bool IsLit() const { return vertexLit; }
     float Attenuation() const { return a; }

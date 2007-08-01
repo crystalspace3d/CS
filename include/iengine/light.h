@@ -513,6 +513,8 @@ struct iLightingProcessInfo : public iFrustumViewUserdata
   virtual void FinalizeLighting () = 0;
 };
 
+SCF_VERSION (iLightIterator, 0, 1, 0);
+
 /**
  * Iterator to iterate over all static lights in the engine.
  * This iterator assumes there are no fundamental changes
@@ -527,8 +529,6 @@ struct iLightingProcessInfo : public iFrustumViewUserdata
  */
 struct iLightIterator : public virtual iBase
 {
-  SCF_INTERFACE (iLightIterator, 0, 1, 0);
-
   /// Return true if there are more elements.
   virtual bool HasNext () = 0;
 

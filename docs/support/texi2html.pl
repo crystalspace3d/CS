@@ -259,10 +259,6 @@ $UNNUMBERED_SYMBOL_IN_MENU
 $MENU_SYMBOL
 $OPEN_QUOTE_SYMBOL
 $CLOSE_QUOTE_SYMBOL
-$OPEN_DOUBLE_QUOTE_SYMBOL
-$CLOSE_DOUBLE_QUOTE_SYMBOL
-$DASH_EN
-$DASH_EM
 $TOC_LIST_STYLE
 $TOC_LIST_ATTRIBUTE
 $TOP_NODE_FILE
@@ -622,10 +618,9 @@ sub T2H_GPL_format($$$)
 sub t2h_gpl_normal_text($)
 {
     my $text = shift;
-    $text =~ s/``/$OPEN_DOUBLE_QUOTE_SYMBOL/go;
-    $text =~ s/''/$CLOSE_DOUBLE_QUOTE_SYMBOL/go;
-    $text =~ s/---/$DASH_EM/go;
-    $text =~ s/--/$DASH_EN/go;
+    $text =~ s/``/"/go;
+    $text =~ s/''/"/go;
+    $text =~ s/-(--?)/$1/go;
     return $text;
 }
 # @INIT@
@@ -3685,7 +3680,6 @@ $tag eq 'float')
                             $node_ref->{'current_place'} = [];
                             merge_element_before_anything($node_ref);
                             $node_ref->{'index_names'} = [];
-                            $node_ref->{'counter'} = 0;
                             $state->{'place'} = $node_ref->{'current_place'};
                             $state->{'element'} = $node_ref;
                             $state->{'after_element'} = 1;
@@ -3748,16 +3742,7 @@ $tag eq 'float')
                         {
                             $sec_num++;
                             $num = $sec_num;
-                            if ($Texi2HTML::Config::NODE_FILES)
-                            {
-                              $docid = $state->{'node_ref'}->{'counter'};
-                              $state->{'node_ref'}->{'counter'}++;
-			    }
-			    else
-			    {
-                              $docid = "SEC$sec_num";
-                              $num = $state->{'node_ref'}->{'counter'};
-			    }
+                            $docid = "SEC$sec_num";
                         }
                         else
                         {
@@ -4422,16 +4407,17 @@ sub rearrange_elements()
                 {
                     $section->{'number'} = $number;
                 }    
+		$section->{'id'} = $section->{'number'};
                 $level--;
             }
             my $toplevel_number = $previous_numbers[$toplevel];
             $toplevel_number = 0 if (!defined($toplevel_number));
             $section->{'number'} = "$toplevel_number.$section->{'number'}";
-	    $section->{'id'} = $section->{'number'} unless $Texi2HTML::Config::NODE_FILES;
+	    $section->{'id'} = $section->{'number'};
         }
 	else
 	{
-	    $section->{'id'} = $section->{'texi'} unless $Texi2HTML::Config::NODE_FILES;
+	    $section->{'id'} = $section->{'texi'};
 	}
         # find the previous section
         if (defined($previous_sections[$section->{'level'}]))
@@ -7630,11 +7616,6 @@ sub do_text($;$)
     my $text = shift;
     my $state = shift;
     return $text if ($state->{'keep_texi'});
-    # Protect first to allow normal_text to emit entities
-    if (!$state->{'no_protection'})
-    {
-        $text = &$Texi2HTML::Config::protect_text($text);
-    }
     if (defined($state) and !$state->{'preformatted'} and !$state->{'code_style'})
     {
         # in normal text `` and '' serve as quotes, --- is for a long dash 
@@ -7642,7 +7623,11 @@ sub do_text($;$)
         # (see texinfo.txi, @node Conventions)
         $text = &$Texi2HTML::Config::normal_text($text);
     }
-    return $text;
+    if ($state->{'no_protection'})
+    {
+        return $text;
+    }
+    return &$Texi2HTML::Config::protect_text($text);
 }
 
 sub end_simple_format($$)

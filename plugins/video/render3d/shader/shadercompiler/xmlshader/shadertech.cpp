@@ -663,7 +663,7 @@ bool csXMLShaderTech::SetupPass (const csRenderMesh *mesh,
 
   //now map our buffers. all refs should be set
   size_t i;
-  for (i = 0; i < thispass->custommapping_attrib.GetSize (); i++)
+  for (i = 0; i < thispass->custommapping_attrib.Length (); i++)
   {
     if (thispass->custommapping_buffer[i] != CS_BUFFER_NONE)
     {
@@ -684,8 +684,8 @@ bool csXMLShaderTech::SetupPass (const csRenderMesh *mesh,
   }
   g3d->ActivateBuffers (modes.buffers, thispass->defaultMappings);
   g3d->ActivateBuffers (thispass->custommapping_attrib.GetArray (), 
-    last_buffers, (uint)thispass->custommapping_attrib.GetSize ());
-  lastBufferCount = thispass->custommapping_attrib.GetSize ();
+    last_buffers, (uint)thispass->custommapping_attrib.Length ());
+  lastBufferCount = thispass->custommapping_attrib.Length ();
   
   //and the textures
   int j;

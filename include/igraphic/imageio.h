@@ -34,6 +34,8 @@ struct iDataBuffer;
 struct iImage;
 
 
+SCF_VERSION (iImageIO, 1, 0, 1);
+
 /** \internal
  * Format can be read.
  */
@@ -74,8 +76,6 @@ typedef csArray<csImageIOFileFormatDescription const*>
  */
 struct iImageIO : public virtual iBase
 {
-  SCF_INTERFACE (iImageIO, 1, 0, 1);
-
   /// Description for a file format supported by an image loader.
   typedef csImageIOFileFormatDescription FileFormatDescription;
 

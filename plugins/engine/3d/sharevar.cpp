@@ -27,7 +27,7 @@ CS_LEAKGUARD_IMPLEMENT (csSharedVariable);
 void csSharedVariable::FireListeners ()
 {
   size_t i;
-  for (i = 0 ; i < listeners.GetSize () ; i++)
+  for (i = 0 ; i < listeners.Length () ; i++)
     listeners[i]->VariableChanged (this);
 }
 

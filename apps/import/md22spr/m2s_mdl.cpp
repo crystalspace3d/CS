@@ -360,7 +360,7 @@ bool Mdl::WriteSPR(const char* spritename, float scaleMdl, int delayMdl,
     if (!mdl2spr_imageio.IsValid ())
     {
       mdl2spr_imageio =
-        scfCreateInstance<iImageIO> ("crystalspace.graphic.image.io.png");
+        SCF_CREATE_INSTANCE ("crystalspace.graphic.image.io.png", iImageIO);
     }
     if (mdl2spr_imageio == 0)
       csFPrintf (stderr, "Unable to load PNG plugin; can't save skins.\n");

@@ -22,11 +22,10 @@
 class csDetectDriver
 {
   bool verbose;
-  csString DriverDLL;
-  csString DriverVersion;
+  char* DriverDLL;
+  char* DriverVersion;
 
   void DetermineDriver (const char* monitorName);
-  void ScanForDriver ();
   void DetermineDriverVersion();
 public:
   csDetectDriver();

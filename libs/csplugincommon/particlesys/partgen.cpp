@@ -27,7 +27,6 @@
 #include "csgeom/tri.h"
 #include "csplugincommon/particlesys/partgen.h"
 #include "cstool/rbuflock.h"
-#include "cstool/rviewclipper.h"
 
 #include "imesh/object.h"
 #include "iengine/camera.h"
@@ -74,13 +73,13 @@ csParticleSystem::csParticleSystem (
   spr_factory = type->NewFactory ();
   current_lod = 1;
   current_features = 0;
-  csRef<iEngine> eng = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> eng = CS_QUERY_REGISTRY (object_reg, iEngine);
   engine = eng;	// We don't want to keep a reference.
-  light_mgr = csQueryRegistry<iLightManager> (object_reg);
+  light_mgr = CS_QUERY_REGISTRY (object_reg, iLightManager);
 
-  g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet>
-    (object_reg, "crystalspace.shared.stringset");
+  g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg,
+    "crystalspace.shared.stringset", iStringSet);
 
   part_sides = 0;
 }
@@ -131,7 +130,7 @@ void csParticleSystem::SetupBuffers (size_t part_sides)
 
 void csParticleSystem::RemoveParticles ()
 {
-  if (particles.GetSize () <= 0) return;
+  if (particles.Length () <= 0) return;
 
   particles.DeleteAll ();
   sprite2ds.DeleteAll ();
@@ -143,8 +142,8 @@ void csParticleSystem::AppendRectSprite (float width, float height,
   iMaterialWrapper *mat, bool lighted)
 {
   csRef<iMeshObject> sprmesh (spr_factory->NewInstance ());
-  csRef<iParticle> part (scfQueryInterface<iParticle> (sprmesh));
-  csRef<iSprite2DState> state (scfQueryInterface<iSprite2DState> (sprmesh));
+  csRef<iParticle> part (SCF_QUERY_INTERFACE (sprmesh, iParticle));
+  csRef<iSprite2DState> state (SCF_QUERY_INTERFACE (sprmesh, iSprite2DState));
   csRef<iColoredVertices> vs = state->GetVertices();
 
   vs->SetSize (4);
@@ -172,8 +171,8 @@ void csParticleSystem::AppendRegularSprite (int n, float radius,
   iMaterialWrapper* mat, bool lighted)
 {
   csRef<iMeshObject> sprmesh (spr_factory->NewInstance ());
-  csRef<iParticle> part (scfQueryInterface<iParticle> (sprmesh));
-  csRef<iSprite2DState> state (scfQueryInterface<iSprite2DState> (sprmesh));
+  csRef<iParticle> part (SCF_QUERY_INTERFACE (sprmesh, iParticle));
+  csRef<iSprite2DState> state (SCF_QUERY_INTERFACE (sprmesh, iSprite2DState));
   state->CreateRegularVertices (n, true);
   part->ScaleBy (radius);
   if (mat) sprmesh->SetMaterialWrapper (mat);
@@ -188,7 +187,7 @@ void csParticleSystem::AppendRegularSprite (int n, float radius,
 void csParticleSystem::SetupMixMode ()
 {
   size_t i;
-  for (i = 0 ; i < particles.GetSize () ; i++)
+  for (i = 0 ; i < particles.Length () ; i++)
   {
     csRef<iMeshObject> sprmesh = scfQueryInterface<iMeshObject> (GetParticle (i));
     sprmesh->SetMixMode (MixMode);
@@ -199,7 +198,7 @@ void csParticleSystem::SetupMixMode ()
 void csParticleSystem::SetupColor ()
 {
   size_t i;
-  for(i = 0 ; i < particles.GetSize () ; i++)
+  for(i = 0 ; i < particles.Length () ; i++)
   {
     csRef<iMeshObject> sprmesh = scfQueryInterface<iMeshObject> (GetParticle (i));
     sprmesh->SetColor (color);
@@ -210,21 +209,21 @@ void csParticleSystem::SetupColor ()
 void csParticleSystem::AddColor (const csColor& col)
 {
   size_t i;
-  for(i = 0; i<particles.GetSize (); i++)
+  for(i = 0; i<particles.Length(); i++)
     GetParticle(i)->AddColor(col);
 }
 
 
 //void csParticleSystem::SetPosition (const csVector3& pos)
 //{
-  //for(int i = 0; i<particles.GetSize (); i++)
+  //for(int i = 0; i<particles.Length(); i++)
     //GetParticle(i)->SetPosition(pos);
 //}
 
 
 //void csParticleSystem::MovePosition (const csVector3& move)
 //{
-  //for(int i = 0; i<particles.GetSize (); i++)
+  //for(int i = 0; i<particles.Length(); i++)
     //GetParticle(i)->MovePosition(move);
 //}
 
@@ -232,7 +231,7 @@ void csParticleSystem::AddColor (const csColor& col)
 void csParticleSystem::ScaleBy (float factor)
 {
   size_t i;
-  for (i = 0 ; i<particles.GetSize () ; i++)
+  for (i = 0 ; i<particles.Length () ; i++)
     GetParticle (i)->ScaleBy (factor);
   ShapeChanged ();
 }
@@ -241,7 +240,7 @@ void csParticleSystem::ScaleBy (float factor)
 void csParticleSystem::Rotate (float angle)
 {
   size_t i;
-  for (i = 0 ; i<particles.GetSize () ; i++)
+  for (i = 0 ; i<particles.Length () ; i++)
     GetParticle (i)->Rotate (angle);
   ShapeChanged ();
 }
@@ -255,7 +254,7 @@ void csParticleSystem::Update (csTicks elapsed_time)
     {
       if (engine)
       {
-        csRef<iMeshWrapper> m = scfQueryInterface<iMeshWrapper> (logparent);
+        csRef<iMeshWrapper> m = SCF_QUERY_INTERFACE (logparent, iMeshWrapper);
 	if (m)
           engine->WantToDie (m);
       }
@@ -301,7 +300,7 @@ csRenderMesh** csParticleSystem::GetRenderMeshes (int& n, iRenderView* rview,
 						  iMovable* movable,
 						  uint32 frustum_mask)
 {
-  if ((sprite2ds.GetSize () == 0)
+  if ((sprite2ds.Length() == 0)
   	|| !PreGetRenderMeshes (rview, movable, frustum_mask))
   {
     n = 0;
@@ -309,8 +308,7 @@ csRenderMesh** csParticleSystem::GetRenderMeshes (int& n, iRenderView* rview,
   }
 
   int ClipPortal, ClipPlane, ClipZ;
-  CS::RenderViewClipper::CalculateClipSettings (rview->GetRenderContext(),
-    frustum_mask, ClipPortal, ClipPlane, ClipZ);
+  rview->CalculateClipSettings (frustum_mask, ClipPortal, ClipPlane, ClipZ);
 
   // get the object-to-camera transformation
   iCamera *camera = rview->GetCamera ();
@@ -353,7 +351,7 @@ csRenderMesh** csParticleSystem::GetRenderMeshes (int& n, iRenderView* rview,
   csRenderBufferLock<csVector4> c (frameData.color_buffer);
   csRenderBufferLock<csVector3> vt (frameData.vertex_buffer);
   csRenderBufferLock<csVector2> txt (frameData.texel_buffer);
-  for (i = 0 ; i < sprite2ds.GetSize () ; i++)
+  for (i = 0 ; i < sprite2ds.Length () ; i++)
   {
     iColoredVertices* sprvt = sprite2ds[i]->GetVertices ();
     // transform to eye coordinates
@@ -422,7 +420,7 @@ void csParticleSystem::UpdateLighting (
   SetupObject ();
   csReversibleTransform trans = movable->GetFullTransform ();
   size_t i;
-  for (i = 0 ; i < particles.GetSize () ; i++)
+  for (i = 0 ; i < particles.Length () ; i++)
     GetParticle (i)->UpdateLighting (lights, trans);
 }
 
@@ -492,7 +490,7 @@ void csNewtonianParticleSystem::Update (csTicks elapsed_time)
   // time passed; together with CS 1 unit = 1 meter makes units right.
   float delta_t = elapsed_time / 1000.0f; // in seconds
   size_t i;
-  for (i=0 ; i < particles.GetSize () ; i++)
+  for (i=0 ; i < particles.Length () ; i++)
   {
     // notice that the ordering of the lines (1) and (2) makes the
     // resulting newpos = a*dt^2 + v*dt + oldposition (i.e. paraboloid).

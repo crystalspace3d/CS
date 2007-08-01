@@ -39,7 +39,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -72,6 +71,7 @@
 				TypeLibraryName="..\..\out\release71\build\plgxmlshader\plgxmlshader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\release71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\xmlshader.dll&quot; &quot;..\..\out\release71\bin\xmlshader.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shadercompiler\xmlshader;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -101,7 +101,6 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -114,7 +113,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -145,6 +143,7 @@
 				TypeLibraryName="..\..\out\debug71\build\plgxmlshader\plgxmlshader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\xmlshader.dll&quot; &quot;..\..\out\debug71\bin\xmlshader.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -153,7 +152,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shadercompiler\xmlshader;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -174,7 +173,6 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -187,7 +185,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -218,6 +215,7 @@
 				TypeLibraryName="..\..\out\debug71\build\plgxmlshader\plgxmlshader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\xmlshader.dll&quot; &quot;..\..\out\debug71\bin\xmlshader.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -226,7 +224,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shadercompiler\xmlshader;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -247,7 +245,6 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -260,7 +257,6 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -291,6 +287,7 @@
 				TypeLibraryName="..\..\out\debug71\build\plgxmlshader\plgxmlshader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="mkdir &quot;..\..\out\debug71\bin&quot;&#x0D;&#x0A;copy &quot;..\..\xmlshader.dll&quot; &quot;..\..\out\debug71\bin\xmlshader.dll&quot;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -299,7 +296,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shadercompiler\xmlshader;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -312,34 +309,34 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condeval.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condition.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condition.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap_replacer.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap_replacer.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\expparser.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\expparser.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\mybitarray.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\tempheap.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\valueset.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\mybitarray.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shader.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tempheap.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\valueset.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.cpp">
@@ -349,40 +346,40 @@
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condeval.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condition.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\condition.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap_replacer.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\docwrap_replacer.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\expparser.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\expparser.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\logic3.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\logic3.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\mybitarray.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\tempheap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\tokenhelper.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\valueset.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\mybitarray.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shader.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tempheap.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\tokenhelper.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\valueset.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.h">
@@ -395,16 +392,7 @@
 				RelativePath="..\..\mk\msvc\plgxmlshader.rc">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condconstbuiltin.inc">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\docwrap.tok">
-			</File>
-			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.csplugin">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.tok">
 			</File>
 		</Filter>
 	</Files>

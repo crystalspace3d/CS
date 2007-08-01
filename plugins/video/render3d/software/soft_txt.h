@@ -24,6 +24,7 @@
 #include "csplugincommon/render3d/txtmgr.h"
 #include "csplugincommon/softshader/texture.h"
 #include "csutil/blockallocator.h"
+#include "csutil/debug.h"
 #include "csutil/hashr.h"
 #include "igraphic/image.h"
 #include "ivideo/graph2d.h"
@@ -71,26 +72,12 @@ public:
     compute_masks ();
     ImageToBitmap (Image);
   }
-  /// Create a csTexture object
-  csSoftwareTexture (csSoftwareTextureHandle* Parent, int w, int h) : 
-    parent (Parent)
-  {
-    this->w = w;
-    this->h = h;
-    compute_masks ();
-    size_t pixNum = w * h;
-    bitmap = (uint32*)cs_malloc (pixNum * sizeof (uint32));
-    memset (bitmap, 0, pixNum * sizeof (uint32));
-  }
   /// Destroy the texture
   virtual ~csSoftwareTexture ()
   {
-    cs_free (bitmap);
+    delete [] bitmap;
   }
 };
-
-// For GetTextureTarget ()
-#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**
  * csSoftwareTextureHandle represents a texture and all its mipmapped
@@ -119,9 +106,6 @@ public:
   /// Create the mipmapped texture object
   csSoftwareTextureHandle (csSoftwareTextureManager *texman, iImage *image,
 		       int flags);
-  /// Create a texture object without an image
-  csSoftwareTextureHandle (csSoftwareTextureManager *texman, int w, int h,
-    bool alpha, int flags);
   /// Destroy the object and free all associated storage
   virtual ~csSoftwareTextureHandle ();
 
@@ -180,14 +164,7 @@ public:
       delete tex[i]; tex[i] = 0;
     }
   }
-
-  virtual TextureType GetTextureType () const
-  {
-    return texType2D;
-  }
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * Software version of the texture manager. This instance of the
@@ -239,11 +216,8 @@ public:
    */
   virtual int GetTextureFormat ();
 
-  virtual csPtr<iTextureHandle> RegisterTexture (iImage* image, int flags,
-      iString* fail_reason = 0);
-  virtual csPtr<iTextureHandle> CreateTexture (int w, int h,
-      csImageType imagetype, const char* format, int flags,
-      iString* fail_reason = 0);
+  ///
+  virtual csPtr<iTextureHandle> RegisterTexture (iImage* image, int flags);
 
   virtual csPtr<iSuperLightmap> CreateSuperLightmap (int width, 
     int height);

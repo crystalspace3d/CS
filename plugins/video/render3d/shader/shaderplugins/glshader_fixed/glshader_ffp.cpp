@@ -467,13 +467,13 @@ static uint LayerSourceToFlag (GLenum source)
 
 void csGLShaderFFP::CompactLayers()
 {
-  if (texlayers.GetSize () >= 2)
+  if (texlayers.Length() >= 2)
   {
-    CS_ALLOC_STACK_ARRAY(uint, layerUseFlags, texlayers.GetSize ());
-    CS_ALLOC_STACK_ARRAY(int, layerMap, texlayers.GetSize ());
-    memset (layerUseFlags, 0, sizeof (uint) * texlayers.GetSize ());
+    CS_ALLOC_STACK_ARRAY(uint, layerUseFlags, texlayers.Length());
+    CS_ALLOC_STACK_ARRAY(int, layerMap, texlayers.Length());
+    memset (layerUseFlags, 0, sizeof (uint) * texlayers.Length());
     size_t p;
-    for (p = 0; p < texlayers.GetSize (); p++)
+    for (p = 0; p < texlayers.Length(); p++)
     {
       const mtexlayer& tl = texlayers[p];
       int i;
@@ -491,7 +491,7 @@ void csGLShaderFFP::CompactLayers()
     mtexlayer nextlayer = texlayers[0];
     p = 0;
     size_t layerOfs = 0;
-    while (p+1 < texlayers.GetSize ())
+    while (p+1 < texlayers.Length())
     {
       // Check if used resources overlap
       if ((layerUseFlags[p] & layerUseFlags[p+1]) == 0)
@@ -552,7 +552,7 @@ void csGLShaderFFP::CompactLayers()
 
 #ifdef DUMP_LAYERS
   {
-    for (size_t i = 0; i < texlayers.GetSize (); i++)
+    for (size_t i = 0; i < texlayers.Length(); i++)
     {
       csPrintf ("Layer %zu:\n", i);
       const mtexlayer& tl = texlayers[i];
@@ -601,10 +601,11 @@ bool csGLShaderFFP::TryMergeTexFuncs (mtexlayer::TexFunc& newTF,
   }
   /* If "previous layer" is not referenced in TF2, "merge" to just TF2. */
   {
-    bool usePrevious = false;
+    bool usePrevious;
     for (int i = 0; i < GetUsedLayersCount (tf2.op); i++)
-      if (tf2.source[i] == GL_PREVIOUS_ARB)
-	usePrevious = true;
+    {
+      if (tf2.source[i] == GL_PREVIOUS_ARB) usePrevious = true;
+    }
     if (!usePrevious)
     {
       newTF = tf2;
@@ -622,20 +623,20 @@ bool csGLShaderFFP::Compile ()
   maxlayers = shaderPlug->texUnits;
 
   //get a statecache
-  csRef<iGraphics2D> g2d = csQueryRegistry<iGraphics2D> (objectReg);
+  csRef<iGraphics2D> g2d = CS_QUERY_REGISTRY (objectReg, iGraphics2D);
   g2d->PerformExtension ("getstatecache", &statecache);
 
-  if (texlayers.GetSize () > (size_t)maxlayers)
+  if (texlayers.Length () > (size_t)maxlayers)
     return false;
 
   // Don't support layers if the COMBINE ext isn't present
-  if ((!shaderPlug->enableCombine) && (texlayers.GetSize () > 0))
+  if ((!shaderPlug->enableCombine) && (texlayers.Length() > 0))
     return false;
 
   const bool hasDOT3 = ext->CS_GL_ARB_texture_env_dot3 || 
     ext->CS_GL_EXT_texture_env_dot3;
 
-  for(size_t i = 0; i < texlayers.GetSize (); ++i)
+  for(size_t i = 0; i < texlayers.Length(); ++i)
   {
     const mtexlayer& layer = texlayers[i];
     if (((layer.color.op == GL_DOT3_RGB_ARB) || 
@@ -688,7 +689,7 @@ void csGLShaderFFP::ActivateTexFunc (const mtexlayer::TexFunc& tf,
 
 void csGLShaderFFP::Activate ()
 {
-  for(size_t i = 0; i < texlayers.GetSize (); ++i)
+  for(size_t i = 0; i < texlayers.Length(); ++i)
   {
     statecache->SetCurrentTU ((int)i);
     statecache->ActivateTU (csGLStateCache::activateTexEnv);
@@ -766,14 +767,11 @@ void csGLShaderFFP::SetupState (const csRenderMesh* /*mesh*/,
     {
       case CS_FOG_MODE_LINEAR:
 	{
-          float start = GetParamFloatVal (stacks, fog.start, 0.0f);
-          float end = GetParamFloatVal (stacks, fog.end, 0.0f);
-
-          end = (end == start) ? start + 0.001f : end;
-
 	  glFogi (GL_FOG_MODE, GL_LINEAR);
-	  glFogf (GL_FOG_START, start);
-	  glFogf (GL_FOG_END, end);
+	  glFogf (GL_FOG_START, 
+	    GetParamFloatVal (stacks, fog.start, 0.0f));
+	  glFogf (GL_FOG_END, 
+	    GetParamFloatVal (stacks, fog.end, 0.0f));
 	}
 	break;
       case CS_FOG_MODE_EXP:

@@ -35,7 +35,6 @@
 #include "csgeom/tri.h"
 #include "CSopcodecollider.h"
 #include "igeom/polymesh.h"
-#include "igeom/trimesh.h"
 #include "ivaria/collider.h"
 
 #include "OPC_TreeBuilders.h"
@@ -45,32 +44,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(csOpcode)
 
 using namespace Opcode;
 
-csOPCODECollider::csOPCODECollider (iTriangleMesh* mesh) :
-  scfImplementationType(this)
-{
-  m_pCollisionModel = 0;
-  indexholder = 0;
-  vertholder = 0;
-  //transform.m[0][3] = 0;
-  //transform.m[1][3] = 0;
-  //transform.m[2][3] = 0;
-  //transform.m[3][3] = 1;
-
-  opcMeshInt.SetCallback (&MeshCallback, this);
-
-  GeometryInitialize (mesh);
-}
-
 csOPCODECollider::csOPCODECollider (iPolygonMesh* mesh) :
   scfImplementationType(this)
 {
   m_pCollisionModel = 0;
   indexholder = 0;
   vertholder = 0;
-  //transform.m[0][3] = 0;
-  //transform.m[1][3] = 0;
-  //transform.m[2][3] = 0;
-  //transform.m[3][3] = 1;
+  transform.m[0][3] = 0;
+  transform.m[1][3] = 0;
+  transform.m[2][3] = 0;
+  transform.m[3][3] = 1;  
 
   opcMeshInt.SetCallback (&MeshCallback, this);
 
@@ -82,12 +65,16 @@ inline float min3 (float a, float b, float c)
 inline float max3(float a, float b, float c)
 { return (a > b ? (a > c ? a : (c > b ? c : b)) : (b > c ? b : c)); }
 
-void csOPCODECollider::GeometryInitialize (csVector3* vertices,
-    size_t vertcount, csTriangle* triangles, size_t tri_count)
+void csOPCODECollider::GeometryInitialize (iPolygonMesh* mesh)
 {
   OPCODECREATE OPCC;
-  size_t i;
-
+  int i;
+  // first, count the number of triangles polyset contains
+  csVector3* vertices = mesh->GetVertices ();
+  int vertcount = mesh->GetVertexCount ();
+  csTriangle* triangles = mesh->GetTriangles ();
+  int tri_count = mesh->GetTriangleCount ();
+  
   if (tri_count>=1)
   {
     m_pCollisionModel = new Opcode::Model;
@@ -105,9 +92,8 @@ void csOPCODECollider::GeometryInitialize (csVector3* vertices,
       vertholder[i].Set (vertices[i].x , vertices[i].y , vertices[i].z);
     }
 
-    radius = max3 (tmp.MaxX ()- tmp.MinX (), tmp.MaxY ()- tmp.MinY (),
-	tmp.MaxZ ()- tmp.MinZ ());
-
+    radius = max3 (tmp.MaxX ()- tmp.MinX (), tmp.MaxY ()- tmp.MinY (), tmp.MaxZ ()- tmp.MinZ ());
+    
     int index = 0;
     for (i = 0 ; i < tri_count ; i++)
     {
@@ -115,7 +101,7 @@ void csOPCODECollider::GeometryInitialize (csVector3* vertices,
       indexholder[index++] = triangles[i].b;
       indexholder[index++] = triangles[i].c;
     }
-
+   
     opcMeshInt.SetNbTriangles (tri_count);
     opcMeshInt.SetNbVertices (vertcount);
 
@@ -130,29 +116,8 @@ void csOPCODECollider::GeometryInitialize (csVector3* vertices,
   else
     return;
 
-  // this should create the OPCODE model
-  bool status = m_pCollisionModel->Build (OPCC);
+  bool status = m_pCollisionModel->Build (OPCC);  // this should create the OPCODE model
   if (!status) { return; };
-}
-
-void csOPCODECollider::GeometryInitialize (iTriangleMesh* mesh)
-{
-  // first, count the number of triangles polyset contains
-  csVector3* vertices = mesh->GetVertices ();
-  size_t vertcount = mesh->GetVertexCount ();
-  csTriangle* triangles = mesh->GetTriangles ();
-  size_t tri_count = mesh->GetTriangleCount ();
-  GeometryInitialize (vertices, vertcount, triangles, tri_count);
-}
-
-void csOPCODECollider::GeometryInitialize (iPolygonMesh* mesh)
-{
-  // first, count the number of triangles polyset contains
-  csVector3* vertices = mesh->GetVertices ();
-  size_t vertcount = mesh->GetVertexCount ();
-  csTriangle* triangles = mesh->GetTriangles ();
-  size_t tri_count = mesh->GetTriangleCount ();
-  GeometryInitialize (vertices, vertcount, triangles, tri_count);
 }
 
 csOPCODECollider::~csOPCODECollider ()
@@ -167,8 +132,8 @@ csOPCODECollider::~csOPCODECollider ()
   delete[] vertholder;
 }
 
-void csOPCODECollider::MeshCallback (udword triangle_index,
-				     VertexPointers& triangle,
+void csOPCODECollider::MeshCallback (udword triangle_index, 
+				     VertexPointers& triangle, 
 				     void* user_data)
 {
   csOPCODECollider* collider = (csOPCODECollider*)user_data;

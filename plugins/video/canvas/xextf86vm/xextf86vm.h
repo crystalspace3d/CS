@@ -21,7 +21,7 @@
 #define __CS_XESTF86VM_H__
 
 #include <stdarg.h>
-#include "csutil/scf_implementation.h"
+#include "csutil/scf.h"
 #include "iutil/eventh.h"
 #include "iutil/comp.h"
 #include "plugins/video/canvas/xwindowcommon/xextf86vm.h"
@@ -36,9 +36,7 @@
 
 #include <X11/extensions/xf86vmode.h>
 
-class csXExtF86VM : public scfImplementation2<csXExtF86VM, 
-                                              iXExtF86VM,
-                                              iComponent>
+class csXExtF86VM : public iXExtF86VM
 {
   /// The Object Registry
   iObjectRegistry *object_reg;
@@ -72,6 +70,8 @@ class csXExtF86VM : public scfImplementation2<csXExtF86VM,
   void LeaveFullScreen ();
   void ChangeVideoMode (int zoom);
 public:
+  SCF_DECLARE_IBASE;
+
   csXExtF86VM (iBase*);
   virtual ~csXExtF86VM ();
 
@@ -96,6 +96,13 @@ public:
 
   virtual void GetDimensions (int &w, int &h)
   { w = width; h = height; }
+
+  struct eiComponent : public iComponent
+  {
+    SCF_DECLARE_EMBEDDED_IBASE(csXExtF86VM);
+    virtual bool Initialize (iObjectRegistry *o)
+    { return scfParent->Initialize(o); }
+  } scfiComponent;
 
 };
 

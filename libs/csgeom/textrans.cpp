@@ -24,7 +24,7 @@
 #include "csqsqrt.h"
 
 //---------------------------------------------------------------------------
-bool csTextureTrans::compute_texture_space (
+void csTextureTrans::compute_texture_space (
   csMatrix3 &m,
   csVector3 &v,
   const csVector3 &v_orig,
@@ -34,7 +34,7 @@ bool csTextureTrans::compute_texture_space (
   float B,
   float C)
 {
-  return compute_texture_space (
+  compute_texture_space (
     m,
     v,
     v_orig.x,
@@ -49,7 +49,7 @@ bool csTextureTrans::compute_texture_space (
     C);
 }
 
-bool csTextureTrans::compute_texture_space (
+void csTextureTrans::compute_texture_space (
   csMatrix3 &m,
   csVector3 &v,
   float xo,
@@ -93,10 +93,10 @@ bool csTextureTrans::compute_texture_space (
   b = B * len1 * invl3;
   c = C * len1 * invl3;
 
-  return compute_texture_space (m, v, xo, yo, zo, x1, y1, z1, x2, y2, z2, a, b, c);
+  compute_texture_space (m, v, xo, yo, zo, x1, y1, z1, x2, y2, z2, a, b, c);
 }
 
-bool csTextureTrans::compute_texture_space (
+void csTextureTrans::compute_texture_space (
   csMatrix3 &m,
   csVector3 &v,
   const csVector3 &v_orig,
@@ -116,7 +116,7 @@ bool csTextureTrans::compute_texture_space (
   csVector3 v_u = (v1 - v_orig) * len1 * invl1;
   csVector3 v_v = (v2 - v_orig) * len2 * invl2;
   csVector3 v_w = v_u % v_v;
-  return compute_texture_space (
+  compute_texture_space (
     m,
     v,
     v_orig.x,
@@ -133,7 +133,7 @@ bool csTextureTrans::compute_texture_space (
     v_w.z);
 }
 
-bool csTextureTrans::compute_texture_space (
+void csTextureTrans::compute_texture_space (
   csMatrix3 &m,
   csVector3 &v,
   const csVector3 &v_orig,
@@ -141,7 +141,7 @@ bool csTextureTrans::compute_texture_space (
   const csVector3 &v_v)
 {
   csVector3 v_w = v_u % v_v;
-  return compute_texture_space (
+  compute_texture_space (
     m,
     v,
     v_orig.x,
@@ -158,7 +158,7 @@ bool csTextureTrans::compute_texture_space (
     v_w.z);
 }
 
-bool csTextureTrans::compute_texture_space (
+void csTextureTrans::compute_texture_space (
   csMatrix3 &m,
   csVector3 &v,
   float xo,
@@ -184,19 +184,14 @@ bool csTextureTrans::compute_texture_space (
   m.m32 = zv;
   m.m33 = zw;
 
-  v.x = xo;
-  v.y = yo;
-  v.z = zo;
-
   float det = m.Determinant ();
   if (ABS (det) < SMALL_EPSILON)
   {
     // @@@ Warning?
-    m.Identity ();
-    return false;
   }
   else
     m.Invert ();
-  
-  return true;
+  v.x = xo;
+  v.y = yo;
+  v.z = zo;
 }

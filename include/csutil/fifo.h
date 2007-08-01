@@ -55,10 +55,10 @@ public:
    */
   T PopTop ()
   {
-    CS_ASSERT ((a1.GetSize () > 0) || (a2.GetSize () > 0));
-    if (a2.GetSize () == 0)
+    CS_ASSERT ((a1.Length() > 0) || (a2.Length() > 0));
+    if (a2.Length() == 0)
     {
-      size_t n = a1.GetSize ();
+      size_t n = a1.Length();
       while (n-- > 0)
       {
 	a2.Push (a1[n]);
@@ -76,20 +76,10 @@ public:
     a1.Push (what);
   }
 
-  /// Return the number of elements in the FIFO.
-  size_t GetSize()
-  {
-    return a1.GetSize() + a2.GetSize();
-  }
-
-  /**
-   * Return the number of elements in the FIFO.
-   * \deprecated Use GetSize() instead.
-   */
-  CS_DEPRECATED_METHOD_MSG("Use GetSize() instead.")
+  /// Return number of elements.
   size_t Length()
   {
-    return GetSize();
+    return a1.Length() + a2.Length();
   }
 
   /**

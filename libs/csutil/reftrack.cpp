@@ -23,18 +23,19 @@
 #include "csutil/scf.h"
 #include "csutil/scopedmutexlock.h"
 #include "csutil/sysfunc.h"
-
 #include "reftrack.h"
 
-const size_t RefInfoAllocChunk = 2*1024*1024;
-
-csRefTracker::csRefTracker () : scfImplementationType (this), 
-  riAlloc (RefInfoAllocChunk / sizeof (RefInfo))
+csRefTracker::csRefTracker () : scfImplementationType (this), riAlloc(1000)
 {
+  (mutex = csMutex::Create (true))->IncRef();
 }
 
 csRefTracker::~csRefTracker ()
 {
+  csMutex* tehMutex = mutex;
+  mutex = 0; 
+    // Set mutex to 0 as mutex DecRef() will cause RefTracker call
+  tehMutex->DecRef();
 }
 
 csRefTracker::RefInfo& csRefTracker::GetObjRefInfo (void* obj)
@@ -51,10 +52,11 @@ csRefTracker::RefInfo& csRefTracker::GetObjRefInfo (void* obj)
 
 void csRefTracker::TrackIncRef (void* object, int refCount)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
 
   RefInfo& refInfo = GetObjRefInfo (object);
-  RefAction& action = refInfo.actions.GetExtend (refInfo.actions.GetSize ());
+  RefAction& action = refInfo.actions.GetExtend (refInfo.actions.Length ());
   action.type = Increased;
   action.refCount = refCount;
   action.stack = csCallStackHelper::CreateCallStack (1, true);
@@ -64,10 +66,11 @@ void csRefTracker::TrackIncRef (void* object, int refCount)
 
 void csRefTracker::TrackDecRef (void* object, int refCount)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
 
   RefInfo& refInfo = GetObjRefInfo (object);
-  RefAction& action = refInfo.actions.GetExtend (refInfo.actions.GetSize ());
+  RefAction& action = refInfo.actions.GetExtend (refInfo.actions.Length ());
   action.type = Decreased;
   action.refCount = refCount;
   action.stack = csCallStackHelper::CreateCallStack (1, true);
@@ -77,7 +80,8 @@ void csRefTracker::TrackDecRef (void* object, int refCount)
 
 void csRefTracker::TrackConstruction (void* object)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
 
   /*
     Move the already tracked object to the "old data".
@@ -86,7 +90,6 @@ void csRefTracker::TrackConstruction (void* object)
   RefInfo* oldRef = trackedRefs.Get (object, 0);
   if (oldRef != 0)
   {
-    oldRef->actions.ShrinkBestFit();
     OldRefInfo oldInfo = {object, oldRef};
     oldData.Push (oldInfo);
     trackedRefs.DeleteAll (object);
@@ -101,25 +104,26 @@ void csRefTracker::TrackConstruction (void* object)
 
 void csRefTracker::TrackDestruction (void* object, int refCount)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
 
   RefInfo& refInfo = GetObjRefInfo (object);
-  RefAction& action = refInfo.actions.GetExtend (refInfo.actions.GetSize ());
+  RefAction& action = refInfo.actions.GetExtend (refInfo.actions.Length ());
   action.type = Destructed;
   action.refCount = refCount;
   action.stack = csCallStackHelper::CreateCallStack (1, true);
   action.tag = 0;
-  refInfo.refCount = refCount;
-  refInfo.flags |= RefInfo::flagDestructed;
+  refInfo.destructed = true;
 }
 
 void csRefTracker::MatchIncRef (void* object, int refCount, void* tag)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
 
   RefInfo& refInfo = GetObjRefInfo (object);
   bool foundAction = false;
-  size_t i = refInfo.actions.GetSize ();
+  size_t i = refInfo.actions.Length ();
   while (i > 0)
   {
     i--;
@@ -135,7 +139,7 @@ void csRefTracker::MatchIncRef (void* object, int refCount, void* tag)
   }
   if (!foundAction)
   {
-    RefAction& action = refInfo.actions.GetExtend (refInfo.actions.GetSize ());
+    RefAction& action = refInfo.actions.GetExtend (refInfo.actions.Length ());
     action.type = Increased;
     action.refCount = refCount;
     action.stack = csCallStackHelper::CreateCallStack (1, true);
@@ -146,11 +150,12 @@ void csRefTracker::MatchIncRef (void* object, int refCount, void* tag)
 
 void csRefTracker::MatchDecRef (void* object, int refCount, void* tag)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
 
   RefInfo& refInfo = GetObjRefInfo (object);
   bool foundAction = false;
-  size_t i = refInfo.actions.GetSize ();
+  size_t i = refInfo.actions.Length ();
   while (i > 0)
   {
     i--;
@@ -166,65 +171,64 @@ void csRefTracker::MatchDecRef (void* object, int refCount, void* tag)
   }
   if (!foundAction)
   {
-    RefAction& action = refInfo.actions.GetExtend (refInfo.actions.GetSize ());
+    RefAction& action = refInfo.actions.GetExtend (refInfo.actions.Length ());
     action.type = Decreased;
     action.refCount = refCount;
     action.stack = csCallStackHelper::CreateCallStack (1, true);
     action.tag = tag;
     refInfo.refCount = refCount - 1;
   }
+  if (refCount == 0)
+  {
+    /*
+      Ditch tracked object as a new one might just 
+      coincidentally be alloced at the same spot.
+    */
+    trackedRefs.DeleteAll (object);
+    RefInfo* ref = trackedRefs.Get (object, 0);
+    riAlloc.Free (ref);
+  }
 }
 
 void csRefTracker::AddAlias (void* obj, void* mapTo)
 {
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
+
   if (obj == mapTo) return;
-
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
-
   aliases.PutUnique (obj, mapTo);
 }
 
 void csRefTracker::RemoveAlias (void* obj, void* mapTo)
 {
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
+
   if (obj == mapTo) return;
-
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
-
   aliases.Delete (obj, mapTo);
 }
 
 void csRefTracker::SetDescription (void* obj, const char* description)
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
 
   RefInfo& refInfo = GetObjRefInfo (obj);
   refInfo.descr = description;
 }
 
-void csRefTracker::SetDescriptionWeak (void* obj, const char* description)
-{
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
-
-  RefInfo& refInfo = GetObjRefInfo (obj);
-  if (refInfo.descr == 0)
-    refInfo.descr = description;
-}
-
 void csRefTracker::ReportOnObj (void* obj, RefInfo* info)
 {
-  bool okay = (info->refCount == 0)
-    /* The next check is to "let through" objects that have been 
-     * destructed with a refcount of 1 remaining
-     * (e.g. ref counted objects created on the stack). */
-     || ((info->flags & RefInfo::flagDestructed) && (info->refCount == 1));
+  bool okay = (info->refCount == 0) ||
+    (info->destructed && (info->refCount <= 1));
   if (!okay)
   {
-    csPrintf ("LEAK: object %p (%s), refcount %d, %s\n",
+    csPrintf ("object %p (%s), refcount %d, %s\n",
       obj,
       info->descr ? info->descr : "<unknown>",
       info->refCount,
-      (info->flags & RefInfo::flagDestructed) ? "destructed" : "not destructed");
-    for (size_t i = 0; i < info->actions.GetSize (); i++)
+      info->destructed ? "destructed" : "not destructed");
+    for (size_t i = 0; i < info->actions.Length(); i++)
     {
       csPrintf ("%s by %p from %d\n",
 	(info->actions[i].type == Increased) ? "Increase" : "Decrease",
@@ -239,9 +243,10 @@ void csRefTracker::ReportOnObj (void* obj, RefInfo* info)
 
 void csRefTracker::Report ()
 {
-  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  if (!mutex) return;
+  csScopedMutexLock lock (mutex);
 
-  for (size_t i = 0; i < oldData.GetSize (); i++)
+  for (size_t i = 0; i < oldData.Length(); i++)
   {
     const OldRefInfo& oldInfo = oldData[i];
 

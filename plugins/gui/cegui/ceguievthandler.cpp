@@ -40,8 +40,6 @@ csCEGUIEventHandler::csCEGUIEventHandler (iObjectRegistry *reg,
   compose = kbd->CreateKeyComposer ();
   csRef<iGraphics2D> g2d = csQueryRegistry <iGraphics2D> (obj_reg);
   CanvasResize = csevCanvasResize (obj_reg, g2d);
-  mouseCapture = true;
-  keyboardCapture = true;
 }
 
 csCEGUIEventHandler::~csCEGUIEventHandler()
@@ -59,7 +57,7 @@ bool csCEGUIEventHandler::OnUnhandledEvent (iEvent &event)
 {
   if (event.GetName() == CanvasResize)
   {
-    csRef<iGraphics2D> g2d = csQueryRegistry<iGraphics2D> (obj_reg);
+    csRef<iGraphics2D> g2d = CS_QUERY_REGISTRY (obj_reg, iGraphics2D);
     renderer->setDisplaySize (CEGUI::Size (g2d->GetWidth (), g2d->GetHeight ()));
     return true;
   }
@@ -98,8 +96,6 @@ CEGUI::MouseButton csCEGUIEventHandler::CSMBtoCEMB (uint button)
 
 bool csCEGUIEventHandler::OnMouseDown (iEvent &event)
 {
-  if (!mouseCapture)
-    return false;
   const uint csmb = csMouseEventHelper::GetButton (&event);
   CEGUI::MouseButton cemb = CSMBtoCEMB (csmb);
   if (cemb != CEGUI::NoButton)
@@ -119,8 +115,6 @@ bool csCEGUIEventHandler::OnMouseDown (iEvent &event)
 
 bool csCEGUIEventHandler::OnMouseMove (iEvent &event)
 {
-  if (!mouseCapture)
-    return false;
   return CEGUI::System::getSingletonPtr()->injectMousePosition (
     csMouseEventHelper::GetX(&event), 
     csMouseEventHelper::GetY(&event));
@@ -128,8 +122,6 @@ bool csCEGUIEventHandler::OnMouseMove (iEvent &event)
 
 bool csCEGUIEventHandler::OnMouseUp (iEvent &event)
 {
-  if (!mouseCapture)
-    return false;
   CEGUI::MouseButton cemb = CSMBtoCEMB (
     csMouseEventHelper::GetButton (&event));
   if (cemb != CEGUI::NoButton)
@@ -139,8 +131,6 @@ bool csCEGUIEventHandler::OnMouseUp (iEvent &event)
 
 bool csCEGUIEventHandler::OnKeyboard (iEvent &event) 
 {
-  if (!keyboardCapture)
-    return false;
   csKeyEventType eventtype = csKeyEventHelper::GetEventType(&event);
   
   utf32_char code = csKeyEventHelper::GetRawCode (&event);
@@ -271,28 +261,3 @@ bool csCEGUIEventHandler::OnKeyboard (iEvent &event)
 
   return false;
 }
-
-/// Capture mouse events.
-void csCEGUIEventHandler::EnableMouseCapture ()
-{
-  mouseCapture = true;
-}
-
-/// Don't capture mouse events.
-void csCEGUIEventHandler::DisableMouseCapture ()
-{
-  mouseCapture = false;
-}
-
-/// Capture keyboard events.
-void csCEGUIEventHandler::EnableKeyboardCapture ()
-{
-  keyboardCapture = true;
-}
-
-/// Don't capture keyboard events.
-void csCEGUIEventHandler::DisableKeyboardCapture ()
-{
-  keyboardCapture = false;
-}
-

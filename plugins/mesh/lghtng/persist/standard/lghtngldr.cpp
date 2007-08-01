@@ -75,8 +75,8 @@ csLightningFactoryLoader::~csLightningFactoryLoader ()
 bool csLightningFactoryLoader::Initialize (iObjectRegistry* object_reg)
 {
   csLightningFactoryLoader::object_reg = object_reg;
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
-  reporter = csQueryRegistry<iReporter> (object_reg);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
 
   xmltokens.Register ("bandwidth", XMLTOKEN_BANDWIDTH);
   xmltokens.Register ("directional", XMLTOKEN_DIRECTIONAL);
@@ -105,7 +105,7 @@ csPtr<iBase> csLightningFactoryLoader::Parse (iDocumentNode* node,
   csRef<iMeshObjectFactory> fact;
   fact = type->NewFactory ();
   csRef<iLightningFactoryState> LightningFactoryState (
-        scfQueryInterface<iLightningFactoryState> (fact));
+        SCF_QUERY_INTERFACE (fact, iLightningFactoryState));
   CS_ASSERT (LightningFactoryState);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
@@ -211,7 +211,7 @@ csLightningFactorySaver::~csLightningFactorySaver ()
 bool csLightningFactorySaver::Initialize (iObjectRegistry* object_reg)
 {
   csLightningFactorySaver::object_reg = object_reg;
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 
@@ -224,8 +224,8 @@ bool csLightningFactorySaver::WriteDown (iBase* obj, iDocumentNode* parent,
   csRef<iDocumentNode> paramsNode = parent->CreateNodeBefore(CS_NODE_ELEMENT, 0);
   paramsNode->SetValue("params");
 
-  csRef<iLightningState> light = scfQueryInterface<iLightningState> (obj);
-  csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (obj);
+  csRef<iLightningState> light = SCF_QUERY_INTERFACE (obj, iLightningState);
+  csRef<iMeshObject> mesh = SCF_QUERY_INTERFACE (obj, iMeshObject);
 
   if (mesh && light)
   {
@@ -308,8 +308,8 @@ csLightningLoader::~csLightningLoader ()
 bool csLightningLoader::Initialize (iObjectRegistry* object_reg)
 {
   csLightningLoader::object_reg = object_reg;
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
-  reporter = csQueryRegistry<iReporter> (object_reg);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
 
   xmltokens.Register ("factory", XMLTOKEN_FACTORY);
   // @@@TODO
@@ -345,7 +345,7 @@ csPtr<iBase> csLightningLoader::Parse (iDocumentNode* node,
             return 0;
           }
           mesh = fact->GetMeshObjectFactory ()->NewInstance ();
-          Lightningstate = scfQueryInterface<iLightningState> (mesh);
+          Lightningstate = SCF_QUERY_INTERFACE (mesh, iLightningState);
 	  if (!Lightningstate)
 	  {
       	    synldr->ReportError (
@@ -354,8 +354,8 @@ csPtr<iBase> csLightningLoader::Parse (iDocumentNode* node,
 		factname);
 	    return 0;
 	  }
-          LightningFactoryState = scfQueryInterface<iLightningFactoryState> (
-              fact->GetMeshObjectFactory());
+          LightningFactoryState = SCF_QUERY_INTERFACE (
+              fact->GetMeshObjectFactory(), iLightningFactoryState);
         }
         break;
 
@@ -395,7 +395,7 @@ bool csLightningSaver::WriteDown (iBase* obj, iDocumentNode* parent,
   csRef<iDocumentNode> paramsNode = parent->CreateNodeBefore(CS_NODE_ELEMENT, 0);
   paramsNode->SetValue("params");
 
-  csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (obj);
+  csRef<iMeshObject> mesh = SCF_QUERY_INTERFACE (obj, iMeshObject);
 
   if ( mesh )
   {

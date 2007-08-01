@@ -104,14 +104,14 @@ public:
     if (position == (size_t)-1) return 0;
     iVisibilityObject* vo = vector->Get (position);
     position++;
-    if (position == vector->GetSize ())
+    if (position == vector->Length ())
       position = (size_t)-1;
     return vo;
   }
 
   virtual void Reset()
   {
-    if (vector == 0 || vector->GetSize () < 1)
+    if (vector == 0 || vector->Length () < 1)
       position = (size_t)-1;
     else
       position = 0;
@@ -119,7 +119,7 @@ public:
 
   virtual bool HasNext () const
   {
-    return ((position != (size_t)-1) && position <= vector->GetSize ());
+    return ((position != (size_t)-1) && position <= vector->Length ());
   }
 };
 
@@ -229,12 +229,12 @@ csDynaVis::~csDynaVis ()
 {
   if (weakEventHandler)
   {
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (object_reg, iEventQueue);
     if (q)
       CS::RemoveWeakListener (q, weakEventHandler);
   }
 
-  while (visobj_vector.GetSize () > 0)
+  while (visobj_vector.Length () > 0)
   {
     csVisibilityObjectWrapper* visobj_wrap = visobj_vector.Pop ();
     iVisibilityObject* visobj = visobj_wrap->visobj;
@@ -260,7 +260,7 @@ bool csDynaVis::Initialize (iObjectRegistry *object_reg)
   delete kdtree;
   delete tcovbuf; tcovbuf = 0;
 
-  csRef<iGraphics3D> g3d = csQueryRegistry<iGraphics3D> (object_reg);
+  csRef<iGraphics3D> g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
   if (g3d)
   {
     scr_width = g3d->GetWidth ();
@@ -283,7 +283,7 @@ bool csDynaVis::Initialize (iObjectRegistry *object_reg)
   if (g2d)
   {
     CanvasResize = csevCanvasResize(object_reg, g2d);
-    csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
+    csRef<iEventQueue> q = CS_QUERY_REGISTRY (object_reg, iEventQueue);
     if (q)
       CS::RegisterWeakListener (q, this, CanvasResize, weakEventHandler);
   }
@@ -329,10 +329,8 @@ bool csDynaVis::Initialize (iObjectRegistry *object_reg)
   desc->DecRef ();
 
   tcovbuf = new csTiledCoverageBuffer (scr_width, scr_height);
-  csRef<iBugPlug> bugplug = csQueryRegistry<iBugPlug> (object_reg);
+  csRef<iBugPlug> bugplug = CS_QUERY_REGISTRY (object_reg, iBugPlug);
   tcovbuf->bugplug = bugplug;
-
-  model_mgr->Initialize (object_reg);
 
   return true;
 }
@@ -341,7 +339,7 @@ bool csDynaVis::HandleEvent (iEvent& ev)
 {
   if (ev.Name == CanvasResize)
   {
-    csRef<iGraphics3D> g3d = csQueryRegistry<iGraphics3D> (object_reg);
+    csRef<iGraphics3D> g3d = CS_QUERY_REGISTRY (object_reg, iGraphics3D);
     scr_width = g3d->GetWidth ();
     scr_height = g3d->GetHeight ();
     //printf ("Got resize %dx%d!\n", scr_width, scr_height);fflush (stdout);
@@ -382,7 +380,7 @@ void csDynaVis::RegisterVisObject (iVisibilityObject* visobj)
 {
 #ifdef CS_DEBUG
   size_t i;
-  for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+  for (i = 0 ; i < visobj_vector.Length () ; i++)
   {
     if (visobj_vector[i]->visobj == visobj)
     {
@@ -422,10 +420,7 @@ void csDynaVis::RegisterVisObject (iVisibilityObject* visobj)
   iObjectModel* model = visobj_wrap->model->GetModel ();
   model->AddListener ((iObjectModelListener*)visobj_wrap);
 
-  iTriangleMesh* trimesh = visobj_wrap->model->GetTriangleMesh ();
-  if (trimesh)
-    visobj_wrap->hint_closed = trimesh->GetFlags ().Check (CS_TRIMESH_CLOSED);
-  else if (model->GetPolygonMeshViscull ())
+  if (model->GetPolygonMeshViscull ())
     visobj_wrap->hint_closed = model->GetPolygonMeshViscull ()
     	->GetFlags ().Check (CS_POLYMESH_CLOSED);
   else
@@ -454,7 +449,7 @@ void csDynaVis::RegisterVisObject (iVisibilityObject* visobj)
 void csDynaVis::UnregisterVisObject (iVisibilityObject* visobj)
 {
   size_t i;
-  for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+  for (i = 0 ; i < visobj_vector.Length () ; i++)
   {
     csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
     if (visobj_wrap->visobj == visobj)
@@ -575,7 +570,7 @@ bool PrintObjects (csKDTree* treenode, void*, uint32, uint32&)
   {
     csVisibilityObjectWrapper* visobj_wrap = (csVisibilityObjectWrapper*)
     	objects[i]->GetObject ();
-    csRef<iObject> iobj (scfQueryInterface<iObject> (visobj_wrap->visobj));
+    csRef<iObject> iobj (SCF_QUERY_INTERFACE (visobj_wrap->visobj, iObject));
     if (iobj)
     {
       if (iobj->GetName ()) 
@@ -825,213 +820,13 @@ void csDynaVis::UpdateCoverageBuffer (csVisibilityObjectWrapper* obj)
     UpdateCoverageBufferOutline (obj);
     return;
   }
-  iTriangleMesh* trimesh = obj->model->GetTriangleMesh ();
-  if (trimesh)
-    UpdateCoverageBufferTri (obj);
-  else
-    UpdateCoverageBufferPoly (obj);
-}
-
-void csDynaVis::UpdateCoverageBufferTri (csVisibilityObjectWrapper* obj)
-{
   iVisibilityObject* visobj = obj->visobj;
   csDynavisObjectModel* model = obj->model;
 
   iMovable* movable = visobj->GetMovable ();
-  iTriangleMesh* trimesh = obj->model->GetTriangleMesh ();
-  csVector3* verts = trimesh->GetVertices ();
-  size_t vertex_count = trimesh->GetVertexCount ();
-  size_t poly_count = trimesh->GetTriangleCount ();
+  iPolygonMesh* polymesh = visobj->GetObjectModel ()->GetPolygonMeshViscull ();
 
-  csReversibleTransform trans = cam_trans;
-  // Camera position in object space.
-  csVector3 campos_object;
-  if (obj->full_transform_identity)
-  {
-    campos_object = trans.GetOrigin ();
-  }
-  else
-  {
-    csReversibleTransform movtrans = movable->GetFullTransform ();
-    campos_object = movtrans.Other2This (trans.GetOrigin ());
-    trans /= movtrans;
-  }
-
-  size_t i;
-
-  // First transform all vertices.
-  dynavis_tr_verts *tr_verts = GetTrVerts();
-  dynavis_tr_cam *tr_cam = GetTrCam();
-  
-  if (vertex_count > tr_verts->GetSize ())
-  {
-    tr_verts->SetSize (vertex_count);
-    tr_cam->SetSize (vertex_count);
-  }
-
-  for (i = 0 ; i < vertex_count ; i++)
-  {
-    (*tr_cam)[i] = trans.Other2This (verts[i]);
-    if ((*tr_cam)[i].z > 0.1)
-      Perspective ((*tr_cam)[i], (*tr_verts)[i], fov, sx, sy);
-  }
-
-# ifdef CS_DEBUG
-  if (do_state_dump)
-  {
-    csRef<iObject> iobj (scfQueryInterface<iObject> (visobj));
-    if (iobj)
-    {
-      csPrintf ("CovIns of object %s\n", iobj->GetName () ? iobj->GetName () :
-      	"<noname>");
-    }
-  }
-# endif
-
-  // Then insert all triangles.
-  csTriangle* poly = trimesh->GetTriangles ();
-  const csPlane3* planes = model->GetPlanes ();
-  csVector2 verts2d[64];
-  int modified = 0;
-  csBox2Int occluder_box;
-  occluder_box.minx = 10000;
-  occluder_box.miny = 10000;
-  occluder_box.maxx = -10000;
-  occluder_box.maxy = -10000;
-  for (i = 0 ; i < poly_count ; i++, poly++)
-  {
-    if (planes[i].Classify (campos_object) >= 0.0)
-      continue;
-
-    bool do_clamp = false;
-    float max_depth = -1.0;
-    size_t j;
-    size_t num_verts = 3;
-    for (j = 0 ; j < 3 ; j++)
-    {
-      int vertex_idx = (*poly)[j];
-      float tz = (*tr_cam)[vertex_idx].z;
-      // @@@ Note: originally 0.1 was used here. However this could cause
-      // very large coordinates to be generated and our coverage line drawer
-      // cannot currently cope with that. We need to improve that line
-      // drawer considerably.
-      if (tz <= 0.2)
-      {
-	max_depth = -1.0;
-	if (do_cull_clampoccluder)
-	{
-	  if (j > 0)
-	  {
-	    // If j > 0 we know there was already one vertex which is in front
-	    // of the Z=0.1 plane.
-	    do_clamp = true;
-	  }
-	  else
-	  {
-	    // j == 0 so we still have to test if there are other vertices
-	    // in front of the Z=0.1 plane.
-	    // NOTE: we reuse the 'j' index here!!! This is not a bug.
-	    for (++j ; j < 3 ; j++)	// The start '++j' is not a bug!
-	    {
-	      vertex_idx = (*poly)[j];
-	      tz = (*tr_cam)[vertex_idx].z;
-	      if (tz > 0.1)
-	      {
-	        do_clamp = true;
-		break;
-	      }
-	    }
-	  }
-	}
-	break;
-      }
-      if (tz > max_depth) max_depth = tz;
-      verts2d[j] = (*tr_verts)[vertex_idx];
-    }
-    if (max_depth > 0.0)
-    {
-      int mod = tcovbuf->InsertPolygon (verts2d, (int)num_verts, max_depth,
-      	occluder_box);
-      modified += mod;
-#     ifdef CS_DEBUG
-      if (do_state_dump)
-      {
-        csPrintf ("  (not clamped) max_depth=%g ", max_depth);
-        for (j = 0 ; j < num_verts ; j++)
-	  csPrintf ("(%g,%g) ", verts2d[j].x, verts2d[j].y);
-        csPrintf ("\n");
-      }
-#     endif
-    }
-    else if (do_clamp)
-    {
-      csPoly3D poly3d;
-      poly3d.AddVertex ((*tr_cam)[poly->a]);
-      poly3d.AddVertex ((*tr_cam)[poly->b]);
-      poly3d.AddVertex ((*tr_cam)[poly->c]);
-      csPoly3D front, back;
-      // @@@ Make specific version that doesn't fill 'front' version.
-      poly3d.SplitWithPlaneZ (front, back, 0.1f);
-      max_depth = -1.0;
-      num_verts = back.GetVertexCount ();
-      for (j = 0 ; j < num_verts ; j++)
-      {
-        const csVector3& v = back[j];
-	if (v.z > max_depth) max_depth = v.z;
-        Perspective (v, verts2d[j], fov, sx, sy);
-      }
-
-      int mod = tcovbuf->InsertPolygon (verts2d, (int)num_verts, max_depth,
-      	occluder_box);
-      modified += mod;
-#     ifdef CS_DEBUG
-      if (do_state_dump)
-      {
-        csPrintf ("  (clamped) max_depth=%g ", max_depth);
-        for (j = 0 ; j < num_verts ; j++)
-	  csPrintf ("(%g,%g) ", verts2d[j].x, verts2d[j].y);
-        csPrintf ("\n");
-      }
-#     endif
-    }
-  }
-  if (modified <= 0)
-  {
-    // This is not a good occluder. It didn't modify the coverage or depth
-    // buffer at all. Disable this occluder for a while.
-    obj->history->no_occluder_vis_cnt = history_frame_cnt + dist_nooccluder ();
-  }
-  else if (badoccluder_thresshold >= 0)
-  {
-    // Remember the amount of already occluded objects in all tiles modified
-    // by this occluder.
-    size_t idx = occluder_info.GetSize ();
-    occluder_info.SetSize (idx+1);
-    csOccluderInfo& occinfo = occluder_info[idx];
-    occinfo.obj = obj;
-    occinfo.occluder_box = occluder_box;
-    occinfo.total_notoccluded = tcovbuf->CountNotCulledObjects (
-    	occinfo.occluder_box);
-  }
-
-# ifdef CS_DEBUG
-  if (do_state_dump)
-  {
-    csRef<iString> str = tcovbuf->Dump ();
-    csPrintf ("%s\n", str->GetData ());
-  }
-# endif
-}
-
-void csDynaVis::UpdateCoverageBufferPoly (csVisibilityObjectWrapper* obj)
-{
-  iVisibilityObject* visobj = obj->visobj;
-  csDynavisObjectModel* model = obj->model;
-
-  iMovable* movable = visobj->GetMovable ();
-  iPolygonMesh* polymesh = visobj->GetObjectModel ()
-      ->GetPolygonMeshViscull ();
-  csVector3* verts = polymesh->GetVertices ();
+  const csVector3* verts = polymesh->GetVertices ();
   size_t vertex_count = polymesh->GetVertexCount ();
   size_t poly_count = polymesh->GetPolygonCount ();
 
@@ -1055,10 +850,10 @@ void csDynaVis::UpdateCoverageBufferPoly (csVisibilityObjectWrapper* obj)
   dynavis_tr_verts *tr_verts = GetTrVerts();
   dynavis_tr_cam *tr_cam = GetTrCam();
   
-  if (vertex_count > tr_verts->GetSize ())
+  if (vertex_count > tr_verts->Length())
   {
-    tr_verts->SetSize (vertex_count);
-    tr_cam->SetSize (vertex_count);
+    tr_verts->SetLength (vertex_count);
+    tr_cam->SetLength (vertex_count);
   }
 
   for (i = 0 ; i < vertex_count ; i++)
@@ -1071,7 +866,7 @@ void csDynaVis::UpdateCoverageBufferPoly (csVisibilityObjectWrapper* obj)
 # ifdef CS_DEBUG
   if (do_state_dump)
   {
-    csRef<iObject> iobj (scfQueryInterface<iObject> (visobj));
+    csRef<iObject> iobj (SCF_QUERY_INTERFACE (visobj, iObject));
     if (iobj)
     {
       csPrintf ("CovIns of object %s\n", iobj->GetName () ? iobj->GetName () :
@@ -1199,8 +994,8 @@ void csDynaVis::UpdateCoverageBufferPoly (csVisibilityObjectWrapper* obj)
   {
     // Remember the amount of already occluded objects in all tiles modified
     // by this occluder.
-    size_t idx = occluder_info.GetSize ();
-    occluder_info.SetSize (idx+1);
+    size_t idx = occluder_info.Length ();
+    occluder_info.SetLength (idx+1);
     csOccluderInfo& occinfo = occluder_info[idx];
     occinfo.obj = obj;
     occinfo.occluder_box = occluder_box;
@@ -1222,21 +1017,10 @@ void csDynaVis::UpdateCoverageBufferOutline (csVisibilityObjectWrapper* obj)
   iVisibilityObject* visobj = obj->visobj;
   csDynavisObjectModel* model = obj->model;
   iMovable* movable = visobj->GetMovable ();
-  csVector3* verts;
-  size_t vertex_count;
-  iTriangleMesh* trimesh = obj->model->GetTriangleMesh ();
-  if (trimesh)
-  {
-    verts = trimesh->GetVertices ();
-    vertex_count = trimesh->GetVertexCount ();
-  }
-  else
-  {
-    iPolygonMesh* polymesh = visobj->GetObjectModel ()
-      ->GetPolygonMeshViscull ();
-    verts = polymesh->GetVertices ();
-    vertex_count = polymesh->GetVertexCount ();
-  }
+  iPolygonMesh* polymesh = visobj->GetObjectModel ()->GetPolygonMeshViscull ();
+
+  csVector3* verts = polymesh->GetVertices ();
+  int vertex_count = polymesh->GetVertexCount ();
 
   csReversibleTransform trans = cam_trans;
   // Camera position in object space.
@@ -1258,7 +1042,7 @@ void csDynaVis::UpdateCoverageBufferOutline (csVisibilityObjectWrapper* obj)
 # ifdef CS_DEBUG
   if (do_state_dump)
   {
-    csRef<iObject> iobj (scfQueryInterface<iObject> (visobj));
+    csRef<iObject> iobj (SCF_QUERY_INTERFACE (visobj, iObject));
     if (iobj)
     {
       csPrintf ("CovOutIns of object %s (max_depth=%g)\n",
@@ -1275,7 +1059,7 @@ void csDynaVis::UpdateCoverageBufferOutline (csVisibilityObjectWrapper* obj)
   int modified = tcovbuf->InsertOutline (
   	trans, fov, sx, sy, verts, vertex_count,
   	outline_info.outline_verts,
-  	(int*)outline_info.outline_edges, outline_info.num_outline_edges,
+  	outline_info.outline_edges, outline_info.num_outline_edges,
 	do_cull_outline_splatting,
 	occluder_box);
   if (modified <= 0)
@@ -1288,8 +1072,8 @@ void csDynaVis::UpdateCoverageBufferOutline (csVisibilityObjectWrapper* obj)
   {
     // Remember the amount of already occluded objects in all tiles modified
     // by this occluder.
-    size_t idx = occluder_info.GetSize ();
-    occluder_info.SetSize (idx+1);
+    size_t idx = occluder_info.Length ();
+    occluder_info.SetLength (idx+1);
     csOccluderInfo& occinfo = occluder_info[idx];
     occinfo.obj = obj;
     occinfo.occluder_box = occluder_box;
@@ -1300,8 +1084,8 @@ void csDynaVis::UpdateCoverageBufferOutline (csVisibilityObjectWrapper* obj)
   if (do_state_dump)
   {
     //csPrintf ("  max_depth=%g\n", max_depth);
-    size_t j;
-    for (j = 0 ; j < (size_t)vertex_count ; j++)
+    int j;
+    for (j = 0 ; j < vertex_count ; j++)
     {
       if (outline_info.outline_verts[j])
       {
@@ -1349,7 +1133,7 @@ void csDynaVis::AppendWriteQueue (iVisibilityObject* visobj,
 # ifdef CS_DEBUG
   if (do_state_dump)
   {
-    csRef<iObject> iobj (scfQueryInterface<iObject> (visobj));
+    csRef<iObject> iobj (SCF_QUERY_INTERFACE (visobj, iObject));
     if (iobj)
     {
       csPrintf (
@@ -1420,63 +1204,32 @@ void csDynaVis::TestSinglePolygonVisibility (csVisibilityObjectWrapper* obj,
     trans /= movtrans;
   }
 
-  iTriangleMesh* trimesh = obj->model->GetTriangleMesh ();
-  if (trimesh)
-  {
-    const csVector3* verts = trimesh->GetVertices ();
-    csTriangle* tri = trimesh->GetTriangles ();
+  iPolygonMesh* polymesh = visobj->GetObjectModel ()->GetPolygonMeshBase ();
+  const csVector3* verts = polymesh->GetVertices ();
+  csMeshedPolygon* poly = polymesh->GetPolygons ();
+  int num_verts = poly->num_vertices;
+  int* vi = poly->vertices;
 
-    csVector2 v2d;
-    csVector3 v = trans * verts[tri->a];
-    min_depth = v.z;
-    max_depth = v.z;
-    if (v.z < .1)
-      PerspectiveWrong (v, v2d, fov, sx, sy);
-    else
-      Perspective (v, v2d, fov, sx, sy);
-    sbox.StartBoundingBox (v2d);
-    int i;
-    for (i = 1 ; i < 3 ; i++)
-    {
-      v = trans * verts[(*tri)[i]];
-      if (min_depth > v.z) min_depth = v.z;
-      else if (max_depth < v.z) max_depth = v.z;
-      if (v.z < .1)
-        PerspectiveWrong (v, v2d, fov, sx, sy);
-      else
-        Perspective (v, v2d, fov, sx, sy);
-      sbox.AddBoundingVertexSmart (v2d);
-    }
-  }
+  csVector2 v2d;
+  csVector3 v = trans * verts[vi[0]];
+  min_depth = v.z;
+  max_depth = v.z;
+  if (v.z < .1)
+    PerspectiveWrong (v, v2d, fov, sx, sy);
   else
+    Perspective (v, v2d, fov, sx, sy);
+  sbox.StartBoundingBox (v2d);
+  int i;
+  for (i = 1 ; i < num_verts ; i++)
   {
-    iPolygonMesh* polymesh = visobj->GetObjectModel ()->GetPolygonMeshBase ();
-    const csVector3* verts = polymesh->GetVertices ();
-    csMeshedPolygon* poly = polymesh->GetPolygons ();
-    int num_verts = poly->num_vertices;
-    int* vi = poly->vertices;
-
-    csVector2 v2d;
-    csVector3 v = trans * verts[vi[0]];
-    min_depth = v.z;
-    max_depth = v.z;
+    v = trans * verts[vi[i]];
+    if (min_depth > v.z) min_depth = v.z;
+    else if (max_depth < v.z) max_depth = v.z;
     if (v.z < .1)
       PerspectiveWrong (v, v2d, fov, sx, sy);
     else
       Perspective (v, v2d, fov, sx, sy);
-    sbox.StartBoundingBox (v2d);
-    int i;
-    for (i = 1 ; i < num_verts ; i++)
-    {
-      v = trans * verts[vi[i]];
-      if (min_depth > v.z) min_depth = v.z;
-      else if (max_depth < v.z) max_depth = v.z;
-      if (v.z < .1)
-        PerspectiveWrong (v, v2d, fov, sx, sy);
-      else
-        Perspective (v, v2d, fov, sx, sy);
-      sbox.AddBoundingVertexSmart (v2d);
-    }
+    sbox.AddBoundingVertexSmart (v2d);
   }
 
   if (max_depth < .1 || sbox.MaxX () <= 0 || sbox.MaxY () <= 0 ||
@@ -1888,7 +1641,7 @@ bool csDynaVis::TestObjectVisibility (csVisibilityObjectWrapper* obj,
 
 end:
   if (vis && do_cull_coverage != COVERAGE_NONE &&
-      obj->model->HasVisCullMesh (obj->visobj->GetObjectModel ()))
+  	obj->visobj->GetObjectModel ()->GetPolygonMeshViscull ())
   {
     if (!obj->hint_badoccluder)
     {
@@ -1921,7 +1674,7 @@ end:
   if (do_state_dump)
   {
     const csBox3& obj_bbox = obj->child->GetBBox ();
-    csRef<iObject> iobj (scfQueryInterface<iObject> (obj->visobj));
+    csRef<iObject> iobj (SCF_QUERY_INTERFACE (obj->visobj, iObject));
     csPrintf ("Obj (%g,%g,%g)-(%g,%g,%g) (%s) %s\n",
     	obj_bbox.MinX (), obj_bbox.MinY (), obj_bbox.MinZ (),
     	obj_bbox.MaxX (), obj_bbox.MaxY (), obj_bbox.MaxZ (),
@@ -2060,7 +1813,7 @@ bool csDynaVis::VisTest (iRenderView* rview,
   if (do_freeze_vis)
   {
     size_t i;
-    for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+    for (i = 0 ; i < visobj_vector.Length () ; i++)
     {
       csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
       if (visobj_wrap->history->history_frame_cnt == history_frame_cnt-1)
@@ -2139,7 +1892,7 @@ bool csDynaVis::VisTest (iRenderView* rview,
   if (badoccluder_thresshold >= 0)
   {
     size_t i;
-    for (i = 0 ; i < occluder_info.GetSize () ; i++)
+    for (i = 0 ; i < occluder_info.Length () ; i++)
     {
       csOccluderInfo& occinfo = occluder_info[i];
       // Get the total number of occluded objects on all tiles covered by
@@ -2836,13 +2589,13 @@ void csDynaVis::CastShadows (iFrustumView* fview)
   // the receivers are processed.
   //======================================
 
-  data.shadobjs = new ShadObj [visobj_vector.GetSize () * 2];
+  data.shadobjs = new ShadObj [visobj_vector.Length () * 2];
   data.num_shadobjs = 0;
 
   // First check if we need to do frustum clipping.
   csFrustum* lf = fview->GetFrustumContext ()->GetLightFrustum ();
   uint32 planes_mask = 0;
-  size_t i;
+  int i;
   // Traverse the kd-tree to find all relevant objects.
   // @@@ What if the frustum is bigger???
   CS_ASSERT (lf->GetVertexCount () <= 31);
@@ -2852,8 +2605,8 @@ void csDynaVis::CastShadows (iFrustumView* fview)
     fflush (stdout);
     return;
   }
-  size_t i1 = lf->GetVertexCount () - 1;
-  for (i = 0 ; i < (size_t)(lf->GetVertexCount ()) ; i1 = i, i++)
+  int i1 = lf->GetVertexCount () - 1;
+  for (i = 0 ; i < lf->GetVertexCount () ; i1 = i, i++)
   {
     planes_mask = (planes_mask<<1)|1;
     const csVector3 &v1 = lf->GetVertex (i);
@@ -2880,7 +2633,7 @@ void csDynaVis::CastShadows (iFrustumView* fview)
 
   // Now scan all objects and cast and receive shadows as appropriate. 
   ShadObj* so = data.shadobjs;
-  for (i = 0 ; i < (size_t)data.num_shadobjs ; i++)
+  for (i = 0 ; i < data.num_shadobjs ; i++)
   {
     if (so->caster) so->caster->AppendShadows (so->movable, shadows, center);
     if (so->mesh) fview->CallObjectFunction (so->mesh, true);
@@ -2907,7 +2660,7 @@ void csDynaVis::CastShadows (iFrustumView* fview)
 csPtr<iString> csDynaVis::UnitTest ()
 {
   csKDTree* kdtree = new csKDTree ();
-  csRef<iDebugHelper> dbghelp (scfQueryInterface<iDebugHelper> (kdtree));
+  csRef<iDebugHelper> dbghelp (SCF_QUERY_INTERFACE (kdtree, iDebugHelper));
   if (dbghelp)
   {
     csRef<iString> rc (dbghelp->UnitTest ());
@@ -2920,7 +2673,7 @@ csPtr<iString> csDynaVis::UnitTest ()
   kdtree->DecRef();
 
   csTiledCoverageBuffer* tcovbuf = new csTiledCoverageBuffer (640, 480);
-  dbghelp = scfQueryInterface<iDebugHelper> (tcovbuf);
+  dbghelp = SCF_QUERY_INTERFACE (tcovbuf, iDebugHelper);
   if (dbghelp)
   {
     csRef<iString> rc (dbghelp->UnitTest ());
@@ -3035,7 +2788,7 @@ void csDynaVis::Dump (iGraphics3D* g3d)
       g2d->DrawLine (to.x+30, to.y,   to.x+24, to.y-4, col_cam);
       g2d->DrawLine (to.x+30, to.y,   to.x+24, to.y+4, col_cam);
 
-      for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+      for (i = 0 ; i < visobj_vector.Length () ; i++)
       {
         csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
         int col = reason_cols[visobj_wrap->history->reason];
@@ -3081,7 +2834,7 @@ void csDynaVis::Dump (iGraphics3D* g3d)
     else if (cfg_view_mode == VIEWMODE_OUTLINES)
     {
       size_t i;
-      for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+      for (i = 0 ; i < visobj_vector.Length () ; i++)
       {
 	csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
 	iVisibilityObject* visobj = visobj_wrap->visobj;
@@ -3099,14 +2852,10 @@ void csDynaVis::Dump (iGraphics3D* g3d)
 	  	->GetOutlineInfo ();
 	  iPolygonMesh* polymesh = visobj->GetObjectModel ()->
 	  	GetPolygonMeshViscull ();
-	  csVector3* verts;
-	  if (visobj_wrap->model->GetTriangleMesh ())
-	    verts = visobj_wrap->model->GetTriangleMesh ()->GetVertices ();
-	  else
-	    verts = polymesh->GetVertices ();
+	  const csVector3* verts = polymesh->GetVertices ();
 
-	  size_t j;
-	  size_t* e = outline_info.outline_edges;
+	  int j;
+	  int* e = outline_info.outline_edges;
 	  for (j = 0 ; j < outline_info.num_outline_edges ; j++)
 	  {
 	    int vt1 = *e++;
@@ -3322,12 +3071,12 @@ bool csDynaVis::DebugCommand (const char* cmd)
   if (!strcmp (cmd, "setup_debugsector"))
   {
     if (!bugplug)
-      bugplug = csQueryRegistry<iBugPlug> (object_reg);
+      bugplug = CS_QUERY_REGISTRY (object_reg, iBugPlug);
     if (bugplug)
     {
       bugplug->SetupDebugSector ();
       size_t i;
-      for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+      for (i = 0 ; i < visobj_vector.Length () ; i++)
       {
         csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
         iVisibilityObject* visobj = visobj_wrap->visobj;
@@ -3382,7 +3131,7 @@ bool csDynaVis::DebugCommand (const char* cmd)
   else if (!strcmp (cmd, "setup_debugview"))
   {
     if (!bugplug)
-      bugplug = csQueryRegistry<iBugPlug> (object_reg);
+      bugplug = CS_QUERY_REGISTRY (object_reg, iBugPlug);
     if (bugplug)
     {
       bugplug->SetupDebugView ();
@@ -3479,31 +3228,25 @@ bool csDynaVis::DebugCommand (const char* cmd)
     do_freeze_vis = true;
     csExactCuller* excul = new csExactCuller (scr_width, scr_height);
     size_t i;
-    for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+    for (i = 0 ; i < visobj_vector.Length () ; i++)
     {
       csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
       iVisibilityObject* visobj = visobj_wrap->visobj;
       iMovable* movable = visobj->GetMovable ();
-      if (visobj_wrap->model->GetTriangleMesh ())
-      {
-        excul->AddObject (visobj_wrap, visobj_wrap->model->GetTriangleMesh (),
-	    movable, debug_camera, visobj_wrap->model->GetPlanes ());
-      }
-      else
-      {
-        iPolygonMesh* polymesh = visobj->GetObjectModel ()
-      	  ->GetPolygonMeshViscull ();
-        if (polymesh)
-          excul->AddObject (visobj_wrap, polymesh, movable, debug_camera,
-  	    visobj_wrap->model->GetPlanes ());
-      }
+      iPolygonMesh* polymesh = visobj->GetObjectModel ()
+      	->GetPolygonMeshViscull ();
+      if (polymesh)
+        excul->AddObject (visobj_wrap, polymesh, movable, debug_camera,
+  	  visobj_wrap->model->GetPlanes ());
     }
     excul->VisTest ();
-    for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+    for (i = 0 ; i < visobj_vector.Length () ; i++)
     {
       csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
+      iPolygonMesh* polymesh = visobj_wrap->visobj->GetObjectModel ()
+      	->GetPolygonMeshViscull ();
       visobj_wrap->history->history_frame_cnt = 0;
-      if (visobj_wrap->model->GetTriangleMesh ())
+      if (polymesh)
       {
         int vispix, totpix;
         excul->GetObjectStatus (visobj_wrap, vispix, totpix);
@@ -3511,21 +3254,6 @@ bool csDynaVis::DebugCommand (const char* cmd)
 	{
 	  visobj_wrap->last_visible_vistestnr = current_vistest_nr;
           visobj_wrap->history->history_frame_cnt = history_frame_cnt;
-        }
-      }
-      else
-      {
-        iPolygonMesh* polymesh = visobj_wrap->visobj->GetObjectModel ()
-      	  ->GetPolygonMeshViscull ();
-        if (polymesh)
-        {
-          int vispix, totpix;
-          excul->GetObjectStatus (visobj_wrap, vispix, totpix);
-	  if (vispix)
-	  {
-	    visobj_wrap->last_visible_vistestnr = current_vistest_nr;
-            visobj_wrap->history->history_frame_cnt = history_frame_cnt;
-          }
         }
       }
     }
@@ -3583,7 +3311,7 @@ bool csDynaVis::DebugCommand (const char* cmd)
     	"Dumped current state.");
     do_state_dump = true;
 
-    csRef<iDebugHelper> dbghelp (scfQueryInterface<iDebugHelper> (kdtree));
+    csRef<iDebugHelper> dbghelp (SCF_QUERY_INTERFACE (kdtree, iDebugHelper));
     if (dbghelp)
     {
       csRef<iString> rc (dbghelp->Dump ());
@@ -3599,24 +3327,16 @@ bool csDynaVis::DebugCommand (const char* cmd)
     	"Analyze visibility status.");
     csExactCuller* excul = new csExactCuller (scr_width, scr_height);
     size_t i;
-    for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+    for (i = 0 ; i < visobj_vector.Length () ; i++)
     {
       csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
       iVisibilityObject* visobj = visobj_wrap->visobj;
       iMovable* movable = visobj->GetMovable ();
-      if (visobj_wrap->model->GetTriangleMesh ())
-      {
-        excul->AddObject (visobj_wrap, visobj_wrap->model->GetTriangleMesh (),
-	    movable, debug_camera, visobj_wrap->model->GetPlanes ());
-      }
-      else
-      {
-        iPolygonMesh* polymesh = visobj->GetObjectModel ()
-      	  ->GetPolygonMeshViscull ();
-        if (polymesh)
-          excul->AddObject (visobj_wrap, polymesh, movable, debug_camera,
-  	    visobj_wrap->model->GetPlanes ());
-      }
+      iPolygonMesh* polymesh = visobj->GetObjectModel ()
+      	->GetPolygonMeshViscull ();
+      if (polymesh)
+        excul->AddObject (visobj_wrap, polymesh, movable, debug_camera,
+  	  visobj_wrap->model->GetPlanes ());
     }
     excul->VisTest ();
     int tot_vis_exact = 0;
@@ -3625,58 +3345,31 @@ bool csDynaVis::DebugCommand (const char* cmd)
     int tot_poly_exact = 0;
     int tot_poly_dynavis = 0;
     int tot_poly = 0;
-    for (i = 0 ; i < visobj_vector.GetSize () ; i++)
+    for (i = 0 ; i < visobj_vector.Length () ; i++)
     {
       csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
-      int vispix, totpix;
-      bool show = false;
-      if (visobj_wrap->model->GetTriangleMesh ())
+      iPolygonMesh* polymesh = visobj_wrap->visobj->GetObjectModel ()
+      	->GetPolygonMeshViscull ();
+      if (polymesh)
       {
-	show = true;
-	iTriangleMesh* trimesh = visobj_wrap->model->GetTriangleMesh ();
+        int vispix, totpix;
         excul->GetObjectStatus (visobj_wrap, vispix, totpix);
 
 	tot_objects++;
-	tot_poly += trimesh->GetTriangleCount ();
+	tot_poly += polymesh->GetPolygonCount ();
 	if (vispix)
 	{
 	  tot_vis_exact++;
-	  tot_poly_exact += trimesh->GetTriangleCount ();
+	  tot_poly_exact += polymesh->GetPolygonCount ();
 	}
 	if (visobj_wrap->history->reason >= VISIBLE)
 	{
 	  tot_vis_dynavis++;
-	  tot_poly_dynavis += trimesh->GetTriangleCount ();
+	  tot_poly_dynavis += polymesh->GetPolygonCount ();
 	}
-      }
-      else
-      {
-        iPolygonMesh* polymesh = visobj_wrap->visobj->GetObjectModel ()
-      	  ->GetPolygonMeshViscull ();
-        if (polymesh)
-        {
-	  show = true;
-          excul->GetObjectStatus (visobj_wrap, vispix, totpix);
 
-	  tot_objects++;
-	  tot_poly += polymesh->GetPolygonCount ();
-	  if (vispix)
-	  {
-	    tot_vis_exact++;
-	    tot_poly_exact += polymesh->GetPolygonCount ();
-	  }
-	  if (visobj_wrap->history->reason >= VISIBLE)
-	  {
-	    tot_vis_dynavis++;
-	    tot_poly_dynavis += polymesh->GetPolygonCount ();
-	  }
-	}
-      }
-
-      if (show)
-      {
         csRef<iObject> iobj (
-		scfQueryInterface<iObject> (visobj_wrap->visobj));
+		SCF_QUERY_INTERFACE (visobj_wrap->visobj, iObject));
         csPrintf ("  obj(%zu,'%s')  vis=%s   vispix=%d totpix=%d      %s\n",
       	  i,
 	  (iobj && iobj->GetName ()) ? iobj->GetName () : "?",
@@ -3710,7 +3403,7 @@ csTicks csDynaVis::Benchmark (int num_iterations)
   csTicks rc = 0;
 
   csKDTree* kdtree = new csKDTree ();
-  csRef<iDebugHelper> dbghelp (scfQueryInterface<iDebugHelper> (kdtree));
+  csRef<iDebugHelper> dbghelp (SCF_QUERY_INTERFACE (kdtree, iDebugHelper));
   if (dbghelp)
   {
     csTicks r = dbghelp->Benchmark (num_iterations);

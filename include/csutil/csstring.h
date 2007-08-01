@@ -286,6 +286,22 @@ public:
   { return GrowBy; }
 
   /**
+   * Tell the string to re-size its buffer exponentially as needed.
+   * \deprecated Use SetGrowsBy(0) instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use SetGrowsBy(0) instead.") 
+  void SetGrowsExponentially(bool b)
+  { SetGrowsBy(b ? 0 : DEFAULT_GROW_BY); }
+
+  /**
+   * Returns true if exponential growth is enabled.
+   * \deprecated Use GetGrowsBy() instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use GetGrowsBy() instead.") 
+  bool GetGrowsExponentially() const
+  { return GetGrowsBy() == 0; }
+
+  /**
    * Free the memory allocated for the string.
    * \remarks Following a call to this method, invocations of GetData() and
    *   'operator char const*' will return a null pointer (until some new
@@ -897,26 +913,22 @@ public:
 
   /**
    * Convert this string to lower-case.
-   * \param flags Mapping options. Same as the \a flags parameter to
-   *   csUnicodeTransform::MapToLower().
    * \return Reference to itself.
    * \remarks This method makes the assumption that the string is UTF-8 
    *   encoded. If the string is in a different character set all non-ASCII
    *   characters will be mangled as they're replaced with 
    *   #CS_UC_CHAR_REPLACER.
    */
-  csStringBase& Downcase (uint flags = csUcMapSimple);
+  csStringBase& Downcase ();
   /**
    * Convert this string to upper-case.
-   * \param flags Mapping options. Same as the \a flags parameter to
-   *   csUnicodeTransform::MapToUpper().
    * \return Reference to itself.
    * \remarks This method makes the assumption that the string is UTF-8 
    *   encoded. If the string is in a different character set all non-ASCII
    *   characters will be mangled as they're replaced with 
    *   #CS_UC_CHAR_REPLACER.
    */
-  csStringBase& Upcase (uint flags = csUcMapSimple);
+  csStringBase& Upcase ();
 
   /**
    * Detach the low-level null-terminated C-string buffer from the csString

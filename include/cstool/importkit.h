@@ -32,14 +32,11 @@ struct iObjectRegistry;
 
 namespace CS
 {
-namespace Utility
-{
-
   /**
    * \internal Namespace for the import kit implementation, to "shield"
    *  use of CSism from the import kit headers.
    */
-  namespace Implementation 
+  namespace ImportKitImpl 
   { 
     class Glue;
     struct GluedModel;
@@ -52,7 +49,7 @@ namespace Utility
    */
   class CS_CRYSTALSPACE_EXPORT ImportKit
   {
-    Implementation::Glue* glue;
+    ImportKitImpl::Glue* glue;
   public:
     /**
      * Contains multiple models.
@@ -78,7 +75,7 @@ namespace Utility
 	{
 	protected:
 	  friend class Model;
-	  friend class Implementation::Glue;
+	  friend class ImportKitImpl::Glue;
 
 	  unsigned int vertexCount;
 	  float* verts;
@@ -121,33 +118,23 @@ namespace Utility
 	  size_t GetMaterial () const { return material; }
 	};
 	/// Get number of meshes in this model.
-	size_t GetMeshCount () const { return meshes.GetSize (); }
+	size_t GetMeshCount () const { return meshes.Length(); }
 	/// Get a mesh.
 	const Mesh& GetMesh (size_t index) const { return meshes[index]; }
-        /// Type of this model
-        enum ModelType
-        {
-          /// Model is a mesh factory.
-          Factory,
-          /// Model is a mesh object.
-          Object
-        };
-        ModelType GetType () const { return type; }
 
 	~Model();
 	Model (const Model& other);
       protected:
 	friend class Container;
-	friend class Implementation::Glue;
+	friend class ImportKitImpl::Glue;
 	wchar_t* name;
-	Implementation::GluedModel* glueModel;
+	ImportKitImpl::GluedModel* glueModel;
 	csArray<Mesh> meshes;
-        ModelType type;
 
-        Model () : type (Factory) {}
+	Model () {}
       };
       /// Return number of models.
-      size_t GetModelCount () const { return models.GetSize (); }
+      size_t GetModelCount () const { return models.Length(); }
       /// Get a model.
       const Model& GetModel (size_t index) const { return models[index]; }
     
@@ -160,7 +147,7 @@ namespace Utility
       {
       protected:
 	friend class Container;
-	friend class Implementation::Glue;
+	friend class ImportKitImpl::Glue;
 	wchar_t* name;
 	char* texture;
 
@@ -177,12 +164,12 @@ namespace Utility
 	Material (const Material& other);
       };
       /// Get number of materials.
-      size_t GetMaterialCount () { return materials.GetSize (); }
+      size_t GetMaterialCount () { return materials.Length(); }
       /// Get a material.
       const Material& GetMaterial (size_t index) { return materials[index]; }
     protected:
       friend class ImportKit;
-      friend class Implementation::Glue;
+      friend class ImportKitImpl::Glue;
       csArray<Model> models;
       csArray<Material> materials;
     };
@@ -202,15 +189,6 @@ namespace Utility
       const char* path = 0);
   };
   
-} // namespace Utility
-  
-  /**
-   * Import kit, old name
-   * \deprecated Use CS::Utility::ImportKit instead.
-   */
-  CS_DEPRECATED_TYPE_MSG("Use CS::Utility::ImportKit")
-  typedef CS::Utility::ImportKit ImportKit;
-
-} // namespace CS
+} // namespace CrystalSpace
 
 #endif // __CS_CSTOOL_IMPORTKIT_H__

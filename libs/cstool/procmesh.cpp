@@ -109,7 +109,7 @@ void csMeshOnTexture::UpdateView (int w, int h)
 }
 
 bool csMeshOnTexture::Render (iMeshWrapper* mesh, iTextureHandle* handle,
-    bool persistent, int color)
+    bool persistent)
 {
   g3d->SetRenderTarget (handle, persistent);
   iTextureHandle *oldContext = engine->GetContext ();
@@ -119,12 +119,10 @@ bool csMeshOnTexture::Render (iMeshWrapper* mesh, iTextureHandle* handle,
   UpdateView (w, h);
 
   // Draw the engine view.
-  g3d->BeginDraw (CSDRAW_3DGRAPHICS | CSDRAW_CLEARZBUFFER |
-    ((persistent || color != -1) ? 0 : CSDRAW_CLEARSCREEN));
-  if ((!persistent) && color != -1)
-    g3d->GetDriver2D()->Clear (color);
+  g3d->BeginDraw (CSDRAW_3DGRAPHICS
+    | CSDRAW_CLEARZBUFFER | (persistent ? 0 : CSDRAW_CLEARSCREEN));
+  //g3d->GetDriver2D()->Clear (g3d->GetDriver2D()->FindRGB (0, 255, 0));
   view->Draw (mesh);
-
   g3d->FinishDraw ();
 
   // switch back to the old context

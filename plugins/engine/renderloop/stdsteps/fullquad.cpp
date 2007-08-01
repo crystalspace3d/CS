@@ -106,8 +106,8 @@ bool csFullScreenQuadRSLoader::ParseStep (iLoaderContext* ldr_context,
     csFullScreenQuadRenderStep* step, 
     csFullScreenQuadRenderStep::DrawSettings& settings, bool firstPass)
 {
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    object_reg, "crystalspace.shared.stringset");
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (
+    object_reg, "crystalspace.shared.stringset", iStringSet);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -225,12 +225,12 @@ csFullScreenQuadRenderStep::csFullScreenQuadRenderStep (
   scfImplementationType (this)
 {
   csRef<iGraphics3D> g3d = 
-    csQueryRegistry<iGraphics3D> (object_reg);
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> 
-    (object_reg, "crystalspace.shared.stringset");
+    CS_QUERY_REGISTRY (object_reg, iGraphics3D);
+  csRef<iStringSet> strings = CS_QUERY_REGISTRY_TAG_INTERFACE (object_reg, 
+    "crystalspace.shared.stringset", iStringSet);
   csFullScreenQuadRenderStep::object_reg = object_reg;
 
-  engine = csQueryRegistry<iEngine> (object_reg);
+  engine = CS_QUERY_REGISTRY (object_reg, iEngine);
 
   firstPass.material = "";
   firstPass.shader = "";
@@ -255,7 +255,7 @@ void csFullScreenQuadRenderStep::Perform (iRenderView* rview, iSector* /*sector*
 {
   csRef<iGraphics3D> g3d = rview->GetGraphics3D();
   if (!shaderMgr.IsValid())
-    shaderMgr = csQueryRegistry<iShaderManager> (object_reg);
+    shaderMgr = CS_QUERY_REGISTRY (object_reg, iShaderManager);
 
   const DrawSettings& settings = 
     (distinguishFirstPass && isFirstPass) ? firstPass : otherPasses;

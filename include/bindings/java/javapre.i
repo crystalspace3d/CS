@@ -24,11 +24,9 @@
 %javaconst(1);
 
 // Fill LIST_OBJECT_FUNCTIONS to extend list interfaces.
-#undef LIST_OBJECT_FUNCTIONS
 %define LIST_OBJECT_FUNCTIONS(classname,typename)
 %enddef
 // Fill SET_OBJECT_FUNCTIONS to extend csSet interfaces.
-#undef SET_OBJECT_FUNCTIONS
 %define SET_OBJECT_FUNCTIONS(classname,typename)
 %enddef
 

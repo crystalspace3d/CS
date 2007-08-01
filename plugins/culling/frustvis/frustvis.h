@@ -39,6 +39,7 @@
 class csKDTree;
 class csKDTreeChild;
 class csFrustumVis;
+struct iPolygonMesh;
 struct iMovable;
 struct iMeshWrapper;
 struct iThingState;
@@ -54,7 +55,7 @@ class csFrustVisObjectWrapper :
 {
 public:
   csFrustumVis* frustvis;
-  csRef<iVisibilityObject> visobj;
+  iVisibilityObject* visobj;
   csKDTreeChild* child;
   long update_number;	// Last used update_number from movable.
   long shape_number;	// Last used shape_number from model.
@@ -96,7 +97,7 @@ private:
   // This puts an upper limit of all boxes in the kdtree itself because
   // those go off to infinity.
   csBox3 kdtree_box;
-  csRefArray<csFrustVisObjectWrapper> visobj_vector;
+  csPDelArray<csFrustVisObjectWrapper> visobj_vector;
   int scr_width, scr_height;	// Screen dimensions.
   uint32 current_vistest_nr;
 

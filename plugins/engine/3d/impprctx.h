@@ -1,6 +1,5 @@
 /*
     Copyright (C) 2002 by Keith Fulton and Jorrit Tyberghein
-    Rewritten during Sommer of Code 2006 by Christoph "Fossi" Mewes
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,46 +20,31 @@
 #define __CS_IMPPRCTX_H__
 
 #include "csutil/ref.h"
+#include "cstool/proctex.h"
 #include "csgeom/vector3.h"
 #include "iengine/engine.h"
 #include "iengine/rview.h"
 
 class csEngine;
+class csEngineProcTex;
 class csImposterMesh;
 
-class csImposterProcTex : public scfImplementation0<csImposterProcTex>
+class csImposterProcTex : public csProcTexture
 {
 private:
-  //parent billboard
+  csEngine* engine;
+  iRenderView* View;
   csImposterMesh *mesh;
-
-  //r2t texture
-  iTextureWrapper *tex;
-
-  //flag if this imposter is currently in queue to be rendered to texture
-  bool updating;
-
-  //imposter texture size
-  int w, h;
-
-  //clipper for r2t
-  iClipper2D *clip;
-
-  //cached csStringID values
-  static csStringID stringid_standard;
-  static csStringID stringid_light_ambient;
-
-  void SetImposterReady (bool r);
+  bool imposter_ready;
 
 public:
   csImposterProcTex (csEngine* engine, csImposterMesh *parent);
   ~csImposterProcTex ();
 
-  bool GetImposterReady () { return !updating; }
-  void RenderToTexture (iRenderView *rview, iSector *s);
-  void Update (iRenderView* rview);
-  csImposterMesh *GetParent () { return mesh; }
-  iTextureWrapper *GetTexture () { return tex; }
+  bool GetImposterReady () { return imposter_ready; }
+  void SetImposterReady (bool r) { imposter_ready = r; }
+  virtual bool PrepareAnim ();
+  virtual void Animate (csTicks current_time);
 };
 
 #endif // __CS_IMPPRCTX_H__

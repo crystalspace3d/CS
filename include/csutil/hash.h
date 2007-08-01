@@ -27,7 +27,7 @@
 #include "csutil/array.h"
 #include "csutil/comparator.h"
 #include "csutil/util.h"
-#include "csutil/tuple.h"
+
 
 /**\addtogroup util_containers
  * @{ */
@@ -164,29 +164,6 @@ public:
 };
 
 /**
- * A helper template to use const pointers as keys for hashes.
- */
-template <typename T>
-class csConstPtrKey
-{
-  const T* ptr;
-public:
-  csConstPtrKey () : ptr(0) {}
-  csConstPtrKey (const T* ptr) : ptr(ptr) {}
-  csConstPtrKey (csConstPtrKey const& other) : ptr (other.ptr) {}
-
-  uint GetHash () const { return (uintptr_t)ptr; }
-  inline friend bool operator < (const csConstPtrKey& r1, const csConstPtrKey& r2)
-  { return r1.ptr < r2.ptr; }
-  operator const T* () const
-  { return ptr; }
-  const T* operator -> () const
-  { return ptr; }
-  csConstPtrKey& operator = (csConstPtrKey const& other)
-  { ptr = other.ptr; return *this; }
-};
-
-/**
  * Template that can be used as a base class for hash computers for 
  * string types (must support cast to const char*).
  * Example:
@@ -230,6 +207,40 @@ public:
   }
 };
 
+#include "csutil/win32/msvc_deprecated_warn_off.h"
+
+/**
+ * This is a simple helper class to make a copy of a const char*.
+ * This can be used to have a hash that makes copies of the keys.
+ * \deprecated csString can also be used for hash keys.
+ */
+class CS_DEPRECATED_TYPE_MSG("csString can also be used for hash keys") 
+  csStrKey
+{
+private:
+  char* str;
+
+public:
+  csStrKey () { str = 0; }
+  csStrKey (const char* s) { str = csStrNew (s); }
+  csStrKey (const csStrKey& c) { str = csStrNew (c.str); }
+  ~csStrKey () { delete[] str; }
+  csStrKey& operator=(const csStrKey& o)
+  {
+    delete[] str; str = csStrNew (o.str);
+    return *this;
+  }
+  operator const char* () const { return str; }
+  uint GetHash() const { return csHashCompute (str); }
+};
+
+/**
+ * csComparator<> specialization for csStrKey that uses strcmp().
+ */
+template<>
+class csComparator<csStrKey, csStrKey> : public csComparatorString<csStrKey> {};
+
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * A generic hash table class,
@@ -237,19 +248,13 @@ public:
  * The hash value of a key is computed using csHashComputer<>, two keys are
  * compared using csComparator<>. You need to provide appropriate 
  * specializations of those templates if you want use non-integral types 
- * (other than const char* and csString for which appropriate specializations
- * are already provided) or special hash algorithms. 
+ * (other than const char*, csStrKey and csString for which appropriate 
+ * specializations are already provided) or special hash algorithms. 
  */
 template <class T, class K = unsigned int, 
   class ArrayMemoryAlloc = CS::Memory::AllocatorMalloc> 
 class csHash
 {
-public:
-  typedef csHash<T, K, ArrayMemoryAlloc> ThisType;
-  typedef T ValueType;
-  typedef K KeyType;
-  typedef ArrayMemoryAlloc AllocatorType;
-
 protected:
   struct Element
   {
@@ -285,17 +290,17 @@ private:
     };
 
     const size_t *p;
-    size_t elen = Elements.GetSize ();
+    size_t elen = Elements.Length ();
     for (p = Primes; *p && *p <= elen; p++) ;
     Modulo = *p;
     CS_ASSERT (Modulo);
 
-    Elements.SetSize (Modulo, ElementArray (0, MIN(Modulo / GrowRate, 4)));
+    Elements.SetLength(Modulo, ElementArray (0, MIN(Modulo / GrowRate, 4)));
 
     for (size_t i = 0; i < elen; i++)
     {
       ElementArray& src = Elements[i];
-      size_t slen = src.GetSize ();
+      size_t slen = src.Length ();
       for (size_t j = slen; j > 0; j--)
       {
         const Element& srcElem = src[j - 1];
@@ -345,13 +350,13 @@ public:
    */
   void Put (const K& key, const T &value)
   {
-    if (Elements.GetSize() == 0) Elements.SetSize (Modulo);
+    if (Elements.GetSize() == 0) Elements.SetLength (Modulo);
     ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
     values.Push (Element (key, value));
     Size++;
-    if (values.GetSize () > Elements.GetSize () / GrowRate
-     && Elements.GetSize () < MaxSize) Grow ();
+    if (values.Length () > Elements.Length () / GrowRate
+     && Elements.Length () < MaxSize) Grow ();
   }
 
   /// Get all the elements with the given key, or empty if there are none.
@@ -368,8 +373,8 @@ public:
     if (Elements.GetSize() == 0) return csArray<T> ();
     const ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    csArray<T> ret (values.GetSize () / 2);
-    const size_t len = values.GetSize ();
+    csArray<T> ret (values.Length () / 2);
+    const size_t len = values.Length ();
     for (size_t i = 0; i < len; ++i)
     {
       const Element& v = values[i];
@@ -382,10 +387,10 @@ public:
   /// Add an element to the hash table, overwriting if the key already exists.
   void PutUnique (const K& key, const T &value)
   {
-    if (Elements.GetSize() == 0) Elements.SetSize (Modulo);
+    if (Elements.GetSize() == 0) Elements.SetLength (Modulo);
     ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    const size_t len = values.GetSize ();
+    const size_t len = values.Length ();
     for (size_t i = 0; i < len; ++i)
     {
       Element& v = values[i];
@@ -398,8 +403,18 @@ public:
 
     values.Push (Element (key, value));
     Size++;
-    if (values.GetSize () > Elements.GetSize () / GrowRate
-     && Elements.GetSize () < MaxSize) Grow ();
+    if (values.Length () > Elements.Length () / GrowRate
+     && Elements.Length () < MaxSize) Grow ();
+  }
+
+  /**
+   * Add an element to the hash table, overwriting if the key already exists.
+   * \deprecated Use PutUnique() instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use PutUnique() instead.")
+  void PutFirst (const K& key, const T &value)
+  {
+    PutUnique(key, value);
   }
 
   /// Returns whether at least one element matches the given key.
@@ -408,7 +423,7 @@ public:
     if (Elements.GetSize() == 0) return false;
     const ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    const size_t len = values.GetSize ();
+    const size_t len = values.Length ();
     for (size_t i = 0; i < len; ++i)
       if (csComparator<K, K>::Compare (values[i].key, key) == 0) 
 	return true;
@@ -432,7 +447,7 @@ public:
     if (Elements.GetSize() == 0) return 0;
     const ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    const size_t len = values.GetSize ();
+    const size_t len = values.Length ();
     for (size_t i = 0; i < len; ++i)
     {
       const Element& v = values[i];
@@ -452,7 +467,7 @@ public:
     if (Elements.GetSize() == 0) return 0;
     ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    const size_t len = values.GetSize ();
+    const size_t len = values.Length ();
     for (size_t i = 0; i < len; ++i)
     {
       Element& v = values[i];
@@ -464,14 +479,6 @@ public:
   }
 
   /**
-   * h["key"] shorthand notation for h.GetElementPoint ("key")
-   */
-  T* operator[] (const K& key)
-  {
-    return GetElementPointer (key);
-  }
-
-  /**
    * Get the first element matching the given key, or \p fallback if there is 
    * none.
    */
@@ -480,7 +487,7 @@ public:
     if (Elements.GetSize() == 0) return fallback;
     const ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    const size_t len = values.GetSize ();
+    const size_t len = values.Length ();
     for (size_t i = 0; i < len; ++i)
     {
       const Element& v = values[i];
@@ -500,7 +507,7 @@ public:
     if (Elements.GetSize() == 0) return fallback;
     ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    const size_t len = values.GetSize ();
+    const size_t len = values.Length ();
     for (size_t i = 0; i < len; ++i)
     {
       Element& v = values[i];
@@ -529,7 +536,7 @@ public:
     if (Elements.GetSize() == 0) return ret;
     ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    for (size_t i = values.GetSize (); i > 0; i--)
+    for (size_t i = values.Length (); i > 0; i--)
     {
       const size_t idx = i - 1;
       if (csComparator<K, K>::Compare (values[idx].key, key) == 0)
@@ -549,7 +556,7 @@ public:
     if (Elements.GetSize() == 0) return ret;
     ElementArray& values = 
       Elements[csHashComputer<K>::ComputeHash (key) % Modulo];
-    for (size_t i = values.GetSize (); i > 0; i--)
+    for (size_t i = values.Length (); i > 0; i--)
     {
       const size_t idx = i - 1;
       if ((csComparator<K, K>::Compare (values[idx].key, key) == 0) && 
@@ -600,7 +607,7 @@ public:
       hash(hash0),
       key(key0), 
       bucket(csHashComputer<K>::ComputeHash (key) % hash->Modulo),
-      size((hash->Elements.GetSize() > 0) ? hash->Elements[bucket].GetSize () : 0)
+      size((hash->Elements.GetSize() > 0) ? hash->Elements[bucket].Length () : 0)
       { Reset (); }
 
     friend class csHash<T, K>;
@@ -655,14 +662,14 @@ public:
     void Init () 
     { 
       size = 
-        (hash->Elements.GetSize() > 0) ? hash->Elements[bucket].GetSize () : 0;
+        (hash->Elements.GetSize() > 0) ? hash->Elements[bucket].Length () : 0;
     }
 
     void FindItem ()
     {
       if (element >= size)
       {
-	while (++bucket < hash->Elements.GetSize ())
+	while (++bucket < hash->Elements.Length ())
 	{
           Init ();
 	  if (size != 0)
@@ -704,8 +711,8 @@ public:
     /// Returns a boolean indicating whether or not the hash has more elements.
     bool HasNext () const
     {
-      if (hash->Elements.GetSize () == 0) return false;
-      return element < size || bucket < hash->Elements.GetSize ();
+      if (hash->Elements.Length () == 0) return false;
+      return element < size || bucket < hash->Elements.Length ();
     }
 
     /// Advance the iterator of one step
@@ -743,15 +750,6 @@ public:
       return Next ();
     }
 
-    /// Return a tuple of the value and key.
-    const csTuple2<T, K> NextTuple ()
-    {
-      csTuple2<T, K> t (NextNoAdvance (),
-          hash->Elements[bucket][element].key);
-      Advance ();
-      return t;
-    }
-
     /// Move the iterator back to the first element.
     void Reset () { Zero (); Init (); FindItem (); }
   };
@@ -778,7 +776,7 @@ public:
       hash(hash0),
       key(key0), 
       bucket(csHashComputer<K>::ComputeHash (key) % hash->Modulo),
-      size((hash->Elements.GetSize() > 0) ? hash->Elements[bucket].GetSize () : 0)
+      size((hash->Elements.GetSize() > 0) ? hash->Elements[bucket].Length () : 0)
       { Reset (); }
 
     friend class csHash<T, K>;
@@ -833,14 +831,14 @@ public:
     void Init () 
     { 
       size = 
-        (hash->Elements.GetSize() > 0) ? hash->Elements[bucket].GetSize () : 0;
+        (hash->Elements.GetSize() > 0) ? hash->Elements[bucket].Length () : 0;
     }
 
     void FindItem ()
     {
       if (element >= size)
       {
-	while (++bucket < hash->Elements.GetSize ())
+	while (++bucket < hash->Elements.Length ())
 	{
           Init ();
 	  if (size != 0)
@@ -882,8 +880,8 @@ public:
     /// Returns a boolean indicating whether or not the hash has more elements.
     bool HasNext () const
     {
-      if (hash->Elements.GetSize () == 0) return false;
-      return element < size || bucket < hash->Elements.GetSize ();
+      if (hash->Elements.Length () == 0) return false;
+      return element < size || bucket < hash->Elements.Length ();
     }
 
     /// Advance the iterator of one step
@@ -919,15 +917,6 @@ public:
     {
       key = hash->Elements[bucket][element].key;
       return Next ();
-    }
-
-    /// Return a tuple of the value and key.
-    const csTuple2<T, K> NextTuple ()
-    {
-      csTuple2<T, K> t (NextNoAdvance (),
-          hash->Elements[bucket][element].key);
-      Advance ();
-      return t;
     }
 
     /// Move the iterator back to the first element.

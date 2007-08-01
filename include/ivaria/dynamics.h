@@ -33,6 +33,7 @@ struct iMeshWrapper;
 struct iLight;
 struct iCamera;
 struct iObject;
+struct iPolygonMesh;
 struct iRigidBody;
 
 class csMatrix3;
@@ -43,17 +44,6 @@ class csVector3;
 struct iDynamicsCollisionCallback;
 struct iDynamicsMoveCallback;
 struct iDynamicSystem;
-
-
-/**
- * This is the interface for a dynamics step callback.
- */
-struct iDynamicsStepCallback : public virtual iBase
-{
-  SCF_INTERFACE (iDynamicsStepCallback, 0, 0, 1);
-
-  virtual void Step (float stepsize) = 0;
-};
 
 /**
  * This is the interface for the actual plugin.
@@ -85,16 +75,6 @@ struct iDynamics : public virtual iBase
 
   /// Step the simulation forward by stepsize.
   virtual void Step (float stepsize) = 0;
-
-  /**
-   * Add a callback to be executed dynamics is being stepped.
-   */
-  virtual void AddStepCallback (iDynamicsStepCallback *callback) = 0;
-
-  /**
-   * Remove dynamics step callback.
-   */
-  virtual void RemoveStepCallback (iDynamicsStepCallback *callback) = 0;
 };
 
 struct iDynamicsSystemCollider;
@@ -310,6 +290,8 @@ struct iDynamicsMoveCallback : public virtual iBase
   virtual void Execute (csOrthoTransform& t) = 0;
 };
 
+SCF_VERSION (iDynamicsCollisionCallback, 0, 0, 2);
+
 /**
  * This is the interface for attaching a collider callback to the body
  * 
@@ -320,10 +302,8 @@ struct iDynamicsMoveCallback : public virtual iBase
  * - iDynamicSystem
  *   
  */
-struct iDynamicsCollisionCallback : public virtual iBase
+struct iDynamicsCollisionCallback : public iBase
 {
-  SCF_INTERFACE (iDynamicsCollisionCallback, 0, 0, 2);
-
   /**
    * A collision occured.
    * \param thisbody The body that received a collision.
@@ -335,6 +315,8 @@ struct iDynamicsCollisionCallback : public virtual iBase
   virtual void Execute (iRigidBody *thisbody, iRigidBody *otherbody,
       const csVector3& pos, const csVector3& normal, float depth) = 0;
 };
+
+SCF_VERSION (iBodyGroup, 0, 0, 1);
 
 /**
  * Body Group is a collection of bodies which don't collide with
@@ -352,16 +334,14 @@ struct iDynamicsCollisionCallback : public virtual iBase
  * Main users of this interface:
  * - iDynamicSystem
  */
-struct iBodyGroup : public virtual iBase
+struct iBodyGroup : public iBase
 {
-  SCF_INTERFACE (iBodyGroup, 0, 1, 0);
-
-  /// Adds a body to this group
-  virtual void AddBody (iRigidBody *body) = 0;
-  /// Removes a body from this group
-  virtual void RemoveBody (iRigidBody *body) = 0;
-  /// Tells whether the body is in this group or not
-  virtual bool BodyInGroup (iRigidBody *body) = 0;
+   /// Adds a body to this group
+   virtual void AddBody (iRigidBody *body) = 0;
+   /// Removes a body from this group
+   virtual void RemoveBody (iRigidBody *body) = 0;
+   /// Tells whether the body is in this group or not
+   virtual bool BodyInGroup (iRigidBody *body) = 0;
 };
 
 /**
@@ -652,10 +632,11 @@ enum csColliderGeometryType
   PLANE_COLLIDER_GEOMETRY,
   TRIMESH_COLLIDER_GEOMETRY,
   CYLINDER_COLLIDER_GEOMETRY,
-  CAPSULE_COLLIDER_GEOMETRY,
   SPHERE_COLLIDER_GEOMETRY
 };
 
+
+SCF_VERSION (iDynamicsColliderCollisionCallback, 0, 0, 1);
 
 /**
  * This is the interface for attaching a collider callback to the body
@@ -666,10 +647,8 @@ enum csColliderGeometryType
  * Main users of this interface:
  * - iDynamicSystem
  */
-struct iDynamicsColliderCollisionCallback : public virtual iBase
+struct iDynamicsColliderCollisionCallback : public iBase
 {
-  SCF_INTERFACE (iDynamicsColliderCollisionCallback, 0, 0, 1);
-
   virtual void Execute (iDynamicsSystemCollider *thiscollider, 
     iDynamicsSystemCollider *othercollider) = 0;
   virtual void Execute (iDynamicsSystemCollider *thiscollider, 
@@ -717,15 +696,8 @@ struct iDynamicsSystemCollider : public virtual iBase
   /// Create Collider Geometry with given box (given by its size)
   virtual bool CreateBoxGeometry (const csVector3& box_size) = 0;
 
-  /**
-   * Create Collider Geometry with Cylinder (given by its length and radius).
-   * \deprecated CreateCCylinderGeometry is deprecated, use CreateCapsuleGeometry instead.
-   */
-  CS_DEPRECATED_METHOD_MSG("CreateCCylinderGeometry is deprecated, use CreateCapsuleGeometry instead")
+  /// Create Collider Geometry with Cylinder (given by its length and radius)
   virtual bool CreateCCylinderGeometry (float length, float radius) = 0;
-  
-  /// Create Capsule Collider Geometry.
-  virtual bool CreateCapsuleGeometry (float length, float radius) = 0;
 
   //FIXME: This should be implememented, but it is not so obvious - it
   //should be valid also for static colliders.

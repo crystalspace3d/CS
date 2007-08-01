@@ -99,7 +99,7 @@ protected:
    * no particle may exceed the bbox.
    */
   csBox3 bbox;
-  csRef<iMeshObjectDrawCallback> vis_cb;
+  iMeshObjectDrawCallback* vis_cb;
 
   /// Pointer to a mesh object factory for 2D sprites.
   csRef<iMeshObjectFactory> spr_factory;
@@ -182,7 +182,7 @@ public:
       iMovable* movable);
 
   /// How many particles the system currently has.
-  inline size_t GetNumParticles () const { return particles.GetSize ();}
+  inline size_t GetNumParticles () const { return particles.Length();}
   /// Get a particle.
   inline iParticle* GetParticle (size_t idx) const
   { return particles[idx]; }
@@ -317,6 +317,8 @@ public:
     iMovable* movable, uint32 frustum_mask);
   virtual void SetVisibleCallback (iMeshObjectDrawCallback* cb)
   {
+    if (cb) cb->IncRef ();
+    if (vis_cb) vis_cb->DecRef ();
     vis_cb = cb;
   }
   virtual iMeshObjectDrawCallback* GetVisibleCallback () const
@@ -370,7 +372,6 @@ public:
   }
   virtual iMaterialWrapper* GetMaterialWrapper () const { return mat; }
   virtual iTerraFormer* GetTerraFormerColldet () { return 0; }
-  virtual iTerrainSystem* GetTerrainColldet () { return 0; }
   //------------------------- iParticleState implementation ----------------
   virtual void SetMixMode (uint mode)
   {
@@ -384,19 +385,10 @@ public:
    * does nothing.
    */
   virtual void PositionChild (iMeshObject* /*child*/,csTicks /*current_time*/) { }
-
-  /**
-   * see imesh/object.h for specification.  The default implementation
-   * does nothing.
-   */
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-	iDecalBuilder* decalBuilder)
-  {
-  }
 };
 
 /**
- * This class has a set of particles that behave with physics.
+ * This class has a set of particles that behave with phsyics.
  * They each have a speed and an acceleration.
  */
 class CS_CRYSTALSPACE_EXPORT csNewtonianParticleSystem :

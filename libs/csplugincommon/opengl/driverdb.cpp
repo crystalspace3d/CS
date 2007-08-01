@@ -536,7 +536,7 @@ void csGLDriverDatabase::Close ()
   if (!ogl2d) return;
   csRef<iConfigManager> cfgmgr = 
     csQueryRegistry<iConfigManager> (ogl2d->object_reg);
-  for (size_t i = 0; i < addedConfigs.GetSize (); i++)
+  for (size_t i = 0; i < addedConfigs.Length(); i++)
   {
     cfgmgr->RemoveDomain (addedConfigs[i]);
   }

@@ -132,25 +132,20 @@ struct csImageArea
   { x = sx; y = sy; w = sw; h = sh; data = 0; }
 };
 
+SCF_VERSION (iOffscreenCanvasCallback, 1, 0, 0);
+
 /**
  * When you create an offscreen canvas (CreateOffscreenCanvas()) then
  * you can use this callback to get informed when the texture has
  * been modified (FinishDraw() called) or a palette entry is modified.
  */
-struct CS_DEPRECATED_TYPE_MSG("Offscreen canvases are deprecated, use "
-  "iGraphics3D::SetRenderTarget()")
-iOffscreenCanvasCallback : public virtual iBase
+struct iOffscreenCanvasCallback : public iBase
 {
-  SCF_INTERFACE (iOffscreenCanvasCallback, 1, 0, 0);
-
   /// FinishDraw has been called.
   virtual void FinishDraw (iGraphics2D* canvas) = 0;
   /// Palette entry has been modified.
   virtual void SetRGB (iGraphics2D* canvas, int idx, int r, int g, int b) = 0;
 };
-
-// For CreateOffscreenCanvas()
-#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**
  * This is the interface for 2D renderer. The 2D renderer is responsible
@@ -177,7 +172,7 @@ iOffscreenCanvasCallback : public virtual iBase
  */
 struct iGraphics2D : public virtual iBase
 {
-  SCF_INTERFACE (iGraphics2D, 3, 1, 0);
+  SCF_INTERFACE (iGraphics2D, 3, 0, 1);
   
   /// Open the device.
   virtual bool Open () = 0;
@@ -335,6 +330,16 @@ struct iGraphics2D : public virtual iBase
   virtual void Write (iFont *font, int x, int y, int fg, int bg,
     const char *str, uint flags = 0) = 0;
 
+  /**
+   * Write a text string into the back buffer. A value of -1 for \p bg
+   * color will not draw the background. x and y are the pen position on
+   * a baseline. The actual font baseline is shifted up by the font's descent.
+   * \deprecated
+   * Instead, use Write() with the #CS_WRITE_BASELINE flag set.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use Write() with CS_WRITE_BASELINE flag instead")
+  virtual void WriteBaseline (iFont *font, 
+    int x, int y, int fg, int bg, const char *str) = 0;
 
   /// Enable/disable canvas resizing
   virtual void AllowResize (bool iAllow) = 0;
@@ -427,11 +432,7 @@ struct iGraphics2D : public virtual iBase
    * The callback interface (if given) is used to communicate from the
    * canvas back to the caller. You can use this to detect when the
    * texture data has changed for example.
-   * \deprecated Offscreen canvases are deprecated, use 
-   *   iGraphics3D::SetRenderTarget()
    */
-  CS_DEPRECATED_METHOD_MSG("Offscreen canvases are deprecated, use "
-    "iGraphics3D::SetRenderTarget()") 
   virtual csPtr<iGraphics2D> CreateOffscreenCanvas (
   	void* memory, int width, int height, int depth,
 	iOffscreenCanvasCallback* ofscb) = 0;
@@ -447,8 +448,6 @@ struct iGraphics2D : public virtual iBase
     const wchar_t* str, uint flags = 0) = 0;
 
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /** @} */
 

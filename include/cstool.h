@@ -52,7 +52,6 @@
 #include "cstool/rbuflock.h"
 #include "cstool/rendermeshholder.h"
 #include "cstool/rendermeshlist.h"
-#include "cstool/rviewclipper.h"
 #include "cstool/saverfile.h"
 #include "cstool/saverref.h"
 #include "cstool/uberscreenshot.h"

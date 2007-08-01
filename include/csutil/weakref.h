@@ -55,9 +55,6 @@ private:
     T* obj;
     void* obj_void;
   };
-#if defined(CS_DEBUG)
-  void* this_saved;
-#endif
 
   /**
    * Unlink the object pointed to by this weak reference so that
@@ -81,21 +78,13 @@ public:
   /**
    * Construct an empty weak reference.
    */
-  csWeakRef () : obj (0) 
-  {
-#if defined(CS_DEBUG)
-    this_saved = this;
-#endif
-  }
+  csWeakRef () : obj (0) {}
 
   /**
    * Construct a weak reference from a normal pointer.
    */
   csWeakRef (T* newobj)
   {
-#if defined(CS_DEBUG)
-    this_saved = this;
-#endif
     obj = newobj;
     Link ();
   }
@@ -105,9 +94,6 @@ public:
    */
   csWeakRef (csRef<T> const& newobj)
   {
-#if defined(CS_DEBUG)
-    this_saved = this;
-#endif
     obj = newobj;
     Link ();
   }
@@ -117,9 +103,6 @@ public:
    */
   csWeakRef (csWeakRef const& other) : obj (other.obj)
   {
-#if defined(CS_DEBUG)
-    this_saved = this;
-#endif
     Link ();
   }
 
@@ -129,9 +112,6 @@ public:
    */
   csWeakRef (const csPtr<T>& newobj)
   {
-#if defined(CS_DEBUG)
-    this_saved = this;
-#endif
     csRef<T> r = newobj;
     obj = r;
     Link ();
@@ -142,10 +122,6 @@ public:
    */
   ~csWeakRef ()
   {
-#if defined(CS_DEBUG)
-    CS_ASSERT_MSG ("A csWeakRef<> was memcpy()ed, which is not allowed",
-      this_saved == this);
-#endif
     Unlink ();
   }
 

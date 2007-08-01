@@ -74,8 +74,8 @@ csGeneralFactoryLoader::~csGeneralFactoryLoader ()
 bool csGeneralFactoryLoader::Initialize (iObjectRegistry* object_reg)
 {
   csGeneralFactoryLoader::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
 
   InitTokenTable (xmltokens);
   return true;
@@ -287,7 +287,7 @@ csPtr<iBase> csGeneralFactoryLoader::Parse (iDocumentNode* node,
   csRef<iGeneralFactoryState> state;
 
   fact = type->NewFactory ();
-  state = scfQueryInterface<iGeneralFactoryState> (fact);
+  state = SCF_QUERY_INTERFACE (fact, iGeneralFactoryState);
 
   bool num_tri_given = false;
   bool num_vt_given = false;
@@ -771,8 +771,8 @@ csGeneralFactorySaver::~csGeneralFactorySaver ()
 bool csGeneralFactorySaver::Initialize (iObjectRegistry* object_reg)
 {
   csGeneralFactorySaver::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 
@@ -833,9 +833,9 @@ bool csGeneralFactorySaver::WriteDown (iBase* obj, iDocumentNode* parent,
   if (obj)
   {
     csRef<iGeneralFactoryState> gfact = 
-      scfQueryInterface<iGeneralFactoryState> (obj);
+      SCF_QUERY_INTERFACE (obj, iGeneralFactoryState);
     csRef<iMeshObjectFactory> meshfact = 
-      scfQueryInterface<iMeshObjectFactory> (obj);
+      SCF_QUERY_INTERFACE (obj, iMeshObjectFactory);
     if (!gfact) return false;
     if (!meshfact) return false;
 
@@ -1032,8 +1032,8 @@ csGeneralMeshLoader::~csGeneralMeshLoader ()
 bool csGeneralMeshLoader::Initialize (iObjectRegistry* object_reg)
 {
   csGeneralMeshLoader::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
 
   InitTokenTable (xmltokens);
   return true;
@@ -1095,15 +1095,10 @@ bool csGeneralMeshLoader::ParseLegacySubMesh(iDocumentNode *node,
   if(!node) return false;
   if (!state)
   {
-    synldr->ReportError ("crystalspace.genmeshloader.parselegacysubmesh",
+    synldr->ReportError ("crystalspace.genmeshloader.parse",
       node, "Submesh must be specified _after_ factory tag.");
     return false;
   }
-
-  synldr->Report ("crystalspace.genmeshloader.parselegacysubmesh", 
-    CS_REPORTER_SEVERITY_WARNING, node, 
-    "Using deprecated legacy submesh syntax.");
-
 
   csRef<iMeshObject> mo = scfQueryInterface<iMeshObject> (state);
   csRef<iGeneralFactoryState> factstate =
@@ -1129,7 +1124,7 @@ bool csGeneralMeshLoader::ParseLegacySubMesh(iDocumentNode *node,
         if (tri > factstate->GetTriangleCount ())
         {
           synldr->ReportError (
-            "crystalspace.genmeshloader.parselegacysubmesh.invalidindex",
+            "crystalspace.genmeshloader.parse.invalidindex",
             child, "Invalid triangle index in genmesh submesh!");
           return false;
         }
@@ -1148,7 +1143,7 @@ bool csGeneralMeshLoader::ParseLegacySubMesh(iDocumentNode *node,
         if (!material.IsValid ())
         {
           synldr->ReportError (
-            "crystalspace.genmeshloader.parselegacysubmesh.unknownmaterial",
+            "crystalspace.genmeshloader.parse.unknownmaterial",
             node, "Couldn't find material '%s'!", matname);
           return false;
         }
@@ -1168,10 +1163,10 @@ bool csGeneralMeshLoader::ParseLegacySubMesh(iDocumentNode *node,
   }
 
   if (do_mixmode)
-    state->AddSubMesh (triangles.GetArray (), (int)triangles.GetSize (),
+    state->AddSubMesh (triangles.GetArray (), (int)triangles.Length (),
   	  material, mixmode);
   else
-    state->AddSubMesh (triangles.GetArray (), (int)triangles.GetSize (),
+    state->AddSubMesh (triangles.GetArray (), (int)triangles.Length (),
   	  material);
 
   return true;
@@ -1326,8 +1321,8 @@ csPtr<iBase> csGeneralMeshLoader::Parse (iDocumentNode* node,
 		child, "Couldn't find factory '%s'!", factname);
 	    return 0;
 	  }
-	  factstate =  
-	    scfQueryInterface<iGeneralFactoryState> (fact->GetMeshObjectFactory());
+	  factstate = SCF_QUERY_INTERFACE (fact->GetMeshObjectFactory(), 
+	    iGeneralFactoryState);
 	  if (!factstate)
 	  {
       	    synldr->ReportError (
@@ -1338,7 +1333,7 @@ csPtr<iBase> csGeneralMeshLoader::Parse (iDocumentNode* node,
 	  }
 	  mesh = fact->GetMeshObjectFactory ()->NewInstance ();
 	  CS_ASSERT (mesh != 0);
-          meshstate = scfQueryInterface<iGeneralMeshState> (mesh);
+          meshstate = SCF_QUERY_INTERFACE (mesh, iGeneralMeshState);
 	  if (!meshstate)
 	  {
       	    synldr->ReportError (
@@ -1381,50 +1376,6 @@ csPtr<iBase> csGeneralMeshLoader::Parse (iDocumentNode* node,
 	CHECK_MESH(meshstate);
         ParseSubMesh (child, meshstate, ldr_context);
         break;
-      case XMLTOKEN_ANIMCONTROL:
-        {
-	  const char* pluginname = child->GetAttributeValue ("plugin");
-	  if (!pluginname)
-	  {
-	    synldr->ReportError (
-		    "crystalspace.genmeshfactoryloader.parse",
-		    child, "Plugin name missing for <animcontrol>!");
-	    return 0;
-	  }
-	  csRef<iGenMeshAnimationControlType> type =
-	  	csLoadPluginCheck<iGenMeshAnimationControlType> (
-		object_reg, pluginname, false);
-	  if (!type)
-	  {
-	    synldr->ReportError (
-		"crystalspace.genmeshloader.parse",
-		child, "Could not load animation control plugin '%s'!",
-		pluginname);
-	    return 0;
-    	  }
-	  csRef<iGenMeshAnimationControlFactory> anim_ctrl_fact = type->
-	  	CreateAnimationControlFactory ();
-	  const char* error = anim_ctrl_fact->Load (child);
-	  if (error)
-	  {
-	    synldr->ReportError (
-		"crystalspace.genmeshloader.parse",
-		child, "Error loading animation control factory: '%s'!",
-		error);
-	    return 0;
-	  }
-          csRef<iGenMeshAnimationControl> animctrl = 
-            anim_ctrl_fact->CreateAnimationControl (mesh);
-	  if (!type)
-	  {
-	    synldr->ReportError (
-		"crystalspace.genmeshloader.parse",
-		child, "Could not create animation control");
-	    return 0;
-    	  }
-          meshstate->SetAnimationControl (animctrl);
-	}
-	break;
       default:
         synldr->ReportBadToken (child);
 	return 0;
@@ -1448,8 +1399,8 @@ csGeneralMeshSaver::~csGeneralMeshSaver ()
 bool csGeneralMeshSaver::Initialize (iObjectRegistry* object_reg)
 {
   csGeneralMeshSaver::object_reg = object_reg;
-  reporter = csQueryRegistry<iReporter> (object_reg);
-  synldr = csQueryRegistry<iSyntaxService> (object_reg);
+  reporter = CS_QUERY_REGISTRY (object_reg, iReporter);
+  synldr = CS_QUERY_REGISTRY (object_reg, iSyntaxService);
   return true;
 }
 

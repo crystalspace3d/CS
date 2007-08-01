@@ -72,15 +72,20 @@ public:
   virtual void ShowMouse();
 
   /// Event handler
-  struct EventHandler : public scfImplementation1<EventHandler, iEventHandler>
+  struct EventHandler : public iEventHandler
   {
   private:
     OSXDriver2D *parent;
-  public:   
+  public:
+    SCF_DECLARE_IBASE;
     EventHandler(OSXDriver2D *p)
-      : scfImplementationType (this)
     {
+      SCF_CONSTRUCT_IBASE(0);
       parent = p;
+    };
+    virtual ~EventHandler()
+    {
+      SCF_DESTRUCT_IBASE();
     };
     virtual bool HandleEvent (iEvent& e) { return parent->HandleEvent(e); }
     CS_EVENTHANDLER_NAMES ("crystalspace.macosx.driver2d")

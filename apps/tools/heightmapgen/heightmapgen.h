@@ -19,8 +19,8 @@
 #ifndef __HEIGHTMAPGEN_H__
 #define __HEIGHTMAPGEN_H__
 
-#include "crystalspace.h"
-#include "stdarg.h"
+#include <stdarg.h>
+#include <crystalspace.h>
 
 class HeightMapGen
 {

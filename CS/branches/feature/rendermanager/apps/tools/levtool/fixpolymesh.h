@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2003 by Jorrit Tyberghein
+    Copyright (C) 2007 by Frank Richter
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,25 +16,27 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "cssysdef.h"
-#include <math.h>
-#include "csgeom/polymesh.h"
-#include "csgeom/pmtools.h"
+#ifndef __FIXPOLYMESH_H__
+#define __FIXPOLYMESH_H__
 
-#include "csutil/win32/msvc_deprecated_warn_off.h"
+#include "csutil/csstring.h"
+#include "csutil/strhash.h"
 
-void csPolygonMesh::Triangulate ()
+struct iDocumentNode;
+
+class FixPolyMesh
 {
-  if (triangles) return;
-  csPolygonMeshTools::Triangulate (this, triangles, triangle_count);
-}
+  csStringHash xmltokens;
+#define CS_TOKEN_ITEM_FILE "apps/tools/levtool/fixpolymesh.tok"
+#include "cstool/tokenlist.h"
+#undef CS_TOKEN_ITEM_FILE 
 
-csTriangle* csPolygonMeshBox::GetTriangles ()
-{
-  if (triangles) return triangles;
-  int tc;
-  csPolygonMeshTools::Triangulate (this, triangles, tc);
-  return triangles;
-}
+  void HandlePolyMeshContainer (iDocumentNode* node);
+  void HandlePolyMesh (iDocumentNode* node);
+public:
+  FixPolyMesh ();
 
-#include "csutil/win32/msvc_deprecated_warn_on.h"
+  void Fix (iDocumentNode* root);
+};
+
+#endif // __FIXPOLYMESH_H__

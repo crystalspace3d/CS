@@ -558,7 +558,7 @@
 				RelativePath="..\..\libs\cstool\enginetools.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\cstool\gentrtex.cpp">
+				RelativePath="..\..\libs\cstool\genmeshbuilder.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\importkit.cpp">
@@ -619,6 +619,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\saverref.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\cstool\smartfileopen.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\uberscreenshot.cpp">
@@ -1303,7 +1306,7 @@
 				RelativePath="..\..\libs\..\include\cstool\framedataholder.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\cstool\gentrtex.h">
+				RelativePath="..\..\libs\..\include\cstool\genmeshbuilder.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\identstrings.h">
@@ -1364,6 +1367,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\saverref.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\smartfileopen.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\tokenlist.h">
@@ -1513,9 +1519,6 @@
 				RelativePath="..\..\libs\..\include\csutil\databuf.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\debug.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\dirtyaccessarray.h">
 			</File>
 			<File
@@ -1643,9 +1646,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\processorspecdetection.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\profile.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\ptrwrap.h">

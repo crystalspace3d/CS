@@ -317,6 +317,9 @@
 			<File
 				RelativePath="..\..\apps\tests\simdtest\simdtestAVSSE.cpp">
 			</File>
+			<File
+				RelativePath="..\..\apps\tests\simdtest\simdtestCPP.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

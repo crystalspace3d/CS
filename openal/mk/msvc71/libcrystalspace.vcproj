@@ -482,9 +482,6 @@
 				RelativePath="..\..\libs\csplugincommon\particlesys\partgen.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csplugincommon\particlesys\particle.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csplugincommon\render3d\normalizationcube.cpp">
 			</File>
 			<File
@@ -842,6 +839,9 @@
 				RelativePath="..\..\libs\csutil\syspath.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\threading\win32_thread.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\threadjobqueue.cpp">
 			</File>
 			<File
@@ -991,6 +991,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\obb.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\odesolver.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\path.h">
@@ -1201,9 +1204,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\particlesys\partgen.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\particlesys\particle.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\render3d\normalizationcube.h">
@@ -1578,6 +1578,9 @@
 				RelativePath="..\..\libs\..\include\csutil\nobjvec.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\noncopyable.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\nulcache.h">
 			</File>
 			<File
@@ -1711,6 +1714,30 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\thread.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\mutex.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\thread.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_apifuncs.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_condition.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_mutex.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_thread.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">

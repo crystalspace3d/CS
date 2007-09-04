@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -102,6 +102,9 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -152,7 +155,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -174,6 +177,9 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -224,7 +230,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -246,6 +252,9 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -296,7 +305,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -330,6 +339,9 @@
 				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple.cpp">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple_prepare.cpp">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\object.cpp">
 			</File>
 			<File
@@ -343,6 +355,12 @@
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\scene.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\statistics.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\swappable.cpp">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\tui.cpp">
@@ -406,7 +424,13 @@
 				RelativePath="..\..\apps\tools\lighter2\statistics.h">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\swappable.h">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\tui.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\vertexdata.h">
 			</File>
 		</Filter>
 		<Filter

@@ -77,7 +77,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -98,6 +98,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -147,7 +148,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -168,6 +169,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -217,7 +219,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -238,6 +240,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -287,7 +290,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -396,6 +399,9 @@
 				RelativePath="..\..\libs\csgeom\trimeshlod.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgeom\trimeshtools.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgeom\tritri.cpp">
 			</File>
 			<File
@@ -456,6 +462,9 @@
 				RelativePath="..\..\libs\csgfx\shadervarframeholder.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgfx\xorpat.cpp">
 			</File>
 			<File
@@ -501,7 +510,13 @@
 				RelativePath="..\..\libs\csplugincommon\renderstep\parserenderstep.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\script\scriptcommon.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\shader\weavertypes.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\sndsys\convert.cpp">
@@ -573,6 +588,9 @@
 				RelativePath="..\..\libs\cstool\numberedfilename.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\cstool\objmodel.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\cstool\pen.cpp">
 			</File>
 			<File
@@ -592,6 +610,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\rendermeshlist.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\cstool\rviewclipper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\saverfile.cpp">
@@ -687,13 +708,16 @@
 				RelativePath="..\..\libs\csutil\csuctransform.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\debug.cpp">
+				RelativePath="..\..\libs\csutil\deprecated_macros.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\dlmalloc.c">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\documentcommon.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\documenthelper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\event.cpp">
@@ -781,9 +805,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\prfxcfg.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\profile.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\ptmalloc\ptmalloc3.c">
@@ -955,16 +976,10 @@
 				RelativePath="..\..\libs\..\include\csgeom\chainhull2d.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csgeom\cspoint.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csgeom\csrect.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\csrectrg.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgeom\fastsqrt.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\fixed.h">
@@ -1033,9 +1048,6 @@
 				RelativePath="..\..\libs\..\include\csgeom\polypool.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csgeom\quaterni.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csgeom\quaternion.h">
 			</File>
 			<File
@@ -1052,9 +1064,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\subrec.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgeom\subrec2.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\tcovbuf.h">
@@ -1076,6 +1085,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\trimeshlod.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\trimeshtools.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\vector2.h">
@@ -1120,9 +1132,6 @@
 				RelativePath="..\..\libs\..\include\csgfx\lightsvcache.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csgfx\memimage.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csgfx\normalmaptools.h">
 			</File>
 			<File
@@ -1154,6 +1163,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\shadervarframeholder.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgfx\textureformatstrings.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\trianglestream.h">
@@ -1225,10 +1237,19 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\parserenderstep.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\script\scriptcommon.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderplugin.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderprogram.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavercombiner.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavertypes.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\sndsys\convert.h">
@@ -1336,6 +1357,9 @@
 				RelativePath="..\..\libs\..\include\cstool\rendermeshlist.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\rviewclipper.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\cstool\saverfile.h">
 			</File>
 			<File
@@ -1382,6 +1406,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\bitarray.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\bitops.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\blockallocator.h">
@@ -1483,6 +1510,9 @@
 				RelativePath="..\..\libs\..\include\csutil\custom_new_enable.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\customallocated.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\databuf.h">
 			</File>
 			<File
@@ -1531,16 +1561,10 @@
 				RelativePath="..\..\libs\..\include\csutil\fpu80x86.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\garray.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\getopt.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hash.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\hashhandlers.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hashr.h">
@@ -1591,9 +1615,6 @@
 				RelativePath="..\..\libs\..\include\csutil\objiter.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\objpool.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\objreg.h">
 			</File>
 			<File
@@ -1619,6 +1640,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\prfxcfg.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\priorityqueue.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\profile.h">
@@ -1666,6 +1690,12 @@
 				RelativePath="..\..\libs\..\include\csutil\scf_implgen.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\scf_implgen_p.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\scf_implgen_p_template.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\scf_interface.h">
 			</File>
 			<File
@@ -1682,6 +1712,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\schedule.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\scopeddelete.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\scopedmutexlock.h">
@@ -1723,6 +1756,18 @@
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_ppc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_x86.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_msvc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_sparc.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
 			</File>
 			<File
@@ -1751,6 +1796,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\tree.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\tuple.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\typetraits.h">

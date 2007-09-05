@@ -370,6 +370,9 @@
 			Name="Header Files"
 			Filter="">
 			<File
+				RelativePath="..\..\apps\tools\lighter2\chunkyalloc.h">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\common.h">
 			</File>
 			<File
@@ -395,6 +398,9 @@
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple_util.h">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\lightprop.h">

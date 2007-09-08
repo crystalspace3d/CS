@@ -130,57 +130,55 @@ void csSkeletonBone::UpdateTransform ()
   }
   else
   {
-    // blend_factor is a ratio of the existing weights
-    float total_factor = 0;
-    size_t num_anims = 0;
-    // compute the total factor of all running animations
-    for (size_t i = 0; i < scripts_len; i++)
-    {
-      csSkeletonAnimationInstance *script = skeleton->GetRunningScripts ().Get (i);
-      csSkeletonAnimationInstance::TransformHash& transforms = script->GetTransforms ();
-      // does this animation affect this bone?
-      if (transforms.Get (factory_bone, 0))
-      {
-        // accumulate the factors
-        total_factor += script->GetFactor ();
-        num_anims++;
-      }
-    }
-    // now each time we use the blend factor, we will divide it
-    // by total_factor to obtain a ratio
-
-    // the end quaternion used
-    csQuaternion quat;
-    // the final position used
-    csVector3 pos (0);
+    csQuaternion q;
+    float min = 0; float max = 0; float script_factors_total = 0;
+    bool slerp = false; bool updated = false;
+    csVector3 final_pos = csVector3 (0);
 
     for (size_t i = 0; i < scripts_len; i++)
     {
       csSkeletonAnimationInstance *script = skeleton->GetRunningScripts ().Get (i);
       csSkeletonAnimationInstance::TransformHash& transforms = script->GetTransforms ();
       bone_transform_data *b_tr = transforms.Get (factory_bone, 0);
-      // we can either use the factor of the animation, or if it has none
-      // make sure there are no other factors for any other animations
-      if (b_tr && ((script->GetFactor () > 0) || total_factor <= 0))
+      if (b_tr && (script->GetFactor () > 0))
       {
-        // interpolation ratio
-        float i;
-        // if anims are using factors then compute this factor as a ratio
-        // compared to the total factor overall
-        if (total_factor > 0)
-          i = script->GetFactor () / total_factor;
-        // else, we can share the animation equally between all running
-        // animations on this bone
+        final_pos += b_tr->pos*script->GetFactor ();
+        script_factors_total += script->GetFactor ();
+        if (slerp)
+        {
+          float max_over_factor = max/script_factors_total;
+          if (script->GetFactor () >= min)
+          {
+            max = script->GetFactor ();
+            q = q.SLerp (b_tr->quat, max_over_factor);
+          }
+          else
+          {
+            min = script->GetFactor ();
+            q = b_tr->quat.SLerp (q, max_over_factor);
+          }
+          script_factors_total = min + max_over_factor;
+        }
         else
-          i = 1.0f / num_anims;
-        // interpolate the position
-        pos = (pos * (1 - i) + b_tr->pos * i);
-        quat = quat.SLerp (b_tr->quat, i);
+        {
+          slerp = true;
+          min = max = script->GetFactor ();
+          q = b_tr->quat;
+        }
+        updated = true; 
       }
     }
-    // use the transforms we calculated
-    next_transform.SetO2T (csMatrix3 (quat));
-    next_transform.SetOrigin (pos);
+
+    if (updated)
+    {
+      rot_quat = q;
+      if (script_factors_total)
+      {
+        final_pos /= script_factors_total;
+      }
+      next_transform.SetO2T (csMatrix3 (rot_quat));
+      next_transform.SetOrigin (final_pos);
+    }
   }
 }
 
@@ -539,7 +537,7 @@ csSkeletonAnimationInstance::csSkeletonAnimationInstance (csSkeletonAnimation* a
   current_frame = -1;
   current_frame_time = 0;
   current_frame_duration = 0;
-  blend_factor = 1;
+  morph_factor = 1;
   time_factor = 1;
   current_frame_duration = 0;
   anim_state = CS_ANIM_STATE_PARSE_NEXT;
@@ -589,7 +587,7 @@ void csSkeletonAnimationInstance::ParseFrame(csSkeletonAnimationKeyFrame *frame)
         m.elapsed_ticks = 0;
         m.curr_quat = m.bone_transform->quat;
         m.position = bone_transform->pos;
-        //m.type = 1;
+        m.type = 1;
         m.quat = rot;
         m.tangent = tangent;
         m.final_position = pos;
@@ -597,12 +595,12 @@ void csSkeletonAnimationInstance::ParseFrame(csSkeletonAnimationKeyFrame *frame)
         csVector3 delta;
         if (relative)
         {
-          m.type = sac_transform_execution::CS_TRANS_RELATIVE;
+          m.type = 2;
           delta = m.final_position;
         }
         else
         {
-          m.type = sac_transform_execution::CS_TRANS_FIXED;
+          m.type = 1;
           delta = m.final_position - m.position;
         }
 
@@ -737,7 +735,7 @@ bool csSkeletonAnimationInstance::Do (long elapsed, bool& stop, long &left)
   {
     i--;
     sac_transform_execution& m = runnable_transforms[i];
-    if (m.type == sac_transform_execution::CS_TRANS_FIXED)
+    if (m.type == 1)
     {
       if (delta)
       {
@@ -975,6 +973,7 @@ bool csSkeleton::UpdateAnimation (csTicks current)
       update_callbacks[i]->Execute(this, current);
     }
 
+    last_update_time = current;
     i = running_animations.GetSize ();
     while (i > 0)
     {
@@ -1022,19 +1021,16 @@ iSkeletonBone *csSkeleton::FindBone (const char *name)
   return 0;
 }
 
-iSkeletonAnimation* csSkeleton::Execute (const char *scriptname, float blend_factor)
+iSkeletonAnimation* csSkeleton::Execute (const char *scriptname)
 {
-  csSkeletonAnimation* script = (csSkeletonAnimation*)(factory->FindAnimation (
-    scriptname));
+  csSkeletonAnimation* script = (csSkeletonAnimation*)(factory->FindScript (scriptname));
   if (!script)
   {
     //printf("script %s doesn't exist\n", scriptname);
     return 0;
   }
 
-  csSkeletonAnimationInstance *runnable = new csSkeletonAnimationInstance (
-    script, this);
-  runnable->SetFactor (blend_factor);
+  csSkeletonAnimationInstance *runnable = new csSkeletonAnimationInstance (script, this);
   running_animations.Push (runnable);
   return script;
 }
@@ -1042,7 +1038,7 @@ iSkeletonAnimation* csSkeleton::Execute (const char *scriptname, float blend_fac
 iSkeletonAnimation* csSkeleton::Append (const char *scriptname)
 {
   csSkeletonAnimation* script = (csSkeletonAnimation*)(
-    factory->FindAnimation (scriptname));
+    factory->FindScript (scriptname));
   if (!script) 
   {
     return 0;

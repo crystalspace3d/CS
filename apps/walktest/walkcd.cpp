@@ -22,6 +22,7 @@
 
 #include "csgeom/csrect.h"
 #include "csgeom/frustum.h"
+#include "csgeom/polymesh.h"
 #include "cstool/collider.h"
 #include "cstool/cspixmap.h"
 #include "cstool/keyval.h"
@@ -29,13 +30,16 @@
 #include "iengine/movable.h"
 #include "iengine/sector.h"
 #include "imesh/objmodel.h"
+#include "igeom/polymesh.h"
 #include "imesh/object.h"
+#include "imesh/thing.h"
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
 #include "ivaria/collider.h"
 #include "ivaria/view.h"
 
 #include "walktest.h"
+#include "infmaze.h"
 
 extern WalkTest *Sys;
 

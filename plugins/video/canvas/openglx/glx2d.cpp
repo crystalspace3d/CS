@@ -89,7 +89,7 @@ bool csGraphics2DGLX::Initialize (iObjectRegistry *object_reg)
   	csQueryRegistry<iPluginManager> (object_reg));
   if ((strDriver = config->GetStr ("Video.OpenGL.Display.Driver", 0)))
   {
-    dispdriver = csLoadPlugin<iOpenGLDisp> (plugin_mgr, strDriver);
+    dispdriver = CS_LOAD_PLUGIN (plugin_mgr, strDriver, iOpenGLDisp);
     if (!dispdriver)
     {
       Report (CS_REPORTER_SEVERITY_WARNING,
@@ -104,7 +104,7 @@ bool csGraphics2DGLX::Initialize (iObjectRegistry *object_reg)
     }
   }
 
-  xwin = csLoadPlugin<iXWindow> (plugin_mgr, XWIN_SCF_ID);
+  xwin = CS_LOAD_PLUGIN (plugin_mgr, XWIN_SCF_ID, iXWindow);
   if (!xwin)
   {
     Report (CS_REPORTER_SEVERITY_WARNING,

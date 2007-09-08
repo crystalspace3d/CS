@@ -245,12 +245,13 @@ private:
   bool polymesh_valid;
   csVector3* polymesh_vertices;
   int polymesh_vertex_count;
-  void SetupPolyMeshData ();
-  void CleanPolyMeshData ();
   csTriangle* polymesh_triangles;
   int polymesh_tri_count;
+  csMeshedPolygon* polymesh_polygons;
   bool ReadCDLODFromCache ();
   void WriteCDLODToCache ();
+  void SetupPolyMeshData ();
+  void CleanPolyMeshData ();
   int cd_resolution;
   float cd_lod_cost;
 
@@ -358,6 +359,7 @@ public:
 
   int CollisionDetect (iMovable *m, csTransform *p);
 
+  void GetObjectBoundingBox (csBox3& bbox);
   const csBox3& GetObjectBoundingBox ();
   void SetObjectBoundingBox (const csBox3& bbox);
   void GetRadius (float& rad, csVector3& cent);
@@ -433,6 +435,40 @@ public:
   void DisconnectAllLights ();
   char* GenerateCacheName ();
   void SetStaticLighting (bool enable);
+
+  //------------------ iPolygonMesh interface implementation ----------------//
+  struct PolyMesh : public scfImplementation1<PolyMesh, iPolygonMesh>
+  {
+  private:
+    csTerrainObject* terrain;
+    csFlags flags;
+  public:
+    void SetTerrain (csTerrainObject* t)
+    {
+      terrain = t;
+      flags.SetAll (CS_POLYMESH_TRIANGLEMESH);
+    }
+    void Cleanup ();
+
+    virtual int GetVertexCount ();
+    virtual csVector3* GetVertices ();
+    virtual int GetPolygonCount ();
+    virtual csMeshedPolygon* GetPolygons ();
+    virtual int GetTriangleCount ();
+    virtual csTriangle* GetTriangles ();
+    virtual void Lock () { }
+    virtual void Unlock () { }
+
+    virtual csFlags& GetFlags () { return flags;  }
+    virtual uint32 GetChangeNumber() const { return 0; }
+
+    PolyMesh () : scfImplementationType (this)
+    { }
+    virtual ~PolyMesh ()
+    { }
+  };
+  csRef<PolyMesh> polygonMesh;
+  friend struct PolyMesh;
 
   //------------------ iTriangleMesh interface implementation ----------------//
   struct TriMesh : public scfImplementation1<TriMesh, iTriangleMesh>
@@ -557,6 +593,7 @@ public:
   /**\name iObjectModel implementation
    * @{ */
   iTerraFormer* GetTerraFormerColldet () { return terraformer; }
+  void GetObjectBoundingBox (csBox3& /*bbox*/) { }
   const csBox3& GetObjectBoundingBox () { return obj_bbox; }
   void SetObjectBoundingBox (const csBox3& /*bbox*/) { }
   void GetRadius (float& /*rad*/, csVector3& /*cent*/) { }

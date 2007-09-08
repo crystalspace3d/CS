@@ -441,8 +441,7 @@ const char* TiXmlElement::ReadValue( TiDocument* document, const char* p )
     else if ( StringEqual(p, "<![CDATA[") )
     {
       csRef<TiXmlCData> cdataNode;
-      void* ptr = document->docHeap.Alloc (sizeof (TiXmlCData));
-      cdataNode.AttachNew (new (ptr) TiXmlCData( ));
+      cdataNode.AttachNew (new TiXmlCData( ));
 
       if ( !cdataNode )
       {

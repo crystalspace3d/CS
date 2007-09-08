@@ -20,7 +20,7 @@
 #define __LEVTOOL_H__
 
 #include <stdarg.h>
-#include "igeom/trimesh.h"
+#include "igeom/polymesh.h"
 #include "csgeom/vector3.h"
 #include "csgeom/box.h"
 #include "csutil/parray.h"
@@ -256,24 +256,6 @@ class csString;
 class LevTool
 {
 public:
-  enum Operation
-  {
-    OP_HELP,
-    OP_LIST,
-    OP_DYNAVIS,
-    OP_VALIDATE,
-    OP_SPLITUNIT,
-    OP_SPLITGEOM,
-    OP_COMPRESS,
-    OP_ANALYZE,
-    OP_FLAGCLEAR,
-    OP_FLAGGOOD,
-    OP_FLAGBAD,
-    OP_TRANSLATE,
-    OP_PLANES,
-    OP_FIXPOLYMESH
-  };
-
   iObjectRegistry* object_reg;
   csRef<iVFS> vfs;
   csRef<iCommandLineParser> cmdline;
@@ -387,14 +369,14 @@ public:
    * Clone a document but change flags of all things in the process.
    */
   void CloneAndChangeFlags (iDocumentNode* node, iDocumentNode* newnode,
-  	Operation op, int minsize, int maxsize, int minpoly, int maxpoly,
+  	int op, int minsize, int maxsize, int minpoly, int maxpoly,
 	float global_area);
 
   /**
    * Clone a document but change flags of all things in the process.
    */
   void CloneAndChangeFlags (iDocument* doc, iDocument* newdoc,
-  	Operation op, int minsize, int maxsize, int minpoly, int maxpoly,
+  	int op, int minsize, int maxsize, int minpoly, int maxpoly,
 	float global_area);
 
   /**

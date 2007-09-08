@@ -285,6 +285,7 @@ public:
     csVector3* campos);
 
   //------------------------- iObjectModel implementation ----------------
+  void GetObjectBoundingBox (csBox3& bbox);
   const csBox3& GetObjectBoundingBox ();
   void SetObjectBoundingBox (const csBox3& bbox);
   void GetRadius (float& rad, csVector3& cent)

@@ -388,7 +388,7 @@ bool csSector::SetVisibilityCullerPlugin (const char *plugname,
   // Load the culler plugin.
   csRef<iPluginManager> plugmgr = 
   	csQueryRegistry<iPluginManager> (engine->objectRegistry);
-  culler = csLoadPlugin<iVisibilityCuller> (plugmgr, plugname);
+  culler = CS_LOAD_PLUGIN (plugmgr, plugname, iVisibilityCuller);
 
   if (!culler)
   {

@@ -113,7 +113,7 @@ csObject::~csObject ()
   ObjRemoveAll ();
 
   if (Children) { delete Children; Children = 0; }
-  cs_free (Name); Name = 0;
+  delete [] Name; Name = 0;
 
   /*
    * @@@ This should not be required for two reasons:
@@ -134,9 +134,9 @@ csObject::~csObject ()
 void csObject::SetName (const char* newname)
 {
   char* oldname = Name;
-  Name = CS::StrDup (newname);
+  Name = csStrNew (newname);
   FireNameChangeListeners (oldname, newname);
-  cs_free (oldname);
+  delete [] oldname;
 }
 
 const char *csObject::GetName () const

@@ -73,14 +73,14 @@ bool csRegExpMatcher::Compile (int flags, bool nosub)
 csRegExpMatcher::csRegExpMatcher (const char* pattern, bool extendedRE) : 
   regex(0)
 {
-  csRegExpMatcher::pattern = CS::StrDup (pattern);
+  csRegExpMatcher::pattern = csStrNew (pattern);
   csRegExpMatcher::extendedRE = extendedRE;
 }
 
 csRegExpMatcher::csRegExpMatcher (const csRegExpMatcher& other) :
   regex (0)
 {
-  pattern = CS::StrDup (other.pattern);
+  pattern = csStrNew (other.pattern);
   extendedRE = other.extendedRE;
 }
 
@@ -91,7 +91,7 @@ csRegExpMatcher::~csRegExpMatcher ()
     regfree ((regex_t*)regex);
     delete (regex_t*)regex;
   }
-  cs_free (pattern);
+  delete[] pattern;
 }
 
 csRegExpMatcher& csRegExpMatcher::operator= (const csRegExpMatcher &other)
@@ -102,9 +102,9 @@ csRegExpMatcher& csRegExpMatcher::operator= (const csRegExpMatcher &other)
     delete (regex_t*)regex;
     regex = 0;
   }
-  cs_free (pattern);
+  delete[] pattern;
   
-  pattern = CS::StrDup (other.pattern);
+  pattern = csStrNew (other.pattern);
   extendedRE = other.extendedRE;
 
   return *this;

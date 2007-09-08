@@ -96,7 +96,7 @@ bool csFancyConsole::Initialize (iObjectRegistry *object_reg)
     "crystalspace.console.output.standard");
   csRef<iPluginManager> plugin_mgr (
   	csQueryRegistry<iPluginManager> (object_reg));
-  base = csLoadPlugin<iConsoleOutput> (plugin_mgr, baseclass);
+  base = CS_LOAD_PLUGIN (plugin_mgr, baseclass, iConsoleOutput);
   if (!base)
     return false;
 

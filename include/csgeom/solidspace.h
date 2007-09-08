@@ -21,7 +21,7 @@
 
 #include "csextern.h"
 #include "csgeom/box.h"
-#include "csgeom/trimeshtools.h"
+#include "csgeom/pmtools.h"
 
 /**\file
  * 3D solid space.

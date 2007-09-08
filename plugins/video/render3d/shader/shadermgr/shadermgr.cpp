@@ -144,7 +144,7 @@ bool csShaderManager::Initialize(iObjectRegistry *objreg)
 
   csRef<iStringArray> classlist =
     iSCF::SCF->QueryClassList("crystalspace.graphics3d.shadercompiler.");
-  size_t const nmatches = classlist.IsValid() ? classlist->GetSize() : 0;
+  size_t const nmatches = classlist.IsValid() ? classlist->Length() : 0;
   if (nmatches != 0)
   {
     size_t i;
@@ -152,7 +152,7 @@ bool csShaderManager::Initialize(iObjectRegistry *objreg)
     {
       const char* classname = classlist->Get(i);
       csRef<iShaderCompiler> plugin = 
-	csLoadPlugin<iShaderCompiler> (plugin_mgr, classname);
+	CS_LOAD_PLUGIN (plugin_mgr, classname, iShaderCompiler);
       if (plugin)
       {
 	if (do_verbose)

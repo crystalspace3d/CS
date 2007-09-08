@@ -41,6 +41,8 @@
 #include "ivaria/engseq.h"
 #include "ivideo/graph3d.h"
 
+class csGenerateImageTexture;
+class csGenerateImageValue;
 class csReversibleTransform;
 class csColor;
 struct csRGBcolor;
@@ -61,6 +63,7 @@ struct iCameraPosition;
 struct iDocumentNode;
 struct iDocument;
 struct iFile;
+struct iPolygonMesh;
 struct iTriangleMesh;
 struct iShaderManager;
 struct iMeshGenerator;
@@ -252,8 +255,6 @@ private:
      */
     bool FindPlugin (const char* Name, iLoaderPlugin*& plug,
     	iBinaryLoaderPlugin*& binplug, iDocumentNode*& defaults);
-    /// Find a plugin's class ID by its name. Returns 0 if it is not found.
-    const char* FindPluginClassID (const char* Name);
     // add a new plugin record
     void NewPlugin (const char* ShortName, iDocumentNode* child);
     /**
@@ -381,9 +382,9 @@ private:
   /// Parse a 'trimesh' block.
   bool ParseTriMesh (iDocumentNode* node, iObjectModel* objmodel);
   bool ParseTriMeshChildBox (iDocumentNode* child,
-	csRef<iTriangleMesh>& trimesh);
+	csRef<iPolygonMesh>& polymesh, csRef<iTriangleMesh>& trimesh);
   bool ParseTriMeshChildMesh (iDocumentNode* child,
-	csRef<iTriangleMesh>& trimesh);
+	csRef<iPolygonMesh>& polymesh, csRef<iTriangleMesh>& trimesh);
 
   /// -----------------------------------------------------------------------
   /// Parse a shaderlist
@@ -393,6 +394,13 @@ private:
   bool ParseShader (iLoaderContext* ldr_context, iDocumentNode* node,
     iShaderManager* shaderMgr);
   virtual csRef<iShader> LoadShader (const char* filename, bool registerShader = true);
+
+  /// For heightgen.
+  csGenerateImageTexture* ParseHeightgenTexture (iDocumentNode* node);
+  /// For heightgen.
+  csGenerateImageValue* ParseHeightgenValue (iDocumentNode* node);
+  /// Parse and load a height texture
+  bool ParseHeightgen (iLoaderContext* ldr_context, iDocumentNode* node);
 
   /**
    * Load a LOD control object.

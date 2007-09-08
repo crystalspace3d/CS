@@ -59,6 +59,8 @@ struct iMaterialWrapper;
     { return new factclass (Engine, object_reg, this); }                    \
   };
 
+#include "csutil/win32/msvc_deprecated_warn_off.h"
+
 /**
  * This is an abstract implementation of iMeshObject. It can be used to
  * write custom mesh object implementations more easily. Currently it
@@ -246,6 +248,12 @@ public:
    * See imesh/objmodel.h for specification. The default implementation
    * returns an infinite bounding box.
    */
+  virtual void GetObjectBoundingBox (csBox3& bbox);
+
+  /**
+   * See imesh/objmodel.h for specification. The default implementation
+   * returns an infinite bounding box.
+   */
   virtual const csBox3& GetObjectBoundingBox ();
 
   /**
@@ -268,6 +276,8 @@ public:
 
   virtual iTerrainSystem* GetTerrainColldet () { return 0; }
 };
+
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * This is the abstract implementation of iMeshObjectFactory. Like

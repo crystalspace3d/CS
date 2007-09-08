@@ -45,6 +45,7 @@ class csCdModel;
 class csCdBBox;
 struct csCdTriangle;
 struct csCollisionPair;
+struct iPolygonMesh;
 struct iTriangleMesh;
 class PathPolygonMesh;
 
@@ -68,11 +69,14 @@ public:
 private:
   void GeometryInitialize (csVector3* vertices, size_t vertcount,
       csTriangle* triangles, size_t tri_count);
+  void GeometryInitialize (iPolygonMesh *mesh);
   void GeometryInitialize (iTriangleMesh *mesh);
 
   static void MeshCallback (udword triangle_index, 
     Opcode::VertexPointers& triangle, void* user_data);
 public:
+  /// Create a collider based on geometry.
+  csOPCODECollider (iPolygonMesh* mesh);
   /// Create a collider based on geometry.
   csOPCODECollider (iTriangleMesh* mesh);
 

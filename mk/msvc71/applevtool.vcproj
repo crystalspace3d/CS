@@ -312,9 +312,6 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\apps\tools\levtool\fixpolymesh.cpp">
-			</File>
-			<File
 				RelativePath="..\..\apps\tools\levtool\levtool.cpp">
 			</File>
 		</Filter>
@@ -322,18 +319,12 @@
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\apps\tools\levtool\fixpolymesh.h">
-			</File>
-			<File
 				RelativePath="..\..\apps\tools\levtool\levtool.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
-			<File
-				RelativePath="..\..\apps\tools\levtool\fixpolymesh.tok">
-			</File>
 			<File
 				RelativePath="..\..\mk\msvc\applevtool.rc">
 			</File>

@@ -165,7 +165,7 @@ struct iObject : public virtual iBase
  * This is an iterator for child objects of a csObject. Note that this
  * iterator only contains type-independent functionality and is therefore
  * a bit complicated to use (i.e. you'll have to do a lot of
- * scfQueryInterface calls if you use it directly). Check out typed object
+ * SCF_QUERY_INTERFACE_CALLS if you use it directly). Check out typed object
  * iterators instead.
  * 
  * Main creators of instances implementing this interface:

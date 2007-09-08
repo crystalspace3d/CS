@@ -29,45 +29,42 @@ namespace CS
 {
 namespace Threading
 {
-  /**
-   * Priority values indicate how frequently a thread runs compared to other threads.
-   * Thread scheduling is handled by the underlying OS, and so the true meaning of these
-   * values will vary depending on platform.  A minimal set of values is defined for CS
-   * so that chances of support of the full range of values by the platform are greater.
-   */
-  enum ThreadPriority
-  {
-    /// Reduced thread priority. Useful for background tasks.
-    THREAD_PRIO_LOW,
+/**
+ * Priority values indicate how frequently a thread runs compared to other threads.
+ * Thread scheduling is handled by the underlying OS, and so the true meaning of these
+ * values will vary depending on platform.  A minimal set of values is defined for CS
+ * so that chances of support of the full range of values by the platform are greater.
+ */
+enum ThreadPriority
+{
+  /// Reduced thread priority. Useful for background tasks.
+  THREAD_PRIO_LOW,
 
-    /// Normal thread priority.
-    THREAD_PRIO_NORMAL,
-
-    /**
-     * Increased thread priority. Useful for tasks that needs precedence over
-     * all other.
-     */
-    THREAD_PRIO_HIGH
-  };
+  /// Normal thread priority.
+  THREAD_PRIO_NORMAL,
 
   /**
-   * Abstract base class for objects to be run in threads.
-   * The lifetime of the Runnable object must at least be as long as the thread
-   * object.
+   * Increased thread priority. Useful for tasks that needs precedence over
+   * all other.
    */
-  class Runnable : public csRefCount, private CS::NonCopyable
-  {
-  public:
-    /**
-     * Main method for thread.
-     * Will be called as soon as the thread is started and thread will be active
-     * until it returns.
-     */
-    virtual void Run () = 0;
-  };
+  THREAD_PRIO_HIGH
+};
 
-  /// OS specific thread identifier
-  typedef unsigned int ThreadID;
+/**
+ * Abstract base class for objects to be run in threads.
+ * The lifetime of the Runnable object must at least be as long as the thread
+ * object.
+ */
+class Runnable : public csRefCount, private CS::NonCopyable
+{
+public:
+  /**
+   * Main method for thread.
+   * Will be called as soon as the thread is started and thread will be active
+   * until it returns.
+   */
+  virtual void Run () = 0;
+};
 
 }
 }
@@ -87,7 +84,6 @@ namespace CS
 {
 namespace Threading
 {
-  
   
   /**
    * Object representing a separate execution thread.
@@ -222,16 +218,6 @@ namespace Threading
       ThreadBase::Yield ();
     }
 
-    /**
-     * Get an OS specific thread identifier.
-     * \remark This gets the thread id of the thread in which this function is called.
-     * For example,  OtherThread->GetThreadID() will NOT have the results that would be expected.
-     */
-    static ThreadID GetThreadID ()
-    {
-      return ThreadBase::GetThreadID ();
-    }
-
   private:
     ThreadPriority priority;
   };
@@ -240,7 +226,7 @@ namespace Threading
   /**
    * A group of threads handled as one unit.
    */
-  class ThreadGroup : private CS::NonCopyable
+   class ThreadGroup : private CS::NonCopyable
   {
   public:
 

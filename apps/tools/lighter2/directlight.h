@@ -60,15 +60,30 @@ namespace lighter
 
     //-- Shade a lightmap element
     typedef csColor (*LMElementShader)(Sector* sector, ElementProxy element,
-      SamplerSequence<2>& lightSampler);
+      SamplerSequence<2>& lightSampler, 
+      PartialElementIgnoreCallback* ignoreCB);
 
     // Shade a primitive element with direct lighting
     static csColor UniformShadeAllLightsNonPD (Sector* sector, ElementProxy element,
-      SamplerSequence<2>& lightSampler);
+      SamplerSequence<2>& lightSampler,
+      PartialElementIgnoreCallback* ignoreCB = 0);
 
     // Shade a primitive element with direct lighting using a single light
     static csColor UniformShadeRndLightNonPD (Sector* sector, ElementProxy element,
-      SamplerSequence<2>& lightSampler);
+      SamplerSequence<2>& lightSampler, 
+      PartialElementIgnoreCallback* ignoreCB = 0);
+
+    //-- Collect potentially shadowing primitives
+    typedef void (*LMElementCollectShadowPrims)(Sector* sector, ElementProxy element,
+      SamplerSequence<2>& lightSampler, PartialElementIgnoreCallback* ignoreCB);
+
+    static void CollectShadowAllLightsNonPD(Sector* sector, ElementProxy element,
+      SamplerSequence<2>& lightSampler, PartialElementIgnoreCallback* ignoreCB);
+    static void CollectShadowRndLightNonPD(Sector* sector, ElementProxy element,
+      SamplerSequence<2>& lightSampler, PartialElementIgnoreCallback* ignoreCB);
+    static void CollectShadowOneLight(Sector* sector, ElementProxy element,
+      Light* light, SamplerSequence<2>& lightSampler, 
+      PartialElementIgnoreCallback* ignoreCB);
 
     //-- Shade using one light
     // Shade a primitive element with direct lighting
@@ -77,13 +92,17 @@ namespace lighter
 
     // Shade a primitive element with direct lighting
     static csColor UniformShadeOneLight (Sector* sector, ElementProxy element,
-      Light* light, SamplerSequence<2>& lightSampler);
+      Light* light, SamplerSequence<2>& lightSampler, 
+      PartialElementIgnoreCallback* ignoreCB = 0);
 
   private:
     // Static methods...
     inline static csColor ShadeLight (Light* light, const csVector3& point,
       const csVector3& normal, SamplerSequence<2>& lightSampler,
-      const Primitive* shadowIgnorePrimitive = 0, bool fullIgnore = false);
+      const Primitive* shadowIgnorePrimitive = 0);
+    inline static csColor ShadeLight (Light* light, const csVector3& point,
+      const csVector3& normal, SamplerSequence<2>& lightSampler,
+      PartialElementIgnoreCallback* ignoreCB);
 
     inline static void CollectShadowLight (Light* light, const csVector3& point,
       const csVector3& normal, SamplerSequence<2>& lightSampler, 
@@ -121,7 +140,8 @@ namespace lighter
 
     // Static data
     static PVLPointShader pvlPointShader;
-    static LMElementShader lmElementShader;    
+    static LMElementShader lmElementShader;
+    static LMElementCollectShadowPrims lmElementCollect;
   };
 }
 

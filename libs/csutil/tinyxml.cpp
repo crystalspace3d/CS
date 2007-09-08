@@ -286,8 +286,7 @@ csPtr<TiDocumentNode> TiDocumentNodeChildren::Identify( TiDocument* document,
 
   if ( StringEqual( p, xmlHeader) )
   {
-    void* ptr = document->docHeap.Alloc (sizeof (TiXmlDeclaration));
-    returnNode = new (ptr) TiXmlDeclaration();
+    returnNode = new TiXmlDeclaration();
   }
   else if (    isalpha( *(p+1) ) || *(p+1) == '_' )
   {
@@ -296,13 +295,11 @@ csPtr<TiDocumentNode> TiDocumentNodeChildren::Identify( TiDocument* document,
   }
   else if ( StringEqual ( p, commentHeader) )
   {
-    void* ptr = document->docHeap.Alloc (sizeof (TiXmlComment));
-    returnNode = new (ptr) TiXmlComment();
+    returnNode = new TiXmlComment();
   }
   else
   {
-    void* ptr = document->docHeap.Alloc (sizeof (TiXmlUnknown));
-    returnNode = new (ptr) TiXmlUnknown();
+    returnNode = new TiXmlUnknown();
   }
 
   if ( returnNode )
@@ -681,8 +678,8 @@ csPtr<TiDocumentNode> TiXmlElement::Clone(TiDocument* document) const
 TiDocument::TiDocument() :
   deleteNest (0),
   strings (3541),
-  blk_element (1000, DocHeapAlloc (&docHeap)),
-  blk_text (1000, DocHeapAlloc (&docHeap))
+  blk_element (1000),
+  blk_text (1000)
 {
   error = false;
   //  ignoreWhiteSpace = true;
@@ -690,10 +687,9 @@ TiDocument::TiDocument() :
 }
 
 TiDocument::TiDocument( const char * documentName ) :
-  deleteNest (0),
   strings (3541),
-  blk_element (1000, DocHeapAlloc (&docHeap)),
-  blk_text (1000, DocHeapAlloc (&docHeap))
+  blk_element (1000),
+  blk_text (1000)
 {
   //  ignoreWhiteSpace = true;
   value = documentName;
@@ -791,11 +787,10 @@ void TiXmlComment::Print( iString* cfile, int depth ) const
   StrPrintf ( cfile, "<!--%s-->", value );
 }
 
-csPtr<TiDocumentNode> TiXmlComment::Clone(TiDocument* document) const
+csPtr<TiDocumentNode> TiXmlComment::Clone(TiDocument* /*document*/) const
 {
   csRef<TiXmlComment> clone;
-  void* ptr = document->docHeap.Alloc (sizeof (TiXmlComment));
-  clone.AttachNew (new (ptr) TiXmlComment());
+  clone.AttachNew (new TiXmlComment());
 
   if ( !clone )
     return 0;
@@ -876,11 +871,10 @@ void TiXmlDeclaration::Print( iString* cfile, int /*depth*/ ) const
   StrPrintf  (cfile, "?>");
 }
 
-csPtr<TiDocumentNode> TiXmlDeclaration::Clone(TiDocument* document) const
+csPtr<TiDocumentNode> TiXmlDeclaration::Clone(TiDocument* /*document*/) const
 {  
   csRef<TiXmlDeclaration> clone;
-  void* ptr = document->docHeap.Alloc (sizeof (TiXmlDeclaration));
-  clone.AttachNew (new (ptr) TiXmlDeclaration());
+  clone.AttachNew (new TiXmlDeclaration());
 
   if ( !clone )
     return 0;
@@ -900,11 +894,10 @@ void TiXmlUnknown::Print( iString* cfile, int depth ) const
   StrPrintf ( cfile, "<%s>", value.c_str() );
 }
 
-csPtr<TiDocumentNode> TiXmlUnknown::Clone(TiDocument* document) const
+csPtr<TiDocumentNode> TiXmlUnknown::Clone(TiDocument* /*document*/) const
 {
   csRef<TiXmlUnknown> clone;
-  void* ptr = document->docHeap.Alloc (sizeof (TiXmlUnknown));
-  clone.AttachNew (new (ptr) TiXmlUnknown());
+  clone.AttachNew (new TiXmlUnknown());
 
   if ( !clone )
     return 0;

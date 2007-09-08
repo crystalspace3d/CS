@@ -344,6 +344,12 @@ void csSprite2DMeshObject::PreGetBuffer (csRenderBufferHolder* holder, csRenderB
   }
 }
 
+void csSprite2DMeshObject::GetObjectBoundingBox (csBox3& bbox)
+{
+  SetupObject ();
+  bbox.Set (-radius, radius);
+}
+
 const csBox3& csSprite2DMeshObject::GetObjectBoundingBox ()
 {
   SetupObject ();

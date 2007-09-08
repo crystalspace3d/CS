@@ -194,11 +194,6 @@ namespace Implementation
     }
   }
 
-  ThreadID ThreadBase::GetThreadID ()
-  {
-    return GetCurrentThreadId ();
-  }
-
 }
 }
 }

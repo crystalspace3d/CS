@@ -31,8 +31,6 @@ namespace lighter
   class Primitive;
   class Raytracer;
   class SwapManager;
-  
-  class ElementAreasAlloc;
 
   class Lighter : public csRefCount
   {

@@ -167,7 +167,7 @@ class csReversibleTransform;
  * This callback is used by:
  * - iMeshWrapper
  */
-struct iMeshDrawCallback : public virtual iBase
+struct iMeshDrawCallback : public iBase
 {
   SCF_INTERFACE (iMeshDrawCallback, 0, 0, 1);
 
@@ -237,12 +237,13 @@ struct csScreenBoxResult
  * Note that a mesh object should never be contained in more than one wrapper.
  *
  * Main creators of instances implementing this interface:
+ * - iEngine::CreateSectorWallsMesh()
+ * - iEngine::CreateThingMesh()
  * - iEngine::CreateMeshWrapper()
  * - iEngine::LoadMeshWrapper()
  * - iEngine::CreatePortalContainer()
  * - iEngine::CreatePortal()
  * - iLoader::LoadMeshObject()
- * - CS::Geometry::GeneralMeshBuilder::CreateMesh()
  *
  * Main ways to get pointers to this interface:
  * - iEngine::FindMeshObject()
@@ -279,7 +280,7 @@ struct iMeshWrapper : public virtual iBase
    * Get the optional lighting information that is implemented
    * by this mesh object. If the mesh object doesn't implement it
    * then this will return 0. This is similar (but more efficient)
-   * to calling scfQueryInterface<iLightingInfo> on the mesh object.
+   * to calling SCF_QUERY_INTERFACE on the mesh object for iLightingInfo.
    */
   virtual iLightingInfo* GetLightingInfo () const = 0;
 
@@ -287,7 +288,7 @@ struct iMeshWrapper : public virtual iBase
    * Get the optional shadow receiver that is implemented
    * by this mesh object. If the mesh object doesn't implement it
    * then this will return 0. This is similar (but more efficient)
-   * to calling scfQueryInterface<iShadowReceiver> on the mesh object.
+   * to calling SCF_QUERY_INTERFACE on the mesh object for iShadowReceiver.
    * <p>
    * Note! If the mesh is a static lod mesh (i.e. a parent of a mesh
    * hierarchy that is used for static lod) then this will return
@@ -300,7 +301,7 @@ struct iMeshWrapper : public virtual iBase
    * Get the optional shadow caster that is implemented
    * by this mesh object. If the mesh object doesn't implement it
    * then this will return 0. This is similar (but more efficient)
-   * to calling scfQueryInterface<iShadowCaster> on the mesh object.
+   * to calling SCF_QUERY_INTERFACE on the mesh object for iShadowCaster.
    * <p>
    * Note! If the mesh is a static lod mesh (i.e. a parent of a mesh
    * hierarchy that is used for static lod) then this will return a

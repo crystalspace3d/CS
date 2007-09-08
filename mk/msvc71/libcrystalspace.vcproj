@@ -345,6 +345,9 @@
 				RelativePath="..\..\libs\csgeom\plane3.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgeom\pmtools.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgeom\poly2d.cpp">
 			</File>
 			<File
@@ -358,6 +361,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\polyidx.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csgeom\polymesh.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\quaterni.cpp">
@@ -510,9 +516,6 @@
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csplugincommon\shader\weavertypes.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csplugincommon\sndsys\convert.cpp">
 			</File>
 			<File
@@ -552,7 +555,7 @@
 				RelativePath="..\..\libs\cstool\enginetools.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\cstool\genmeshbuilder.cpp">
+				RelativePath="..\..\libs\cstool\gentrtex.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\importkit.cpp">
@@ -613,9 +616,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\saverref.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\cstool\smartfileopen.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\uberscreenshot.cpp">
@@ -1021,6 +1021,9 @@
 				RelativePath="..\..\libs\..\include\csgeom\plane3.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgeom\pmtools.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgeom\poly2d.h">
 			</File>
 			<File
@@ -1034,6 +1037,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\polyidx.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\polymesh.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\polypool.h">
@@ -1237,12 +1243,6 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderprogram.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavercombiner.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavertypes.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\sndsys\convert.h">
 			</File>
 			<File
@@ -1294,7 +1294,7 @@
 				RelativePath="..\..\libs\..\include\cstool\framedataholder.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\cstool\genmeshbuilder.h">
+				RelativePath="..\..\libs\..\include\cstool\gentrtex.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\identstrings.h">
@@ -1355,9 +1355,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\saverref.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\cstool\smartfileopen.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\tokenlist.h">
@@ -1510,6 +1507,9 @@
 				RelativePath="..\..\libs\..\include\csutil\databuf.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\debug.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\dirtyaccessarray.h">
 			</File>
 			<File
@@ -1634,6 +1634,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\priorityqueue.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\profile.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\ptrwrap.h">

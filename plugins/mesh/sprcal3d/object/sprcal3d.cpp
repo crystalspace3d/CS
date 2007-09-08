@@ -170,6 +170,11 @@ csSpriteCal3DMeshObjectFactory::csSpriteCal3DMeshObjectFactory (
   scfImplementationType (this, (iBase*)pParent), sprcal3d_type (pParent), 
   calCoreModel("no name")
 {
+  SetPolygonMeshBase (sprcal3d_type->nullPolyMesh);
+  SetPolygonMeshColldet (sprcal3d_type->nullPolyMesh);
+  SetPolygonMeshViscull (0);
+  SetPolygonMeshShadows (0);
+
   csSpriteCal3DMeshObjectFactory::object_reg = object_reg;
 
   light_mgr = csQueryRegistry<iLightManager> (object_reg);
@@ -849,6 +854,12 @@ csSpriteCal3DMeshObject::csSpriteCal3DMeshObject (iBase *pParent,
 {
   csSpriteCal3DMeshObject::object_reg = object_reg;
 
+  //  scfiPolygonMesh.SetFactory (this);
+  //  scfiObjectModel.SetPolygonMeshBase (&scfiPolygonMesh);
+  //  scfiObjectModel.SetPolygonMeshColldet (&scfiPolygonMesh);
+  //  scfiObjectModel.SetPolygonMeshViscull (0);
+  //  scfiObjectModel.SetPolygonMeshShadows (0);
+
   // create the model instance from the loaded core model
 //  if(!calModel.create (&calCoreModel))
 //  {
@@ -975,6 +986,12 @@ void csSpriteCal3DMeshObject::RecalcBoundingBox (csBox3& bbox)
 }
 
 
+void csSpriteCal3DMeshObject::GetObjectBoundingBox (csBox3& bbox)
+{
+  RecalcBoundingBox (object_bbox);
+  bbox = object_bbox;
+}
+
 const csBox3& csSpriteCal3DMeshObject::GetObjectBoundingBox ()
 {
   RecalcBoundingBox (object_bbox);
@@ -993,7 +1010,7 @@ void csSpriteCal3DMeshObjectFactory::GetRadius (float& rad, csVector3& cent)
   rad = 1.0f;
 }
 
-const csBox3& csSpriteCal3DMeshObjectFactory::GetObjectBoundingBox ()
+void csSpriteCal3DMeshObjectFactory::GetObjectBoundingBox (csBox3& bbox)
 {
   CalCoreSkeleton *skel = calCoreModel.getCoreSkeleton ();
   skel->calculateBoundingBoxes(&calCoreModel);
@@ -1002,11 +1019,16 @@ const csBox3& csSpriteCal3DMeshObjectFactory::GetObjectBoundingBox ()
   CalVector p[8];
   calBoundingBox.computePoints(p);
 
-  obj_bbox.Set (p[0].x, p[0].y, p[0].z, p[0].x, p[0].y, p[0].z);
+  bbox.Set (p[0].x, p[0].y, p[0].z, p[0].x, p[0].y, p[0].z);
   for (int i=1; i<8; i++)
   {
-    obj_bbox.AddBoundingVertexSmart(p[i].x, p[i].y, p[i].z);
+    bbox.AddBoundingVertexSmart(p[i].x, p[i].y, p[i].z);
   }
+}
+
+const csBox3& csSpriteCal3DMeshObjectFactory::GetObjectBoundingBox ()
+{
+  obj_bbox = GetObjectBoundingBox ();
   return obj_bbox;
 }
 
@@ -2441,7 +2463,7 @@ SCF_IMPLEMENT_FACTORY (csSpriteCal3DMeshObjectType)
 csSpriteCal3DMeshObjectType::csSpriteCal3DMeshObjectType (iBase* pParent) :
   scfImplementationType (this, pParent)
 {
-  //nullPolyMesh.AttachNew (new NullPolyMesh (pParent));
+  nullPolyMesh.AttachNew (new NullPolyMesh (pParent));
 }
 
 csSpriteCal3DMeshObjectType::~csSpriteCal3DMeshObjectType ()

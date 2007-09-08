@@ -255,7 +255,7 @@ iVFS* csInitializer::SetupVFS(iObjectRegistry* r, const char* pluginID)
   if (!VFS)
   {
     csRef<iPluginManager> plugin_mgr (csQueryRegistry<iPluginManager> (r));
-    VFS = csLoadPlugin<iVFS> (plugin_mgr, pluginID);
+    VFS = CS_LOAD_PLUGIN (plugin_mgr, pluginID, iVFS);
     if (!VFS)
     {
       /* NB: loading the plugin should have already resulted in a message 

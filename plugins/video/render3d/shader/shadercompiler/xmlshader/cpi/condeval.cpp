@@ -845,10 +845,10 @@ bool csConditionEvaluator::Evaluate (csConditionID condition,
    * are added (notably when a shader source is retrieved from an
    * external source). Make sure the cache is large enough.
    */
-  if (condChecked.GetSize() < GetNumConditions ())
+  if (condChecked.Length() < GetNumConditions ())
   {
-    condChecked.SetSize (GetNumConditions ());
-    condResult.SetSize (GetNumConditions ());
+    condChecked.SetLength (GetNumConditions ());
+    condResult.SetLength (GetNumConditions ());
   }
 
   if (condChecked.IsBitSet (condition))
@@ -1201,9 +1201,9 @@ typename Evaluator::EvalResult csConditionEvaluator::Evaluate (
 
 void csConditionEvaluator::ResetEvaluationCache()
 {
-  condChecked.SetSize (GetNumConditions ());
+  condChecked.SetLength (GetNumConditions ());
   condChecked.Clear();
-  condResult.SetSize (GetNumConditions ());
+  condResult.SetLength (GetNumConditions ());
 }
 
 bool csConditionEvaluator::EvaluateConst (const CondOperation& op, bool& result)

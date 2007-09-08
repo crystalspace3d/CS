@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space: 4.9.6 Camera Movement</title>
+<title>Crystal Space 1.3.0: 4.9.6 Camera Movement</title>
 
-<meta name="description" content="Crystal Space: 4.9.6 Camera Movement">
-<meta name="keywords" content="Crystal Space: 4.9.6 Camera Movement">
+<meta name="description" content="Crystal Space 1.3.0: 4.9.6 Camera Movement">
+<meta name="keywords" content="Crystal Space 1.3.0: 4.9.6 Camera Movement">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -109,7 +109,7 @@ and let it look at <samp>&lsquo;3,5,10&rsquo;</samp>. The up vector of the camer
 csVector3 look_at_pos (3, 5, 10);
 csVector3 up (0, 1, 0);
 camera-&gt;GetTransform ().Move (camera_pos);
-camera-&gt;GetTransform ().LookAt (camera_pos - look_at_pos, up);
+camera-&gt;GetTransform ().LookAt (look_at_pos - camera_pos, up);
 </pre></td></tr></table>
 <a name="2"></a>
 <h4 class="subsubheading"> Include Files </h4>

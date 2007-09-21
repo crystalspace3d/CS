@@ -40,6 +40,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -79,7 +80,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -101,6 +102,9 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -113,6 +117,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -150,7 +155,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -172,6 +177,9 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -184,6 +192,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -221,7 +230,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -243,6 +252,9 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -255,6 +267,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -292,7 +305,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -314,19 +327,28 @@
 				RelativePath="..\..\apps\tools\lighter2\kdtree.cpp">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\light.cpp">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\lighter.cpp">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\lightmap.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\lightmapuv.cpp">
+				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radobject.cpp">
+				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple_prepare.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radprimitive.cpp">
+				RelativePath="..\..\apps\tools\lighter2\object.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\object_genmesh.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\primitive.cpp">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\raytracer.cpp">
@@ -335,12 +357,21 @@
 				RelativePath="..\..\apps\tools\lighter2\scene.cpp">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\statistics.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\swappable.cpp">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\tui.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
+			<File
+				RelativePath="..\..\apps\tools\lighter2\chunkyalloc.h">
+			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\common.h">
 			</File>
@@ -354,6 +385,9 @@
 				RelativePath="..\..\apps\tools\lighter2\kdtree.h">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\light.h">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\lighter.h">
 			</File>
 			<File
@@ -363,13 +397,22 @@
 				RelativePath="..\..\apps\tools\lighter2\lightmapuv.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radobject.h">
+				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radpatch.h">
+				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple_util.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\radprimitive.h">
+				RelativePath="..\..\apps\tools\lighter2\lightprop.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\object.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\object_genmesh.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\primitive.h">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\raygenerator.h">
@@ -378,13 +421,22 @@
 				RelativePath="..\..\apps\tools\lighter2\raytracer.h">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\sampler.h">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\scene.h">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\statistics.h">
 			</File>
 			<File
+				RelativePath="..\..\apps\tools\lighter2\swappable.h">
+			</File>
+			<File
 				RelativePath="..\..\apps\tools\lighter2\tui.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tools\lighter2\vertexdata.h">
 			</File>
 		</Filter>
 		<Filter

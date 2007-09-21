@@ -39,6 +39,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -79,7 +80,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\movierecorder;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -100,6 +101,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -112,6 +114,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -150,7 +153,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\movierecorder;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -171,6 +174,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -183,6 +187,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -221,7 +226,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\movierecorder;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -242,6 +247,7 @@
 				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
+
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -254,6 +260,7 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -292,7 +299,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\movierecorder;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -305,44 +312,44 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\movierecorder\minilzo.cpp">
+				RelativePath="..\..\plugins\utilities\movierecorder\minilzo.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\movierecorder.cpp">
+				RelativePath="..\..\plugins\utilities\movierecorder\movierecorder.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\nuppelwriter.cpp">
+				RelativePath="..\..\plugins\utilities\movierecorder\nuppelwriter.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\rgb2yuv420.cpp">
+				RelativePath="..\..\plugins\utilities\movierecorder\rgb2yuv420.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\rtjpeg.cpp">
+				RelativePath="..\..\plugins\utilities\movierecorder\rtjpeg.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\movierecorder\lzoconf.h">
+				RelativePath="..\..\plugins\utilities\movierecorder\lzoconf.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\minilzo.h">
+				RelativePath="..\..\plugins\utilities\movierecorder\minilzo.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\mmx.h">
+				RelativePath="..\..\plugins\utilities\movierecorder\mmx.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\movierecorder.h">
+				RelativePath="..\..\plugins\utilities\movierecorder\movierecorder.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\nuppelvideo.h">
+				RelativePath="..\..\plugins\utilities\movierecorder\nuppelvideo.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\nuppelwriter.h">
+				RelativePath="..\..\plugins\utilities\movierecorder\nuppelwriter.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\rtjpeg.h">
+				RelativePath="..\..\plugins\utilities\movierecorder\rtjpeg.h">
 			</File>
 		</Filter>
 		<Filter
@@ -352,7 +359,7 @@
 				RelativePath="..\..\mk\msvc\plgmovierecorder.rc">
 			</File>
 			<File
-				RelativePath="..\..\plugins\movierecorder\movierecorder.csplugin">
+				RelativePath="..\..\plugins\utilities\movierecorder\movierecorder.csplugin">
 			</File>
 		</Filter>
 	</Files>

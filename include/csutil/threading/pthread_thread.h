@@ -52,8 +52,6 @@ namespace Implementation
 
     static void Yield ();
 
-    static ThreadID GetThreadID ();
-
   private:
     csRef<Runnable> runnable;
 

@@ -27,11 +27,6 @@
 #include "csutil/sysfunc.h"
 #include "csutil/syspath.h"
 
-#define VERSION_STR            CS_VERSION_MAJOR "_" CS_VERSION_MINOR
-#define VERSION_STR_DOTTED     CS_VERSION_MAJOR "." CS_VERSION_MINOR
-
-#define CS_PACKAGE_NAME_VER    CS_PACKAGE_NAME "-" VERSION_STR_DOTTED
-
 // @@@ Re-enable recursive scanning after we rethink it.  Presently, many
 // developers run applications from within the source tree, and recursion
 // causes a lot of needless scanning. For now it is disabled.
@@ -42,14 +37,16 @@
 #ifdef CS_COMPILER_GCC
 #warning CS_CONFIGDIR not set
 #endif
-#define CS_CONFIGDIR "/usr/local/" CS_PACKAGE_NAME_VER
+#define CS_CONFIGDIR "/usr/local/" CS_PACKAGE_NAME
 #endif
 #ifndef CS_PLUGINDIR
 #ifdef CS_COMPILER_GCC
 #warning CS_PLUGINDIR not set
 #endif
-#define CS_PLUGINDIR "/usr/local/" CS_PACKAGE_NAME_VER "/lib"
+#define CS_PLUGINDIR "/usr/local/" CS_PACKAGE_NAME "/lib"
 #endif
+
+#define VERSION_STR     CS_VERSION_MAJOR "_" CS_VERSION_MINOR
 
 csString csGetConfigPath ()
 {

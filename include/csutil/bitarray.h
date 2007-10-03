@@ -131,7 +131,7 @@ public:
   typedef csBitArrayTweakable<InlinedBits, Allocator> ThisType;
   typedef Allocator AllocatorType;
 
-protected:
+private:
   template<typename BitArray> friend class csComparatorBitArray;
   template<typename BitArray> friend class csHashComputerBitArray;
 
@@ -288,9 +288,9 @@ public:
 
   /**
    * Return the number of stored bits.
-   * \deprecated Deprecated in 1.3. Use GetSize() instead.
+   * \deprecated Use GetSize() instead.
    */
-  CS_DEPRECATED_METHOD_MSG("Use GetSize() instead.")
+  /*CS_DEPRECATED_METHOD_MSG("Use GetSize() instead.")*/
   size_t Length () const
   {
     return GetSize();
@@ -298,9 +298,9 @@ public:
 
   /**
    * Set the number of stored bits.
-   * \deprecated Deprecated in 1.3. Use SetSize() instead.
+   * \deprecated Use SetSize() instead.
    */
-  CS_DEPRECATED_METHOD_MSG("Use SetSize() instead.")
+  /*CS_DEPRECATED_METHOD_MSG("Use SetSize() instead.")*/
   void SetLength (size_t newSize)
   {
     SetSize (newSize);
@@ -610,11 +610,11 @@ public:
     return a;
   }
 
-  //@{
   /// Return the full backing-store.
-  csBitArrayStorageType* GetArrayBits() { return GetStore(); }
-  const csBitArrayStorageType* GetArrayBits() const { return GetStore(); }
-  //@}
+  csBitArrayStorageType* GetArrayBits()
+  {
+    return GetStore();
+  }
 };
 
 /**
@@ -630,20 +630,6 @@ public:
   explicit csBitArray (size_t size) : csBitArrayTweakable<> (size) { }
   /// Construct as duplicate of \a that (copy constructor).
   csBitArray (const csBitArray& that) : csBitArrayTweakable<> (that) { }
-
-  /// Copy from other array.
-  template<int A, typename B>
-  csBitArray& operator=(const csBitArrayTweakable<A, B>& that)
-  {
-    if (this != &that)
-    {
-      SetSize (that.GetSize());
-      memcpy (GetStore(), that.GetArrayBits(), 
-        mLength * sizeof (csBitArrayStorageType));
-    }
-    return *this;
-  }
-
 };
 
 

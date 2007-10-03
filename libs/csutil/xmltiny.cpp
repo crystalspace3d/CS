@@ -29,8 +29,6 @@
 #include "iutil/databuff.h"
 #include "tinyxml.h"
 
-using namespace CS;
-
 //------------------------------------------------------------------------
 
 
@@ -54,7 +52,7 @@ csRef<iDocument> csTinyDocumentSystem::CreateDocument ()
 //------------------------------------------------------------------------
 
 
-csTinyXmlAttributeIterator::csTinyXmlAttributeIterator (TiDocumentNode* parent)
+csTinyXmlAttributeIterator::csTinyXmlAttributeIterator (CS::TiDocumentNode* parent)
   : scfImplementationType (this)
 {
   csTinyXmlAttributeIterator::parent = parent->ToElement ();
@@ -106,12 +104,12 @@ csTinyXmlNodeIterator::csTinyXmlNodeIterator (
   : scfImplementationType (this), doc (doc), parent (parent),
   currentPos (0), endPos ((size_t)~0)
 {
-  csTinyXmlNodeIterator::value = value ? StrDup (value) : 0;
+  csTinyXmlNodeIterator::value = value ? CS::StrDup (value) : 0;
 
-  TiDocumentNodeChildren* node_children = 0;
+  CS::TiDocumentNodeChildren* node_children = 0;
   if (parent && 
-    ((parent->GetTiNode()->Type() == TiDocumentNode::ELEMENT)
-      || (parent->GetTiNode()->Type() == TiDocumentNode::DOCUMENT)))
+    ((parent->GetTiNode()->Type() == CS::TiDocumentNode::ELEMENT)
+      || (parent->GetTiNode()->Type() == CS::TiDocumentNode::DOCUMENT)))
     node_children = parent->GetTiNodeChildren ();
   if (!node_children)
     current = 0;
@@ -151,7 +149,7 @@ size_t csTinyXmlNodeIterator::GetEndPosition ()
   if (endPos == (size_t)~0)
   {
     endPos = currentPos;
-    TiDocumentNode* node = current;
+    CS::TiDocumentNode* node = current;
     while (node != 0)
     {
       endPos++;
@@ -170,10 +168,6 @@ csTinyXmlNode::csTinyXmlNode (csTinyXmlDocument* doc)
 
 csTinyXmlNode::~csTinyXmlNode ()
 {
-  if (node->Type () == TiDocumentNode::ELEMENT)
-  {
-    static_cast<TiXmlElement*> ((TiDocumentNode*)node)->ShrinkAttributes ();
-  }
 }
 
 csRef<iDocumentNode> csTinyXmlNode::GetParent ()
@@ -188,13 +182,13 @@ csDocumentNodeType csTinyXmlNode::GetType ()
 {
   switch (node->Type ())
   {
-    case TiDocumentNode::DOCUMENT: return CS_NODE_DOCUMENT;
-    case TiDocumentNode::ELEMENT: return CS_NODE_ELEMENT;
-    case TiDocumentNode::COMMENT: return CS_NODE_COMMENT;
-    case TiDocumentNode::CDATA:
-    case TiDocumentNode::TEXT:
+    case CS::TiDocumentNode::DOCUMENT: return CS_NODE_DOCUMENT;
+    case CS::TiDocumentNode::ELEMENT: return CS_NODE_ELEMENT;
+    case CS::TiDocumentNode::COMMENT: return CS_NODE_COMMENT;
+    case CS::TiDocumentNode::CDATA:
+    case CS::TiDocumentNode::TEXT:
       return CS_NODE_TEXT;
-    case TiDocumentNode::DECLARATION: return CS_NODE_DECLARATION;
+    case CS::TiDocumentNode::DECLARATION: return CS_NODE_DECLARATION;
     default: return CS_NODE_UNKNOWN;
   }
 }
@@ -249,27 +243,27 @@ csRef<iDocumentNodeIterator> csTinyXmlNode::GetNodes (const char* value)
 
 csRef<iDocumentNode> csTinyXmlNode::GetNode (const char* value)
 {
-  if ((node->Type() != TiDocumentNode::ELEMENT)
-    && (node->Type() != TiDocumentNode::DOCUMENT)) return 0;
-  TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
+  if ((node->Type() != CS::TiDocumentNode::ELEMENT)
+    && (node->Type() != CS::TiDocumentNode::DOCUMENT)) return 0;
+  CS::TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
   csRef<iDocumentNode> child;
-  TiDocumentNode* c = node_children->FirstChild (value);
+  CS::TiDocumentNode* c = node_children->FirstChild (value);
   if (c) child = csPtr<iDocumentNode> (doc->Alloc (c));
   return child;
 }
 
 void csTinyXmlNode::RemoveNode (const csRef<iDocumentNode>& child)
 {
-  if ((node->Type() != TiDocumentNode::ELEMENT)
-    && (node->Type() != TiDocumentNode::DOCUMENT)) return;
-  TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
+  if ((node->Type() != CS::TiDocumentNode::ELEMENT)
+    && (node->Type() != CS::TiDocumentNode::DOCUMENT)) return;
+  CS::TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
 
   //CS_ASSERT (child.IsValid ());
   if (node_children)
   {
     csTinyXmlNode* tinyChild = 
       static_cast<csTinyXmlNode*>((iDocumentNode*)child);
-    TiDocumentNode* tiNode = tinyChild->GetTiNode ();
+    CS::TiDocumentNode* tiNode = tinyChild->GetTiNode ();
     node_children->RemoveChild (tiNode);
     if (tiNode == lastChild) lastChild = 0;
   }
@@ -277,9 +271,9 @@ void csTinyXmlNode::RemoveNode (const csRef<iDocumentNode>& child)
 
 void csTinyXmlNode::RemoveNodes (csRef<iDocumentNodeIterator> children)
 {
-  if ((node->Type() != TiDocumentNode::ELEMENT)
-    && (node->Type() != TiDocumentNode::DOCUMENT)) return;
-  TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
+  if ((node->Type() != CS::TiDocumentNode::ELEMENT)
+    && (node->Type() != CS::TiDocumentNode::DOCUMENT)) return;
+  CS::TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
 
   while (children->HasNext ())
   {
@@ -292,9 +286,9 @@ void csTinyXmlNode::RemoveNodes (csRef<iDocumentNodeIterator> children)
 
 void csTinyXmlNode::RemoveNodes ()
 {
-  if ((node->Type() != TiDocumentNode::ELEMENT)
-    && (node->Type() != TiDocumentNode::DOCUMENT)) return;
-  TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
+  if ((node->Type() != CS::TiDocumentNode::ELEMENT)
+    && (node->Type() != CS::TiDocumentNode::DOCUMENT)) return;
+  CS::TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
 
   node_children->Clear ();
   lastChild = 0;
@@ -303,19 +297,19 @@ void csTinyXmlNode::RemoveNodes ()
 csRef<iDocumentNode> csTinyXmlNode::CreateNodeBefore (csDocumentNodeType type,
 	iDocumentNode* before)
 {
-  if ((node->Type() != TiDocumentNode::ELEMENT)
-    && (node->Type() != TiDocumentNode::DOCUMENT)) return 0;
-  TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
+  if ((node->Type() != CS::TiDocumentNode::ELEMENT)
+    && (node->Type() != CS::TiDocumentNode::DOCUMENT)) return 0;
+  CS::TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
 
   csRef<iDocumentNode> n;
-  TiDocumentNode* child = 0;
+  CS::TiDocumentNode* child = 0;
   switch (type)
   {
     case CS_NODE_DOCUMENT:
       break;
     case CS_NODE_ELEMENT:
       {
-        TiXmlElement el;
+        CS::TiXmlElement el;
 	if (before)
 	  child = node_children->InsertBeforeChild (
 	  	static_cast<csTinyXmlNode*> (before)->GetTiNode (),
@@ -330,7 +324,7 @@ csRef<iDocumentNode> csTinyXmlNode::CreateNodeBefore (csDocumentNodeType type,
       break;
     case CS_NODE_COMMENT:
       {
-        TiXmlComment el;
+        CS::TiXmlComment el;
 	if (before)
 	  child = node_children->InsertBeforeChild (
 	  	static_cast<csTinyXmlNode*> (before)->GetTiNode (),
@@ -345,7 +339,7 @@ csRef<iDocumentNode> csTinyXmlNode::CreateNodeBefore (csDocumentNodeType type,
       break;
     case CS_NODE_TEXT:
       {
-        TiXmlText el;
+        CS::TiXmlText el;
 	if (before)
 	  child = node_children->InsertBeforeChild (
 	  	static_cast<csTinyXmlNode*> (before)->GetTiNode (),
@@ -360,7 +354,7 @@ csRef<iDocumentNode> csTinyXmlNode::CreateNodeBefore (csDocumentNodeType type,
       break;
     case CS_NODE_DECLARATION:
       {
-        TiXmlDeclaration el;
+        CS::TiXmlDeclaration el;
 	if (before)
 	  child = node_children->InsertBeforeChild (
 	  	static_cast<csTinyXmlNode*> (before)->GetTiNode (),
@@ -375,7 +369,7 @@ csRef<iDocumentNode> csTinyXmlNode::CreateNodeBefore (csDocumentNodeType type,
       break;
     case CS_NODE_UNKNOWN:
       {
-        TiXmlUnknown el;
+        CS::TiXmlUnknown el;
 	if (before)
 	  child = node_children->InsertBeforeChild (
 	  	static_cast<csTinyXmlNode*> (before)->GetTiNode (),
@@ -398,15 +392,15 @@ csRef<iDocumentNode> csTinyXmlNode::CreateNodeBefore (csDocumentNodeType type,
 
 const char* csTinyXmlNode::GetContentsValue ()
 {
-  if ((node->Type() != TiDocumentNode::ELEMENT)
-    && (node->Type() != TiDocumentNode::DOCUMENT)) return 0;
-  TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
+  if ((node->Type() != CS::TiDocumentNode::ELEMENT)
+    && (node->Type() != CS::TiDocumentNode::DOCUMENT)) return 0;
+  CS::TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
   
-  TiDocumentNode* child = node_children->FirstChild ();
+  CS::TiDocumentNode* child = node_children->FirstChild ();
   while (child)
   {
-    if ((child->Type () == TiDocumentNode::TEXT)
-      || (child->Type () == TiDocumentNode::CDATA))
+    if ((child->Type () == CS::TiDocumentNode::TEXT)
+      || (child->Type () == CS::TiDocumentNode::CDATA))
     {
       return child->Value ();
     }
@@ -442,15 +436,15 @@ csRef<iDocumentAttributeIterator> csTinyXmlNode::GetAttributes ()
   return it;
 }
 
-TiDocumentAttribute* csTinyXmlNode::GetAttributeInternal (const char* name)
+CS::TiDocumentAttribute* csTinyXmlNode::GetAttributeInternal (const char* name)
 {
-  TiXmlElement* element = node->ToElement ();
+  CS::TiXmlElement* element = node->ToElement ();
   if (!element) return 0;
   size_t count = element->GetAttributeCount ();
   size_t i;
   for (i = 0 ; i < count ; i++)
   {
-    TiDocumentAttribute& attrib = node->ToElement ()->GetAttribute (i);
+    CS::TiDocumentAttribute& attrib = node->ToElement ()->GetAttribute (i);
     if (strcmp (name, attrib.Name ()) == 0)
       return &attrib;
   }
@@ -461,7 +455,7 @@ TiDocumentAttribute* csTinyXmlNode::GetAttributeInternal (const char* name)
 csRef<iDocumentAttribute> csTinyXmlNode::GetAttribute (const char* name)
 {
   csRef<iDocumentAttribute> attr;
-  TiDocumentAttribute* a = GetAttributeInternal (name);
+  CS::TiDocumentAttribute* a = GetAttributeInternal (name);
   if (a)
   {
     attr = csPtr<iDocumentAttribute> (new csTinyXmlAttribute (a));
@@ -472,21 +466,21 @@ csRef<iDocumentAttribute> csTinyXmlNode::GetAttribute (const char* name)
 
 const char* csTinyXmlNode::GetAttributeValue (const char* name)
 {
-  TiXmlElement* el = node->ToElement ();
+  CS::TiXmlElement* el = node->ToElement ();
   if (el) return el->Attribute (name);
   else return 0;
 }
 
 int csTinyXmlNode::GetAttributeValueAsInt (const char* name)
 {
-  TiDocumentAttribute* a = GetAttributeInternal (name);
+  CS::TiDocumentAttribute* a = GetAttributeInternal (name);
   if (!a) return 0;
   return a->IntValue ();
 }
 
 float csTinyXmlNode::GetAttributeValueAsFloat (const char* name)
 {
-  TiDocumentAttribute* a = GetAttributeInternal (name);
+  CS::TiDocumentAttribute* a = GetAttributeInternal (name);
   if (!a) return 0;
   float f;
   sscanf (a->Value (), "%f", &f);
@@ -496,7 +490,7 @@ float csTinyXmlNode::GetAttributeValueAsFloat (const char* name)
 bool csTinyXmlNode::GetAttributeValueAsBool(const char* name,
 					    bool defaultvalue)
 {
-  TiDocumentAttribute* a = GetAttributeInternal (name);
+  CS::TiDocumentAttribute* a = GetAttributeInternal (name);
   if (!a || !a->Value () ) return defaultvalue;
   if (strcasecmp(a->Value(),"true")==0 ||
       strcasecmp(a->Value(),"yes")==0 ||
@@ -520,19 +514,19 @@ void csTinyXmlNode::RemoveAttributes ()
 
 void csTinyXmlNode::SetAttribute (const char* name, const char* value)
 {
-  TiXmlElement* el = node->ToElement ();
+  CS::TiXmlElement* el = node->ToElement ();
   if (el) el->SetAttribute (el->GetDocument (), name, value);
 }
 
 void csTinyXmlNode::SetAttributeAsInt (const char* name, int value)
 {
-  TiXmlElement* el = node->ToElement ();
+  CS::TiXmlElement* el = node->ToElement ();
   if (el) el->SetAttribute (el->GetDocument (), name, value);
 }
 
 void csTinyXmlNode::SetAttributeAsFloat (const char* name, float value)
 {
-  TiXmlElement* el = node->ToElement ();
+  CS::TiXmlElement* el = node->ToElement ();
   if (el)
   {
     csString v;
@@ -563,7 +557,7 @@ void csTinyXmlDocument::Clear ()
 csRef<iDocumentNode> csTinyXmlDocument::CreateRoot ()
 {
   Clear ();
-  root.AttachNew (new TiDocument ());
+  root.AttachNew (new CS::TiDocument ());
   return csPtr<iDocumentNode> (Alloc (root));
 }
 #include "csutil/custom_new_enable.h"
@@ -609,8 +603,10 @@ const char* csTinyXmlDocument::Parse (iString* str, bool collapse)
 const char* csTinyXmlDocument::Parse (const char* buf, bool collapse)
 {
   CreateRoot ();
+  bool const old_collapse = root->IsWhiteSpaceCondensed();
   root->SetCondenseWhiteSpace(collapse);
-  root->Parse (buf);
+  root->Parse (root, buf);
+  root->SetCondenseWhiteSpace(old_collapse);
   if (root->Error ())
     return root->ErrorDesc ();
   return 0;
@@ -618,21 +614,29 @@ const char* csTinyXmlDocument::Parse (const char* buf, bool collapse)
 
 const char* csTinyXmlDocument::Write (iFile* file)
 {
-  return root->Print (file);
+  scfString str;
+  const char* error = Write (&str);
+  if (error) return error;
+  if (!file->Write (str.GetData (), str.Length ()))
+    return "Error writing file!";
+  return 0;
 }
 
 const char* csTinyXmlDocument::Write (iString* str)
 {
   str->SetGrowsBy (0);
-  return root->Print (str);
+  root->Print (str, 0);
+  return 0;
 }
 
 const char* csTinyXmlDocument::Write (iVFS* vfs, const char* filename)
 {
-  csRef<iFile> file = vfs->Open (filename, VFS_FILE_WRITE);
-  if (!file.IsValid ())
-    return "Error opening file";
-  return root->Print (file);
+  scfString str;
+  const char* error = Write (&str);
+  if (error) return error;
+  if (!vfs->WriteFile (filename, str.GetData (), str.Length ()))
+    return "Error writing file!";
+  return 0;
 }
 
 int csTinyXmlDocument::Changeable ()
@@ -647,7 +651,7 @@ csTinyXmlNode* csTinyXmlDocument::Alloc ()
 }
 #include "csutil/custom_new_enable.h"
 
-csTinyXmlNode* csTinyXmlDocument::Alloc (TiDocumentNode* node)
+csTinyXmlNode* csTinyXmlDocument::Alloc (CS::TiDocumentNode* node)
 {
   csTinyXmlNode* n = Alloc ();
   n->SetTiNode (node);

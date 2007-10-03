@@ -92,13 +92,6 @@
 # define CS_ATTRIBUTE_MALLOC
 #endif
 
-// Set up deprecation macros
-#ifdef CS_COMPILER_GCC
-#  define CS_DEPRECATED_METHOD    CS_ATTRIBUTE_DEPRECATED
-#  define CS_DEPRECATED_TYPE      CS_ATTRIBUTE_DEPRECATED
-#  define CS_DEPRECATED_VAR(decl) decl CS_ATTRIBUTE_DEPRECATED
-#endif
-
 /**\def CS_DEPRECATED_METHOD
  * Use the CS_DEPRECATED_METHOD macro in front of method declarations to
  * indicate that they are deprecated. Example:
@@ -162,39 +155,6 @@
 #    define CS_DEPRECATED_TYPE_MSG(msg) __declspec(deprecated(msg))
 #  else
 #    define CS_DEPRECATED_TYPE_MSG(msg) CS_DEPRECATED_TYPE
-#  endif
-#endif
-
-/**\def CS_DEPRECATED_VAR
- * Use the CS_DEPRECATED_VAR macro tol indicate that a variable or 
- * class/struct is deprecated. Example:
- * \code
- * struct MyStuff
- * {
- *   int newStuff;
- *   CS_DEPRECATED_VAR(int oldStuff);
- * };
- * \endcode
- * Compilers which are capable of flagging deprecation will exhibit a warning
- * when it encounters client code using types so tagged.
- */
-#if !defined(CS_DEPRECATED_VAR) || defined(DOXYGEN_RUN)
-#  if defined(CS_COMPILER_MSVC)
-#    define CS_DEPRECATED_VAR(decl) __declspec(deprecated) decl
-#  else
-#    define CS_DEPRECATED_VAR(decl) decl
-#  endif
-#endif
-
-/**\def CS_DEPRECATED_VAR_MSG
- * A variant of CS_DEPRECATED_VAR that also emits the message \a msg
- * on compilers that support it.
- */
-#if !defined(CS_DEPRECATED_VAR_MSG) || defined(DOXYGEN_RUN)
-#  if defined(CS_COMPILER_MSVC) && _MSC_VER >= 1400
-#    define CS_DEPRECATED_VAR_MSG(msg, decl) __declspec(deprecated(msg)) decl
-#  else
-#    define CS_DEPRECATED_VAR_MSG(msg, decl) CS_DEPRECATED_VAR(decl)
 #  endif
 #endif
 
@@ -882,32 +842,23 @@ namespace CS
   {
     extern void CS_CRYSTALSPACE_EXPORT AssertMessage (const char* expr, 
       const char* filename, int line, const char* msg = 0);
-    
-    /**
-     * Break execution for debugging purposes.
-     * Causes a signal/exception/fault (which depends on the exact 
-     * nomenclature used on a platform) with the intention to break into an
-     * attached debugger.
-     */
-    static inline void DebugBreak ()
-    {
-    #  if defined (CS_PLATFORM_WIN32)
-      ::DebugBreak();
-    #  elif defined (CS_PROCESSOR_X86)
-    #    if defined (CS_COMPILER_GCC)
-      asm ("int $3");
-    #    else
-      _asm int 3;
-    #    endif
-    #  else
-      static int x = 0; x /= x;
-    #  endif
-    }
   } // namespace Debug
 } // namespace CS
 
-#if defined(CS_DEBUG) || defined(CS_WITH_ASSERTIONS)
-#  define CS_DEBUG_BREAK	CS::Debug::DebugBreak()
+#ifdef CS_DEBUG
+#  if !defined (CS_DEBUG_BREAK)
+#    if defined (CS_PLATFORM_WIN32)
+#      define CS_DEBUG_BREAK ::DebugBreak()
+#    elif defined (CS_PROCESSOR_X86)
+#      if defined (CS_COMPILER_GCC)
+#        define CS_DEBUG_BREAK asm ("int $3")
+#      else
+#        define CS_DEBUG_BREAK _asm int 3
+#      endif
+#    else
+#      define CS_DEBUG_BREAK { static int x = 0; x /= x; }
+#    endif
+#  endif
 #  if !defined (CS_ASSERT_MSG)
 #   define CS_ASSERT_MSG(msg,x) 					\
       if (!(x)) CS::Debug::AssertMessage (#x, __FILE__, __LINE__, msg);

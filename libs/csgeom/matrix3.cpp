@@ -23,7 +23,6 @@
 #include "csqint.h"
 #include "csgeom/matrix3.h"
 #include "csgeom/quaternion.h"
-#include "csutil/csstring.h"
 
 //---------------------------------------------------------------------------
 csMatrix3::csMatrix3 (float x,float y, float z, float angle)
@@ -130,14 +129,6 @@ csMatrix3 &csMatrix3::operator/= (float s)
   m32 *= s;
   m33 *= s;
   return *this;
-}
-
-csString csMatrix3::Description () const
-{
-  return csString().Format ("(%s), (%s), (%s)",
-    Row1().Description().GetData(), 
-    Row2().Description().GetData(), 
-    Row3().Description().GetData());
 }
 
 void csMatrix3::Identity ()

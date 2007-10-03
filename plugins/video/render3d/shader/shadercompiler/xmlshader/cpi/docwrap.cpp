@@ -1735,12 +1735,12 @@ csTextNodeWrapper::csTextNodeWrapper (iDocumentNode* realMe,
                                       const char* text) : 
   scfPooledImplementationType (this), realMe (realMe)
 {  
-  nodeText = CS::StrDup (text);
+  nodeText = csStrNew (text);
 }
 
 csTextNodeWrapper::~csTextNodeWrapper ()
 {
-  cs_free (nodeText);
+  delete[] nodeText;
 }
 
 //---------------------------------------------------------------------------

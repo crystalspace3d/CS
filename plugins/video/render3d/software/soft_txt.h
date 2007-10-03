@@ -89,9 +89,6 @@ public:
   }
 };
 
-// For GetTextureTarget ()
-#include "csutil/win32/msvc_deprecated_warn_off.h"
-
 /**
  * csSoftwareTextureHandle represents a texture and all its mipmapped
  * variants.
@@ -180,14 +177,7 @@ public:
       delete tex[i]; tex[i] = 0;
     }
   }
-
-  virtual TextureType GetTextureType () const
-  {
-    return texType2D;
-  }
 };
-
-#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * Software version of the texture manager. This instance of the

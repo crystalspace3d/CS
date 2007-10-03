@@ -32,16 +32,16 @@
 /// This is an SCF-compatible interface for csStringArray.
 struct iStringArray : public virtual iBase
 {
-  SCF_INTERFACE(iStringArray, 2,1,0);
+  SCF_INTERFACE(iStringArray, 2,0,0);
   /// Get array length.
   virtual size_t GetSize () const = 0;
 
   /**
    * Get array length.
-   * \deprecated Deprecated in 1.3. Use GetSize() instead.
+   * \deprecated Use GetSize() instead.
    */
-  CS_DEPRECATED_METHOD_MSG("Use GetSize() instead.")
-  CS_FORCEINLINE size_t Length () const { return GetSize(); }
+  /*CS_DEPRECATED_METHOD_MSG("Use GetSize() instead.")*/
+  virtual size_t Length () const = 0;
 
   /// Push a string onto the stack.
   virtual void Push (const char *value) = 0;
@@ -110,10 +110,10 @@ struct iStringArray : public virtual iBase
 
   /**
    * Remove all strings from array.
-   * \deprecated Deprecated in 1.3. Use Empty() instead.
+   * \deprecated Use Empty() instead.
    */
-  CS_DEPRECATED_METHOD_MSG("Use Empty() instead.")
-  CS_FORCEINLINE void DeleteAll () { Empty(); }
+  /*CS_DEPRECATED_METHOD_MSG("Use Empty() instead.")*/
+  virtual void DeleteAll () = 0;
 
   /**
    * Return true if the array is empty.

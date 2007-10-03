@@ -93,6 +93,7 @@ public:
   /// Destructor.
   virtual ~csNullmeshMeshObject ();
 
+  void GetObjectBoundingBox (csBox3& bbox);
   const csBox3& GetObjectBoundingBox ();
   void SetObjectBoundingBox (const csBox3& bbox);
   void GetRadius (float& rad, csVector3& cent);
@@ -132,7 +133,7 @@ public:
   virtual void SetMeshWrapper (iMeshWrapper* lp) { logparent = lp; }
   virtual iMeshWrapper* GetMeshWrapper () const { return logparent; }
 
-  virtual CS::Graphics::RenderMesh **GetRenderMeshes (int &num, iRenderView*, 
+  virtual csRenderMesh **GetRenderMeshes (int &num, iRenderView*, 
     iMovable*, uint32)
   {
     num = 0;

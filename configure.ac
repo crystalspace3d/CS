@@ -14,7 +14,7 @@ AC_PREREQ([2.56])
 #       Also, mk/autoconf/crystal.m4 should be updated with the current version
 #         number.
 #------------------------------------------------------------------------------
-m4_define([cs_version_number], [1.3])
+m4_define([cs_version_number], [1.2rc3])
 
 
 
@@ -78,19 +78,6 @@ AS_IF([test -n "$SWIG"],
 	[9.9|.9], [CS_EMIT_BUILD_PROPERTY([CMD.SWIG], [$SWIG])])])
 
 CS_CHECK_COMMON_TOOLS_ICONS
-
-AC_ARG_ENABLE([relaytool], [AC_HELP_STRING([--enable-relaytool],
-    [enable use of relaytool for some libraries (default YES)])])
-    AS_IF([test -z "$enable_relaytool"], 
-	[enable_relaytool=yes])
-AS_IF([test "$enable_relaytool" != "no"],
-    [# Note that CS comes with a copy of relaytool that, compared to the 
-    # current (as of 2007-09-18) version from apbuild-2.0.5, has some 
-    # additions and small fixes applied. Thus, prefer the version that 
-    # ships with CS.
-    CS_PATH_TOOL([RELAYTOOL], [relaytool], [], 
-	[${srcdir}/bin$PATH_SEPARATOR$PATH])
-    CS_EMIT_BUILD_PROPERTY([CMD.RELAYTOOL], [$RELAYTOOL])])
 
 #------------------------------------------------------------------------------
 # In order to avoid alienating users by forcing them to install and use Jam,
@@ -1590,28 +1577,6 @@ AS_IF([test $cs_cv_libCEGUI = yes],
 
 
 
-#----------------------------------------------------------------------------
-# Check for GTK.
-#----------------------------------------------------------------------------
-CS_CHECK_LIB_WITH([GTK],
-    [AC_LANG_PROGRAM([[#include <gtk/gtk.h>]],
-    [gtk_message_dialog_new (0, 0, 0, 0, 0);])], [], [],
-    [CS_EMIT_BUILD_RESULT([cs_cv_libGTK], [GTK])], [], [], [], [], [gtk+-2.0])
-
-AS_IF([test $cs_cv_libGTK = yes],
-    [CS_CHECK_BUILD([if gtk_message_dialog_format_secondary_text is available], 
-        [cs_cv_GTK_gtk_message_dialog_format_secondary_text],
-	[AC_LANG_PROGRAM(
-	    [[#include <gtk/gtk.h>]],
-	    [gtk_message_dialog_format_secondary_text (0, 0);])],
-	[], [],
-	[CS_EMIT_BUILD_PROPERTY([GTK.MESSAGE_HAS_SECONDARY], [yes])], [], [],
-	[$cs_cv_libGTK_cflags],
-	[$cs_cv_libGTK_lflags],
-	[$cs_cv_libGTK_libs])])
-
-
-
 #------------------------------------------------------------------------------
 # Check if GNU/Linux joystick API is present.
 #------------------------------------------------------------------------------
@@ -2155,7 +2120,9 @@ AC_CHECK_HEADERS([byteswap.h],
 CS_SYMBOL_QUALIFIER([how to declare deprecations],
     [cs_cv_prog_cxx_declare_deprecated],
     [__attribute__((deprecated))], [], [C++],
-    [CS_HEADER_PROPERTY([CS_ATTRIBUTE_DEPRECATED],
+    [CS_HEADER_PROPERTY([CS_DEPRECATED_METHOD],
+	[$cs_cv_prog_cxx_declare_deprecated])
+    CS_HEADER_PROPERTY([CS_DEPRECATED_TYPE],
 	[$cs_cv_prog_cxx_declare_deprecated])])
 
 

@@ -1,0 +1,124 @@
+1.2 branch log.
+
+03-Oct-2007
+        - Mike Gist merged r27782, r27783 into 1.2 (memtracker compile fixes).
+01-Oct-2007
+        - Mike Gist merged r27752 into 1.2 (UnlinkObjects() loop reversal).
+29-Sep-2007
+        - Mike Gist merged r27733 into 1.2 (material duplication fix).
+        - Mike Gist merged r27735 into 1.2 (<comparever> fix).
+        - Mike Gist merged r27740 into 1.2 (csMeshFactoryList::Remove() fix).
+27-Sep-2007
+	- res merged r27718 into 1.2 (lighter2: "single color" lightmap
+	  cleaning fix).
+	- res merged r27719 and r27722 into 1.2 (lighter2: include level name
+	  in lightmap file and texture names).
+21-Sep-2007
+        - Mike Gist merged r27696 into 1.2 (GL driver DB fix).
+	- res merged r27676 and r27694 into 1.2 (lib3ds 1.3.0 support).
+	- res merged r27683 into 1.2 (more graceful handling of default texture
+	  loading errors).
+	- res merged r27684 into 1.2 (fix infinite portal recursion in
+	  lighter2).
+18-Sep-2007
+        - Mike Gist merged r27669 and r27670 into 1.2 (ATI gldriver tweaks).
+15-Sep-2007
+        - Mike Gist merged r27657 and r27658 into 1.2 (<comparever> fix and
+          'glvendor' tweaks).
+14-Sep-2007
+	- Eric Sunshine merged r27642 into 1.2 (authorship attribution and
+	  copyrights in CS manual).
+13-Sep-2007
+        - Mike Gist merged r27635 into 1.2 (fix for font corruption with
+          Mesa 6.5.2).
+7-Sep-2007
+	- Jorrit reverted r27161 (quotes for javac detection). This fixes
+	  both #377 and #378.
+	- res removed a remnant of the shader weaver from glshader_cg.csplugin.
+6-Sep-2007
+	- Jorrit merged r27571 into 1.2 (fix for #351, wxgl compilation).
+	- res merged r27577 into 1.2 (null3d crash fix).
+31-Aug-2007
+	- Vincent merged r27336 into 1.2 (Add PyCSCegui generation to jobber).
+29-Aug-2007
+	- res merged r27508:27510 into 1.2 (fix wxgl+UNICODE on Win32).
+	- res merged r27511 into 1.2 (new cs-win32libs).
+28-Aug-2007
+	- Vincent merged r27504 into 1.2 (#369 fix).
+20-Aug-2007
+	- Jorrit merged r27453 into 1.2 (decal 64-bit fix).
+17-Aug-2007
+	- Vincent updated CS/scripts/rpm/cs.spec for 1.2 release.
+	- Jorrit merged r27446 into 1.2 (genmesh/decal fix).
+8-Aug-2007
+	- res merged r27373 into 1.2 (new cs-win32libs version).
+	- res merged r27392 into 1.2 (csconout fix).
+1-Aug-2007
+	- Jorrit merged r27356 into 1.2 (gmeshanim2 fix).
+24-Jul-2007
+	- Jorrit merged r27290:27292 into 1.2 (MacOS/X warning fixes).
+	- Jorrit merged r27297:27303 into 1.2 (warnings, OpenGL, MacOS/X).
+	- Jorrit merged r27118 into 1.2 (new SCF).
+23-Jul-2007
+	- res merged r27294 into 1.2 (crystal.m4 fix).
+	- res updated scripts/jamtemplate/cel.m4 with the latest version from
+	  the CEL repository.
+22-Jul-2007
+	- Vincent merged r27282 into 1.2 (#278 fix).
+20-Jul-2007
+	- Vincent merged r27224 into 1.2 (csQsqrt() configure check fix).
+	- Vincent merged r27263 into 1.2 (Mac OS X compilation and deprecation
+	  warnings fixes).
+	- Vincent merged r27264:27265 into 1.2 (Remove outdated entries from
+	  vfs.cfg and vfs.cfg.template).
+19-Jul-2007
+	- Vincent merged r27038 into 1.2 (xextf86vm & xextshm SCF fixes).
+18-Jul-2007
+	- Jorrit merged r26988 into 1.2 (SCF stuff).
+	- Jorrit merged r27072:27074 into 1.2 (MacOS/X fixes).
+	- Jorrit merged r27211 into 1.2 (SCF stuff).
+	- Jorrit merged r27222:27223 into 1.2 (MacOS/X fixes).
+	- Jorrit merged r27232 into 1.2 (csKeyEventHelper::GetModifierBits()).
+	- Jorrit merged r27235 into 1.2 (csSpline fixes).
+	- Jorrit merged r27231 into 1.2 (enable GNU C extensions/dmalloc).
+	- res merged r27251, r27255 into 1.2 (cs-config wrapper improvements).
+	- res reverted some breaking and undesireable changes that crept in
+	  via r26988 and merged r27005, r27006 (SCF fixes).
+	- res merged r27181, r27183, r27186, r27189, r27190, r27195, 
+	  r27211:27213 (lighter2 fixes and improvements + related 
+	  CS::SubRectangles changes).
+	- res merged r27193 into 1.2 (don't reload shaders on engine close).
+1-Jul-2007
+	- Vincent merged r27167:27169 into 1.2 (portable replacements for
+	  isnan() and isnormal()).
+27-Jun-2007
+	- Jorrit merged r27079 into 1.2 (walktest recording crasher).
+	- Jorrit merged r27080, r27087:27089, r27093:r27094, and r27096
+	  into 1.2 (CollideRay).
+	- Jorrit merged r27048 into 1.2 (javac detection fix).
+	- Jorrit merged r27090 into 1.2 (windows joystick).
+	- Jorrit merged r27153 into 1.2 (gmeshanim/socket leak).
+24-Jun-2007
+	- Eric Sunshine merged r27108 into 1.2 (#348 fix).
+	- res merged r27110:27112 into 1.2 (install branch history).
+23-Jun-2007
+	- res merged r27099 into 1.2 (#347 fix).
+6-Jun-2007
+	- res merged r26991 into 1.2 (docs tweak).
+	- res merged r27009 into 1.2 (cs-config wrapper fixes).
+1-Jun-2007
+	- res removed weaver-based shaders.
+31-May-2007
+	- Jorrit merged r26971 into 1.2 (lighter2 docs).
+	- Jorrit merged r26982 into 1.2 (threading doc fix).
+	- Jorrit merged r26983 into 1.2 (lighter2 factory fix).
+	- Jorrit merged r26984 into 1.2 (csString fix).
+	- Jorrit merged r26986 into 1.2 (leftover AWS stuff).
+	- Jorrit merged r26990 into 1.2 (CS version in doc titles).
+29-May-2007
+	- Jorrit removed shaderweaver from 1.2 (#307).
+	- Jorrit disabled imposters because they are currently
+	  not working yet.
+25-May-2007
+	- Jorrit merged r26967 into 1.2 (small walktest cleanup).
+

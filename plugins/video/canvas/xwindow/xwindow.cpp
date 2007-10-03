@@ -170,7 +170,7 @@ bool csXWindow::Initialize (iObjectRegistry *object_reg)
   {
     csRef<iPluginManager> plugin_mgr (
     	csQueryRegistry<iPluginManager> (object_reg));
-    xf86vm = csLoadPlugin<iXExtF86VM> (plugin_mgr, CS_XEXT_XF86VM_SCF_ID);
+    xf86vm = CS_LOAD_PLUGIN (plugin_mgr, CS_XEXT_XF86VM_SCF_ID, iXExtF86VM);
   }
   return true;
 }
@@ -870,16 +870,4 @@ bool csXWindow::SetMouseCursor (iImage *image, const csRGBcolor* keycolor,
     cachedCursors.Put (image->GetName(), mouseCursor);
 
   return true;
-}
-
-bool csXWindow::AlertV (int type, const char* title, const char* okMsg,
-			const char* msg, va_list arg)
-{
-#ifdef HAVE_GTK
-  if (AlertV_GTK (type, title, okMsg, msg, arg)) return true;
-#endif
-#ifdef HAVE_XAW
-  if (AlertV_Xaw (type, title, okMsg, msg, arg)) return true;
-#endif
-  return false;
 }

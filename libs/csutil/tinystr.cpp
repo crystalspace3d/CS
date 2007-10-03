@@ -33,10 +33,6 @@ distribution.
 
 namespace CS
 {
-namespace Implementation
-{
-namespace TinyXml
-{
 
 // TiXmlString constructor, based on a C string
 TiXmlString::TiXmlString (const char* instring)
@@ -268,6 +264,4 @@ bool TiXmlString::operator > (const TiXmlString & compare) const
   return false;
 }
 
-} // namespace TinyXml
-} // namespace Implementation
 } // namespace CS

@@ -36,7 +36,6 @@
 #include "iengine/light.h"
 #include "iengine/light.h"
 #include "iengine/material.h"
-#include "iengine/portal.h"
 #include "iengine/movable.h"
 #include "iengine/portalcontainer.h"
 #include "iengine/sector.h"
@@ -49,6 +48,7 @@
 #include "imap/saver.h"
 #include "imesh/object.h"
 #include "imesh/sprite3d.h"
+#include "imesh/thing.h"
 #include "isndsys.h"
 #include "iutil/databuff.h"
 #include "iutil/pluginconfig.h"
@@ -65,6 +65,7 @@
 
 #include "bot.h"
 #include "command.h"
+#include "infmaze.h"
 #include "walktest.h"
 #include "wentity.h"
 
@@ -931,13 +932,14 @@ bool CommandHandler (const char *cmd, const char *arg)
     CONPRI("  zbuf debug0 debug1 debug2 palette bugplug");
     CONPRI("  db_boxshow db_boxcam1 db_boxcam2 db_boxsize1 db_boxsize2");
     CONPRI("Meshes:");
-    CONPRI("  loadmesh addmesh delmesh listmeshes listactions setaction");
-    CONPRI("  objectdump objectmove objectmovex objectmovez");
+    CONPRI("  loadmesh addmesh delmesh listmeshes");
+    CONPRI("  listactions setaction");
     CONPRI("Various:");
     CONPRI("  coordsave coordload bind s_fog");
     CONPRI("  snd_play snd_volume record play playonce clrrec saverec");
     CONPRI("  loadrec plugins conflist confset do_logo");
-    CONPRI("  varlist var setvar setvarv setvarc loadmap saveworld");
+    CONPRI("  varlist var setvar setvarv setvarc loadmap");
+    CONPRI("  saveworld");
 
 #   undef CONPRI
   }
@@ -1295,7 +1297,7 @@ bool CommandHandler (const char *cmd, const char *arg)
   }
   else if (!csStrCaseCmp (cmd, "bugplug"))
   {
-    csRef<iBase> plug = csLoadPluginAlways (Sys->plugin_mgr,
+    csRef<iBase> plug = CS_LOAD_PLUGIN_ALWAYS (Sys->plugin_mgr,
     	"crystalspace.utilities.bugplug");
     plug->IncRef ();	// Avoid smart pointer release (@@@)
   }
@@ -1367,66 +1369,6 @@ bool CommandHandler (const char *cmd, const char *arg)
   else if (!csStrCaseCmp (cmd, "coordshow"))
   {
     csCommandProcessor::change_boolean (arg, &Sys->do_show_coord, "coordshow");
-  }
-  else if (!csStrCaseCmp (cmd, "objectdump"))
-  {
-    if (Sys->closestMesh)
-    {
-      csReversibleTransform& tr = Sys->closestMesh->GetMovable ()
-	  ->GetTransform ();
-      printf ("mesh: %s\n", Sys->closestMesh->QueryObject ()->GetName ());
-      printf ("pos: %g,%g,%g\n", tr.GetOrigin ().x, tr.GetOrigin ().y,
-	  tr.GetOrigin ().z);
-      printf ("matrix: %g,%g,%g\n",
-	  tr.GetO2T ().m11, tr.GetO2T ().m12, tr.GetO2T ().m13);
-      printf ("        %g,%g,%g\n",
-	  tr.GetO2T ().m21, tr.GetO2T ().m22, tr.GetO2T ().m23);
-      printf ("        %g,%g,%g\n",
-	  tr.GetO2T ().m31, tr.GetO2T ().m32, tr.GetO2T ().m33);
-      fflush (stdout);
-    }
-    else
-    {
-      Sys->Report (CS_REPORTER_SEVERITY_NOTIFY,
-      	"No object selected!");
-    }
-  }
-  else if (!csStrCaseCmp (cmd, "objectmove"))
-  {
-    csCommandProcessor::change_boolean (arg, &Sys->do_object_move,
-	"objectmove");
-  }
-  else if (!csStrCaseCmp (cmd, "objectmovex"))
-  {
-    if (Sys->do_object_move)
-    {
-      float f = safe_atof (arg);
-      if (f && Sys->closestMesh)
-      {
-	csReversibleTransform& tr = Sys->closestMesh->GetMovable ()
-	  ->GetTransform ();
-	csVector3 v (-f, 0, 0);
-	tr.Translate (
-	    Sys->view->GetCamera ()->GetTransform ().This2OtherRelative (v));
-	Sys->closestMesh->GetMovable ()->UpdateMove ();
-      }
-    }
-  }
-  else if (!csStrCaseCmp (cmd, "objectmovez"))
-  {
-    if (Sys->do_object_move)
-    {
-      float f = safe_atof (arg);
-      if (f && Sys->closestMesh)
-      {
-	csReversibleTransform& tr = Sys->closestMesh->GetMovable ()
-	  ->GetTransform ();
-	csVector3 v (0, 0, f);
-	tr.Translate (
-	    Sys->view->GetCamera ()->GetTransform ().This2OtherRelative (v));
-	Sys->closestMesh->GetMovable ()->UpdateMove ();
-      }
-    }
   }
   else if (!csStrCaseCmp (cmd, "s_fog"))
   {
@@ -1671,80 +1613,26 @@ bool CommandHandler (const char *cmd, const char *arg)
   else if (!csStrCaseCmp (cmd, "step_forward"))
   {
     float f = safe_atof (arg);
-    if (Sys->do_object_move)
-    {
-      if (f && Sys->closestMesh)
-      {
-	csReversibleTransform& tr = Sys->closestMesh->GetMovable ()
-	  ->GetTransform ();
-	tr.Translate (csVector3 (0, Sys->object_move_speed, 0));
-	Sys->closestMesh->GetMovable ()->UpdateMove ();
-      }
-    }
-    else
-    {
-      if (Sys->move_3d) { if (f) Sys->imm_forward (0.1f, false, false); }
-      else Sys->Step (1*f);
-    }
+    if (Sys->move_3d) { if (f) Sys->imm_forward (0.1f, false, false); }
+    else Sys->Step (1*f);
   }
   else if (!csStrCaseCmp (cmd, "step_backward"))
   {
     float f = safe_atof (arg);
-    if (Sys->do_object_move)
-    {
-      if (f && Sys->closestMesh)
-      {
-	csReversibleTransform& tr = Sys->closestMesh->GetMovable ()
-	  ->GetTransform ();
-	tr.Translate (csVector3 (0, -Sys->object_move_speed, 0));
-	Sys->closestMesh->GetMovable ()->UpdateMove ();
-      }
-    }
-    else
-    {
-      if (Sys->move_3d) { if (f) Sys->imm_backward (0.1f, false, false); }
-      else Sys->Step (-1*f);
-    }
+    if (Sys->move_3d) { if (f) Sys->imm_backward (0.1f, false, false); }
+    else Sys->Step (-1*f);
   }
   else if (!csStrCaseCmp (cmd, "rotate_left"))
   {
     float f = safe_atof (arg);
-    if (Sys->do_object_move)
-    {
-      if (f && Sys->closestMesh)
-      {
-	csReversibleTransform& tr = Sys->closestMesh->GetMovable ()
-	  ->GetTransform ();
-	tr.RotateThis (csVector3 (0, 1, 0), -Sys->object_move_speed);
-	Sys->closestMesh->GetMovable ()->UpdateMove ();
-      }
-    }
-    else
-    {
-      if (Sys->move_3d)
-      { if (f) Sys->imm_rot_left_camera (0.1f, false, false); }
-      else Sys->Rotate (-1*f);
-    }
+    if (Sys->move_3d) { if (f) Sys->imm_rot_left_camera (0.1f, false, false); }
+    else Sys->Rotate (-1*f);
   }
   else if (!csStrCaseCmp (cmd, "rotate_right"))
   {
     float f = safe_atof (arg);
-    if (Sys->do_object_move)
-    {
-      if (f && Sys->closestMesh)
-      {
-	csReversibleTransform& tr = Sys->closestMesh->GetMovable ()
-	  ->GetTransform ();
-	tr.RotateThis (csVector3 (0, 1, 0), Sys->object_move_speed);
-	Sys->closestMesh->GetMovable ()->UpdateMove ();
-      }
-    }
-    else
-    {
-      if (Sys->move_3d)
-      { if (f) Sys->imm_rot_right_camera (0.1f, false, false); }
-      else Sys->Rotate (1*f);
-    }
+    if (Sys->move_3d) { if (f) Sys->imm_rot_right_camera (0.1f, false, false); }
+    else Sys->Rotate (1*f);
   }
   else if (!csStrCaseCmp (cmd, "look_up"))
   {
@@ -2390,7 +2278,7 @@ bool CommandHandler (const char *cmd, const char *arg)
     csRef<iSaver> saver = csQueryRegistry<iSaver> (Sys->object_reg);
     if (!saver.IsValid ())
     {
-      saver = csLoadPlugin<iSaver> (Sys->plugin_mgr, "crystalspace.level.saver");
+      saver = CS_LOAD_PLUGIN(Sys->plugin_mgr, "crystalspace.level.saver", iSaver);
       if (!saver.IsValid ())
       {
         Sys->Report (CS_REPORTER_SEVERITY_NOTIFY,

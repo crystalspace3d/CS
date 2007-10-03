@@ -38,12 +38,8 @@ namespace lighter
 
   enum ObjectFlags
   {
-    // Don't compute lighting
     OBJECT_FLAG_NOLIGHT = 1,
-    // Don't cast shadows
-    OBJECT_FLAG_NOSHADOW = 2,
-    // Include in occlusion debugging
-    OBJECT_FLAG_RAYDEBUG = 4
+    OBJECT_FLAG_NOSHADOW = 2
   };
 
   /**
@@ -76,9 +72,6 @@ namespace lighter
 
     /// Whether to light meshes of this factory per vertex
     bool lightPerVertex;
-    
-    /// Whether to avoid modifying this factory
-    bool noModify;
   protected:
 
     // Begin remapping of submeshes
@@ -150,7 +143,7 @@ namespace lighter
     virtual void ParseMesh (iMeshWrapper *wrapper);
 
     // Write out the data again
-    virtual void SaveMesh (iDocumentNode *node);
+    virtual void SaveMesh (Sector* sector, iDocumentNode *node);
 
     /* Conserve memory: free all object data that won't be needed for the 
      * actual lighting. */
@@ -177,8 +170,6 @@ namespace lighter
 
     inline ObjectVertexData& GetVertexData ()
     { return vertexData; }
-    
-    inline iMeshWrapper* GetMeshWrapper () { return meshWrapper; }
 
     inline const csSphere& GetBoundingSphere () const
     { return bsphere; }
@@ -196,8 +187,6 @@ namespace lighter
 
     inline const csFlags& GetFlags () const
     { return objFlags; }
-
-    inline Sector* GetSector() const { return sector; }
 
     // Name
     csString meshName;
@@ -219,9 +208,6 @@ namespace lighter
         layouter (layouter), layoutID (layoutID), group (group) {}
     };
     csArray<LMLayoutingInfo> lmLayouts;
-
-    // Sector the object belongs in
-    Sector* sector;
 
     // Bounding sphere
     csSphere bsphere;

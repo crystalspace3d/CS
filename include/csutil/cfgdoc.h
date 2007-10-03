@@ -57,15 +57,15 @@ class CS_CRYSTALSPACE_EXPORT csConfigDocument :
     KeyInfo () : cachedStringValue(0), cachedComment(0), originalKey(0) {}
     KeyInfo (const KeyInfo& other)
     {
-      cachedStringValue = CS::StrDup (other.cachedStringValue);
-      cachedComment = CS::StrDup (other.cachedComment);
-      originalKey = CS::StrDup (other.originalKey);
+      cachedStringValue = csStrNew (other.cachedStringValue);
+      cachedComment = csStrNew (other.cachedComment);
+      originalKey = csStrNew (other.originalKey);
     }
     ~KeyInfo()
     {
-      cs_free (cachedStringValue);
-      cs_free (cachedComment);
-      cs_free (originalKey);
+      delete[] cachedStringValue;
+      delete[] cachedComment;
+      delete[] originalKey;
     }
   };
   csHash<KeyInfo, csString> keys;

@@ -41,7 +41,7 @@ namespace lighter
       const FactoryPrimitiveArray& inPrims, ObjectFactoryVertexData& vertexData,
       const ObjectFactory* factory,
       csArray<FactoryPrimitiveArray>& outPrims,
-      csBitArray& usedVerts, bool noSplit);
+      csBitArray& usedVerts);
 
     virtual void PrepareLighting (Statistics::Progress& progress);
   protected:
@@ -98,7 +98,7 @@ namespace lighter
 
     bool ProjectPrimitives (FactoryPrimitiveArray& prims, 
       csBitArray &usedVerts, float lmscale, 
-      Vector2Array& lightmapUVs, bool noSplit);
+      Vector2Array& lightmapUVs);
     void ScaleLightmapUVs (FactoryPrimitiveArray& prims, 
       Vector2Array& lightmapUVs, float lmscale);
 
@@ -213,20 +213,6 @@ namespace lighter
       {
         delete queue.maps[index].alloc;
         queue.maps.DeleteIndex (index);
-      }
-      void CleanEmpty ()
-      {
-        size_t i = 0;
-        while (i < queue.maps.GetSize())
-        {
-          if (queue.maps[i].alloc->IsEmpty())
-          {
-            delete queue.maps[i].alloc;
-            queue.maps.DeleteIndex (i);
-          }
-          else
-            i++;
-        }
       }
     };
     class ArraysLQ

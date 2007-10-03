@@ -181,8 +181,9 @@ csPtr<iRenderLoop> csRenderLoopManager::Load (const char* fileName)
   	csQueryRegistry<iPluginManager> (engine->objectRegistry));
 
   csRef<iLoaderPlugin> rlLoader =
-    csLoadPlugin<iLoaderPlugin> (plugin_mgr,
-      "crystalspace.renderloop.loop.loader");
+    CS_LOAD_PLUGIN (plugin_mgr,
+      "crystalspace.renderloop.loop.loader",
+      iLoaderPlugin);
 
   if (rlLoader == 0)
   {

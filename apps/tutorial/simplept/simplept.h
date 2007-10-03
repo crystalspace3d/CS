@@ -33,7 +33,6 @@ public:
   ~csEngineProcTex ();
 
   bool LoadLevel ();
-  iTextureWrapper* CreateTexture (iObjectRegistry* object_reg);
   virtual bool PrepareAnim ();
   virtual void Animate (csTicks current_time);
 };
@@ -58,7 +57,8 @@ private:
   csRef<iMeshWrapper> genmesh;
   csRef<iGeneralFactoryState> factstate;
 
-  void CreatePolygon (iGeneralFactoryState *th, int v1, int v2, int v3, int v4);
+  void CreatePolygon (iThingFactoryState *th, int v1, int v2, int v3, int v4,
+    iMaterialWrapper *mat);
 
   int genmesh_resolution;
   csVector3 genmesh_scale;

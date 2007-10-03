@@ -23,6 +23,7 @@
 #include "trimesh.h"
 #undef CS_DEPRECATION_SUPPRESS_HACK
 
+#include "csgeom/pmtools.h"
 #include "csgeom/trimeshtools.h"
 #include "csgeom/transfrm.h"
 #include "csgeom/vector4.h"
@@ -244,7 +245,7 @@ void csStencilShadowCacheEntry::ObjectModelChanged (iObjectModel* model)
     csStencilShadowCacheEntry::model = model;	
   }
 
-  // Try to get a MeshShadow triangle mesh
+  // Try to get a MeshShadow polygonmesh
   csRef<iTriangleMesh> trimesh;
   if (use_trimesh)
   {
@@ -256,6 +257,12 @@ void csStencilShadowCacheEntry::ObjectModelChanged (iObjectModel* model)
     {
       trimesh = 0;
     }
+  }
+  else
+  {
+    iPolygonMesh* mesh = model->GetPolygonMeshShadows ();
+    if (mesh)
+      trimesh.AttachNew (new csTriangleMeshPolyMesh (mesh));
   }
 
   if (!trimesh) return;	// No shadow casting for this object.
@@ -818,8 +825,9 @@ csPtr<iBase> csStencilShadowLoader::Parse (iDocumentNode* node,
 {
   csRef<iPluginManager> plugin_mgr (
   	csQueryRegistry<iPluginManager> (object_reg));
-  csRef<iRenderStepType> type = csLoadPlugin<iRenderStepType> (plugin_mgr,
-  	"crystalspace.renderloop.step.shadow.stencil.type");
+  csRef<iRenderStepType> type (CS_LOAD_PLUGIN (plugin_mgr,
+  	"crystalspace.renderloop.step.shadow.stencil.type", 
+	iRenderStepType));
 
   csRef<iRenderStepFactory> factory = type->NewFactory();
   csRef<iRenderStep> step = factory->Create ();

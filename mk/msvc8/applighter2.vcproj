@@ -342,9 +342,6 @@
 				RelativePath="..\..\apps\tools\lighter2\lightmapuv_simple_prepare.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\material.cpp">
-			</File>
-			<File
 				RelativePath="..\..\apps\tools\lighter2\object.cpp">
 			</File>
 			<File
@@ -352,9 +349,6 @@
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\primitive.cpp">
-			</File>
-			<File
-				RelativePath="..\..\apps\tools\lighter2\raydebug.cpp">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\raytracer.cpp">
@@ -375,9 +369,6 @@
 		<Filter
 			Name="Header Files"
 			Filter="">
-			<File
-				RelativePath="..\..\apps\tools\lighter2\chunkyalloc.h">
-			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\common.h">
 			</File>
@@ -412,9 +403,6 @@
 				RelativePath="..\..\apps\tools\lighter2\lightprop.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\tools\lighter2\material.h">
-			</File>
-			<File
 				RelativePath="..\..\apps\tools\lighter2\object.h">
 			</File>
 			<File
@@ -422,9 +410,6 @@
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\primitive.h">
-			</File>
-			<File
-				RelativePath="..\..\apps\tools\lighter2\raydebug.h">
 			</File>
 			<File
 				RelativePath="..\..\apps\tools\lighter2\raygenerator.h">

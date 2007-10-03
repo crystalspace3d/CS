@@ -114,6 +114,16 @@ bool csLoader::ParseTextureList (iLoaderContext* ldr_context,
         if (!ParseTexture (ldr_context, child))
 	        return false;
         break;
+      case XMLTOKEN_HEIGHTGEN:
+	SyntaxService->Report (
+	  "crystalspace.maploader.parse.texture",
+	  CS_REPORTER_SEVERITY_WARNING,
+	  child,
+	  "<heightmap> is obsolete: it was intended for use together with the "
+	  "'terrfunc' mesh which is long gone.");
+        if (!ParseHeightgen (ldr_context, child))
+	  return false;
+        break;
       case XMLTOKEN_CUBEMAP:
         if (!ParseCubemap (ldr_context, child))
           return false;
@@ -462,7 +472,7 @@ iTextureWrapper* csLoader::ParseTexture (iLoaderContext* ldr_context,
     CS_ASSERT_MSG("Texture loader did not register texture", 
       tex->GetTextureHandle());
     tex->QueryObject ()->SetName (txtname);
-    if (keep_image) tex->SetKeepImage (true);
+    tex->SetKeepImage (keep_image);
     if (do_transp)
       tex->SetKeyColor (csQint (transp.red * 255.99),
         csQint (transp.green * 255.99), csQint (transp.blue * 255.99));
@@ -486,6 +496,8 @@ iTextureWrapper* csLoader::ParseTexture (iLoaderContext* ldr_context,
   if (tm)
   {
     if (!tex->GetTextureHandle ()) tex->Register (tm);
+    if (!tex->KeepImage ())
+      tex->SetImageFile (0);
   }
   return tex;
 }

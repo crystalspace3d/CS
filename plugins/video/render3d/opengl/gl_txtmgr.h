@@ -62,7 +62,6 @@ private:
   typedef csWeakRefArray<csGLBasicTextureHandle> csTexVector;
   /// List of textures.
   csTexVector textures;
-  bool compactTextures;
 
   csStringSet textureClassIDs;
   csHash<csGLTextureClassSettings, csStringID> textureClasses;
@@ -84,32 +83,6 @@ private:
   csHash<TextureStorageFormat, csString> specialFormats;
   void InitFormats ();
   bool FormatSupported (GLenum srcFormat, GLenum srcType);
-
-public:
-  /* Format tables - maps component sizes to GL sizes.
-   * A lot of source formats have the same 'type' bit only differ in 'format'.
-   * So the tables below store the 'type' information for given component sizes
-   * and the 'format' is chosen based on the input component order.
-   */
-  struct FormatTemplate
-  {
-    /// Component sizes
-    int size[4];
-    /// Target format index
-    int targetFmtIndex;
-    /// Source type
-    GLenum srcType;
-  };
-private:
-  bool FindFormats (const CS::StructuredTextureFormat& format,
-    const FormatTemplate* templates, GLenum const* targetTable,
-    int compCount, GLenum targetFormat, GLenum sourceFormat, 
-    TextureStorageFormat& glFormat, TextureSourceFormat& srcFormat);
-
-  bool DetermineIntegerFormat (const CS::StructuredTextureFormat& format,
-    TextureStorageFormat& glFormat, TextureSourceFormat& sourceFormat);
-  bool DetermineFloatFormat (const CS::StructuredTextureFormat& format,
-    TextureStorageFormat& glFormat, TextureSourceFormat& sourceFormat);
 public:
   CS_LEAKGUARD_DECLARE (csGLTextureManager);
 
@@ -171,7 +144,7 @@ public:
    * Determine the GL texture format for a structured texture format.
    */
   bool DetermineGLFormat (const CS::StructuredTextureFormat& format,
-    TextureStorageFormat& glFormat, TextureSourceFormat& sourceFormat);
+    TextureStorageFormat& glFormat);
 
 
   virtual csPtr<iTextureHandle> RegisterTexture (iImage *image, int flags,
@@ -179,7 +152,7 @@ public:
   virtual csPtr<iTextureHandle> CreateTexture (int w, int h,
       csImageType imagetype, const char* format, int flags,
       iString* fail_reason = 0);
-  void MarkTexturesDirty () { compactTextures = true; }
+  void UnregisterTexture (csGLBasicTextureHandle* handle);
 
   /**
    * Query the basic format of textures that can be registered with this

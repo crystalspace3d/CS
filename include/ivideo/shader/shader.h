@@ -40,13 +40,7 @@ struct iLight;
 struct iObject;
 struct iLoaderContext;
 
-namespace CS
-{
-  namespace Graphics
-  {
-    struct RenderMesh;
-  }
-}
+struct csRenderMesh;
 class csShaderVariable;
 
 struct iShader;
@@ -310,7 +304,7 @@ struct iShader : public virtual iShaderVariableContext
    * to be provided to get the actual variant, which is then identified
    * by the "ticket".
    */
-  virtual size_t GetTicket (const CS::Graphics::RenderMeshModes& modes,
+  virtual size_t GetTicket (const csRenderMeshModes& modes,
     const iShaderVarStack* stacks) = 0;
 
   /// Get number of passes this shader have
@@ -320,8 +314,8 @@ struct iShader : public virtual iShaderVariableContext
   virtual bool ActivatePass (size_t ticket, size_t number) = 0;
 
   /// Setup a pass
-  virtual bool SetupPass (size_t ticket, const CS::Graphics::RenderMesh *mesh,
-    CS::Graphics::RenderMeshModes& modes,
+  virtual bool SetupPass (size_t ticket, const csRenderMesh *mesh,
+    csRenderMeshModes& modes,
     const iShaderVarStack* stacks) = 0;
 
   /**

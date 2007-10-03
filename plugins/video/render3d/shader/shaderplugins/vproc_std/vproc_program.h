@@ -47,8 +47,8 @@ public:
   virtual void Deactivate();
 
   /// Setup states needed for proper operation of the shader
-  virtual void SetupState (const CS::Graphics::RenderMesh* mesh,
-                           CS::Graphics::RenderMeshModes& modes,
+  virtual void SetupState (const csRenderMesh* mesh,
+                           csRenderMeshModes& modes,
                            const iShaderVarStack* stacks);
 
   /// Reset states to original
@@ -129,9 +129,9 @@ private:
   bool ParseLightMixMode (iDocumentNode* child, LightMixmode& mixmode);
   bool ParseBufferName (iDocumentNode* child, BufferName& name);
   iRenderBuffer* GetBuffer (const BufferName& name,
-    CS::Graphics::RenderMeshModes& modes, 
+    csRenderMeshModes& modes, 
     const iArrayReadOnly<csShaderVariable*>* stacks);
-  bool UpdateSkinnedVertices (CS::Graphics::RenderMeshModes& modes,
+  bool UpdateSkinnedVertices (csRenderMeshModes& modes,
                            const iShaderVarStack* stacks);
 };
 

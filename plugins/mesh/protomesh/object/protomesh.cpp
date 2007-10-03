@@ -302,6 +302,12 @@ csProtoMeshObjectFactory::csProtoMeshObjectFactory (
 {
   csProtoMeshObjectFactory::object_reg = object_reg;
 
+  polyMesh.AttachNew (new PolyMesh (this));
+  SetPolygonMeshBase (polyMesh);
+  SetPolygonMeshColldet (polyMesh);
+  SetPolygonMeshViscull (polyMesh);
+  SetPolygonMeshShadows (polyMesh);
+
   csStringID base_mesh_id = GetBaseID (object_reg);
   csRef<csTriangleMeshPointer> trimesh_base;
   trimesh_base.AttachNew (new csTriangleMeshPointer (
@@ -313,6 +319,8 @@ csProtoMeshObjectFactory::csProtoMeshObjectFactory (
   initialized = false;
   object_bbox_valid = false;
   color_nr = 0;
+
+  polygons = 0;
 
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
 
@@ -356,6 +364,13 @@ void csProtoMeshObjectFactory::GetRadius (float& radius, csVector3& center)
   if (!object_bbox_valid) CalculateBBoxRadius ();
   radius = this->radius;
   center = object_bbox.GetCenter();
+}
+
+void csProtoMeshObjectFactory::GetObjectBoundingBox (csBox3& bbox)
+{
+  SetupFactory ();
+  if (!object_bbox_valid) CalculateBBoxRadius ();
+  bbox = object_bbox;
 }
 
 const csBox3& csProtoMeshObjectFactory::GetObjectBoundingBox ()
@@ -405,6 +420,8 @@ void csProtoMeshObjectFactory::PreGetBuffer (csRenderBufferHolder* holder,
 void csProtoMeshObjectFactory::Invalidate ()
 {
   object_bbox_valid = false;
+  delete[] polygons;
+  polygons = 0;
 
   mesh_vertices_dirty_flag = true;
   mesh_texels_dirty_flag = true;
@@ -454,6 +471,11 @@ void csProtoMeshObjectFactory::PrepareBuffers ()
   }
 }
 
+csMeshedPolygon* csProtoMeshObjectFactory::PolyMesh::GetPolygons ()
+{
+  return factory->GetPolygons ();
+}
+
 csPtr<iMeshObject> csProtoMeshObjectFactory::NewInstance ()
 {
   csRef<csProtoMeshObject> cm;
@@ -461,6 +483,21 @@ csPtr<iMeshObject> csProtoMeshObjectFactory::NewInstance ()
 
   csRef<iMeshObject> im = scfQueryInterface<iMeshObject> (cm);
   return csPtr<iMeshObject> (im);
+}
+
+csMeshedPolygon* csProtoMeshObjectFactory::GetPolygons ()
+{
+  if (!polygons)
+  {
+    polygons = new csMeshedPolygon [PROTO_TRIS];
+    int i;
+    for (i = 0 ; i < PROTO_TRIS ; i++)
+    {
+      polygons[i].num_vertices = 3;
+      polygons[i].vertices = &triangles[i].a;
+    }
+  }
+  return polygons;
 }
 
 //----------------------------------------------------------------------

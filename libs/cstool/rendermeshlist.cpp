@@ -42,41 +42,37 @@ csRenderMeshList::~csRenderMeshList ()
 }
 
 void csRenderMeshList::AddRenderMeshes (csRenderMesh** meshes, int num,
-					CS::Graphics::RenderPriority defaultRenderPriority, 
+					long renderPriority, 
 					csZBufMode z_buf_mode, 
 					iMeshWrapper* mesh)
 {
   renderMeshListInfo* entry;
 
-  for (int i = 0; i < num; ++i)
+  //check if we have rp or need to add it
+  if ((size_t)(renderPriority + 1) > renderList.GetSize () || 
+      renderList.Get ((uint32)renderPriority) == 0)
   {
-    CS::Graphics::RenderPriority renderPriority = meshes[i]->renderPrio;
-    if (renderPriority < 0) renderPriority = defaultRenderPriority;
-  
-    //check if we have rp or need to add it
-    if ((size_t)(renderPriority + 1) > renderList.GetSize () || 
-	renderList.Get ((uint32)renderPriority) == 0)
+    entry = new renderMeshListInfo;
+    entry->renderPriority = renderPriority;
+    if (engine)
     {
-      entry = new renderMeshListInfo;
-      entry->renderPriority = renderPriority;
-      if (engine)
-      {
-	entry->sortingOption = engine->GetRenderPrioritySorting (renderPriority);
-      }
-      else
-      {
-	entry->sortingOption = 0;
-      }
-  
-      renderList.Put ((uint32)renderPriority, entry);
+      entry->sortingOption = engine->GetRenderPrioritySorting (renderPriority);
     }
     else
     {
-      entry = renderList.Get ((uint32)renderPriority);
+      entry->sortingOption = 0;
     }
 
-    if (meshes[i]->z_buf_mode == (csZBufMode)~0)
-      meshes[i]->z_buf_mode = z_buf_mode;
+    renderList.Put ((uint32)renderPriority, entry);
+  }
+  else
+  {
+    entry = renderList.Get ((uint32)renderPriority);
+  }
+
+  for (int i = 0; i < num; ++i)
+  {
+    meshes[i]->z_buf_mode = z_buf_mode;
     entry->meshList.Push (meshListEntry (meshes[i], mesh));
   }
 }

@@ -136,15 +136,12 @@ namespace lighter
 
     // The primitive we hit
     Primitive *primitive;
-    
-    // KD tree primitive flags
-    int32 kdFlags;
 
     HitPoint ()
       : distance (0), hitPoint (0,0,0), primitive (0)
     {}
 
-    bool operator< (const HitPoint& o) const
+    bool operator< (const HitPoint& o)
     {
       return distance < o.distance;
     }
@@ -154,8 +151,7 @@ namespace lighter
   {
     virtual ~HitPointCallback () {}
 
-    /// Returns whether to continue tracing.
-    virtual bool RegisterHit (const Ray &ray, const HitPoint &hit) = 0;
+    virtual void RegisterHit (const Ray &ray, const HitPoint &hit) = 0;
   };
 
   struct HitIgnoreCallback
@@ -325,7 +321,7 @@ namespace lighter
     /**
      * Raytrace for all hits along a ray.
      */
-    static bool TraceAllHits (const KDTree* tree, const Ray &ray, 
+    static void TraceAllHits (const KDTree* tree, const Ray &ray, 
       HitPointCallback* hitCallback, HitIgnoreCallback* ignoreCB = 0);
   };
 

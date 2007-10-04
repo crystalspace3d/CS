@@ -62,6 +62,7 @@
 #include "iengine/sector.h"
 #include "iengine/viscull.h"
 #include "iengine/scenenode.h"
+#include "igeom/polymesh.h"
 #include "igraphic/image.h"
 #include "igraphic/imageio.h"
 #include "imap/saver.h"
@@ -1754,6 +1755,29 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
 		    "base"));
 	      break;
           }
+	}
+	else
+	{
+          iPolygonMesh* pm = 0;
+          switch (show_polymesh)
+          {
+	    case BUGPLUG_POLYMESH_CD:
+	      pm = objmodel->GetPolygonMeshColldet ();
+	      break;
+	    case BUGPLUG_POLYMESH_VIS:
+	      pm = objmodel->GetPolygonMeshViscull ();
+	      break;
+	    case BUGPLUG_POLYMESH_SHAD:
+	      pm = objmodel->GetPolygonMeshShadows ();
+	      break;
+	    case BUGPLUG_POLYMESH_BASE:
+	      pm = objmodel->GetPolygonMeshBase ();
+	      break;
+          }
+	  if (pm)
+	  {
+	    trimesh.AttachNew (new csTriangleMeshPolyMesh (pm));
+	  }
 	}
         if (trimesh)
         {

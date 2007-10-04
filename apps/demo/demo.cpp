@@ -51,6 +51,7 @@
 #include "imesh/particle.h"
 #include "imesh/sprite2d.h"
 #include "imesh/sprite3d.h"
+#include "imesh/thing.h"
 #include "iutil/cmdline.h"
 #include "iutil/comp.h"
 #include "iutil/csinput.h"
@@ -317,14 +318,14 @@ bool Demo::Initialize (int argc, const char* const argv[],
     // user.
     csRef<iStringArray> zips = myVFS->FindFiles ("/this/*");
     size_t i;
-    for (i = 0 ; i < zips->GetSize () ; i++)
+    for (i = 0 ; i < zips->Length () ; i++)
     {
       const char* zip = zips->Get (i);
       TestDemoFile (zip, myVFS, demos);
     }
     myVFS->Mount ("/tmp/csdemo_datadir", "$@data$/");
     zips = myVFS->FindFiles ("/tmp/csdemo_datadir/*");
-    for (i = 0 ; i < zips->GetSize () ; i++)
+    for (i = 0 ; i < zips->Length () ; i++)
     {
       const char* zip = zips->Get (i);
       TestDemoFile (zip, myVFS, demos);

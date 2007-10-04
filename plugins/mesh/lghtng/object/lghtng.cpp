@@ -105,6 +105,11 @@ csRenderMesh** csLightningMeshObject::GetRenderMeshes (int &n,
 }
 
 
+void csLightningMeshObject::GetObjectBoundingBox (csBox3& retbbox)
+{
+  retbbox = GenMesh->GetObjectModel ()->GetObjectBoundingBox ();
+}
+
 const csBox3& csLightningMeshObject::GetObjectBoundingBox ()
 {
   return GenMesh->GetObjectModel ()->GetObjectBoundingBox ();
@@ -156,8 +161,8 @@ csLightningMeshObjectFactory::csLightningMeshObjectFactory (
   
   csRef<iPluginManager> PlugMgr (csQueryRegistry<iPluginManager> (object_registry));
   CS_ASSERT (PlugMgr);
-  csRef<iMeshObjectType> MeshType = csLoadPlugin<iMeshObjectType> (PlugMgr,
-      "crystalspace.mesh.object.genmesh");
+  csRef<iMeshObjectType> MeshType (CS_LOAD_PLUGIN(PlugMgr,
+      "crystalspace.mesh.object.genmesh", iMeshObjectType));
   if (MeshType)
   {
     GenMeshFact = MeshType->NewFactory ();

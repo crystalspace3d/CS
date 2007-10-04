@@ -26,11 +26,12 @@ namespace lighter
    */
   struct ObjectBaseVertexData
   {
-    typedef csDirtyAccessArray<csVector2> Vector2Array;
     typedef csDirtyAccessArray<csVector3> Vector3Array;
     Vector3Array positions;
     Vector3Array normals;
-    Vector2Array uvs;
+
+    // Make refcounted once needed...
+    //csRef<Vector2ArrayRefCounted> textureUVs;
 
     //Helper functions
 
@@ -39,7 +40,6 @@ namespace lighter
     {
       size_t index = positions.Push (positions[oldIndex]);
       normals.Push (normals[oldIndex]);
-      uvs.Push (uvs[oldIndex]);
       return index;
     }
 
@@ -55,10 +55,6 @@ namespace lighter
       csVector3 newNormal (n0 - (n1 - n0) * t);
       newNormal.Normalize ();
       normals.Push (newNormal);
-
-      const csVector2& uv0 = uvs[i0];
-      const csVector2& uv1 = uvs[i1];
-      uvs.Push (csLerp (uv0, uv1, t));
 
       return index;
     }
@@ -101,6 +97,7 @@ namespace lighter
 
   struct ObjectVertexData : public ObjectBaseVertexData
   {
+    typedef csDirtyAccessArray<csVector2> Vector2Array;
     Vector2Array lightmapUVs;
 
     size_t SplitVertex (size_t oldIndex)

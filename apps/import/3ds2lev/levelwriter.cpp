@@ -383,9 +383,6 @@ bool LevelWriter::CombineTriangle (Lib3dsMesh* mesh, csDPlane*& plane,
   int i, i2;
   for (i=0;i<3;i++)
   {
-    const int ip1 = CS::Math::NextModulo3(i);
-    const int ip2 = CS::Math::NextModulo3(ip1);
-
     for (i2=0; i2<plen; i2++)
     {
       // a point found that is the same on both polys
@@ -396,23 +393,22 @@ bool LevelWriter::CombineTriangle (Lib3dsMesh* mesh, csDPlane*& plane,
 	int tp = poly[ (i2+1) % plen ];
 	nonshared2 = poly[ (i2+2) % plen];
 
-        
-	if (tp == points[ip1] )
+	if (tp == points[ (i+1) % 3 ] )
 	{
 	  found=true;
 	  sharedvertices[0]=poly[i2];
 	  sharedvertices[1]=tp;
 	  // you can write i+2 instead of i-1 (in fact it avoids errors where
 	  // i==0
-	  nonshared = points[ip2];
+	  nonshared = points[ (i+2) % 3 ];
 	  goto pointfound;
 	}
-	else if (tp == points[ip2])
+	else if (tp == points[ (i+2) % 3 ])
 	{
 	  found=true;
 	  sharedvertices[0]=poly[i2];
 	  sharedvertices[1]=tp;
-	  nonshared = points[ip1];
+	  nonshared = points[ (i+1) % 3 ];
 	  goto pointfound;
 	}
       }

@@ -55,7 +55,6 @@ public:
   virtual void FinishDraw ();
   virtual void SetClipRect (const csRect& clipRect);
   virtual void SetupClipPortalDrawing ();
-  virtual bool HasStencil();
 };
 
 }

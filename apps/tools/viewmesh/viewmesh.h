@@ -44,6 +44,7 @@
 #include "imap/writer.h"
 #include "imesh/sprite3d.h"
 #include "imesh/spritecal3d.h"
+#include "imesh/thing.h"
 #include "ivaria/icegui.h"
 
 struct vmAnimCallback;
@@ -196,18 +197,7 @@ private:
   bool StdDlgDirChange (const CEGUI::EventArgs& e);
 
   CS_EVENTHANDLER_NAMES ("crystalspace.viewmesh")
-  
-  CS_CONST_METHOD virtual const csHandlerID * GenericPrec (csRef<iEventHandlerRegistry> &r1, 
-    csRef<iEventNameRegistry> &r2, csEventID event) const 
-  {
-    static csHandlerID precConstraint[2];
-    
-    precConstraint[0] = r1->GetGenericID("crystalspace.cegui");
-    precConstraint[1] = CS_HANDLERLIST_END;
-    return precConstraint;
-  }
-
-  CS_EVENTHANDLER_DEFAULT_INSTANCE_CONSTRAINTS
+  CS_EVENTHANDLER_NIL_CONSTRAINTS
 };
 
 #endif // __VIEWMESH_H__

@@ -168,11 +168,6 @@ namespace Implementation
   {
     sched_yield ();
   }
-
-  ThreadID ThreadBase::GetThreadID ()
-  {
-    return (ThreadID)pthread_self();
-  }
 }
 }
 }

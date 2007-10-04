@@ -124,14 +124,12 @@ namespace lighter
 
     for (uint j = 0; j < size; j++, lmData++, mmData++)
     {
-      if (*mmData == 0 /*|| *mmData >= 1.0f*/)
-        continue;
+      if (*mmData < FLT_EPSILON || *mmData >= 1.0f) continue;
 
       *lmData *= (1.0f / *mmData);
     }
 
     // Reset
-    
     lmData = colorArray;
     mmData = mask.GetMaskData();
 

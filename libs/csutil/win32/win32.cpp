@@ -153,13 +153,17 @@ public:
 //static Win32Assistant* GLOBAL_ASSISTANT = 0;
 static csRefArray<Win32Assistant> assistants;
 
-static void ToLower (csString& s)
+static inline void ToLower (char *dst, const char *src) 
 {
-  for (size_t i = 0; i < s.Length(); i++)
-    s[i] = tolower (s[i]);
+  char *d=dst;
+  const char *s=src;
+  for(; *s; s++, d++) {
+    *d = (char)tolower(*s);
+  }
+  *d=0;
 }
 
-static inline bool AddToPathEnv (csString dir, csString& pathEnv)
+static inline bool AddToPathEnv (csString dir, char **pathEnv)
 {
   // check if installdir is in the path.
   bool gotpath = false;
@@ -168,23 +172,23 @@ static inline bool AddToPathEnv (csString dir, csString& pathEnv)
   // csGetInstallDir() might return "" (current dir)
   if (dlen != 0)
   {
-    ToLower (dir);
+    dir.Downcase();
   
-    if (!pathEnv.IsEmpty())
+    if (*pathEnv)
     {
-      csString mypath (pathEnv);
-      ToLower (mypath);
+      char *mypath = new char[strlen(*pathEnv) + 1];
+      ToLower (mypath, *pathEnv);
 
-      const char* ppos = strstr (mypath.GetData(), dir);
+      char* ppos = strstr (mypath, dir);
       while (!gotpath && ppos)
       {
-        const char* npos = strchr (ppos, ';');
-        size_t len = npos ? npos - ppos : strlen (ppos);
+        char* npos = strchr (ppos, ';');
+        if (npos) *npos = 0;
 
-        if ((len == dlen) || (len == dlen+1))
+        if ((strlen (ppos) == dlen) || (strlen (ppos) == dlen+1))
         {
-          if (ppos[len] == '\\') len--;
-	  if (!strncmp (ppos, dir, len))
+	  if (ppos[dlen] == '\\') ppos[dlen] = 0;
+	  if (!strcmp (ppos, dir))
 	  {
 	    // found it
 	    gotpath = true;
@@ -192,16 +196,18 @@ static inline bool AddToPathEnv (csString dir, csString& pathEnv)
         }
         ppos = npos ? strstr (npos+1, dir) : 0;
       }
+      delete[] mypath;
     }
 
     if (!gotpath)
     {
       // put CRYSTAL path into PATH environment.
-      csString newpath;
-      newpath.Append (dir);
-      newpath.Append (";");
-      newpath.Append (pathEnv);
-      pathEnv = newpath;
+      char *newpath = new char[(*pathEnv?strlen(*pathEnv):0) + strlen(dir) + 2];
+      strcpy (newpath, dir);
+      strcat (newpath, ";");
+      if (*pathEnv) strcat (newpath, *pathEnv);
+      delete[] *pathEnv;
+      *pathEnv = newpath;
       return true;
     }
   }
@@ -210,7 +216,6 @@ static inline bool AddToPathEnv (csString dir, csString& pathEnv)
 
 typedef void (WINAPI * LPFNSETDLLDIRECTORYA)(LPCSTR lpPathName);
 
-#include "csutil/custom_new_disable.h"
 bool csPlatformStartup(iObjectRegistry* r)
 {
   /* Work around QueryPerformanceCounter() issues on multiprocessor systems.
@@ -267,15 +272,16 @@ bool csPlatformStartup(iObjectRegistry* r)
 
   if (needPATHpatch)
   {
-    csString pathEnv (getenv("PATH"));
+    char* pathEnv = csStrNew (getenv("PATH"));
     bool pathChanged = false;
 
     for (size_t i = 0; i < pluginpaths->Length(); i++)
     {
       // @@@ deal with path recursion here?
-      if (AddToPathEnv ((*pluginpaths)[i].path, pathEnv)) pathChanged = true;
+      if (AddToPathEnv ((*pluginpaths)[i].path, &pathEnv)) pathChanged = true;
     }
     if (pathChanged) SetEnvironmentVariable ("PATH", pathEnv);
+    delete[] pathEnv;
   }
 
   delete pluginpaths;
@@ -294,7 +300,6 @@ bool csPlatformStartup(iObjectRegistry* r)
 
   return ok;
 }
-#include "csutil/custom_new_enable.h"
 
 bool csPlatformShutdown(iObjectRegistry* r)
 {
@@ -529,7 +534,6 @@ Win32Assistant::Win32Assistant (iObjectRegistry* r)
   //CanvasHidden = csevCanvasHidden (registry, "graph2d");
 
   // Put our own keyboard driver in place.
-#include "csutil/custom_new_disable.h"
   kbdDriver.AttachNew (new csWin32KeyboardDriver (r));
   if (kbdDriver == 0)
   {
@@ -548,7 +552,6 @@ Win32Assistant::Win32Assistant (iObjectRegistry* r)
   }
   r->Register (kbdDriver, "iKeyboardDriver");
 }
-#include "csutil/custom_new_enable.h"
 
 Win32Assistant::~Win32Assistant ()
 {

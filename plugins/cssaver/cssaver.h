@@ -45,8 +45,6 @@ class csSaver : public scfImplementation2<csSaver, iSaver, iComponent>
   csRef<iDocumentNode> before;
   iRegion* curRegion;
   int fileType;
-  
-  void InitializePluginsHash ();
 
 public:
   csSaver(iBase*);

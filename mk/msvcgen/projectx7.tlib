@@ -66,13 +66,6 @@
 			WholeProgramOptimization="1"
 [% END %]
 
-[% MACRO global_dll BLOCK -%]
-			ConfigurationType="2"
-[% END %]
-[% MACRO global_dll_release BLOCK -%]
-			WholeProgramOptimization="1"
-[% END %]
-
 [% MACRO precompiled_header BLOCK -%]
 [%- IF my.doc.pch.0 -%]
 				UsePrecompiledHeader="1"
@@ -123,12 +116,6 @@
 [% MACRO linker_appgui_debug GET linker_app(1) %]
 
 [% MACRO linker_plugin BLOCK -%]
-[% linker_common -%]
-				DelayLoadDLLs="[% glue(my.doc.librarydelay,';','','.dll') %]"
-				ImportLibrary="[% workbuild([my.doc.project.0,'.lib']) %]"
-[% END %]
-
-[% MACRO linker_dll BLOCK -%]
 [% linker_common -%]
 				DelayLoadDLLs="[% glue(my.doc.librarydelay,';','','.dll') %]"
 				ImportLibrary="[% workbuild([my.doc.project.0,'.lib']) %]"

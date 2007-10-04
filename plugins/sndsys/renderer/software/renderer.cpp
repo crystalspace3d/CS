@@ -306,16 +306,14 @@ bool csSndSysRendererSoftware::Initialize (iObjectRegistry *obj_reg)
   // Try to load the specified driver exactly as specified
   DriverFullName=drv;
   RecordEvent(SSEL_DEBUG, "Attempting to load driver plugin [%s]", DriverFullName.GetData());
-  m_pSoundDriver = csLoadPlugin<iSndSysSoftwareDriver> (plugin_mgr,
-    DriverFullName.GetData());
+  m_pSoundDriver = CS_LOAD_PLUGIN (plugin_mgr, DriverFullName.GetData(), iSndSysSoftwareDriver);
 
   // Try to load the driver with "crystalspace.sndsys.software.driver." prepended
   if (!m_pSoundDriver)
   {
     DriverFullName.Format("crystalspace.sndsys.software.driver.%s", drv);
     RecordEvent(SSEL_DEBUG, "Attempting to load driver plugin [%s]", DriverFullName.GetData());
-    m_pSoundDriver = csLoadPlugin<iSndSysSoftwareDriver> (plugin_mgr,
-      DriverFullName.GetData());
+    m_pSoundDriver = CS_LOAD_PLUGIN (plugin_mgr, DriverFullName.GetData(), iSndSysSoftwareDriver);
   }
 
   // If we still failed, report an error
@@ -616,7 +614,7 @@ void csSndSysRendererSoftware::GarbageCollection()
     SourceRemoved(sourceptr);
 
     // Remove this source from the Filter list as well
-    m_DispatchSources.Delete(static_cast<iSndSysSourceSoftware *>(sourceptr));
+    m_DispatchSources.Delete(dynamic_cast<iSndSysSourceSoftware *>(sourceptr));
 
     sourceptr->DecRef();
   }
@@ -712,7 +710,7 @@ void csSndSysRendererSoftware::ProcessPendingSources()
   }
 
   // Empty the queue of source removal requests
-  while ((src=static_cast<iSndSysSourceSoftware *> (m_SourceRemoveQueue.DequeueEntry())))
+  while ((src=dynamic_cast<iSndSysSourceSoftware *> (m_SourceRemoveQueue.DequeueEntry())))
   {
     // We don't know that the application has queued a pointer to a source that's
     //  active.  If the Delete() fails, then the source is not even in our active list.

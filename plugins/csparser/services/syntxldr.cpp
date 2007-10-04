@@ -622,9 +622,6 @@ bool csTextSyntaxService::ParseMixmode (iDocumentNode* node, uint &mixmode,
       case XMLTOKEN_BLENDOP:
         {
           mixmodeSpecified = true;
-	  mixmode &= ~CS_MIXMODE_TYPE_MASK;
-          mixmode |= CS_MIXMODE_TYPE_BLENDOP;
-	  
           const char* srcFactorStr = child->GetAttributeValue ("src");
           const char* dstFactorStr = child->GetAttributeValue ("dst");
           uint srcFactor = 0, dstFactor = 0;
@@ -638,32 +635,10 @@ bool csTextSyntaxService::ParseMixmode (iDocumentNode* node, uint &mixmode,
           {
             Report ("crystalspace.syntax.mixmode",
               CS_REPORTER_SEVERITY_WARNING,
-	      child, "Invalid blend factor %s", dstFactorStr);
+	      child, "Invalid blend factor %s", srcFactorStr);
           }
           mixmode &= ~((CS_MIXMODE_FACT_MASK << 20) | (CS_MIXMODE_FACT_MASK << 16));
           mixmode |= ((srcFactor << 20) | (dstFactor << 16));
-
-          const char* srcAlphaFactorStr = child->GetAttributeValue ("srcalpha");
-          const char* dstAlphaFactorStr = child->GetAttributeValue ("dstalpha");
-	  if (srcAlphaFactorStr || dstAlphaFactorStr)
-	  {
-	    uint srcFactorA = 0, dstFactorA = 0;
-	    if (!StringToBlendFactor (srcAlphaFactorStr, srcFactorA))
-	    {
-	      Report ("crystalspace.syntax.mixmode",
-		CS_REPORTER_SEVERITY_WARNING,
-		child, "Invalid blend factor %s", srcAlphaFactorStr);
-	    }
-	    if (!StringToBlendFactor (dstAlphaFactorStr, dstFactorA))
-	    {
-	      Report ("crystalspace.syntax.mixmode",
-		CS_REPORTER_SEVERITY_WARNING,
-		child, "Invalid blend factor %s", dstAlphaFactorStr);
-	    }
-	    mixmode &= ~((CS_MIXMODE_FACT_MASK << 12) | (CS_MIXMODE_FACT_MASK << 8));
-	    mixmode |= ((srcFactor << 12) | (dstFactor << 8));
-	    mixmode |= CS_MIXMODE_FLAG_BLENDOP_ALPHA;
-	  }
         }
         break;
       default:
@@ -748,13 +723,6 @@ bool csTextSyntaxService::WriteMixmode (iDocumentNode* node, uint mixmode,
             BlendFactorToString (CS_MIXMODE_BLENDOP_SRC (mixmode)));
           blendOp->SetAttribute ("dst", 
             BlendFactorToString (CS_MIXMODE_BLENDOP_DST (mixmode)));
-	  if (mixmode & CS_MIXMODE_FLAG_BLENDOP_ALPHA)
-	  {
-	    blendOp->SetAttribute ("srcalpha", 
-	      BlendFactorToString (CS_MIXMODE_BLENDOP_ALPHA_SRC (mixmode)));
-	    blendOp->SetAttribute ("dstalpha", 
-	      BlendFactorToString (CS_MIXMODE_BLENDOP_ALPHA_DST (mixmode)));
-	  }
         }
     }
   }
@@ -795,77 +763,69 @@ bool csTextSyntaxService::WriteMixmode (iDocumentNode* node, uint mixmode,
   return true;
 }
 
-struct HandlePortalParameterState : public csRefCount
-{
-  bool ww_given;
-  
-  HandlePortalParameterState () : ww_given (false) {}
-};
-
-bool csTextSyntaxService::HandlePortalParameter (iDocumentNode* child, 
-  iLoaderContext* /*ldr_context*/, csRef<csRefCount>& parseState, 
-  CS::Utility::PortalParameters& params, bool& handled)
+bool csTextSyntaxService::HandlePortalParameter (
+	iDocumentNode* child, iLoaderContext* /*ldr_context*/,
+	uint32 &flags, bool &mirror, bool &warp, int& msv,
+	csMatrix3 &m, csVector3 &before, csVector3 &after,
+	iString* destSector, bool& handled, bool& autoresolve)
 {
   handled = true;
   const char* value = child->GetValue ();
-  if (!parseState.IsValid()) parseState.AttachNew (new HandlePortalParameterState);
-  HandlePortalParameterState* state =
-    static_cast<HandlePortalParameterState*> ((csRefCount*)parseState);
+  bool ww_given = false;
   csStringID id = xmltokens.Request (value);
   switch (id)
   {
     case XMLTOKEN_MAXVISIT:
-      params.msv = child->GetContentsValueAsInt ();
+      msv = child->GetContentsValueAsInt ();
       break;
     case XMLTOKEN_MATRIX:
-      ParseMatrix (child, params.m);
-      params.mirror = false;
-      params.warp = true;
+      ParseMatrix (child, m);
+      mirror = false;
+      warp = true;
       break;
     case XMLTOKEN_WV:
-      ParseVector (child, params.before);
-      if (!state->ww_given) params.after = params.before;
-      params.mirror = false;
-      params.warp = true;
+      ParseVector (child, before);
+      if (!ww_given) after = before;
+      mirror = false;
+      warp = true;
       break;
     case XMLTOKEN_WW:
-      ParseVector (child, params.after);
-      state->ww_given = true;
-      params.mirror = false;
-      params.warp = true;
+      ParseVector (child, after);
+      ww_given = true;
+      mirror = false;
+      warp = true;
       break;
     case XMLTOKEN_AUTORESOLVE:
-      if (!ParseBool (child, params.autoresolve, true))
+      if (!ParseBool (child, autoresolve, true))
         return false;
       break;
     case XMLTOKEN_MIRROR:
-      if (!ParseBool (child, params.mirror, true))
+      if (!ParseBool (child, mirror, true))
         return false;
       break;
     case XMLTOKEN_CLIPSTRADDLING:
-      params.flags |= CS_PORTAL_CLIPSTRADDLING;
+      flags |= CS_PORTAL_CLIPSTRADDLING;
       break;
     case XMLTOKEN_COLLDET:
-      params.flags |= CS_PORTAL_COLLDET;
+      flags |= CS_PORTAL_COLLDET;
       break;
     case XMLTOKEN_VISCULL:
-      params.flags |= CS_PORTAL_VISCULL;
+      flags |= CS_PORTAL_VISCULL;
       break;
     case XMLTOKEN_STATIC:
-      params.flags |= CS_PORTAL_STATICDEST;
+      flags |= CS_PORTAL_STATICDEST;
       break;
     case XMLTOKEN_FLOAT:
-      params.flags |= CS_PORTAL_FLOAT;
+      flags |= CS_PORTAL_FLOAT;
       break;
     case XMLTOKEN_ZFILL:
-      params.flags |= CS_PORTAL_ZFILL;
+      flags |= CS_PORTAL_ZFILL;
       break;
     case XMLTOKEN_CLIP:
-      params.flags |= CS_PORTAL_CLIPDEST;
+      flags |= CS_PORTAL_CLIPDEST;
       break;
     case XMLTOKEN_SECTOR:
-      if (params.destSector)
-        params.destSector->Append (child->GetContentsValue ());
+      destSector->Append (child->GetContentsValue ());
       break;
     default:
       handled = false;
@@ -1564,7 +1524,7 @@ bool csTextSyntaxService::WriteKey (iDocumentNode *node, iKeyValuePair *keyvalue
   if (keyvalue->GetEditorOnly ())
     node->SetAttribute ("editoronly", "yes");
   csRef<iStringArray> vnames = keyvalue->GetValueNames ();
-  for (size_t i=0; i<vnames->GetSize (); i++)
+  for (size_t i=0; i<vnames->Length (); i++)
   {
     const char* name = vnames->Get (i);
     node->SetAttribute (name, keyvalue->GetValue (name));

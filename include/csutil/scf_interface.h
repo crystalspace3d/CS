@@ -97,33 +97,6 @@ static CS_FORCEINLINE bool scfCompatibleVersion (
      || iVersion == 0;
 }
 
-/**
- * Metadata about a single interface implemented within a class
- */
-struct scfInterfaceMetadata
-{
-  /// Interface name
-  const char* interfaceName;
-
-  /// Interface runtime ID
-  scfInterfaceID interfaceID;
-
-  /// Interface (compile-time) version
-  scfInterfaceVersion interfaceVersion;
-};
-
-/**
- * A chain list of metadata for interfaces implemented within a class
- */
-struct scfInterfaceMetadataList
-{
-  /// Pointer to list of meta-data
-  scfInterfaceMetadata* metadata;
-
-  /// Number of entries in meta-data list
-  size_t metadataCount;
-};
-
 // -- The main two SCF interfaces, iBase and iSCF
 
 /**
@@ -140,7 +113,7 @@ protected:
    */
   virtual ~iBase() {}
 public:
-  SCF_INTERFACE(iBase, 1, 1, 0);
+  SCF_INTERFACE(iBase, 1, 0, 0);
   /// Increment the number of references to this object.
   virtual void IncRef () = 0;
   /// Decrement the reference count.
@@ -158,9 +131,6 @@ public:
   virtual void AddRefOwner (void** ref_owner) = 0;
   /// For weak references: remove a reference owner.
   virtual void RemoveRefOwner (void** ref_owner) = 0;
-
-  /// Request the meta-data for the interfaces implemented by this object.
-  virtual scfInterfaceMetadataList* GetInterfaceMetadata () = 0;
 };
 
 /// Type of factory function which creates an instance of an SCF class.

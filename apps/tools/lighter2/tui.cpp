@@ -104,7 +104,7 @@ namespace lighter
 
       buf.Append (TUI_SEVERITY_TEXT[severity]);
       csString tmp(descrSplit[i]);
-      buf.Append (tmp.Slice (0,74).PadRight (74));
+      buf.Append (tmp.Slice (0,69).PadRight (69));
 
       if (simpleMode)
       {
@@ -121,8 +121,7 @@ namespace lighter
     // Print them
     Redraw (TUI::TUI_DRAW_MESSAGES);
 
-    // Also hand it off to the standard listener
-    return false;
+    return true;
   }
 
   void TUI::DrawStatic () const

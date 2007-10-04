@@ -162,11 +162,6 @@ projtypes = {
   {
     defines = ['_WINDOWS'],
     libs = ['delayimp.lib']
-  },
-  dll =>
-  {
-    defines = ['_WINDOWS'],
-    libs = ['delayimp.lib']
   }
 };
 

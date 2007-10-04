@@ -37,24 +37,15 @@ distribution.
 #include <assert.h>
 #include "iutil/string.h"
 #include "csutil/array.h"
-#include "csutil/csstring.h"
 #include "csutil/fifo.h"
 #include "csutil/fixedsizeallocator.h"
-#include "csutil/memheap.h"
 #include "csutil/reftrackeraccess.h"
 #include "csutil/strset.h"
 #include "csutil/util.h"
-#include "csgeom/math.h"
 
 #include "tinystr.h"
 
-struct iFile;
-
 namespace CS
-{
-namespace Implementation
-{
-namespace TinyXml
 {
 
 class TiDocument;
@@ -87,71 +78,6 @@ enum
   TIXML_ERROR_STRING_COUNT
 };
 
-struct ParseInfo
-{
-  TiDocument* document;
-  bool condenseWhiteSpace;
-  
-  const char* startOfLine;
-  int linenum;
-  
-  void BeginParse (const char* p)
-  { startOfLine = p; linenum = 1; }
-};
-
-struct iPrintOutput
-{
-  virtual ~iPrintOutput() {}
-
-  virtual void Init (char*& bufPtr, size_t& bufRemaining) = 0;
-  virtual bool FlushBuffer (char*& bufPtr, size_t& bufRemaining) = 0;
-};
-
-class PrintState
-{
-  iPrintOutput* output;
-  char* bufPtr;
-  size_t bufRemaining;
-
-  csString fmtBuf;
-public:
-  PrintState (iPrintOutput* output) : output (output)
-  {
-    output->Init (bufPtr, bufRemaining);
-  }
-  
-  bool AppendFmtV (const char* fmt, va_list args)
-  {
-    fmtBuf.FormatV (fmt, args);
-    return Append (fmtBuf.GetData(), fmtBuf.Length ());
-  }
-
-  bool Append (const char* data, size_t size)
-  {
-    while (size > 0)
-    {
-      if (bufRemaining == 0)
-      {
-        if (!output->FlushBuffer (bufPtr, bufRemaining)) return false;
-      }
-
-      size_t copySize = csMin (size, bufRemaining);
-      memcpy (bufPtr, data, copySize);
-      bufRemaining -= copySize;
-      bufPtr += copySize;
-      data += copySize;
-      size -= copySize;
-    }
-
-    return true;
-  }
-
-  bool Flush ()
-  {
-    return output->FlushBuffer (bufPtr, bufRemaining);
-  }
-};
-
 /**
  * TiXmlBase is a base class for every class in TinyXml.
  * It does little except to establish that TinyXml classes
@@ -175,7 +101,7 @@ public:
  * A Decleration contains: Attributes (not on tree)
  * @endverbatim
  */
-class TiXmlBase : public CS::Memory::CustomAllocated
+class TiXmlBase
 {
   friend class TiDocumentNode;
   friend class TiXmlElement;
@@ -185,7 +111,21 @@ public:
   TiXmlBase () {}
   ~TiXmlBase () {}
 
-  static const char* SkipWhiteSpace( ParseInfo& parse, const char* );
+  /**
+   * The world does not agree on whether white space should be kept or
+   * not. In order to make everyone happy, these global, static functions
+   * are provided to set whether or not TinyXml will condense all white space
+   * into a single space or not. The default is to condense. Note changing these
+   * values is not thread safe.
+   */
+  static void SetCondenseWhiteSpace( bool condense )
+  { condenseWhiteSpace = condense; }
+
+  /// Return the current white space setting.
+  static bool IsWhiteSpaceCondensed()
+  { return condenseWhiteSpace; }
+
+  static const char* SkipWhiteSpace( const char* );
 
   /**
    * Reads an XML name into the string provided. Returns
@@ -198,8 +138,7 @@ public:
    * Reads text. Returns a pointer past the given end tag.
    * Wickedly complex options, but it keeps the (sensitive) code in one place.
    */
-  static const char* ReadText( ParseInfo& parse, 
-        const char* in, GrowString& buf,
+  static const char* ReadText(  const char* in, GrowString& buf,
         bool ignoreWhiteSpace,
         const char* endTag);
 
@@ -248,6 +187,7 @@ private:
     MAX_ENTITY_LENGTH = 6
   };
   static const Entity entity[ NUM_ENTITY ];
+  static bool condenseWhiteSpace;
 };
 
 
@@ -258,7 +198,7 @@ private:
  * in a document, or stand on its own. The type of a TiDocumentNode
  * can be queried, and it can be cast to its more defined type.
  */
-class TiDocumentNode : public TiXmlBase
+class TiDocumentNode : public TiXmlBase,  public CS::Memory::CustomAllocated
 {
   friend class TiDocument;
   friend class TiDocumentNodeChildren;
@@ -289,8 +229,8 @@ public:
    * This is a formatted print, and will insert tabs and newlines.
    * (For an unformatted stream, use the << operator.)
    */
-  const char* Print( PrintState& print, int depth ) const;
-  const char* Parse( ParseInfo& parse, const char* p );
+  void Print( iString* cfile, int depth ) const;
+  const char* Parse( TiDocument* document, const char* p );
 
   /**
    * The meaning of 'value' changes for the specific type of
@@ -335,7 +275,7 @@ public:
   TiXmlElement* NextSiblingElement( const char * ) const;
 
   /// Query the type (as an enumerated value, above) of this node.
-  NodeType Type() const { return (NodeType)type; }
+  NodeType Type() const { return type; }
 
   /**
    * Return a pointer to the Document this node lives in.
@@ -359,9 +299,7 @@ public:
   csPtr<TiDocumentNode> Clone(TiDocument* document) const;
 
 protected:
-  uint16 type;
-  // Unlikely to get very large
-  int16 refcount;
+  int refcount;
 
   TiDocumentNode( );
 
@@ -370,6 +308,7 @@ protected:
     target->SetValue (Value () );
   }
 
+  NodeType type;
   TiDocumentNodeChildren* parent;
 
   csRef<TiDocumentNode> next;
@@ -412,7 +351,7 @@ public:
 protected:
   // Figure out what is at *p, and parse it. Returns null if it is not an xml
   // node.
-  csPtr<TiDocumentNode> Identify( ParseInfo& parse, const char* start );
+  csPtr<TiDocumentNode> Identify( TiDocument* document, const char* start );
 
   /**
    * Add a new node related to this. Adds a child past afterThis.
@@ -480,13 +419,13 @@ public:
    * Attribute parsing starts: first letter of the name
    * returns: the next char after the value end quote
    */
-  const char* Parse( ParseInfo& parse, TiDocumentNode* node, const char* p );
+  const char* Parse( TiDocument* document, const char* p );
 
 private:
   friend class TiXmlElement;
 
   // [internal use]
-  const char* Print( PrintState& print, int depth ) const;
+  void Print( iString* cfile, int depth ) const;
 
   const char* name;
   char* value;
@@ -587,26 +526,22 @@ public:
   }
   void SetValue (const char * _value);
 
-  void ShrinkAttributes ()
-  {
-    attributeSet.set.ShrinkBestFit ();
-  }
 protected:
   friend class TiDocumentNode;
 
-  const char* Print( PrintState& print, int depth ) const;
+  void Print( iString* cfile, int depth ) const;
 
   /*  [internal use]
    * Attribtue parsing starts: next char past '<'
    * returns: next char past '>'
    */
-  const char* Parse( ParseInfo& parse, const char* p );
+  const char* Parse( TiDocument* document, const char* p );
 
   /*  [internal use]
    * Reads the "value" of the element -- another element, or text.
    * This should terminate with the current end tag.
    */
-  const char* ReadValue( ParseInfo& parse, const char* in );
+  const char* ReadValue( TiDocument* document, const char* in );
 
 private:
   TiDocumentAttributeSet attributeSet;
@@ -637,13 +572,13 @@ protected:
   friend class TiDocumentNode;
 
   // [internal use]
-  const char* Print( PrintState& print, int depth ) const;
+  void Print( iString* cfile, int depth ) const;
 
   /*  [internal use]
    * Attribtue parsing starts: at the ! of the !--
    * returns: next char past '>'
    */
-  const char* Parse( ParseInfo& parse, const char* p );
+  const char* Parse( TiDocument* document, const char* p );
 
   char* value;
 };
@@ -675,7 +610,7 @@ protected :
   friend class TiDocumentNode;
 
   // [internal use]
-  const char* Print( PrintState& print, int depth ) const;
+  void Print( iString* cfile, int depth ) const;
 
   // [internal use] Creates a new Element and returns it.
   csPtr<TiDocumentNode> Clone(TiDocument* document) const;
@@ -685,7 +620,7 @@ protected :
    * Attribtue parsing starts: First char of the text
    * returns: next char past '>'
    */
-  const char* Parse( ParseInfo& parse, const char* p );
+  const char* Parse( TiDocument* document,  const char* p );
 
   const char* value;
 };
@@ -709,7 +644,7 @@ public:
 protected :
   friend class TiDocumentNode;
 
-  const char* Parse( ParseInfo& parse, const char* p );
+  const char* Parse( TiDocument* document,  const char* p );
 };
 
 /**
@@ -754,12 +689,12 @@ protected:
   friend class TiDocumentNode;
 
   // [internal use]
-  const char* Print( PrintState& print, int depth ) const;
+  void Print( iString* cfile, int depth ) const;
 
   //  [internal use]
   //  Attribtue parsing starts: next char past '<'
   //           returns: next char past '>'
-  const char* Parse( ParseInfo& parse, const char* p );
+  const char* Parse( TiDocument* document,  const char* p );
 
 private:
   TiXmlString version;
@@ -789,13 +724,13 @@ protected:
   friend class TiDocumentNode;
 
   // [internal use]
-  const char* Print( PrintState& print, int depth ) const;
+  void Print( iString* cfile, int depth ) const;
 
   /*  [internal use]
    * Attribute parsing starts: First char of the text
    * returns: next char past '>'
    */
-  const char* Parse( ParseInfo& parse, const char* p );
+  const char* Parse( TiDocument* document,  const char* p );
 
   TiXmlString value;
 };
@@ -806,7 +741,7 @@ protected:
  * XML pieces. It can be saved, loaded, and printed to the screen.
  * The 'value' of a document node is the xml file name.
  */
-  class TiDocument : public TiDocumentNodeChildren
+class TiDocument : public TiDocumentNodeChildren
 {
   /* When e.g. the root node is deleted with DeleteNode() an avalanche of
      node releases may follow, even to the extent that the stack is blown.
@@ -848,46 +783,20 @@ protected:
       case TEXT: 
         blk_text.Free (node.ptr); 
         break;
+      case DOCUMENT:
       case COMMENT:
       case CDATA:
       case DECLARATION:
       case UNKNOWN:
-        docHeap.Free (node.ptr);
-        break;
-      case DOCUMENT:
         CS::Memory::CustomAllocated::operator delete (node.ptr);
         break;
       default: 
         CS_ASSERT(false);
     }
   }
-  /**
-   * Array capacity. Grows exponentially until a cap is hit.
-   */
-  class FreeQueueArrayCapacity
-  {
-    enum { maxGrow = 256*1024 };
-  public:
-    FreeQueueArrayCapacity () {}
-  
-    bool IsCapacityExcessive (size_t capacity, size_t count) const
-    {
-      size_t threshold = csMin (size_t (csFindNearestPowerOf2 (int (count))),
-	size_t (maxGrow));
-      return (capacity > threshold && count < capacity - threshold);
-    }
-    size_t GetCapacity (size_t count) const
-    {
-      size_t threshold = csMin (size_t (csFindNearestPowerOf2 (int (count))), 
-	size_t (maxGrow));
-      return ((count + threshold - 1) / threshold) * threshold;
-    }
-  };
   void EmptyDestroyQueue()
   {
-    csArray<FreeQueueEntry, csArrayElementHandler<FreeQueueEntry>,
-      CS::Memory::AllocatorMalloc, FreeQueueArrayCapacity> freeQueue;
-    freeQueue.SetCapacity (destroyQueue.GetSize());
+    csArray<FreeQueueEntry> freeQueue;
     while (destroyQueue.GetSize() > 0)
     {
       TiDocumentNode* node = destroyQueue.PopTop ();
@@ -905,15 +814,12 @@ protected:
     }
   }
 public:
-  /// Heap used for document allocations.
-  CS::Memory::Heap docHeap;
-  typedef CS::Memory::AllocatorHeap<CS::Memory::Heap*> DocHeapAlloc;
   /// Interned strings.
   csStringSet strings;
   /// Block allocator for elements.
-  csFixedSizeAllocator<sizeof(TiXmlElement), DocHeapAlloc> blk_element;
+  csFixedSizeAllocator<sizeof(TiXmlElement)> blk_element;
   /// Block allocator for text.
-  csFixedSizeAllocator<sizeof(TiXmlText), DocHeapAlloc> blk_text;
+  csFixedSizeAllocator<sizeof(TiXmlText)> blk_text;
 
   /// Create an empty document, that has no name.
   TiDocument();
@@ -956,19 +862,11 @@ public:
   const char * Value () const { return value.c_str (); }
   void SetValue (const char * _value) { value = _value;}
 
-private:
   /// Parse the given null terminated block of xml data.
-  const char* Parse( ParseInfo& parse, const char* p );
-  const char* Print( PrintState& print, int depth = 0 ) const;
-public:
-  const char* Parse( const char* p )
-  {
-    parse.BeginParse (p);
-    return Parse (parse, p);
-  }
+  const char* Parse( TiDocument* document,  const char* p );
 
   /// If, during parsing, a error occurs, Error will be set to true.
-  bool Error() const { return errorId != TIXML_NO_ERROR; }
+  bool Error() const { return error; }
 
   /// Contains a textual (english) description of the error if one occurs.
   const char * ErrorDesc() const { return errorDesc.c_str (); }
@@ -980,61 +878,18 @@ public:
   int ErrorId() const { return errorId; }
 
   /// If you have handled the error, it can be reset with this call.
-  void ClearError() { errorId = TIXML_NO_ERROR; errorDesc = ""; }
+  void ClearError() { error = false; errorId = 0; errorDesc = ""; }
 
   // [internal use]
-  const char* Print( iString* cfile ) const;
-  const char* Print( iFile* cfile ) const;
+  void Print( iString* cfile, int depth = 0 ) const;
   // [internal use]
-  void SetError( int err, TiDocumentNode* errorNode, const char* errorPos )
+  void SetError( int err )
   {
+    error   = true;
     errorId = err;
     errorDesc = errorString[ errorId ];
-    if (errorNode != 0)
-    {
-      csString errorPath;
-      
-      while (errorNode != 0)
-      {
-        const char* nodeVal;
-        if ((errorNode->type == ELEMENT)
-          && (nodeVal = errorNode->Value()) && *nodeVal)
-        {
-          if (!errorPath.IsEmpty ())
-            errorPath.Insert (0, " -> ");
-	  errorPath.Insert (0, nodeVal);
-        }
-        errorNode = errorNode->parent;
-      }
-      
-      errorDesc += " (in: ";
-      csString location;
-      location.Format ("line %d", parse.linenum);
-      if (errorPos != 0)
-        location.AppendFmt (":%zu", errorPos - parse.startOfLine + 1);
-      errorDesc += location.GetDataSafe();
-      if (!errorPath.IsEmpty())
-      {
-        errorDesc += "; ";
-        errorDesc += errorPath.GetDataSafe();
-      }
-      errorDesc += ")";
-    }
   }
 
-
-  /**
-   * The world does not agree on whether white space should be kept or
-   * not. In order to make everyone happy, these functions are provided 
-   * to set whether or not TinyXml will condense all white space into a 
-   * single space or not. The default is to condense. 
-   */
-  void SetCondenseWhiteSpace( bool condense )
-  { parse.condenseWhiteSpace = condense; }
-
-  /// Return the current white space setting.
-  bool IsWhiteSpaceCondensed()
-  { return parse.condenseWhiteSpace; }
 protected :
   friend class TiDocumentNode;
 
@@ -1042,14 +897,12 @@ protected :
   csPtr<TiDocumentNode> Clone(TiDocument* document) const;
 
 private:
+  bool error;
   int  errorId;
-  ParseInfo parse;
   TiXmlString errorDesc;
   TiXmlString value;
 };
 
-} // namespace TinyXml
-} // namespace Implementation
 } // namespace CS
 
 #endif

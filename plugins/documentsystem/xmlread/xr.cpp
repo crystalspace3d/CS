@@ -27,10 +27,7 @@ distribution.
 #include "xr.h"
 #include "csutil/scfstr.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(XMLRead)
-{
-
-const char* const TrXmlBase::errorString[ TIXML_ERROR_STRING_COUNT ] =
+const char* TrXmlBase::errorString[ TIXML_ERROR_STRING_COUNT ] =
 {
   "No error",
   "Error",
@@ -73,18 +70,18 @@ TrDocumentNode* TrDocumentNode::NextSibling( const char * value ) const
 }
 
 
-TrDocumentNode* TrDocumentNodeChildren::Identify (ParseInfo& parse,
+TrDocumentNode* TrDocumentNodeChildren::Identify (const ParseInfo& parse,
 	const char* p)
 {
   TrDocumentNode* returnNode = 0;
 
-  p = SkipWhiteSpace( parse, p );
+  p = SkipWhiteSpace( p );
   if( !p || !*p || *p != '<' )
   {
     return 0;
   }
 
-  p = SkipWhiteSpace( parse, p );
+  p = SkipWhiteSpace( p );
 
   if ( !p || !*p )
   {
@@ -126,7 +123,7 @@ TrDocumentNode* TrDocumentNodeChildren::Identify (ParseInfo& parse,
   }
   else
   {
-    parse.document->SetError( TIXML_ERROR_OUT_OF_MEMORY, this, p );
+    parse.document->SetError( TIXML_ERROR_OUT_OF_MEMORY );
   }
   return returnNode;
 }
@@ -267,7 +264,7 @@ TrDocument::TrDocument(char* buf) :
   blk_element (7000),
   blk_text (100)
 {
-  errorId = TIXML_NO_ERROR;
+  error = false;
   //  ignoreWhiteSpace = true;
   type = DOCUMENT;
   input_data = buf;
@@ -325,6 +322,3 @@ size_t TrDocumentAttributeSet::FindExact (const char * reg_name) const
   return csArrayItemNotFound;
 }
 
-
-}
-CS_PLUGIN_NAMESPACE_END(XMLRead)

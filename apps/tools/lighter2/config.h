@@ -88,13 +88,6 @@ namespace lighter
       
     };
 
-    struct DebugProperties
-    {
-      /* Regular expression for meshes for which to generate "debug occlusion"
-         visualiuzation. */
-      csString rayDebugRE;
-    };
-
 
     // Public accessible (readable) properties
     const LighterProperties& GetLighterProperties () const
@@ -112,17 +105,11 @@ namespace lighter
       return diProperties;
     }
 
-    const DebugProperties& GetDebugProperties() const
-    {
-      return debugProperties;
-    }
-
   protected:
     // Properties
     LighterProperties     lighterProperties;
     LightmapProperties    lmProperties;
     DIProperties          diProperties;
-    DebugProperties       debugProperties;
   };
 
 }

@@ -48,6 +48,9 @@ csRef<iString> scfString::Clone () const
 char const* scfString::GetData () const
 { return s.GetData (); }
 
+char* scfString::GetData ()
+{ return const_cast<char*> (s.GetData()); }
+
 size_t scfString::Length () const
 { return s.Length (); }
 

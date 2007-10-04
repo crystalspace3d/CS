@@ -32,7 +32,7 @@
 
 /* config node */
 
-class csConfigNode : public CS::Memory::CustomAllocated
+class csConfigNode
 {
 public:
   // create a new config node. Set name to 0 to create the initial node.
@@ -79,16 +79,16 @@ private:
 csConfigNode::csConfigNode(const char *Keyname)
 {
   Prev = Next = 0;
-  Name = CS::StrDup (Keyname);
+  Name = csStrNew(Keyname);
   Data = Comment = 0;
 }
 
 csConfigNode::~csConfigNode()
 {
   Remove();
-  cs_free (Name);
-  cs_free (Data);
-  cs_free (Comment);
+  delete[] Name;
+  delete[] Data;
+  delete[] Comment;
 }
 
 const char *csConfigNode::GetName() const
@@ -130,8 +130,8 @@ void csConfigNode::Remove()
 
 void csConfigNode::SetStr(const char *s)
 {
-  cs_free (Data);
-  Data = CS::StrDup (s);
+  delete[] Data;
+  Data = csStrNew(s);
 }
 
 void csConfigNode::SetInt(int n)
@@ -170,8 +170,8 @@ void csConfigNode::SetTuple (iStringArray* Value)
 
 void csConfigNode::SetComment(const char *s)
 {
-  cs_free (Comment);
-  Comment = CS::StrDup (s);
+  delete[] Comment;
+  Comment = csStrNew(s);
 }
 
 const char *csConfigNode::GetStr() const
@@ -441,7 +441,7 @@ csConfigFile::~csConfigFile()
   // deleted there shouldn't be any iterators left.
   CS_ASSERT(Iterators->GetSize () == 0);
   delete Iterators;
-  cs_free (Filename);
+  delete[] Filename;
 }
 
 bool csConfigFile::IsEmpty() const
@@ -462,9 +462,9 @@ iVFS* csConfigFile::GetVFS() const
 
 void csConfigFile::SetFileName(const char *fName, iVFS *vfs)
 {
-  cs_free (Filename);
+  delete[] Filename;
 
-  Filename = CS::StrDup (fName);
+  Filename = csStrNew(fName);
   VFS = vfs;
   Dirty = true;
 }
@@ -597,7 +597,7 @@ void csConfigFile::Clear()
   }
   if (EOFComment)
   {
-    cs_free (EOFComment);
+    delete[] EOFComment;
     EOFComment = 0;
   }
   Dirty = true;
@@ -723,13 +723,13 @@ void csConfigFile::SetTuple (const char *Key, iStringArray* Value)
     if (sa)
     {
       // its different if lengths differ
-      if (sa->GetSize () != Value->GetSize ())
+      if (sa->Length () != Value->Length ())
       {
         changed = true;
       }
       else
       {
-        for (uint i = 0 ; i < sa->GetSize (); i++)
+        for (uint i = 0 ; i < sa->Length (); i++)
         {
           // found 2 different strings in tuple
           if (sa->Get (i) != Value->Get (i))
@@ -910,8 +910,8 @@ void csConfigFile::RemoveIterator(csConfigIterator *it) const
 
 void csConfigFile::SetEOFComment(const char *text)
 {
-  cs_free (EOFComment);
-  EOFComment = (text ? CS::StrDup(text) : 0);
+  delete[] EOFComment;
+  EOFComment = (text ? csStrNew(text) : 0);
   Dirty = true;
 }
 

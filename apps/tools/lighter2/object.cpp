@@ -29,7 +29,7 @@ namespace lighter
 {
 
   ObjectFactory::ObjectFactory ()
-    : lightPerVertex (false), noModify (false),
+    : lightPerVertex (false),
     lmScale (globalConfig.GetLMProperties ().lmDensity),
     factoryWrapper (0)
   {
@@ -60,17 +60,16 @@ namespace lighter
         csArray<FactoryPrimitiveArray> newPrims;
         csRef<LightmapUVObjectLayouter> lightmaplayout = 
           uvlayout->LayoutFactory (unlayoutedPrimitives[i], vertexData, this, 
-          newPrims, usedVertices, noModify);
-        if (lightmaplayout)
+          newPrims, usedVertices);
+        if (!lightmaplayout) return false;
+
+        for (size_t n = 0; n < newPrims.GetSize(); n++)
         {
-	  for (size_t n = 0; n < newPrims.GetSize(); n++)
-	  {
-	    layoutedPrimitives.Push (LayoutedPrimitives (newPrims[n],
-	      lightmaplayout, n));
-  
-	    AddSubmeshRemap (i, layoutedPrimitives.GetSize () - 1);
-	  }
-	}
+          layoutedPrimitives.Push (LayoutedPrimitives (newPrims[n],
+            lightmaplayout, n));
+
+          AddSubmeshRemap (i, layoutedPrimitives.GetSize () - 1);
+        }
       }
       unlayoutedPrimitives.DeleteAll();
     }
@@ -165,8 +164,8 @@ namespace lighter
   //-------------------------------------------------------------------------
 
   Object::Object (ObjectFactory* fact)
-    : lightPerVertex (fact->lightPerVertex), sector (0), litColors (0), 
-      litColorsPD (0), factory (fact)
+    : lightPerVertex (fact->lightPerVertex), litColors (0), litColorsPD (0), 
+      factory (fact)
   {
   }
   
@@ -179,9 +178,6 @@ namespace lighter
   bool Object::Initialize (Sector* sector)
   {
     if (!factory || !meshWrapper) return false;
-
-    this->sector = sector;
-
     const csReversibleTransform transform = meshWrapper->GetMovable ()->
       GetFullTransform ();
 
@@ -288,7 +284,6 @@ namespace lighter
   void Object::ParseMesh (iMeshWrapper *wrapper)
   {
     this->meshWrapper = wrapper;
-    this->meshName = wrapper->QueryObject ()->GetName ();
 
     const csFlags& meshFlags = wrapper->GetFlags ();
     if (meshFlags.Check (CS_ENTITY_NOSHADOWS))
@@ -296,9 +291,7 @@ namespace lighter
     if (meshFlags.Check (CS_ENTITY_NOLIGHTING))
       objFlags.Set (OBJECT_FLAG_NOLIGHT);
 
-    if (globalLighter->rayDebug.EnableForMesh (meshName))
-      objFlags.Set (OBJECT_FLAG_RAYDEBUG);
-
+    this->meshName = wrapper->QueryObject ()->GetName ();
     csRef<iObjectIterator> objiter = 
       wrapper->QueryObject ()->GetIterator();
     while (objiter->HasNext())
@@ -320,7 +313,7 @@ namespace lighter
     }
   }
 
-  void Object::SaveMesh (iDocumentNode* node)
+  void Object::SaveMesh (Sector* /*sector*/, iDocumentNode* node)
   {
     // Save out the object to the node
     csRef<iSaverPlugin> saver = 
@@ -385,7 +378,9 @@ namespace lighter
       PrimitiveArray::Iterator primIt = allPrimitives[i].GetIterator ();
       while (primIt.HasNext ())
       {
-        const Primitive &prim = primIt.Next ();        
+        const Primitive &prim = primIt.Next ();
+        totalArea = (prim.GetuFormVector ()%prim.GetvFormVector ()).Norm ();
+        float area2pixel = 1.0f / totalArea;
 
         int minu,maxu,minv,maxv;
         prim.ComputeMinMaxUV (minu,maxu,minv,maxv);
@@ -396,21 +391,11 @@ namespace lighter
         {
           uint vindex = v * mask.GetWidth();
           for (uint u = minu; u <= (uint)maxu; u++, findex++)
-          {            
-            //@@TODO
-            Primitive::ElementType type = prim.GetElementType (findex);
-            if (type == Primitive::ELEMENT_EMPTY)
-            {
-              continue;
-            }
-            else if (type == Primitive::ELEMENT_BORDER)
-            {
-              maskData[vindex+u] += prim.ComputeElementFraction (findex);
-            }
-            else
-            {
-              maskData[vindex+u] += 1.0f;
-            }
+          {
+            const float elemArea = prim.GetElementAreas ().GetElementArea (findex);
+            if (elemArea == 0) continue; // No area, skip
+
+            maskData[vindex+u] += elemArea * area2pixel; //Accumulate
           }
         } 
       }
@@ -457,8 +442,8 @@ namespace lighter
           {
             const csVector2 &lmUV = vertexData.lightmapUVs[index];
             csVector2& outUV = lmcoords[index];
-            outUV.x = (lmUV.x) * factorX;
-            outUV.y = (lmUV.y) * factorY;
+            outUV.x = (lmUV.x + 0.5f) * factorX;
+            outUV.y = (lmUV.y + 0.5f) * factorY;
             indicesRemapped.AddNoTest (index);
           }
         }

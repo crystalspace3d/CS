@@ -40,9 +40,7 @@ namespace lighter
   public:
     Object_Genmesh (ObjectFactory_Genmesh* factory);
 
-    virtual bool Initialize (Sector* sector);
-    
-    virtual void SaveMesh (iDocumentNode *node);
+    virtual void SaveMesh (Sector* sector, iDocumentNode *node);
 
     virtual void FreeNotNeededForLighting ();
 
@@ -105,7 +103,6 @@ namespace lighter
 
       IntDArray* FindSubmesh (size_t submeshIndex);
       void CommitSubmeshes (iGeneralFactoryState* genFact);
-      void CommitSubmeshNames ();
     protected:
       ObjectFactory_Genmesh* factory;
 

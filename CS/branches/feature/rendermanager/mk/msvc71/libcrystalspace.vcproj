@@ -495,6 +495,9 @@
 				RelativePath="..\..\libs\csplugincommon\render3d\txtmgr.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\posteffects.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\renderview.cpp">
 			</File>
 			<File
@@ -1231,7 +1234,13 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\posteffects.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\render.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\renderlayers.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\rendertree.h">
@@ -1253,6 +1262,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\svsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\texturecache.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteploader.h">

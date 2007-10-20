@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
-	Name="plgptpdlight"
-	ProjectGUID="{6F0BB944-4943-A0A7-4544-B939AC88BB9A}"
+	Version="7.10"
+	Name="appsimdtest"
+	ProjectGUID="{CCD2D1AE-50DB-9A1C-82E7-B346714F00D5}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,9 +13,10 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release7\build\plgptpdlight\"
-			IntermediateDirectory="..\..\out\release7\build\plgptpdlight\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release71\build\appsimdtest\"
+			IntermediateDirectory="..\..\out\release71\build\appsimdtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -31,10 +32,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release7\build\plgptpdlight\plgptpdlight.pch"
-				AssemblerListingLocation="..\..\out\release7\build\plgptpdlight\"
-				ObjectFile="..\..\out\release7\build\plgptpdlight\"
-				ProgramDataBaseFileName="..\..\out\release7\build\plgptpdlight\ptpdlight.pdb"
+				PrecompiledHeaderFile="..\..\out\release71\build\appsimdtest\appsimdtest.pch"
+				AssemblerListingLocation="..\..\out\release71\build\appsimdtest\"
+				ObjectFile="..\..\out\release71\build\appsimdtest\"
+				ProgramDataBaseFileName="..\..\out\release71\build\appsimdtest\simdtest.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -50,15 +51,14 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\ptpdlight.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release7\build\plgptpdlight\plgptpdlight.lib"
+				OutputFile="..\..\simdtest.exe"
+				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\release7\build\plgptpdlight\ptpdlight.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\appsimdtest\simdtest.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -69,7 +69,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release7\build\plgptpdlight\plgptpdlight.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\appsimdtest\appsimdtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -79,8 +79,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins\proctex\ptpdlight;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\simdtest;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -89,9 +89,10 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug7\build\plgptpdlight\"
-			IntermediateDirectory="..\..\out\debug7\build\plgptpdlight\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\appsimdtest\"
+			IntermediateDirectory="..\..\out\debug71\build\appsimdtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -106,10 +107,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\plgptpdlight\plgptpdlight.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\plgptpdlight\"
-				ObjectFile="..\..\out\debug7\build\plgptpdlight\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgptpdlight\ptpdlight.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\appsimdtest\appsimdtest.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\appsimdtest\"
+				ObjectFile="..\..\out\debug71\build\appsimdtest\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appsimdtest\simdtest.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -123,15 +124,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\ptpdlight.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgptpdlight\plgptpdlight.lib"
+				OutputFile="..\..\simdtest.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgptpdlight\ptpdlight.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appsimdtest\simdtest.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -142,7 +142,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\plgptpdlight\plgptpdlight.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\appsimdtest\appsimdtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -152,8 +152,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins\proctex\ptpdlight;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\simdtest;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -162,9 +162,10 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker|Win32"
-			OutputDirectory="..\..\out\debug7\build\plgptpdlight\"
-			IntermediateDirectory="..\..\out\debug7\build\plgptpdlight\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\appsimdtest\"
+			IntermediateDirectory="..\..\out\debug71\build\appsimdtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -179,10 +180,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\plgptpdlight\plgptpdlight.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\plgptpdlight\"
-				ObjectFile="..\..\out\debug7\build\plgptpdlight\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgptpdlight\ptpdlight.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\appsimdtest\appsimdtest.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\appsimdtest\"
+				ObjectFile="..\..\out\debug71\build\appsimdtest\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appsimdtest\simdtest.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -196,15 +197,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\ptpdlight.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgptpdlight\plgptpdlight.lib"
+				OutputFile="..\..\simdtest.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgptpdlight\ptpdlight.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appsimdtest\simdtest.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -215,7 +215,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\plgptpdlight\plgptpdlight.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\appsimdtest\appsimdtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -225,8 +225,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins\proctex\ptpdlight;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\simdtest;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -235,9 +235,10 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker|Win32"
-			OutputDirectory="..\..\out\debug7\build\plgptpdlight\"
-			IntermediateDirectory="..\..\out\debug7\build\plgptpdlight\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug71\build\appsimdtest\"
+			IntermediateDirectory="..\..\out\debug71\build\appsimdtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -252,10 +253,10 @@
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\plgptpdlight\plgptpdlight.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\plgptpdlight\"
-				ObjectFile="..\..\out\debug7\build\plgptpdlight\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgptpdlight\ptpdlight.pdb"
+				PrecompiledHeaderFile="..\..\out\debug71\build\appsimdtest\appsimdtest.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\appsimdtest\"
+				ObjectFile="..\..\out\debug71\build\appsimdtest\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appsimdtest\simdtest.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -269,15 +270,14 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\ptpdlight.dll"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgptpdlight\plgptpdlight.lib"
+				OutputFile="..\..\simdtest.exe"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib"
 				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgptpdlight\ptpdlight.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appsimdtest\simdtest.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -288,7 +288,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\plgptpdlight\plgptpdlight.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\appsimdtest\appsimdtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				/>
@@ -298,8 +298,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins\proctex\ptpdlight;..\..;..\..\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\simdtest;..\..;..\..\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -312,39 +312,14 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight_generic.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight_loader.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight_mmx.cpp">
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="">
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight_loader.h">
+				RelativePath="..\..\apps\tests\simdtest\simdtest.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgptpdlight.rc">
-			</File>
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight.csplugin">
-			</File>
-			<File
-				RelativePath="..\..\plugins\proctex\ptpdlight\ptpdlight_loader.tok">
+				RelativePath="..\..\mk\msvc\appsimdtest.rc">
 			</File>
 		</Filter>
 	</Files>

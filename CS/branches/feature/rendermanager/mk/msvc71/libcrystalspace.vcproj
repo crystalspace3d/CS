@@ -1690,6 +1690,9 @@
 				RelativePath="..\..\libs\..\include\csutil\priorityqueue.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\processorspecdetection.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\ptrwrap.h">
 			</File>
 			<File

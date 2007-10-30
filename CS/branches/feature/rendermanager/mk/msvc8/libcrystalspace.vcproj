@@ -1247,9 +1247,6 @@
 				RelativePath="..\..\libs\csutil\win32\winsyspath.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\win32\winthread.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\win32\wintools.cpp">
 			</File>
 			<File
@@ -2055,6 +2052,9 @@
 				RelativePath="..\..\libs\..\include\csutil\scopeddelete.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\scopedlock.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\scopedmutexlock.h">
 			</File>
 			<File
@@ -2088,9 +2088,6 @@
 				RelativePath="..\..\libs\..\include\csutil\syspath.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\thread.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
 			</File>
 			<File
@@ -2104,6 +2101,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_sparc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\barrier.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
@@ -2263,9 +2263,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\win32kbd_identstrs.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\win32\winthread.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\xmltinyp.h">

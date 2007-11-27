@@ -26,6 +26,7 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
+				ProgramDataBaseFileName="..\..\out\release7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -33,7 +34,6 @@
 				PrecompiledHeaderFile="..\..\out\release7\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\release7\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\"
-				ProgramDataBaseFileName="..\..\out\release7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -50,7 +50,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7.lib lib3ds.lib cal3d-vc7.lib ode.lib bulletcollision-vc7.lib bulletdynamics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7.lib lib3ds.lib cal3d-vc7.lib ode.lib bulletcollision-vc7.lib bulletdynamics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib alut.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -98,6 +98,7 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
+				ProgramDataBaseFileName="..\..\out\release7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -105,7 +106,6 @@
 				PrecompiledHeaderFile="..\..\out\release7\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\release7\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\"
-				ProgramDataBaseFileName="..\..\out\release7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -122,7 +122,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7.lib lib3ds.lib cal3d-vc7.lib ode.lib bulletcollision-vc7.lib bulletdynamics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7.lib lib3ds.lib cal3d-vc7.lib ode.lib bulletcollision-vc7.lib bulletdynamics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib alut.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -170,6 +170,7 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -177,7 +178,6 @@
 				PrecompiledHeaderFile="..\..\out\debug7\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug7\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -192,7 +192,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib alut.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -240,6 +240,7 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -247,7 +248,6 @@
 				PrecompiledHeaderFile="..\..\out\debug7\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug7\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -262,7 +262,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib alut.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -310,6 +310,7 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -317,7 +318,6 @@
 				PrecompiledHeaderFile="..\..\out\debug7\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug7\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -332,7 +332,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib alut.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -380,6 +380,7 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -387,7 +388,6 @@
 				PrecompiledHeaderFile="..\..\out\debug7\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug7\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -402,7 +402,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib alut.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -450,6 +450,7 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -457,7 +458,6 @@
 				PrecompiledHeaderFile="..\..\out\debug7\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug7\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -472,7 +472,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib alut.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -520,6 +520,7 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -527,7 +528,6 @@
 				PrecompiledHeaderFile="..\..\out\debug7\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug7\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\"
-				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace_staticplugins\crystalspace_staticplugins.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -542,7 +542,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib alut.lib libcaca.lib libcucul.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -4855,6 +4855,53 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysogg_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libsndsysopenal_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysopenal_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysopenal_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysopenal_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysopenal_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysopenal_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysopenal_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysopenal_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libsndsysopenal_staticreg.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -16044,6 +16091,147 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\listener.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_listener.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_listener.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_listener.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_listener.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_listener.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_listener.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_listener.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_listener.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\renderer.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_renderer.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_renderer.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_renderer.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_renderer.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_renderer.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_renderer.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_renderer.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_renderer.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\source.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_source.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_source.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_source.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_source.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_source.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_source.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_source.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_sndsys_renderer_openal_source.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\sndsys\renderer\software\compressor.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -22432,6 +22620,18 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\sndsys\manager\sndmanager.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\listener.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\renderer.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\scopedlock.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\source.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\sndsys\renderer\software\compressor.h">

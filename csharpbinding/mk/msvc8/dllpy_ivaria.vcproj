@@ -27,14 +27,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
+				ProgramDataBaseFileName="..\..\out\release8\build\dllpy_ivaria\py_ivaria.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\release8\build\dllpy_ivaria\dllpy_ivaria.pch"
 				AssemblerListingLocation="..\..\out\release8\build\dllpy_ivaria\"
 				ObjectFile="..\..\out\release8\build\dllpy_ivaria\"
-				ProgramDataBaseFileName="..\..\out\release8\build\dllpy_ivaria\py_ivaria.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -57,7 +57,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -103,14 +103,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
+				ProgramDataBaseFileName="..\..\out\release8\build\dllpy_ivaria\py_ivaria.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\release8\build\dllpy_ivaria\dllpy_ivaria.pch"
 				AssemblerListingLocation="..\..\out\release8\build\dllpy_ivaria\"
 				ObjectFile="..\..\out\release8\build\dllpy_ivaria\"
-				ProgramDataBaseFileName="..\..\out\release8\build\dllpy_ivaria\py_ivaria.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -133,7 +133,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -156,7 +156,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -178,14 +178,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\dllpy_ivaria\dllpy_ivaria.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\dllpy_ivaria\"
 				ObjectFile="..\..\out\debug8\build\dllpy_ivaria\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -206,7 +206,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -229,7 +229,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -251,14 +251,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\dllpy_ivaria\dllpy_ivaria.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\dllpy_ivaria\"
 				ObjectFile="..\..\out\debug8\build\dllpy_ivaria\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -279,7 +279,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -302,7 +302,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -324,14 +324,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\dllpy_ivaria\dllpy_ivaria.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\dllpy_ivaria\"
 				ObjectFile="..\..\out\debug8\build\dllpy_ivaria\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -352,7 +352,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -375,7 +375,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -397,14 +397,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\dllpy_ivaria\dllpy_ivaria.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\dllpy_ivaria\"
 				ObjectFile="..\..\out\debug8\build\dllpy_ivaria\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -425,7 +425,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -448,7 +448,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -470,14 +470,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\dllpy_ivaria\dllpy_ivaria.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\dllpy_ivaria\"
 				ObjectFile="..\..\out\debug8\build\dllpy_ivaria\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -498,7 +498,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -521,7 +521,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -543,14 +543,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
+				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				PrecompiledHeaderFile="..\..\out\debug8\build\dllpy_ivaria\dllpy_ivaria.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\dllpy_ivaria\"
 				ObjectFile="..\..\out\debug8\build\dllpy_ivaria\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\dllpy_ivaria\py_ivaria.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -571,7 +571,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -594,7 +594,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivaria;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>

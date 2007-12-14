@@ -788,6 +788,9 @@
 				RelativePath="..\..\libs\csplugincommon\rendermanager\posteffects.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\renderlayers.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\renderview.cpp">
 			</File>
 			<File
@@ -1890,6 +1893,9 @@
 				RelativePath="..\..\libs\..\include\csutil\fixedsizeallocator.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\fixedsizecache.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\flags.h">
 			</File>
 			<File
@@ -1909,6 +1915,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hash.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\hashcomputer.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hashr.h">
@@ -1936,6 +1945,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\mempool.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\metautils.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\mmap_dummy.h">

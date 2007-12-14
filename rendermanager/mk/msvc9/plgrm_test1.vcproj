@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="dllpy_pycscegui"
-	ProjectGUID="{523884A4-196F-FFA2-6B8E-67764CA81976}"
+	Name="plgrm_test1"
+	ProjectGUID="{5C2468CB-28D1-F0DC-FFB9-4073491D7AA0}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,8 +13,8 @@
 	<Configurations>
   		<Configuration
 			Name="Release (with static libs)|Win32"
-			OutputDirectory="..\..\out\release9\build\dllpy_pycscegui\"
-			IntermediateDirectory="..\..\out\release9\build\dllpy_pycscegui\"
+			OutputDirectory="..\..\out\release9\build\plgrm_test1\"
+			IntermediateDirectory="..\..\out\release9\build\plgrm_test1\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -27,14 +27,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\dllpy_pycscegui\py_pycscegui.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;WIN32"
+				ProgramDataBaseFileName="..\..\out\release9\build\plgrm_test1\rm_test1.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release9\build\dllpy_pycscegui\dllpy_pycscegui.pch"
-				AssemblerListingLocation="..\..\out\release9\build\dllpy_pycscegui\"
-				ObjectFile="..\..\out\release9\build\dllpy_pycscegui\"
+				PrecompiledHeaderFile="..\..\out\release9\build\plgrm_test1\plgrm_test1.pch"
+				AssemblerListingLocation="..\..\out\release9\build\plgrm_test1\"
+				ObjectFile="..\..\out\release9\build\plgrm_test1\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -50,12 +50,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\_pycscegui.pyd"
-				ProgramDatabaseFile="..\..\out\release9\build\dllpy_pycscegui\py_pycscegui.pdb"
+				OutputFile="..\..\rm_test1.dll"
+				ProgramDatabaseFile="..\..\out\release9\build\plgrm_test1\rm_test1.pdb"
+				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9\build\dllpy_pycscegui\dllpy_pycscegui.lib"
+				ImportLibrary="..\..\out\release9\build\plgrm_test1\plgrm_test1.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib CEGUIBase-vc8.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -64,11 +65,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\dllpy_pycscegui\dllpy_pycscegui.tlb"/>
+				TypeLibraryName="..\..\out\release9\build\plgrm_test1\plgrm_test1.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9\bin\&#x0D;&#x0A;"
@@ -79,8 +80,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pycscegui;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -89,8 +90,8 @@
 		</Configuration>
   		<Configuration
 			Name="Release (with DLLs)|Win32"
-			OutputDirectory="..\..\out\release9\build\dllpy_pycscegui\"
-			IntermediateDirectory="..\..\out\release9\build\dllpy_pycscegui\"
+			OutputDirectory="..\..\out\release9\build\plgrm_test1\"
+			IntermediateDirectory="..\..\out\release9\build\plgrm_test1\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -103,14 +104,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\dllpy_pycscegui\py_pycscegui.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9\build\plgrm_test1\rm_test1.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release9\build\dllpy_pycscegui\dllpy_pycscegui.pch"
-				AssemblerListingLocation="..\..\out\release9\build\dllpy_pycscegui\"
-				ObjectFile="..\..\out\release9\build\dllpy_pycscegui\"
+				PrecompiledHeaderFile="..\..\out\release9\build\plgrm_test1\plgrm_test1.pch"
+				AssemblerListingLocation="..\..\out\release9\build\plgrm_test1\"
+				ObjectFile="..\..\out\release9\build\plgrm_test1\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -126,12 +127,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\_pycscegui.pyd"
-				ProgramDatabaseFile="..\..\out\release9\build\dllpy_pycscegui\py_pycscegui.pdb"
+				OutputFile="..\..\rm_test1.dll"
+				ProgramDatabaseFile="..\..\out\release9\build\plgrm_test1\rm_test1.pdb"
+				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9\build\dllpy_pycscegui\dllpy_pycscegui.lib"
+				ImportLibrary="..\..\out\release9\build\plgrm_test1\plgrm_test1.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib CEGUIBase-vc8.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -140,11 +142,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\dllpy_pycscegui\dllpy_pycscegui.tlb"/>
+				TypeLibraryName="..\..\out\release9\build\plgrm_test1\plgrm_test1.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9\bin\&#x0D;&#x0A;"
@@ -155,8 +157,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pycscegui;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -165,8 +167,8 @@
 		</Configuration>
     		<Configuration
 			Name="Debug (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
-			IntermediateDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
+			OutputDirectory="..\..\out\debug9\build\plgrm_test1\"
+			IntermediateDirectory="..\..\out\debug9\build\plgrm_test1\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -178,14 +180,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\dllpy_pycscegui\"
-				ObjectFile="..\..\out\debug9\build\dllpy_pycscegui\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgrm_test1\plgrm_test1.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgrm_test1\"
+				ObjectFile="..\..\out\debug9\build\plgrm_test1\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -199,12 +201,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\_pycscegui.pyd"
-				ProgramDatabaseFile="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
+				OutputFile="..\..\rm_test1.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.lib"
+				ImportLibrary="..\..\out\debug9\build\plgrm_test1\plgrm_test1.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib CEGUIBase-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -213,11 +216,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgrm_test1\plgrm_test1.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -228,8 +231,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pycscegui;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -238,8 +241,8 @@
 		</Configuration>
   		<Configuration
 			Name="Debug (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
-			IntermediateDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
+			OutputDirectory="..\..\out\debug9\build\plgrm_test1\"
+			IntermediateDirectory="..\..\out\debug9\build\plgrm_test1\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -251,14 +254,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\dllpy_pycscegui\"
-				ObjectFile="..\..\out\debug9\build\dllpy_pycscegui\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgrm_test1\plgrm_test1.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgrm_test1\"
+				ObjectFile="..\..\out\debug9\build\plgrm_test1\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -272,12 +275,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\_pycscegui.pyd"
-				ProgramDatabaseFile="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
+				OutputFile="..\..\rm_test1.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.lib"
+				ImportLibrary="..\..\out\debug9\build\plgrm_test1\plgrm_test1.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib CEGUIBase-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -286,11 +290,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgrm_test1\plgrm_test1.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -301,8 +305,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pycscegui;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -311,8 +315,8 @@
 		</Configuration>
     		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
-			IntermediateDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
+			OutputDirectory="..\..\out\debug9\build\plgrm_test1\"
+			IntermediateDirectory="..\..\out\debug9\build\plgrm_test1\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -324,14 +328,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\dllpy_pycscegui\"
-				ObjectFile="..\..\out\debug9\build\dllpy_pycscegui\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgrm_test1\plgrm_test1.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgrm_test1\"
+				ObjectFile="..\..\out\debug9\build\plgrm_test1\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -345,12 +349,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\_pycscegui.pyd"
-				ProgramDatabaseFile="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
+				OutputFile="..\..\rm_test1.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.lib"
+				ImportLibrary="..\..\out\debug9\build\plgrm_test1\plgrm_test1.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib CEGUIBase-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -359,11 +364,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgrm_test1\plgrm_test1.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -374,8 +379,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pycscegui;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -384,8 +389,8 @@
 		</Configuration>
   		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
-			IntermediateDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
+			OutputDirectory="..\..\out\debug9\build\plgrm_test1\"
+			IntermediateDirectory="..\..\out\debug9\build\plgrm_test1\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -397,14 +402,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\dllpy_pycscegui\"
-				ObjectFile="..\..\out\debug9\build\dllpy_pycscegui\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgrm_test1\plgrm_test1.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgrm_test1\"
+				ObjectFile="..\..\out\debug9\build\plgrm_test1\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -418,12 +423,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\_pycscegui.pyd"
-				ProgramDatabaseFile="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
+				OutputFile="..\..\rm_test1.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.lib"
+				ImportLibrary="..\..\out\debug9\build\plgrm_test1\plgrm_test1.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib CEGUIBase-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -432,11 +438,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgrm_test1\plgrm_test1.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -447,8 +453,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pycscegui;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -457,8 +463,8 @@
 		</Configuration>
     		<Configuration
 			Name="RefTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
-			IntermediateDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
+			OutputDirectory="..\..\out\debug9\build\plgrm_test1\"
+			IntermediateDirectory="..\..\out\debug9\build\plgrm_test1\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -470,14 +476,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\dllpy_pycscegui\"
-				ObjectFile="..\..\out\debug9\build\dllpy_pycscegui\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgrm_test1\plgrm_test1.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgrm_test1\"
+				ObjectFile="..\..\out\debug9\build\plgrm_test1\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -491,12 +497,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\_pycscegui.pyd"
-				ProgramDatabaseFile="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
+				OutputFile="..\..\rm_test1.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.lib"
+				ImportLibrary="..\..\out\debug9\build\plgrm_test1\plgrm_test1.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib CEGUIBase-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -505,11 +512,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgrm_test1\plgrm_test1.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -520,8 +527,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pycscegui;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -530,8 +537,8 @@
 		</Configuration>
   		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
-			IntermediateDirectory="..\..\out\debug9\build\dllpy_pycscegui\"
+			OutputDirectory="..\..\out\debug9\build\plgrm_test1\"
+			IntermediateDirectory="..\..\out\debug9\build\plgrm_test1\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -543,14 +550,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\dllpy_pycscegui\"
-				ObjectFile="..\..\out\debug9\build\dllpy_pycscegui\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgrm_test1\plgrm_test1.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgrm_test1\"
+				ObjectFile="..\..\out\debug9\build\plgrm_test1\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -564,12 +571,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\_pycscegui.pyd"
-				ProgramDatabaseFile="..\..\out\debug9\build\dllpy_pycscegui\py_pycscegui.pdb"
+				OutputFile="..\..\rm_test1.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgrm_test1\rm_test1.pdb"
+				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.lib"
+				ImportLibrary="..\..\out\debug9\build\plgrm_test1\plgrm_test1.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib CEGUIBase-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -578,11 +586,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\dllpy_pycscegui\dllpy_pycscegui.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgrm_test1\plgrm_test1.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -593,8 +601,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pycscegui;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -607,17 +615,24 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\cscript\pycscegui\ceguimod.cpp">
+				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.cpp">
 			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="">
 			<File
-				RelativePath="..\..\plugins\cscript\pycscegui\cs_pycscegui.cpp">
+				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\dllpy_pycscegui.rc">
+				RelativePath="..\..\mk\msvc\plgrm_test1.rc">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.csplugin">
 			</File>
 		</Filter>
 	</Files>

@@ -12,6 +12,8 @@
 #pragma comment(linker, "/section:.CSmeta,er")
 #pragma comment(linker, "/merge:.CSmetai=.CSmeta")
 #endif
+struct _static_use { _static_use (); };
+_static_use::_static_use () {}
 SCF_USE_STATIC_PLUGIN(bezier)
 SCF_USE_STATIC_PLUGIN(bezierldr)
 SCF_USE_STATIC_PLUGIN(bugplug)
@@ -37,6 +39,7 @@ SCF_USE_STATIC_PLUGIN(fontplex)
 SCF_USE_STATIC_PLUGIN(frustvis)
 SCF_USE_STATIC_PLUGIN(genmesh)
 SCF_USE_STATIC_PLUGIN(gmeshanim)
+SCF_USE_STATIC_PLUGIN(gmeshanimpdl)
 SCF_USE_STATIC_PLUGIN(gmeshldr)
 SCF_USE_STATIC_PLUGIN(gmeshskelanim2)
 SCF_USE_STATIC_PLUGIN(skeleton)

@@ -1518,10 +1518,13 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\render3d\txtmgr.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\context.h">
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\dependenttarget.h">
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\operations.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\portalsetup.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\posteffects.h">
@@ -1554,7 +1557,13 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\svsetup.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\svtraverse.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\texturecache.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\viscull.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteploader.h">

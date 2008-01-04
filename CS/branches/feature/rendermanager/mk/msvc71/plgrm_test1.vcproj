@@ -622,6 +622,54 @@
 			Name="Header Files"
 			Filter="">
 			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\operations.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\render.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\renderview.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.h">
 			</File>
 		</Filter>

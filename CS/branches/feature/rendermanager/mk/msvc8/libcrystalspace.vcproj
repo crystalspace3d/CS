@@ -677,6 +677,9 @@
 				RelativePath="..\..\libs\csgeom\triangulate.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgeom\triangulate3d.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgeom\trimesh.cpp">
 			</File>
 			<File
@@ -1106,6 +1109,12 @@
 				RelativePath="..\..\libs\csutil\prfxcfg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\processor\processorspecdetection_gcc_ppc.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\processor\processorspecdetection_nonwin_gcc_x86.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\ptmalloc\ptmalloc3.c">
 			</File>
 			<File
@@ -1140,6 +1149,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\schedule.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\simplejobqueue.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\snprintf.cpp">
@@ -1263,6 +1275,9 @@
 			Name="Header Files"
 			Filter="">
 			<File
+				RelativePath="..\..\libs\..\include\csgeom\aabbtree.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgeom\box.h">
 			</File>
 			<File
@@ -1369,6 +1384,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\triangulate.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\triangulate3d.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\trimesh.h">
@@ -2010,6 +2028,15 @@
 				RelativePath="..\..\libs\..\include\csutil\priorityqueue.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_gcc_ppc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_nonwin_gcc_x86.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_win.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\processorspecdetection.h">
 			</File>
 			<File
@@ -2089,6 +2116,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\set.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\simplejobqueue.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\snprintf.h">

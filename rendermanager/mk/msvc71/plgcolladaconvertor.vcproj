@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="appunittest"
-	ProjectGUID="{80CE18F1-310C-298C-A92E-99AA9FB6D733}"
+	Name="plgcolladaconvertor"
+	ProjectGUID="{83E3B556-6553-6F8E-0BF9-8476F43CC9CB}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,10 +13,9 @@
 	<Configurations>
   		<Configuration
 			Name="Release (with static libs)|Win32"
-			OutputDirectory="..\..\out\release71\build\appunittest\"
-			IntermediateDirectory="..\..\out\release71\build\appunittest\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\release71\build\plgcolladaconvertor\"
+			IntermediateDirectory="..\..\out\release71\build\plgcolladaconvertor\"
+			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -28,14 +27,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\appunittest\unittest.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;WIN32"
+				ProgramDataBaseFileName="..\..\out\release71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\appunittest\appunittest.pch"
-				AssemblerListingLocation="..\..\out\release71\build\appunittest\"
-				ObjectFile="..\..\out\release71\build\appunittest\"
+				PrecompiledHeaderFile="..\..\out\release71\build\plgcolladaconvertor\plgcolladaconvertor.pch"
+				AssemblerListingLocation="..\..\out\release71\build\plgcolladaconvertor\"
+				ObjectFile="..\..\out\release71\build\plgcolladaconvertor\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -51,11 +50,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\unittest.exe"
-				ProgramDatabaseFile="..\..\out\release71\build\appunittest\unittest.pdb"
-				SubSystem="1"
+				OutputFile="..\..\colladaconvertor.dll"
+				ProgramDatabaseFile="..\..\out\release71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				IgnoreImportLibrary="TRUE"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\release71\build\plgcolladaconvertor\plgcolladaconvertor.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -64,11 +65,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\appunittest\appunittest.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\plgcolladaconvertor\plgcolladaconvertor.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
@@ -79,8 +80,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\unittest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\colladaconvertor;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -89,10 +90,9 @@
 		</Configuration>
   		<Configuration
 			Name="Release (with DLLs)|Win32"
-			OutputDirectory="..\..\out\release71\build\appunittest\"
-			IntermediateDirectory="..\..\out\release71\build\appunittest\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\release71\build\plgcolladaconvertor\"
+			IntermediateDirectory="..\..\out\release71\build\plgcolladaconvertor\"
+			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -104,14 +104,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\appunittest\unittest.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\appunittest\appunittest.pch"
-				AssemblerListingLocation="..\..\out\release71\build\appunittest\"
-				ObjectFile="..\..\out\release71\build\appunittest\"
+				PrecompiledHeaderFile="..\..\out\release71\build\plgcolladaconvertor\plgcolladaconvertor.pch"
+				AssemblerListingLocation="..\..\out\release71\build\plgcolladaconvertor\"
+				ObjectFile="..\..\out\release71\build\plgcolladaconvertor\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -127,11 +127,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\unittest.exe"
-				ProgramDatabaseFile="..\..\out\release71\build\appunittest\unittest.pdb"
-				SubSystem="1"
+				OutputFile="..\..\colladaconvertor.dll"
+				ProgramDatabaseFile="..\..\out\release71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				IgnoreImportLibrary="TRUE"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\release71\build\plgcolladaconvertor\plgcolladaconvertor.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -140,11 +142,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\appunittest\appunittest.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\plgcolladaconvertor\plgcolladaconvertor.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
@@ -155,8 +157,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\unittest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\colladaconvertor;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -165,10 +167,9 @@
 		</Configuration>
     		<Configuration
 			Name="Debug (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\appunittest\"
-			IntermediateDirectory="..\..\out\debug71\build\appunittest\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			IntermediateDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -179,14 +180,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appunittest\unittest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appunittest\appunittest.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appunittest\"
-				ObjectFile="..\..\out\debug71\build\appunittest\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgcolladaconvertor\"
+				ObjectFile="..\..\out\debug71\build\plgcolladaconvertor\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -200,11 +201,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\unittest.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appunittest\unittest.pdb"
-				SubSystem="1"
+				OutputFile="..\..\colladaconvertor.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				IgnoreImportLibrary="TRUE"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -213,11 +216,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appunittest\appunittest.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -228,8 +231,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\unittest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\colladaconvertor;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -238,10 +241,9 @@
 		</Configuration>
   		<Configuration
 			Name="Debug (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\appunittest\"
-			IntermediateDirectory="..\..\out\debug71\build\appunittest\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			IntermediateDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -252,14 +254,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appunittest\unittest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appunittest\appunittest.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appunittest\"
-				ObjectFile="..\..\out\debug71\build\appunittest\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgcolladaconvertor\"
+				ObjectFile="..\..\out\debug71\build\plgcolladaconvertor\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -273,11 +275,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\unittest.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appunittest\unittest.pdb"
-				SubSystem="1"
+				OutputFile="..\..\colladaconvertor.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				IgnoreImportLibrary="TRUE"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -286,11 +290,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appunittest\appunittest.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -301,8 +305,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\unittest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\colladaconvertor;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -311,10 +315,9 @@
 		</Configuration>
     		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\appunittest\"
-			IntermediateDirectory="..\..\out\debug71\build\appunittest\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			IntermediateDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -325,14 +328,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appunittest\unittest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appunittest\appunittest.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appunittest\"
-				ObjectFile="..\..\out\debug71\build\appunittest\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgcolladaconvertor\"
+				ObjectFile="..\..\out\debug71\build\plgcolladaconvertor\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -346,11 +349,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\unittest.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appunittest\unittest.pdb"
-				SubSystem="1"
+				OutputFile="..\..\colladaconvertor.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				IgnoreImportLibrary="TRUE"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -359,11 +364,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appunittest\appunittest.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -374,8 +379,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\unittest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\colladaconvertor;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -384,10 +389,9 @@
 		</Configuration>
   		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\appunittest\"
-			IntermediateDirectory="..\..\out\debug71\build\appunittest\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			IntermediateDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -398,14 +402,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appunittest\unittest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appunittest\appunittest.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appunittest\"
-				ObjectFile="..\..\out\debug71\build\appunittest\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgcolladaconvertor\"
+				ObjectFile="..\..\out\debug71\build\plgcolladaconvertor\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -419,11 +423,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\unittest.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appunittest\unittest.pdb"
-				SubSystem="1"
+				OutputFile="..\..\colladaconvertor.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				IgnoreImportLibrary="TRUE"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -432,11 +438,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appunittest\appunittest.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -447,8 +453,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\unittest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\colladaconvertor;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -457,10 +463,9 @@
 		</Configuration>
     		<Configuration
 			Name="RefTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\appunittest\"
-			IntermediateDirectory="..\..\out\debug71\build\appunittest\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			IntermediateDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -471,14 +476,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appunittest\unittest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appunittest\appunittest.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appunittest\"
-				ObjectFile="..\..\out\debug71\build\appunittest\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgcolladaconvertor\"
+				ObjectFile="..\..\out\debug71\build\plgcolladaconvertor\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -492,11 +497,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\unittest.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appunittest\unittest.pdb"
-				SubSystem="1"
+				OutputFile="..\..\colladaconvertor.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				IgnoreImportLibrary="TRUE"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -505,11 +512,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appunittest\appunittest.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -520,8 +527,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\unittest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\colladaconvertor;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -530,10 +537,9 @@
 		</Configuration>
   		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\appunittest\"
-			IntermediateDirectory="..\..\out\debug71\build\appunittest\"
-			ConfigurationType="1"
-			CharacterSet="2"
+			OutputDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			IntermediateDirectory="..\..\out\debug71\build\plgcolladaconvertor\"
+			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -544,14 +550,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appunittest\unittest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appunittest\appunittest.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appunittest\"
-				ObjectFile="..\..\out\debug71\build\appunittest\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgcolladaconvertor\"
+				ObjectFile="..\..\out\debug71\build\plgcolladaconvertor\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -565,11 +571,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\unittest.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appunittest\unittest.pdb"
-				SubSystem="1"
+				OutputFile="..\..\colladaconvertor.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgcolladaconvertor\colladaconvertor.pdb"
+				IgnoreImportLibrary="TRUE"
+				DelayLoadDLLs=""
+				ImportLibrary="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -578,11 +586,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appunittest\appunittest.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgcolladaconvertor\plgcolladaconvertor.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -593,8 +601,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\unittest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\utilities\colladaconvertor;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -607,14 +615,30 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\apps\tests\unittest\unittest.cpp">
+				RelativePath="..\..\plugins\utilities\colladaconvertor\csColladaClasses.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\utilities\colladaconvertor\csColladaConvertor.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="">
+			<File
+				RelativePath="..\..\plugins\utilities\colladaconvertor\csColladaClasses.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\utilities\colladaconvertor\csColladaConvertor.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\appunittest.rc">
+				RelativePath="..\..\mk\msvc\plgcolladaconvertor.rc">
+			</File>
+			<File
+				RelativePath="..\..\plugins\utilities\colladaconvertor\colladaconvertor.csplugin">
 			</File>
 		</Filter>
 	</Files>

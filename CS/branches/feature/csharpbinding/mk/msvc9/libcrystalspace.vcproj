@@ -1097,6 +1097,9 @@
 				RelativePath="..\..\libs\csutil\prfxcfg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\processor\processorspecdetection_gcc_ppc.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\processor\processorspecdetection_nonwin_gcc_x86.cpp">
 			</File>
 			<File
@@ -1130,10 +1133,16 @@
 				RelativePath="..\..\libs\csutil\scfimp.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\scfimplhelper.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\scfstr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\schedule.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\simplejobqueue.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\snprintf.cpp">
@@ -1857,6 +1866,9 @@
 				RelativePath="..\..\libs\..\include\csutil\fpu80x86.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\genericresourcecache.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\getopt.h">
 			</File>
 			<File
@@ -2029,6 +2041,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\set.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\simplejobqueue.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\snprintf.h">

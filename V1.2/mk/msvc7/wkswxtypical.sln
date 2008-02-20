@@ -96,8 +96,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grplibs_wxtypical", "grplib
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpmeshes_wxtypical", "grpmeshes_wxtypical.vcproj", "{51EB4748-0550-BA41-05B3-AE945DC67674}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpmeshimpexp_wxtypical", "grpmeshimpexp_wxtypical.vcproj", "{FC96558D-6D67-593F-FC2D-06C0BD6453FA}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpopenglcanvas_wxtypical", "grpopenglcanvas_wxtypical.vcproj", "{7815FAC7-E15E-AA78-4A2C-6F7E39591874}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpopenglrenderer_wxtypical", "grpopenglrenderer_wxtypical.vcproj", "{89189D60-F39C-C231-FEDD-D1D367AC9667}"
@@ -1428,14 +1426,6 @@ Global
 		{51EB4748-0550-BA41-05B3-AE945DC67674}.MemoryTracker.Build.0 = MemoryTracker|Win32
 		{51EB4748-0550-BA41-05B3-AE945DC67674}.RefTracker.ActiveCfg = RefTracker|Win32
 		{51EB4748-0550-BA41-05B3-AE945DC67674}.RefTracker.Build.0 = RefTracker|Win32
-		{FC96558D-6D67-593F-FC2D-06C0BD6453FA}.Release.ActiveCfg = Release|Win32
-		{FC96558D-6D67-593F-FC2D-06C0BD6453FA}.Release.Build.0 = Release|Win32
-		{FC96558D-6D67-593F-FC2D-06C0BD6453FA}.Debug.ActiveCfg = Debug|Win32
-		{FC96558D-6D67-593F-FC2D-06C0BD6453FA}.Debug.Build.0 = Debug|Win32
-		{FC96558D-6D67-593F-FC2D-06C0BD6453FA}.MemoryTracker.ActiveCfg = MemoryTracker|Win32
-		{FC96558D-6D67-593F-FC2D-06C0BD6453FA}.MemoryTracker.Build.0 = MemoryTracker|Win32
-		{FC96558D-6D67-593F-FC2D-06C0BD6453FA}.RefTracker.ActiveCfg = RefTracker|Win32
-		{FC96558D-6D67-593F-FC2D-06C0BD6453FA}.RefTracker.Build.0 = RefTracker|Win32
 		{7815FAC7-E15E-AA78-4A2C-6F7E39591874}.Release.ActiveCfg = Release|Win32
 		{7815FAC7-E15E-AA78-4A2C-6F7E39591874}.Release.Build.0 = Release|Win32
 		{7815FAC7-E15E-AA78-4A2C-6F7E39591874}.Debug.ActiveCfg = Debug|Win32

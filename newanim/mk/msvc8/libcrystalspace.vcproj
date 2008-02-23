@@ -1281,6 +1281,9 @@
 				RelativePath="..\..\libs\..\include\csgeom\csrectrg.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgeom\dualquaternion.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgeom\fixed.h">
 			</File>
 			<File

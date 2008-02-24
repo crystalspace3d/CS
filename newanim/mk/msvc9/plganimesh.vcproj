@@ -612,6 +612,20 @@
   	</Configurations>
 	<Files>
 		<Filter
+			Name="Source Files"
+			Filter="">
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\object\animesh.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="">
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\object\animesh.h">
+			</File>
+		</Filter>
+		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File

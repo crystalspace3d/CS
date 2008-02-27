@@ -615,6 +615,12 @@
 			Name="Source Files"
 			Filter="">
 			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\animation.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\nodes.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\skeleton2\skeleton2.cpp">
 			</File>
 		</Filter>
@@ -622,7 +628,16 @@
 			Name="Header Files"
 			Filter="">
 			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\animation.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\nodes.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\skeleton2\skeleton2.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\utilities.h">
 			</File>
 		</Filter>
 		<Filter

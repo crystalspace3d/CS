@@ -23,63 +23,63 @@ static char const metainfo_animeshldr[] =
 "    <classes>"
 "      <class>"
 "        <name>crystalspace.mesh.loader.factory.animesh</name>"
-"        <implementation>csProtoFactoryLoader</implementation>"
+"        <implementation>AnimeshFactoryLoader</implementation>"
 "        <description>Crystal Space Animated Mesh Factory Loader</description>"
 "      </class>"
 "      <class>"
 "        <name>crystalspace.mesh.loader.animesh</name>"
-"        <implementation>csProtoMeshLoader</implementation>"
+"        <implementation>AnimeshObjectLoader</implementation>"
 "        <description>Crystal Space Animated Mesh Mesh Loader</description>"
 "      </class>"
 "      <class>"
 "        <name>crystalspace.mesh.saver.factory.animesh</name>"
-"        <implementation>csProtoFactorySaver</implementation>"
+"        <implementation>AnimeshFactorySaver</implementation>"
 "        <description>Crystal Space Animated Mesh Factory Saver</description>"
 "      </class>"
 "      <class>"
 "        <name>crystalspace.mesh.saver.animesh</name>"
-"        <implementation>csProtoMeshSaver</implementation>"
+"        <implementation>AnimeshObjectSaver</implementation>"
 "        <description>Crystal Space Animated Mesh Mesh Saver</description>"
 "      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
 ;
-  #ifndef csProtoFactoryLoader_FACTORY_REGISTER_DEFINED 
-  #define csProtoFactoryLoader_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csProtoFactoryLoader) 
+  #ifndef AnimeshFactoryLoader_FACTORY_REGISTER_DEFINED 
+  #define AnimeshFactoryLoader_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(AnimeshFactoryLoader) 
   #endif
-  #ifndef csProtoMeshLoader_FACTORY_REGISTER_DEFINED 
-  #define csProtoMeshLoader_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csProtoMeshLoader) 
+  #ifndef AnimeshObjectLoader_FACTORY_REGISTER_DEFINED 
+  #define AnimeshObjectLoader_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(AnimeshObjectLoader) 
   #endif
-  #ifndef csProtoFactorySaver_FACTORY_REGISTER_DEFINED 
-  #define csProtoFactorySaver_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csProtoFactorySaver) 
+  #ifndef AnimeshFactorySaver_FACTORY_REGISTER_DEFINED 
+  #define AnimeshFactorySaver_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(AnimeshFactorySaver) 
   #endif
-  #ifndef csProtoMeshSaver_FACTORY_REGISTER_DEFINED 
-  #define csProtoMeshSaver_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csProtoMeshSaver) 
+  #ifndef AnimeshObjectSaver_FACTORY_REGISTER_DEFINED 
+  #define AnimeshObjectSaver_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(AnimeshObjectSaver) 
   #endif
 
 class animeshldr
 {
 SCF_REGISTER_STATIC_LIBRARY(animeshldr,metainfo_animeshldr)
-  #ifndef csProtoFactoryLoader_FACTORY_REGISTERED 
-  #define csProtoFactoryLoader_FACTORY_REGISTERED 
-    csProtoFactoryLoader_StaticInit csProtoFactoryLoader_static_init__; 
+  #ifndef AnimeshFactoryLoader_FACTORY_REGISTERED 
+  #define AnimeshFactoryLoader_FACTORY_REGISTERED 
+    AnimeshFactoryLoader_StaticInit AnimeshFactoryLoader_static_init__; 
   #endif
-  #ifndef csProtoMeshLoader_FACTORY_REGISTERED 
-  #define csProtoMeshLoader_FACTORY_REGISTERED 
-    csProtoMeshLoader_StaticInit csProtoMeshLoader_static_init__; 
+  #ifndef AnimeshObjectLoader_FACTORY_REGISTERED 
+  #define AnimeshObjectLoader_FACTORY_REGISTERED 
+    AnimeshObjectLoader_StaticInit AnimeshObjectLoader_static_init__; 
   #endif
-  #ifndef csProtoFactorySaver_FACTORY_REGISTERED 
-  #define csProtoFactorySaver_FACTORY_REGISTERED 
-    csProtoFactorySaver_StaticInit csProtoFactorySaver_static_init__; 
+  #ifndef AnimeshFactorySaver_FACTORY_REGISTERED 
+  #define AnimeshFactorySaver_FACTORY_REGISTERED 
+    AnimeshFactorySaver_StaticInit AnimeshFactorySaver_static_init__; 
   #endif
-  #ifndef csProtoMeshSaver_FACTORY_REGISTERED 
-  #define csProtoMeshSaver_FACTORY_REGISTERED 
-    csProtoMeshSaver_StaticInit csProtoMeshSaver_static_init__; 
+  #ifndef AnimeshObjectSaver_FACTORY_REGISTERED 
+  #define AnimeshObjectSaver_FACTORY_REGISTERED 
+    AnimeshObjectSaver_StaticInit AnimeshObjectSaver_static_init__; 
   #endif
 public:
  animeshldr();

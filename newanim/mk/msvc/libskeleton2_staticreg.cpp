@@ -23,24 +23,24 @@ static char const metainfo_skeleton2[] =
 "    <classes>"
 "      <class>"
 "        <name>crystalspace.skeletalanimation</name>"
-"        <implementation>csSkeletonSystem</implementation>"
+"        <implementation>SkeletonSystem</implementation>"
 "        <description>Crystal Space Skeletal animation plugin</description>"
 "      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
 ;
-  #ifndef csSkeletonSystem_FACTORY_REGISTER_DEFINED 
-  #define csSkeletonSystem_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csSkeletonSystem) 
+  #ifndef SkeletonSystem_FACTORY_REGISTER_DEFINED 
+  #define SkeletonSystem_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(SkeletonSystem) 
   #endif
 
 class skeleton2
 {
 SCF_REGISTER_STATIC_LIBRARY(skeleton2,metainfo_skeleton2)
-  #ifndef csSkeletonSystem_FACTORY_REGISTERED 
-  #define csSkeletonSystem_FACTORY_REGISTERED 
-    csSkeletonSystem_StaticInit csSkeletonSystem_static_init__; 
+  #ifndef SkeletonSystem_FACTORY_REGISTERED 
+  #define SkeletonSystem_FACTORY_REGISTERED 
+    SkeletonSystem_StaticInit SkeletonSystem_static_init__; 
   #endif
 public:
  skeleton2();

@@ -4670,6 +4670,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libskeleton2ldr_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libskeleton2ldr_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\mk_msvc_libskeleton2ldr_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libskeleton2ldr_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libskeleton2ldr_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libskeleton2ldr_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libskeleton2ldr_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libskeleton2ldr_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\mk_msvc_libskeleton2ldr_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libskeleton_staticreg.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -11858,6 +11905,53 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_animesh.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\persist\skeleton2\skeleton2ldr.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_persist_skeleton2_skeleton2ldr.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_persist_skeleton2_skeleton2ldr.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_persist_skeleton2_skeleton2ldr.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_persist_skeleton2_skeleton2ldr.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_persist_skeleton2_skeleton2ldr.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_persist_skeleton2_skeleton2ldr.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_persist_skeleton2_skeleton2ldr.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_mesh_animesh_persist_skeleton2_skeleton2ldr.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -22773,6 +22867,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\animesh.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\persist\skeleton2\skeleton2ldr.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\persist\standard\animeshldr.h">

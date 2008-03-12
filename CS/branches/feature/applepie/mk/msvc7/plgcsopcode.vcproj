@@ -621,9 +621,6 @@
 				RelativePath="..\..\plugins\collide\opcode\CSopcodecollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\collide\opcode\csTerraFormerCollider.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\collide\opcode\Ice\IceAABB.cpp">
 			</File>
 			<File
@@ -743,9 +740,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\collide\opcode\CSopcodecollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\csTerraFormerCollider.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\collide\opcode\Ice\IceAABB.h">

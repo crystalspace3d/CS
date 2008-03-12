@@ -617,6 +617,9 @@
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\animesh.cpp">
 			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\object\skinning.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

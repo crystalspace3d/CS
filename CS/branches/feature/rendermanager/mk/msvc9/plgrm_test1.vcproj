@@ -625,6 +625,9 @@
 				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\operations.h">
 			</File>
 			<File
@@ -647,6 +650,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\shadow_shadowmap.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">

@@ -791,6 +791,9 @@
 				RelativePath="..\..\libs\csplugincommon\render3d\txtmgr.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\renderview.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\renderstep\basesteploader.cpp">
 			</File>
 			<File
@@ -1528,6 +1531,18 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\render3d\txtmgr.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\rendertree.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\renderview.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\standardsorter.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\standardtreetraits.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteploader.h">

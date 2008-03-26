@@ -23,24 +23,24 @@ static char const metainfo_animesh[] =
 "    <classes>"
 "      <class>"
 "        <name>crystalspace.mesh.object.animesh</name>"
-"        <implementation>csAnimatedMeshObjectType</implementation>"
+"        <implementation>AnimeshObjectType</implementation>"
 "        <description>Crystal Space Animated Mesh Type</description>"
 "      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
 ;
-  #ifndef csAnimatedMeshObjectType_FACTORY_REGISTER_DEFINED 
-  #define csAnimatedMeshObjectType_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csAnimatedMeshObjectType) 
+  #ifndef AnimeshObjectType_FACTORY_REGISTER_DEFINED 
+  #define AnimeshObjectType_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(AnimeshObjectType) 
   #endif
 
 class animesh
 {
 SCF_REGISTER_STATIC_LIBRARY(animesh,metainfo_animesh)
-  #ifndef csAnimatedMeshObjectType_FACTORY_REGISTERED 
-  #define csAnimatedMeshObjectType_FACTORY_REGISTERED 
-    csAnimatedMeshObjectType_StaticInit csAnimatedMeshObjectType_static_init__; 
+  #ifndef AnimeshObjectType_FACTORY_REGISTERED 
+  #define AnimeshObjectType_FACTORY_REGISTERED 
+    AnimeshObjectType_StaticInit AnimeshObjectType_static_init__; 
   #endif
 public:
  animesh();

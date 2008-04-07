@@ -1097,6 +1097,9 @@
 				RelativePath="..\..\libs\csutil\mempool.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\memutil.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\mmapio.cpp">
 			</File>
 			<File
@@ -2004,6 +2007,9 @@
 				RelativePath="..\..\libs\..\include\csutil\mempool.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\memutil.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\metautils.h">
 			</File>
 			<File
@@ -2254,6 +2260,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\weakreferenced.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\weakrefhash.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\callstack.h">

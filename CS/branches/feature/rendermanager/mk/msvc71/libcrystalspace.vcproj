@@ -794,6 +794,9 @@
 				RelativePath="..\..\libs\csplugincommon\render3d\txtmgr.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrexposure.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\lightsetup.cpp">
 			</File>
 			<File
@@ -1564,6 +1567,12 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\dependenttarget.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\hdrhelper.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\lightsetup.h">

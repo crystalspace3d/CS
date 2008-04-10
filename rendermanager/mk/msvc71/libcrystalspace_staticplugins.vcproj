@@ -22974,6 +22974,12 @@
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
 			</File>
 			<File
@@ -23031,6 +23037,12 @@
 				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
 			</File>
 			<File
@@ -23086,6 +23098,12 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">

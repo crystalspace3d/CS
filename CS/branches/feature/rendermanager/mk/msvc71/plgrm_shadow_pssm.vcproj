@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
-	Name="plgrm_test1"
-	ProjectGUID="{5C2468CB-28D1-F0DC-FFB9-4073491D7AA0}"
+	Version="7.10"
+	Name="plgrm_shadow_pssm"
+	ProjectGUID="{45AD742B-0A70-9A28-5DC3-458D0881292F}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,8 +13,8 @@
 	<Configurations>
   		<Configuration
 			Name="Release (with static libs)|Win32"
-			OutputDirectory="..\..\out\release8\build\plgrm_test1\"
-			IntermediateDirectory="..\..\out\release8\build\plgrm_test1\"
+			OutputDirectory="..\..\out\release71\build\plgrm_shadow_pssm\"
+			IntermediateDirectory="..\..\out\release71\build\plgrm_shadow_pssm\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -27,14 +27,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release8\build\plgrm_test1\rm_test1.pdb"
+				ProgramDataBaseFileName="..\..\out\release71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release8\build\plgrm_test1\plgrm_test1.pch"
-				AssemblerListingLocation="..\..\out\release8\build\plgrm_test1\"
-				ObjectFile="..\..\out\release8\build\plgrm_test1\"
+				PrecompiledHeaderFile="..\..\out\release71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.pch"
+				AssemblerListingLocation="..\..\out\release71\build\plgrm_shadow_pssm\"
+				ObjectFile="..\..\out\release71\build\plgrm_shadow_pssm\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -50,11 +50,11 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rm_test1.dll"
-				ProgramDatabaseFile="..\..\out\release8\build\plgrm_test1\rm_test1.pdb"
+				OutputFile="..\..\rm_shadow_pssm.dll"
+				ProgramDatabaseFile="..\..\out\release71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release8\build\plgrm_test1\plgrm_test1.lib"
+				ImportLibrary="..\..\out\release71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -69,10 +69,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\plgrm_test1\plgrm_test1.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -80,8 +80,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\shadow_pssm;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -90,8 +90,8 @@
 		</Configuration>
   		<Configuration
 			Name="Release (with DLLs)|Win32"
-			OutputDirectory="..\..\out\release8\build\plgrm_test1\"
-			IntermediateDirectory="..\..\out\release8\build\plgrm_test1\"
+			OutputDirectory="..\..\out\release71\build\plgrm_shadow_pssm\"
+			IntermediateDirectory="..\..\out\release71\build\plgrm_shadow_pssm\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -104,14 +104,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release8\build\plgrm_test1\rm_test1.pdb"
+				ProgramDataBaseFileName="..\..\out\release71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release8\build\plgrm_test1\plgrm_test1.pch"
-				AssemblerListingLocation="..\..\out\release8\build\plgrm_test1\"
-				ObjectFile="..\..\out\release8\build\plgrm_test1\"
+				PrecompiledHeaderFile="..\..\out\release71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.pch"
+				AssemblerListingLocation="..\..\out\release71\build\plgrm_shadow_pssm\"
+				ObjectFile="..\..\out\release71\build\plgrm_shadow_pssm\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -127,11 +127,11 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rm_test1.dll"
-				ProgramDatabaseFile="..\..\out\release8\build\plgrm_test1\rm_test1.pdb"
+				OutputFile="..\..\rm_shadow_pssm.dll"
+				ProgramDatabaseFile="..\..\out\release71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release8\build\plgrm_test1\plgrm_test1.lib"
+				ImportLibrary="..\..\out\release71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -146,10 +146,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\plgrm_test1\plgrm_test1.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -157,8 +157,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\shadow_pssm;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -167,8 +167,8 @@
 		</Configuration>
     		<Configuration
 			Name="Debug (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_test1\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_test1\"
+			OutputDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
+			IntermediateDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -180,14 +180,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_test1\plgrm_test1.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_test1\"
-				ObjectFile="..\..\out\debug8\build\plgrm_test1\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgrm_shadow_pssm\"
+				ObjectFile="..\..\out\debug71\build\plgrm_shadow_pssm\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -201,11 +201,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_test1.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				OutputFile="..\..\rm_shadow_pssm.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_test1\plgrm_test1.lib"
+				ImportLibrary="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -220,10 +220,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_test1\plgrm_test1.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -231,8 +231,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\shadow_pssm;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -241,8 +241,8 @@
 		</Configuration>
   		<Configuration
 			Name="Debug (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_test1\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_test1\"
+			OutputDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
+			IntermediateDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -254,14 +254,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_test1\plgrm_test1.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_test1\"
-				ObjectFile="..\..\out\debug8\build\plgrm_test1\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgrm_shadow_pssm\"
+				ObjectFile="..\..\out\debug71\build\plgrm_shadow_pssm\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -275,11 +275,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_test1.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				OutputFile="..\..\rm_shadow_pssm.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_test1\plgrm_test1.lib"
+				ImportLibrary="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -294,10 +294,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_test1\plgrm_test1.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -305,8 +305,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\shadow_pssm;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -315,8 +315,8 @@
 		</Configuration>
     		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_test1\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_test1\"
+			OutputDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
+			IntermediateDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -328,14 +328,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_test1\plgrm_test1.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_test1\"
-				ObjectFile="..\..\out\debug8\build\plgrm_test1\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgrm_shadow_pssm\"
+				ObjectFile="..\..\out\debug71\build\plgrm_shadow_pssm\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -349,11 +349,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_test1.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				OutputFile="..\..\rm_shadow_pssm.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_test1\plgrm_test1.lib"
+				ImportLibrary="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -368,10 +368,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_test1\plgrm_test1.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -379,8 +379,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\shadow_pssm;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -389,8 +389,8 @@
 		</Configuration>
   		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_test1\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_test1\"
+			OutputDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
+			IntermediateDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -402,14 +402,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_test1\plgrm_test1.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_test1\"
-				ObjectFile="..\..\out\debug8\build\plgrm_test1\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgrm_shadow_pssm\"
+				ObjectFile="..\..\out\debug71\build\plgrm_shadow_pssm\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -423,11 +423,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_test1.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				OutputFile="..\..\rm_shadow_pssm.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_test1\plgrm_test1.lib"
+				ImportLibrary="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -442,10 +442,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_test1\plgrm_test1.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -453,8 +453,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\shadow_pssm;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -463,8 +463,8 @@
 		</Configuration>
     		<Configuration
 			Name="RefTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_test1\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_test1\"
+			OutputDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
+			IntermediateDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -476,14 +476,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_test1\plgrm_test1.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_test1\"
-				ObjectFile="..\..\out\debug8\build\plgrm_test1\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgrm_shadow_pssm\"
+				ObjectFile="..\..\out\debug71\build\plgrm_shadow_pssm\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -497,11 +497,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_test1.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				OutputFile="..\..\rm_shadow_pssm.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_test1\plgrm_test1.lib"
+				ImportLibrary="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -516,10 +516,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_test1\plgrm_test1.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -527,8 +527,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\shadow_pssm;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -537,8 +537,8 @@
 		</Configuration>
   		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_test1\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_test1\"
+			OutputDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
+			IntermediateDirectory="..\..\out\debug71\build\plgrm_shadow_pssm\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -550,14 +550,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_test1\plgrm_test1.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_test1\"
-				ObjectFile="..\..\out\debug8\build\plgrm_test1\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\plgrm_shadow_pssm\"
+				ObjectFile="..\..\out\debug71\build\plgrm_shadow_pssm\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -571,11 +571,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_test1.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_test1\rm_test1.pdb"
+				OutputFile="..\..\rm_shadow_pssm.dll"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgrm_shadow_pssm\rm_shadow_pssm.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_test1\plgrm_test1.lib"
+				ImportLibrary="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -590,10 +590,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_test1\plgrm_test1.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\plgrm_shadow_pssm\plgrm_shadow_pssm.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -601,8 +601,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\test1;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\shadow_pssm;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -615,84 +615,87 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.cpp">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\operations.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\operations.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\render.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\renderview.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderview.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\shadow_shadowmap.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_common.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgrm_test1.rc">
+				RelativePath="..\..\mk\msvc\plgrm_shadow_pssm.rc">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.csplugin">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\rm_shadow_pssm.csplugin">
 			</File>
 		</Filter>
 	</Files>

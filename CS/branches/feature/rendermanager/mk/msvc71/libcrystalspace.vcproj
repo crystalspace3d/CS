@@ -809,6 +809,9 @@
 				RelativePath="..\..\libs\csplugincommon\rendermanager\renderview.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\shadow_common.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\renderstep\basesteploader.cpp">
 			</File>
 			<File
@@ -819,6 +822,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\script\scriptcommon.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\shader\shadercachehelper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
@@ -1608,7 +1614,10 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\shadersetup.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\shadow_shadowmap.h">
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\shadow_common.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\shadow_pssm.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\standardsorter.h">
@@ -1642,6 +1651,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\script\scriptcommon.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\shader\shadercachehelper.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderplugin.h">

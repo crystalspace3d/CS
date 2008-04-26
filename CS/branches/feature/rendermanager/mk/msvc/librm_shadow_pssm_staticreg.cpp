@@ -15,16 +15,16 @@
 
 namespace csStaticPluginInit
 {
-static char const metainfo_rm_test1[] =
+static char const metainfo_rm_shadow_pssm[] =
 "<?xml version=\"1.0\"?>"
-"<!-- rm_test1.csplugin -->"
+"<!-- rm_shadow_pssm.csplugin -->"
 "<plugin>"
 "  <scf>"
 "    <classes>"
 "      <class>"
-"        <name>crystalspace.rendermanager.test1</name>"
-"        <implementation>RMTest1</implementation>"
-"        <description>Render manager - test1</description>"
+"        <name>crystalspace.rendermanager.shadow_pssm</name>"
+"        <implementation>RMShadowedPSSM</implementation>"
+"        <description>Rendermanager (PSSM shadows)</description>"
 "        <requires>"
 "          <class>crystalspace.engine.</class>"
 "          <class>crystalspace.graphics3d.</class>         "
@@ -34,21 +34,21 @@ static char const metainfo_rm_test1[] =
 "  </scf>"
 "</plugin>"
 ;
-  #ifndef RMTest1_FACTORY_REGISTER_DEFINED 
-  #define RMTest1_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(RMTest1) 
+  #ifndef RMShadowedPSSM_FACTORY_REGISTER_DEFINED 
+  #define RMShadowedPSSM_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(RMShadowedPSSM) 
   #endif
 
-class rm_test1
+class rm_shadow_pssm
 {
-SCF_REGISTER_STATIC_LIBRARY(rm_test1,metainfo_rm_test1)
-  #ifndef RMTest1_FACTORY_REGISTERED 
-  #define RMTest1_FACTORY_REGISTERED 
-    RMTest1_StaticInit RMTest1_static_init__; 
+SCF_REGISTER_STATIC_LIBRARY(rm_shadow_pssm,metainfo_rm_shadow_pssm)
+  #ifndef RMShadowedPSSM_FACTORY_REGISTERED 
+  #define RMShadowedPSSM_FACTORY_REGISTERED 
+    RMShadowedPSSM_StaticInit RMShadowedPSSM_static_init__; 
   #endif
 public:
- rm_test1();
+ rm_shadow_pssm();
 };
-rm_test1::rm_test1() {}
+rm_shadow_pssm::rm_shadow_pssm() {}
 
 }

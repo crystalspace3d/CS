@@ -4435,50 +4435,50 @@
 					</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\mk\msvc\librm_test1_staticreg.cpp">
+				RelativePath="..\..\mk\msvc\librm_shadow_pssm_staticreg.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\mk_msvc_librm_test1_staticreg.cpp.obj"/>
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="Release (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\mk_msvc_librm_test1_staticreg.cpp.obj"/>
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="Debug (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_test1_staticreg.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="Debug (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_test1_staticreg.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="MemoryTracker (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_test1_staticreg.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="MemoryTracker (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_test1_staticreg.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="RefTracker (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_test1_staticreg.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="RefTracker (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_test1_staticreg.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -16326,50 +16326,50 @@
 					</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.cpp">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_rendermanager_test1_rm_test1.cpp.obj"/>
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="Release (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_rendermanager_test1_rm_test1.cpp.obj"/>
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="Debug (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_test1_rm_test1.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="Debug (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_test1_rm_test1.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="MemoryTracker (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_test1_rm_test1.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="MemoryTracker (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_test1_rm_test1.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="RefTracker (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_test1_rm_test1.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="RefTracker (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_test1_rm_test1.cpp.obj"/>
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -23545,7 +23545,10 @@
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadow_shadowmap.h">
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadow_common.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
@@ -23572,67 +23575,70 @@
 				RelativePath="..\..\plugins\rendermanager\rlcompat\rm_compat.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\operations.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\operations.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\render.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\renderview.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderview.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\shadow_shadowmap.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_common.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\test1\rm_test1.h">
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
@@ -23671,7 +23677,10 @@
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\shadow_shadowmap.h">
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\shadow_common.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">

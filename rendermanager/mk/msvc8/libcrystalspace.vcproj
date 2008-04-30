@@ -797,6 +797,9 @@
 				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrexposure.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrhelper.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\lightsetup.cpp">
 			</File>
 			<File

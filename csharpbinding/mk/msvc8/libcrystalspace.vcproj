@@ -623,10 +623,10 @@
 				RelativePath="..\..\libs\csgeom\math3d_d.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csgeom\matrix2.cpp">
+				RelativePath="..\..\libs\csgeom\matrix3.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csgeom\matrix3.cpp">
+				RelativePath="..\..\libs\csgeom\matrix4.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\obb.cpp">
@@ -1055,6 +1055,9 @@
 				RelativePath="..\..\libs\csutil\generic\runloop.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\graphalg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\hash.cpp">
 			</File>
 			<File
@@ -1074,6 +1077,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\mempool.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\memutil.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\mmapio.cpp">
@@ -1217,6 +1223,9 @@
 				RelativePath="..\..\libs\csutil\win32\loadlib.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\win32\memutil_impl.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\win32\minidump.cpp">
 			</File>
 			<File
@@ -1281,6 +1290,9 @@
 				RelativePath="..\..\libs\..\include\csgeom\csrectrg.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgeom\dualquaternion.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgeom\fixed.h">
 			</File>
 			<File
@@ -1306,6 +1318,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\matrix3.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\matrix4.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\obb.h">
@@ -1872,6 +1887,9 @@
 				RelativePath="..\..\libs\..\include\csutil\getopt.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\graphalg.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\hash.h">
 			</File>
 			<File
@@ -1900,6 +1918,12 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\mempool.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\memutil.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\metautils.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\mmap_dummy.h">
@@ -2151,6 +2175,9 @@
 				RelativePath="..\..\libs\..\include\csutil\weakreferenced.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\weakrefhash.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\callstack.h">
 			</File>
 			<File
@@ -2221,6 +2248,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\dlmalloc-settings.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\memutil.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\reftrack.h">

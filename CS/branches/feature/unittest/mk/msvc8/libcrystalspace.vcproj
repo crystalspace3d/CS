@@ -1163,6 +1163,9 @@
 				RelativePath="..\..\libs\csutil\strhash.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\strhashr.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\stringreader.cpp">
 			</File>
 			<File
@@ -2067,6 +2070,9 @@
 				RelativePath="..\..\libs\..\include\csutil\set.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\setenv.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\simplejobqueue.h">
 			</File>
 			<File
@@ -2080,6 +2086,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\strhash.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\strhashr.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\stringarray.h">

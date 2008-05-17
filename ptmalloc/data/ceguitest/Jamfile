@@ -1,3 +1,0 @@
-SubDir TOP data ceguitest ;
-
-InstallData [ Wildcard *.xsd *.xsx ice.* ] : data ceguitest ;

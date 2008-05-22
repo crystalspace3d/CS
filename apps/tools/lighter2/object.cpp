@@ -28,9 +28,9 @@
 namespace lighter
 {
 
-  ObjectFactory::ObjectFactory (const Configuration& config)
-    : lightPerVertex (false), noModify (false), hasTangents (false),
-    lmScale (config.GetLMProperties ().lmDensity),
+  ObjectFactory::ObjectFactory ()
+    : lightPerVertex (false),
+    lmScale (globalConfig.GetLMProperties ().lmDensity),
     factoryWrapper (0)
   {
   }
@@ -60,17 +60,16 @@ namespace lighter
         csArray<FactoryPrimitiveArray> newPrims;
         csRef<LightmapUVObjectLayouter> lightmaplayout = 
           uvlayout->LayoutFactory (unlayoutedPrimitives[i], vertexData, this, 
-          newPrims, usedVertices, noModify);
-        if (lightmaplayout)
+          newPrims, usedVertices);
+        if (!lightmaplayout) return false;
+
+        for (size_t n = 0; n < newPrims.GetSize(); n++)
         {
-	  for (size_t n = 0; n < newPrims.GetSize(); n++)
-	  {
-	    layoutedPrimitives.Push (LayoutedPrimitives (newPrims[n],
-	      lightmaplayout, n));
-  
-	    AddSubmeshRemap (i, layoutedPrimitives.GetSize () - 1);
-	  }
-	}
+          layoutedPrimitives.Push (LayoutedPrimitives (newPrims[n],
+            lightmaplayout, n));
+
+          AddSubmeshRemap (i, layoutedPrimitives.GetSize () - 1);
+        }
       }
       unlayoutedPrimitives.DeleteAll();
     }
@@ -165,49 +164,26 @@ namespace lighter
   //-------------------------------------------------------------------------
 
   Object::Object (ObjectFactory* fact)
-    : lightPerVertex (fact->lightPerVertex), sector (0), litColors (0), 
-      litColorsPD (0), factory (fact)
+    : lightPerVertex (fact->lightPerVertex), litColors (0), litColorsPD (0), 
+      factory (fact)
   {
   }
   
   Object::~Object ()
   {
-    delete[] litColors;
-    delete[] litColorsPD;
+    delete litColors;
+    delete litColorsPD;
   }
 
   bool Object::Initialize (Sector* sector)
   {
     if (!factory || !meshWrapper) return false;
-
-    if (factory->hasTangents)
-    {
-      objFlags.Set (OBJECT_FLAG_TANGENTS);
-      vdataBitangents = factory->vdataBitangents;
-      vdataTangents = factory->vdataTangents;
-    }
-
-    this->sector = sector;
-
     const csReversibleTransform transform = meshWrapper->GetMovable ()->
       GetFullTransform ();
 
     //Copy over data, transform the radprimitives..
     vertexData = factory->vertexData;
     vertexData.Transform (transform);
-    if (objFlags.Check (OBJECT_FLAG_TANGENTS))
-    {
-      for(size_t i = 0; i < vertexData.positions.GetSize (); ++i)
-      {
-        csVector3& tang = 
-          *((csVector3*)vertexData.GetCustomData (i, vdataTangents));
-        tang = transform.This2OtherRelative (tang);
-        csVector3& bitang = 
-          *((csVector3*)vertexData.GetCustomData (i, vdataBitangents));
-        bitang = transform.This2OtherRelative (bitang);
-      }
-      
-    }
     ComputeBoundingSphere ();
 
     const LightRefArray& allPDLights = sector->allPDLights;
@@ -283,43 +259,31 @@ namespace lighter
 
     if (lightPerVertex)
     {
-      size_t n = globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
-
-      litColors = new LitColorArray[n];
-      for (size_t i = 0; i < n; i++)
-        litColors[i].SetSize (vertexData.positions.GetSize(), 
-          csColor (0.0f, 0.0f, 0.0f));
-      litColorsPD = new LitColorsPDHash[n];
+      litColors = new LitColorArray();
+      litColors->SetSize (vertexData.positions.GetSize(), 
+        csColor (0.0f, 0.0f, 0.0f));
+      litColorsPD = new LitColorsPDHash();
     }
   }
 
   void Object::StripLightmaps (csSet<csString>& lms)
   {
     iShaderVariableContext* svc = meshWrapper->GetSVContext();
-    for (int i = 0; i < 4; i++)
+    csShaderVariable* sv = svc->GetVariable (
+      globalLighter->strings->Request ("tex lightmap"));
+    if (sv != 0)
     {
-      csString svName;
-      if (i == 0)
-        svName = "tex lightmap";
-      else
-        svName.Format ("tex lightmap dir %d", i);
-      csShaderVariable* sv = svc->GetVariable (
-        globalLighter->strings->Request (svName));
-      if (sv != 0)
-      {
-        iTextureWrapper* tex;
-        sv->GetValue (tex);
-        if (tex != 0)
-          lms.Add (tex->QueryObject()->GetName());
-        svc->RemoveVariable (sv);
-      }
+      iTextureWrapper* tex;
+      sv->GetValue (tex);
+      if (tex != 0)
+        lms.Add (tex->QueryObject()->GetName());
+      svc->RemoveVariable (sv);
     }
   }
 
   void Object::ParseMesh (iMeshWrapper *wrapper)
   {
     this->meshWrapper = wrapper;
-    this->meshName = wrapper->QueryObject ()->GetName ();
 
     const csFlags& meshFlags = wrapper->GetFlags ();
     if (meshFlags.Check (CS_ENTITY_NOSHADOWS))
@@ -327,9 +291,7 @@ namespace lighter
     if (meshFlags.Check (CS_ENTITY_NOLIGHTING))
       objFlags.Set (OBJECT_FLAG_NOLIGHT);
 
-    if (globalLighter->rayDebug.EnableForMesh (meshName))
-      objFlags.Set (OBJECT_FLAG_RAYDEBUG);
-
+    this->meshName = wrapper->QueryObject ()->GetName ();
     csRef<iObjectIterator> objiter = 
       wrapper->QueryObject ()->GetIterator();
     while (objiter->HasNext())
@@ -351,7 +313,7 @@ namespace lighter
     }
   }
 
-  void Object::SaveMesh (iDocumentNode* node)
+  void Object::SaveMesh (Sector* /*sector*/, iDocumentNode* node)
   {
     // Save out the object to the node
     csRef<iSaverPlugin> saver = 
@@ -404,6 +366,8 @@ namespace lighter
   {
     if (lightPerVertex) return;
 
+    float totalArea = 0;
+
     // And fill it with data
     for (size_t i = 0; i < allPrimitives.GetSize(); i++)
     {
@@ -414,7 +378,9 @@ namespace lighter
       PrimitiveArray::Iterator primIt = allPrimitives[i].GetIterator ();
       while (primIt.HasNext ())
       {
-        const Primitive &prim = primIt.Next ();        
+        const Primitive &prim = primIt.Next ();
+        totalArea = (prim.GetuFormVector ()%prim.GetvFormVector ()).Norm ();
+        float area2pixel = 1.0f / totalArea;
 
         int minu,maxu,minv,maxv;
         prim.ComputeMinMaxUV (minu,maxu,minv,maxv);
@@ -425,21 +391,11 @@ namespace lighter
         {
           uint vindex = v * mask.GetWidth();
           for (uint u = minu; u <= (uint)maxu; u++, findex++)
-          {            
-            //@@TODO
-            Primitive::ElementType type = prim.GetElementType (findex);
-            if (type == Primitive::ELEMENT_EMPTY)
-            {
-              continue;
-            }
-            else if (type == Primitive::ELEMENT_BORDER)
-            {
-              maskData[vindex+u] += prim.ComputeElementFraction (findex);
-            }
-            else
-            {
-              maskData[vindex+u] += 1.0f;
-            }
+          {
+            const float elemArea = prim.GetElementAreas ().GetElementArea (findex);
+            if (elemArea == 0) continue; // No area, skip
+
+            maskData[vindex+u] += elemArea * area2pixel; //Accumulate
           }
         } 
       }
@@ -447,61 +403,15 @@ namespace lighter
 
   }
 
-  Object::LitColorArray* Object::GetLitColorsPD (Light* light, size_t num)
+  Object::LitColorArray* Object::GetLitColorsPD (Light* light)
   {
-    LitColorArray* colors = litColorsPD[num].GetElementPointer (light);
+    LitColorArray* colors = litColorsPD->GetElementPointer (light);
     if (colors != 0) return colors;
 
     LitColorArray newArray;
-    newArray.SetSize (litColors[num].GetSize(), csColor (0));
-    return &(litColorsPD[num].Put (light, newArray));
-  }
-
-  csMatrix3 Object::ComputeTangentSpace (const Primitive* prim,
-                                         const csVector3& pt) const
-  {
-    csVector3 normal (prim->ComputeNormal (pt));
-    csVector3 tang, bitang;
-    if (objFlags.Check (OBJECT_FLAG_TANGENTS))
-    {
-      tang = prim->ComputeCustomData<csVector3> (pt, vdataTangents);
-      bitang = prim->ComputeCustomData<csVector3> (pt, vdataBitangents);
-    }
-    else
-    {
-      // Fake something up
-      csVector3 right (1, 0, 0);
-      if ((right * normal) > (1.0f - LITEPSILON))
-        right = csVector3(0, 1, 0);
-      bitang = normal % right;
-      tang = normal % bitang;
-    }
-    return csMatrix3 (tang[0], bitang[0], normal[0],
-                      tang[1], bitang[1], normal[1],
-                      tang[2], bitang[2], normal[2]);
-  }
-
-  csMatrix3 Object::GetTangentSpace (size_t vert) const
-  {
-    csVector3 normal (vertexData.normals[vert]);
-    csVector3 tang, bitang;
-    if (objFlags.Check (OBJECT_FLAG_TANGENTS))
-    {
-      tang = *((csVector3*)vertexData.GetCustomData (vert, vdataTangents));
-      bitang = *((csVector3*)vertexData.GetCustomData (vert, vdataBitangents));
-    }
-    else
-    {
-      // Fake something up
-      csVector3 right (1, 0, 0);
-      if ((right * normal) > (1.0f - LITEPSILON))
-        right = csVector3(0, 1, 0);
-      bitang = normal % right;
-      tang = normal % bitang;
-    }
-    return csMatrix3 (tang[0], bitang[0], normal[0],
-                      tang[1], bitang[1], normal[1],
-                      tang[2], bitang[2], normal[2]);
+    newArray.SetSize (litColors->GetSize(), csColor (0));
+    litColorsPD->Put (light, newArray);
+    return litColorsPD->GetElementPointer (light);
   }
 
   void Object::RenormalizeLightmapUVs (const LightmapPtrDelArray& lightmaps,
@@ -532,8 +442,8 @@ namespace lighter
           {
             const csVector2 &lmUV = vertexData.lightmapUVs[index];
             csVector2& outUV = lmcoords[index];
-            outUV.x = (lmUV.x) * factorX;
-            outUV.y = (lmUV.y) * factorY;
+            outUV.x = (lmUV.x + 0.5f) * factorX;
+            outUV.y = (lmUV.y + 0.5f) * factorY;
             indicesRemapped.AddNoTest (index);
           }
         }

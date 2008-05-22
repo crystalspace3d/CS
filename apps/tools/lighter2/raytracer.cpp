@@ -20,7 +20,6 @@
 
 #include "raytracer.h"
 #include "kdtree.h"
-#include "primitive.h"
 
 namespace lighter
 {
@@ -33,6 +32,7 @@ namespace lighter
       sizeof (HashEntry) * HASH_SIZE, 16));
     memset (hash, 0, sizeof (HashEntry) * HASH_SIZE);
   }
+
 
   MailboxHash::~MailboxHash ()
   {
@@ -51,12 +51,14 @@ namespace lighter
     CS::Memory::AlignedFree (traversalStack);
   }
 
+  static const uint mod5[] = {0,1,2,0,1};
+
   static bool IntersectPrimitiveRay (const KDTreePrimitive &primitive, const Ray &ray,
     HitPoint &hit)
   {
     const uint k = primitive.normal_K & ~KDPRIM_FLAG_MASK;
-    const uint ku = CS::Math::NextModulo3(k);  // ku = (k+1) % 3
-    const uint kv = CS::Math::NextModulo3(ku); // kv = (k+2) % 3
+    const uint ku = mod5[k+1];
+    const uint kv = mod5[k+2];
 
     // prefetch?
 
@@ -91,20 +93,12 @@ namespace lighter
     hit.hitPoint = ray.origin + ray.direction * f;
     hit.distance = f;
     hit.primitive = primitive.primPointer;
-    hit.kdFlags = primitive.normal_K & KDPRIM_FLAG_MASK;
 
     return true;
   }
 
-  enum IntersectState
-  {
-    isctNoHit,
-    isctHit,
-    isctHitAndExit
-  };
-
   template<bool ExitFirstHit, typename HitCallback, typename HitIgnore>
-  static IntersectState IntersectPrimitives (const KDTreeNode* node, const Ray &ray, 
+  static bool IntersectPrimitives (const KDTreeNode* node, const Ray &ray, 
     HitPoint &hit, RaytraceState& state, HitCallback& hitCB, HitIgnore& ignoreCB)
   {
     size_t nIdx, nMax;
@@ -123,33 +117,28 @@ namespace lighter
       if (ray.ignoreFlags & (prim->normal_K & KDPRIM_FLAG_MASK)) 
         continue; 
 
-      if (ray.ignorePrimitive == prim->primPointer ||
-        state.mailbox.PutPrimitiveRay (prim->primPointer, ray.rayID) ||
-        ignoreCB (prim->primPointer))
+      if (ignoreCB (prim->primPointer) ||
+        ray.ignorePrimitive == prim->primPointer ||
+        state.mailbox.PutPrimitiveRay (prim->primPointer, ray.rayID))
           continue;
-
-      if (ray.ignorePrimitive && 
-        ray.ignorePrimitive->GetPlane () == prim->primPointer->GetPlane ())
-        continue;
 
       haveHit = IntersectPrimitiveRay (*prim, ray, thisHit);
       if (haveHit)
       {
-        bool continueTrace = hitCB (ray, thisHit);
+        hitCB (ray, thisHit);
 
         haveAnyHit = true;
         if (ExitFirstHit) 
         {
           hit = thisHit;
-          return isctHit;
+          return true;
         }
         if (thisHit.distance < hit.distance) 
           hit = thisHit;
-	if (!continueTrace) return isctHitAndExit;
       }
     }
 
-    return haveAnyHit ? isctHit : isctNoHit;
+    return haveAnyHit;
   }
 
   // Generic traversal function
@@ -216,14 +205,12 @@ namespace lighter
         }
       }
 
-      IntersectState isct = 
-        IntersectPrimitives<ExitFirstHit, HitCallback, HitIgnore> (node,
-          myRay, hit, state, hitCB, ignoreCB);
-      if (isct != isctNoHit)
+      if (IntersectPrimitives<ExitFirstHit, HitCallback, HitIgnore> 
+        (node, myRay, hit, state, hitCB, ignoreCB))
       {
         traversalState |= HaveHit;
 
-        if (ExitFirstHit || (isct == isctHitAndExit))
+        if (ExitFirstHit)
           traversalState |= TraversalFinished;
       }
 
@@ -237,8 +224,8 @@ namespace lighter
   // Hit callback functors
   struct HitCallbackNone 
   {
-    CS_FORCEINLINE bool operator () (const Ray& ray, const HitPoint& hit)
-    { return true; }
+    CS_FORCEINLINE void operator () (const Ray& ray, const HitPoint& hit)
+    {}
   };
 
   struct HitCallbackObj
@@ -247,9 +234,9 @@ namespace lighter
       : cb (hitCallback)
     {}
 
-    CS_FORCEINLINE bool operator () (const Ray& ray, const HitPoint& hit)
+    CS_FORCEINLINE void operator () (const Ray& ray, const HitPoint& hit)
     {
-      return cb->RegisterHit (ray, hit);
+      cb->RegisterHit (ray, hit);
     }
 
     HitPointCallback* cb;
@@ -309,11 +296,11 @@ namespace lighter
     else
     {
       IgnoreCallbackNone ignCB;
-      return TraceFunction<false> (tree, ray, hit, hitCB, ignCB);
+      return TraceFunction<false> (tree, ray, hit, hitCB, ignCB);;
     }
   }
 
-  bool Raytracer::TraceAllHits (const KDTree* tree, const Ray &ray, 
+  void Raytracer::TraceAllHits (const KDTree* tree, const Ray &ray, 
     HitPointCallback* hitCallback, HitIgnoreCallback* ignoreCB)
   {
     HitCallbackObj hitCB (hitCallback);
@@ -321,12 +308,12 @@ namespace lighter
     if (ignoreCB)
     {
       IgnoreCallbackObj ignCB (ignoreCB);
-      return TraceFunction<false> (tree, ray, hit, hitCB, ignCB);
+      TraceFunction<false> (tree, ray, hit, hitCB, ignCB);
     }
     else
     {
       IgnoreCallbackNone ignCB;
-      return TraceFunction<false> (tree, ray, hit, hitCB, ignCB);
+      TraceFunction<false> (tree, ray, hit, hitCB, ignCB);
     }
   }
 }

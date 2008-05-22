@@ -190,7 +190,6 @@ public:
   /// Fills in the 'cooked' key code of an event with only a 'raw' key code.
   virtual csEventError SynthesizeCooked (iEvent *);
 
-  const csKeyModifiers& GetModifiersState () const { return modifiersState; }
 };
 
 /**
@@ -290,7 +289,7 @@ public:
 
 };
 
-#include "csutil/deprecated_warn_off.h"
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**
  * Generic Joystick driver.
@@ -357,6 +356,6 @@ public:
 
 };
 
-#include "csutil/deprecated_warn_on.h"
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 #endif // __CS_CSINPUT_H__

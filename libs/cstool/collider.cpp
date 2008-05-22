@@ -21,12 +21,16 @@
 
 #include "csqsqrt.h"
 #include "csgeom/math3d.h"
+#include "csgeom/polymesh.h"
 #include "csgeom/quaternion.h"
 #include "csgeom/transfrm.h"
-#include "csgeom/trimesh.h"
 
+// For backward-compatibility, collider.cpp must invoke its own deprecated
+// constructors. Suppress the deprecation warning for this special case.
+#define CS_DEPRECATION_SUPPRESS_HACK
 #include "cstool/collider.h"
-#include "iengine/collection.h"
+#undef CS_DEPRECATION_SUPPRESS_HACK
+
 #include "iengine/camera.h"
 #include "iengine/engine.h"
 #include "iengine/mesh.h"
@@ -39,6 +43,7 @@
 #include "iengine/scenenode.h"
 
 #include "imesh/objmodel.h"
+#include "igeom/polymesh.h"
 #include "imesh/object.h"
 #include "ivaria/collider.h"
 
@@ -67,6 +72,27 @@ csColliderWrapper::csColliderWrapper (iObject* parent,
   csColliderWrapper::collide_system = collide_system;
   collider = collide_system->CreateCollider (mesh);
 }
+
+csColliderWrapper::csColliderWrapper (csObject& parent,
+	iCollideSystem* collide_system,
+	iPolygonMesh* mesh)
+  : scfImplementationType (this)
+{
+  parent.ObjAdd (this);
+  csColliderWrapper::collide_system = collide_system;
+  collider = collide_system->CreateCollider (mesh);
+}
+
+csColliderWrapper::csColliderWrapper (iObject* parent,
+        iCollideSystem* collide_system,
+        iPolygonMesh* mesh)
+  : scfImplementationType (this)
+{
+  parent->ObjAdd (this);
+  csColliderWrapper::collide_system = collide_system;
+  collider = collide_system->CreateCollider (mesh);
+}
+
 
 csColliderWrapper::csColliderWrapper (iObject* parent,
 	iCollideSystem* collide_system,
@@ -138,14 +164,19 @@ bool csColliderWrapper::Collide (csColliderWrapper& otherCollider,
 
 csColliderWrapper* csColliderWrapper::GetColliderWrapper (csObject &object)
 {
-  csRef<csColliderWrapper> w (CS::GetChildObject<csColliderWrapper> (&object));
+  csRef<csColliderWrapper> w (CS_GET_CHILD_OBJECT (&object, csColliderWrapper));
   return w;	// This will DecRef() but that's ok in this case.
 }
 
 csColliderWrapper* csColliderWrapper::GetColliderWrapper (iObject* object)
 {
-  csRef<csColliderWrapper> w (CS::GetChildObject<csColliderWrapper> (object));
+  csRef<csColliderWrapper> w (CS_GET_CHILD_OBJECT (object, csColliderWrapper));
   return w;	// This will DecRef() but that's ok in this case.
+}
+
+void csColliderWrapper::UpdateCollider (iPolygonMesh* mesh)
+{
+  collider = collide_system->CreateCollider (mesh);
 }
 
 void csColliderWrapper::UpdateCollider (iTriangleMesh* mesh)
@@ -168,14 +199,39 @@ csColliderWrapper* csColliderHelper::InitializeCollisionWrapper (
   csStringID basemesh_id = colsys->GetBaseDataID ();
   csStringID trianglemesh_id = colsys->GetTriangleDataID ();
 
+  // do_trimesh will be set to true if we're using the new trianglemesh
+  // system (instead of polygonmesh). We detect that we want to use the
+  // new system when the base mesh of the object model is given (even
+  // if the collision detection mesh might not be set).
+  bool do_trimesh = obj_objmodel->IsTriangleDataSet (basemesh_id);
+  // Also check factory.
+  if (!do_trimesh && factory)
+  {
+    iObjectModel* fact_objmodel = factory->GetMeshObjectFactory ()
+      ->GetObjectModel ();
+    if (fact_objmodel)
+      do_trimesh = fact_objmodel->IsTriangleDataSet (basemesh_id);
+  }
+
   iTriangleMesh* obj_trimesh;
-  // If the collision detection triangle mesh is not set then we
-  // use the base mesh instead.
-  bool obj_trimesh_set = obj_objmodel->IsTriangleDataSet (trianglemesh_id);
-  if (obj_trimesh_set)
-    obj_trimesh = obj_objmodel->GetTriangleData (trianglemesh_id);
+  iPolygonMesh* obj_polymesh;
+  bool obj_trimesh_set = false;
+  if (do_trimesh)
+  {
+    // If the collision detection triangle mesh is not set then we
+    // use the base mesh instead.
+    obj_trimesh_set = obj_objmodel->IsTriangleDataSet (trianglemesh_id);
+    if (obj_trimesh_set)
+      obj_trimesh = obj_objmodel->GetTriangleData (trianglemesh_id);
+    else
+      obj_trimesh = obj_objmodel->GetTriangleData (basemesh_id);
+    obj_polymesh = 0;
+  }
   else
-    obj_trimesh = obj_objmodel->GetTriangleData (basemesh_id);
+  {
+    obj_polymesh = obj_objmodel->GetPolygonMeshColldet ();
+    obj_trimesh = 0;
+  }
 
   iTerraFormer* obj_terraformer = obj_objmodel->GetTerraFormerColldet ();
   iTerrainSystem* obj_terrain = obj_objmodel->GetTerrainColldet ();
@@ -219,31 +275,67 @@ csColliderWrapper* csColliderHelper::InitializeCollisionWrapper (
             colsys, collider));
           cw->SetName (mesh->QueryObject ()->GetName());
           cw = 0;
-          // Clear object triangle mesh so we will no longer try to create
+          // Clear object polygon mesh so we will no longer try to create
           // a collider from that (we already have a collider).
           obj_terraformer = 0;
         }
       }
       else 
       {
-	if (!obj_trimesh_set)
+	if (do_trimesh)
 	{
-	  bool fact_trimesh_set = fact_objmodel->IsTriangleDataSet (
-	        trianglemesh_id);
-          iTriangleMesh* fact_trimesh;
-	  // If the collision detection triangle mesh is not set then we
-	  // use the base mesh instead.
-	  if (fact_trimesh_set)
-	    fact_trimesh  = fact_objmodel->GetTriangleData (trianglemesh_id);
-	  else
-	    fact_trimesh  = fact_objmodel->GetTriangleData (basemesh_id);
-
-	  if (fact_trimesh)
+	  if (!obj_trimesh_set)
 	  {
+	    bool fact_trimesh_set = fact_objmodel->IsTriangleDataSet (
+	        trianglemesh_id);
+            iTriangleMesh* fact_trimesh;
+	    // If the collision detection triangle mesh is not set then we
+	    // use the base mesh instead.
+	    if (fact_trimesh_set)
+	      fact_trimesh  = fact_objmodel->GetTriangleData (trianglemesh_id);
+	    else
+	      fact_trimesh  = fact_objmodel->GetTriangleData (basemesh_id);
+
+	    if (fact_trimesh)
+	    {
+              // First check if the parent factory has a collider wrapper.
+              iCollider* collider;
+              csColliderWrapper* cw_fact =
+		csColliderWrapper::GetColliderWrapper (factory->QueryObject ());
+              if (cw_fact)
+              {
+                collider = cw_fact->GetCollider ();
+              }
+              else
+              {
+                csColliderWrapper *cw_fact = new csColliderWrapper (
+                  factory->QueryObject (), colsys, fact_trimesh);
+                cw_fact->SetName (factory->QueryObject ()->GetName());
+                collider = cw_fact->GetCollider ();
+                cw_fact->DecRef ();
+              }
+
+              // Now add the collider wrapper to the mesh. We need a new
+              // csColliderWrapper because the csObject system is strictly
+              // a tree and one csColliderWrapper cannot have multiple parents.
+              cw.AttachNew (new csColliderWrapper (mesh->QueryObject (),
+                colsys, collider));
+              cw->SetName (mesh->QueryObject ()->GetName());
+	    }
+            // Clear object polygon mesh so we will no longer try to create
+            // a collider from that (we already have a collider).
+            obj_trimesh = 0;
+	  }
+	}
+	else
+	{
+          iPolygonMesh* fact_polymesh = fact_objmodel->GetPolygonMeshColldet ();
+          if (fact_polymesh && (fact_polymesh == obj_polymesh || !obj_polymesh))
+          {
             // First check if the parent factory has a collider wrapper.
             iCollider* collider;
-            csColliderWrapper* cw_fact =
-		csColliderWrapper::GetColliderWrapper (factory->QueryObject ());
+            csColliderWrapper* cw_fact = csColliderWrapper::GetColliderWrapper (
+              factory->QueryObject ());
             if (cw_fact)
             {
               collider = cw_fact->GetCollider ();
@@ -251,7 +343,7 @@ csColliderWrapper* csColliderHelper::InitializeCollisionWrapper (
             else
             {
               csColliderWrapper *cw_fact = new csColliderWrapper (
-                  factory->QueryObject (), colsys, fact_trimesh);
+                factory->QueryObject (), colsys, fact_polymesh);
               cw_fact->SetName (factory->QueryObject ()->GetName());
               collider = cw_fact->GetCollider ();
               cw_fact->DecRef ();
@@ -261,12 +353,12 @@ csColliderWrapper* csColliderHelper::InitializeCollisionWrapper (
             // csColliderWrapper because the csObject system is strictly
             // a tree and one csColliderWrapper cannot have multiple parents.
             cw.AttachNew (new csColliderWrapper (mesh->QueryObject (),
-                colsys, collider));
+              colsys, collider));
             cw->SetName (mesh->QueryObject ()->GetName());
-	  }
-          // Clear object triangle mesh so we will no longer try to create
-          // a collider from that (we already have a collider).
-          obj_trimesh = 0;
+            // Clear object polygon mesh so we will no longer try to create
+            // a collider from that (we already have a collider).
+            obj_polymesh = 0;
+          }
 	}
       }
     }
@@ -278,9 +370,12 @@ csColliderWrapper* csColliderHelper::InitializeCollisionWrapper (
   else if (obj_terrain)
     cw.AttachNew (new csColliderWrapper (mesh->QueryObject (),
       colsys, obj_terrain));
-  else if (obj_trimesh)
+  else if (do_trimesh && obj_trimesh)
     cw.AttachNew (new csColliderWrapper (mesh->QueryObject (),
       colsys, obj_trimesh));
+  else if (obj_polymesh)
+    cw.AttachNew (new csColliderWrapper (mesh->QueryObject (),
+      colsys, obj_polymesh));
   if (cw)
     cw->SetName (mesh->QueryObject ()->GetName());
 
@@ -298,22 +393,6 @@ csColliderWrapper* csColliderHelper::InitializeCollisionWrapper (
   return cw;
 }
 
-#include "csutil/deprecated_warn_off.h"
-
-void csColliderHelper::InitializeCollisionWrappers (iCollideSystem* colsys,
-  	iEngine* engine, iCollection* collection)
-{
-  // Initialize all mesh objects for collision detection.
-  int i;
-  iMeshList* meshes = engine->GetMeshes ();
-  for (i = 0 ; i < meshes->GetCount () ; i++)
-  {
-    iMeshWrapper* sp = meshes->Get (i);
-    if (collection && !collection->IsParentOf(sp->QueryObject ())) continue;
-    InitializeCollisionWrapper (colsys, sp);
-  }
-}
-
 void csColliderHelper::InitializeCollisionWrappers (iCollideSystem* colsys,
   	iEngine* engine, iRegion* region)
 {
@@ -327,8 +406,6 @@ void csColliderHelper::InitializeCollisionWrappers (iCollideSystem* colsys,
     InitializeCollisionWrapper (colsys, sp);
   }
 }
-
-#include "csutil/deprecated_warn_on.h"
 
 bool csColliderHelper::CollideArray (
 	iCollideSystem* colsys,
@@ -615,6 +692,7 @@ float csColliderHelper::TraceBeam (iCollideSystem* cdsys, iSector* sector,
 
 csColliderActor::csColliderActor ()
 {
+  revertMove = false;
   gravity = 9.806f;
   onground = false;
   cd = true;
@@ -624,6 +702,7 @@ csColliderActor::csColliderActor ()
   mesh = 0;
   camera = 0;
   movable = 0;
+  revertCount = 0;
   do_hit_meshes = false;
 
   // Only used in case a camera is used.
@@ -643,7 +722,7 @@ void csColliderActor::InitializeColliders (
   float maxX = MAX(body.x, legs.x)+shift.x;
   float maxZ = MAX(body.z, legs.z)+shift.z;
 
-  csRef<iTriangleMesh> pm;
+  csRef<iPolygonMesh> pm;
 
   float bX2 = body.x / 2.0f;
   float bZ2 = body.z / 2.0f;
@@ -652,7 +731,7 @@ void csColliderActor::InitializeColliders (
 
   csBox3 top (csVector3 (-bX2, bYbottom, -bZ2) + shift,
 		csVector3 (bX2, bYtop, bZ2) + shift);
-  pm = csPtr<iTriangleMesh> (new csTriangleMeshBox (top));
+  pm = csPtr<iPolygonMesh> (new csPolygonMeshBox (top));
   topCollider = cdsys->CreateCollider (pm);
 
   float lX2 = legs.x / 2.0f;
@@ -660,7 +739,7 @@ void csColliderActor::InitializeColliders (
 
   csBox3 bot (csVector3 (-lX2, 0, -lZ2) + shift,
 		csVector3 (lX2, 0 + legs.y, lZ2) + shift);
-  pm = csPtr<iTriangleMesh> (new csTriangleMeshBox (bot));
+  pm = csPtr<iPolygonMesh> (new csPolygonMeshBox (bot));
   bottomCollider = cdsys->CreateCollider (pm);
 
   boundingBox.Set(csVector3(-maxX / 2.0f, 0, -maxZ / 2.0f) + shift,
@@ -925,7 +1004,7 @@ int csColliderActor::CollisionDetectIterative (
 
   //cdsys->SetOneHitOnly(true);
   // Repeatedly split the range with which to test the collision against
-  while ((upper - lower).SquaredNorm() > 0.01f)
+  while ((upper - lower).SquaredNorm() > EPSILON)
   {
     // Test in the middle between upper and lower bounds
     csOrthoTransform current (id, lower + (upper - lower)/2);
@@ -965,10 +1044,10 @@ bool csColliderActor::AdjustForCollisions (
 	const csVector3& vel,
 	float delta)
 {
+  revertMove = false;
+
   if (movable && movable->GetSectors()->GetCount() == 0)
     return true;
-
-  bool hitsurface = false;
 
   int hits;
   size_t i;
@@ -992,17 +1071,11 @@ bool csColliderActor::AdjustForCollisions (
   cdsys->SetOneHitOnly (false);
   cdsys->ResetCollisionPairs ();
 
-  // Perform collision testing to minimise hits and
+  // Perform recursive collision testing to minimise hits and
   // find distance we can travel
   if (cd)
-  {
-      if(onground)
-          hits = CollisionDetect (topCollider, current_sector,
-      &transform_newpos, &transform_oldpos);
-      else
-          hits = CollisionDetect (bottomCollider, current_sector,
-                                           &transform_newpos, &transform_oldpos);
-  }
+    hits = CollisionDetectIterative (topCollider, current_sector,
+      &transform_newpos, &transform_oldpos, maxmove);
   else
   {
     hits = 0;
@@ -1010,59 +1083,33 @@ bool csColliderActor::AdjustForCollisions (
   }
 
   // localvel is smaller because we can partly move the object in that direction
-  maxmove = transform_oldpos.GetOrigin ();
-  //localvel -= maxmove - oldpos;
+  localvel -= maxmove - oldpos;
   csVector3 correctedVel(localvel);
-    
-    bool bounced = false;
-    csVector3 bestBounce;
+
   for (i = 0; i < our_cd_contact.GetSize () ; i++ )
   {
     csCollisionPair& cd = our_cd_contact[i];
     csPlane3 obstacle (cd.a2, cd.b2, cd.c2);
     csVector3 normal = obstacle.Normal ();
-      
-      // Check, have we collided against an 'inner' face
-      if (normal * localvel > 0)
-      {
-           
-          continue;
-      }
+
     float norm = normal.Norm ();
     if (fabs (norm) < SMALL_EPSILON) continue;
-
-      
     csVector3 unit = normal / norm;
 
-    // No sliding forces from ground-like surfaces
-    // sin(Pi/4) == 0.7
-    if(unit.y >= 0.7) continue;
-    
+    if (unit * localvel > 0) continue;
 
-    csVector3 bounce(unit * (unit * localvel));
-    
-    if((localvel - bounce).y > 0)
-    {
-        unit.y = 0;
-        bounce = unit * (unit * localvel);
-    }
-      
     // Bounce back
-    if(bounced && (localvel - bounce).SquaredNorm() < (localvel - bestBounce).SquaredNorm())
-        bestBounce = bounce;
-    
-    bounced = true;
-      
-    correctedVel = localvel - 1.1 * bestBounce; //(-(localvel % unit) % unit);    
 
-      
+    correctedVel -= unit * (unit * correctedVel)*1.1; //(-(localvel % unit) % unit);
   }
+ 
+  localvel = correctedVel;
+  newpos = maxmove + localvel;
 
-    localvel = correctedVel;
-  //newpos = maxmove + localvel;
-    newpos = oldpos + localvel;
-    
+  transform_newpos = csOrthoTransform (csMatrix3(), newpos);
+ 
   // Part2: legs
+
   our_cd_contact.Empty ();
 
   transform_newpos = csOrthoTransform (csMatrix3(), newpos);
@@ -1075,43 +1122,15 @@ bool csColliderActor::AdjustForCollisions (
   else
     hits = 0;
 
-  bool stepDown = true;
-    
-    for (i = 0; i < our_cd_contact.GetSize (); i++ )
-    {
-        csCollisionPair cd = our_cd_contact[i];
-        csPlane3 obstacle (cd.a2, cd.b2, cd.c2);
-        csVector3 normal = obstacle.Normal();
-        float norm = normal.Norm ();
-        
-        // Ensure this is a big-enough triangle to count as a collision.
-        if (fabs (norm) < 1e-4f ) continue;
-        
-        csVector3 n = normal / norm;
-        
-        csVector3 line[2];
-        
-        // This needs to be done for numerical inaccuracies in this test
-        // versus the collision system test.
-        if(!FindIntersection (cd,line))
-            continue;
-        
-        // Is it a collision with a ground polygon?
-        //  (this tests for the angle between ground and colldet
-        //  triangle)
-        // sin(Pi/4) == 0.7
-        if(n.y >= 0.7)
-        {
-            stepDown = false;
-        }
-    }
-    
-    
+  bool stepDown;
+
   // Only able to step down if we aren't jumping or falling
-  if (vel.y != 0)
+  if (hits > 0 || vel.y != 0)
     stepDown = false;
-  if(stepDown)
+  else
   {
+    stepDown = true;
+
     // Try stepping down
     newpos.y -= bottomSize.y/2;
     transform_newpos = csOrthoTransform (csMatrix3(), newpos);
@@ -1132,12 +1151,11 @@ bool csColliderActor::AdjustForCollisions (
 
   float maxJump = newpos.y + bottomSize.y;
   float max_y = -1e9;
-    float max_y_steep = -1e9;
 
   // Keep moving the model up until it no longer collides
   while (hits > 0 && newpos.y < maxJump)
   {
-    hitsurface = false;
+    bool adjust = false;
     for (i = 0; i < our_cd_contact.GetSize (); i++ )
     {
       csCollisionPair cd = our_cd_contact[i];
@@ -1160,38 +1178,28 @@ bool csColliderActor::AdjustForCollisions (
       // Is it a collision with a ground polygon?
       //  (this tests for the angle between ground and colldet
       //  triangle)
-      // sin(Pi/4) == 0.7
-      if((fabs(n.y) >= 0.7))
-      {
+      if(!(n.y < 0.7))
           onground = true;
-          // This is a ground triangle so we can move on top of it
-          max_y = MAX(MAX(line[0].y, line[1].y)+shift.y,max_y);
+      adjust = true;
+      max_y = MAX(MAX(line[0].y, line[1].y)+shift.y,max_y);
+      if (max_y > maxJump)
+      {
+        max_y = maxJump;
+        break;
       }
-     
-          // This is not a ground polygon so we can move down to rest on it
-          max_y_steep = MAX(MAX(line[0].y, line[1].y)+shift.y, max_y_steep);
-      hitsurface = true;
     }
+    hits = 0;
 
     // This prevents us from going up if there is no surface to rest on.
-    if(!onground && max_y_steep > oldpos.y)
+    if(!onground && max_y > oldpos.y)
     {
-        // in this case we do not accept the move
-        // hitsurface must be true so this will be adjusted down later
-        newpos = oldpos;
-        newpos.y = oldpos.y + 0.01f;
+        newpos.y = oldpos.y;
         break;
     }
-        
-    if (hitsurface)
+    if (adjust)
     {
       // Temporarily lift the model up so that it passes the final check
-      if(onground)
-        newpos.y = max_y + 0.01f;
-      else
-        newpos.y = max_y_steep + 0.01f;
-      break;
-        
+      newpos.y = max_y + 0.01f;
       our_cd_contact.Empty ();
 
       transform_newpos = csOrthoTransform (csMatrix3(), newpos);
@@ -1204,11 +1212,9 @@ bool csColliderActor::AdjustForCollisions (
       else
         hits = 0;
     }
-    else
-      hits = 0;
   }
 
-  if (hits == 0)
+  if (!onground)
   {
     // Reaction force - Disabled because no distinction made between physics
     // engine predicted velocity and player controlled velocity
@@ -1228,8 +1234,6 @@ bool csColliderActor::AdjustForCollisions (
   // Bring the model back down now that it has passed the final check
   if (onground)
     newpos.y -= 0.02f;
-  else if(hitsurface)
-    newpos.y -= 0.01f;
 
   if (cd)
     hits = CollisionDetect (topCollider, current_sector,
@@ -1250,16 +1254,19 @@ bool csColliderActor::AdjustForCollisions (
 
     if (unit * (newpos - oldpos) > 0) continue;
     hits++;
-    break;
   }
 
-  if (hits > 0 || (newpos - oldpos).IsZero())
+  if (hits > 0)
   {
     // No move possible without a collision with the torso
+    revertMove = true;
+    if(vel.y < 0)// && fabs(vel.x) < 0.01 && fabs(vel.y) < 0.01)
+      revertCount++;
     newpos = oldpos;
     return false;
   }
 
+  revertCount = 0;
   return true;
 }
 
@@ -1352,31 +1359,7 @@ bool csColliderActor::MoveV (float delta,
 
   // Check for collisions and adjust position
   if (!AdjustForCollisions (oldpos, newpos, worldVel, delta))
-  {
-      if(worldVel.y != 0 && (worldVel.x != 0 || worldVel.z != 0))
-      {
-          // Try to move again without the x and z actor vectors
-          // Otherwise the actor may 'stick' to the wall
-          worldVel = fulltransf.This2OtherRelative (csVector3(0, velBody.y, 0)) + velWorld;
-          newpos = worldVel*delta + oldpos;
-          if(!AdjustForCollisions (oldpos, newpos, worldVel, delta))
-          {
-              // Pathologic case where there is no where for the actor to move eg.
-              // \    /
-              //  \  /
-              //   \/
-              // In this case stop Y and pretend actor is on the ground
-              if(velWorld.y < -ABS_MAX_FREEFALL_VELOCITY / 2)
-              {
-                  velWorld.y = 0;
-                  onground = true;
-              }
-              return false;
-          }
-      }
-      else
-          return false;                   // We haven't moved so return early
-  }
+    return false;                   // We haven't moved so return early
   
   bool mirror = false;
 
@@ -1514,11 +1497,6 @@ bool csColliderActor::Move (float delta, float speed, const csVector3& velBody,
 
     if (!rc) return rc;
 
-    // We must update the transform after every rotation!
-    if (movable)
-    {
-        fulltransf = movable->GetFullTransform ();
-    }
     // The velocity may have changed by now
     bodyVel = fulltransf.Other2ThisRelative(velWorld) + velBody;
 
@@ -1539,5 +1517,3 @@ bool csColliderActor::Move (float delta, float speed, const csVector3& velBody,
 
   return rc;
 }
-
-

@@ -49,7 +49,7 @@ struct iMeshWrapper;
 struct iLightingInfo;
 struct iSector;
 
-#include "csutil/deprecated_warn_off.h"
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 class csLightObjectModel : public scfImplementationExt0<csLightObjectModel,
                                                         csObjectModel>
@@ -66,6 +66,10 @@ public:
   {
   }
 
+  virtual void GetObjectBoundingBox (csBox3& bbox)
+  {
+    bbox = box;
+  }
   virtual const csBox3& GetObjectBoundingBox ()
   {
     return box;
@@ -83,7 +87,7 @@ public:
   virtual iTerrainSystem* GetTerrainColldet () { return 0; }
 };
 
-#include "csutil/deprecated_warn_on.h"
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * Class that represents the influence that a certain light
@@ -109,7 +113,7 @@ public:
 
 typedef csSet<csRef<csLightSectorInfluence> > csLightSectorInfluences;
 
-#include "csutil/deprecated_warn_off.h"
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**
  * Superclass of all positional lights.
@@ -208,10 +212,6 @@ protected:
   csLightSectorInfluences influences;
 
   csEngine* engine;
-
-protected:
-  void InternalRemove() { SelfDestruct(); }
-
 public:
   /// Set of flags
   csFlags flags;
@@ -600,7 +600,7 @@ public:
 
 };
 
-#include "csutil/deprecated_warn_on.h"
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * List of lights for a sector. This class implements iLightList.

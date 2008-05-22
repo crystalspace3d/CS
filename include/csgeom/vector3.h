@@ -28,8 +28,7 @@
  * @{ */
 
 #include "csextern.h"
-#include "csgeom/math3d_d.h"
-#include "csqsqrt.h"
+#include "math3d_d.h"
 
 class csString;
 
@@ -82,27 +81,20 @@ public:
    * \warning The vector is not initialized. This makes the code slightly
    *   faster as csVector3 objects are used a lot.
    */
-  csVector3 () 
-  {}
+  csVector3 () {}
 
   /**
    * Make a new initialized vector.
    * Creates a new vector and initializes it to m*<1,1,1>.  To create
    * a vector initialized to the zero vector, use csVector3(0)
    */
-  csVector3 (float m) 
-    : x(m), y(m), z(m) 
-  {}
+  csVector3 (float m) : x(m), y(m), z(m) {}
 
   /// Make a new vector and initialize with the given values.
-  csVector3 (float ix, float iy, float iz = 0) 
-    : x(ix), y(iy), z(iz) 
-  {}
+  csVector3 (float ix, float iy, float iz = 0) : x(ix), y(iy), z(iz) {}
 
   /// Copy Constructor.
-  csVector3 (const csVector3& v) 
-    : x(v.x), y(v.y), z(v.z) 
-  {}
+  csVector3 (const csVector3& v) : x(v.x), y(v.y), z(v.z) {}
 
   /// Conversion from double precision vector to single.
   csVector3 (const csDVector3&);
@@ -156,19 +148,19 @@ public:
 
   /// Multiply a vector and a scalar.
   inline friend csVector3 operator* (const csVector3& v, float f)
-  { return csVector3 (v.x*f, v.y*f, v.z*f); }
+  { return csVector3(v.x*f, v.y*f, v.z*f); }
 
   /// Multiply a vector and a scalar.
   inline friend csVector3 operator* (float f, const csVector3& v)
-  { return csVector3 (v.x*f, v.y*f, v.z*f); }
+  { return csVector3(v.x*f, v.y*f, v.z*f); }
 
   /// Multiply a vector and a scalar double. Upgrade v to DVector.
   inline friend csDVector3 operator* (const csVector3& v, double f)
-  { return csDVector3 (v) * f; }
+  { return csDVector3(v) * f; }
 
   /// Multiply a vector and a scalar double. Upgrade v to DVector.
   inline friend csDVector3 operator* (double f, const csVector3& v)
-  { return csDVector3 (v) * f; }
+  { return csDVector3(v) * f; }
 
   /// Multiply a vector and a scalar int.
   inline friend csVector3 operator* (const csVector3& v, int f)
@@ -180,11 +172,11 @@ public:
 
   /// Divide a vector by a scalar.
   inline friend csVector3 operator/ (const csVector3& v, float f)
-  { f = 1.0f/f; return csVector3 (v.x*f, v.y*f, v.z*f); }
+  { f = 1.0f/f; return csVector3(v.x*f, v.y*f, v.z*f); }
 
   /// Divide a vector by a scalar double. Upgrade v to DVector.
   inline friend csDVector3 operator/ (const csVector3& v, double f)
-  { return csDVector3 (v) / f; }
+  { return csDVector3(v) / f; }
 
   /// Divide a vector by a scalar int.
   inline friend csVector3 operator/ (const csVector3& v, int f)
@@ -278,11 +270,10 @@ public:
   inline void Get (float* v) { v[0] = x; v[1] = y; v[2] = z; }
 
   /// Returns the norm of this vector.
-  inline float Norm () const
-  { return csQsqrt (x * x + y * y + z * z); }
+  float Norm () const;
 
   /// Return the squared norm (magnitude) of this vector.
-  inline float SquaredNorm () const
+  float SquaredNorm () const
   { return x * x + y * y + z * z; }
 
   /**
@@ -290,26 +281,16 @@ public:
    * Attempting to normalize a zero-vector will result in a divide by
    * zero error.  This is as it should be... fix the calling code.
    */
-  inline csVector3 Unit () const 
-  { return (*this)/(this->Norm()); }
+  csVector3 Unit () const { return (*this)/(this->Norm()); }
 
   /// Returns the norm (magnitude) of a vector.
-  inline static float Norm (const csVector3& v) 
-  { return v.Norm(); }
+  inline static float Norm (const csVector3& v) { return v.Norm(); }
 
   /// Normalizes a vector to a unit vector.
-  inline static csVector3 Unit (const csVector3& v) 
-  { return v.Unit(); }
+  inline static csVector3 Unit (const csVector3& v) { return v.Unit(); }
 
   /// Scale this vector to length = 1.0;
-  inline void Normalize ()
-  {
-    float sqlen = x * x + y * y + z * z;
-    if (sqlen < SMALL_EPSILON) return ;
-
-    float invlen = csQisqrt (sqlen);
-    *this *= invlen;
-  }
+  void Normalize ();
 
   /// Query if the vector is zero
   inline bool IsZero (float precision = SMALL_EPSILON) const

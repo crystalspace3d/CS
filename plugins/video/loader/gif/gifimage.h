@@ -28,9 +28,6 @@
 CS_PLUGIN_NAMESPACE_BEGIN(GIFImageIO)
 {
 
-// For SetDithering()
-#include "csutil/deprecated_warn_off.h"
-
 /**
  * The GIF image file format loader.
  */
@@ -56,8 +53,6 @@ class csGIFImageIO : public scfImplementation2<csGIFImageIO,
 
   virtual bool Initialize (iObjectRegistry*) { return true; }
 };
-
-#include "csutil/deprecated_warn_on.h"
 
 /// An csImageFile subclass for reading GIF files.
 class ImageGifFile : public csImageMemory

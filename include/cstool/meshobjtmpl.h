@@ -59,8 +59,7 @@ struct iMaterialWrapper;
     { return new factclass (Engine, object_reg, this); }                    \
   };
 
-// For InvalidateMaterialHandles
-#include "csutil/deprecated_warn_off.h"
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**
  * This is an abstract implementation of iMeshObject. It can be used to
@@ -124,7 +123,7 @@ public:
    * See imesh/object.h for specification. The default implementation
    * does nothing and always returns 0.
    */
-  virtual CS::Graphics::RenderMesh** GetRenderMeshes (int& num, iRenderView*, iMovable*,
+  virtual csRenderMesh** GetRenderMeshes (int& num, iRenderView*, iMovable*,
   	uint32)
   {
     num = 0;
@@ -249,6 +248,12 @@ public:
    * See imesh/objmodel.h for specification. The default implementation
    * returns an infinite bounding box.
    */
+  virtual void GetObjectBoundingBox (csBox3& bbox);
+
+  /**
+   * See imesh/objmodel.h for specification. The default implementation
+   * returns an infinite bounding box.
+   */
   virtual const csBox3& GetObjectBoundingBox ();
 
   /**
@@ -272,7 +277,7 @@ public:
   virtual iTerrainSystem* GetTerrainColldet () { return 0; }
 };
 
-#include "csutil/deprecated_warn_on.h"
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * This is the abstract implementation of iMeshObjectFactory. Like

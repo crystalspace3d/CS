@@ -53,10 +53,6 @@ private:
   iObjectRegistry* object_reg;
   csShaderExpression* expression;
   csWeakRef<iShaderManager> shaderMgr;
-
-protected:
-  void InternalRemove() { SelfDestruct(); }
-
 public:
   /**
    * Construct accessor. 

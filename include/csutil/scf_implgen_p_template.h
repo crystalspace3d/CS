@@ -19,12 +19,8 @@
 
 /*
  * This header have been generated from scf_implgen.h by using
- * bin/gen-scf_impl.sh. Rerun this script if you wish to apply changes made
- * to any of the scf_impl* files.
- *
- * Note that the generation incurs C preprocessing; thus most of this file
- * is devoid of comments - check the original scf_impl* files for possible
- * notes and comments.
+ * gcc -E -x c -P -DSCF_IN_IMPLEMENTATION_H -I.. scf_implgen.h > scf_implgen_P.h
+ * after which the result was put into scf_implgen_p_template.h manually!
  */
 
 #if !defined(SCF_IN_IMPLEMENTATION_H)
@@ -36,11 +32,9 @@
 #pragma once
 #endif
 
-#include "csutil/deprecated_warn_off.h"
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
-/* Pre-preprocessed code starts here */
 /** INSERT OUTPUT FROM GCC HERE **/
-/* Pre-preprocessed code ends here */
 
-#include "csutil/deprecated_warn_on.h"
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 

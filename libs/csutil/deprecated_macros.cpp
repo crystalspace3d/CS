@@ -21,4 +21,22 @@
  */
 
 #include "cssysdef.h"
+#undef CS_TEMP_DIR
+#undef CS_TEMP_FILE
+#include "csutil/syspath.h"
+
+namespace CS
+{
+  namespace Macros
+  {
+    csString CS_TEMP_DIR ()
+    {
+      return Platform::GetTempDirectory ();
+    }
+    csString CS_TEMP_FILE ()
+    {
+      return Platform::GetTempFilename (0);
+    }
+  }
+}
 

@@ -64,6 +64,11 @@ void csNullmeshMeshObject::SetBoundingBox (const csBox3& box)
   ShapeChanged ();
 }
 
+void csNullmeshMeshObject::GetObjectBoundingBox (csBox3& bbox)
+{
+  bbox = box;
+}
+
 const csBox3& csNullmeshMeshObject::GetObjectBoundingBox ()
 {
   return box;

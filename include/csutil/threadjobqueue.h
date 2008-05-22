@@ -27,6 +27,7 @@
 #include "csextern.h"
 #include "csutil/fifo.h"
 #include "csutil/scf_implementation.h"
+#include "csutil/thread.h"
 #include "iutil/job.h"
 
 #include "csutil/threading/condition.h"
@@ -48,7 +49,6 @@ public:
   virtual void Enqueue (iJob* job);
   virtual void PullAndRun (iJob* job);
   virtual void Unqueue (iJob* job, bool waitIfCurrent = true);
-  virtual bool IsFinished ();
 
   enum
   {
@@ -100,7 +100,6 @@ private:
 
   size_t numWorkerThreads;
   bool shutdownQueue;
-  int32 outstandingJobs;
 };
 
 }

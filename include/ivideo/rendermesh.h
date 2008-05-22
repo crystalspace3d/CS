@@ -31,102 +31,38 @@
 #include "csgeom/transfrm.h"
 #include "csgeom/vector3.h"
 
-#include "iengine/material.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/shader/shader.h"
 
+struct iMaterialWrapper;
 struct iPortalContainer;
-
-namespace CS
-{
-namespace Graphics
-{
-  
-  typedef int RenderPriority;
-  
-  enum MeshCullMode
-  {
-    cullNormal,
-    cullFlipped,
-    cullDisabled
-  };
-  
-  /**
-   * Returns inverse culling mode for a given culling mode.
-   * Specifically, for "normal" culling, "flipped" is returned; for "flipped"
-   * culling, "normal" is returned.
-   */
-  static inline MeshCullMode GetFlippedCullMode (MeshCullMode cullMode)
-  {
-    switch (cullMode)
-    {
-      case cullNormal:   return cullFlipped;
-      case cullFlipped:  return cullNormal;
-      case cullDisabled: return cullDisabled;
-    }
-    // Should not happen ...
-    return cullNormal;
-  }
 
 /**
  * Mesh render mode information. Contains the Z, mix and alpha modes to use
  * for rendering a mesh. 
- * \remarks Is separate from CS::Graphics::CoreRenderMesh to allow preprocessing steps 
+ * \remarks Is separate from csCoreRenderMesh to allow preprocessing steps 
  *  to modify the mode data. 
  */
-struct RenderMeshModes
+struct csRenderMeshModes
 {
-  RenderMeshModes () : z_buf_mode ((csZBufMode)~0), mixmode (CS_FX_COPY),
-    renderPrio (-1), flipCulling (false), cullMode (cullNormal),
-    alphaType (csAlphaMode::alphaNone)
+  csRenderMeshModes ()
   {
+    z_buf_mode = CS_ZBUF_NONE;
+    mixmode = CS_FX_COPY;
+    flipCulling = false;
+    alphaType = csAlphaMode::alphaNone;
   }
 
-  RenderMeshModes (RenderMeshModes const& x) :
-    z_buf_mode (x.z_buf_mode),
-    mixmode (x.mixmode),
-    renderPrio (x.renderPrio),
-    flipCulling (x.flipCulling),
-    cullMode (x.cullMode),
-    alphaType (x.alphaType),
-    buffers (x.buffers)
-  {
-  }
-
-  ~RenderMeshModes () { }
+  ~csRenderMeshModes () { }
 
   /// Z mode to use
   csZBufMode z_buf_mode;
 
   /// mixmode to use
   uint mixmode;
-  
-  /// Mesh render priority
-  RenderPriority renderPrio;
 
-  // Deprecated in 1.3.
-  // ***NOTE*** Though deprecated, actual compiler-based deprecation is not
-  // presently enabled since the inline constructors references this variable
-  // and cause a Niagara of warnings to flood the build. Worse, even if
-  // external projects fix their own code to avoid this variable, they still
-  // get penalized by warnings because of the constructors (over which code
-  // external projects have no control). One way to avoid this problem would be
-  // to un-inline the constructors and then disable the deprecation warning
-  // only when compiling the implementation file containing the constructors. A
-  // potential difficulty with this approach, however, is that there is no
-  // obvious location in the CS/libs hierarchy for such an implementation file
-  // to reside.  Since it is considered very unlikely that external projects
-  // will be accessing this variable, and since un-inlining the constructors is
-  // perhaps unnecessarily complicated, the decision was made instead to remove
-  // the compiler-based deprecation attribute, but retain the
-  // documentation-based deprecation warning. If real-world experience shows
-  // that removing the compiler attribute was the wrong approach, then the
-  // un-inlining approach can instead be implemented.
-  // CS_DEPRECATED_VAR_MSG("Use cullMode instead", bool flipCulling );
+  /// Backface flipping mode
   bool flipCulling;
-  
-  /// Mesh culling mode
-  MeshCullMode cullMode;
 
   /// Alpha mode this mesh is drawn.
   csAlphaMode::AlphaType alphaType;
@@ -136,20 +72,9 @@ struct RenderMeshModes
 };
 
 /**
- * Start and end for a  range of indices to render.
- * The indices are used in the range from \a start (inclusive) to \a end
- * (exclusive): start <= n < end
- */
-struct RenderMeshIndexRange
-{
-  unsigned int start;
-  unsigned int end;
-};
-
-/**
  * Data required by the renderer to draw a mesh.
  */
-struct CoreRenderMesh
+struct csCoreRenderMesh
 {
   /**
    * To make debugging easier we add the name of the mesh object
@@ -157,13 +82,17 @@ struct CoreRenderMesh
    */
   const char* db_mesh_name;
 
-  CoreRenderMesh () : db_mesh_name ("<unknown>"), clip_portal (0), 
-    clip_plane (0), clip_z_plane (0), do_mirror (false), indexstart (0), 
-    indexend (0), multiRanges (0), rangesNum (0)
+  csCoreRenderMesh () 
   {
+    clip_portal = 0;
+    clip_plane = 0;
+    clip_z_plane = 0;
+    do_mirror = false;
+    indexstart = indexend = 0;
+    db_mesh_name = "<unknown>";
   }
 
-  ~CoreRenderMesh () {}
+  ~csCoreRenderMesh () {}
 
   /// Clipping parameter
   int clip_portal;
@@ -174,7 +103,6 @@ struct CoreRenderMesh
   /// Clipping parameter
   int clip_z_plane;
 
-  // @@@ FIXME: should prolly be handled by component managing rendering
   /**
    * Mirror mode - whether the mesh should be mirrored.
    * Essentially toggles between back- and front-face culling. 
@@ -205,13 +133,6 @@ struct CoreRenderMesh
   unsigned int indexstart;
   unsigned int indexend;
   /** @} */
-  /**
-   * Index ranges to render. If ranges are specified they have precedence
-   * over \a indexstart and \a indexend.
-   */
-  RenderMeshIndexRange* multiRanges;
-  /// Number of index ranges in \a multiRanges.
-  size_t rangesNum;
 
   /**
    * Material used for this mesh.
@@ -230,13 +151,15 @@ struct CoreRenderMesh
  * Mesh data as returned by mesh plugins. Contains both the data needed for
  * rendering as well as some additional data for preprocessing.
  */
-struct RenderMesh : public CoreRenderMesh, public RenderMeshModes
+struct csRenderMesh : public csCoreRenderMesh, public csRenderMeshModes
 {
-  RenderMesh () : geometryInstance (0), portal (0)
+  csRenderMesh () 
   {
+    portal = 0;
+    geometryInstance = 0;
   }
 
-  ~RenderMesh () {}
+  ~csRenderMesh () {}
 
   /**
    * Some unique ID for the geometry used to render this mesh.
@@ -254,12 +177,6 @@ struct RenderMesh : public CoreRenderMesh, public RenderMeshModes
   /// Worldspace origin of the mesh
   csVector3 worldspace_origin;
 };
-} // namespace Graphics
-} // namespace CS
-
-typedef CS::Graphics::RenderMeshModes csRenderMeshModes;
-typedef CS::Graphics::CoreRenderMesh csCoreRenderMesh;
-typedef CS::Graphics::RenderMesh csRenderMesh;
 
 /** @} */
 

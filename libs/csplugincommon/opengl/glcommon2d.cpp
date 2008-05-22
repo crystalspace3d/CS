@@ -22,7 +22,6 @@
 #include "igraphic/image.h"
 #include "igraphic/imageio.h"
 #include "iutil/document.h"
-#include "iutil/eventq.h"
 #include "iutil/objreg.h"
 #include "iutil/vfs.h"
 #include "ivaria/reporter.h"
@@ -30,7 +29,6 @@
 #include "csgeom/csrect.h"
 #include "csgeom/math.h"
 #include "csplugincommon/canvas/scrshot.h"
-#include "csplugincommon/opengl/assumedstate.h"
 #include "csplugincommon/opengl/glcommon2d.h"
 #include "csplugincommon/opengl/glstates.h"
 #include "csutil/xmltiny.h"
@@ -79,12 +77,11 @@ bool csGraphics2DGLCommon::Initialize (iObjectRegistry *object_reg)
 
   ext.Initialize (object_reg, this);
 
-  multiFavorQuality = config->GetBool ("Video.OpenGL.MultisampleFavorQuality");
+  statecache = new csGLStateCache (&ext);
+  statecontext = new csGLStateCacheContext (&ext);
+  statecache->SetContext (statecontext);
 
-  // Create the event outlet
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
-  if (q != 0)
-    EventOutlet = q->CreateEventOutlet (this);
+  multiFavorQuality = config->GetBool ("Video.OpenGL.MultisampleFavorQuality");
 
   return true;
 }
@@ -93,6 +90,7 @@ csGraphics2DGLCommon::~csGraphics2DGLCommon ()
 {
   Close ();
   
+  delete statecache;
   delete[] screen_shot;
 
   while (ssPool)
@@ -107,13 +105,10 @@ bool csGraphics2DGLCommon::Open ()
 {
   if (is_open) return true;
 
+  statecontext->InitCache();
+
   ext.Open ();
   OpenDriverDB ();
-
-  statecache = new csGLStateCache (&ext);
-  statecontext = new csGLStateCacheContext (&ext);
-  statecache->SetContext (statecontext);
-  statecontext->InitCache();
 
   // initialize font cache object
   csGLFontCache* GLFontCache = new csGLFontCache (this);
@@ -138,7 +133,7 @@ bool csGraphics2DGLCommon::Open ()
 
   Report (CS_REPORTER_SEVERITY_NOTIFY,
     "Using %s mode at resolution %dx%d.",
-    FullScreen ? "full screen" : "windowed", fbWidth, fbHeight);
+    FullScreen ? "full screen" : "windowed", Width, Height);
 
   {
     csString pfStr;
@@ -233,13 +228,13 @@ bool csGraphics2DGLCommon::Open ()
 
   GLFontCache->Setup();
 
-  CS::PluginCommon::GL::SetAssumedState (statecache, &ext);
   glClearColor (0., 0., 0., 0.);
+  glClearDepth (-1.0);
 
   statecache->SetMatrixMode (GL_MODELVIEW);
   glLoadIdentity ();
 
-  glViewport (0, 0, vpWidth, vpHeight);
+  glViewport (0, 0, Width, Height);
   Clear (0);
 
   return true;
@@ -248,11 +243,9 @@ bool csGraphics2DGLCommon::Open ()
 void csGraphics2DGLCommon::Close ()
 {
   if (!is_open) return;
-  csGraphics2D::Close ();
-  delete statecontext; statecontext = 0;
-  delete statecache; statecache = 0;
   ext.Close ();
   driverdb.Close ();
+  csGraphics2D::Close ();
 }
 
 void csGraphics2DGLCommon::SetClipRect (int xmin, int ymin, int xmax, int ymax)
@@ -260,8 +253,7 @@ void csGraphics2DGLCommon::SetClipRect (int xmin, int ymin, int xmax, int ymax)
   ((csGLFontCache*)fontCache)->FlushText ();
 
   csGraphics2D::SetClipRect (xmin, ymin, xmax, ymax);
-  glScissor (vpLeft + ClipX1, fbHeight - (vpTop + ClipY2),
-    ClipX2 - ClipX1, ClipY2 - ClipY1);
+  glScissor (ClipX1, vpHeight - ClipY2, ClipX2 - ClipX1, ClipY2 - ClipY1);
 }
 
 bool csGraphics2DGLCommon::BeginDraw ()
@@ -274,7 +266,7 @@ bool csGraphics2DGLCommon::BeginDraw ()
   /* Note: the renderer relies on this function to setup
    * matrices etc. So be careful when changing stuff. */
 
-  glViewport (vpLeft, fbHeight - (vpTop + vpHeight), vpWidth, vpHeight);
+  glViewport (0, 0, vpWidth, vpHeight);
   if (!hasRenderTarget)
   {
     statecache->SetMatrixMode (GL_PROJECTION);
@@ -363,9 +355,7 @@ csGLScreenShot* csGraphics2DGLCommon::GetScreenShot ()
   }
   else
   {
-#include "csutil/custom_new_disable.h"
     res = new csGLScreenShot (this);
-#include "csutil/custom_new_enable.h"
   }
   scfRefCount++;
   return res;
@@ -396,7 +386,6 @@ void csGraphics2DGLCommon::GetPixelFormatString (const GLPixelFormat& format,
   }
 }
 
-#include "csutil/custom_new_disable.h"
 void csGraphics2DGLCommon::OpenDriverDB (const char* phase)
 {
   const char* driverDB = config->GetStr ("Video.OpenGL.DriverDB.Path",
@@ -437,7 +426,6 @@ void csGraphics2DGLCommon::OpenDriverDB (const char* phase)
 
   driverdb.Open (this, dbRoot, phase, driverDBprio);
 }
-#include "csutil/custom_new_enable.h"
 
 void csGraphics2DGLCommon::Report (int severity, const char* msg, ...)
 {
@@ -782,8 +770,8 @@ csPtr<iImage> csGraphics2DGLCommon::ScreenShot ()
 #endif*/
 
   // Need to resolve pixel alignment issues
-  int screen_width = vpWidth * (4);
-  if (!screen_shot) screen_shot = new uint8 [screen_width * vpHeight];
+  int screen_width = Width * (4);
+  if (!screen_shot) screen_shot = new uint8 [screen_width * Height];
   //if (!screen_shot) return 0;
 
   glReadPixels (0, 0, vpWidth, vpHeight, GL_RGBA,
@@ -896,20 +884,12 @@ bool csGraphics2DGLCommon::DebugCommand (const char* cmdstr)
   return false;
 }
 
-void csGraphics2DGLCommon::SetViewport (int left, int top, int width, int height)
-{ 
-  vpLeft = left; vpTop = top; vpWidth = width; vpHeight = height;
-  glViewport (vpLeft, fbHeight - (vpTop + vpHeight), vpWidth, vpHeight);
-  glScissor (vpLeft + ClipX1, fbHeight - (vpTop + ClipY2),
-    ClipX2 - ClipX1, ClipY2 - ClipY1);
-}
-
 bool csGraphics2DGLCommon::Resize (int width, int height)
 {
   if (!is_open)
   {
-    vpWidth = fbWidth = width;
-    vpHeight = fbHeight = height;
+    Width = width;
+    Height = height;
     return true;
   }
   if (!AllowResizing)
@@ -917,16 +897,15 @@ bool csGraphics2DGLCommon::Resize (int width, int height)
 
   ((csGLFontCache*)fontCache)->FlushText ();
 
-  if ((vpLeft == 0) && (vpTop == 0)
-       && (vpWidth == fbWidth) && (vpHeight == fbHeight))
+  Width = width;
+  Height = height;
+  if (!vpSet)
   {
     vpWidth = width;
     vpHeight = height;
-    SetClipRect (0, 0, vpWidth, vpHeight);
+    SetClipRect (0, 0, Width, Height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
-  fbWidth = width;
-  fbHeight = height;
   EventOutlet->Broadcast (csevCanvasResize(object_reg, this), (intptr_t)this);
   return true;
 }

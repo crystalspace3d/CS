@@ -60,9 +60,8 @@
 %ignore operator&=;
 %ignore operator|=;
 %ignore operator^=;
-// SWIG 1.3.33 reports a syntax error here
-//%ignore operator&&=;
-//%ignore operator||=;
+%ignore operator&&=;
+%ignore operator||=;
 %ignore operator->;
 %ignore operator->*;
 %ignore operator,;
@@ -312,7 +311,7 @@ _TYPEMAP_csArray(double,		newSVnv,	SvNV)
 
 /****************************************************************************
  * Typemaps to convert an interface and version from an interface name.
- * Used by wrapped versions of scfQueryInterface, csQueryRegistry, etc.
+ * Used by wrapped versions of SCF_QUERY_INTERFACE, CS_QUERY_REGISTRY, etc.
  ****************************************************************************/
 %typemap(in) (const char *iface, int iface_ver)
 {

@@ -446,11 +446,16 @@ bool ImageJpgFile::JpegLoader::InitOk()
   /* ==== Step 3: read file parameters with jpeg_read_header() */
   (void) jpeg_read_header(&cinfo, TRUE);
 
-  bool isGrayScale = cinfo.jpeg_color_space == JCS_GRAYSCALE;
   /* ==== Step 4: set parameters for decompression */
   // We want max quality, doesnt matter too much it can be a bit slow
-  if (isGrayScale)
+  if ((Format & CS_IMGFMT_MASK) == CS_IMGFMT_PALETTED8)
+  {
+    cinfo.two_pass_quantize = TRUE;
+    cinfo.dither_mode = dither ? JDITHER_FS : JDITHER_NONE;
+    cinfo.quantize_colors = TRUE;
+    cinfo.desired_number_of_colors = 256;
     dataType = rdtIndexed;
+  }
   else
     dataType = rdtR8G8B8;
   // We almost always want RGB output (no grayscale, yuv etc)
@@ -474,7 +479,7 @@ bool ImageJpgFile::JpegLoader::InitOk()
 
   if ((Format & CS_IMGFMT_MASK) == CS_IMGFMT_ANY)
     Format = (Format & ~CS_IMGFMT_MASK) |
-      (isGrayScale ? CS_IMGFMT_PALETTED8 : CS_IMGFMT_TRUECOLOR);
+      (cinfo.quantize_colors ? CS_IMGFMT_PALETTED8 : CS_IMGFMT_TRUECOLOR);
 
   return true;
 }
@@ -501,9 +506,8 @@ bool ImageJpgFile::JpegLoader::LoadData ()
     return false;
   }
 
-  bool isGrayScale = cinfo.jpeg_color_space == JCS_GRAYSCALE;
   int pixelcount = Width * Height;
-  if (isGrayScale)
+  if ((Format & CS_IMGFMT_MASK) == CS_IMGFMT_PALETTED8)
     indexData = new uint8 [pixelcount];
   else
     rawData.AttachNew (new csDataBuffer (pixelcount * 3));
@@ -529,13 +533,28 @@ bool ImageJpgFile::JpegLoader::LoadData ()
      */
     (void) jpeg_read_scanlines (&cinfo, buffer, 1);
 
-    if (isGrayScale)
-    {
-      // Safety.
-      if (bufp + row_stride > pixelcount) break;
-      /* paletted image */
-      memcpy (indexData + bufp, buffer [0], row_stride);
-    }
+    if (cinfo.output_components == 1)
+      if (cinfo.quantize_colors)
+      {
+	// Safety.
+	if (bufp + row_stride > pixelcount) break;
+        /* paletted image */
+	memcpy (indexData + bufp, buffer [0], row_stride);
+      }
+      else
+      {
+	// Safety.
+	if (bufp + (int)cinfo.output_width > pixelcount) break;
+	/* Grayscale image */
+	uint8* out = rawData->GetUint8() + bufp*3;
+        for (i = 0; i < (int)cinfo.output_width; i++)
+        {
+	  const uint8 v = buffer [0][i];
+	  *out++ = v;
+	  *out++ = v;
+	  *out++ = v;
+        }
+      }
     else
     {
       // Safety.
@@ -548,14 +567,21 @@ bool ImageJpgFile::JpegLoader::LoadData ()
   }
 
   /* Get palette */
-  if (isGrayScale)
+  if (cinfo.quantize_colors)
   {
     palette = new csRGBpixel [256];
-    for (i = 0; i < 256; i++)
+    int cshift = 8 - cinfo.data_precision;
+    for (i = 0; i < cinfo.actual_number_of_colors; i++)
     {
-      palette [i].green = palette [i].blue = palette [i].red = i;
+      palette [i].red   = cinfo.colormap [0] [i] << cshift;
+      if (cinfo.jpeg_color_space != JCS_GRAYSCALE)
+      {
+        palette [i].green = cinfo.colormap [1] [i] << cshift;
+        palette [i].blue  = cinfo.colormap [2] [i] << cshift;
+      }
+      else
+        palette [i].green = palette [i].blue = palette [i].red;
     }
-    paletteCount = 256;
   }
 
   /* ==== Step 7: Finish decompression */

@@ -52,7 +52,6 @@
 #include "ivideo/graph2d.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/shader/shader.h"
-#include "plugins/engine/3d/collection.h"
 #include "plugins/engine/3d/halo.h"
 #include "plugins/engine/3d/meshobj.h"
 #include "plugins/engine/3d/meshfact.h"
@@ -93,8 +92,7 @@ class csLightIt : public scfImplementation1<csLightIt,
 {
 public:
   /// Construct an iterator and initialize to start.
-  csLightIt (csEngine*, iRegion* region);
-  csLightIt (csEngine*, iCollection* collection = 0);
+  csLightIt (csEngine*, iRegion* region = 0);
 
   virtual ~csLightIt ();
 
@@ -114,8 +112,6 @@ private:
   csEngine* engine;
   // The region we are iterating in (optional).
   iRegion* region;
-  // The collection we are iterating in (optional).
-  iCollection* collection;
   // Current sector index.
   int sectorIndex;
   // Current light index.
@@ -181,7 +177,7 @@ public:
 };
 
 
-#include "csutil/deprecated_warn_off.h"
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 struct csImposterUpdateQueue
 {
@@ -240,7 +236,7 @@ public:
   virtual void ForceRelight (iRegion* region = 0,
   	iProgressMeter* meter = 0);
   virtual void ForceRelight (iLight* light, iRegion* region = 0);
-  virtual void ShineLights (iBase* base = 0, 
+  virtual void ShineLights (iRegion* region = 0, 
     iProgressMeter* meter = 0);
 
   virtual void SetLightingCacheMode (int mode)
@@ -317,11 +313,7 @@ public:
   	iTextureWrapper* texture);
   virtual iMaterialList* GetMaterialList () const;
   virtual iMaterialWrapper* FindMaterial (const char* name,
-  	iBase* base = 0);
-  virtual iMaterialWrapper* FindMaterialRegion (const char* name,
-  	iRegion* region);
-  virtual iMaterialWrapper* FindMaterialCollection (const char* name,
-  	iCollection* collection = 0);
+  	iRegion* region = 0);
 
   //-- Texture handling
 
@@ -332,11 +324,7 @@ public:
   virtual int GetTextureFormat () const;
   virtual iTextureList* GetTextureList () const;
   virtual iTextureWrapper* FindTexture (const char* name,
-  	iBase* base = 0);
-  virtual iTextureWrapper* FindTextureRegion (const char* name,
-  	iRegion* region);
-  virtual iTextureWrapper* FindTextureCollection (const char* name,
-  	iCollection* collection = 0);
+  	iRegion* region = 0);
   
   //-- Light handling
 
@@ -346,29 +334,9 @@ public:
   virtual iLight* FindLight (const char *Name, bool RegionOnly = false)
     const;
   virtual iLight* FindLightID (const char* light_id) const;
-
-  virtual csPtr<iLightIterator> GetLightIterator (iBase* base = 0)
-  {
-    csRef<iRegion> region (scfQueryInterfaceSafe<iRegion>(base));
-    if(region)
-    {
-      return GetLightIteratorRegion(region);
-    }
-    else
-    {
-      csRef<iCollection> collection (scfQueryInterfaceSafe<iCollection>(base));
-      return GetLightIteratorCollection(collection);
-    }
-  }
-
-  virtual csPtr<iLightIterator> GetLightIteratorRegion (iRegion* region)
+  virtual csPtr<iLightIterator> GetLightIterator (iRegion* region = 0)
   {
     return csPtr<iLightIterator> (new csLightIt (this, region));
-  }
-
-  virtual csPtr<iLightIterator> GetLightIteratorCollection (iCollection* collection = 0)
-  {
-    return csPtr<iLightIterator> (new csLightIt (this, collection));
   }
 
   virtual void RemoveLight (iLight* light);
@@ -388,11 +356,7 @@ public:
   virtual iSectorList* GetSectors ()
   { return &sectors; }
   virtual iSector* FindSector (const char* name,
-  	iBase* base);
-  virtual iSector* FindSectorRegion (const char* name,
-  	iRegion* region);
-  virtual iSector* FindSectorCollection (const char* name,
-  	iCollection* collection);
+  	iRegion* region = 0);
   virtual csPtr<iSectorIterator> GetNearbySectors (iSector* sector,
   	const csVector3& pos, float radius);
   virtual csPtr<iSectorIterator> GetNearbySectors (iSector* sector,
@@ -442,13 +406,7 @@ public:
   { return &meshes; }
 
   virtual iMeshWrapper* FindMeshObject (const char* name,
-  	iBase* base = 0);
-
-  virtual iMeshWrapper* FindMeshObjectRegion (const char* name,
-  	iRegion* region);
-
-  virtual iMeshWrapper* FindMeshObjectCollection (const char* name,
-  	iCollection* collection = 0);
+  	iRegion* region = 0);
 
   virtual void WantToDie (iMeshWrapper* mesh);
 
@@ -467,13 +425,7 @@ public:
 	iDataBuffer* input);
 
   virtual iMeshFactoryWrapper* FindMeshFactory (const char* name,
-  	iBase* base = 0);
-
-  virtual iMeshFactoryWrapper* FindMeshFactoryRegion (const char* name,
-  	iRegion* region);
-
-  virtual iMeshFactoryWrapper* FindMeshFactoryCollection (const char* name,
-  	iCollection* collection = 0);
+  	iRegion* region = 0);
 
   virtual iMeshFactoryList* GetMeshFactories ()
   { return &meshFactories; }
@@ -484,32 +436,12 @@ public:
   
   virtual iRegionList* GetRegions ();
 
-  // -- Collection handling
-
-  virtual iCollection* CreateCollection(const char* name);
-
-  virtual iCollection* GetCollection(const char* name) const;
-
-  virtual csPtr<iCollectionArray> GetCollections();
-
-  virtual void RemoveCollection(iCollection* collect);
-
-  virtual void RemoveCollection(const char* name);
-
-  virtual void RemoveAllCollections();
-
   //-- Camera handling
 
   virtual csPtr<iCamera> CreateCamera ();
 
   virtual iCameraPosition* FindCameraPosition (const char* name,
-    iBase* base = 0);
-
-  virtual iCameraPosition* FindCameraPositionRegion (const char* name,
-  	iRegion* region);
-
-  virtual iCameraPosition* FindCameraPositionCollection (const char* name,
-  	iCollection* collection = 0);
+  	iRegion* region = 0);
 
   virtual iCameraPositionList* GetCameraPositions ()
   { return &cameraPositions; }
@@ -560,9 +492,7 @@ public:
   virtual iRenderView* GetTopLevelClipper () const
   { return (iRenderView*)topLevelClipper; }
 
-  virtual void PrecacheDraw (iBase* base = 0);
-  virtual void PrecacheDrawCollection (iCollection* collection = 0);
-  virtual void PrecacheDrawRegion (iRegion* region);
+  virtual void PrecacheDraw (iRegion* region = 0);
   virtual void Draw (iCamera* c, iClipper2D* clipper, iMeshWrapper* mesh = 0);
 
   virtual void SetContext (iTextureHandle* ctxt);
@@ -584,12 +514,7 @@ public:
   { return worldSaveable; }
   
   virtual csPtr<iLoaderContext> CreateLoaderContext (
-  	iBase* base = 0, bool curRegOnly = true);
-  
-  virtual void SetDefaultKeepImage (bool enable) 
-  { defaultKeepImage = enable; }
-  virtual bool GetDefaultKeepImage ()
-  { return defaultKeepImage; }
+  	iRegion* region = 0, bool curRegOnly = true);
   
   //-- Other
   
@@ -800,18 +725,17 @@ private:
   void FireStartFrame (iRenderView* rview);
 
   /**
-   * Split a name into optional 'collection/name' format.
+   * Split a name into optional 'region/name' format.
    * This function returns the pointer to the real name of the object.
-   * The 'collection' variable will contain the collection is one is given.
-   * If a collection was given but none could be found this function returns
+   * The 'region' variable will contain the region is one is given.
+   * If a region was given but none could be found this function returns
    * 0 (this is an error).<br>
-   * If '*' was given as a collection name then all collections are searched EVEN if
-   * the the FindXxx() routine is called for a specific collection only. i.e.
+   * If '*' was given as a region name then all regions are searched EVEN if
+   * the the FindXxx() routine is called for a specific region only. i.e.
    * this forces the search to be global. In this case 'global' will be set
    * to true.
    */
-  char* SplitRegionName(const char* name, iRegion*& region, bool& global);
-  char* SplitCollectionName(const char* name, iCollection*& collection, bool& global);
+  char* SplitRegionName (const char* name, iRegion*& region, bool& global);
 
   // Precache a single mesh
   void PrecacheMesh (iMeshWrapper* s, iRenderView* rview);
@@ -838,7 +762,6 @@ public:
 
   /// Store engine shadervar names
   csStringID id_creation_time;
-  csStringID id_lod_fade;
   /// For triangle meshes.
   csStringID colldet_id;
   csStringID viscull_id;
@@ -917,8 +840,6 @@ private:
   csPDelArray<csLightHalo> halos;
   /// The list of all regions currently loaded.
   csRegionList regions;
-  /// The hash of all collections currently existing.
-  csHash<csRef<iCollection>, csString> collections;
 
   /// Sector callbacks.
   csRefArray<iEngineSectorCallback> sectorCallbacks;
@@ -985,9 +906,6 @@ private:
 
   /// 'Saveable' flag
   bool worldSaveable;
-  
-  /// Default 'keep image' flag
-  bool defaultKeepImage;
 
   /// Maximum texture aspect ratio
   int maxAspectRatio;
@@ -1070,6 +988,6 @@ private:
   csRef<iEventHandler> weakEventHandler;
 };
 
-#include "csutil/deprecated_warn_on.h"
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 #endif // __CS_ENGINE_H__

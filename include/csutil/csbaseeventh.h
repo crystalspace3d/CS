@@ -33,7 +33,6 @@
 #include "csutil/scf_implementation.h"
 #include "iutil/event.h"
 #include "iutil/eventh.h"
-#include "iutil/eventq.h"
 
 #include <limits.h>
 

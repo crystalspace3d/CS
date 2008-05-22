@@ -20,7 +20,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "cssysdef.h"
-#include "csplugincommon/opengl/assumedstate.h"
 #include "embedgl2d.h"
 
 CS_IMPLEMENT_PLUGIN
@@ -31,20 +30,11 @@ csGraphics2DGLEmbed::csGraphics2DGLEmbed(iBase* iParent)
 : scfImplementationType (this, iParent)
 {
 }
-
-bool csGraphics2DGLEmbed::Open()
-{
-  bool ret = csGraphics2DGLCommon::Open();
-  AllowResizing = true;
-  return ret;
-}
-
 bool csGraphics2DGLEmbed::PerformExtensionV (char const* command, va_list args)
 {
   if (!strcasecmp (command, "resetstatecache"))
   {
     statecontext->InitCache ();
-    CS::PluginCommon::GL::SetAssumedState (statecache, &ext);
     return true;
   }
   return csGraphics2DGLCommon::PerformExtensionV (command,args);

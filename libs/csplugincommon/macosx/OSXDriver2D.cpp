@@ -97,8 +97,8 @@ bool OSXDriver2D::Initialize(iObjectRegistry *reg)
 bool OSXDriver2D::Open()
 {
     // Copy original values
-    origWidth = canvas->fbWidth;
-    origHeight = canvas->fbHeight;
+    origWidth = canvas->Width;
+    origHeight = canvas->Height;
 
         // Set up pixel format
     if (canvas->Depth == 32)
@@ -119,7 +119,7 @@ bool OSXDriver2D::Open()
 
     // Create window
     if (OSXDelegate2D_openWindow(delegate, canvas->win_title.GetData(),
-	canvas->fbWidth, canvas->fbHeight, canvas->Depth,
+	canvas->Width, canvas->Height, canvas->Depth,
 	canvas->FullScreen, display, screen) == false)
         return false;
 
@@ -232,7 +232,7 @@ bool OSXDriver2D::EnterFullscreenMode()
 {
     // Find mode and copy parameters
     CFDictionaryRef mode = CGDisplayBestModeForParameters(display, 
-                        canvas->Depth, canvas->fbWidth, canvas->fbHeight, 0);
+                        canvas->Depth, canvas->Width, canvas->Height, 0);
     if (mode == 0)
         return false;
 
@@ -249,12 +249,10 @@ bool OSXDriver2D::EnterFullscreenMode()
         // Extract actual Width/Height/Depth
         CFNumberGetValue(
 	    (CFNumberRef) CFDictionaryGetValue(mode, kCGDisplayWidth),
-	    kCFNumberLongType, &canvas->fbWidth);
-	canvas->vpWidth = canvas->fbWidth;
+	    kCFNumberLongType, &canvas->Width);
         CFNumberGetValue(
 	    (CFNumberRef) CFDictionaryGetValue(mode, kCGDisplayHeight),
-	    kCFNumberLongType, &canvas->fbHeight);
-	canvas->vpHeight = canvas->fbHeight;
+	    kCFNumberLongType, &canvas->Height);
         CFNumberGetValue(
 	    (CFNumberRef) CFDictionaryGetValue(mode, kCGDisplayBitsPerPixel), 
 	    kCFNumberLongType, &canvas->Depth);
@@ -312,7 +310,7 @@ bool OSXDriver2D::ToggleFullscreen()
 
     if (success == true)
         OSXDelegate2D_openWindow(delegate, canvas->win_title.GetData(),
-                                canvas->fbWidth, canvas->fbHeight, canvas->Depth, 
+                                canvas->Width, canvas->Height, canvas->Depth, 
                                 canvas->FullScreen, display, screen);
 
     return success;

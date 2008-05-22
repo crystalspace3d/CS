@@ -32,7 +32,7 @@ class csStringBase;
 /**
  * A template providing various comparison and ordering functions.
  */
-template <typename T1, typename T2 = T1>
+template <class T1, class T2>
 class csComparator
 {
 public:

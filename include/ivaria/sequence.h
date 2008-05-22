@@ -170,7 +170,7 @@ struct iSequence : public virtual iBase
  * - Sequence Manager plugin (crystalspace.utilities.sequence)
  *   
  * Main ways to get pointers to this interface:
- * - csQueryRegistry<iSequenceManager>()
+ * - CS_QUERY_REGISTRY()
  *   
  * Main users of this interface:
  * - iEngineSequenceManager

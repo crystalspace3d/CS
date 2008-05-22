@@ -406,6 +406,7 @@ public:
 
   // Debugging functions.
   bool Debug_CheckTree (csString& str);
+  csPtr<iString> Debug_UnitTest ();
   void Debug_Dump (csString& str, int indent);
   void Debug_Statistics (int& tot_objects,
         int& tot_nodes, int& tot_leaves, int depth, int& max_depth,
@@ -415,13 +416,13 @@ public:
 
   virtual int GetSupportedTests () const
   {
-    return CS_DBGHELP_STATETEST |
+    return CS_DBGHELP_UNITTEST | CS_DBGHELP_STATETEST |
       CS_DBGHELP_TXTDUMP | CS_DBGHELP_BENCHMARK;
   }
 
   virtual csPtr<iString> UnitTest ()
   {
-    return 0;
+    return Debug_UnitTest ();
   }
 
   virtual csPtr<iString> StateTest ()

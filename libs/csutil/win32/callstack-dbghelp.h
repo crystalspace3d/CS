@@ -34,21 +34,21 @@ namespace CS
 namespace Debug
 {
 
-class CallStackCreatorDbgHelp :
-  public CallstackAllocatedDerived<iCallStackCreator>
+class CallStackCreatorDbgHelp : public iCallStackCreator,
+                                public CS::Memory::CustomAllocated
 {
-  virtual bool CreateCallStack (CallStackEntriesArray& entries,
-    CallStackParamsArray& params, bool fast);
+  virtual bool CreateCallStack (csDirtyAccessArray<CallStackEntry>& entries,
+    csDirtyAccessArray<uintptr_t>& params, bool fast);
 };
 
-class CallStackNameResolverDbgHelp :
-  public CallstackAllocatedDerived<iCallStackNameResolver>
+class CallStackNameResolverDbgHelp : public iCallStackNameResolver,
+                                     public CS::Memory::CustomAllocated
 {
-  virtual bool GetAddressSymbol (void* addr, char*& sym);
+  virtual bool GetAddressSymbol (void* addr, csString& sym);
   virtual void* OpenParamSymbols (void* addr);
-  virtual bool GetParamName (void* handle, size_t paramNum, char*& sym);
+  virtual bool GetParamName (void* handle, size_t paramNum, csString& sym);
   virtual void FreeParamSymbols (void* handle);
-  virtual bool GetLineNumber (void* addr, char*& lineAndFile);
+  virtual bool GetLineNumber (void* addr, csString& lineAndFile);
 };
 
 } // namespace Debug

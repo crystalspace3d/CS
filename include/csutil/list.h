@@ -26,65 +26,43 @@
 
 #include "csextern.h"
 
-#include "csutil/allocator.h"
-
 /**
  * A lightweight double-linked list template.  Copies the elements into the
  * list for storages.  Assumes that type T supports copy construction.
  */
-template <class T, class MemoryAllocator = CS::Memory::AllocatorMalloc>
+template <class T>
 class csList
 {
 protected:
   /**
    * Template which describes the data stored in the linked list
-   * For example a list of ints uses ListElement<int>.
+   * For example a list of ints uses csListElement<int>.
    */
-  struct ListElement
+  struct csListElement
   {
     /// Use specified data
-    ListElement(const T& d, ListElement* newnext, ListElement* newprev) :
+    csListElement(const T& d, csListElement* newnext, csListElement* newprev) :
       next(newnext), prev(newprev), data(d) {}
 
     /// Next element in list. If this is the last one, then next is 0
-    ListElement* next;
+    csListElement* next;
 
     /// Previous element in list. If this is the first one, prev is 0
-    ListElement* prev;
+    csListElement* prev;
 
     /// Stored data
     T data;
   };
 
   /// Remove specific item by explicit ref
-  void Delete (ListElement *el);
+  void Delete (csListElement *el);
 
-  void* AllocElement ()
-  {
-    return head.Alloc (sizeof (ListElement));
-  }
-  void FreeElement (ListElement* el)
-  {
-    el->~ListElement();
-    head.Free (el);
-  }
 public:
-  /**
-   * This is the size of the memory block the wrapper list uses to
-   * store the actual data. It is published to make fixed-size allocators
-   * possible.
-   */
-  static const size_t allocSize = sizeof (ListElement);
-
   /// Default constructor
-  csList() : head ((ListElement*)0), tail(0) {}
-
-  /// Construct with allocator setup
-  csList (const MemoryAllocator& alloc) : head (alloc, (ListElement*)0), 
-    tail(0) {}
+  csList() : head(0), tail(0) {}
 
   /// Copy constructor
-  csList(const csList<T, MemoryAllocator> &other);
+  csList(const csList<T> &other);
 
   /// Destructor
   ~csList()
@@ -101,11 +79,11 @@ public:
     Iterator(const Iterator& r)
     { ptr = r.ptr; visited = r.visited; reversed = r.reversed; }
     /// Constructor.
-    Iterator(const csList<T, MemoryAllocator> &list, bool reverse = false) :
+    Iterator(const csList<T> &list, bool reverse = false) :
       visited(false), reversed(reverse)
     {
       if (reverse) ptr = list.tail;
-      else ptr = list.head.p;
+      else ptr = list.head;
     }
     /// Assignment operator
     Iterator& operator= (const Iterator& r)
@@ -212,19 +190,19 @@ public:
     T& FetchPrev () const { return FetchPrevious(); } // Backward compat.
 
   protected:
-    friend class csList<T, MemoryAllocator>;
-    Iterator (ListElement* element, bool visit = true, bool rev = false) :
+    friend class csList<T>;
+    Iterator (csListElement* element, bool visit = true, bool rev = false) :
       ptr(element), visited(visit), reversed(rev)
     {}
 
   private:
-    ListElement* ptr;
+    csListElement* ptr;
     bool visited;
     bool reversed;
   };
 
-  /// Assignment, deep-copy
-  csList& operator=(const csList<T, MemoryAllocator>& other);
+  /// Assignment, shallow copy.
+  csList& operator=(const csList<T>& other);
 
   /// Add an item first in list. Copy T into the listdata.
   Iterator PushFront (const T& item);
@@ -238,50 +216,21 @@ public:
   /// Insert an item after the item the iterator is set to.
   void InsertAfter(Iterator& it, const T& item);
 
-  /**
-   * Move an item (as iterator \a item) before the item the iterator \a it is 
-   * set to.
-   */
+  /// Move an item (as iterator) before the item the iterator is set to.
   void MoveBefore(const Iterator& it, const Iterator& item);
-  /// Move an item (as iterator \a item) to the front of the list.
-  void MoveToFront (const Iterator& item);
 
-  /** 
-   * Move an item (as iterator \a item ) after the item the iterator \a it is 
-   * set to.
-   */
+  /// Move an item (as iterator) after the item the iterator is set to.
   void MoveAfter(const Iterator& it, const Iterator& item);
-  /// Move an item (as iterator \a item) to the front of the list.
-  void MoveToBack (const Iterator& item);
 
   /// Remove specific item by iterator.
   void Delete (Iterator& it);
-  
-  /**
-   * Remove specified item.
-   * \remarks Slow!
-   */
-  bool Delete (const T& item)
-  {
-    ListElement* e = head.p;
-    while (e != 0)
-    {
-      if (e->data == item)
-      {
-	Delete (e);
-	return true;
-      }
-      e = e->next;
-    }
-    return false;
-  }
 
   /// Empty an list.
   void DeleteAll();
 
   /// Return first element of the list.
   T& Front () const
-  { return head.p->data; }
+  { return head->data; }
   /// Return last element of the list.
   T& Last () const
   { return tail->data; }
@@ -289,9 +238,9 @@ public:
   /// Deletes the first element of the list.
   bool PopFront ()
   {
-    if (!head.p)
+    if (!head)
       return false;
-    Delete (head.p);
+    Delete (head);
     return true;
   }
 
@@ -306,22 +255,20 @@ public:
   
   bool IsEmpty () const
   {
-    CS_ASSERT((head.p == 0 && tail == 0) || (head.p !=0 && tail != 0));
-    return head.p == 0;
+    CS_ASSERT((head == 0 && tail == 0) || (head !=0 && tail != 0));
+    return head == 0;
   }
 
 private:
   friend class Iterator;
-  CS::Memory::AllocatorPointerWrapper<ListElement, MemoryAllocator> head;
-  ListElement* tail;
+  csListElement *head, *tail;
 };
 
 /// Deep copy of list
-template <class T, class MemoryAllocator>
-inline csList<T, MemoryAllocator>::csList(
-  const csList<T, MemoryAllocator> &other) : head((ListElement*)0), tail(0)
+template <class T>
+inline csList<T>::csList(const csList<T> &other) : head(0), tail(0)
 {
-  ListElement* e = other.head.p;
+  csListElement* e = other.head;
   while (e != 0)
   {
     PushBack (e->data);
@@ -330,12 +277,11 @@ inline csList<T, MemoryAllocator>::csList(
 }
 
 /// Assignment, deep-copy
-template <class T, class MemoryAllocator>
-inline csList<T, MemoryAllocator>& csList<T, MemoryAllocator>::operator= (
-  const csList<T, MemoryAllocator> &other)
+template <class T>
+inline csList<T>& csList<T>::operator= (const csList<T> &other)
 {
   DeleteAll ();
-  ListElement* e = other.head.p;
+  csListElement* e = other.head;
   while (e != 0)
   {
     PushBack (e->data);
@@ -345,59 +291,53 @@ inline csList<T, MemoryAllocator>& csList<T, MemoryAllocator>::operator= (
 }
 
 /// Delete all elements
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::DeleteAll ()
+template <class T>
+inline void csList<T>::DeleteAll ()
 {
-  ListElement *cur = head.p, *next = 0;
+  csListElement *cur = head, *next = 0;
   while (cur != 0)
   {
     next = cur->next;
-    FreeElement (cur);
+    delete cur;
     cur = next;
   }
-  head.p = tail = 0;
+  head = tail = 0;
 }
 
-#include "csutil/custom_new_disable.h"
-
 /// Add one item last in the list
-template <class T, class MemoryAllocator>
-inline typename csList<T, MemoryAllocator>::Iterator 
-  csList<T, MemoryAllocator>::PushBack (const T& e)
+template <class T>
+inline typename csList<T>::Iterator csList<T>::PushBack (const T& e)
 {
-  ListElement* el = new (AllocElement()) ListElement (e, 0, tail);
+  csListElement* el = new csListElement (e, 0, tail);
   if (tail)
     tail->next = el;
   else
-    head.p = el;
+    head = el;
   tail = el;
   return Iterator(el);
 }
 
 /// Add one item first in the list
-template <class T, class MemoryAllocator>
-inline typename csList<T, MemoryAllocator>::Iterator 
-  csList<T, MemoryAllocator>::PushFront (const T& e)
+template <class T>
+inline typename csList<T>::Iterator csList<T>::PushFront (const T& e)
 {
-  ListElement* el = new (AllocElement()) ListElement (e, head.p, 0);
-  if (head.p)
-    head.p->prev = el;
+  csListElement* el = new csListElement (e, head, 0);
+  if (head)
+    head->prev = el;
   else
     tail = el;
-  head.p = el;
+  head = el;
   return Iterator (el);
 }
 
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::InsertAfter (Iterator &it, 
-  const T& item)
+template <class T>
+inline void csList<T>::InsertAfter (Iterator &it, const T& item)
 {
   CS_ASSERT(it.HasCurrent());
-  ListElement* el = it.ptr;
-  ListElement* next = el->next;
-  ListElement* prev = el;
-  ListElement* newEl = new (AllocElement()) ListElement (item, next, 
-    prev);
+  csListElement* el = it.ptr;
+  csListElement* next = el->next;
+  csListElement* prev = el;
+  csListElement* newEl = new csListElement (item, next, prev);
   if (!next) // this is the last element
     tail = newEl;
   else
@@ -405,45 +345,41 @@ inline void csList<T, MemoryAllocator>::InsertAfter (Iterator &it,
   el->next = newEl;
 }
 
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::InsertBefore (Iterator &it, 
-  const T& item)
+template <class T>
+inline void csList<T>::InsertBefore (Iterator &it, const T& item)
 {
   CS_ASSERT(it.HasCurrent());
-  ListElement* el = it.ptr;
-  ListElement* next = el;
-  ListElement* prev = el->prev;
-  ListElement* newEl = new (AllocElement()) ListElement (item, next, prev);
+  csListElement* el = it.ptr;
+  csListElement* next = el;
+  csListElement* prev = el->prev;
+  csListElement* newEl = new csListElement (item, next, prev);
   if (!prev) // this is the first element
-    head.p = newEl;
+    head = newEl;
   else
     el->prev->next = newEl;
   el->prev = newEl;
 }
 
-#include "csutil/custom_new_enable.h"
-
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::MoveAfter (const Iterator &it, 
-  const Iterator &item)
+template <class T>
+inline void csList<T>::MoveAfter (const Iterator &it, const Iterator &item)
 {
   CS_ASSERT(item.HasCurrent());
-  ListElement* el_item = item.ptr;
+  csListElement* el_item = item.ptr;
 
   // Unlink the item.
   if (el_item->prev)
     el_item->prev->next = el_item->next;
   else
-    head.p = el_item->next;
+    head = el_item->next;
   if (el_item->next)
     el_item->next->prev = el_item->prev;
   else
     tail = el_item->prev;
 
   CS_ASSERT(it.HasCurrent());
-  ListElement* el = it.ptr;
-  ListElement* next = el->next;
-  ListElement* prev = el;
+  csListElement* el = it.ptr;
+  csListElement* next = el->next;
+  csListElement* prev = el;
 
   el_item->next = next;
   el_item->prev = prev;
@@ -454,119 +390,53 @@ inline void csList<T, MemoryAllocator>::MoveAfter (const Iterator &it,
   el->next = el_item;
 }
 
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::MoveToBack (const Iterator &item)
+template <class T>
+inline void csList<T>::MoveBefore (const Iterator &it, const Iterator &item)
 {
   CS_ASSERT(item.HasCurrent());
-  ListElement* el_item = item.ptr;
-
-  if (!el_item->next)
-    // Already at back.
-    return;
-
-  ListElement* el = tail;
-  ListElement* prev = el;
+  csListElement* el_item = item.ptr;
 
   // Unlink the item.
   if (el_item->prev)
     el_item->prev->next = el_item->next;
   else
-    head.p = el_item->next;
-  el_item->next->prev = el_item->prev;
-
-  el_item->next = 0;
-  el_item->prev = prev;
-  tail = el_item;
-  el->next = el_item;
-}
-
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::MoveBefore (const Iterator &it, 
-  const Iterator &item)
-{
-  CS_ASSERT(item.HasCurrent());
-  ListElement* el_item = item.ptr;
-
-  // Unlink the item.
-  if (el_item->prev)
-    el_item->prev->next = el_item->next;
-  else
-    head.p = el_item->next;
+    head = el_item->next;
   if (el_item->next)
     el_item->next->prev = el_item->prev;
   else
     tail = el_item->prev;
 
   CS_ASSERT(it.HasCurrent());
-  ListElement* el = it.ptr;
-  ListElement* next = el;
-  ListElement* prev = el->prev;
+  csListElement* el = it.ptr;
+  csListElement* next = el;
+  csListElement* prev = el->prev;
 
   el_item->next = next;
   el_item->prev = prev;
   if (!prev) // this is the first element
-    head.p = el_item;
+    head = el_item;
   else
     el->prev->next = el_item;
   el->prev = el_item;
 }
 
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::MoveToFront (const Iterator &item)
-{
-  CS_ASSERT(item.HasCurrent());
-  ListElement* el_item = item.ptr;
-
-  if (!el_item->prev)
-    // Already at front.
-    return;
-
-  ListElement* el = head.p;
-  ListElement* next = el;
-
-  // Unlink the item.
-  el_item->prev->next = el_item->next;
-  if (el_item->next)
-    el_item->next->prev = el_item->prev;
-  else
-    tail = el_item->prev;
-
-  el_item->next = next;
-  el_item->prev = 0;
-  head.p = el_item;
-  el->prev = el_item;
-}
-
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::Delete (Iterator &it)
+template <class T>
+inline void csList<T>::Delete (Iterator &it)
 {
   CS_ASSERT(it.HasCurrent());
-  ListElement* el = it.ptr;
+  csListElement* el = it.ptr;
 
-  if (el->prev == 0)
-  {
-    // Deleting first element, reset to next
-    if (it.IsReverse())
-      --it;
-    else
-      ++it;
-    Delete(el);
-    it.visited = false;
-  }
+  // Advance the iterator so we can delete the data it's using
+  if (it.IsReverse())
+    --it;
   else
-  {
-    /* Make a step back so the current element can be deleted
-       and the next element returned is the one after the deleted */
-    if (it.IsReverse())
-      ++it;
-    else
-      --it;
-    Delete(el);
-  }
+    ++it;
+
+  Delete(el);
 }
 
-template <class T, class MemoryAllocator>
-inline void csList<T, MemoryAllocator>::Delete (ListElement *el)
+template <class T>
+inline void csList<T>::Delete (csListElement *el)
 {
   CS_ASSERT(el != 0);
 
@@ -574,14 +444,14 @@ inline void csList<T, MemoryAllocator>::Delete (ListElement *el)
   if (el->prev)
     el->prev->next = el->next;
   else
-    head.p = el->next;
+    head = el->next;
 
   if (el->next)
     el->next->prev = el->prev;
   else
     tail = el->prev;
 
-  FreeElement (el);
+  delete el;
 }
 
 #endif //__CS_UTIL_LIST_H__

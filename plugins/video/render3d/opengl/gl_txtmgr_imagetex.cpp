@@ -56,7 +56,7 @@ csGLTextureHandle::csGLTextureHandle (iImage* image, int flags,
 
 csGLTextureHandle::~csGLTextureHandle()
 {
-  cs_free (origName);
+  delete[] origName;
 }
 
 
@@ -64,7 +64,7 @@ void csGLTextureHandle::FreeImage ()
 {
   if (image.IsValid()) 
   {
-    origName = CS::StrDup (image->GetName());
+    origName = csStrNew (image->GetName());
     if (IsTransp() && !IsTranspSet())
     {
       int r,g,b;
@@ -136,7 +136,7 @@ void csGLTextureHandle::CreateMipMaps()
    */
   bool compressedTarget;
   GLenum targetFormat; 
-  if ((texType == iTextureHandle::texTypeRect)
+  if ((target == iTextureHandle::CS_TEX_IMG_RECT)
     && (txtmgr->disableRECTTextureCompression))
     /* @@@ Hack: Some ATI drivers can't grok generic compressed formats for 
      * RECT textures, so force an uncompressed format in this case. */
@@ -354,12 +354,10 @@ bool csGLTextureHandle::MakeUploadData (bool allowCompressed,
       CS::StructuredTextureFormat texFormat (
         CS::TextureFormatStrings::ConvertStructured (rawFormat));
       TextureStorageFormat glFormat;
-      TextureSourceFormat srcFormat;
-      if (txtmgr->DetermineGLFormat (texFormat, glFormat, srcFormat)
+      if (txtmgr->DetermineGLFormat (texFormat, glFormat)
         && !(glFormat.isCompressed && !allowCompressed))
       {
-        uploadData.storageFormat = glFormat;
-        uploadData.sourceFormat = srcFormat;
+        uploadData.sourceFormat = glFormat;
         uploadData.image_data = imageRaw->GetUint8();
         if (glFormat.isCompressed)
 	  uploadData.compressedSize = imageRaw->GetSize();
@@ -390,7 +388,7 @@ bool csGLTextureHandle::MakeUploadData (bool allowCompressed,
     uploadData.sourceFormat.format = GL_RGBA;
     uploadData.sourceFormat.type = GL_UNSIGNED_BYTE;
   }
-  uploadData.storageFormat.targetFormat = targetFormat;
+  uploadData.sourceFormat.targetFormat = targetFormat;
   uploadData.w = Image->GetWidth();
   uploadData.h = Image->GetHeight();
   uploadData.d = Image->GetDepth();

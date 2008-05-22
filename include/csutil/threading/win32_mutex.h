@@ -53,7 +53,11 @@ namespace Implementation
         Implementation::CloseHandle (semaphore);
       }
     }
-      
+    
+    bool IsLocked ()
+    {
+      return AtomicOperations::Read (&activeFlag) > 0;
+    }
 
     bool Lock ()
     {
@@ -77,13 +81,7 @@ namespace Implementation
       }
     }
 
-  protected:
-    friend class RecursiveMutexBase;
-    bool IsLocked ()
-    {
-      return AtomicOperations::Read (&activeFlag) > 0;
-    }
-  
+  private:
     void* GetSemaphore ()
     {
       void* currentSem = AtomicOperations::Read (&semaphore);

@@ -114,8 +114,6 @@ public:									\
   virtual int GetRefCount ();						\
   virtual void AddRefOwner (void** ref_owner);				\
   virtual void RemoveRefOwner (void** ref_owner);			\
-  scfInterfaceMetadataList* GetInterfaceMetadata () \
-  { return 0; } \
   virtual void *QueryInterface (scfInterfaceID iInterfaceID, int iVersion)
 
 /**
@@ -549,7 +547,7 @@ void *Class::QueryInterface (scfInterfaceID iInterfaceID, int iVersion)	\
 static inline void Class ## _scfUnitInitialize(iSCF* SCF)		\
 {									\
   iSCF::SCF = SCF;							\
-  CS::Debug::MemTracker::RegisterModule (#Class);			\
+  mtiRegisterModule (#Class);						\
 }									\
 CS_EXPORTED_FUNCTION							\
 void CS_EXPORTED_NAME(Class,_scfInitialize)(iSCF* SCF)			\
@@ -706,8 +704,6 @@ struct iFactory : public iBase
   /// Query library module name.
   virtual const char *QueryModuleName () = 0;
 };
-// Give versions to above declared classes.
-SCF_VERSION (iFactory, 0, 0, 2);
 
 //----------------------------------------------- Client-side functions -----//
 
@@ -767,6 +763,7 @@ CS_CRYSTALSPACE_EXPORT void scfRegisterStaticFactoryFunc (scfFactoryFunc,
 //---------- IMPLEMENTATION OF HELPER FUNCTIONS
 
 
+
 /**
  * Helper function around iBase::QueryInterface
  */
@@ -778,6 +775,18 @@ inline csPtr<Interface> scfQueryInterface (ClassPtr object)
     scfInterfaceTraits<Interface>::GetVersion ());
   return csPtr<Interface> (x);
 }
+
+template<class Interface, class ClassPtr>
+inline CS_DEPRECATED_METHOD_MSG ("SCF_QUERY_INTERFACE macro is deprecated")
+csPtr<Interface> SCF_QUERY_INTERFACE_is_deprecated (ClassPtr object)
+{
+  return scfQueryInterface<Interface> (object);
+}
+/**
+ * \deprecated Compatibility macro for scfQueryInterface
+ */
+#define SCF_QUERY_INTERFACE(Object,Interface) \
+  SCF_QUERY_INTERFACE_is_deprecated<Interface> (Object)
 
 /**
  * Helper function around iBase::QueryInterface which also 
@@ -793,6 +802,18 @@ inline csPtr<Interface> scfQueryInterfaceSafe (ClassPtr object)
     scfInterfaceTraits<Interface>::GetVersion ());
   return csPtr<Interface> (x);
 }
+
+template<class Interface, class ClassPtr>
+inline CS_DEPRECATED_METHOD_MSG ("SCF_QUERY_INTERFACE_SAFE macro is deprecated")
+csPtr<Interface> SCF_QUERY_INTERFACE_SAFE_is_deprecated (ClassPtr object)
+{
+  return scfQueryInterfaceSafe<Interface> (object);
+}
+/**
+ * \deprecated Compatibility macro for scfQueryInterfaceSafe
+ */
+#define SCF_QUERY_INTERFACE_SAFE(Object,Interface) \
+  SCF_QUERY_INTERFACE_SAFE_is_deprecated<Interface> (Object)
 
 /**
  * Handy function to create an instance of a shared class.
@@ -812,7 +833,21 @@ inline csPtr<Interface> scfCreateInstance (char const * const ClassID)
   return csPtr<Interface> (x);
 }
 
+template<class Interface>
+inline CS_DEPRECATED_METHOD_MSG ("SCF_CREATE_INSTANCE macro is deprecated")
+csPtr<Interface> SCF_CREATE_INSTANCE_is_deprecated (
+  char const * const ClassID)
+{
+  return scfCreateInstance<Interface> (ClassID);
+}
+/**
+ * \deprecated Compatibility macro for scfCreateInstance function
+ */
+#define SCF_CREATE_INSTANCE(ClassID,Interface) \
+  SCF_CREATE_INSTANCE_is_deprecated<Interface> (ClassID)
 
+// Give versions to above declared classes.
+SCF_VERSION (iFactory, 0, 0, 2);
 
 // A bit hacky.
 #include "csutil/reftrackeraccess.h"

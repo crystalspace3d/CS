@@ -122,23 +122,22 @@ struct LSIAndDist
 
 struct ExtraRenderMeshData
 {
+    long            priority;
     csZBufMode      zBufMode;
 };
 
-#include "csutil/deprecated_warn_off.h"
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**
  * The holder class for all implementations of iMeshObject.
  */
-class csMeshWrapper : 
-  public scfImplementationExt5<csMeshWrapper,
-                               csObject,
-                               iMeshWrapper,
-                               scfFakeInterface<iShaderVariableContext>,
-                               iVisibilityObject,
-    		               iSceneNode,
-                               iSelfDestruct>,
-  public CS::Graphics::OverlayShaderVariableContextImpl
+class csMeshWrapper : public scfImplementationExt5<csMeshWrapper,
+                                                   csObject,
+                                                   iMeshWrapper,
+                                                   iShaderVariableContext,
+                                                   iVisibilityObject,
+						   iSceneNode,
+						   iSelfDestruct>
 {
   friend class csMovable;
   friend class csMovableSectorList;
@@ -164,7 +163,7 @@ protected:
    * later. There are a few predefined slots which the application is
    * free to use or not.
    */
-  CS::Graphics::RenderPriority render_priority;
+  long render_priority;
 
   /// For NR: Cached value from DrawTest
   bool draw_test;
@@ -203,11 +202,10 @@ protected:
   csRef<csLODListener> var_min_render_dist_listener;
   csRef<csLODListener> var_max_render_dist_listener;
 
+  csShaderVariableContext svcontext;
+  csRef<iShaderVariableContext> factorySVC;
+
   csEngine* engine;
-
-protected:
-  virtual void InternalRemove() { SelfDestruct(); }
-
 private:
   /// Mesh object corresponding with this csMeshWrapper.
   csRef<iMeshObject> meshobj;
@@ -328,7 +326,7 @@ public:
   virtual void SetFactory (iMeshFactoryWrapper* factory)
   {
     csMeshWrapper::factory = factory;
-    SetParentContext (factory ? factory->GetSVContext() : 0);
+    factorySVC = factory ? factory->GetSVContext() : 0;
   }
   /// Get the mesh factory.
   virtual iMeshFactoryWrapper* GetFactory () const
@@ -377,11 +375,11 @@ public:
   }
 
   /// Set the render priority for this object.
-  virtual void SetRenderPriority (CS::Graphics::RenderPriority rp);
+  virtual void SetRenderPriority (long rp);
   /// Set the render priority for this object and children.
-  virtual void SetRenderPriorityRecursive (CS::Graphics::RenderPriority rp);
+  virtual void SetRenderPriorityRecursive (long rp);
   /// Get the render priority for this object.
-  virtual CS::Graphics::RenderPriority GetRenderPriority () const
+  virtual long GetRenderPriority () const
   {
     return render_priority;
   }
@@ -451,53 +449,41 @@ public:
   /// Return true if there is a parent mesh that has static lod.
   bool SomeParentHasStaticLOD () const;
 
-  virtual CS::Graphics::RenderMesh** GetRenderMeshes (int& num, iRenderView* rview,
+  /**
+   * Draw the zpass for the object.  If this object doesn't use lighting
+   * then it can be drawn fully here.
+   */
+  virtual csRenderMesh** GetRenderMeshes (int& num, iRenderView* rview,
   	uint32 frustum_mask);
   /**
    * Adds a render mesh to the list of extra render meshes.
    * This list is used for special cases (like decals) where additional
    * things need to be renderered for the mesh in an abstract way.
    */
-  virtual size_t AddExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh, 
+  virtual void AddExtraRenderMesh(csRenderMesh* renderMesh, long priority, 
           csZBufMode zBufMode);
-  virtual void AddExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh, 
-    CS::Graphics::RenderPriority priority, csZBufMode zBufMode)
-  {
-    renderMesh->renderPrio = priority;
-    AddExtraRenderMesh (renderMesh, zBufMode);
-  }
 
   /**
    * Grabs any additional render meshes this mesh might have on top
    * of the normal rendermeshes through GetRenderMeshes.
    */
-  virtual CS::Graphics::RenderMesh** GetExtraRenderMeshes (size_t& num, iRenderView* rview,
+  virtual csRenderMesh** GetExtraRenderMeshes (size_t& num, iRenderView* rview,
     uint32 frustum_mask);
-
-  /// Get a specific extra render mesh.
-  virtual CS::Graphics::RenderMesh* GetExtraRenderMesh (size_t idx) const;
-  
-  /// Get number of extra render meshes.
-  virtual size_t GetExtraRenderMeshCount () const
-  { return extraRenderMeshes.GetSize(); }
 
   /** 
    * Gets the priority of a specific extra rendermesh.
    */
-  virtual CS::Graphics::RenderPriority GetExtraRenderMeshPriority(size_t idx) const;
+  virtual long GetExtraRenderMeshPriority(size_t idx) const;
 
   /**
    * Gets the z-buffer mode of a specific extra rendermesh
    */
   virtual csZBufMode GetExtraRenderMeshZBufMode(size_t idx) const;
 
-  //@{
   /**
    * Deletes a specific extra rendermesh
    */
-  virtual void RemoveExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh);
-  virtual void RemoveExtraRenderMesh(size_t idx);
-  //@}
+  virtual void RemoveExtraRenderMesh(csRenderMesh* renderMesh);
 
   /**
    * Do a hard transform of this object.
@@ -517,9 +503,6 @@ public:
    * Gets the imposters rendermesh
    */
   csRenderMesh** GetImposter (iRenderView *rview);
-
-  void SetLODFade (float fade);
-  void UnsetLODFade ();
 
   //---------- Bounding volume and beam functions -----------------//
 
@@ -562,8 +545,57 @@ public:
   virtual csScreenBoxResult GetScreenBoundingBox (iCamera *camera);
 
   //--------------------- SCF stuff follows ------------------------------//
+  /**\name iShaderVariableContext implementation
+   * @{ */
+  /// Add a variable to this context
+  void AddVariable (csShaderVariable *variable)
+  { svcontext.AddVariable (variable); }
+
+  /// Get a named variable from this context
+  csShaderVariable* GetVariable (csStringID name) const
+  { 
+    csShaderVariable* sv = svcontext.GetVariable (name); 
+    if ((sv == 0) && (factorySVC.IsValid()))
+      sv = factorySVC->GetVariable (name);
+    return sv;
+  }
+
+  /// Get Array of all ShaderVariables
+  const csRefArray<csShaderVariable>& GetShaderVariables () const
+  { 
+    // @@@ Will not return factory SVs
+    return svcontext.GetShaderVariables (); 
+  }
+
+  /**
+   * Push the variables of this context onto the variable stacks
+   * supplied in the "stacks" argument
+   */
+  void PushVariables (iShaderVarStack* stacks) const
+  { 
+    if (factorySVC.IsValid()) factorySVC->PushVariables (stacks);
+    svcontext.PushVariables (stacks); 
+  }
+
+  bool IsEmpty () const 
+  {
+    return svcontext.IsEmpty() 
+      && (!factorySVC.IsValid() || factorySVC->IsEmpty());
+  }
+
+  void ReplaceVariable (csShaderVariable *variable)
+  { svcontext.ReplaceVariable (variable); }
+  void Clear () { svcontext.Clear(); }
+  
+  bool RemoveVariable (csShaderVariable* variable)
+  { 
+    // @@@ Also remove from factory?
+    return svcontext.RemoveVariable (variable); 
+  }
+  /** @} */
 
   //--------------------- iSelfDestruct implementation -------------------//
+
   virtual void SelfDestruct ();
 
   /**\name iSceneNode implementation
@@ -635,6 +667,6 @@ public:
   }
 };
 
-#include "csutil/deprecated_warn_on.h"
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 #endif // __CS_MESHOBJ_H__

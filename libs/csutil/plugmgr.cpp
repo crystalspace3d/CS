@@ -24,6 +24,7 @@
 #include "csutil/array.h"
 #include "csutil/plugmgr.h"
 #include "csutil/scf_implementation.h"
+#include "csutil/scopedmutexlock.h"
 #include "csutil/util.h"
 
 #include "iutil/comp.h"
@@ -37,13 +38,13 @@
 csPluginManager::csPlugin::csPlugin (iComponent *obj, const char *classID)
 {
   Plugin = obj;
-  ClassID = CS::StrDup (classID);
+  ClassID = csStrNew (classID);
 }
 
 csPluginManager::csPlugin::~csPlugin ()
 {
   //csPrintf ("DecRef %08p/'%s' ref=%d\n", Plugin, ClassID, Plugin->GetRefCount ()); fflush (stdout);
-  cs_free (ClassID);
+  delete [] ClassID;
 }
 
 //------------------------------------------------------------------------
@@ -167,17 +168,15 @@ void csPluginManager::QueryOptions (iComponent *obj)
   }
 }
 
-iBase *csPluginManager::LoadPlugin (const char *classID, bool init,
-				    bool report)
+iBase *csPluginManager::LoadPlugin (const char *classID, bool init)
 {
   csRef<iComponent> p (scfCreateInstance<iComponent> (classID));
   
   if (!p)
   {
-    if (report)
-      csReport (object_reg, CS_REPORTER_SEVERITY_WARNING,
-	  "crystalspace.pluginmgr.loadplugin",
-	  "could not load plugin '%s'", classID);
+    csReport (object_reg, CS_REPORTER_SEVERITY_WARNING,
+    	"crystalspace.pluginmgr.loadplugin",
+    	"could not load plugin '%s'", classID);
   }
   else
   {
@@ -207,10 +206,9 @@ iBase *csPluginManager::LoadPlugin (const char *classID, bool init,
       if (init) QueryOptions (p);
       return p;
     }
-    if (report)
-      csReport (object_reg, CS_REPORTER_SEVERITY_WARNING,
-	  "crystalspace.pluginmgr.loadplugin",
-	  "failed to initialize plugin '%s'", classID);
+    csReport (object_reg, CS_REPORTER_SEVERITY_WARNING,
+    	"crystalspace.pluginmgr.loadplugin",
+    	"failed to initialize plugin '%s'", classID);
     // If we added this plugin in this call then we remove it here as well.
     if (index != csArrayItemNotFound)
       Plugins.DeleteIndex (index);

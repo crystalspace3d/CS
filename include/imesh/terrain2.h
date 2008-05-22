@@ -165,27 +165,12 @@ struct iTerrainCellRenderProperties : public virtual iShaderVariableContext
  */
 struct iTerrainCellFeederProperties : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainCellFeederProperties, 3, 0, 0);
+  SCF_INTERFACE (iTerrainCellFeederProperties, 2, 0, 0);
   
   /**
    * Set heightmap source.
    */
-  virtual void SetHeightmapSource (const char* source, const char* format) = 0;
-
-  /**
-   * Set materialmap source
-   */
-  virtual void SetMaterialMapSource (const char* source) = 0;
-
-  /**
-   * Set height offset
-   */
-  virtual void SetHeightOffset (float offset) = 0;
-
-  /**
-   * Add an explicit material/alpha-map pair
-   */
-  virtual void AddAlphaMap (const char* material, const char* alphaMapSource) = 0;
+  virtual void SetHeightmapSource (const char* source) = 0;
 
   /**
    * Set named parameter
@@ -391,7 +376,7 @@ struct iTerrainRenderer : public virtual iBase
    *
    * \return array of render meshes
    */
-  virtual CS::Graphics::RenderMesh** GetRenderMeshes (int& n, iRenderView* rview,
+  virtual csRenderMesh** GetRenderMeshes (int& n, iRenderView* rview,
                                    iMovable* movable, uint32 frustum_mask,
                                    const csArray<iTerrainCell*> cells) = 0;
 
@@ -406,46 +391,21 @@ struct iTerrainRenderer : public virtual iBase
                                         material_palette) = 0;
 
   /**
-   * Indicates that the cells material mask has been changed (while
+   * Indicates that the cell's material mask has been changed (while
    * unlocking the cell material map data either by a feeder or by a user-
    * provided functions or while setting the new mask with the respective
    * functions), and that the renderer should update its internal structures
    * to reflect the changes.
    *
-   * \param cell cell with the changed data   
+   * \param cell cell with the changed data
+   * \param material material index
    * \param rectangle rectangle that was updated
-   * \param materialMap the updated material map
+   * \param data height data
    * \param pitch data pitch
    */
-  virtual void OnMaterialMaskUpdate (iTerrainCell* cell, 
-    const csRect& rectangle, const unsigned char* materialMap, size_t pitch) = 0; 
-
-  /**
-   * Indicates that the cells material mask has been changed (while
-   * unlocking the cell material map data either by a feeder or by a user-
-   * provided functions or while setting the new mask with the respective
-   * functions), and that the renderer should update its internal structures
-   * to reflect the changes.
-   *
-   * \param cell cell with the changed data   
-   * \param materialIdx specific material index
-   * \param rectangle rectangle that was updated
-   * \param materialMap the updated material map
-   * \param pitch data pitch
-   */
-  virtual void OnMaterialMaskUpdate (iTerrainCell* cell, size_t materialIdx, 
-    const csRect& rectangle, const unsigned char* materialMap, size_t pitch) = 0; 
-
-  /**
-   * Indicate that the cells alpha-map matching a given material have changed
-   * and that the renderer should update its internal structures.
-   *
-   * \param cell cell with changed data
-   * \param material material
-   * \param alphaMap the alpha map
-   */
-  virtual void OnAlphaMapUpdate (iTerrainCell* cell,
-    iMaterialWrapper* material, iImage* alphaMap) = 0;
+  virtual void OnMaterialMaskUpdate (iTerrainCell* cell, size_t material,
+                               const csRect& rectangle, 
+                               const unsigned char* data, size_t pitch) = 0; 
 };
 
 /// Callbacks for cell height data modifications
@@ -789,7 +749,7 @@ struct iTerrainSystem : public virtual iBase
  */
 struct iTerrainCell : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainCell, 3, 0, 0);
+  SCF_INTERFACE (iTerrainCell, 2, 0, 0);
 
   /// Enumeration that specifies current cell state
   enum LoadState
@@ -1007,14 +967,6 @@ struct iTerrainCell : public virtual iBase
   virtual void SetMaterialMask (unsigned int material, const unsigned char*
                           data, unsigned int width, unsigned int height) = 0;
   
-  /**
-   * Set alpha mask for a specified material.
-   *
-   * \param material the material
-   * \param alphaMap the alpha map to use
-   */
-  virtual void SetAlphaMask (iMaterialWrapper* material, iImage* alphaMap) = 0;
-
   /**
    * Set base material for the cell.
    *

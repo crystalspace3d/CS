@@ -28,7 +28,6 @@
 
 #include "csutil/ref.h"
 #include "csutil/scf_implementation.h"
-#include "igeom/clip2d.h"
 #include "ivaria/view.h"
 
 class csBox2;

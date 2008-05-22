@@ -71,7 +71,6 @@ private:
 
   csWeakRef<iGraphics3D> g3d;
   csGLShader_FIXED* shaderPlug;
-  csGLExtensionManager* ext;
 
   enum GlLightParam
   {
@@ -109,8 +108,6 @@ private:
   ProgramParam matSpecular;
   ProgramParam matSpecularExp;
   bool separateSpecular;
-  ProgramParam pointSize;
-  ProgramParam pointAttenuation;
 
   struct layerentry
   {
@@ -152,8 +149,8 @@ public:
   virtual void Deactivate ();
 
   /// Setup states needed for proper operation of the shader
-  virtual void SetupState (const CS::Graphics::RenderMesh* mesh,
-    CS::Graphics::RenderMeshModes& modes,
+  virtual void SetupState (const csRenderMesh* mesh,
+    csRenderMeshModes& modes,
     const iShaderVarStack* stacks);
 
   /// Reset states to original

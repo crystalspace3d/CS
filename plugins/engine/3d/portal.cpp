@@ -204,12 +204,6 @@ const csPlane3& csPortal::GetWorldPlane ()
   return world_plane;
 }
 
-const csSphere& csPortal::GetWorldSphere ()
-{
-  parent->CheckMovable ();
-  return world_sphere;
-}
-
 void csPortal::ComputeCameraPlane (const csReversibleTransform& t,
 	csPlane3& camplane)
 {

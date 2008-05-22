@@ -39,9 +39,6 @@
 #include "iutil/objreg.h"
 #include "ivaria/sequence.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(csparser)
-{
-
 static iSequenceWrapper* FindSequence (iEngineSequenceManager* eseqmgr,
 		const char* name)
 {
@@ -156,7 +153,7 @@ csPtr<iParameterESM> csLoader::ResolveOperationParameter (
 	{
 	  iSequenceTrigger* trig = CreateTrigger (
 	  	GetEngineSequenceManager (), parname);
-	  AddToRegionOrCollection (ldr_context, trig->QueryObject ());
+	  AddToRegion (ldr_context, trig->QueryObject ());
 	  value = trig;
 	}
         break;
@@ -466,7 +463,7 @@ iSequenceTrigger* csLoader::LoadTrigger (iLoaderContext* ldr_context,
   if (!trigger)
   {
     trigger = CreateTrigger (GetEngineSequenceManager (), trigname);
-    AddToRegionOrCollection (ldr_context, trigger->QueryObject ());
+    AddToRegion (ldr_context, trigger->QueryObject ());
   }
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
@@ -678,8 +675,7 @@ iSequenceWrapper* csLoader::CreateSequence (iDocumentNode* node)
   // LoadSequences() already checked for the presence of the engine
   // sequence manager.
 
-  iSequenceWrapper* sequence = 
-    CS_PLUGIN_NAMESPACE_NAME(csparser)::CreateSequence (
+  iSequenceWrapper* sequence = ::CreateSequence (
 	GetEngineSequenceManager (), seqname);
   if (!sequence)
   {
@@ -858,7 +854,6 @@ iSequenceWrapper* csLoader::LoadSequence (iLoaderContext* ldr_context,
 	  int axis1 = -1, axis2 = -1, axis3 = -1;
 	  csVector3 offset (0);
 	  float tot_angle1 = 0, tot_angle2 = 0, tot_angle3 = 0;
-	  bool relative = child->GetAttributeValueAsBool ("relative");
 	  int duration = child->GetAttributeValueAsInt ("duration");
 	  csRef<iDocumentNodeIterator> it2 = child->GetNodes ();
 	  while (it2->HasNext ())
@@ -932,7 +927,7 @@ iSequenceWrapper* csLoader::LoadSequence (iLoaderContext* ldr_context,
 
 	  sequence->AddOperationRotateDuration (cur_time, target,
 	  	axis1, tot_angle1, axis2, tot_angle2,
-	  	axis3, tot_angle3, offset, duration, relative);
+	  	axis3, tot_angle3, offset, duration);
 	}
 	break;
       case XMLTOKEN_MATERIAL:
@@ -1314,7 +1309,7 @@ bool csLoader::LoadSequences (iLoaderContext* ldr_context, iDocumentNode* node)
         {
           iSequenceWrapper* sequence = CreateSequence (child);
           if (!sequence) return false;
-	  AddToRegionOrCollection (ldr_context, sequence->QueryObject ());
+	  AddToRegion (ldr_context, sequence->QueryObject ());
 	}
         break;
       default:
@@ -1358,6 +1353,3 @@ iSharedVariable *csLoader::FindSharedVariable(const char *colvar,
     }
     return 0;
 }
-
-}
-CS_PLUGIN_NAMESPACE_END(csparser)

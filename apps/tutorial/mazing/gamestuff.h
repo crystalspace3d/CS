@@ -116,16 +116,15 @@ public:
   bool IsSpaceFree (const RoomCoordinate& rc) const;
 
   bool CreateGeometry ();
-  bool CreateWallOrPortal (iGeneralFactoryState* factory_state,
+  bool CreateWallOrPortal (iThingFactoryState* factory_state,
   	const csVector3& v1, const csVector3& v2,
   	const csVector3& v3, const csVector3& v4,
-	CS::Geometry::TextureMapper* mapper,
 	bool do_portal,
 	const RoomCoordinate& source,
 	const RoomCoordinate& dest);
   bool CreateRoom (iMaterialWrapper* wall_material,
   	int x, int y, int z,
-	const char* portals);
+	char* portals);
   bool CreateLight (const csColor& color,
   	int x, int y, int z);
 };

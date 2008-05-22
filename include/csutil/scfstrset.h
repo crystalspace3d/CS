@@ -28,9 +28,6 @@
 #include "csutil/strset.h"
 #include "iutil/strset.h"
 
-// For Clear()
-#include "csutil/deprecated_warn_off.h"
-
 /**
  * The string set is a collection of unique strings. Each string has an ID
  * number. The most important operation is to request a string, which means to
@@ -125,7 +122,5 @@ public:
   virtual bool IsEmpty() const
   { return set.IsEmpty(); }
 };
-
-#include "csutil/deprecated_warn_on.h"
 
 #endif // __CS_SCFSTRSET_H__

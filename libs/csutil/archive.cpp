@@ -77,7 +77,7 @@ csArchive::csArchive (const char *filename)
 {
   comment = 0;
   comment_length = 0;
-  csArchive::filename = CS::StrDup (filename);
+  csArchive::filename = csStrNew (filename);
 
   file = fopen (filename, "rb");
   if (!file)       			/* Create new archive file */
@@ -88,8 +88,8 @@ csArchive::csArchive (const char *filename)
 
 csArchive::~csArchive ()
 {
-  cs_free (filename);
-  cs_free (comment);
+  delete [] filename;
+  delete [] comment;
   if (file) fclose (file);
 
   size_t i;
@@ -329,7 +329,7 @@ bool csArchive::ReadArchiveComment (FILE *infile, size_t zipfile_comment_length)
 {
   if (comment && (comment_length != zipfile_comment_length))
   {
-    cs_free (comment);
+    delete [] comment;
     comment = 0;
   }
 
@@ -338,7 +338,7 @@ bool csArchive::ReadArchiveComment (FILE *infile, size_t zipfile_comment_length)
     return true;
 
   if (!comment)
-    comment = (char*)cs_malloc (zipfile_comment_length);
+    comment = new char [zipfile_comment_length];
   return (fread (comment, 1, zipfile_comment_length, infile) ==
   	zipfile_comment_length);
 }
@@ -373,31 +373,27 @@ char *csArchive::Read (const char *name, size_t *size)
 
   if (!f)
     return 0;
-  char* out_buff = new char[f->info.ucsize+1];
   if (size)
     *size = f->info.ucsize;
 
-  if (!ReadEntry (file, f, out_buff))
-  {
-    delete[] out_buff;
-    return 0;
-  }
-  out_buff [f->info.ucsize] = 0;
-  return out_buff;
+  return ReadEntry (file, f);
 }
 
-bool csArchive::ReadEntry (FILE *infile, ArchiveEntry * f, char* out_buff)
+char *csArchive::ReadEntry (FILE *infile, ArchiveEntry * f)
 {
   // This routine allocates one byte more than is actually needed
   // and fills it with zero. This can be used when reading text files
 
   size_t bytes_left;
   char buff[1024];
+  char *out_buff;
   int err;
   ZIP_local_file_header lfh;
 
+  out_buff = new char[f->info.ucsize + 1];
   if (!out_buff)
-    return false;
+    return 0;
+  out_buff [f->info.ucsize] = 0;
 
   if ((fseek (infile, f->info.relative_offset_local_header, SEEK_SET))
       || (fread (buff, 1, sizeof (hdr_local), infile) < sizeof (hdr_local))
@@ -406,7 +402,8 @@ bool csArchive::ReadEntry (FILE *infile, ArchiveEntry * f, char* out_buff)
       || (fseek (infile, lfh.filename_length + lfh.extra_field_length,
       	SEEK_CUR)))
   {
-    return false;
+    delete [] out_buff;
+    return 0;
   }
   switch (f->info.compression_method)
   {
@@ -414,7 +411,8 @@ bool csArchive::ReadEntry (FILE *infile, ArchiveEntry * f, char* out_buff)
       {
         if (fread (out_buff, 1, f->info.csize, infile) < f->info.csize)
         {
-          return false;
+          delete [] out_buff;
+          return 0;
         } /* endif */
         break;
       }
@@ -432,7 +430,8 @@ bool csArchive::ReadEntry (FILE *infile, ArchiveEntry * f, char* out_buff)
         err = inflateInit2 (&zs, -DEF_WBITS);
         if (err != Z_OK)
         {
-          return false;
+          delete [] out_buff;
+          return 0;
         }
         while (bytes_left)
         {
@@ -464,11 +463,12 @@ bool csArchive::ReadEntry (FILE *infile, ArchiveEntry * f, char* out_buff)
       }
     default:
       {
-        /* Can't handle this compression algorithm */
-        return false;
+        /* Can't handle this compression algorythm */
+        delete [] out_buff;
+        return 0;
       }
   } /* endswitch */
-  return true;
+  return out_buff;
 }
 
 void *csArchive::NewFile (const char *name, size_t size, bool pack)
@@ -564,10 +564,10 @@ bool csArchive::WriteZipArchive ()
       if (!ReadLFH (lfh, file))
         goto temp_failed;
 
-      char *this_name = (char*)cs_malloc (lfh.filename_length + 1);
+      char *this_name = new char[lfh.filename_length + 1];
       if (fread (this_name, 1, lfh.filename_length, file) < lfh.filename_length)
       {
-        cs_free (this_name);
+        delete [] this_name;
         goto temp_failed;
       }
       this_name[lfh.filename_length] = 0;
@@ -577,7 +577,7 @@ bool csArchive::WriteZipArchive ()
 skip_entry:
         bytes_to_skip = lfh.extra_field_length + lfh.csize;
         bytes_to_copy = 0;
-        cs_free (this_name);
+        delete [] this_name;
       }
       else
       {
@@ -593,7 +593,7 @@ skip_entry:
            */
           goto skip_entry;
 
-        cs_free (this_name);
+        delete [] this_name;
         if (this_file->info.csize != lfh.csize)
           goto temp_failed;   /* Broken archive */
         this_file->ReadExtraField (file, lfh.extra_field_length);
@@ -895,7 +895,8 @@ bool csArchive::WriteECDR (ZIP_end_central_dir_record & ecdr, FILE *outfile)
 csArchive::ArchiveEntry::ArchiveEntry (const char *name,
   ZIP_central_directory_file_header &cdfh)
 {
-  filename = CS::StrDup (name);
+  filename = new char[strlen (name) + 1];
+  strcpy (filename, name);
   info = cdfh;
   buffer = 0;
   extrafield = 0;
@@ -908,9 +909,9 @@ csArchive::ArchiveEntry::ArchiveEntry (const char *name,
 csArchive::ArchiveEntry::~ArchiveEntry ()
 {
   FreeBuffer ();
-  cs_free (comment);
-  cs_free (extrafield);
-  cs_free (filename);
+  delete [] comment;
+  delete [] extrafield;
+  delete [] filename;
 }
 
 void csArchive::ArchiveEntry::FreeBuffer ()
@@ -1030,14 +1031,14 @@ bool csArchive::ArchiveEntry::ReadExtraField (FILE *infile,
 {
   if (extrafield && (info.extra_field_length != extra_field_length))
   {
-    cs_free (extrafield);
+    delete [] extrafield;
     extrafield = 0;
   }
   info.extra_field_length = (ush)extra_field_length;
   if (extra_field_length)
   {
     if (!extrafield)
-      extrafield = (char*)cs_malloc (extra_field_length);
+      extrafield = new char[extra_field_length];
     return (fread (extrafield, 1, extra_field_length, infile) ==
     	extra_field_length);
   }
@@ -1049,14 +1050,14 @@ bool csArchive::ArchiveEntry::ReadFileComment (FILE *infile,
 {
   if (comment && (info.file_comment_length != file_comment_length))
   {
-    cs_free (comment);
+    delete [] comment;
     comment = 0;
   }
   info.file_comment_length = (ush)file_comment_length;
   if (file_comment_length)
   {
     if (!comment)
-      comment = (char*)cs_malloc (file_comment_length);
+      comment = new char[file_comment_length];
     return (fread (comment, 1, file_comment_length, infile) ==
     	file_comment_length);
   }

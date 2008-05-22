@@ -96,7 +96,7 @@ csObject::csObject (iBase* pParent)
 }
 
 csObject::csObject (csObject &o) 
-  : iBase(), scfImplementationType (this), Children (0), Name (0)
+  : iBase(), scfImplementationType (this),  Children (0), Name (0)
 {
   InitializeObject ();
 
@@ -113,7 +113,7 @@ csObject::~csObject ()
   ObjRemoveAll ();
 
   if (Children) { delete Children; Children = 0; }
-  cs_free (Name); Name = 0;
+  delete [] Name; Name = 0;
 
   /*
    * @@@ This should not be required for two reasons:
@@ -134,9 +134,9 @@ csObject::~csObject ()
 void csObject::SetName (const char* newname)
 {
   char* oldname = Name;
-  Name = CS::StrDup (newname);
+  Name = csStrNew (newname);
   FireNameChangeListeners (oldname, newname);
-  cs_free (oldname);
+  delete [] oldname;
 }
 
 const char *csObject::GetName () const
@@ -273,32 +273,6 @@ iObject* csObject::GetChild (const char *Name) const
     if (ThisName != 0 && !strcmp (ThisName, Name))
       return Children->Get (i);
   }
-  return 0;
-}
-  
-iObject* csObject::GetChild (int iInterfaceID, int iVersion, 
-			     const char *Name) const
-{
-  if (!Children)
-    return 0;
-
-  for (size_t i = 0; i < Children->GetSize (); i++)
-  {
-    if (Name)
-    {
-      const char *OtherName = Children->Get (i)->GetName ();
-      if (!OtherName) continue;
-      if (strcmp (OtherName, Name) != 0) continue;
-    }
-
-    iObject *child = Children->Get(i);
-    if (child->QueryInterface(iInterfaceID, iVersion) != 0)
-    {
-      child->DecRef(); // Undo the IncRef from QueryInterface
-      return child;
-    }
-  }
-
   return 0;
 }
 

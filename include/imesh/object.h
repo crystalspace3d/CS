@@ -42,13 +42,7 @@ struct iObjectModel;
 struct iPortal;
 struct iRenderView;
 
-namespace CS
-{
-  namespace Graphics
-  {
-    struct RenderMesh;
-  }
-}
+struct csRenderMesh;
 
 class csColor;
 class csFlags;
@@ -141,7 +135,7 @@ struct iMeshObject : public virtual iBase
    * all relevant planes for the given object. These planes correspond
    * with the clip planes kept by iRenderView.
    */
-  virtual CS::Graphics::RenderMesh** GetRenderMeshes (int& num, iRenderView* rview, 
+  virtual csRenderMesh** GetRenderMeshes (int& num, iRenderView* rview, 
     iMovable* movable, uint32 frustum_mask) = 0;
 
   /**
@@ -267,9 +261,7 @@ struct iMeshObject : public virtual iBase
    * handles are changed in some way which requires the mesh object
    * to fetch it again (i.e. to call materialwrapper->GetMaterialHandle())
    * again.
-   * \deprecated Deprecated in 1.3. Obsolete and unused.
    */
-  CS_DEPRECATED_METHOD_MSG("Obsolete and unused.")
   virtual void InvalidateMaterialHandles () = 0;
 
   /**

@@ -142,11 +142,11 @@ struct iDocumentNodeIterator : public virtual iBase
    * may increase by any number or not at all. 
    *
    * The only guarantees made are:
-   *  - The <em>next position</em> is less than the <em>last position</em>
+   *  * The <em>next position</em> is less than the <em>last position</em>
    *    as long as elements are available,
-   *  - The <em>next position</em> is equal to the <em>last position</em>
+   *  * the <em>next position</em> is equal to the <em>last position</em>
    *    if no more elements are available, and
-   *  - After a Next() call, the <em>next position</em> is larger or equal
+   *  * after a Next() call, the <em>next position</em> is larger or equal
    *    to the <em>next position</em> before the call.
    * @{ */
   /**
@@ -432,7 +432,7 @@ struct iDocument : public virtual iBase
  *       (crystalspace.documentsystem.multiplexer)
  *
  * Main ways to get pointers to this interface:
- * - csQueryRegistry<iDocumentSystem>()
+ * - CS_QUERY_REGISTRY()
  */
 struct iDocumentSystem : public virtual iBase
 {

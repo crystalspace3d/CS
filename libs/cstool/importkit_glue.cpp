@@ -113,8 +113,8 @@ namespace Utility
 	if (error != 0)
 	  return false;
 
-	csLoadResult rc = loader->Load (doc->GetRoot(), loadRegion);
-	if (!rc.success)
+	iBase* result;
+	if (!loader->Load (doc->GetRoot(), result, loadRegion))
 	  return false;
       }
 
@@ -306,9 +306,6 @@ namespace Utility
       return true;
     }
 
-// For Thing stuff
-#include "csutil/deprecated_warn_off.h"
-
     bool Glue::ProbeThingFactory (ImportKit::Container& container, 
 			          iMeshFactoryWrapper* fact, const char* name)
     {
@@ -423,8 +420,6 @@ namespace Utility
       return true;
     }
 
-#include "csutil/deprecated_warn_on.h"
-
     bool Glue::ProbeMeshObject (ImportKit::Container& container, 
 			        iObject* obj)
     {
@@ -435,9 +430,6 @@ namespace Utility
 	return true;
       return false;
     }
-
-// For Thing stuff
-#include "csutil/deprecated_warn_off.h"
 
     bool Glue::ProbeThingObject (ImportKit::Container& container, 
 			         iMeshWrapper* wrap, const char* name)
@@ -457,8 +449,6 @@ namespace Utility
       }
       return false;
     }
-
-#include "csutil/deprecated_warn_on.h"
 
   } // namespace Implementation
 

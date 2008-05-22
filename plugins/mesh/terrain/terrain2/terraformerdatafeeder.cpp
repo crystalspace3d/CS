@@ -50,25 +50,16 @@ struct TerraFormerFeederProperties : public
   {
   }
 
-  void SetHeightmapSource (const char* source, const char* format) 
+  void SetHeightmapSource (const char* source) 
   {
     terraFormer = csQueryRegistryTagInterface<iTerraFormer> (objectReg, source);
   }
-
-  void SetMaterialMapSource (const char* source)
-  {}
-
-  void SetHeightOffset (float offset) 
-  {}
-
-  void AddAlphaMap (const char* material, const char* alphaMapSource)
-  {}
 
   void SetParameter (const char* param, const char* value) 
   {
     if (strcmp (param, "terraformer") == 0)
     {
-      SetHeightmapSource (value, 0); 
+      SetHeightmapSource (value); 
     }
     else if (strcmp (param, "sampleregion min") == 0)
     {

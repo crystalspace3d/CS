@@ -43,7 +43,6 @@ distribution.
 #include "csutil/memheap.h"
 #include "csutil/reftrackeraccess.h"
 #include "csutil/strset.h"
-#include "csutil/threading/atomicops.h"
 #include "csutil/util.h"
 #include "csgeom/math.h"
 
@@ -279,12 +278,11 @@ public:
 
   void IncRef () 
   { 
-    csRefTrackerAccess::TrackIncRef (this, int16 (typeAndRefCount & 0xffff)); 
-    CS::Threading::AtomicOperations::Increment (&typeAndRefCount);
+    csRefTrackerAccess::TrackIncRef (this, refcount); 
+    refcount++; 
   }
   void DecRef ();
-  int GetRefCount () const
-  { return int16 (CS::Threading::AtomicOperations::Read (&typeAndRefCount) & 0xffff); }
+  int GetRefCount () const { return refcount; }
 
   /**
    * All TinyXml classes can print themselves to a filestream.
@@ -337,8 +335,7 @@ public:
   TiXmlElement* NextSiblingElement( const char * ) const;
 
   /// Query the type (as an enumerated value, above) of this node.
-  NodeType Type() const
-  { return (NodeType)(CS::Threading::AtomicOperations::Read (&typeAndRefCount) >> 16); }
+  NodeType Type() const { return (NodeType)type; }
 
   /**
    * Return a pointer to the Document this node lives in.
@@ -362,11 +359,9 @@ public:
   csPtr<TiDocumentNode> Clone(TiDocument* document) const;
 
 protected:
-  int32 typeAndRefCount;
-  void SetType (NodeType type)
-  {
-    typeAndRefCount = (typeAndRefCount & 0xffff) | (type << 16);
-  }
+  uint16 type;
+  // Unlikely to get very large
+  int16 refcount;
 
   TiDocumentNode( );
 
@@ -626,7 +621,7 @@ class TiXmlComment : public TiDocumentNode
 {
 public:
   /// Constructs an empty comment.
-  TiXmlComment() { value = 0; SetType (COMMENT); }
+  TiXmlComment() { value = 0; type = COMMENT; }
   ~TiXmlComment() { cs_free (value); }
 
   // [internal use] Creates a new Element and returs it.
@@ -665,7 +660,7 @@ public:
   TiXmlText ()
   {
     value = 0;
-    SetType (TEXT);
+    type = TEXT;
   }
   ~TiXmlText()
   {
@@ -707,7 +702,7 @@ public:
   /// Constructor.
   TiXmlCData () : TiXmlText ()
   {
-    SetType (CDATA);
+    type = CDATA;
   }
   ~TiXmlCData() {}
 
@@ -735,7 +730,7 @@ class TiXmlDeclaration : public TiDocumentNode
 {
 public:
   /// Construct an empty declaration.
-  TiXmlDeclaration() { SetType (DECLARATION); }
+  TiXmlDeclaration() { type = DECLARATION; }
 
   /// Construct.
   TiXmlDeclaration (const char * _version,
@@ -783,7 +778,7 @@ private:
 class TiXmlUnknown : public TiDocumentNode
 {
 public:
-  TiXmlUnknown() { SetType (UNKNOWN); }
+  TiXmlUnknown() { type = UNKNOWN; }
   ~TiXmlUnknown() {}
 
   // [internal use]
@@ -1002,7 +997,7 @@ public:
       while (errorNode != 0)
       {
         const char* nodeVal;
-        if ((errorNode->Type() == ELEMENT)
+        if ((errorNode->type == ELEMENT)
           && (nodeVal = errorNode->Value()) && *nodeVal)
         {
           if (!errorPath.IsEmpty ())
@@ -1016,8 +1011,7 @@ public:
       csString location;
       location.Format ("line %d", parse.linenum);
       if (errorPos != 0)
-        location.AppendFmt (":%zu",
-          static_cast<size_t>(errorPos - parse.startOfLine + 1));
+        location.AppendFmt (":%zu", errorPos - parse.startOfLine + 1);
       errorDesc += location.GetDataSafe();
       if (!errorPath.IsEmpty())
       {

@@ -33,15 +33,15 @@ csTextureWrapper::csTextureWrapper (csEngine* engine, iImage *Image)
   flags(CS_TEXTURE_3D)
 {
   image = Image;
-  keep_image = engine->csEngine::GetDefaultKeepImage();
+  keep_image = false;
   texClass = 0;
-  keyColorDirty = true;
+  UpdateKeyColorFromImage ();
 }
 
 csTextureWrapper::csTextureWrapper (csEngine* engine, iTextureHandle *ith) 
   : scfImplementationType (this), engine (engine)
 {
-  keep_image = engine->csEngine::GetDefaultKeepImage();
+  keep_image = false;
   texClass = 0;
 
   handle = ith;
@@ -54,15 +54,7 @@ csTextureWrapper::csTextureWrapper (csEngine* engine, iTextureHandle *ith)
     flags = 0;
   }
 
-  keyColorDirty = true;
-}
-
-csTextureWrapper::csTextureWrapper (csEngine* engine)
-  : scfImplementationType (this), engine (engine),
-  flags(CS_TEXTURE_3D)
-{
-  keep_image = engine->csEngine::GetDefaultKeepImage();
-  texClass = 0;
+  UpdateKeyColorFromHandle ();
 }
 
 void csTextureWrapper::SelfDestruct ()
@@ -82,7 +74,7 @@ csTextureWrapper::csTextureWrapper (const csTextureWrapper &t) :
   else
     texClass = 0;
 
-  keyColorDirty = true;
+  UpdateKeyColorFromImage ();
 }
 
 csTextureWrapper::~csTextureWrapper ()
@@ -96,7 +88,7 @@ void csTextureWrapper::SetImageFile (iImage *Image)
   image = Image;
 
   if (image)
-    keyColorDirty = true;
+    UpdateKeyColorFromImage ();
 }
 
 void csTextureWrapper::SetTextureHandle (iTextureHandle *tex)
@@ -106,7 +98,7 @@ void csTextureWrapper::SetTextureHandle (iTextureHandle *tex)
   handle = tex;
 
   flags = handle->GetFlags ();
-  keyColorDirty = true;
+  UpdateKeyColorFromHandle ();
 }
 
 void csTextureWrapper::SetKeyColor (int red, int green, int blue)
@@ -119,7 +111,6 @@ void csTextureWrapper::SetKeyColor (int red, int green, int blue)
   key_col_r = red;
   key_col_g = green;
   key_col_b = blue;
-  keyColorDirty = false;
 }
 
 void csTextureWrapper::Register (iTextureManager *txtmgr)
@@ -151,8 +142,6 @@ void csTextureWrapper::Register (iTextureManager *txtmgr)
   handle = txtmgr->RegisterTexture (image, flags, fail_reason);
   if (handle)
   {
-    if (keyColorDirty)
-      UpdateKeyColorFromHandle ();
     SetKeyColor (key_col_r, key_col_g, key_col_b);
     handle->SetTextureClass (texClass);
     delete[] texClass; texClass = 0; 

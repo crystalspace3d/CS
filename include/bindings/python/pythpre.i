@@ -21,11 +21,9 @@
   See include/bindings/cspace.i
 */
 
+#ifdef SWIGPYTHON
+
 %include "bindings/python/pyattributes.i"
-%rename(_CreateEnvironment) csInitializer::CreateEnvironment;
-%rename(_InitializeSCF) csInitializer::InitializeSCF;
-%rename(_SetSCFPointer) SetSCFPointer;
-%rename(_GetSCFPointer) GetSCFPointer;
 
 %ignore ::operator+;
 %ignore ::operator-;
@@ -60,7 +58,7 @@
 
 %{
 CS_EXPORT_SYM PyObject *
-_csRef_to_Python (const csRef<iBase> & ref, void * ptr, swig_type_info *name)
+_csRef_to_Python (const csRef<iBase> & ref, void * ptr, const char * name)
 {
   if (!ref.IsValid())
   {
@@ -68,33 +66,9 @@ _csRef_to_Python (const csRef<iBase> & ref, void * ptr, swig_type_info *name)
     return Py_None;
   }
   ref->IncRef();
-  return SWIG_NewPointerObj((void *)ptr, name, 1);
+  return SWIG_NewPointerObj((void *)ptr, SWIG_TypeQuery(name), 1);
 }
 %}
-
-#undef LANG_FUNCTIONS
-%define LANG_FUNCTIONS
-%{
-PyObject *
-_csRef_to_Python (const csRef<iBase> & ref, void * ptr, swig_type_info * name)
-{
-  if (!ref.IsValid())
-  {
-    Py_INCREF(Py_None);
-    return Py_None;
-  }
-  ref->IncRef();
-  return SWIG_NewPointerObj((void *)ptr, name, 1);
-}
-%}
-%pythoncode %{
-if not "core" in dir():
-    core = __import__("cspace").__dict__["core"]
-core.AddSCFLink(_SetSCFPointer)
-CSMutableArrayHelper = core.CSMutableArrayHelper
-%}
-%enddef
-
 
 /*
   ptr  : either a csRef<type> or csPtr<type>
@@ -113,21 +87,27 @@ CSMutableArrayHelper = core.CSMutableArrayHelper
 */
 %define TYPEMAP_OUT_csRef_BODY(ptr, name, type, wrapper)
   csRef<type> ref((wrapper<type>&)ptr); /* explicit cast */
-
-  if (!ref.IsValid())
+  $result = _csRef_to_Python(csRef<iBase>(
+    (type *)ref), (void *)(type *)ref, name);
+%enddef
+/*
+  if (ref.IsValid())
+  {
+    ref->IncRef();
+    $result = SWIG_NewPointerObj((void*)(type*)ref, SWIG_TypeQuery(name), 1);
+  }
+  else
   {
     Py_INCREF(Py_None);
-    return Py_None;
+    $result = Py_None;
   }
-  ref->IncRef();
-  $result = SWIG_NewPointerObj((void *)(type *)ref, name, 1);
-%enddef
+*/
 
 #undef TYPEMAP_OUT_csRef
 %define TYPEMAP_OUT_csRef(T)
   %typemap(out) csRef<T>
   {
-    TYPEMAP_OUT_csRef_BODY($1, SWIGTYPE_p_ ## T , T, csRef)
+    TYPEMAP_OUT_csRef_BODY($1, #T " *", T, csRef)
   }
 %enddef
 
@@ -135,7 +115,7 @@ CSMutableArrayHelper = core.CSMutableArrayHelper
 %define TYPEMAP_OUT_csPtr(T)
   %typemap(out) csPtr<T>
   {
-    TYPEMAP_OUT_csRef_BODY($1, SWIGTYPE_p_ ## T , T, csPtr)
+    TYPEMAP_OUT_csRef_BODY($1, #T " *", T, csPtr)
   }
 %enddef
 
@@ -159,10 +139,9 @@ As long as we don't call DecRef after QueryInterface, the object should end up
 with the correct reference count. That's how I understand it, anyway, but I
 know practically nothing about Python.
  ***@@@***/
-%define CS_WRAP_PTR_TYPEMAP(PtrName)
 %{
 PyObject *
-_ ## PtrName ## _to_Python (const PtrName & wp)
+_csWrapPtr_to_Python (const csWrapPtr & wp)
 {
   if (!wp.Ref.IsValid())
   {
@@ -171,7 +150,7 @@ _ ## PtrName ## _to_Python (const PtrName & wp)
   }
   iBase * ibase = (iBase *)wp.Ref;
   void * ptr = ibase->QueryInterface(iSCF::SCF->GetInterfaceID(wp.Type), wp.Version);
-  // ibase->DecRef(); // Undo IncRef from QueryInterface
+//  ibase->DecRef(); // Undo IncRef from QueryInterface
 
   // This is a bit tricky: We want the generated Python 'result' object
   // to own one reference to the wrapped object, so we want to call
@@ -206,9 +185,6 @@ _ ## PtrName ## _to_Python (const PtrName & wp)
   return result;
 }
 %}
-%enddef
-
-CS_WRAP_PTR_TYPEMAP(csWrapPtr)
 
 #undef TYPEMAP_OUT_csWrapPtr
 %define TYPEMAP_OUT_csWrapPtr
@@ -217,11 +193,6 @@ CS_WRAP_PTR_TYPEMAP(csWrapPtr)
     $result = _csWrapPtr_to_Python($1);
   }
 %enddef
-
-%typemap(typecheck) (const char * iface, int iface_ver)
-{
-  $1 = PyObject_HasAttrString($input,"scfGetVersion");
-}
 
 %typemap(in) (const char * iface, int iface_ver) (csString className)
 {
@@ -233,8 +204,8 @@ CS_WRAP_PTR_TYPEMAP(csWrapPtr)
   $2 = PyInt_AsLong(pyver);
   Py_XDECREF(pyver);
 }
-%define TYPEMAP_ARGC_ARGV(Arg1,Arg2)
-%typemap(in) (Arg1,Arg2)
+
+%typemap(in) (int argc, char const * const argv[])
 {
   if (!PyList_Check($input))
   {
@@ -262,8 +233,6 @@ CS_WRAP_PTR_TYPEMAP(csWrapPtr)
 {
   delete [] $2;
 }
-%enddef
-TYPEMAP_ARGC_ARGV(int argc, char const * const argv[])
 
 %typemap(in) (const char * description, ...)
 {
@@ -403,6 +372,7 @@ TYPEMAP_ARGC_ARGV(int argc, char const * const argv[])
   $1 = ptr;
 }
 
+#ifndef CS_MINI_SWIG
 /*
  * Using the shadow feature allows us to define our own python code to replace
  * the automatically generated wrapper for a function.	This is also the only
@@ -449,6 +419,22 @@ TYPEMAP_ARGC_ARGV(int argc, char const * const argv[])
 %{
   def GetColors(self):
     return CSMutableArrayHelper(self.GetColorByIndex, self.GetVertexCount)
+%}
+
+%feature("shadow") iPolygonMesh::GetTriangles()
+%{
+  def GetTriangles(self):
+    return CSMutableArrayHelper(self.GetTriangleByIndex, self.GetTriangleCount)
+%}
+%feature("shadow") iPolygonMesh::GetPolygons()
+%{
+  def GetPolygons(self):
+    return CSMutableArrayHelper(self.GetPolygonByIndex, self.GetPolygonCount)
+%}
+%feature("shadow") iPolygonMesh::GetVertices()
+%{
+  def GetVertices(self):
+    return CSMutableArrayHelper(self.GetVertexByIndex, self.GetVertexCount)
 %}
 
 %feature("shadow") iTriangleMesh::GetTriangles()
@@ -505,7 +491,7 @@ PYITERATOR_PROTOCOL(classname)
 /* Array Functions */
 #undef ARRAY_OBJECT_FUNCTIONS
 %define ARRAY_OBJECT_FUNCTIONS(classname,typename)
-        PYLIST_BASE_FUNCTIONS(classname,typename,size_t,GetSize,Get,Push,DeleteIndex,Find)
+        PYLIST_BASE_FUNCTIONS(classname,typename,size_t,GetSize,Get,Push,Delete,Find)
 %enddef
 /* Pseudo-List Functions */
 #undef LIST_OBJECT_FUNCTIONS
@@ -561,53 +547,23 @@ def __iter__(self):
         yield self.Next() %}
 %enddef
 
-/*
- * Macro for implementing buffer objects
-*/
-#undef BUFFER_RW_FUNCTIONS
-%define BUFFER_RW_FUNCTIONS(ClassName,DataFunc,CountFunc,ElmtType,BufGetter)
-%extend ClassName
+// csStringFast typemaps
+%typemap(out) csStringFast *
 {
-    PyObject * BufGetter ()
-    {
-        return PyBuffer_FromReadWriteMemory(self-> ## DataFunc ## (),self-> ## CountFunc ## ()*sizeof( ElmtType ));
-    }
+        const char *res = $1->GetData();
+        $result = SWIG_FromCharPtr(res);
 }
-%enddef
 
-// csstring typemaps
-%include "bindings/python/csstring.i"
-
-/*
- * Macro for handling deprecated methods
-*/
-#undef DEPRECATED_METHOD
-%define DEPRECATED_METHOD(ClassName,Method,Replacement)
-%ignore ClassName ## :: ## Method ## ;
-%extend ClassName
+%typemap(in) csStringFast *
 {
-  %pythoncode %{
-    def Method (*args):
-        print "ClassName.Method() is deprecated, use ClassName.Replacement() instead"
-        return self. ## Replacement ## (*args)
-  %}
+        $1 = new $1_basetype (PyString_AsString($input));
 }
-%enddef
 
-# Callback helper template to help declaring director stuff for ibase classes.
-# Intended for use by cspace module or other scf using libs.
-%define CALLBACK_INTERFACE_HDR(Class,Interface)
+%typemap(freearg) csStringFast *
+{
+   delete $1;
+}
 
-%template (swig ## Class) scfImplementation1<Class, Interface>;
+#endif // ifndef CS_MINI_SWIG
 
-%feature("director") Class;
-%feature("nodirector") Class::IncRef;
-%feature("nodirector") Class::DecRef;
-%feature("nodirector") Class::GetRefCount;
-%feature("nodirector") Class::AddRefOwner;
-%feature("nodirector") Class::RemoveRefOwner;
-%feature("nodirector") Class::QueryInterface;
-%feature("nodirector") Class::GetInterfaceMetadata;
-
-%enddef
-
+#endif // SWIGPYTHON

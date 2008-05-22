@@ -41,7 +41,8 @@
  * This is particularly useful in combination with
  * csReversibleTransform::LookAt().
  */
-class csPath : public scfImplementation1<csPath, iPath>
+class CS_CRYSTALSPACE_EXPORT csPath :
+  public scfImplementation1<csPath, iPath>
 {
 protected:
   csCatmullRomSpline spline;

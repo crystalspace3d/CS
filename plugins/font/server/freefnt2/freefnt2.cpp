@@ -148,14 +148,14 @@ void csFreeType2Server::RemoveFT2Face (csFt2FaceWrapper* face,
 				       char* faceName)
 {
   ftfaces.Delete (faceName, face);
-  cs_free (faceName);
+  delete[] faceName;
 }
 
 void csFreeType2Server::RemoveFont (iFont* font, 
 				    char* fontId)
 {
   fonts.Delete (fontId, font);
-  cs_free (fontId);
+  delete[] fontId;
 }
 
 bool csFreeType2Server::Initialize (iObjectRegistry *object_reg)
@@ -259,7 +259,7 @@ csPtr<iFont> csFreeType2Server::LoadFont (const char *filename, float size)
 	  }
 	}
 
-        char* newFilename = CS::StrDup (filename);
+	char* newFilename = csStrNew (filename);
 	face.AttachNew (new csFt2FaceWrapper (this, fontdata, newFilename));
 	face->face = ftFace;
 	ftfaces.Put (newFilename, face);
@@ -280,7 +280,7 @@ csPtr<iFont> csFreeType2Server::LoadFont (const char *filename, float size)
     }
   }
 
-  char* newFontId = CS::StrDup (fontid);
+  char* newFontId = csStrNew (fontid);
   font.AttachNew (new csFreeType2Font (this, newFontId, face, size));
   fonts.Put (newFontId, font);
 

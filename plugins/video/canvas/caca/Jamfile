@@ -1,10 +1,10 @@
 SubDir TOP plugins video canvas caca ;
 
-if $(CACA.AVAILABLE) = "yes" && $(CUCUL.AVAILABLE) = "yes"
+if $(LIBCACA.AVAILABLE) = "yes"
 {
 Description cacacanvas : "Colour Ascii Art driver" ;
 Plugin cacacanvas : [ Wildcard *.cpp *.h ] ;
 LinkWith cacacanvas : crystalspace ;
-ExternalLibs cacacanvas : CACA CUCUL ;
+ExternalLibs cacacanvas : LIBCACA ;
 CompileGroups cacacanvas : canvases ;
 }

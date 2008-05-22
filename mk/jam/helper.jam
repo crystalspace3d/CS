@@ -634,6 +634,7 @@ actions ignore Move
 ##    to target, else copy source to target.
 rule SymLink
 {
+  
   if "$(LN_S)"
   {
     DoSymLink $(<) : $(>) ;

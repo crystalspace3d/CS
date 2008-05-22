@@ -11,8 +11,8 @@
 			Name="Win32"/>
 	</Platforms>
 	<Configurations>
-  		<Configuration
-			Name="Release (with static libs)|Win32"
+		<Configuration
+			Name="Release|Win32"
 			OutputDirectory="..\..\out\release71\build\libcrystalspace\"
 			IntermediateDirectory="..\..\out\release71\build\libcrystalspace\"
 			ConfigurationType="4"
@@ -26,14 +26,14 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\libcrystalspace\crystalspace.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\release71\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\release71\build\libcrystalspace\"
 				ObjectFile="..\..\out\release71\build\libcrystalspace\"
+				ProgramDataBaseFileName="..\..\out\release71\build\libcrystalspace\crystalspace.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -51,8 +51,10 @@
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\release71\build\libcrystalspace\crystalspace.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -60,14 +62,13 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\release71\build\libcrystalspace\libcrystalspace.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -75,91 +76,16 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-  		<Configuration
-			Name="Release (with DLLs)|Win32"
-			OutputDirectory="..\..\out\release71\build\libcrystalspace\"
-			IntermediateDirectory="..\..\out\release71\build\libcrystalspace\"
-			ConfigurationType="2"
-			WholeProgramOptimization="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				DebugInformationFormat="3"
-				BufferSecurityCheck="FALSE"
-				ProgramDatabaseFileName="..\..\out\release71\build\libcrystalspace\crystalspace-1.3-vc71.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\libcrystalspace\libcrystalspace.pch"
-				AssemblerListingLocation="..\..\out\release71\build\libcrystalspace\"
-				ObjectFile="..\..\out\release71\build\libcrystalspace\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-                                OutputFile="..\..\crystalspace-1.3-vc71.dll"
-				ImportLibrary="..\..\out\release71\libs\libcrystalspace.lib"
-				ProgramDatabaseFile="..\..\out\release71\build\libcrystalspace\crystalspace-1.3-vc71.pdb"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\libcrystalspace\libcrystalspace.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-    		<Configuration
-			Name="Debug (with static libs)|Win32"
+		<Configuration
+			Name="Debug|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace\"
 			ConfigurationType="4"
@@ -173,14 +99,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug71\build\libcrystalspace\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -196,8 +122,10 @@
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -205,14 +133,13 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\libcrystalspace\libcrystalspace.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -220,89 +147,16 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-  		<Configuration
-			Name="Debug (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\libcrystalspace\"
-			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				DebugInformationFormat="4"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-
-				ProgramDatabaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace-1.3-vc71_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\libcrystalspace\libcrystalspace.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\libcrystalspace\"
-				ObjectFile="..\..\out\debug71\build\libcrystalspace\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                                OutputFile="..\..\crystalspace-1.3-vc71_d.dll"
-				ImportLibrary="..\..\out\debug71\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\crystalspace-1.3-vc71_d.pdb"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\libcrystalspace\libcrystalspace.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-    		<Configuration
-			Name="MemoryTracker (with static libs)|Win32"
+		<Configuration
+			Name="MemoryTracker|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace\"
 			ConfigurationType="4"
@@ -316,14 +170,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug71\build\libcrystalspace\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -339,8 +193,10 @@
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -348,14 +204,13 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\libcrystalspace\libcrystalspace.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -363,89 +218,16 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_MEMORY_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-  		<Configuration
-			Name="MemoryTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\libcrystalspace\"
-			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				DebugInformationFormat="4"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-
-				ProgramDatabaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace-1.3-vc71_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\libcrystalspace\libcrystalspace.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\libcrystalspace\"
-				ObjectFile="..\..\out\debug71\build\libcrystalspace\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                                OutputFile="..\..\crystalspace-1.3-vc71_d.dll"
-				ImportLibrary="..\..\out\debug71\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\crystalspace-1.3-vc71_d.pdb"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\libcrystalspace\libcrystalspace.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-    		<Configuration
-			Name="RefTracker (with static libs)|Win32"
+		<Configuration
+			Name="RefTracker|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace\"
 			ConfigurationType="4"
@@ -459,14 +241,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\debug71\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\debug71\build\libcrystalspace\"
 				ObjectFile="..\..\out\debug71\build\libcrystalspace\"
+				ProgramDataBaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -482,8 +264,10 @@
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
+				IgnoreImportLibrary="TRUE"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories="..\..\libs\csutil\win32\libs"
+				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\crystalspace.pdb"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -491,14 +275,13 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
 				TypeLibraryName="..\..\out\debug71\build\libcrystalspace\libcrystalspace.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -506,88 +289,15 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_REF_TRACKER;_LIB;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-  		<Configuration
-			Name="RefTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\libcrystalspace\"
-			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				DebugInformationFormat="4"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-
-				ProgramDatabaseFileName="..\..\out\debug71\build\libcrystalspace\crystalspace-1.3-vc71_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\libcrystalspace\libcrystalspace.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\libcrystalspace\"
-				ObjectFile="..\..\out\debug71\build\libcrystalspace\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                                OutputFile="..\..\crystalspace-1.3-vc71_d.dll"
-				ImportLibrary="..\..\out\debug71\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\crystalspace-1.3-vc71_d.pdb"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\libcrystalspace\libcrystalspace.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-  	</Configurations>
+	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"
@@ -623,16 +333,19 @@
 				RelativePath="..\..\libs\csgeom\math3d_d.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csgeom\matrix3.cpp">
+				RelativePath="..\..\libs\csgeom\matrix2.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csgeom\matrix4.cpp">
+				RelativePath="..\..\libs\csgeom\matrix3.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\obb.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\plane3.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csgeom\pmtools.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\poly2d.cpp">
@@ -648,6 +361,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\polyidx.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csgeom\polymesh.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\quaterni.cpp">
@@ -675,9 +391,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\triangulate.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csgeom\triangulate3d.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\trimesh.cpp">
@@ -803,9 +516,6 @@
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csplugincommon\shader\weavertypes.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csplugincommon\sndsys\convert.cpp">
 			</File>
 			<File
@@ -845,7 +555,7 @@
 				RelativePath="..\..\libs\cstool\enginetools.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\cstool\genmeshbuilder.cpp">
+				RelativePath="..\..\libs\cstool\gentrtex.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\importkit.cpp">
@@ -912,9 +622,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\uberscreenshot.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\cstool\unusedresourcehelper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\userrndbuf.cpp">
@@ -1055,9 +762,6 @@
 				RelativePath="..\..\libs\csutil\generic\runloop.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\graphalg.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\hash.cpp">
 			</File>
 			<File
@@ -1079,9 +783,6 @@
 				RelativePath="..\..\libs\csutil\mempool.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\memutil.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\mmapio.cpp">
 			</File>
 			<File
@@ -1094,6 +795,9 @@
 				RelativePath="..\..\libs\csutil\physfile.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\platform_new.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\plugldr.cpp">
 			</File>
 			<File
@@ -1101,15 +805,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\prfxcfg.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\processor\processorspecdetection_gcc_ppc.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\processor\processorspecdetection_nonwin_gcc_x86.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\processorcount.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\ptmalloc\ptmalloc3.c">
@@ -1142,16 +837,10 @@
 				RelativePath="..\..\libs\csutil\scfimp.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\scfimplhelper.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\scfstr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\schedule.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\simplejobqueue.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\snprintf.cpp">
@@ -1164,9 +853,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\strhash.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\strhashr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\stringreader.cpp">
@@ -1229,16 +915,10 @@
 				RelativePath="..\..\libs\csutil\win32\loadlib.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\win32\memutil_impl.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\win32\minidump.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\mmap.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\win32\processorcount_impl.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\registrycfg.cpp">
@@ -1274,6 +954,9 @@
 				RelativePath="..\..\libs\csutil\win32\winsyspath.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\win32\winthread.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\win32\wintools.cpp">
 			</File>
 			<File
@@ -1297,9 +980,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\csrectrg.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgeom\dualquaternion.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\fixed.h">
@@ -1329,9 +1009,6 @@
 				RelativePath="..\..\libs\..\include\csgeom\matrix3.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csgeom\matrix4.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csgeom\obb.h">
 			</File>
 			<File
@@ -1347,6 +1024,9 @@
 				RelativePath="..\..\libs\..\include\csgeom\plane3.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgeom\pmtools.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgeom\poly2d.h">
 			</File>
 			<File
@@ -1360,6 +1040,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\polyidx.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\polymesh.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\polypool.h">
@@ -1396,9 +1079,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\triangulate.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgeom\triangulate3d.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\trimesh.h">
@@ -1566,12 +1246,6 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderprogram.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavercombiner.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\weavertypes.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\sndsys\convert.h">
 			</File>
 			<File
@@ -1623,7 +1297,7 @@
 				RelativePath="..\..\libs\..\include\cstool\framedataholder.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\cstool\genmeshbuilder.h">
+				RelativePath="..\..\libs\..\include\cstool\gentrtex.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\identstrings.h">
@@ -1693,9 +1367,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\uberscreenshot.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\cstool\unusedresourcehelper.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\userrndbuf.h">
@@ -1842,10 +1513,7 @@
 				RelativePath="..\..\libs\..\include\csutil\databuf.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\deprecated_warn_off.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\deprecated_warn_on.h">
+				RelativePath="..\..\libs\..\include\csutil\debug.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\dirtyaccessarray.h">
@@ -1890,13 +1558,7 @@
 				RelativePath="..\..\libs\..\include\csutil\fpu80x86.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\genericresourcecache.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\getopt.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\graphalg.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hash.h">
@@ -1927,9 +1589,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\mempool.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\metautils.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\mmap_dummy.h">
@@ -1968,9 +1627,6 @@
 				RelativePath="..\..\libs\..\include\csutil\physfile.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\platform.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\plugldr.h">
 			</File>
 			<File
@@ -1986,16 +1642,7 @@
 				RelativePath="..\..\libs\..\include\csutil\priorityqueue.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_gcc_ppc.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_nonwin_gcc_x86.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_win.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\processorspecdetection.h">
+				RelativePath="..\..\libs\..\include\csutil\profile.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\ptrwrap.h">
@@ -2067,19 +1714,10 @@
 				RelativePath="..\..\libs\..\include\csutil\scopeddelete.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\scopedlock.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\scopedmutexlock.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\set.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\setenv.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\simplejobqueue.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\snprintf.h">
@@ -2092,9 +1730,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\strhash.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\strhashr.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\stringarray.h">
@@ -2112,6 +1747,9 @@
 				RelativePath="..\..\libs\..\include\csutil\syspath.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\thread.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
 			</File>
 			<File
@@ -2125,9 +1763,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_sparc.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\threading\barrier.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
@@ -2188,9 +1823,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\weakreferenced.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\weakrefhash.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\callstack.h">
@@ -2265,10 +1897,10 @@
 				RelativePath="..\..\libs\csutil\dlmalloc-settings.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\memutil.h">
+				RelativePath="..\..\libs\csutil\reftrack.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\reftrack.h">
+				RelativePath="..\..\libs\csutil\regex_wrapper.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\tinystr.h">
@@ -2293,6 +1925,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\win32kbd_identstrs.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\win32\winthread.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\xmltinyp.h">

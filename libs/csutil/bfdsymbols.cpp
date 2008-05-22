@@ -30,21 +30,9 @@ namespace CS
       syms(0), addrOffs(addrOffs)
     {
       this->filename = filename;
-	abfd = bfd_openr (filename, 0);
-      bool ok = false;
-      if (CheckValid())
-      {
-	csString separateDebugInfo (bfd_follow_gnu_debuglink (abfd, 0));
-	if (!separateDebugInfo.IsEmpty())
-	{
-	  bfd_close (abfd);
-	  abfd = bfd_openr (separateDebugInfo, 0);
-	  ok = CheckValid();
-	}
-      }
-      if (ok) ok = GrabSymbols();
-      
-      if (!ok)
+      abfd = bfd_openr (filename, 0);
+      if (!CheckValid()
+	|| !GrabSymbols())
       {
 	bfd_close (abfd);
 	abfd = 0;

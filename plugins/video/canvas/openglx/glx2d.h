@@ -22,7 +22,7 @@
 #include "csutil/scf.h"
 #include "csplugincommon/opengl/glcommon2d.h"
 #include "csplugincommon/iopengl/openglinterface.h"
-#include "ivaria/xwindow.h"
+#include "plugins/video/canvas/xwindowcommon/xwindow.h"
 
 #define GLX_GLXEXT_PROTOTYPES
 #include <GL/glx.h>

@@ -47,7 +47,6 @@ private:
   iObjectRegistry* object_reg;
   csRef<iReporter> reporter;
   csRef<iSyntaxService> synldr;
-  csRef<iEngine> engine;
 
   csStringHash xmltokens;
 #define CS_TOKEN_ITEM_FILE "plugins/mesh/genmesh/persist/standard/gmeshldr.tok"
@@ -86,7 +85,6 @@ private:
   iObjectRegistry* object_reg;
   csRef<iReporter> reporter;
   csRef<iSyntaxService> synldr;
-  csRef<iEngine> engine;
 
 public:
   /// Constructor.
@@ -98,8 +96,6 @@ public:
   /// Register plugin with the system driver
   virtual bool Initialize (iObjectRegistry *object_reg);
 
-  void WriteSubMesh (iGeneralMeshSubMesh* submesh, iDocumentNode* submeshNode);
-                          
   /// Write down given object and add to iDocumentNode.
   virtual bool WriteDown (iBase *obj, iDocumentNode* parent,
   	iStreamSource*);
@@ -116,17 +112,14 @@ private:
   iObjectRegistry* object_reg;
   csRef<iReporter> reporter;
   csRef<iSyntaxService> synldr;
-  csRef<iEngine> engine;
 
   csStringHash xmltokens;
 #define CS_TOKEN_ITEM_FILE "plugins/mesh/genmesh/persist/standard/gmeshldr.tok"
 #include "cstool/tokenlist.h"
 #undef CS_TOKEN_ITEM_FILE 
 
-#if 0
   bool ParseLegacySubMesh (iDocumentNode *node, iGeneralMeshState* state, 
     iLoaderContext* ldr_context);
-#endif
 public:
   /// Constructor.
   csGeneralMeshLoader (iBase*);
@@ -159,7 +152,6 @@ private:
   iObjectRegistry* object_reg;
   csRef<iReporter> reporter;
   csRef<iSyntaxService> synldr;
-  csRef<iEngine> engine;
 
 public:
   /// Constructor.

@@ -186,15 +186,15 @@ public:
 
   virtual const char* GetRawFormat() const 
   { 
-    return "a8b8g8r8"; 
+    if ((Format & CS_IMGFMT_MASK) == CS_IMGFMT_TRUECOLOR)
+      return "a8b8g8r8"; 
+    else
+      return 0;
   }
   virtual csRef<iDataBuffer> GetRawData() const 
   { 
     // Should this also call EnsureImage()?
-    if ((Format & CS_IMGFMT_MASK) == CS_IMGFMT_TRUECOLOR)
-      return databuf; 
-    CS_ASSERT_MSG("Not implemented yet: get RGB data from palette", false);
-    return 0;
+    return databuf; 
   }
   virtual int GetFormat () const { return Format; }
   virtual const csRGBpixel* GetPalette () { return GetPalettePtr(); }
@@ -223,14 +223,17 @@ public:
 
   /// Set the keycolor
   virtual void SetKeyColor (int r, int g, int b);
+  virtual void SetKeycolor (int r, int g, int b) { SetKeyColor(r,g,b); }
   /// Remove the keycolor
   virtual void ClearKeyColor ();
+  virtual void ClearKeycolor () { ClearKeyColor(); }
 
   /**
    * Apply the keycolor, that is, set all pixels which match the
    * keycolor to 0.
    */
   virtual void ApplyKeyColor ();
+  virtual void ApplyKeycolor () { ApplyKeyColor(); }
 
   virtual csImageType GetImageType() const { return imageType; }
   void SetImageType (csImageType type) { imageType = type; }

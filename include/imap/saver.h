@@ -25,8 +25,6 @@
 
 #include "csutil/scf_interface.h"
 
-#include "csutil/deprecated_warn_off.h"
-
 struct iDocumentNode;
 struct iString;
 struct iRegion;
@@ -77,7 +75,5 @@ struct iSaver : public virtual iBase
   // TODO: Add more, as needed
   /** @} */
 };
-
-#include "csutil/deprecated_warn_on.h"
 
 #endif // __CS_IMAP_SAVER_H__

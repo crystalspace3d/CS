@@ -101,9 +101,6 @@ private:
 
   friend void scfInitialize (csPathsList const*, unsigned int);
 
-  virtual size_t GetInterfaceMetadataCount () const { return 0;}
-  virtual void FillInterfaceMetadata (size_t n) {;}
-
   virtual void *QueryInterface (scfInterfaceID iInterfaceID,
     scfInterfaceVersion iVersion);
 
@@ -177,7 +174,7 @@ public:
 static scfLibraryVector *LibraryRegistry = 0;
 
 /// A object of this class represents a shared library
-class scfSharedLibrary : public CS::Memory::CustomAllocated
+class scfSharedLibrary
 {
   typedef void (*scfInitFunc)(iSCF*);
   typedef void (*scfFinisFunc)();
@@ -294,7 +291,7 @@ int scfLibraryVector::CompareName (scfSharedLibrary* const& Item,
 }
 
 /// This structure contains everything we need to know about a particular class
-class scfFactory : public iFactory, public CS::Memory::CustomAllocated
+class scfFactory : public iFactory
 {
 public:
   // Class identifier
@@ -351,7 +348,6 @@ protected:
   virtual int GetRefCount ();
   virtual void AddRefOwner (void** ref_owner);
   virtual void RemoveRefOwner (void** ref_owner);
-  scfInterfaceMetadataList* GetInterfaceMetadata () { return 0; }
   virtual void *QueryInterface (scfInterfaceID iInterfaceID, int iVersion);
 };
 
@@ -387,7 +383,8 @@ scfFactory::scfFactory (const char *iClassID, const char *iLibraryName,
   const char *iDepend, csStringID context)
 {
   csRefTrackerAccess::SetDescription (this, CS_TYPENAME(*this));
-  csRefTrackerAccess::TrackConstruction (this);  
+  csRefTrackerAccess::TrackConstruction (this);
+  // Don't use SCF_CONSTRUCT_IBASE (0) since it will call IncRef()
   scfWeakRefOwners = 0;
   scfRefCount = 0;
 #ifdef CS_REF_TRACKER
@@ -395,11 +392,11 @@ scfFactory::scfFactory (const char *iClassID, const char *iLibraryName,
    * instance */
   ClassID = classIDs->Register (iClassID);
 #else
-  ClassID = CS::StrDup (iClassID);
+  ClassID = csStrNew (iClassID);
 #endif
-  Description = CS::StrDup (iDescription);
-  Dependencies = CS::StrDup (iDepend);
-  FactoryClass = CS::StrDup (iFactoryClass);
+  Description = csStrNew (iDescription);
+  Dependencies = csStrNew (iDepend);
+  FactoryClass = csStrNew (iFactoryClass);
   CreateFunc = iCreate;
   classContext = context;
   LibraryName =
@@ -433,11 +430,11 @@ scfFactory::~scfFactory ()
 
   if (Library)
     Library->DecRef ();
-  cs_free (FactoryClass);
-  cs_free (Dependencies);
-  cs_free (Description);
+  delete [] FactoryClass;
+  delete [] Dependencies;
+  delete [] Description;
 #ifndef CS_REF_TRACKER
-  cs_free (const_cast<char*> (ClassID));
+  delete [] ClassID;
 #endif
 
   csRefTrackerAccess::TrackDestruction (this, scfRefCount);
@@ -584,8 +581,8 @@ void* csSCF::QueryInterface (scfInterfaceID iInterfaceID,
   if (iInterfaceID == scfInterfaceTraits<iSCF>::GetID () &&
     scfCompatibleVersion (iVersion, scfInterfaceTraits<iSCF>::GetVersion ()))
   {
-    GetSCFObject()->IncRef ();
-    return static_cast<iSCF*> (GetSCFObject());
+    scfObject->IncRef ();
+    return static_cast<iSCF*> (scfObject);
   }
 #ifdef CS_REF_TRACKER
   if (refTracker)
@@ -624,23 +621,23 @@ void csSCF::ScanPluginsInt (csPathsList const* pluginPaths,
       }
 
       if (plugins)
-        plugins->Empty();
+        plugins->DeleteAll();
 
       csRef<iStringArray> messages =
         csScanPluginDir (pathrec.path, plugins, pathrec.scanRecursive);
       scannedDirs.Request(pathrec.path);
 
-      if ((messages != 0) && (messages->GetSize () > 0))
+      if ((messages != 0) && (messages->Length() > 0))
       {
         csPrintfErr("SCF_WARNING: the following issue(s) arose while "
           "scanning '%s':", pathrec.path.GetData());
-        for (j = 0; j < messages->GetSize (); j++)
+        for (j = 0; j < messages->Length(); j++)
           csPrintfErr(" %s\n", messages->Get (j));
       }
 
       csRef<iDocument> metadata;
       csRef<iString> msg;
-      for (j = 0; j < plugins->GetSize (); j++)
+      for (j = 0; j < plugins->Length(); j++)
       {
         char const* plugin = plugins->Get(j);
         msg = csGetPluginMetadata (plugin, metadata);
@@ -940,30 +937,9 @@ void csSCF::RegisterClassesInt(char const* pluginPath, iDocumentNode* scfnode,
   }
 }
 
-uint64 scfImplementationHelper::stats[scfImplementationHelper::scfstatsNum];
-CS::Threading::Mutex scfImplementationHelper::statsLock;
-
-class scfImplementationHelperXS : public scfImplementationHelper
-{
-public:
-  static void DumpStats ()
-  {
-#ifdef SCF_TRACK_STATS
-    csPrintf ("Total SCF objects created: %llu\n", stats[scfstatTotal]);
-    csPrintf (" SCF-parented:             %llu\n", stats[scfstatParented]);
-    csPrintf (" Weak-Referenced:          %llu\n", stats[scfstatWeakreffed]);
-    csPrintf (" Metadata requested:       %llu\n", stats[scfstatMetadata]);
-    csPrintf ("\n");
-    csPrintf ("IncRef calls:              %llu\n", stats[scfstatIncRef]);
-    csPrintf ("DecRef calls:              %llu\n", stats[scfstatDecRef]);
-#endif
-  }
-};
-
 void csSCF::Finish ()
 {
   delete this;
-  scfImplementationHelperXS::DumpStats();
 }
 
 iBase *csSCF::CreateInstance (const char *iClassID)

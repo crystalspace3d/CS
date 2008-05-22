@@ -42,7 +42,7 @@ namespace CS
 	if (msg) fprintf (stderr, 
 	  "Message:          %s\n", msg);
 	fflush (stderr);
-	CS::Debug::DebugBreak();
+	CS_DEBUG_BREAK;
 	return;
       }
       
@@ -64,20 +64,13 @@ namespace CS
 	fflush (stderr);
 	stack->Free();
       }
-      
-      const char* dumpMemoryEnv = getenv ("CS_ASSERT_DUMPALLOC");
-      if (!dumpMemoryEnv || (atoi (dumpMemoryEnv) != 0))
-      {
-	if (VerifyAllMemory())
-	  DumpAllocateMemoryBlocks();
-      }
 
       assertCnt--;
       
       const char* ignoreEnv = getenv ("CS_ASSERT_IGNORE");
       if (!ignoreEnv || (atoi (ignoreEnv) == 0))
       {
-	CS::Debug::DebugBreak();
+	CS_DEBUG_BREAK;
       }
     }
     

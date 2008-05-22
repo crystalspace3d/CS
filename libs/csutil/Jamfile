@@ -10,14 +10,6 @@ SubDir TOP libs csutil ;
   {
     CSLIB.EXTERNAL_LIBS += LIBBFD ;
   }
-  if $(ZLIB.AVAILABLE) != "yes"
-  {
-    rejects += archive.cpp ;
-  }
-  else
-  {
-    CSLIB.EXTERNAL_LIBS += ZLIB ;
-  }
 
   CsLibAddModule $(rejects) ;
 }
@@ -50,12 +42,11 @@ if $(REGEX.AVAILABLE) != "yes"
 SubInclude TOP libs csutil generic ;
 SubInclude TOP libs csutil ptmalloc ;
 SubInclude TOP libs csutil threading ;
-SubInclude TOP libs csutil processor ;
 
 CSLIB.CFLAGS +=
   [ FDefines CS_CONFIGDIR='\"$(appconfdir)\"' ]
   [ FDefines CS_PLUGINDIR='\"$(plugindir)\"'  ] ;
-CSLIB.EXTERNAL_LIBS += PTHREAD ;
+CSLIB.EXTERNAL_LIBS += PTHREAD ZLIB ;
 
 # Uncomment to build the tool to generate the Unicode mapping tables.
 #SubInclude TOP libs csutil ucmapgen ;

@@ -166,7 +166,6 @@ void csPrintLibraryError (const char* /*iModule*/)
   }
 }
 
-#include "csutil/custom_new_disable.h"
 static void AppendStrVecString (iStringArray*& strings, const char* str)
 {
   if (!strings)
@@ -460,7 +459,7 @@ void InternalScanPluginDir (iStringArray*& messages,
       
       if (subdirMessages != 0)
       {
-	for (size_t i = 0; i < subdirMessages->GetSize (); i++)
+	for (size_t i = 0; i < subdirMessages->Length(); i++)
 	{
 	  AppendStrVecString (messages, subdirMessages->Get (i));
 	}
@@ -508,7 +507,7 @@ csRef<iStringArray> csScanPluginDirs (csPathsList* dirs,
 
       AppendStrVecString (messages, tmp);
 
-      for (size_t j = 0; j < dirMessages->GetSize (); j++)
+      for (size_t j = 0; j < dirMessages->Length(); j++)
       {
 	tmp.Format (" %s", dirMessages->Get (j));
 	AppendStrVecString (messages, tmp);
@@ -519,4 +518,3 @@ csRef<iStringArray> csScanPluginDirs (csPathsList* dirs,
 	 
   return csPtr<iStringArray> (messages);
 }
-#include "csutil/custom_new_enable.h"

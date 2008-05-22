@@ -122,19 +122,6 @@ namespace lighter
   };
   typedef csHash<AllocResult, size_t> AllocResultHash;
 
-  template<class Allocators>
-  static void UndoAllocations (Allocators& allocs, const 
-    AllocResultHash& result)
-  {
-    AllocResultHash::ConstGlobalIterator resultIt (result.GetIterator ());
-    while (resultIt.HasNext())
-    {
-      const AllocResult& oneRes = resultIt.Next ();
-      for (size_t i = 0; i < oneRes.subRects.GetSize(); i++)
-        allocs.Get (oneRes.allocIndex).Reclaim (oneRes.subRects[i]);
-    }
-  }
-
   enum
   {
     resultFailure,
@@ -202,21 +189,6 @@ namespace lighter
     return resultFailure;
   }
 
-  static void MergeResultHash (AllocResultHash& to, const AllocResultHash& from)
-  {
-    AllocResultHash::ConstGlobalIterator fromIt (from.GetIterator ());
-    while (fromIt.HasNext())
-    {
-      size_t key;
-      const AllocResult& fromRes = fromIt.Next (key);
-#ifdef CS_DEBUG
-      AllocResult* toRes = to.GetElementPointer (key);
-      CS_ASSERT(toRes == 0);
-#endif
-      to.Put (key, fromRes);
-    }
-  }
-
   const uint allocTryNoGrow = 1;
   const uint allocTryNormal = 2;
   const uint allocDefault = allocTryNoGrow | allocTryNormal;
@@ -226,8 +198,8 @@ namespace lighter
   static bool AllocAllPrims (const Arrays& arrays, Allocators& allocs,
     AllocResultHash& result, Statistics::Progress* progress, uint flags)
   {
-    size_t u = 0, updateFreq = 0;
-    float progressStep = 0;
+    size_t u, updateFreq;
+    float progressStep;
     if (progress && (arrays.GetSize() > 0))
     {
       updateFreq = progress->GetUpdateFrequency (arrays.GetSize());
@@ -238,11 +210,11 @@ namespace lighter
     bool createTestOrder = true;
     csArray<SizeAndIndex> testOrder;
 
-    result.DeleteAll();
-
     size_t arraysFirst = 0;
     while (arraysFirst < arrays.GetSize())
     {
+      size_t tryCount = arrays.GetSize() - arraysFirst;
+
       if (createTestOrder)
       {
         testOrder.Empty ();
@@ -258,28 +230,12 @@ namespace lighter
         createTestOrder = false;
       }
 
-      /* Try to layout as much primitive queues onto a single map at once as
-         possible.
-         The number of queues to be layouted is determined by a binary-search
-         style algorithm: half the number of queues allocated until they all
-         fit, then try halfway between that number and the largest last 
-         non-working amount. Recurse until right number is found. 
-       */
-      size_t tryMin = arraysFirst;
-      size_t tryMax = arrays.GetSize();
-      size_t lastTryMax = tryMax+1;
-      while (tryMin <= tryMax)
+      while (tryCount > 0)
       {
-        size_t tryCount = tryMax - arraysFirst;
-        if (tryCount == 0)
-          // If we get here none of the queues could be mapped...
-          return false;
-
         csArray<PrimToMap> primsToMap;
         for (size_t a = 0; a < tryCount; a++)
         {
           typename Arrays::ArrayType queue = arrays.Get (a+arraysFirst);
-          primsToMap.SetCapacity (primsToMap.GetSize() + queue.GetSize());
           for (size_t p = 0; p < queue.GetSize(); p++)
           {
             PrimToMap prim;
@@ -297,48 +253,33 @@ namespace lighter
         const bool doFailDump = false;
 #endif
         int res = resultFailure;
-        AllocResultHash thisResult;
         if (flags & allocTryNoGrow)
         {
           res = AllocAllPrimsInner<Arrays, Allocators, MPTAAMAllocNoGrow> (
-            arrays, allocs, thisResult, testOrder, primsToMap, doFailDump);
+            arrays, allocs, result, testOrder, primsToMap, doFailDump);
         }
         if (!res && (flags & allocTryNormal))
         {
           res = AllocAllPrimsInner<Arrays, Allocators, MPTAAMAlloc> (
-            arrays, allocs, thisResult, testOrder, primsToMap, doFailDump);
+            arrays, allocs, result, testOrder, primsToMap, doFailDump);
         }
 
         if (res) 
         {
-          if (res == resultWithNew) createTestOrder = true;
-
-          tryMin = tryMax;
-          tryMax = lastTryMax - 1;
-
-          if (tryMin >= tryMax) 
+          arraysFirst += tryCount;
+          if (progress)
           {
-            MergeResultHash (result, thisResult);
-            break;
+            u += tryCount;
+            progress->IncProgress (progressStep * (u / updateFreq));
+            u = u % updateFreq;
           }
-
-          UndoAllocations (allocs, thisResult);
-          allocs.CleanEmpty ();
-          thisResult.DeleteAll ();
+          if (res == resultWithNew) createTestOrder = true;
+          break;
         }
-        else
-        {
-          lastTryMax = tryMax;
-          tryMax = (tryMin + tryMax) / 2;
-        }
+        tryCount--;
       }
-      if (progress)
-      {
-        u += tryMax - arraysFirst;
-        progress->IncProgress (progressStep * (u / updateFreq));
-        u = u % updateFreq;
-      }
-      arraysFirst = tryMax;
+      // None of the queues could be mapped...
+      if (tryCount == 0) return false;
     }
     // All queues mapped successfully
     if (progress) progress->SetProgress (1);
@@ -367,19 +308,6 @@ namespace lighter
     void Delete (size_t index)
     {
       lightmaps.DeleteIndex (index);
-    }
-    void CleanEmpty ()
-    {
-      size_t i = 0;
-      while (i < lightmaps.GetSize())
-      {
-        if (lightmaps[i]->GetAllocator().IsEmpty())
-        {
-          lightmaps.DeleteIndex (i);
-        }
-        else
-          i++;
-      }
     }
   };
 

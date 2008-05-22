@@ -39,9 +39,6 @@ extern "C"
 CS_PLUGIN_NAMESPACE_BEGIN(JPGImageIO)
 {
 
-// For SetDithering()
-#include "csutil/deprecated_warn_off.h"
-
 /**
  * The JPG image file format loader.
  */
@@ -69,8 +66,6 @@ public:
   bool Initialize (iObjectRegistry* p) 
   { object_reg = p; return true; }
 };
-
-#include "csutil/deprecated_warn_on.h"
 
 /* ==== Error mgmnt ==== */
 struct my_error_mgr

@@ -357,17 +357,7 @@ void ConditionTree::DumpNode (csString& out, const Node* node, int level)
     out += '\n';
     out += indent;
     out += ' ';
-    switch (node->condition)
-    {
-      case csCondAlwaysTrue:
-	out.Append ("condition \"always true\"");
-	break;
-      case csCondAlwaysFalse:
-	out.Append ("condition \"always false\"");
-	break;
-      default:
-        out.AppendFmt ("condition %zu", node->condition);
-    }
+    out.AppendFmt ("condition %zu", node->condition);
     out += '\n';
     DumpNode (out, node->branches[0], level+1);
     DumpNode (out, node->branches[1], level+1);
@@ -394,7 +384,9 @@ void csWrappedDocumentNode::WrappedChild::operator delete (void* p)
   ChildAlloc()->Free (p);
 }
 
-#include "csutil/custom_new_enable.h"
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# define new CS_EXTENSIVE_MEMDEBUG_NEW
+#endif
 
 //---------------------------------------------------------------------------
 
@@ -1425,7 +1417,6 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
                     state->generateStart = start;
                     state->generateEnd = end;
                     state->generateStep = step;
-                    state->templ = Template();
                   }
                 }
               }
@@ -1747,12 +1738,12 @@ csTextNodeWrapper::csTextNodeWrapper (iDocumentNode* realMe,
                                       const char* text) : 
   scfPooledImplementationType (this), realMe (realMe)
 {  
-  nodeText = CS::StrDup (text);
+  nodeText = csStrNew (text);
 }
 
 csTextNodeWrapper::~csTextNodeWrapper ()
 {
-  cs_free (nodeText);
+  delete[] nodeText;
 }
 
 //---------------------------------------------------------------------------
@@ -1840,17 +1831,7 @@ void csWrappedDocumentNodeFactory::DumpCondition (size_t id,
 {
   if (currentOut)
   {
-    switch (id)
-    {
-      case csCondAlwaysTrue:
-	currentOut->AppendFmt ("condition \"always true\" = '");
-	break;
-      case csCondAlwaysFalse:
-	currentOut->AppendFmt ("condition \"always false\" = '");
-	break;
-      default:
-        currentOut->AppendFmt ("condition %zu = '", id);
-    }
+    currentOut->AppendFmt ("condition %zu = '", id);
     currentOut->Append (condStr, condLen);
     currentOut->Append ("'\n");
   }

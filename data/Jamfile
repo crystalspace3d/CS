@@ -26,7 +26,6 @@ for map in $(maps)
   local files =
     [ Wildcard $(map) : *.lib *.jpg *.png *.map *.tga *.dds *.spr world ] ;
   InstallData $(files) : data maps $(map) ;
-  InstallData [ Wildcard $(map) lightmaps : *.png ] : data maps $(map) lightmaps ;
 }
 
 SubInclude TOP data castle ;

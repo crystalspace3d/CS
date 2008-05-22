@@ -23,7 +23,6 @@
 #include <string.h>
 
 #include "csgfx/bakekeycolor.h"
-#include "csgfx/imagecubemapmaker.h"
 #include "csgfx/imagemanipulate.h"
 #include "csgfx/imagetools.h"
 #include "csgfx/imagememory.h"
@@ -46,7 +45,7 @@
 
 CS_IMPLEMENT_APPLICATION
 
-const char *programversion = "0.0.1";
+char *programversion = "0.0.1";
 char *programname;
 csRef<iImageIO> ImageLoader;
 
@@ -68,8 +67,6 @@ static struct option long_options[] =
   {"sharpen", required_argument, 0, 'p'},
   {"mipmaps", no_argument, 0, 'N'},
   {"save", optional_argument, 0, 'S'},
-  {"cube", no_argument, 0, 'C'},
-  {"split-image", no_argument, 0, 'E'},
   {"mime", required_argument, 0, 'M'},
   {"options", required_argument, 0, 'O'},
   {"prefix", required_argument, 0, 'P'},
@@ -97,8 +94,6 @@ static struct
   bool addalpha;
   int sharpen;
   bool mipmaps;
-  bool makeCube;
-  bool splitSubImg;
 } opt =
 {
   false,
@@ -116,8 +111,6 @@ static struct
   false,
   false,
   0,
-  false,
-  false,
   false
 };
 // Dont move inside the struct!
@@ -149,10 +142,8 @@ static int display_help ()
   csPrintf ("  -A   --add-alpha     Add alpha channel, if not present\n");
   csPrintf ("  -p   --sharpen=#     Sharpen the image, strength #\n");
   csPrintf ("  -N   --mipmaps       Generate mipmaps for the image\n");
-  csPrintf ("-------------------- Output options (-S, -D are exclusive):  -------------------\n");
+  csPrintf ("------------------ Output options (-S, -D, -H are exclusive):  -----------------\n");
   csPrintf ("  -S   --save[=#]      Output an image (default)\n");
-  csPrintf ("  -C   --cube          Merge 6 images into a cubemap\n");
-  csPrintf ("  -E   --split-image   Split image up into subimages (e.g. faces of a cubemap)\n");
   csPrintf ("  -M   --mime=#        Output file mime type (default: image/png)\n");
   csPrintf ("  -O   --options=#     Optional output format options (e.g. \"progressive\")\n");
   csPrintf ("  -P   --prefix=#      Add prefix before output filename\n");
@@ -184,7 +175,7 @@ static int list_supported_formats (iObjectRegistry * /*r*/)
   return 1;
 }
 
-static bool output_picture (const char *fname, const char *suffix, iImage* ifile)
+static bool output_picture (const char *fname, const char *suffix, csRef<iImage> ifile)
 {
   char outname [CS_MAXPATHLEN + 1];
   char* eol;
@@ -260,8 +251,54 @@ static bool display_picture (csRef<iImage> ifile)
   return true;
 }
 
-static void process_image (csRef<iImage>& ifile, csString& suffix)
+static bool process_file (const char *fname)
 {
+  csPrintf ("Loading file %s\n", fname);
+
+  FILE *f = fopen (fname, "rb");
+  if (!f)
+  {
+    csPrintf ("%s: cannot open file %s\n", programname, fname);
+    return false;
+  }
+
+  fseek (f, 0, SEEK_END);
+  size_t fsize = ftell (f);
+  fseek (f, 0, SEEK_SET);
+
+  if (opt.verbose)
+    csPrintf ("Reading %zu bytes from file\n", fsize);
+
+  csRef<iDataBuffer> buf;
+  {
+    char* buffer = new char[fsize];
+    if (fread (buffer, 1, fsize, f) < fsize)
+    {
+      csPrintf ("%s: unexpected EOF while reading file %s\n", programname, fname);
+      return false;
+    }
+    buf.AttachNew (new csDataBuffer (buffer, fsize, true));
+  }
+
+  fclose (f);
+
+  int fmt;
+  if (opt.outputmode > 0
+   || opt.paletted)
+    fmt = CS_IMGFMT_PALETTED8;
+  else if (opt.truecolor)
+    fmt = CS_IMGFMT_TRUECOLOR;
+  else
+    fmt = CS_IMGFMT_ANY;
+
+  csRef<iImage> ifile = ImageLoader->Load (buf, fmt | CS_IMGFMT_ALPHA);
+  if (!ifile)
+  {
+    csPrintf ("%s: failed to recognise image format for %s\n",
+    	programname, fname);
+    return false;
+  }
+
   if (opt.verbose || opt.info)
   {
     csPrintf ("Image size: %d x %d pixels, %zu bytes\n", ifile->GetWidth (),
@@ -287,6 +324,8 @@ static void process_image (csRef<iImage>& ifile, csString& suffix)
     }
     ifile = csBakeKeyColor::Image (ifile, transp);
   }
+
+  csString suffix;
 
   if (opt.scaleX > 0)
   {
@@ -392,84 +431,20 @@ static void process_image (csRef<iImage>& ifile, csString& suffix)
     }
     ifile.AttachNew (newImage);
   }
-}
-
-static csRef<iImage> open_file (const char *fname)
-{
-  csPrintf ("Loading file %s\n", fname);
-
-  FILE *f = fopen (fname, "rb");
-  if (!f)
-  {
-    csPrintf ("%s: cannot open file %s\n", programname, fname);
-    return 0;
-  }
-
-  fseek (f, 0, SEEK_END);
-  size_t fsize = ftell (f);
-  fseek (f, 0, SEEK_SET);
-
-  if (opt.verbose)
-    csPrintf ("Reading %zu bytes from file\n", fsize);
-
-  csRef<iDataBuffer> buf;
-  {
-    char* buffer = new char[fsize];
-    if (fread (buffer, 1, fsize, f) < fsize)
-    {
-      csPrintf ("%s: unexpected EOF while reading file %s\n", programname, fname);
-      return 0;
-    }
-    buf.AttachNew (new csDataBuffer (buffer, fsize, true));
-  }
-
-  fclose (f);
-
-  int fmt;
-  if (opt.outputmode > 0
-   || opt.paletted)
-    fmt = CS_IMGFMT_PALETTED8;
-  else if (opt.truecolor)
-    fmt = CS_IMGFMT_TRUECOLOR;
-  else
-    fmt = CS_IMGFMT_ANY;
-
-  csRef<iImage> ifile = ImageLoader->Load (buf, fmt | CS_IMGFMT_ALPHA);
-  if (!ifile)
-  {
-    csPrintf ("%s: failed to recognise image format for %s\n",
-    	programname, fname);
-    return 0;
-  }
-  return ifile;
-}
-
-static bool process_file (const char *fname, csRef<iImage>* outImage = 0)
-{
-  csRef<iImage> ifile (open_file (fname));
-  if (!ifile.IsValid()) return false;
-  csString suffix;
-  process_image (ifile, suffix);
 
   bool success = false;
-  if (!opt.makeCube)
+  switch (opt.outputmode)
   {
-    switch (opt.outputmode)
-    {
-      case 0:
-	success = output_picture (fname, suffix.GetDataSafe(), ifile);
-	break;
-      case 1:
-	success = display_picture (ifile);
-	break;
-      case 2:
-	success = true;
-	break;
-    }
+    case 0:
+      success = output_picture (fname, suffix.GetDataSafe(), ifile);
+      break;
+    case 1:
+      success = display_picture (ifile);
+      break;
+    case 2:
+      success = true;
+      break;
   }
-  else
-    success = true;
-  if (outImage != 0) *outImage = ifile;
 
   // Destroy the image object
 
@@ -481,10 +456,7 @@ int gfxtest_main (iObjectRegistry* object_reg, int argc, char *argv[])
   programname = argv [0];
 
   int c;
-  /* getopt_long 101: one colon follows - required argument, 
-                      two colons - optional arg. */
-  while ((c = getopt_long (argc, argv, 
-      "8cdaAs:m:t:p:D::S::EM:O:P:U:IhvVFTNC", long_options, 0)) != EOF)
+  while ((c = getopt_long (argc, argv, "8cdaAs:m:t:p:D:S::M:O:P:U::H::IhvVFTN", long_options, 0)) != EOF)
     switch (c)
     {
       case '?':
@@ -524,14 +496,7 @@ int gfxtest_main (iObjectRegistry* object_reg, int argc, char *argv[])
         break;
       case 'S':
         opt.outputmode = 0;
-	if (optarg)
-	  sscanf (optarg, "%s", output_name);
-	else if ((optind < argc) && (*argv[optind] != '-') && (*argv[optind] != '+'))
-	{
-	  // Optional argument after -S
-	  sscanf (argv[optind], "%s", output_name);
-	  optind++;
-	}
+	if (optarg) sscanf (optarg, "%s", output_name);
 	break;
       case 'M':
 	if (optarg && sscanf (optarg, "%s", output_mime) != 1)
@@ -613,12 +578,6 @@ int gfxtest_main (iObjectRegistry* object_reg, int argc, char *argv[])
           csPrintf ("%s: expecting <sharpening strength> after -p\n", programname);
           return -1;
         }
-      case 'C':
-        opt.makeCube = true;
-        break;
-      case 'E':
-        opt.splitSubImg = true;
-        break; 
       case 'V':
         csPrintf ("%s version %s\n\n", programname, programversion);
         csPrintf ("This program is distributed in the hope that it will be useful,\n");
@@ -638,51 +597,8 @@ int gfxtest_main (iObjectRegistry* object_reg, int argc, char *argv[])
 
   ImageLoader->SetDithering (opt.dither);
 
-  if (opt.splitSubImg)
-  {
-    for (; optind < argc; ++optind)
-    {
-      csRef<iImage> ifile (open_file (argv[optind]));
-      if (!ifile.IsValid()) return 1;
-      uint subImgNum = ifile->HasSubImages ();
-      for (uint s = 0; s < subImgNum; s++)
-      {
-	csRef<iImage> subImg (ifile->GetSubImage (s));
-	csString suffix;
-	process_image (subImg, suffix);
-	suffix.AppendFmt ("-subimg%u", s);
-	if (!output_picture (argv[optind], suffix.GetDataSafe(), subImg)) return 1;
-      }
-    }
-  }
-  else if (opt.makeCube)
-  {
-    if ((argc - optind) != 6)
-    {
-      csPrintf ("You need to specify 6 images to make a cube map.\n");
-    }
-    else
-    {
-      csRef<iImage> face[6];
-      for (int f = 0; optind < argc; ++optind, f++)
-      {
-        csRef<iImage> foo;
-	process_file (argv [optind], &face[f]);
-      }
-      csRef<csImageCubeMapMaker> cubemap;
-      cubemap.AttachNew (new csImageCubeMapMaker ());
-      for (int f = 0; f < 6; f++)
-      {
-        cubemap->SetSubImage (f, face[f]);
-      }
-      output_picture ("cube", "", cubemap);
-    }
-  }
-  else
-  {
-    for (; optind < argc; ++optind)
-      process_file (argv [optind]);
-  }
+  for (; optind < argc; ++optind)
+    process_file (argv [optind]);
   ImageLoader = 0;
 
   return 0;

@@ -125,8 +125,14 @@ void DocConv::Main ()
     const char *inds = cmdline->GetOption ("inds");
     if (inds)
     {
-      inputDS = csLoadPlugin<iDocumentSystem> (plugin_mgr,
-	  csString().Format ("crystalspace.documentsystem.%s", inds));
+/*      inputDS = csPtr<iDocumentSystem> (CS_LOAD_PLUGIN (plugin_mgr,
+	inds, iDocumentSystem));
+      if (!inputDS)*/
+      {
+        inputDS = csPtr<iDocumentSystem> (CS_LOAD_PLUGIN (plugin_mgr,
+	  csString().Format ("crystalspace.documentsystem.%s", inds),
+	  iDocumentSystem));
+      }
       if (!inputDS)
       {
 	ReportError ("Unable to load input document system '%s'!",
@@ -138,8 +144,14 @@ void DocConv::Main ()
     const char *outds = cmdline->GetOption ("outds");
     if (outds)
     {
-      outputDS = csLoadPlugin<iDocumentSystem> (plugin_mgr,
-	  csString().Format ("crystalspace.documentsystem.%s", outds));
+/*      outputDS = csPtr<iDocumentSystem> (CS_LOAD_PLUGIN (plugin_mgr,
+	outds, iDocumentSystem));
+      if (!outputDS)*/
+      {
+	outputDS = csPtr<iDocumentSystem> (CS_LOAD_PLUGIN (plugin_mgr,
+	  csString().Format ("crystalspace.documentsystem.%s", outds),
+	  iDocumentSystem));
+      }
       if (!outputDS)
       {
 	ReportError ("Unable to load output document system '%s'!",
@@ -186,8 +198,8 @@ void DocConv::Main ()
   }
   else
   {
-    xml = csLoadPlugin<iDocumentSystem> (plugin_mgr,
-      "crystalspace.documentsystem.multiplexer");
+    xml = csPtr<iDocumentSystem> (CS_LOAD_PLUGIN (plugin_mgr,
+      "crystalspace.documentsystem.multiplexer", iDocumentSystem));
     if (xml == 0)
       xml = (csPtr<iDocumentSystem> (
 	new csTinyDocumentSystem ()));

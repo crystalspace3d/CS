@@ -162,8 +162,11 @@ csPtr<iSndSysSource> csSndSysRendererSoftware::CreateSource(iSndSysStream* strea
     source=s;
   }
 
+  // This is the reference that will belong to the render thread
+  source->IncRef();
+
   // Notify any registered callback components
-  SourceAdded((iSndSysSource*)source);
+  SourceAdded(source);
 
   // Queue this source for the background thread to add to its list of existent sources
   m_SourceAddQueue.QueueEntry(source);
@@ -171,7 +174,7 @@ csPtr<iSndSysSource> csSndSysRendererSoftware::CreateSource(iSndSysStream* strea
   // Add this source to the foreground list of sources that may have filters
   m_DispatchSources.Push(source);
 
-  return scfQueryInterface<iSndSysSource> (source);
+  return source;
 }
 
 /// Remove a stream from the sound renderer's list of streams
@@ -303,16 +306,14 @@ bool csSndSysRendererSoftware::Initialize (iObjectRegistry *obj_reg)
   // Try to load the specified driver exactly as specified
   DriverFullName=drv;
   RecordEvent(SSEL_DEBUG, "Attempting to load driver plugin [%s]", DriverFullName.GetData());
-  m_pSoundDriver = csLoadPlugin<iSndSysSoftwareDriver> (plugin_mgr,
-    DriverFullName.GetData());
+  m_pSoundDriver = CS_LOAD_PLUGIN (plugin_mgr, DriverFullName.GetData(), iSndSysSoftwareDriver);
 
   // Try to load the driver with "crystalspace.sndsys.software.driver." prepended
   if (!m_pSoundDriver)
   {
     DriverFullName.Format("crystalspace.sndsys.software.driver.%s", drv);
     RecordEvent(SSEL_DEBUG, "Attempting to load driver plugin [%s]", DriverFullName.GetData());
-    m_pSoundDriver = csLoadPlugin<iSndSysSoftwareDriver> (plugin_mgr,
-      DriverFullName.GetData());
+    m_pSoundDriver = CS_LOAD_PLUGIN (plugin_mgr, DriverFullName.GetData(), iSndSysSoftwareDriver);
   }
 
   // If we still failed, report an error
@@ -633,7 +634,7 @@ void csSndSysRendererSoftware::RemoveAllSources()
     sourceptr=m_ActiveSources.Get(0);
 
     // Notify any callbacks of the removal
-    SourceRemoved(dynamic_cast<iSndSysSource *>(sourceptr));
+    SourceRemoved(sourceptr);
 
     m_ActiveSources.DeleteIndex(0);
     sourceptr->DecRef();
@@ -648,7 +649,7 @@ void csSndSysRendererSoftware::RemoveAllSources()
     // Notify any callbacks of the removal
     // Although these sources never entered the renderer's background list, notification of
     // addition was sent at creation time
-    SourceRemoved(dynamic_cast<iSndSysSource *>(sourceptr));
+    SourceRemoved(sourceptr);
 
     sourceptr->DecRef();
   }
@@ -718,7 +719,7 @@ void csSndSysRendererSoftware::ProcessPendingSources()
       RecordEvent(SSEL_DEBUG, "Processing remove request for source addr [%08x]", src);
       // The source is removed from our active list.  Now queue it back to the foreground thread
       //  so that the reference count can be decreased.
-      m_SourceClearQueue.QueueEntry(dynamic_cast<iSndSysSource *>(src));
+      m_SourceClearQueue.QueueEntry(src);
     }
     else
       RecordEvent(SSEL_WARNING, "Failed remove request for source addr [%08x]. Source not in active list.", src);
@@ -785,13 +786,12 @@ void csSndSysRendererSoftware::AdvanceStreams(size_t Frames)
       maxsource = m_ActiveSources.GetSize();
       for (currentsource = 0; currentsource < maxsource; currentsource++)
       {
-        csRef<iSndSysSource> currentsourceinterface;
-        if ( ( currentsourceinterface = scfQueryInterface<iSndSysSource>(m_ActiveSources.Get(currentsource)) ) && ( currentsourceinterface->GetStream() == str ) )
+        if (m_ActiveSources.Get(currentsource)->GetStream() == str)
         {
           // This source is associated with the removed stream
           RecordEvent(SSEL_DEBUG, "Marked source index [%d] for removal due to AutoUnregistered stream.", currentsource);
           // Mark the source for removal
-          m_SourceRemoveQueue.QueueEntry (currentsourceinterface);
+          m_SourceRemoveQueue.QueueEntry (m_ActiveSources.Get(currentsource));
         }
       }
       // Now that all sources have been removed, queue the stream for cleanup

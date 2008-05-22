@@ -21,18 +21,15 @@
 
 #include "csutil/refcount.h"
 
-#include "raydebug.h"
 #include "statistics.h"
 
 namespace lighter
 {
-  class ElementAreasAlloc;
-  class Light_old;
-  class LightmapUVFactoryLayouter;
-  class Primitive;
-  class Raytracer;
   class Scene;
   class Sector;
+  class Light_old;
+  class Primitive;
+  class Raytracer;
   class SwapManager;
 
   class Lighter : public csRefCount
@@ -64,10 +61,8 @@ namespace lighter
     csRef<iConfigManager> configMgr;
     iObjectRegistry *objectRegistry;
     csRef<iStringSet> strings;
-    csRef<iJobQueue> jobManager;
 
     SwapManager* swapManager;
-    RayDebugHelper rayDebug;
 
   protected:
     // Cleanup and prepare for shutdown
@@ -76,33 +71,11 @@ namespace lighter
     // Parse the commandline and load any files specified
     bool LoadFiles (Statistics::Progress& progress);
 
-    // Calculate lightmapping
-    void CalculateLightmaps ();
-
-    // Initialize objects after LM construction
-    void InitializeObjects ();
-
-    // Prepare for lighting
-    void PrepareLighting ();
-
-    // Build per-sector KD-tree
-    void BuildKDTrees ();
-
-    // Shoot direct lighting
-    void DoDirectLighting ();
-
-    // Post-process all lightmaps
-    void PostprocessLightmaps ();
-
-    // Load configuration from config file & command line
     void LoadConfiguration ();
 
-    // Print command line help
-    void CommandLineHelp () const;    
+    void CommandLineHelp () const;
 
     Scene *scene;
-
-    csRef<LightmapUVFactoryLayouter> uvLayout;
 
     Statistics::Progress progStartup;
     Statistics::Progress progLoadFiles;
@@ -111,6 +84,7 @@ namespace lighter
     Statistics::Progress progInitializeMain;
     Statistics::Progress progInitialize;
     Statistics::Progress progInitializeLightmaps;
+    Statistics::Progress progInitializeLM;
     Statistics::Progress progPrepareLighting;
     Statistics::Progress progPrepareLightingUVL;
     Statistics::Progress progPrepareLightingSector;

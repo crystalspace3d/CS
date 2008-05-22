@@ -51,9 +51,6 @@ private:
 
   void FireListeners ();
 
-protected:
-  virtual void InternalRemove() { SelfDestruct(); }
-
 public:
   CS_LEAKGUARD_DECLARE (csSharedVariable);
 

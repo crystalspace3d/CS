@@ -643,37 +643,21 @@ void operator delete[] (void* p)
 
 #ifdef CS_EXTENSIVE_MEMDEBUG_IMPLEMENT
 #undef new
-CS_CRYSTALSPACE_EXPORT void* operator new (size_t s, void* f, int l)
+void* operator new (size_t s, void*, int)
 {
-#ifdef CS_CHECKING_ALLOCATIONS
-  return ptmalloc_checking (s);
-#else
-  return ptmalloc_located (s);
-#endif
+  return (void*)cs_malloc (s);
 }
-CS_CRYSTALSPACE_EXPORT void* operator new[] (size_t s, void* f, int l)
+void* operator new[] (size_t s, void*, int)
 {
-#ifdef CS_CHECKING_ALLOCATIONS
-  return ptmalloc_checking (s);
-#else
-  return ptmalloc_located (s);
-#endif
+  return (void*)cs_malloc (s);
 }
-CS_CRYSTALSPACE_EXPORT void operator delete (void* p)
+void operator delete (void* p)
 {
-#ifdef CS_CHECKING_ALLOCATIONS
-  return ptfree_checking (p);
-#else
-  return ptfree_located (p);
-#endif
+  if (p) cs_free (p);
 }
-CS_CRYSTALSPACE_EXPORT void operator delete[] (void* p)
+void operator delete[] (void* p)
 {
-#ifdef CS_CHECKING_ALLOCATIONS
-  return ptfree_checking (p);
-#else
-  return ptfree_located (p);
-#endif
+  if (p) cs_free (p);
 }
 #endif  // CS_EXTENSIVE_MEMDEBUG_IMPLEMENT
 
@@ -691,7 +675,6 @@ CS_CRYSTALSPACE_EXPORT void operator delete[] (void* p)
 #undef CS_MEMORY_TRACKER
 
 #include "iutil/objreg.h"
-#include "csutil/hash.h"
 #include "csutil/memdebug.h"
 #include "iutil/memdebug.h"
 
@@ -702,39 +685,38 @@ CS_CRYSTALSPACE_EXPORT void operator delete[] (void* p)
 class csMemTrackerModule
 {
 public:
-  const char* Class;          // Name of class or 0 for application level.
-  csArray<csMemTrackerInfo*, csArrayElementHandler<csMemTrackerInfo*>,
-    CS::Memory::AllocatorMallocPlatform> mti_table;
-  struct BlockInfo
-  {
-    size_t size;
-    const char* info;
-  };
-  csHash<BlockInfo, void*, CS::Memory::AllocatorMallocPlatform> blockSizes;
+  char* Class;          // Name of class or 0 for application level.
+  static const int mti_table_max = 10000;
+  csMemTrackerInfo* mti_table[mti_table_max];
+  int mti_table_count;
 
   csMemTrackerModule ()
   {
+    mti_table_count = 0;
   }
 
   void InsertBefore (int idx, const char* filename)
   {
-    csMemTrackerInfo* mti =
-      (csMemTrackerInfo*)malloc (sizeof (csMemTrackerInfo));
-    mti->Init (filename);
-    mti_table.Insert (idx, mti);
+    int tomove = mti_table_count - idx;
+    if (tomove > 0)
+      memmove (mti_table+idx+1, mti_table+idx,
+          sizeof (csMemTrackerInfo*) * tomove);
+    mti_table_count++;
+    CS_ASSERT(mti_table_count <= mti_table_max);
+    mti_table[idx] = (csMemTrackerInfo*)cs_malloc (sizeof (csMemTrackerInfo));
+    mti_table[idx]->Init (filename);
   }
 
   csMemTrackerInfo* FindInsertMtiTableEntry (
         const char* filename, int start, int end)
   {
     // Binary search.
-    if (mti_table.GetSize() == 0)
+    if (mti_table_count <= 0)
     {
-      csMemTrackerInfo* mti =
-        (csMemTrackerInfo*)malloc (sizeof (csMemTrackerInfo));
-      mti->Init (filename);
-      mti_table.Push (mti);
-      return mti;
+      mti_table_count++;
+      mti_table[0] = (csMemTrackerInfo*)cs_malloc (sizeof (csMemTrackerInfo));
+      mti_table[0]->Init (filename);
+      return mti_table[0];
     }
 
     if (start == end)
@@ -784,18 +766,18 @@ public:
 
   csMemTrackerInfo* FindInsertMtiTableEntry (const char* filename)
   {
-    return FindInsertMtiTableEntry (filename, 0, mti_table.GetSize()-1);
+    return FindInsertMtiTableEntry (filename, 0, mti_table_count-1);
   }
 
   void Dump (bool summary_only)
   {
-    size_t i;
+    int i;
     csPrintf ("-----------------------------------------------------\n");
     csPrintf ("Module: %s\n", Class);
     csPrintf ("       bytes   ...max   blocks   ...max #alloc #free  file\n");
     size_t total_current_alloc = 0;
     int total_current_count = 0;
-    for (i = 0 ; i < mti_table.GetSize(); i++)
+    for (i = 0 ; i < mti_table_count ; i++)
     {
       csMemTrackerInfo* mti = mti_table[i];
       if (!summary_only)
@@ -835,7 +817,7 @@ public:
   {
   }
 
-  csMemTrackerModule* NewMemTrackerModule (const char* Class)
+  csMemTrackerModule* NewMemTrackerModule (char* Class)
   {
     csMemTrackerModule* mod = new csMemTrackerModule ();
     mod->Class = Class;
@@ -909,12 +891,34 @@ public:
 };
 
 
-static csMemTrackerModule* mti_this_module;
+static csMemTrackerModule* mti_this_module = 0;
 
-void mtiRegisterModule (const char* Class)
+void mtiRegisterModule (char* Class)
 {
-  CS::Debug::MemTracker::Impl::RegisterModule (mti_this_module,
-    Class);
+  if (!iSCF::SCF)
+  {
+    csPrintf ("iSCF::SCF not set yet!\n");
+    return;
+  }
+
+  if (iSCF::SCF->object_reg)
+  {
+    csRef<iMemoryTracker> mtiTR = csQueryRegistryTagInterface<iMemoryTracker> (
+        iSCF::SCF->object_reg, "crystalspace.utilities.memorytracker");
+    if (!mtiTR)
+    {
+      mtiTR.AttachNew (new csMemTrackerRegistry);
+      iSCF::SCF->object_reg->Register (mtiTR,
+        "crystalspace.utilities.memorytracker");
+    }
+    mti_this_module = (static_cast<csMemTrackerRegistry*> (
+      (iMemoryTracker*)mtiTR))->NewMemTrackerModule (Class);
+  }
+  else
+  {
+    csPrintf ("Object Reg not set for %s!!!\n", Class);
+    fflush (stdout);
+  }
 }
 
 csMemTrackerInfo* mtiRegisterAlloc (size_t s, const char* filename)
@@ -969,143 +973,58 @@ void mtiUpdateAmount (csMemTrackerInfo* mti, int dcount, int dsize)
   }
 }
 
-namespace CS
+void* operator new (size_t s, void* filename, int /*line*/)
 {
-  namespace Debug
-  {
-    namespace MemTracker
-    {
-      namespace Impl
-      {
-	void RegisterAlloc (csMemTrackerModule* m, void* p, size_t s, const char* info)
-	{
-	  if (!m) return;
-	  csMemTrackerInfo* mti = m->FindInsertMtiTableEntry (info);
-	  mti->current_count++;
-	  mti->current_alloc += s;
-	  if (mti->current_count > mti->max_count)
-	    mti->max_count = mti->current_count;
-	  if (mti->current_alloc > mti->max_alloc)
-	    mti->max_alloc = mti->current_alloc;
-	  mti->totalAllocCount++;
-	  
-	  csMemTrackerModule::BlockInfo bi;
-	  bi.size = s;
-	  bi.info = info;
-	  m->blockSizes.Put (p, bi);
-	}
-	void RegisterModule (csMemTrackerModule*& m, const char* Class)
-	{
-	  if (!iSCF::SCF)
-	  {
-	    csPrintf ("iSCF::SCF not set yet!\n");
-	    return;
-	  }
-	
-	  if (iSCF::SCF->object_reg)
-	  {
-	    csRef<iMemoryTracker> mtiTR = csQueryRegistryTagInterface<iMemoryTracker> (
-		iSCF::SCF->object_reg, "crystalspace.utilities.memorytracker");
-	    if (!mtiTR)
-	    {
-	      mtiTR.AttachNew (new csMemTrackerRegistry);
-	      iSCF::SCF->object_reg->Register (mtiTR,
-		"crystalspace.utilities.memorytracker");
-	    }
-	    m = (static_cast<csMemTrackerRegistry*> (
-	      (iMemoryTracker*)mtiTR))->NewMemTrackerModule (Class);
-	  }
-	  else
-	  {
-	    csPrintf ("Object Reg not set for %s!!!\n", Class);
-	    fflush (stdout);
-	  }
-	}
-	void RegisterFree (csMemTrackerModule* m, void* p)
-	{
-	  if (!m) return;
-	  csMemTrackerModule::BlockInfo* bi =
-	    m->blockSizes.GetElementPointer (p);
-	  if (!bi) return;
-	  size_t s = bi->size;
-	  csMemTrackerInfo* mti = m->FindInsertMtiTableEntry (bi->info);
-	  mti->current_count--;
-	  mti->current_alloc -= s;
-	  mti->totalDeallocCount++;
-	  m->blockSizes.DeleteAll (p);
-	}
-	void UpdateSize (csMemTrackerModule* m, void* p,
-	  void* newP, size_t newSize)
-	{
-	  if (!m) return;
-	  csMemTrackerModule::BlockInfo* bi =
-	    m->blockSizes.GetElementPointer (p);
-	  if (!bi) return;
-	  size_t s = bi->size;
-	  csMemTrackerInfo* mti = m->FindInsertMtiTableEntry (bi->info);
-	  mti->current_alloc -= s;
-          mti->current_alloc += newSize;
-	  if (mti->current_alloc > mti->max_alloc)
-	    mti->max_alloc = mti->current_alloc;
-          csMemTrackerModule::BlockInfo newBI;
-          newBI.size = newSize;
-          newBI.info = bi->info;
-          m->blockSizes.Put (newP, newBI);
-	  m->blockSizes.DeleteAll (p);
-	}
-	void UpdateAmount (csMemTrackerModule* m, const char* info,
-	  int dcount, int dsize)
-	{
-	  if (!m) return;
-	  csMemTrackerInfo* mti = m->FindInsertMtiTableEntry (info);
-	  mti->current_count += dcount;
-	  mti->current_alloc += dsize;
-	  if (mti->current_count > mti->max_count)
-	    mti->max_count = mti->current_count;
-	  if (mti->current_alloc > mti->max_alloc)
-	    mti->max_alloc = mti->current_alloc;
-	  if (dcount > 0)
-	    mti->totalAllocCount++;
-	  else if (dcount < 0)
-	    mti->totalDeallocCount++;
-	}
-      } // namespace Impl
-    } // namespace MemTracker
-  } // namespace Debug
-} // namespace CS
-
-
-static void* memdebug_malloc (size_t s)
-{ return ptmalloc_sentinel (s); }
-static void memdebug_free (void* p)
-{ return ptfree_sentinel (p); }
-
-CS_CRYSTALSPACE_EXPORT void* operator new (size_t s, void* filename, int /*line*/)
-{
-  void* rc = memdebug_malloc (s);
-  CS::Debug::MemTracker::RegisterAlloc (rc, s, (const char*)filename);
-  return rc;
+  //CS_ASSERT (s > 0);
+  uintptr_t* rc = (uintptr_t*)cs_malloc (s+4*sizeof(uintptr_t));
+  memset (rc, 0xfe, s+4*sizeof(uintptr_t));
+  *rc++ = s;
+  *rc++ = 0xbeebbeeb;
+  *rc++ = (uintptr_t)mtiRegisterAlloc (s, (const char*)filename);
+  *rc++ = 0xdeadbeef;
+  return (void*)rc;
 }
-CS_CRYSTALSPACE_EXPORT void* operator new[] (size_t s, void* filename, int /*line*/)
+void* operator new[] (size_t s, void* filename, int /*line*/)
 {
-  void* rc = memdebug_malloc (s);
-  CS::Debug::MemTracker::RegisterAlloc (rc, s, (const char*)filename);
-  return rc;
+  //CS_ASSERT (s > 0);
+  uintptr_t* rc = (uintptr_t*)cs_malloc (s+4*sizeof(uintptr_t));
+  memset (rc, 0xfe, s+4*sizeof(uintptr_t));
+  *rc++ = s;
+  *rc++ = 0xfeedbeef;
+  *rc++ = (uintptr_t)mtiRegisterAlloc (s, (const char*)filename);
+  *rc++ = 0xdeadbeef;
+  return (void*)rc;
 }
-CS_CRYSTALSPACE_EXPORT void operator delete (void* p)
+void operator delete (void* p)
 {
   if (p)
   {
-    memdebug_free (p);
-    CS::Debug::MemTracker::RegisterFree (p);
+    uintptr_t* rc = ((uintptr_t*)p)-4;
+    if (rc[3] != 0xdeadbeef) 
+    { 
+      platform_free (p); // Not nice, but at least try.
+      return; 
+    }
+    size_t s = rc[0];
+    csMemTrackerInfo* mti = (csMemTrackerInfo*)rc[2];
+    cs_free ((void*)rc);
+    mtiRegisterFree (mti, s);
   }
 }
-CS_CRYSTALSPACE_EXPORT void operator delete[] (void* p)
+void operator delete[] (void* p)
 {
   if (p)
   {
-    memdebug_free (p);
-    CS::Debug::MemTracker::RegisterFree (p);
+    uintptr_t* rc = ((uintptr_t*)p)-4;
+    if (rc[3] != 0xdeadbeef) 
+    { 
+      platform_free (p); // Not nice, but at least try.
+      return; 
+    }
+    size_t s = rc[0];
+    csMemTrackerInfo* mti = (csMemTrackerInfo*)rc[2];
+    cs_free ((void*)rc);
+    mtiRegisterFree (mti, s);
   }
 }
 

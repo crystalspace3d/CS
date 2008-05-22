@@ -27,60 +27,34 @@
 CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 {
 
-class csGLBasicTextureHandle;
-
 /// Render2texture backend using the framebuffer
 class csGLRender2TextureFramebuf : public csGLRender2TextureBackend
 {
 protected:
-  //@{
-  /// Current render targets.
-  RTAttachment colorTarget;
-  RTAttachment depthTarget;
-  bool targetsSet;
-  //@}
+  /// Current render target.
+  csRef<iTextureHandle> render_target;
   /// If true then the current render target has been put on screen.
   bool rt_onscreen;
+  /// Old clip rect to restore after rendering on a proc texture.
+  int rt_old_minx, rt_old_miny, rt_old_maxx, rt_old_maxy;
   /// Render target dimensions
   int txt_w, txt_h;
-  R2TViewportHelper viewportHelper;
 
-  enum InternalFormatClass { ifColor, ifDepth };
-  /**
-   * Return a GL internal texture format that has the same basic components as
-   * the internal format of the texture but with a precision of the components
-   * that matches the framebuffer precision as closely as possible.
-   */
-  static GLenum GetInternalFormat (InternalFormatClass fmtClass,
-    csGLBasicTextureHandle* tex);
-  static GLenum GetInternalFormatColor (GLenum texInternalFormat);
-  static GLenum GetInternalFormatDepth (GLenum texInternalFormat);
-
+  int sub_texture_id;
   csDirtyAccessArray<uint8> pixelScratch;
-  void GrabFramebuffer (const RTAttachment& target, InternalFormatClass fmtClass);
 public:
   csGLRender2TextureFramebuf (csGLGraphics3D* G3D) 
-    : csGLRender2TextureBackend (G3D), targetsSet (false), 
-      rt_onscreen (false) { }
-  bool Status() { return true; }
+    : csGLRender2TextureBackend (G3D) { }
 
-  bool SetRenderTarget (iTextureHandle* handle, bool persistent,
-    int subtexture, csRenderTargetAttachment attachment);
-  void UnsetRenderTargets();
-  bool ValidateRenderTargets ()
-  {
-    // @@@ Should really return 'false' if SetRenderTarget() failed earlier
-    return true;
-  }
-  bool CanSetRenderTarget (const char* format, csRenderTargetAttachment attachment);
-  iTextureHandle* GetRenderTarget (csRenderTargetAttachment attachment, int* subtexture) const;
+  virtual void SetRenderTarget (iTextureHandle* handle, 
+	  bool persistent,
+	  int subtexture);
 
   virtual void BeginDraw (int drawflags);
   virtual void SetupProjection ();
   virtual void FinishDraw ();
   virtual void SetClipRect (const csRect& clipRect);
   virtual void SetupClipPortalDrawing ();
-  virtual bool HasStencil();
 };
 
 }

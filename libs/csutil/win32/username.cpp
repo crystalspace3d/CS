@@ -48,9 +48,9 @@ csString csGetUsername()
       wname = cswinAnsiToWide (buff);
     }
   }
-  char* name = CS::StrDup (wname);
+  char* name = csStrNew (wname);
   username.Replace (name);
-  cs_free (name);
+  delete[] name;
   delete[] wname;
   username.Trim();
   return username;

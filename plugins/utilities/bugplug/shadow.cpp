@@ -18,6 +18,7 @@
 
 #include "cssysdef.h"
 #include "shadow.h"
+#include "igeom/polymesh.h"
 #include "iengine/rview.h"
 #include "iengine/camera.h"
 #include "iengine/mesh.h"
@@ -33,8 +34,6 @@ csShadow::csShadow () :
   wrap = 0;
   do_bbox = true;
   do_rad = true;
-  do_normals = false;
-  do_skeleton = false;
   logparent = 0;
 }
 

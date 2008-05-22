@@ -175,12 +175,14 @@ void csEventQueue::Post (iEvent *Event)
 	    << std::endl;
 #endif
 again:
+  Lock ();
   size_t newHead = evqHead + 1;
   if (newHead == Length)
     newHead = 0;
 
   if (newHead == evqTail) // Queue full?
-  {    
+  {
+    Unlock ();
     Resize (Length * 2); // Normally queue should not be more than half full.
     goto again;
   }
@@ -188,6 +190,7 @@ again:
   EventQueue [evqHead] = Event;
   Event->IncRef ();
   evqHead = newHead;
+  Unlock ();
 }
 
 csPtr<iEvent> csEventQueue::Get ()
@@ -195,10 +198,12 @@ csPtr<iEvent> csEventQueue::Get ()
   iEvent* ev = 0;
   if (!IsEmpty ())
   {
+    Lock ();
     size_t oldTail = evqTail++;
     if (evqTail == Length)
       evqTail = 0;
     ev = (iEvent*)EventQueue [oldTail];
+    Unlock ();
   }
 #ifdef ADB_DEBUG
   if (ev != 0)
@@ -223,8 +228,10 @@ void csEventQueue::Resize (size_t iLength)
   if (iLength <= 0)
     iLength = DEF_EVENT_QUEUE_LENGTH;
 
+  Lock ();
   if (iLength == Length)
   {
+    Unlock ();
     return;
   }
 
@@ -249,7 +256,8 @@ void csEventQueue::Resize (size_t iLength)
     }
   }
 
-  delete[] oldEventQueue; 
+  delete[] oldEventQueue;
+  Unlock ();
 }
 
 void csEventQueue::Notify (const csEventID &name)

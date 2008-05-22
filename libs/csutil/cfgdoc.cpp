@@ -204,7 +204,7 @@ csConfigDocument::csConfigDocument ()
 csConfigDocument::csConfigDocument (const char *Filename, iVFS* vfs)
   : scfImplementationType (this), filename(0), fileVFS(vfs)
 {
-  filename = CS::StrDup (Filename);
+  filename = csStrNew (Filename);
   csRef<iFile> file;
   if (vfs)
     file = vfs->Open (Filename, VFS_FILE_READ);
@@ -234,7 +234,7 @@ csConfigDocument::csConfigDocument (iDocumentNode* node)
 
 csConfigDocument::~csConfigDocument()
 {
-  cs_free (filename);
+  delete[] filename;
 }
 
 void csConfigDocument::ParseDocument (iDocument* doc, bool Merge, bool NewWins)
@@ -275,10 +275,10 @@ void csConfigDocument::ParseNode (const char* parent, iDocumentNode* node,
       KeyInfo newInfo;
       newInfo.node = child;
       newInfo.comment = lastComment;
-      newInfo.cachedStringValue = CS::StrDup (child->GetContentsValue ());
-      newInfo.cachedComment = lastComment ? CS::StrDup (
+      newInfo.cachedStringValue = csStrNew (child->GetContentsValue ());
+      newInfo.cachedComment = lastComment ? csStrNew (
 	lastComment->GetContentsValue ()) : 0;
-      newInfo.originalKey = CS::StrDup (fullKey);
+      newInfo.originalKey = csStrNew (fullKey);
       keys.PutUnique ((const char*)downKey, newInfo);
       lastComment = 0;
     }

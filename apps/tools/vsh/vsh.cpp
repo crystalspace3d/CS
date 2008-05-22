@@ -123,7 +123,7 @@ static void trimwhite (char*& s)
   }
 }
 
-static bool get2args (const char *command, char *args, char *&arg1, char *&arg2,
+static bool get2args (char *command, char *args, char *&arg1, char *&arg2,
   bool req2nd = true)
 {
   if (!args)
@@ -282,12 +282,12 @@ static void cmd_ls (char *args)
     dir = VFS->GetCwd ();
 
   csRef<iStringArray> fl (VFS->FindFiles (dir));
-  if (fl->GetSize () > 0)
+  if (fl->Length() > 0)
   {
     bool nl = false;
 	
     size_t i;
-    for (i = 0; i < fl->GetSize () ; i++)
+    for (i = 0; i < fl->Length (); i++)
     {
       const char *fname = fl->Get (i);
       if (fullpath)
@@ -336,12 +336,12 @@ static void cmd_cp (char *args)
 
   csRef<iStringArray> fl (VFS->FindFiles (src));
   size_t i;
-  for (i = 0; i < fl->GetSize () ; i++)
+  for (i = 0; i < fl->Length (); i++)
   {
     char destname [VFS_MAX_PATH_LEN + 1];
     src = (char *)fl->Get (i);
 
-    if (fl->GetSize () > 1)
+    if (fl->Length () > 1)
     {
       size_t dirlen = strlen (src);
       if (dirlen)
@@ -528,10 +528,10 @@ static void cmd_rpath (char *args)
 static void cmd_mounts (char* /*args*/)
 {
   csRef<iStringArray> mounts = VFS->GetMounts ();
-  if (mounts->GetSize ())
+  if (mounts->Length ())
   {
     bool nl = false;
-    for (size_t i=0; i<mounts->GetSize () ; i++)
+    for (size_t i=0; i<mounts->Length (); i++)
     {
       csPrintf ("%-19s", mounts->Get (i));
       nl = true;
@@ -557,9 +557,9 @@ static void cmd_rmounts (char *args)
   }
 
   csRef<iStringArray> rpaths = VFS->GetRealMountPaths (args);
-  if (rpaths->GetSize ())
+  if (rpaths->Length ())
   {
-    for (size_t i=0; i<rpaths->GetSize () ; i++)
+    for (size_t i=0; i<rpaths->Length (); i++)
     {
       csPrintf ("%s\n", rpaths->Get (i));
     }

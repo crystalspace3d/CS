@@ -20,8 +20,6 @@
 #define __SWAPPABLE_H__
 
 #include "lighter.h"
-#include "csutil/threading/mutex.h"
-#include "csutil/threading/atomicops.h"
 
 namespace lighter
 {
@@ -61,8 +59,6 @@ namespace lighter
     void Lock (iSwappable* obj);
     /// Mark object as "unlocked" so it can be swapped out
     void Unlock (iSwappable* obj);
-    /// Notify of a size change of an object
-    void UpdateSize (iSwappable* obj);
 
     /// Free memory, around \a desiredAmount bytes
     void FreeMemory (size_t desiredAmount);
@@ -79,13 +75,10 @@ namespace lighter
       iSwappable* obj;
       enum
       {
-        swappedOut = 0,
-        swappedOutEmpty = 1,
-        swappedIn = 2,
-        swapping = 3
-      };
-
-      int32 swapStatus;
+        swappedOut,
+        swappedOutEmpty,
+        swappedIn
+      } swapStatus;
       size_t lastUnlockTime;
       size_t lastSize;
     };
@@ -124,8 +117,6 @@ namespace lighter
     size_t maxCacheSize, currentCacheSize;
     size_t currentUnlockTime;
 
-    CS::Threading::Mutex swapMutex;
-
     void AccountEntrySize (SwapEntry* e)
     {
       if (e->lastSize == (size_t)~0)
@@ -156,8 +147,7 @@ namespace lighter
 
   /**
    * Base implementation for a swappable object. Also supports nested
-   * locking. 
-   */
+   * locking. */
   class Swappable : public iSwappable
   {
     mutable uint lockCount;
@@ -191,11 +181,6 @@ namespace lighter
       lockCount--;
       if (lockCount == 0)
         globalLighter->swapManager->Unlock (
-          const_cast<iSwappable*> ((iSwappable*)this));
-    }
-    void UpdateSizeInSwapManager () const
-    {
-      globalLighter->swapManager->UpdateSize (
           const_cast<iSwappable*> ((iSwappable*)this));
     }
   };
@@ -233,16 +218,6 @@ namespace lighter
         this->SetCapacity (in_capacity);
         Unlock ();
       }
-    }
-    SwappableArray (const SwappableArray& other) : 
-      csDirtyAccessArray<T, ElementHandler, SwappableHeap, 
-        CapacityHandler> (0, CapacityHandler()) 
-    {
-      Lock ();
-      this->SetCapacity (other.GetSize());
-      for (size_t i=0 ; i<other.GetSize () ; i++)
-        Push (other[i]);
-      Unlock ();
     }
     ~SwappableArray ()
     {

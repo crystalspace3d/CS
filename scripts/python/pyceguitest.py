@@ -18,17 +18,16 @@ Note to be able to run this you'll need to
 import sys, time, traceback
 from cspace import *
 try:
-    # this is just a test to see if we have cegui support. note
-    # from cspace import * already imports all symbols from this module.
-    import cspace.pycscegui
+    from pycscegui import *
 except:
-    print "cspace python bindings dont have cegui support"
+    print "pycscegui python module not present!"
     sys.exit(1)
 try:
     import cegui
 except:
     print "cegui python module not present!"
     sys.exit(1)
+
 Cegui = None
 def onQuit(args):
     print args.__dict__
@@ -41,8 +40,8 @@ def onSlider(args):
 
 def InitCegui():
     global Cegui
-    vfs = object_reg.Get(iVFS)
-    Cegui = object_reg.Get(iCEGUI)
+    vfs = CS_QUERY_REGISTRY(object_reg, iVFS)
+    Cegui = CS_QUERY_REGISTRY(object_reg, iCEGUI)
     if not Cegui:
         Report(CS_REPORTER_SEVERITY_ERROR, "Cegui plugin not present in registry!")
 	return False
@@ -78,15 +77,15 @@ def InitCegui():
     return True
 
 def CreateRoom (matname):
-    engine = object_reg.Get(iEngine)
-    vc = object_reg.Get(iVirtualClock)
-    loader = object_reg.Get(iLoader)
+    engine = CS_QUERY_REGISTRY(object_reg, iEngine)
+    vc = CS_QUERY_REGISTRY(object_reg, iVirtualClock)
+    loader = CS_QUERY_REGISTRY(object_reg, iLoader)
     matname = 'mystone'
     loader.LoadTexture (matname, "/lib/stdtex/bricks.jpg")
     room = engine.GetSectors().FindByName("room")
     walls = engine.CreateSectorWallsMesh(room, "walls")
     material=engine.GetMaterialList().FindByName(matname)
-    walls_state = walls.GetMeshObject().GetFactory().QueryInterface(iThingFactoryState)
+    walls_state = SCF_QUERY_INTERFACE(walls.GetMeshObject().GetFactory(), iThingFactoryState)
     walls_state.AddInsideBox (csVector3 (-5, 0, -5), csVector3 (5, 20, 5))
     walls_state.SetPolygonMaterial (CS_POLYRANGE_LAST, material);
     walls_state.SetPolygonTextureMapping (CS_POLYRANGE_LAST, 3);
@@ -123,7 +122,7 @@ def FinishFrame ():
 def HandleEvent (ev):
     if ((ev.Name  == KeyboardDown) and
         (csKeyEventHelper.GetCookedCode(ev) == CSKEY_ESC)):
-        q  = object_reg.Get(iEventQueue)
+        q  = CS_QUERY_REGISTRY(object_reg, iEventQueue)
         if q:
             q.GetEventOutlet().Broadcast(csevQuit(object_reg))
             return 1
@@ -178,24 +177,24 @@ if csCommandLineHelper.CheckHelp(object_reg):
     csCommandLineHelper.Help(object_reg)
     sys.exit(0)
  
-vc = object_reg.Get(iVirtualClock)
+vc = CS_QUERY_REGISTRY(object_reg, iVirtualClock)
 
-engine = object_reg.Get(iEngine)
+engine = CS_QUERY_REGISTRY(object_reg, iEngine)
 if not engine:
     Report(CS_REPORTER_SEVERITY_ERROR, "No iEngine plugin!")
     sys.exit(1)
 
-myG3D = object_reg.Get(iGraphics3D)
+myG3D = CS_QUERY_REGISTRY (object_reg, iGraphics3D)
 if not myG3D:
     Report(CS_REPORTER_SEVERITY_ERROR, "No iGraphics3D loader plugin!")
     sys.exit(1)
 
-LevelLoader = object_reg.Get(iLoader)
+LevelLoader = CS_QUERY_REGISTRY(object_reg, iLoader)
 if not LevelLoader:
     Report(CS_REPORTER_SEVERITY_ERROR, "No iLoader plugin!")
     sys.exit(1)
 
-kbd = object_reg.Get(iKeyboardDriver)
+kbd = CS_QUERY_REGISTRY(object_reg, iKeyboardDriver)
 if not kbd:
     Report(CS_REPORTER_SEVERITY_ERROR, "No iKeyboardDriver!")
     sys.exit(1)
@@ -225,7 +224,7 @@ Report(CS_REPORTER_SEVERITY_NOTIFY, "Creating world!...")
 LevelLoader.LoadTexture("stone", "/lib/std/stone4.gif")
 room = engine.CreateSector("room")
  
-plugin_mgr = object_reg.Get(iPluginManager)
+plugin_mgr = CS_QUERY_REGISTRY(object_reg, iPluginManager)
  
 if not InitCegui():
     sys.exit(1)

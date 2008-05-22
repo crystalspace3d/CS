@@ -54,7 +54,7 @@ public:
   virtual bool ParseCollider (iDocumentNode *node, iRigidBody* body);
   /// Parse an anonymous mesh collider in the system
   virtual bool ParseSystemColliderMesh (iDocumentNode *node,
-  	iDynamicSystem* system, bool convex);
+  	iDynamicSystem* system);
   /// Parse an anonymous sphere collider in the system
   virtual bool ParseSystemColliderSphere (iDocumentNode *node,
   	iDynamicSystem* system);

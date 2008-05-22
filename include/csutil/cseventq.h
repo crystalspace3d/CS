@@ -84,7 +84,9 @@ private:
   // Queue head and tail pointers
   volatile size_t evqHead, evqTail;
   // The maximum queue length
-  volatile size_t Length;  
+  volatile size_t Length;
+  // Protection against multiple threads accessing same event queue
+  CS::Threading::Mutex Mutex;
   // Event tree.  All subscription PO graphs and delivery queues hang off
   // of this.
   csEventTree *EventTree;
@@ -100,7 +102,11 @@ private:
   csRefArray<iEventHandler> handlers;
 
   // Enlarge the queue size.
-  void Resize (size_t iLength);  
+  void Resize (size_t iLength);
+  // Lock the queue for modifications: NESTED CALLS TO LOCK/UNLOCK NOT ALLOWED!
+  inline void Lock () { Mutex.Lock(); }
+  // Unlock the queue
+  inline void Unlock () { Mutex.Unlock (); }
   // Send broadcast pseudo-events (bypassing event queue).
   void Notify (const csEventID &name);
 

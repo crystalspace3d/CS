@@ -29,12 +29,14 @@
 #include "csutil/parray.h"
 
 #include "ivideo/graph3d.h"
-#include "ivideo/rendermesh.h"
 
 struct iEngine;
 struct iMeshWrapper;
 struct iObjectRegistry;
 struct iRenderView;
+
+struct csRenderMesh;
+
 
 /**
  * This class is used when we need to store, sort and then render a list of
@@ -58,9 +60,8 @@ public:
   /**
    * Add a new set of rendermeshes to the lists
    */
-  void AddRenderMeshes (CS::Graphics::RenderMesh** meshes, int num, 
-    CS::Graphics::RenderPriority defaultRenderPriority,
-    csZBufMode z_buf_mode, iMeshWrapper* mesh);
+  void AddRenderMeshes (csRenderMesh** meshes, int num, long renderPriority,
+	csZBufMode z_buf_mode, iMeshWrapper* mesh);
 
   /**
    * Sort the list of meshes by render priority and within every render
@@ -71,7 +72,7 @@ public:
   /**
    * After sorting the meshes fetch them with this function.
    */
-  void GetSortedMeshes (CS::Graphics::RenderMesh** meshes, iMeshWrapper** imeshes);
+  void GetSortedMeshes (csRenderMesh** meshes, iMeshWrapper** imeshes);
 
   /**
    * Empty the meshlist. It will still hold the list of renderpriorities.
@@ -81,10 +82,10 @@ public:
 private:
   struct meshListEntry
   {
-    CS::Graphics::RenderMesh* rm;
+    csRenderMesh* rm;
     iMeshWrapper* mesh;
 
-    meshListEntry (CS::Graphics::RenderMesh* mesh, iMeshWrapper* imesh) 
+    meshListEntry (csRenderMesh* mesh, iMeshWrapper* imesh) 
       : rm(mesh), mesh(imesh) {}
   };
 

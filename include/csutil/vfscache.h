@@ -40,8 +40,8 @@ private:
   iObjectRegistry* object_reg;
   char* vfsdir;
   csRef<iVFS> vfs;
-  csString current_type;
-  csString current_scope;
+  char* current_type;
+  char* current_scope;
   bool readonly;
 
   iVFS* GetVFS ();

@@ -170,7 +170,7 @@ bool csXWindow::Initialize (iObjectRegistry *object_reg)
   {
     csRef<iPluginManager> plugin_mgr (
     	csQueryRegistry<iPluginManager> (object_reg));
-    xf86vm = csLoadPlugin<iXExtF86VM> (plugin_mgr, CS_XEXT_XF86VM_SCF_ID);
+    xf86vm = CS_LOAD_PLUGIN (plugin_mgr, CS_XEXT_XF86VM_SCF_ID, iXExtF86VM);
   }
   return true;
 }
@@ -183,12 +183,10 @@ bool csXWindow::Open ()
 //--------------------------------------------------------------------
   unsigned long cw_ctx_mask = (CWOverrideRedirect |
 			       CWBorderPixel |
-			       CWBackPixel |
 			       (cmap ? CWColormap : 0) |
 			       CWEventMask );
 
   unsigned long cw_wm_mask  = (CWBorderPixel |
-			       CWBackPixel |
 			       (cmap ? CWColormap : 0) |
 			       CWEventMask );
 
@@ -783,18 +781,6 @@ bool csXWindow::HandleEvent (iEvent &Event)
       case MapNotify:
 	EventOutlet->Broadcast (csevCanvasExposed (name_reg, Canvas), 0);
 	break;
-      case SelectionRequest:
-        storedEvent = event;
-        EventOutlet->Broadcast (csEventNameRegistry::GetID(name_reg, "crystalspace.xwindow.clipboard.selection.request"));
-        break;
-      case SelectionNotify:
-        storedEvent = event;
-        EventOutlet->Broadcast (csEventNameRegistry::GetID(name_reg, "crystalspace.xwindow.clipboard.selection.notify"));
-        break;
-      case SelectionClear:
-        storedEvent = event;
-        EventOutlet->Broadcast (csEventNameRegistry::GetID(name_reg, "crystalspace.xwindow.clipboard.selection.clear"));
-        break;
       default:
         break;
     }
@@ -884,16 +870,4 @@ bool csXWindow::SetMouseCursor (iImage *image, const csRGBcolor* keycolor,
     cachedCursors.Put (image->GetName(), mouseCursor);
 
   return true;
-}
-
-bool csXWindow::AlertV (int type, const char* title, const char* okMsg,
-			const char* msg, va_list arg)
-{
-#ifdef HAVE_GTK
-  if (AlertV_GTK (type, title, okMsg, msg, arg)) return true;
-#endif
-#ifdef HAVE_XAW
-  if (AlertV_Xaw (type, title, okMsg, msg, arg)) return true;
-#endif
-  return false;
 }

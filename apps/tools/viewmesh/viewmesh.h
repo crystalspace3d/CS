@@ -44,6 +44,7 @@
 #include "imap/writer.h"
 #include "imesh/sprite3d.h"
 #include "imesh/spritecal3d.h"
+#include "imesh/thing.h"
 #include "ivaria/icegui.h"
 
 struct vmAnimCallback;
@@ -76,7 +77,6 @@ class ViewMesh : public csApplicationFramework, public csBaseEventHandler
   csRef<iVFS> vfs;
   csRef<iView> view;
   csRef<iCEGUI> cegui;
-  csString renderLoop;
   iSector* room;
   int x,y;
 
@@ -119,8 +119,8 @@ class ViewMesh : public csApplicationFramework, public csBaseEventHandler
   static void Help ();
   void HandleCommandLine();
 
-  bool CreateRoom ();
-  bool CreateGui ();
+  void CreateRoom ();
+  void CreateGui ();
   void LoadLibrary(const char* file);
   void LoadTexture(const char* file, const char* name);
   void LoadSprite (const char* file);

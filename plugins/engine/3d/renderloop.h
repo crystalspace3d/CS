@@ -52,10 +52,6 @@ protected:
 
   csRefArray<iRenderStep> steps;
   csRef<iShaderManager> shadermanager;
-
-protected:
-  virtual void InternalRemove() { SelfDestruct(); }
-
 public:
 
   csRenderLoop (csEngine* engine);
@@ -77,8 +73,7 @@ public:
 class csRenderLoopManager : public scfImplementation1<csRenderLoopManager,
                                                       iRenderLoopManager>
 {
-  typedef csHashReversible<csRef<iRenderLoop>, const char*> LoopsHash;
-  LoopsHash loops;
+  csHashReversible<csRef<iRenderLoop>, const char*> loops;
   csStringSet strings;
 
   csEngine* engine;
@@ -89,7 +84,7 @@ public:
 
   virtual csPtr<iRenderLoop> Create ();
   
-  virtual bool Register (const char* name, iRenderLoop* loop, bool checkDupes = false);
+  virtual bool Register (const char* name, iRenderLoop* loop);
   virtual iRenderLoop* Retrieve (const char* name);
   virtual const char* GetName (iRenderLoop* loop);
   virtual bool Unregister (iRenderLoop* loop);
@@ -98,8 +93,6 @@ public:
    * Load a renderloop from VFS file named \p file.
    */
   virtual csPtr<iRenderLoop> Load (const char* fileName);
-  
-  void UnregisterAll (bool evenDefault);
 };
 
 #endif

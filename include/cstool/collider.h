@@ -35,13 +35,13 @@
 #include "ivaria/collider.h"
 
 struct iCamera;
-struct iCollection;
 struct iCollider;
 struct iCollideSystem;
 struct iEngine;
 struct iMeshWrapper;
 struct iMovable;
 struct iObject;
+struct iPolygonMesh;
 struct iTriangleMesh;
 struct iRegion;
 struct iSector;
@@ -51,6 +51,9 @@ struct csCollisionPair;
 class csReversibleTransform;
 
 struct csIntersectingTriangle;
+
+// for iPolygonMesh
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**
  * This is a convenience object that you can use in your own
@@ -75,9 +78,29 @@ private:
   csRef<iCollider> collider;
 
 public:
-  SCF_INTERFACE(csColliderWrapper, 2,2,0);
+  SCF_INTERFACE(csColliderWrapper, 2,1,0);
 
   CS_LEAKGUARD_DECLARE (csColliderWrapper);
+
+  /**
+   * Create a collider based on a mesh.
+   * \deprecated Use version with iTriangleMesh instead.
+   */
+#ifndef CS_DEPRECATION_SUPPRESS_HACK
+  CS_DEPRECATED_METHOD_MSG("Use version with iTriangleMesh instead.")
+#endif
+  csColliderWrapper (csObject& parent, iCollideSystem* collide_system,
+  	iPolygonMesh* mesh);
+
+  /**
+   * Create a collider based on a mesh.
+   * \deprecated Use version with iTriangleMesh instead.
+   */
+#ifndef CS_DEPRECATION_SUPPRESS_HACK
+  CS_DEPRECATED_METHOD_MSG("Use version with iTriangleMesh instead.")
+#endif
+  csColliderWrapper (iObject* parent, iCollideSystem* collide_system,
+  	iPolygonMesh* mesh);
 
   /**
    * Create a collider based on a mesh.
@@ -154,6 +177,13 @@ public:
   static csColliderWrapper* GetColliderWrapper (iObject* object);
 
   /**
+   * Update collider from a polymesh.
+   * \deprecated Use version with iTriangleMesh instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use version with iTriangleMesh instead.")
+  void UpdateCollider (iPolygonMesh* mesh);
+
+  /**
    * Update collider from a triangle mesh.
    */
   void UpdateCollider (iTriangleMesh* mesh);
@@ -162,6 +192,9 @@ public:
   void UpdateCollider (iTerraFormer* terrain);
 
 };
+
+// for iPolygonMesh
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 /**
  * Return structure for the csColliderHelper::TraceBeam() method.
@@ -221,18 +254,7 @@ public:
    * the objects from that region will be initialized.
    */
   static void InitializeCollisionWrappers (iCollideSystem* colsys,
-      iEngine* engine, iCollection* collection = 0);
-  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
-  static void InitializeCollisionWrappers (iCollideSystem* colsys,
-      iEngine* engine, iRegion* region);
-  /* Hack to ensure source compatibility when a 0 collection/region is used.
-   * Remove with region variant. */
-  static CS_FORCEINLINE void InitializeCollisionWrappers (iCollideSystem* colsys,
-      iEngine* engine, int dummy)
-  { 
-    InitializeCollisionWrappers (colsys, engine, (iCollection*)0);
-  }
-
+  	iEngine* engine, iRegion* region = 0);
 
   /**
    * Test collision between one collider and an array of colliders.

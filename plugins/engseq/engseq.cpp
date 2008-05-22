@@ -645,8 +645,8 @@ public:
 
 //---------------------------------------------------------------------------
 
-class RelativeRotateInfo : 
-  public scfImplementation1<RelativeRotateInfo, iSequenceTimedOperation>
+class RotateInfo : 
+  public scfImplementation1<RotateInfo, iSequenceTimedOperation>
 {
 public:
   csRef<iMovable> movable;
@@ -655,66 +655,10 @@ public:
   csVector3 offset;
   csReversibleTransform start_transform;
 
-  RelativeRotateInfo () : scfImplementationType (this)
+  RotateInfo () : scfImplementationType (this)
   { }
-  virtual ~RelativeRotateInfo ()
+  virtual ~RotateInfo ()
   { }
-
-  virtual void Do (float time, iBase*)
-  {
-    csMatrix3 mat = start_transform.GetO2T();
-    switch (axis1)
-    {
-      case -1:
-        break;
-      case 0:
-        mat = mat * csXRotMatrix3 (tot_angle1*time);
-	break;
-      case 1:
-        mat = mat * csYRotMatrix3 (tot_angle1*time);
-	break;
-      case 2:
-        mat = mat * csZRotMatrix3 (tot_angle1*time);
-	break;
-    }
-    switch (axis2)
-    {
-      case -1:
-        break;
-      case 0:
-        mat = mat * csXRotMatrix3 (tot_angle2*time);
-	break;
-      case 1:
-        mat = mat * csYRotMatrix3 (tot_angle2*time);
-	break;
-      case 2:
-        mat = mat * csZRotMatrix3 (tot_angle2*time);
-	break;
-    }
-    switch (axis3)
-    {
-      case -1:
-        break;
-      case 0:
-        mat = mat * csXRotMatrix3 (tot_angle3*time);
-	break;
-      case 1:
-        mat = mat * csYRotMatrix3 (tot_angle3*time);
-	break;
-      case 2:
-        mat = mat * csZRotMatrix3 (tot_angle3*time);
-	break;
-    }
-    movable->GetTransform().SetO2T(mat);
-    movable->UpdateMove ();
-  }
-};
-
-class AbsoluteRotateInfo : public RelativeRotateInfo
-{
-public:
-  AbsoluteRotateInfo ()  { }
-  virtual ~AbsoluteRotateInfo ()  { }
 
   virtual void Do (float time, iBase*)
   {
@@ -769,7 +713,6 @@ public:
   }
 };
 
-
 /**
  * Rotate operation.
  */
@@ -785,7 +728,6 @@ private:
   csTicks duration;
   iEngineSequenceManager* eseqmgr;
   uint sequence_id;
-  bool relative;
 
 public:
   OpRotate (iParameterESM* meshpar,
@@ -794,11 +736,11 @@ public:
   	int axis3, float tot_angle3,
 	const csVector3& offset,
   	csTicks duration, iEngineSequenceManager* eseqmgr,
-	uint sequence_id, bool relative) :
+	uint sequence_id) :
     axis1 (axis1), axis2 (axis2), axis3 (axis3),
     tot_angle1 (tot_angle1), tot_angle2 (tot_angle2), tot_angle3 (tot_angle3),
     offset (offset), duration (duration),
-    eseqmgr (eseqmgr), sequence_id (sequence_id), relative(relative)
+    eseqmgr (eseqmgr), sequence_id (sequence_id)
   {
     if (meshpar->IsConstant ())
     {
@@ -825,11 +767,7 @@ public:
       movable = light->GetMovable ();
     if (movable)
     {
-      RelativeRotateInfo* ri;
-      if (relative)
-	 ri = new RelativeRotateInfo ();
-      else
-	 ri = new AbsoluteRotateInfo ();
+      RotateInfo* ri = new RotateInfo ();
       ri->movable = movable;
       ri->start_transform = movable->GetTransform ();
       ri->axis1 = axis1;
@@ -1338,11 +1276,11 @@ void csSequenceWrapper::AddOperationRotateDuration (csTicks time,
 	int axis1, float tot_angle1,
 	int axis2, float tot_angle2,
 	int axis3, float tot_angle3,
-	const csVector3& offset, csTicks duration, bool relative)
+	const csVector3& offset, csTicks duration)
 {
   OpRotate* op = new OpRotate (mesh,
   	axis1, tot_angle1, axis2, tot_angle2, axis3, tot_angle3,
-	offset, duration, eseqmgr, sequence_id, relative);
+	offset, duration, eseqmgr, sequence_id);
   sequence->AddOperation (time, op, 0, sequence_id);
   op->DecRef ();
 }
@@ -1861,8 +1799,8 @@ bool csEngineSequenceManager::Initialize (iObjectRegistry *r)
 
   csRef<iPluginManager> plugin_mgr (
   	csQueryRegistry<iPluginManager> (object_reg));
-  seqmgr = csLoadPlugin<iSequenceManager> (plugin_mgr,
-    "crystalspace.utilities.sequence");
+  seqmgr = CS_LOAD_PLUGIN (plugin_mgr, "crystalspace.utilities.sequence",
+  	iSequenceManager);
   if (!seqmgr)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,

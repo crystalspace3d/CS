@@ -835,6 +835,12 @@ void csHazeMeshObject::ProjectO2S(csReversibleTransform& tr_o2c, float fov,
   scrpos.y = scrpos.y * inv_z + shifty;
 }
 
+void csHazeMeshObject::GetObjectBoundingBox (csBox3& retbbox)
+{
+  SetupObject ();
+  retbbox = bbox;
+}
+
 const csBox3& csHazeMeshObject::GetObjectBoundingBox ()
 {
   SetupObject ();

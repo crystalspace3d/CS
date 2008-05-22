@@ -264,7 +264,9 @@ void HeightMapGen::Start ()
     return;
   }
 
-  csBox3 box = mesh->GetWorldBoundingBox ();
+  csBox3 box;
+  //mesh->GetMeshObject ()->GetObjectModel ()->GetObjectBoundingBox (box);
+  box = mesh->GetWorldBoundingBox ();
   csPrintf ("box=%g,%g,%g   %g,%g,%g\n",
   	box.MinX (), box.MinY (), box.MinZ (),
   	box.MaxX (), box.MaxY (), box.MaxZ ());

@@ -38,6 +38,8 @@ class csColor;
 class csReversibleTransform;
 class csVector3;
 
+struct csRenderMesh;
+
 /**
  * A iParticle can be used in particle Systems.
  * Each particle may perform these operations in it's own manner,

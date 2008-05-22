@@ -26,10 +26,9 @@
 
 #include "csextern.h"
 #include "csutil/csstring.h"
-#include "csutil/refcount.h"
 
 /// Call stack.
-class CS_CRYSTALSPACE_EXPORT csCallStack : public csRefCount
+class CS_CRYSTALSPACE_EXPORT csCallStack
 {
 protected:
   virtual ~csCallStack() {}
@@ -41,62 +40,23 @@ public:
   
   /// Get number of entries in the stack.
   virtual size_t GetEntryCount () = 0;
-  //{@
   /**
    * Get the function for an entry.
    * Contains usually raw address, function name and module name.
    * Returns false if an error occured or a name is not available.
    */
-  virtual bool GetFunctionName (size_t num, char*& str) = 0;
-  bool GetFunctionName (size_t num, csString& str)
-  {
-    char* cstr;
-    if (GetFunctionName (num, cstr))
-    {
-      str = cstr;
-      free (cstr);
-      return true;
-    }
-    return false;
-  }
-  //@}
-  //{@
+  virtual bool GetFunctionName (size_t num, csString& str) = 0;
   /**
    * Get file and line number for an entry.
    * Returns false if an error occured or a line number is not
    * available.
    */
-  virtual bool GetLineNumber (size_t num, char*& str) = 0;
-  bool GetLineNumber (size_t num, csString& str)
-  {
-    char* cstr;
-    if (GetLineNumber (num, cstr))
-    {
-      str = cstr;
-      free (cstr);
-      return true;
-    }
-    return false;
-  }
-  //@}
-  //{@
+  virtual bool GetLineNumber (size_t num, csString& str) = 0;
   /**
    * Get function parameter names and values.
    * Returns false if an error occured or if parameters are not available.
    */
-  virtual bool GetParameters (size_t num, char*& str) = 0;
-  bool GetParameters (size_t num, csString& str)
-  {
-    char* cstr;
-    if (GetParameters (num, cstr))
-    {
-      str = cstr;
-      free (cstr);
-      return true;
-    }
-    return false;
-  }
-  //@}
+  virtual bool GetParameters (size_t num, csString& str) = 0;
   /**
    * Print the complete stack.
    * \param f File handle to print to.
@@ -106,20 +66,13 @@ public:
   {
     for (size_t i = 0; i < GetEntryCount(); i++)
     {
-      char* s;
+      csString s;
       bool hasFunc = GetFunctionName (i, s);
       fprintf (f, "%s", hasFunc ? (const char*)s : "<unknown>");
-      if (hasFunc) free (s);
       if (!brief && (GetLineNumber (i, s)))
-      {
 	fprintf (f, " @%s", (const char*)s);
-	free (s);
-      }
       if (!brief && (GetParameters (i, s)))
-      {
 	fprintf (f, " (%s)", (const char*)s);
-	free (s);
-      }
       fprintf (f, "\n");
     }
     fflush (f);
@@ -132,20 +85,13 @@ public:
   csString GetEntryAll (size_t i, bool brief = false)
   {
     csString line;
-    char* s;
+    csString s;
     bool hasFunc = GetFunctionName (i, s);
     line << (hasFunc ? (const char*)s : "<unknown>");
-    if (hasFunc) free (s);
     if (!brief && GetLineNumber (i, s))
-    {
       line << " @" << s;
-      free (s);
-    }
     if (!brief && GetParameters (i, s))
-    {
       line << " (" << s << ")";
-      free (s);
-    }
     return line;
   }
 };

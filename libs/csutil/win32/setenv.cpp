@@ -21,25 +21,17 @@
 #include "csutil/csstring.h"
 #include <stdlib.h>
 
-namespace CS
+#ifndef CS_HAVE_SETENV
+
+int setenv (const char* name, const char* value, bool overwrite)
 {
-  namespace Utility
+  if (overwrite || (getenv (name) == 0))
   {
+    csString envStr;
+    envStr.Format ("%s=%s", name, value);
+    return _putenv (envStr);
+  }
+  return 0;
+}
 
-    int setenv (const char* name, const char* value, bool overwrite)
-    {
-#ifdef CS_HAVE_SETENV
-      return ::setenv (name, value, overwrite);
-#else
-      if (overwrite || getenv (name) == 0)
-	{
-	  csString s;
-	  s.Format ("%s=%s", name, value);
-	  return _putenv (s);
-	}
-      return 0;
 #endif // CS_HAVE_SETENV
-    }
-
-  } // namespace Utility
-} // namespace CS

@@ -27,6 +27,13 @@
 #include "iutil/objreg.h"
 #include "iutil/virtclk.h"
 
+struct timerevent
+{
+  csRef<iTimerEvent> event;
+  csTicks delay;
+  int time_left;
+};
+
 //-----------------------------------------------------------------------
 
 class csTimerEventHandler : public scfImplementation1<csTimerEventHandler,

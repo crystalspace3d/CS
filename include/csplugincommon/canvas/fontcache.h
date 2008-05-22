@@ -150,7 +150,6 @@ public:
   };
   /// the current clipping rect
   int ClipX1, ClipY1, ClipX2, ClipY2;
-  int vpX, vpY;
 protected:
 
   /// Array of known fonts.
@@ -235,10 +234,6 @@ public:
   void SetClipRect (int x1, int y1, int x2, int y2)
   { 
     ClipX1 = x1; ClipY1 = y1; ClipX2 = x2; ClipY2 = y2; 
-  }
-  void SetViewportOfs (int vpX, int vpY)
-  { 
-    this->vpX = vpX; this->vpY = vpY;
   }
 
   //@{

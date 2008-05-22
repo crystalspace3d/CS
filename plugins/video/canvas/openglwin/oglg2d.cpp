@@ -210,6 +210,11 @@ bool csGraphics2DOpenGL::Initialize (iObjectRegistry *object_reg)
     pfmt.PixelBytes = 1;
   }
 
+  // Create the event outlet
+  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+  if (q != 0)
+    EventOutlet = q->CreateEventOutlet (this);
+
   csRef<iCommandLineParser> cmdline (
   	csQueryRegistry<iCommandLineParser> (object_reg));
   m_bHardwareCursor = config->GetBool ("Video.SystemMouseCursor", true);
@@ -457,8 +462,8 @@ bool csGraphics2DOpenGL::Open ()
 
   m_bActivated = true;
 
-  int wwidth = fbWidth;
-  int wheight = fbHeight;
+  int wwidth = Width;
+  int wheight = Height;
   DWORD exStyle = 0;
   DWORD style = WS_POPUP | WS_SYSMENU;
   int xpos = 0;
@@ -578,7 +583,7 @@ bool csGraphics2DOpenGL::Open ()
      * of the window rectangle equal to the size of the screen with 
      * SetWindowPos."
      */
-    SetWindowPos (m_hWnd, CS_WINDOW_Z_ORDER, 0, 0, fbWidth, fbHeight, 0);
+    SetWindowPos (m_hWnd, CS_WINDOW_Z_ORDER, 0, 0, Width, Height, 0);
   }
 
   if (!csGraphics2DGLCommon::Open ())
@@ -873,13 +878,13 @@ bool csGraphics2DOpenGL::Resize (int width, int height)
   {
     RECT R;
     GetClientRect (m_hWnd, &R);
-    if (R.right - R.left != fbWidth || R.bottom - R.top != fbHeight)
+    if (R.right - R.left != Width || R.bottom - R.top != Height)
     {
       // We only resize the window when the canvas is different. This only
       // happens on a manual Resize() from the app, as this is called after
       // the window resizing is finished     
-      int wwidth = fbWidth + 2 * GetSystemMetrics (SM_CXSIZEFRAME);
-      int wheight = fbHeight + 2 * GetSystemMetrics (SM_CYSIZEFRAME)
+      int wwidth = Width + 2 * GetSystemMetrics (SM_CXSIZEFRAME);
+      int wheight = Height + 2 * GetSystemMetrics (SM_CYSIZEFRAME)
         + GetSystemMetrics (SM_CYCAPTION);
 
       // To prevent a second resize of the canvas, we temporarily disable resizing
@@ -909,7 +914,7 @@ void csGraphics2DOpenGL::SetFullScreen (bool b)
       SwitchDisplayMode (false);
       style = WS_POPUP | WS_VISIBLE | WS_SYSMENU;
       SetWindowLong (m_hWnd, GWL_STYLE, style);
-      SetWindowPos (m_hWnd, CS_WINDOW_Z_ORDER, 0, 0, fbWidth, fbHeight, SWP_FRAMECHANGED);
+      SetWindowPos (m_hWnd, CS_WINDOW_Z_ORDER, 0, 0, Width, Height, SWP_FRAMECHANGED);
       ShowWindow (m_hWnd, SW_SHOW);
     }
     else
@@ -920,14 +925,14 @@ void csGraphics2DOpenGL::SetFullScreen (bool b)
       if (AllowResizing)
       {
         style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
-        wwidth = fbWidth + 2 * GetSystemMetrics (SM_CXSIZEFRAME);
-        wheight = fbHeight + 2 * GetSystemMetrics (SM_CYSIZEFRAME)
+        wwidth = Width + 2 * GetSystemMetrics (SM_CXSIZEFRAME);
+        wheight = Height + 2 * GetSystemMetrics (SM_CYSIZEFRAME)
           + GetSystemMetrics (SM_CYCAPTION);
       }
       else
       {
-        wwidth = fbWidth + 2 * GetSystemMetrics (SM_CXFIXEDFRAME);
-        wheight = fbHeight + 2 * GetSystemMetrics (SM_CYFIXEDFRAME)
+        wwidth = Width + 2 * GetSystemMetrics (SM_CXFIXEDFRAME);
+        wheight = Height + 2 * GetSystemMetrics (SM_CYFIXEDFRAME)
           + GetSystemMetrics (SM_CYCAPTION);
       }
       SetWindowLong (m_hWnd, GWL_STYLE, style);
@@ -990,7 +995,7 @@ void csGraphics2DOpenGL::Activate (bool activated)
     {
       SwitchDisplayMode (false);
       ShowWindow (m_hWnd, SW_RESTORE);
-      SetWindowPos (m_hWnd, CS_WINDOW_Z_ORDER, 0, 0, fbWidth, fbHeight, 0);
+      SetWindowPos (m_hWnd, CS_WINDOW_Z_ORDER, 0, 0, Width, Height, 0);
       wglMakeCurrent (hDC, hGLRC);
     }
     else
@@ -1034,16 +1039,16 @@ void csGraphics2DOpenGL::SwitchDisplayMode (bool userMode)
 
     // check if we already are in the desired display mode
     if (((int)curdmode.dmBitsPerPel == Depth) &&
-      ((int)curdmode.dmPelsWidth == fbWidth) &&
-      ((int)curdmode.dmPelsHeight == fbHeight) &&
+      ((int)curdmode.dmPelsWidth == Width) &&
+      ((int)curdmode.dmPelsHeight == Height) &&
       (!m_nDisplayFrequency || (dmode.dmDisplayFrequency == m_nDisplayFrequency)))
     {
       // no action necessary
       return;
     }
     dmode.dmBitsPerPel = Depth;
-    dmode.dmPelsWidth = fbWidth;
-    dmode.dmPelsHeight = fbHeight;
+    dmode.dmPelsWidth = Width;
+    dmode.dmPelsHeight = Height;
     if (m_nDisplayFrequency) dmode.dmDisplayFrequency = m_nDisplayFrequency;
     dmode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
     
@@ -1054,8 +1059,8 @@ void csGraphics2DOpenGL::SwitchDisplayMode (bool userMode)
       // so try without setting it.
       // but first check resolution/depth w/o refresh rate
       if (((int)curdmode.dmBitsPerPel == Depth) &&
-        ((int)curdmode.dmPelsWidth == fbWidth) &&
-        ((int)curdmode.dmPelsHeight == fbHeight))
+        ((int)curdmode.dmPelsWidth == Width) &&
+        ((int)curdmode.dmPelsHeight == Height))
       {
 	refreshRate = curdmode.dmDisplayFrequency;
         // no action necessary

@@ -121,12 +121,9 @@ class csSequenceWrapper : public scfImplementationExt2<csSequenceWrapper,
 {
 private:
   csRef<iSequence> sequence;
-  csRef<csEngineSequenceManager> eseqmgr;
+  csEngineSequenceManager* eseqmgr;
   csRef<csEngineSequenceParameters> params;
   uint sequence_id;
-
-protected:
-  void InternalRemove() { SelfDestruct(); }
 
 public:
   csSequenceWrapper (csEngineSequenceManager* eseqmgr, iSequence* sequence,
@@ -184,7 +181,7 @@ public:
 		int axis2, float tot_angle2,
 		int axis3, float tot_angle3,
 		const csVector3& offset,
-		csTicks duration, bool relative);
+		csTicks duration);
   virtual void AddOperationMoveDuration (csTicks time, iParameterESM* mesh,
 		const csVector3& offset,
 		csTicks duration);
@@ -262,9 +259,6 @@ private:
 
   int total_conditions;
   int fired_conditions;
-
-protected:
-  void InternalRemove() { SelfDestruct(); }
 
 public:
   csSequenceTrigger (csEngineSequenceManager* eseqmgr);

@@ -21,20 +21,6 @@
 #ifndef CS_MICRO_SWIG
 
 #ifndef SWIGIMPORTED
-
-%template (csPyEventPlugParent) scfImplementation1<csPyEventPlug, iEventPlug>;
-
-%inline %{
-  struct csPyEventPlug : public scfImplementation1<csPyEventPlug,iEventPlug>
-  {
-    csPyEventPlug () : scfImplementationType(this) { }
-    virtual ~csPyEventPlug () { }
-    virtual unsigned GetPotentiallyConflictingEvents () { return CSEVTYPE_Joystick|CSEVTYPE_Mouse|CSEVTYPE_Keyboard; }
-    virtual unsigned QueryEventPriority (unsigned) { return 110; }
-  };
-%}
-
-
 %template (csPyEventHandlerParent) scfImplementation1<_csPyEventHandler, iEventHandler>;
 %inline %{
 
@@ -56,8 +42,6 @@
       Py_DECREF(event_obj);
       if (!result)
       {
-        if (PyErr_Occurred ())
-                PyErr_Print ();
         return false;
       }
       bool res = PyInt_AsLong(result);
@@ -112,6 +96,7 @@
       self._func._cs_event_handler_wrapper = self
     def HandleEvent (self, event):
       return self._func(event)
+
   def _csInitializer_SetupEventHandler (reg, obj,
       eventids=None):
     """Replacement of C++ versions."""
@@ -129,6 +114,7 @@
   
   csInitializer.SetupEventHandler = \
     staticmethod(_csInitializer_SetupEventHandler)
+
 %}
 
 #endif // SWIGIMPORTED

@@ -99,7 +99,7 @@ struct iKeyComposer : public virtual iBase
  * - csInitializer::CreateInputDrivers()
  *
  * Main ways to get pointers to this interface:
- * - csQueryRegistry<iKeyboardDriver>()
+ * - CS_QUERY_REGISTRY()
  *
  * 
  * \todo Need a simple way to query all currently-set modifiers for event 
@@ -111,7 +111,7 @@ struct iKeyComposer : public virtual iBase
  */
 struct iKeyboardDriver : public virtual iBase
 {
-  SCF_INTERFACE(iKeyboardDriver, 2,0,1);
+  SCF_INTERFACE(iKeyboardDriver, 2,0,0);
   /**
    * Call to release all key down flags (when focus switches from application
    * window, for example).
@@ -155,12 +155,6 @@ struct iKeyboardDriver : public virtual iBase
    * modifiers.
    */
   virtual csEventError SynthesizeCooked (iEvent *) = 0;
-
-  /**
-   * Get the current state of all modifiers.
-   */
-  virtual const csKeyModifiers& GetModifiersState () const = 0;
-
 };
 
 
@@ -180,7 +174,7 @@ struct iKeyboardDriver : public virtual iBase
  * - csInitializer::CreateInputDrivers()
  *
  * Main ways to get pointers to this interface:
- * - csQueryRegistry<iMouseDriver>()
+ * - CS_QUERY_REGISTRY()
  */
 struct iMouseDriver : public virtual iBase
 {
@@ -232,7 +226,7 @@ struct iMouseDriver : public virtual iBase
  * - csInitializer::CreateInputDrivers()
  *
  * Main ways to get pointers to this interface:
- * - csQueryRegistry<iJoystickDriver>()
+ * - CS_QUERY_REGISTRY()
  */
 struct iJoystickDriver : public virtual iBase
 {

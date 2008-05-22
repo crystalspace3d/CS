@@ -22,7 +22,6 @@
 
 #include "csutil/csstring.h"
 #include "csutil/customallocated.h"
-#include "callstack.h"
 
 #include <bfd.h>
 
@@ -32,11 +31,11 @@ namespace CS
   {
     
     /// Class to obtain symbols from an object file via libbfd.
-    class BfdSymbols : public CallstackAllocated
+    class BfdSymbols : public CS::Memory::CustomAllocated
     {
       bfd* abfd;
       asymbol** syms;
-      csStringFast<CS_MAXPATHLEN> filename;
+      csString filename;
       uintptr_t addrOffs;
       
       /// Check if everything is sane

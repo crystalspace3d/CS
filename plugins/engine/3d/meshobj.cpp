@@ -413,7 +413,7 @@ void csMeshWrapper::SetZBufModeRecursive (csZBufMode mode)
   }
 }
 
-void csMeshWrapper::SetRenderPriorityRecursive (CS::Graphics::RenderPriority rp)
+void csMeshWrapper::SetRenderPriorityRecursive (long rp)
 {
   SetRenderPriority (rp);
   const csRefArray<iSceneNode>& children = movable.GetChildren ();
@@ -426,7 +426,7 @@ void csMeshWrapper::SetRenderPriorityRecursive (CS::Graphics::RenderPriority rp)
   }
 }
 
-void csMeshWrapper::SetRenderPriority (CS::Graphics::RenderPriority rp)
+void csMeshWrapper::SetRenderPriority (long rp)
 {
   render_priority = rp;
 
@@ -664,7 +664,7 @@ csRenderMesh** csMeshWrapper::GetRenderMeshes (int& n, iRenderView* rview,
     parent = parent->GetParent ();
   }
 
-  CS::Graphics::RenderMesh** rmeshes = meshobj->GetRenderMeshes (n, rview, &movable,
+  csRenderMesh** rmeshes = meshobj->GetRenderMeshes (n, rview, &movable,
   	old_ctxt != 0 ? 0 : frustum_mask);
   if (old_ctxt)
   {
@@ -674,17 +674,18 @@ csRenderMesh** csMeshWrapper::GetRenderMeshes (int& n, iRenderView* rview,
   return rmeshes;
 }
 
-size_t csMeshWrapper::AddExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh, 
-					 csZBufMode zBufMode)
+void csMeshWrapper::AddExtraRenderMesh(csRenderMesh* renderMesh, long priority,
+        csZBufMode zBufMode)
 {
   ExtraRenderMeshData data;
   extraRenderMeshes.Push(renderMesh);
 
+  data.priority = priority;
   data.zBufMode = zBufMode;
-  return extraRenderMeshData.Push(data);
+  extraRenderMeshData.Push(data);
 }
 
-CS::Graphics::RenderMesh** csMeshWrapper::GetExtraRenderMeshes (size_t& num, 
+csRenderMesh** csMeshWrapper::GetExtraRenderMeshes (size_t& num, 
                     iRenderView* rview, uint32 frustum_mask)
 {
   // Here we check the CS_ENTITY_NOCLIP flag. If that flag is set
@@ -734,14 +735,9 @@ CS::Graphics::RenderMesh** csMeshWrapper::GetExtraRenderMeshes (size_t& num,
   return extraRenderMeshes.GetArray();
 }
 
-CS::Graphics::RenderMesh* csMeshWrapper::GetExtraRenderMesh (size_t idx) const
+long csMeshWrapper::GetExtraRenderMeshPriority(size_t idx) const
 {
-  return extraRenderMeshes[idx];
-}
-
-CS::Graphics::RenderPriority csMeshWrapper::GetExtraRenderMeshPriority(size_t idx) const
-{
-    return extraRenderMeshes[idx]->renderPrio;
+    return extraRenderMeshData[idx].priority;
 }
 
 csZBufMode csMeshWrapper::GetExtraRenderMeshZBufMode(size_t idx) const
@@ -757,17 +753,16 @@ void csMeshWrapper::RemoveExtraRenderMesh(csRenderMesh* renderMesh)
         if (extraRenderMeshes[a] != renderMesh)
             continue;
 
-        extraRenderMeshes.DeleteIndexFast(a);
-        extraRenderMeshData.DeleteIndexFast(a);
+        // copy last value in list over top of the one we're removing
+        extraRenderMeshes[a] = extraRenderMeshes[len-1];
+        extraRenderMeshData[a] = extraRenderMeshData[len-1];
+
+        // remove the last one
+        extraRenderMeshes.DeleteIndexFast(len-1);
+        extraRenderMeshData.DeleteIndexFast(len-1);
 
         return;
     }
-}
-
-void csMeshWrapper::RemoveExtraRenderMesh(size_t index)
-{
-  extraRenderMeshes.DeleteIndexFast(index);
-  extraRenderMeshData.DeleteIndexFast(index);
 }
 
 //----- Min/Max Distance Range ----------------------------------------------
@@ -974,18 +969,6 @@ csRenderMesh** csMeshWrapper::GetImposter (iRenderView *rview)
   return imposter_mesh->GetRenderMesh (rview);
 }
 
-void csMeshWrapper::SetLODFade (float fade)
-{
-  csRef<csShaderVariable> sv_lod_fade =
-    GetSVContext()->GetVariableAdd (engine->id_lod_fade);
-  sv_lod_fade->SetValue (fade);
-}
-
-void csMeshWrapper::UnsetLODFade ()
-{
-  GetSVContext()->RemoveVariable (engine->id_lod_fade);
-}
-
 csHitBeamResult csMeshWrapper::HitBeamOutline (
   const csVector3 &start,
   const csVector3 &end)
@@ -1156,7 +1139,7 @@ void csMeshWrapper::PlaceMesh ()
   if (!movable.IsFullTransformIdentity ())
     sphere = movable.GetFullTransform ().This2Other (sphere);
   radius = sphere.GetRadius ();
-  //float max_sq_radius = radius * radius;
+  float max_sq_radius = radius * radius;
 
   csRef<iMeshWrapperIterator> it = 
     engine->GetNearbyMeshes (sector, sphere.GetCenter (), radius, true);
@@ -1175,9 +1158,19 @@ void csMeshWrapper::PlaceMesh ()
       iSector *dest_sector = portal->GetSector ();
       if (movable_sectors->Find (dest_sector) == -1)
       {
-	const csSphere& portal_sphere = portal->GetWorldSphere ();
-	if (portal_sphere.TestIntersect (sphere))
-          movable_sectors->Add (dest_sector);
+        const csPlane3 &pl = portal->GetWorldPlane ();
+
+        float sqdist = csSquaredDist::PointPlane (sphere.GetCenter (), pl);
+        if (sqdist <= max_sq_radius)
+        {
+          // Plane of portal is close enough.
+          // If N is the normal of the portal plane then we
+          // can use that to calculate the point on the portal plane.
+          csVector3 testpoint = sphere.GetCenter () + pl.Normal () * csQsqrt (
+                  sqdist);
+          if (portal->PointOnPolygon (testpoint))
+            movable_sectors->Add (dest_sector);
+        }
       }
     }
   }

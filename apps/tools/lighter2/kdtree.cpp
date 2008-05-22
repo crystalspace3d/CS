@@ -19,7 +19,6 @@
 #include "common.h"
 
 #include "kdtree.h"
-#include "material.h"
 #include "primitive.h"
 #include "statistics.h"
 #include "object.h"
@@ -115,20 +114,17 @@ namespace lighter
       }
     }
 
-    if (box != 0)
+    //Finish and sort the lists
+    for (size_t a = 0; a < 3; ++a)
     {
-      //Finish and sort the lists
-      for (size_t a = 0; a < 3; ++a)
-      {
-	//Finish last box
-	box->side[1].SetNext (a, 0);
-	if (box->side[0].GetSide (a) == EndPoint::SIDE_PLANAR)
-	  box->side[0].SetNext (a, 0);
-  
-	//Save first and sort
-	endPointList.head[a] = &first->side[0];
-	endPointList.SortList (a);
-      }
+      //Finish last box
+      box->side[1].SetNext (a, 0);
+      if (box->side[0].GetSide (a) == EndPoint::SIDE_PLANAR)
+        box->side[0].SetNext (a, 0);
+
+      //Save first and sort
+      endPointList.head[a] = &first->side[0];
+      endPointList.SortList (a);
     }
 
     return true;
@@ -147,7 +143,7 @@ namespace lighter
 
     //Best axis and side for planar
     uint bestAxis = ~0, bestSide = ~0;
-    size_t bestNLeft = 0, bestNRight = 0, bestNPlanar = 0;
+    size_t bestNLeft, bestNRight, bestNPlanar;
 
     for (uint axis = 0; axis < 3; ++axis)
     {
@@ -522,8 +518,6 @@ namespace lighter
 
           if (prim->GetObject ()->GetFlags ().Check (OBJECT_FLAG_NOSHADOW))
             kdFlags |= KDPRIM_FLAG_NOSHADOW;
-	  if (prim->GetMaterial() && prim->GetMaterial()->IsTransparent())
-	    kdFlags |= KDPRIM_FLAG_TRANSPARENT;
 
           //Extract our info
           const csVector3& N = prim->GetPlane ().Normal ();

@@ -25,18 +25,14 @@
 
 #include <execinfo.h>
 
-#include "csutil/custom_new_disable.h"
-#include <string>
-#include "csutil/custom_new_enable.h"
-
 namespace CS
 {
 namespace Debug
 {
 
 bool CallStackCreatorBacktrace::CreateCallStack (
-  CallStackEntriesArray& entries, 
-  CallStackParamsArray& /*params*/, bool /*fast*/)
+  csDirtyAccessArray<CallStackEntry>& entries, 
+  csDirtyAccessArray<uintptr_t>& /*params*/, bool /*fast*/)
 {
   void* traceBuffer[200];
   int count = backtrace (traceBuffer, sizeof (traceBuffer) / sizeof (void*));
@@ -51,32 +47,30 @@ bool CallStackCreatorBacktrace::CreateCallStack (
 }
 
 bool CallStackNameResolverBacktrace::GetAddressSymbol (void* addr, 
-  char*& sym)
+  csString& sym)
 {
   char** s = backtrace_symbols (&addr, 1);
   if (!s) return false;
-  std::string symTmp;
-  symTmp = s[0];
+  sym = s[0];
   free(s);
   // Try demangling... for this, try to extract the symbol name from the line
   {
-    size_t symStart = symTmp.find ('(');
+    size_t symStart = sym.FindFirst ('(');
     if (symStart != (size_t)-1)
     {
       symStart++;
-      size_t symEnd = symTmp.find ("+)", symStart);
+      size_t symEnd = sym.FindFirst ("+)", symStart);
       if (symEnd != (size_t)-1)
       {
-        std::string tmp = symTmp.substr (symStart, symEnd - symStart);
+        csString tmp;
+        sym.SubString (tmp, symStart, symEnd - symStart);
         // ...and replace with the demangled one
-        char* symDemangled = Demangle (tmp.c_str());
-        symTmp.erase (symStart, symEnd - symStart);
-        symTmp.insert (symStart, symDemangled);
-        free (symDemangled);
+        Demangle (tmp, tmp);
+        sym.DeleteAt (symStart, symEnd - symStart);
+        sym.Insert (symStart, tmp);
       }
     }
   }
-  sym = strdup (symTmp.c_str());
   return true;
 }
 
@@ -85,7 +79,7 @@ void* CallStackNameResolverBacktrace::OpenParamSymbols (void* /*addr*/)
   return 0;
 }
 
-bool CallStackNameResolverBacktrace::GetParamName (void*, size_t, char*&)
+bool CallStackNameResolverBacktrace::GetParamName (void*, size_t, csString&)
 {
   return false;
 }
@@ -94,7 +88,7 @@ void CallStackNameResolverBacktrace::FreeParamSymbols (void* /*handle*/)
 {
 }
 
-bool CallStackNameResolverBacktrace::GetLineNumber (void*, char*&)
+bool CallStackNameResolverBacktrace::GetLineNumber (void*, csString&)
 {
   return false;
 }

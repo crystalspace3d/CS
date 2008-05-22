@@ -37,7 +37,8 @@
 class CS_CRYSTALSPACE_EXPORT csObjectRegistry : 
   public scfImplementation1<csObjectRegistry, iObjectRegistry>
 {
-private:  
+private:
+  CS::Threading::RecursiveMutex mutex;
   csArray<iBase*> registry;
   csStringArray tags;
   // True when this object is being cleared; prevents external changes.

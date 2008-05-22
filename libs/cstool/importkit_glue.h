@@ -51,9 +51,6 @@ namespace Utility
       csDirtyAccessArray<csTriangle> tris;
     };
 
-// For Thing stuff
-#include "csutil/deprecated_warn_off.h"
-
     /// Bulk of the import kit implementation.
     class Glue
     {
@@ -81,7 +78,7 @@ namespace Utility
 	}
 	~VfsRootMounter ()
 	{
-	  for (size_t i = 0; i < mounted->GetSize (); i++)
+	  for (size_t i = 0; i < mounted->Length(); i++)
 	    vfs->Unmount (mounted->Get (i), 0);
 	}
 	const csString& GetRootPath() { return rootPath; }
@@ -123,8 +120,6 @@ namespace Utility
       bool PopulateContainer (const char* filename, 
 	const char* path, ImportKit::Container& container);
     };
-
-#include "csutil/deprecated_warn_on.h"
 
   } // namespace Implementation
 } // namespace Utility

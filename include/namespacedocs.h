@@ -35,8 +35,8 @@ namespace CS
   {}
 
   /**
-   * Contains deprecated code that will be removed after next stable release.
-   * Do not use of any members.
+   * Contains deprecated code that will be removed after next stable release
+   * \deprecated
    */
   namespace Deprecated
   {}
@@ -45,12 +45,6 @@ namespace CS
    * Document system / XML helper classes
    */
   namespace DocSystem
-  {}
-
-  /**
-   * Geometry and mesh related classes.
-   */
-  namespace Geometry
   {}
 
   /**

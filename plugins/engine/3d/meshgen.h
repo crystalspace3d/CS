@@ -43,17 +43,15 @@ struct csMGCell;
 #define CS_GEOM_MAX_ROTATIONS 16
 
 /**
- * A representation of a single mesh. Can be either a stand-alone
- * mesh or else an instance of a mesh.
+ * In case a csMGGeom uses an instmesh then this holds the
+ * meshes used for a single cell.
  */
-struct csMGMesh
+struct csMGGeomInstMesh
 {
-  // A reference to either the standalone mesh or else the instmesh
-  // of which we represent a single instance.
-  csRef<iMeshWrapper> mesh;
-  // If this is equal to csArrayItemNotFound then we are a single mesh.
-  // Otherwise this is the id of the instance.
-  size_t instance_id;
+  // @@@ FIXME: only one instmesh per cell for now?
+  csRef<iMeshWrapper> instmesh;
+  csRef<iInstancingMeshState> instmesh_state;
+  csArray<size_t> inst_setaside;
 };
 
 /**
@@ -66,17 +64,22 @@ struct csMGGeom
   float sqmaxdistance;
 
   /**
-   * If this geometry is derived from an instmesh then this is the
-   * pointer to the mesh from which we can create instances.
-   * Not used (null) in case we use a 'normal' mesh type.
+   * 2-dimensional array of cells with cell_dim*cell_dim entries.
+   * This is only used in case this factory represents
+   * an instmesh factory.
    */
-  csRef<iMeshWrapper> instmesh;
-  csRef<iInstancingMeshState> instmesh_state;
+  csArray<csMGGeomInstMesh> instmeshes;
 
   /// For every lod level we have a cache of meshes.
-  csArray<csMGMesh> mesh_cache;
+  csRefArray<iMeshWrapper> mesh_cache;
   /// For every lod level we have a cache of meshes that are set aside.
-  csArray<csMGMesh> mesh_setaside;
+  csRefArray<iMeshWrapper> mesh_setaside;
+
+  /**
+   * A set of geom instmeshes where we have put aside instances.
+   * This is an optimization to prevent having to traverse all cells.
+   */
+  csSet<csPtrKey<csMGGeomInstMesh> > instmesh_setaside;
 };
 
 struct csMGDensityMaterialFactor
@@ -169,7 +172,7 @@ public:
    * It will also return an instance_id if the mesh represents an
    * instance from an instmesh.
    */
-  iMeshWrapper* AllocMesh (int cidx, const csMGCell& cell,
+  csPtr<iMeshWrapper> AllocMesh (int cidx, const csMGCell& cell,
       float sqdist, size_t& lod, size_t& instance_id);
 
   /**
@@ -423,9 +426,6 @@ private:
   /// Statistics.
   size_t CountPositions (int cidx, csMGCell& cell);
   size_t CountAllPositions ();
-
-protected:
-  void InternalRemove() { SelfDestruct(); }
 
 public:
   csEngine* engine;

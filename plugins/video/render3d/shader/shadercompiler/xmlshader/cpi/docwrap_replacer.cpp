@@ -177,10 +177,12 @@ void csReplacerDocumentAttribute::DecRef ()
 {
   CS_ASSERT_MSG("Refcount decremented for destroyed object", 
     scfRefCount != 0);
-  csRefTrackerAccess::TrackDecRef (GetSCFObject(), scfRefCount);
+  csRefTrackerAccess::TrackDecRef (scfObject, scfRefCount);
   scfRefCount--;
   if (scfRefCount == 0)
   {
+    scfRemoveRefOwners ();
+    if (scfParent) scfParent->DecRef();
     ReplacerAttrAlloc()->Free (this);
   }
 }

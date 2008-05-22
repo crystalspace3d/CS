@@ -293,8 +293,6 @@ public:
 
   /// Execute a debug command.
   virtual bool DebugCommand (const char* cmd);
-  
-  void SetViewport (int left, int top, int width, int height);
 
   /**\name iEventPlug implementation
    * @{ */

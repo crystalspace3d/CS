@@ -32,6 +32,7 @@
 #include "iengine/camera.h"
 #include "iengine/mesh.h"
 #include "iengine/movable.h"
+#include "imesh/thing.h"
 #include "imesh/object.h"
 #include "imesh/particle.h"
 #include "ivaria/reporter.h"
@@ -56,8 +57,8 @@ DemoSequenceManager::DemoSequenceManager (Demo* demo)
   iObjectRegistry* object_reg = demo->object_reg;
   csRef<iPluginManager> plugin_mgr (
   	csQueryRegistry<iPluginManager> (object_reg));
-  seqmgr = csLoadPlugin<iSequenceManager> (plugin_mgr,
-    "crystalspace.utilities.sequence");
+  seqmgr = CS_LOAD_PLUGIN (plugin_mgr, "crystalspace.utilities.sequence",
+  	iSequenceManager);
   if (!seqmgr)
   {
     demo->Report (CS_REPORTER_SEVERITY_ERROR,

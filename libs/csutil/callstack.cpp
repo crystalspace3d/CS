@@ -21,10 +21,6 @@
 #include "csutil/callstack.h"
 #include "callstack.h"
 
-#include "csutil/custom_new_disable.h"
-#include <string>
-#include "csutil/custom_new_enable.h"
-
 #ifdef CS_HAVE_BACKTRACE
   #include "generic/callstack-backtrace.h"
   CS_IMPLEMENT_STATIC_VAR(cscBacktrace, 
@@ -40,11 +36,11 @@
   CS_IMPLEMENT_STATIC_VAR(csnrDbgHelp, 
 			  CS::Debug::CallStackNameResolverDbgHelp, ())
 
-#endif
-#ifdef CS_BFD_DEBUG_SYMBOLS
-  #include "generic/callstack-bfd.h"
-  CS_IMPLEMENT_STATIC_VAR(csnrBfd, 
-			  CS::Debug::CallStackNameResolverBfd, ())
+  #ifdef CS_HAVE_LIBBFD
+    #include "win32/callstack-bfd.h"
+    CS_IMPLEMENT_STATIC_VAR(csnrBfd, 
+			    CS::Debug::CallStackNameResolverBfd, ())
+  #endif
 #endif
 
 namespace CS
@@ -65,10 +61,10 @@ static const void* const callStackCreators[] =
 
 static const void* const callStackNameResolvers[] =
 {
-#ifdef CS_BFD_DEBUG_SYMBOLS
-  (void*)&csnrBfd,
-#endif
 #ifdef CS_PLATFORM_WIN32
+  #ifdef CS_HAVE_LIBBFD
+    (void*)&csnrBfd,
+  #endif
   (void*)&csnrDbgHelp,
 #endif
 #ifdef CS_HAVE_BACKTRACE
@@ -76,25 +72,6 @@ static const void* const callStackNameResolvers[] =
 #endif
   0
 };
-
-static CS::Memory::Heap* callstackHeap;
-
-#include "csutil/custom_new_disable.h"
-
-namespace Impl
-{
-  CS::Memory::Heap* GetCallstackHeap()
-  {
-    if (callstackHeap == 0)
-    {
-      callstackHeap = (CS::Memory::Heap*)malloc (sizeof (CS::Memory::Heap*));
-      new (callstackHeap) CS::Memory::Heap ();
-    }
-    return callstackHeap;
-  }
-}
-
-#include "csutil/custom_new_enable.h"
 
 void CallStackImpl::Free() { delete this; }
 
@@ -105,8 +82,9 @@ size_t CallStackImpl::GetEntryCount ()
 
 typedef iCallStackNameResolver* (*NameResolveGetter)();
 
-bool CallStackImpl::GetFunctionName (size_t num, char*& str)
+bool CallStackImpl::GetFunctionName (size_t num, csString& str)
 {
+  csString sym, mod;
   const void* const* resGetter = callStackNameResolvers;
   while (*resGetter != 0)
   {
@@ -119,13 +97,11 @@ bool CallStackImpl::GetFunctionName (size_t num, char*& str)
   }
   
   // Return at least the address...
-  char buf[CS_PROCESSOR_SIZE/4 + 5];
-  snprintf (buf, sizeof (buf), "[%p]", entries[num].address);
-  str = strdup (buf);
+  str.Format ("[%p]", entries[num].address);
   return true;
 }
 
-bool CallStackImpl::GetLineNumber (size_t num, char*& str)
+bool CallStackImpl::GetLineNumber (size_t num, csString& str)
 {
   const void* const* resGetter = callStackNameResolvers;
   while (*resGetter != 0)
@@ -138,11 +114,9 @@ bool CallStackImpl::GetLineNumber (size_t num, char*& str)
   return false;
 }
 
-bool CallStackImpl::GetParameters (size_t num, char*& str)
+bool CallStackImpl::GetParameters (size_t num, csString& str)
 {
   if (entries[num].paramNum == csParamUnknown) return false;
-  std::string tmp;
-  char buf[256];
   const void* const* resGetter = callStackNameResolvers;
   while (*resGetter != 0)
   {
@@ -150,25 +124,20 @@ bool CallStackImpl::GetParameters (size_t num, char*& str)
     iCallStackNameResolver* res = ((NameResolveGetter)*resGetter)();
     if ((h = res->OpenParamSymbols (entries[num].address)))
     {
-      char* parm;
+      str.Clear();
+      csString parm;
       for (size_t i = 0; i < entries[num].paramNum; i++)
       {
+        parm.Clear();
         if (!res->GetParamName (h, i, parm)) 
-        {
-          snprintf (buf, sizeof (buf), "unk%lu", (unsigned long)i);
-          parm = strdup (buf);
-        }
-        if (i > 0) tmp.append (", ");
-        tmp.append (parm);
-        tmp.append (" = ");
-        snprintf (buf, sizeof (buf), "%" PRIdPTR "(0x%" PRIxPTR ")",
+          parm.Format ("unk%zu", i);
+        if (i > 0) str << ", ";
+        str << parm << " = ";
+        str.AppendFmt ("%" PRIdPTR "(0x%" PRIxPTR ")",
           params[entries[num].paramOffs + i],
           params[entries[num].paramOffs + i]);
-        tmp.append (buf);
-        free (parm);
       }
       res->FreeParamSymbols (h);
-      str = strdup (tmp.c_str());
       return true;
     }
     resGetter++;

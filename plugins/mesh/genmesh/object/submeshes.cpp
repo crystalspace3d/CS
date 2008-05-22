@@ -19,7 +19,6 @@
 
 #include "cssysdef.h"
 
-#include "csgfx/renderbuffer.h"
 #include "cstool/rbuflock.h"
 
 #include "submeshes.h"
@@ -27,41 +26,6 @@
 
 CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
 {
-  iRenderBuffer* SubMesh::GetIndicesB2F (const csVector3& pos, uint frameNum,
-                                         const csVector3* vertices, size_t vertNum)
-  {
-    if (!b2fTree)
-    {
-      CS::TriangleIndicesStream<int> triangles (index_buffer,
-	CS_MESHTYPE_TRIANGLES);
-      b2fTree = new csBSPTree;
-      b2fTree->Build (triangles, vertices);
-    }
-    
-    const csDirtyAccessArray<int>& triidx = b2fTree->Back2Front (pos);
-    
-    bool bufCreated;
-    csRef<iRenderBuffer>& newIndexBuffer = b2fIndices.GetUnusedData (bufCreated, frameNum);
-    if (bufCreated || newIndexBuffer->GetElementCount() != triidx.GetSize()*3)
-    {
-      newIndexBuffer = csRenderBuffer::CreateIndexRenderBuffer (triidx.GetSize()*3,
-        CS_BUF_STREAM, CS_BUFCOMP_UNSIGNED_INT, 0, vertNum-1);
-    }
-    csRenderBufferLock<int> indices (newIndexBuffer);
-    CS::TriangleIndicesStreamRandom<int> triangles (index_buffer,
-      CS_MESHTYPE_TRIANGLES);
-    for (size_t t = 0; t < triidx.GetSize(); t++)
-    {
-      const TriangleT<int> tri (triangles[triidx[t]]);
-      *(indices++) = tri.a;
-      *(indices++) = tri.b;
-      *(indices++) = tri.c;
-    }
-    return newIndexBuffer;
-  }
-  
-  //-------------------------------------------------------------------------
-  
   static int SubmeshSubmeshCompare (SubMesh* const& A, 
                                     SubMesh* const& B)
   {
@@ -119,8 +83,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
 
   csRenderBufferHolder* SubMeshProxy::GetBufferHolder()
   {
-    if (!bufferHolder.IsValid()) bufferHolder.AttachNew (
-      new csRenderBufferHolder);
+    if (!bufferHolder.IsValid())
+    {
+      bufferHolder.AttachNew (new csRenderBufferHolder);
+      bufferHolder->SetRenderBuffer(CS_BUFFER_INDEX, GetIndices ());
+    }
     return bufferHolder;
   }
 
@@ -155,6 +122,87 @@ CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
       csArrayCmp<SubMeshProxy*, const char*> (name, &SubmeshProxyStringCompare));
     if (idx == csArrayItemNotFound) return 0;
     return subMeshes[idx];
+  }
+
+  //-------------------------------------------------------------------------
+
+  void SubMeshesPolyMesh::CacheTriangles ()
+  {
+    if (triChangeNum == subMeshes.GetChangeNum()) return;
+
+    triangleCache.Empty();
+    for (size_t s = 0; s < subMeshes.GetSubMeshCount(); s++)
+    {
+      SubMesh* subMesh = subMeshes.GetSubMesh (s);
+      iRenderBuffer* buffer = subMesh->GetIndices();
+      size_t offs = triangleCache.GetSize();
+      size_t bufferTris = buffer->GetElementCount() / 3;
+      triangleCache.SetSize (offs + bufferTris);
+      void* tris = buffer->Lock (CS_BUF_LOCK_READ);
+      memcpy (triangleCache.GetArray() + offs, tris, 
+        bufferTris * sizeof (csTriangle));
+      buffer->Release();
+    }
+    triangleCache.ShrinkBestFit();
+
+    triChangeNum = subMeshes.GetChangeNum();
+  }
+  void SubMeshesPolyMesh::CachePolygons ()
+  {
+    if (polyChangeNum == subMeshes.GetChangeNum()) return;
+
+    CacheTriangles ();
+
+    polygonCache.Empty();
+    for (size_t s = 0; s < subMeshes.GetSubMeshCount(); s++)
+    {
+      size_t bufferTris = triangleCache.GetSize();
+      for (size_t t = 0; t < bufferTris; t++)
+      {
+        csMeshedPolygon poly;
+        poly.num_vertices = 3;
+        poly.vertices = (int*)(&triangleCache[t]);
+        polygonCache.Push (poly);
+      }
+    }
+    polygonCache.ShrinkBestFit();
+
+    polyChangeNum = subMeshes.GetChangeNum();
+  }
+
+  int SubMeshesPolyMesh::GetVertexCount ()
+  {
+    if (!factory) return 0;
+    return factory->GetVertexCount ();
+  }
+  csVector3* SubMeshesPolyMesh::GetVertices ()
+  {
+    if (!factory) return 0;
+    return factory->GetVertices ();
+  }
+  int SubMeshesPolyMesh::GetPolygonCount ()
+  {
+    if (!factory) return 0;
+    CachePolygons ();
+    return (int)polygonCache.GetSize ();
+  }
+  csMeshedPolygon* SubMeshesPolyMesh::GetPolygons ()
+  {
+    if (!factory) return 0;
+    CachePolygons ();
+    return polygonCache.GetArray ();
+  }
+  int SubMeshesPolyMesh::GetTriangleCount ()
+  {
+    if (!factory) return 0;
+    CacheTriangles ();
+    return (int)triangleCache.GetSize ();
+  }
+  csTriangle* SubMeshesPolyMesh::GetTriangles ()
+  {
+    if (!factory) return 0;
+    CacheTriangles ();
+    return triangleCache.GetArray ();
   }
 
   //-------------------------------------------------------------------------

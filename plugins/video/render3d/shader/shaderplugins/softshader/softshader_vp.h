@@ -50,8 +50,8 @@ public:
   /// Deactivate program so that it's not used in next rendering
   virtual void Deactivate();
 
-  virtual void SetupState (const CS::Graphics::RenderMesh* /*mesh*/,
-    CS::Graphics::RenderMeshModes& /*modes*/,
+  virtual void SetupState (const csRenderMesh* /*mesh*/,
+    csRenderMeshModes& /*modes*/,
     const iShaderVarStack* /*stacks*/) {}
 
   virtual void ResetState () {}

@@ -38,14 +38,8 @@ namespace lighter
 
   enum ObjectFlags
   {
-    // Don't compute lighting
     OBJECT_FLAG_NOLIGHT = 1,
-    // Don't cast shadows
-    OBJECT_FLAG_NOSHADOW = 2,
-    // Include in occlusion debugging
-    OBJECT_FLAG_RAYDEBUG = 4,
-    // Tangent space is available
-    OBJECT_FLAG_TANGENTS = 8
+    OBJECT_FLAG_NOSHADOW = 2
   };
 
   /**
@@ -56,7 +50,7 @@ namespace lighter
   class ObjectFactory : public csRefCount
   {
   public:
-    ObjectFactory (const Configuration& config);
+    ObjectFactory ();
 
     virtual bool PrepareLightmapUV (LightmapUVFactoryLayouter* uvlayout);
 
@@ -75,21 +69,9 @@ namespace lighter
 
     // Name of the factory
     csString factoryName;
-  
-    //@{
-    /// Indices of tangent/bitangent in vertex data
-    size_t vdataTangents;
-    size_t vdataBitangents;
-    //@}
 
     /// Whether to light meshes of this factory per vertex
-    bool lightPerVertex : 1;
-    
-    /// Whether to avoid modifying this factory
-    bool noModify : 1;
-
-    /// Whether tangent space data is available
-    bool hasTangents : 1;
+    bool lightPerVertex;
   protected:
 
     // Begin remapping of submeshes
@@ -161,7 +143,7 @@ namespace lighter
     virtual void ParseMesh (iMeshWrapper *wrapper);
 
     // Write out the data again
-    virtual void SaveMesh (iDocumentNode *node);
+    virtual void SaveMesh (Sector* sector, iDocumentNode *node);
 
     /* Conserve memory: free all object data that won't be needed for the 
      * actual lighting. */
@@ -188,32 +170,23 @@ namespace lighter
 
     inline ObjectVertexData& GetVertexData ()
     { return vertexData; }
-    
-    inline iMeshWrapper* GetMeshWrapper () { return meshWrapper; }
 
     inline const csSphere& GetBoundingSphere () const
     { return bsphere; }
 
     typedef csDirtyAccessArray<csColor> LitColorArray;
-    inline LitColorArray* GetLitColors (size_t num)
-    { return litColors + num; }
+    inline LitColorArray* GetLitColors ()
+    { return litColors; }
 
     typedef csHash<LitColorArray, csPtrKey<Light> > LitColorsPDHash;
     /// Return lit colors for all PD lights
-    inline LitColorsPDHash* GetLitColorsPD (size_t num)
-    { return litColorsPD + num; }
+    inline LitColorsPDHash* GetLitColorsPD ()
+    { return litColorsPD; }
     /// Return lit colors for one PD light
-    LitColorArray* GetLitColorsPD (Light* light, size_t num);
+    LitColorArray* GetLitColorsPD (Light* light);
 
     inline const csFlags& GetFlags () const
     { return objFlags; }
-
-    inline Sector* GetSector() const { return sector; }
-
-    csMatrix3 ComputeTangentSpace (const Primitive* prim,
-      const csVector3& pt) const;
-
-    csMatrix3 GetTangentSpace (size_t vert) const;
 
     // Name
     csString meshName;
@@ -235,9 +208,6 @@ namespace lighter
         layouter (layouter), layoutID (layoutID), group (group) {}
     };
     csArray<LMLayoutingInfo> lmLayouts;
-
-    // Sector the object belongs in
-    Sector* sector;
 
     // Bounding sphere
     csSphere bsphere;
@@ -262,12 +232,6 @@ namespace lighter
 
     // Internal flags
     csFlags objFlags;
-
-    //@{
-    /// Indices of tangent/bitangent in vertex data
-    size_t vdataTangents;
-    size_t vdataBitangents;
-    //@}
 
     // Renormalize lightmap UVs into buffer \a lmcoords.
     virtual void RenormalizeLightmapUVs (const LightmapPtrDelArray& lightmaps,

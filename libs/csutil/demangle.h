@@ -28,17 +28,19 @@ namespace CS
   namespace Debug
   {
 
-    static char* Demangle (const char* symbol)
+    static void Demangle (const char* symbol, csString& str)
     {
     #ifdef CS_HAVE_ABI_CXA_DEMANGLE
       {
         int status;
         char* s = abi::__cxa_demangle (symbol, 0, 0, &status);
-        if (status == 0) return s;
+        if (status == 0)
+          str = s;
         if (s != 0) free (s);
+        if (status == 0) return;
       }
     #endif
-      return strdup (symbol);
+      str = symbol;
     }
 
   } // namespace Debug

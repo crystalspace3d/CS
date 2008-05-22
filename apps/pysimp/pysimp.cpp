@@ -46,7 +46,6 @@ bool PySimple::OnInitialize (int /*argc*/, char* /*argv*/[])
 	CS_REQUEST_FONTSERVER,
 	CS_REQUEST_IMAGELOADER,
 	CS_REQUEST_LEVELLOADER,
-	CS_REQUEST_PLUGIN( "crystalspace.script.python", iScript ),
 	CS_REQUEST_END))
     return ReportError ("Couldn't init app!");
 
@@ -106,7 +105,8 @@ bool PySimple::Application()
   csRef<iPluginManager> plugin_mgr (
   	csQueryRegistry<iPluginManager> (GetObjectRegistry()));
   // Initialize the python plugin.
-  csRef<iScript> is = csQueryRegistry<iScript> (GetObjectRegistry());
+  csRef<iScript> is (CS_LOAD_PLUGIN (plugin_mgr,
+      "crystalspace.script.python", iScript));
   if (is)
   {
     char const* module = "pysimp";
@@ -128,16 +128,9 @@ bool PySimple::Application()
     // Execute one method defined in pysimp.py
     // This will create the polygons in the room.
     csString run;
-    run << module << ".CreateRoom";
-    // prepare arguments
-    csRefArray<iScriptValue> args;
-    args.Push(csRef<iScriptValue>(is->RValue("stone")));
-    // run method
-    csRef<iScriptValue> ret = is->Call(run,args);
-    if(!ret.IsValid())
-    {
-      ReportError ("Failed running '%s.CreateRoom'...",module);
-    }
+    run << module << ".CreateRoom('stone')";
+    if (!is->RunText(run))
+      return false;
   }
   else
     ReportError ("Could not load Python plugin");

@@ -28,7 +28,6 @@
 
 #include "csextern.h"
 #include "csutil/refarr.h"
-#include "csutil/weakrefarr.h"
 #include "iutil/object.h"
 
 /**\file 
@@ -37,7 +36,7 @@
 
 /* Workaround for deprecation warnings caused by types used as the template 
  * parameter */
-#include "csutil/deprecated_warn_off.h"
+#include "csutil/win32/msvc_deprecated_warn_off.h"
 
 /**\addtogroup util_containers
  * @{ */
@@ -82,46 +81,6 @@ public:
 
 /** @} */
 
-/**
- * This class implements a typed array that does not keep track
- * of reference count and is able to find by name. Assumes
- * the types used for this implement QueryObject() to get the iObject
- * that has GetName().
- */
-template <class T>
-class csWeakRefArrayObject : public csWeakRefArray<T>
-{
-public:
-  csWeakRefArrayObject (int ilimit = 0, int ithreshold = 0)
-  	: csWeakRefArray<T> (ilimit, ithreshold)
-  {
-  }
-
-  size_t GetIndexByName (const char* name) const
-  {
-    size_t i;
-    for (i = 0 ; i < this->GetSize () ; i++) // see *1*
-    {
-      T* o = (*this)[i];
-      const char* n = o->QueryObject ()->GetName ();
-      if (n && !strcmp (n, name))
-        return i;
-    }
-    return csArrayItemNotFound;
-  }
-
-  T* FindByName (const char* name) const
-  {
-    size_t i = GetIndexByName (name);
-    if (i != csArrayItemNotFound)
-      return (*this)[i];
-    else
-      return 0;
-  }
-};
-
-/** @} */
-
-#include "csutil/deprecated_warn_on.h"
+#include "csutil/win32/msvc_deprecated_warn_on.h"
 
 #endif // __CS_NOBJVEC_H__

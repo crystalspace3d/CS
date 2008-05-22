@@ -20,7 +20,6 @@
 #define __XRPRIV_H__
 
 #include "iutil/document.h"
-#include "csutil/pooledscfclass.h"
 #include "csutil/scf_implementation.h"
 #include "xr.h"
 
@@ -138,22 +137,22 @@ public:
  * This is an SCF compatible wrapper for a node in XmlRead.
  */
 struct csXmlReadNode :
-  public scfImplementationPooled<scfImplementation1<csXmlReadNode,
-				 iDocumentNode>,
-				 CS::Memory::AllocatorMalloc,
-				 true>
+  public scfImplementation1<csXmlReadNode, iDocumentNode>
 {
 private:
   friend class csXmlReadDocument;
   TrDocumentNode* node;
   bool use_contents_value;	// Optimization: use GetContentsValue().
   TrDocumentNodeChildren* node_children;
+  // We keep a reference to 'doc' to avoid it being cleaned up too early.
+  // We need 'doc' for the pool.
+  csRef<csXmlReadDocument> doc;
+  csXmlReadNode* next_pool;	// Next element in pool.
 
-  csXmlReadNode ();
+  csXmlReadNode (csXmlReadDocument* doc);
 
   TrDocumentAttribute* GetAttributeInternal (const char* name);
 
-  csXmlReadDocument* GetDoc();
 public:
   virtual ~csXmlReadNode ();
   virtual void DecRef ();
@@ -206,7 +205,6 @@ public:
  * This is an SCF compatible wrapper for a document in XmlRead.
  */
 class csXmlReadDocument :
-  public csXmlReadNode::Pool,
   public scfImplementation1<csXmlReadDocument, iDocument>
 {
 private:
@@ -215,6 +213,8 @@ private:
   csRef<csXmlReadDocumentSystem> sys;
 
   friend struct csXmlReadNode;
+  csXmlReadNode* pool;
+
 public:
   csXmlReadDocument (csXmlReadDocumentSystem* sys);
   virtual ~csXmlReadDocument ();
@@ -226,6 +226,8 @@ public:
   csXmlReadNode* Alloc ();
   /// Internal function: don't use!
   csXmlReadNode* Alloc (TrDocumentNode*, bool use_contents_value);
+  /// Internal function: don't use!
+  void Free (csXmlReadNode* n);
 
   virtual csRef<iDocumentNode> GetRoot ();
   virtual const char* Parse (iFile* file,      bool collapse = false);

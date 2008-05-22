@@ -1109,6 +1109,9 @@
 				RelativePath="..\..\libs\csutil\processor\processorspecdetection_nonwin_gcc_x86.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\processorcount.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\ptmalloc\ptmalloc3.c">
 			</File>
 			<File
@@ -1161,6 +1164,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\strhash.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\strhashr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\stringreader.cpp">
@@ -1223,10 +1229,16 @@
 				RelativePath="..\..\libs\csutil\win32\loadlib.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\win32\memutil_impl.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\win32\minidump.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\mmap.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\win32\processorcount_impl.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\registrycfg.cpp">
@@ -1917,9 +1929,6 @@
 				RelativePath="..\..\libs\..\include\csutil\mempool.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\memutil.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\metautils.h">
 			</File>
 			<File
@@ -1957,6 +1966,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\physfile.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\platform.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\plugldr.h">
@@ -2064,6 +2076,9 @@
 				RelativePath="..\..\libs\..\include\csutil\set.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\setenv.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\simplejobqueue.h">
 			</File>
 			<File
@@ -2077,6 +2092,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\strhash.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\strhashr.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\stringarray.h">
@@ -2187,9 +2205,6 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\DbgHelpAPI.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\win32\memutil.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\minidump.h">
 			</File>
 			<File
@@ -2248,6 +2263,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\dlmalloc-settings.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\memutil.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\reftrack.h">

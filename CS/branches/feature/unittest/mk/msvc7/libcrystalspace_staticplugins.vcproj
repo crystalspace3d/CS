@@ -10968,53 +10968,6 @@
 					</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\engine\3d\region.cpp">
-                                  					<FileConfiguration
-						Name="Release (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Release (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release7\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="Debug (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Debug (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="MemoryTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="MemoryTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="RefTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="RefTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug7\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
-					</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\engine\3d\renderloop.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -23622,9 +23575,6 @@
 				RelativePath="..\..\plugins\engine\3d\reflectomotron3000.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\engine\3d\region.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\engine\3d\renderloop.h">
 			</File>
 			<File
@@ -23997,6 +23947,9 @@
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\context.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
@@ -24066,6 +24019,9 @@
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\context.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
 			</File>
 			<File
@@ -24133,6 +24089,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\context.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">

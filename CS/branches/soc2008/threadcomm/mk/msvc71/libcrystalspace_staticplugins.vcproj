@@ -11908,53 +11908,6 @@
 					</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\animesh\object\morphtarget.cpp">
-                                  					<FileConfiguration
-						Name="Release (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Release (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="Debug (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Debug (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="MemoryTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="MemoryTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="RefTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="RefTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
-					</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\skinning.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -12798,100 +12751,6 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_genmesh.cpp.obj"/>
-					</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\genmesh\object\legacy_buffers.cpp">
-                                  					<FileConfiguration
-						Name="Release (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_buffers.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Release (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_buffers.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="Debug (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_buffers.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Debug (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_buffers.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="MemoryTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_buffers.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="MemoryTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_buffers.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="RefTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_buffers.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="RefTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_buffers.cpp.obj"/>
-					</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\genmesh\object\legacy_lighting.cpp">
-                                  					<FileConfiguration
-						Name="Release (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_lighting.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Release (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_lighting.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="Debug (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_lighting.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Debug (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_lighting.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="MemoryTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_lighting.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="MemoryTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_lighting.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="RefTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_lighting.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="RefTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_genmesh_object_legacy_lighting.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -23058,9 +22917,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\animesh.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\mesh\animesh\object\morphtarget.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\persist\skeleton2\skeleton2ldr.h">

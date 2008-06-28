@@ -1217,6 +1217,9 @@
 				RelativePath="..\..\libs\csutil\threadjobqueue.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\threadmanager.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\timer.cpp">
 			</File>
 			<File
@@ -2244,6 +2247,9 @@
 				RelativePath="..\..\libs\..\include\csutil\syspath.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\threadevent.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops.h">
 			</File>
 			<File
@@ -2284,6 +2290,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threadmanager.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\timer.h">

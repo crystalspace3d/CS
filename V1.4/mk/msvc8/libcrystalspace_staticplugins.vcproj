@@ -3871,6 +3871,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libpathloader_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libphysldr_staticreg.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -15292,6 +15339,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\misc\pathloader\pathloader.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics\bullet\bullet.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -23267,6 +23361,9 @@
 				RelativePath="..\..\plugins\mesh\thing\persist\standard\thingldr.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\misc\pathloader\pathloader.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics\bullet\bullet.h">
 			</File>
 			<File
@@ -23349,6 +23446,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\sndsys\manager\sndmanager.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\al_stringlists.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\sndsys\renderer\openal\listener.h">

@@ -14775,6 +14775,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\persist\terrain2\saver.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release8\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug8\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\bruteblockrenderer.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -23974,6 +24021,9 @@
 				RelativePath="..\..\plugins\mesh\terrain\persist\terrain2\loader.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\persist\terrain2\saver.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\bruteblockrenderer.h">
 			</File>
 			<File
@@ -24085,9 +24135,6 @@
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\context.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
 			</File>
 			<File
@@ -24160,9 +24207,6 @@
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\context.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
 			</File>
 			<File
@@ -24233,9 +24277,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\context.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">

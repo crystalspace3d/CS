@@ -1004,6 +1004,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libclouds_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\mk_msvc_libclouds_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\mk_msvc_libclouds_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libclouds_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libclouds_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libclouds_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libclouds_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libclouds_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\mk_msvc_libclouds_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libcolladaconvertor_staticreg.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -12519,6 +12566,194 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\clouds\csClouds.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csClouds.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csClouds.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csClouds.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csClouds.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csClouds.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csClouds.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csClouds.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csClouds.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsDynamics.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsDynamics.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsDynamics.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsDynamics.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsDynamics.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsDynamics.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsDynamics.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsDynamics.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsDynamics.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsRenderer.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsRenderer.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsRenderer.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsRenderer.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsRenderer.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsRenderer.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsRenderer.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsRenderer.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsRenderer.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsUtils.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsUtils.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsUtils.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsUtils.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsUtils.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsUtils.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsUtils.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsUtils.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71\build\libcrystalspace_staticplugins\plugins_mesh_clouds_csCloudsUtils.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\emit\object\emit.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -23050,6 +23285,18 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\bezier\persist\standard\bezierldr.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csClouds.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsDynamcis.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsRenderer.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsUtils.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\emit\object\emit.h">

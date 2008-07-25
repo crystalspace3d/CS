@@ -885,6 +885,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsStandards.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\clouds\csCloudsUtils.h"
 				>
 			</File>

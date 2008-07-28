@@ -205,9 +205,9 @@ namespace lighter
     syntaxService = csQueryRegistry<iSyntaxService> (objectRegistry);
     if (!syntaxService) return Report ("No iSyntaxService!");
 
-    svStrings = csQueryRegistryTagInterface<iShaderVarStringSet> (
-      objectRegistry, "crystalspace.shader.variablenameset");
-    if (!svStrings) return Report ("No SV names string set!");
+    strings = csQueryRegistryTagInterface<iStringSet> (
+      objectRegistry, "crystalspace.shared.stringset");
+    if (!strings) return Report ("No shared string set!");
 
     // Open the systems
     if (!csInitializer::OpenApplication (objectRegistry))
@@ -605,14 +605,6 @@ namespace lighter
                 "the\n");
     csPrintf ("  lightmap layouter.\n");
     csPrintf ("   Default: 1\n");
-
-    csPrintf (" --maxterrainlightmapu=<number>\n");
-    csPrintf ("  Set maximum terrain lightmap size in u-mapping direction\n");
-    csPrintf ("   Default: value for non-terrain lightmaps\n");
-
-    csPrintf (" --maxterrainlightmapv=<number>\n");
-    csPrintf ("  Set maximum terrain lightmap size in v-mapping direction\n");
-    csPrintf ("   Default: value for non-terrain lightmaps\n");
 
     csPrintf (" --expert\n");
     csPrintf ("  Display advanced command line options\n");

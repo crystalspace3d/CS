@@ -26,14 +26,14 @@ class PathTut
 {
 private:
   iObjectRegistry* object_reg;
-  csEventID Frame;
+  csEventID Process;
+  csEventID FinalProcess;
   csEventID KeyboardDown;
   csRef<iEngine> engine;
   csRef<iLoader> loader;
   csRef<iGraphics3D> g3d;
   csRef<iKeyboardDriver> kbd;
   csRef<iVirtualClock> vc;
-  csRef<FramePrinter> printer;
   iSector* room;
   csRef<iView> view;
   csRef<iMeshWrapper> sprite;
@@ -43,6 +43,7 @@ private:
   static bool PathTutEventHandler (iEvent& ev);
   bool HandleEvent (iEvent& ev);
   void SetupFrame ();
+  void FinishFrame ();
   void InitializePath();
   void Animate(csTicks elapsedTime);
 public:
@@ -51,7 +52,6 @@ public:
 
   bool Initialize (int argc, const char* const argv[]);
   void Start ();
-  void Shutdown ();
 };
 
 #endif // __PATHTUT_H__

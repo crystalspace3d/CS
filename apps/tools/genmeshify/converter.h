@@ -27,9 +27,9 @@ namespace genmeshify
   class Converter
   {
     App* app;
-    CS::ShaderVarStringID idTexLightmap;
+    csStringID idTexLightmap;
     csRef<iLoaderContext> context;
-    csRef<iCollection> collection;
+    csRef<iRegion> region;
 
     csRef<iLoaderPlugin> thingFactLoader;
     csRef<iLoaderPlugin> thingObjLoader;
@@ -95,7 +95,7 @@ namespace genmeshify
     bool WriteTriMeshes (iObjectModel* objmodel, iDocumentNode* to);
     bool WriteTriMesh (iTriangleMesh* triMesh, iDocumentNode* to);
   public:
-    Converter (App* app, iLoaderContext* context, iCollection* collection);
+    Converter (App* app, iLoaderContext* context, iRegion* region);
   
     bool ConvertMeshFact (const char* factoryName, 
       iDocumentNode* from, iDocumentNode* to);

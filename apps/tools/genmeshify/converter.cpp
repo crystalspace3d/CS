@@ -24,8 +24,8 @@
 
 namespace genmeshify
 {
-  Converter::Converter (App* app, iLoaderContext* context, iCollection* collection) : 
-    app (app), context (context), collection (collection)
+  Converter::Converter (App* app, iLoaderContext* context, iRegion* region) : 
+    app (app), context (context), region (region)
   {
     gmfactSaver = csLoadPluginCheck<iSaverPlugin> (app->objectRegistry,
       "crystalspace.mesh.saver.factory.genmesh", true);
@@ -39,7 +39,7 @@ namespace genmeshify
         "crystalspace.mesh.loader.thing", true);
     }
 
-    idTexLightmap = app->svStrings->Request ("tex lightmap");
+    idTexLightmap = app->strings->Request ("tex lightmap");
   }
 
   bool Converter::ConvertMeshFact (const char* factoryName, 
@@ -72,7 +72,7 @@ namespace genmeshify
       csRef<iMeshFactoryWrapper> thingmfw = app->engine->CreateMeshFactory (
         factoryName);
       thingmfw->SetMeshObjectFactory (mfact);
-      collection->Add (thingmfw->QueryObject());
+      region->QueryObject ()->ObjAdd (thingmfw->QueryObject());
     }
 
     csRef<iMeshFactoryWrapper> mfw = app->engine->CreateMeshFactory (
@@ -82,7 +82,7 @@ namespace genmeshify
       app->Report ("Could not create genmesh factory");
       return false;
     }
-    collection->Add (mfw->QueryObject());
+    region->QueryObject ()->ObjAdd (mfw->QueryObject());
     csRef<iMeshObjectFactory> mof = mfw->GetMeshObjectFactory();
     csRef<iGeneralFactoryState> gmfact = 
       scfQueryInterface<iGeneralFactoryState> (mof);
@@ -128,7 +128,7 @@ namespace genmeshify
     if (!paramsNode) return false;
 
     csRef<iMeshWrapper> meshWrap = app->engine->CreateMeshWrapper (meshName);
-    collection->Add (meshWrap->QueryObject());
+    region->QueryObject ()->ObjAdd (meshWrap->QueryObject());
 
     csRef<iBase> obj = thingObjLoader->Parse (paramsNode, 0, context, meshWrap);
     if (!obj) return false;
@@ -213,7 +213,7 @@ namespace genmeshify
         app->Report ("Could not create genmesh factory");
         return false;
       }
-      collection->Add (mfw->QueryObject());
+      region->QueryObject ()->ObjAdd (mfw->QueryObject());
       mof = mfw->GetMeshObjectFactory();
       gmfact = scfQueryInterface<iGeneralFactoryState> (mof);
       if (!gmfact)
@@ -272,12 +272,12 @@ namespace genmeshify
     {
       const LMLayout::SubMesh& layoutSM = lmLayout.subMeshes[i];
       csRef<iTextureWrapper> dummyTex = 
-        app->engine->FindTexture (slmNames[layoutSM.slm], collection);
+        app->engine->FindTexture (slmNames[layoutSM.slm], region);
       if (!dummyTex.IsValid())
       {
         dummyTex = app->engine->CreateBlackTexture (
           slmNames[layoutSM.slm], 1, 1, 0, 0);
-        collection->Add (dummyTex->QueryObject());
+        region->Add (dummyTex->QueryObject());
       }
 
       iGeneralMeshSubMesh* submesh = 

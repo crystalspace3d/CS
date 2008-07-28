@@ -99,7 +99,7 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDatabaseFileName="..\..\out\release8\build\libcrystalspace\crystalspace-1.9-vc8.pdb"
+				ProgramDatabaseFileName="..\..\out\release8\build\libcrystalspace\crystalspace-1.4-vc8.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -122,9 +122,9 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-                                OutputFile="..\..\crystalspace-1.9-vc8.dll"
+                                OutputFile="..\..\crystalspace-1.4-vc8.dll"
 				ImportLibrary="..\..\out\release8\libs\libcrystalspace.lib"
-				ProgramDatabaseFile="..\..\out\release8\build\libcrystalspace\crystalspace-1.9-vc8.pdb"
+				ProgramDatabaseFile="..\..\out\release8\build\libcrystalspace\crystalspace-1.4-vc8.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -244,7 +244,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug8\build\libcrystalspace\crystalspace-1.9-vc8_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug8\build\libcrystalspace\crystalspace-1.4-vc8_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -265,9 +265,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                                OutputFile="..\..\crystalspace-1.9-vc8_d.dll"
+                                OutputFile="..\..\crystalspace-1.4-vc8_d.dll"
 				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace\crystalspace-1.9-vc8_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace\crystalspace-1.4-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -387,7 +387,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug8\build\libcrystalspace\crystalspace-1.9-vc8_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug8\build\libcrystalspace\crystalspace-1.4-vc8_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -408,9 +408,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                                OutputFile="..\..\crystalspace-1.9-vc8_d.dll"
+                                OutputFile="..\..\crystalspace-1.4-vc8_d.dll"
 				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace\crystalspace-1.9-vc8_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace\crystalspace-1.4-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -530,7 +530,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug8\build\libcrystalspace\crystalspace-1.9-vc8_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug8\build\libcrystalspace\crystalspace-1.4-vc8_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -551,9 +551,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                                OutputFile="..\..\crystalspace-1.9-vc8_d.dll"
+                                OutputFile="..\..\crystalspace-1.4-vc8_d.dll"
 				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace\crystalspace-1.9-vc8_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace\crystalspace-1.4-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -743,16 +743,10 @@
 				RelativePath="..\..\libs\csgfx\shadervar.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csgfx\shadervararrayhelper.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csgfx\shadervarcontext.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgfx\shadervarframeholder.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csgfx\shadervarnameparser.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
@@ -794,33 +788,6 @@
 				RelativePath="..\..\libs\csplugincommon\render3d\txtmgr.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\debugcommon.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrexposure.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrhelper.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\lightsetup.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\posteffects.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\renderlayers.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\rendertree.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\renderview.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\shadow_common.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csplugincommon\renderstep\basesteploader.cpp">
 			</File>
 			<File
@@ -831,9 +798,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\script\scriptcommon.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\shader\shadercachehelper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\shader\shaderprogram.cpp">
@@ -900,9 +864,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\memory_pen.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\cstool\meshfilter.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\meshobjtmpl.cpp">
@@ -1202,10 +1163,16 @@
 				RelativePath="..\..\libs\csutil\staticvarcleanup.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\strhash.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\strhashr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\stringreader.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\strset.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\syspath.cpp">
@@ -1236,9 +1203,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\vfscache.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\vfshiercache.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\virtclk.cpp">
@@ -1320,9 +1284,6 @@
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\libs\..\include\csgeom\aabbtree.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csgeom\box.h">
 			</File>
 			<File
@@ -1402,9 +1363,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\polypool.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgeom\projections.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\quaternion.h">
@@ -1518,9 +1476,6 @@
 				RelativePath="..\..\libs\..\include\csgfx\shadervar.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csgfx\shadervararrayhelper.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csgfx\shadervarblockalloc.h">
 			</File>
 			<File
@@ -1528,9 +1483,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\shadervarframeholder.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgfx\shadervarnameparser.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\textureformatstrings.h">
@@ -1596,75 +1548,6 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\render3d\txtmgr.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\debugcommon.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\dependenttarget.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\hdrexposure.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\hdrhelper.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\lightsetup.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\operations.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\portalsetup.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\posteffects.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\render.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\renderlayers.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\rendertree.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\renderview.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\shadersetup.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\shadow_common.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\shadow_pssm.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\standardsorter.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\standardtreetraits.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\svarrayholder.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\svsetup.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\svtraverse.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\texturecache.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\viscull.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteploader.h">
 			</File>
 			<File
@@ -1675,9 +1558,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\script\scriptcommon.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\shader\shadercachehelper.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\shader\shaderplugin.h">
@@ -1759,9 +1639,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\mapnode.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\cstool\meshfilter.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\meshobjtmpl.h">
@@ -1893,9 +1770,6 @@
 				RelativePath="..\..\libs\..\include\csutil\compileassert.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\compositefunctor.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\cowwrapper.h">
 			</File>
 			<File
@@ -2004,9 +1878,6 @@
 				RelativePath="..\..\libs\..\include\csutil\fixedsizeallocator.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\fixedsizecache.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\flags.h">
 			</File>
 			<File
@@ -2029,9 +1900,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hash.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\hashcomputer.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\hashr.h">
@@ -2305,9 +2173,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\vfscache.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\vfshiercache.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\vfsplat.h">

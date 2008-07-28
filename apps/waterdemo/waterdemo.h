@@ -30,7 +30,6 @@ struct iMaterialWrapper;
 struct iKeyboardDriver;
 struct iMouseDriver;
 struct iVFS;
-class FramePrinter;
 
 
 class csWaterDemo
@@ -40,7 +39,8 @@ private:
 
   csEventID FocusGained;
   csEventID FocusLost;
-  csEventID Frame;
+  csEventID Process;
+  csEventID FinalProcess;
   csEventID KeyboardDown;
 
   csRef<iEngine> engine;
@@ -49,7 +49,6 @@ private:
   csRef<iKeyboardDriver> kbd;
   csRef<iMouseDriver> mouse;
   csRef<iConsoleOutput> console;
-  csRef<FramePrinter> printer;
 
   csRef<iVFS> vfs;
   csRef<iVirtualClock> vc;
@@ -72,6 +71,7 @@ private:
   static bool SimpleEventHandler (iEvent& ev);
   bool HandleEvent (iEvent& ev);
   void SetupFrame ();
+  void FinishFrame ();
 
 
   //surface-buffers

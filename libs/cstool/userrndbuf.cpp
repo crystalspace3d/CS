@@ -27,8 +27,7 @@
 #include "ivideo/graph3d.h"
 #include "ivideo/rndbuf.h"
 
-iRenderBuffer* csUserRenderBufferManager::GetRenderBuffer (
-  CS::ShaderVarStringID name) const
+iRenderBuffer* csUserRenderBufferManager::GetRenderBuffer (csStringID name) const
 {
   size_t bufIndex = userBuffers.FindSortedKey (UserBufArrayCmp (name));
   if (bufIndex == csArrayItemNotFound) return 0;
@@ -42,7 +41,7 @@ int csUserRenderBufferManager::BufCompare (userbuffer const& r,
   return r.name - k.name;
 }
 
-bool csUserRenderBufferManager::AddRenderBuffer (CS::ShaderVarStringID name, 
+bool csUserRenderBufferManager::AddRenderBuffer (csStringID name, 
 						 iRenderBuffer* buffer)
 {
   size_t bufIndex = userBuffers.FindSortedKey (UserBufArrayCmp (name));
@@ -55,7 +54,7 @@ bool csUserRenderBufferManager::AddRenderBuffer (CS::ShaderVarStringID name,
   return true;
 }
 
-bool csUserRenderBufferManager::RemoveRenderBuffer (CS::ShaderVarStringID name)
+bool csUserRenderBufferManager::RemoveRenderBuffer (csStringID name)
 {
   size_t bufIndex = userBuffers.FindSortedKey (UserBufArrayCmp (name));
   if (bufIndex == csArrayItemNotFound) return false;
@@ -68,7 +67,7 @@ class BufferNameIter : public scfImplementation1<BufferNameIter,
 {
   size_t index;
 public:
-  csArray<CS::ShaderVarStringID> names;
+  csArray<csStringID> names;
   csRefArray<iRenderBuffer> buffers;
 
   BufferNameIter() : scfImplementationType (this), index(0) 
@@ -79,7 +78,7 @@ public:
   }
 
   bool HasNext();
-  CS::ShaderVarStringID Next (csRef<iRenderBuffer>* buf = 0);
+  csStringID Next (csRef<iRenderBuffer>* buf = 0);
   void Reset();
 };
 
@@ -103,7 +102,7 @@ bool BufferNameIter::HasNext()
   return index < names.GetSize ();
 }
 
-CS::ShaderVarStringID BufferNameIter::Next (csRef<iRenderBuffer>* buf)
+csStringID BufferNameIter::Next (csRef<iRenderBuffer>* buf)
 {
   if (index < names.GetSize ())
   {
@@ -114,7 +113,7 @@ CS::ShaderVarStringID BufferNameIter::Next (csRef<iRenderBuffer>* buf)
   else
   {
     if (buf != 0) *buf = 0;
-    return CS::InvalidShaderVarStringID;
+    return csInvalidStringID;
   }
 }
 

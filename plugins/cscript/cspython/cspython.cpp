@@ -33,7 +33,6 @@
 #include "csutil/stringarray.h"
 #include "csutil/sysfunc.h"
 #include "csutil/syspath.h"
-#include "csutil/stringarray.h"
 #include "iutil/cmdline.h"
 #include "iutil/eventq.h"
 #include "csutil/event.h"

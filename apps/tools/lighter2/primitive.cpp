@@ -83,14 +83,12 @@ namespace lighter
   void PrimitiveBase::ComputePlane ()
   {
     //Setup a temporary array of our vertices
-    const csVector3 vertices[] =
-    {
-      vertexData->positions[triangle.a],
-      vertexData->positions[triangle.b],
-      vertexData->positions[triangle.c]
-    };
+    Vector3DArray vertices;
+    vertices.Push (vertexData->positions[triangle.a]);
+    vertices.Push (vertexData->positions[triangle.b]);
+    vertices.Push (vertexData->positions[triangle.c]);
 
-    plane = csPoly3D::ComputePlane (vertices, 3);
+    plane = csPoly3D::ComputePlane (vertices);
   }
 
   template<typename Array>

@@ -128,17 +128,17 @@ class csArrayThresholdVariableCapacityLinear(csArrayThresholdVariable):
 csArrayThresholdVariableCapacityLinear_swigregister = _core.csArrayThresholdVariableCapacityLinear_swigregister
 csArrayThresholdVariableCapacityLinear_swigregister(csArrayThresholdVariableCapacityLinear)
 
-class csArrayCapacityVariableGrow(csArrayThresholdVariableCapacityLinear):
+class csArrayCapacityDefault(csArrayThresholdVariableCapacityLinear):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args): 
-        this = _core.new_csArrayCapacityVariableGrow(*args)
+        this = _core.new_csArrayCapacityDefault(*args)
         try: self.this.append(this)
         except: self.this = this
-    __swig_destroy__ = _core.delete_csArrayCapacityVariableGrow
+    __swig_destroy__ = _core.delete_csArrayCapacityDefault
     __del__ = lambda self : None;
-csArrayCapacityVariableGrow_swigregister = _core.csArrayCapacityVariableGrow_swigregister
-csArrayCapacityVariableGrow_swigregister(csArrayCapacityVariableGrow)
+csArrayCapacityDefault_swigregister = _core.csArrayCapacityDefault_swigregister
+csArrayCapacityDefault_swigregister(csArrayCapacityDefault)
 
 class Vector2Array(CustomAllocated):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -173,7 +173,7 @@ Vector2Array_swigregister(Vector2Array)
 cvar = _core.cvar
 csArrayItemNotFound = cvar.csArrayItemNotFound
 
-class Vector2DirtyAccessArray(object):
+class Vector2DirtyAccessArray(Vector2Array):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -218,7 +218,7 @@ class Vector3Array(CustomAllocated):
 Vector3Array_swigregister = _core.Vector3Array_swigregister
 Vector3Array_swigregister(Vector3Array)
 
-class Vector3DirtyAccessArray(object):
+class Vector3DirtyAccessArray(Vector3Array):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -263,7 +263,7 @@ class Vector4Array(CustomAllocated):
 Vector4Array_swigregister = _core.Vector4Array_swigregister
 Vector4Array_swigregister(Vector4Array)
 
-class Vector4DirtyAccessArray(object):
+class Vector4DirtyAccessArray(Vector4Array):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -308,7 +308,7 @@ class UIntArray(CustomAllocated):
 UIntArray_swigregister = _core.UIntArray_swigregister
 UIntArray_swigregister(UIntArray)
 
-class UIntDirtyAccessArray(object):
+class UIntDirtyAccessArray(UIntArray):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -447,6 +447,7 @@ class iDebugHelper(iBase):
     def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def GetSupportedTests(*args): return _core.iDebugHelper_GetSupportedTests(*args)
+    def UnitTest(*args): return _core.iDebugHelper_UnitTest(*args)
     def StateTest(*args): return _core.iDebugHelper_StateTest(*args)
     def Benchmark(*args): return _core.iDebugHelper_Benchmark(*args)
     def Dump(*args): return _core.iDebugHelper_Dump(*args)
@@ -565,41 +566,33 @@ class csFlags(object):
     def Get(*args): return _core.csFlags_Get(*args)
     def Check(*args): return _core.csFlags_Check(*args)
     def CheckAll(*args): return _core.csFlags_CheckAll(*args)
-    def __eq__(*args): return _core.csFlags___eq__(*args)
-    def __ne__(*args): return _core.csFlags___ne__(*args)
-    def __and__(*args): return _core.csFlags___and__(*args)
-    def __invert__(*args): return _core.csFlags___invert__(*args)
     __swig_destroy__ = _core.delete_csFlags
     __del__ = lambda self : None;
 csFlags_swigregister = _core.csFlags_swigregister
 csFlags_swigregister(csFlags)
 
-class iGeneralStringSetBase(iBase):
+class csStringSet(object):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
-    def Request(*args): return _core.iGeneralStringSetBase_Request(*args)
-    def Contains(*args): return _core.iGeneralStringSetBase_Contains(*args)
-    def Delete(*args): return _core.iGeneralStringSetBase_Delete(*args)
-    def Empty(*args): return _core.iGeneralStringSetBase_Empty(*args)
-    def Clear(*args): return _core.iGeneralStringSetBase_Clear(*args)
-    def GetSize(*args): return _core.iGeneralStringSetBase_GetSize(*args)
-    def IsEmpty(*args): return _core.iGeneralStringSetBase_IsEmpty(*args)
-    __swig_destroy__ = _core.delete_iGeneralStringSetBase
+    def __init__(self, *args): 
+        this = _core.new_csStringSet(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _core.delete_csStringSet
     __del__ = lambda self : None;
-iGeneralStringSetBase_swigregister = _core.iGeneralStringSetBase_swigregister
-iGeneralStringSetBase_swigregister(iGeneralStringSetBase)
+    def assign(*args): return _core.csStringSet_assign(*args)
+    def Request(*args): return _core.csStringSet_Request(*args)
+    def Contains(*args): return _core.csStringSet_Contains(*args)
+    def Delete(*args): return _core.csStringSet_Delete(*args)
+    def Empty(*args): return _core.csStringSet_Empty(*args)
+    def GetSize(*args): return _core.csStringSet_GetSize(*args)
+    def IsEmpty(*args): return _core.csStringSet_IsEmpty(*args)
+    def Clear (*args):
+        print "csStringSet.Clear() is deprecated, use csStringSet.Empty() instead"
+        return self.Empty(*args)
 
-class iStringSet(iGeneralStringSetBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    scfGetVersion = staticmethod(_core.iStringSet_scfGetVersion)
-    __swig_destroy__ = _core.delete_iStringSet
-    __del__ = lambda self : None;
-iStringSet_swigregister = _core.iStringSet_swigregister
-iStringSet_swigregister(iStringSet)
-iStringSet_scfGetVersion = _core.iStringSet_scfGetVersion
+csStringSet_swigregister = _core.csStringSet_swigregister
+csStringSet_swigregister(csStringSet)
 
 class csStringIDSet(object):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -1007,6 +1000,25 @@ iObjectIterator_swigregister = _core.iObjectIterator_swigregister
 iObjectIterator_swigregister(iObjectIterator)
 iObjectIterator_scfGetVersion = _core.iObjectIterator_scfGetVersion
 
+class iStringSet(iBase):
+    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    def __init__(self): raise AttributeError, "No constructor defined"
+    __repr__ = _swig_repr
+    def Request(*args): return _core.iStringSet_Request(*args)
+    def Contains(*args): return _core.iStringSet_Contains(*args)
+    def Delete(*args): return _core.iStringSet_Delete(*args)
+    def Empty(*args): return _core.iStringSet_Empty(*args)
+    def Clear(*args): return _core.iStringSet_Clear(*args)
+    def GetSize(*args): return _core.iStringSet_GetSize(*args)
+    def IsEmpty(*args): return _core.iStringSet_IsEmpty(*args)
+    scfGetVersion = staticmethod(_core.iStringSet_scfGetVersion)
+    __swig_destroy__ = _core.delete_iStringSet
+    __del__ = lambda self : None;
+iStringSet_swigregister = _core.iStringSet_swigregister
+iStringSet_swigregister(iStringSet)
+csInvalidStringID = cvar.csInvalidStringID
+iStringSet_scfGetVersion = _core.iStringSet_scfGetVersion
+
 class iObjectRegistry(iBase):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     def __init__(self): raise AttributeError, "No constructor defined"
@@ -1159,6 +1171,7 @@ class iEvent(iBase):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
+    Name = _swig_property(_core.iEvent_Name_get, _core.iEvent_Name_set)
     def GetName(*args): return _core.iEvent_GetName(*args)
     Time = _swig_property(_core.iEvent_Time_get, _core.iEvent_Time_set)
     Broadcast = _swig_property(_core.iEvent_Broadcast_get, _core.iEvent_Broadcast_set)
@@ -1194,8 +1207,6 @@ class iEvent(iBase):
     scfGetVersion = staticmethod(_core.iEvent_scfGetVersion)
     __swig_destroy__ = _core.delete_iEvent
     __del__ = lambda self : None;
-    Name = property(GetName)
-
 iEvent_swigregister = _core.iEvent_swigregister
 iEvent_swigregister(iEvent)
 iEvent_scfGetVersion = _core.iEvent_scfGetVersion
@@ -1499,6 +1510,7 @@ class iEventNameRegistry(iBase):
     __del__ = lambda self : None;
 iEventNameRegistry_swigregister = _core.iEventNameRegistry_swigregister
 iEventNameRegistry_swigregister(iEventNameRegistry)
+csHashCompute = _core.csHashCompute
 iEventNameRegistry_scfGetVersion = _core.iEventNameRegistry_scfGetVersion
 
 class csEventNameRegistry(object):
@@ -2503,8 +2515,7 @@ csInitializer.SetupEventHandler = \
 
 def csevCommandLineHelp(reg):
   csEventNameRegistry.GetID(reg, "crystalspace.application.commandlinehelp")
-
-csInvalidStringID = ~0 # we want stringids as unsigned long
+  
 CS_EVENTLIST_END = csInvalidStringID
 
 def _csInitializer_RequestPlugins (reg, plugins):

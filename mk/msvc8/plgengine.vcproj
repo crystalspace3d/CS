@@ -675,10 +675,13 @@
 				RelativePath="..\..\plugins\engine\3d\portalcontainer.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\engine\3d\reflectomotron3000.cpp">
+				RelativePath="..\..\plugins\engine\3d\region.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\renderloop.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\3d\rview.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\sector.cpp">
@@ -754,10 +757,13 @@
 				RelativePath="..\..\plugins\engine\3d\portalcontainer.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\engine\3d\reflectomotron3000.h">
+				RelativePath="..\..\plugins\engine\3d\region.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\renderloop.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\3d\rview.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\scenenode.h">

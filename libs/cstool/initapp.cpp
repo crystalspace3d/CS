@@ -17,7 +17,6 @@
 */
 
 #include "cssysdef.h"
-#include "csgfx/shadervar.h"
 #include "cstool/initapp.h"
 #include "csutil/ansicommand.h"
 #include "csutil/cfgacc.h"
@@ -180,11 +179,8 @@ bool csInitializer::CreateInputDrivers (iObjectRegistry* r)
 bool csInitializer::CreateStringSet (iObjectRegistry* r)
 {
   csRef<iStringSet> strings;
-  strings.AttachNew (new csScfStringSet);
+  strings.AttachNew (new csScfStringSet ());
   r->Register (strings, "crystalspace.shared.stringset");
-  csRef<iShaderVarStringSet> svStrings;
-  svStrings.AttachNew (new CS::ScfStringSet<iShaderVarStringSet> );
-  r->Register (svStrings, "crystalspace.shader.variablenameset");
   return true;
 }
 

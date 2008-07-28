@@ -766,7 +766,6 @@ class iSkeletonFactory2(core.iBase):
     def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def CreateBone(*args): return _imesh.iSkeletonFactory2_CreateBone(*args)
-    def FindBone(*args): return _imesh.iSkeletonFactory2_FindBone(*args)
     def RemoveBone(*args): return _imesh.iSkeletonFactory2_RemoveBone(*args)
     def GetBoneParent(*args): return _imesh.iSkeletonFactory2_GetBoneParent(*args)
     def HasBone(*args): return _imesh.iSkeletonFactory2_HasBone(*args)
@@ -958,8 +957,6 @@ class iSkeletonAnimationNodeFactory2(iSkeletonAnimNodeFactory2):
     def GetPlaybackSpeed(*args): return _imesh.iSkeletonAnimationNodeFactory2_GetPlaybackSpeed(*args)
     def SetAutomaticReset(*args): return _imesh.iSkeletonAnimationNodeFactory2_SetAutomaticReset(*args)
     def GetAutomaticReset(*args): return _imesh.iSkeletonAnimationNodeFactory2_GetAutomaticReset(*args)
-    def SetAutomaticStop(*args): return _imesh.iSkeletonAnimationNodeFactory2_SetAutomaticStop(*args)
-    def GetAutomaticStop(*args): return _imesh.iSkeletonAnimationNodeFactory2_GetAutomaticStop(*args)
     scfGetVersion = staticmethod(_imesh.iSkeletonAnimationNodeFactory2_scfGetVersion)
     __swig_destroy__ = _imesh.delete_iSkeletonAnimationNodeFactory2
     __del__ = lambda self : None;
@@ -1078,8 +1075,6 @@ class iSkeletonFSMNodeFactory2(iSkeletonAnimNodeFactory2):
     def GetStartState(*args): return _imesh.iSkeletonFSMNodeFactory2_GetStartState(*args)
     def GetStateCount(*args): return _imesh.iSkeletonFSMNodeFactory2_GetStateCount(*args)
     def ClearStates(*args): return _imesh.iSkeletonFSMNodeFactory2_ClearStates(*args)
-    def SetStateTransition(*args): return _imesh.iSkeletonFSMNodeFactory2_SetStateTransition(*args)
-    def SetTransitionCrossfade(*args): return _imesh.iSkeletonFSMNodeFactory2_SetTransitionCrossfade(*args)
     scfGetVersion = staticmethod(_imesh.iSkeletonFSMNodeFactory2_scfGetVersion)
     __swig_destroy__ = _imesh.delete_iSkeletonFSMNodeFactory2
     __del__ = lambda self : None;
@@ -1913,8 +1908,6 @@ class iTerrainCellFeederProperties(core.iBase):
     def GetAlphaMapCount(*args): return _imesh.iTerrainCellFeederProperties_GetAlphaMapCount(*args)
     def GetAlphaMapMaterial(*args): return _imesh.iTerrainCellFeederProperties_GetAlphaMapMaterial(*args)
     def GetAlphaMapSource(*args): return _imesh.iTerrainCellFeederProperties_GetAlphaMapSource(*args)
-    def SetHeightmapSmooth(*args): return _imesh.iTerrainCellFeederProperties_SetHeightmapSmooth(*args)
-    def GetHeightmapSmooth(*args): return _imesh.iTerrainCellFeederProperties_GetHeightmapSmooth(*args)
     scfGetVersion = staticmethod(_imesh.iTerrainCellFeederProperties_scfGetVersion)
     __swig_destroy__ = _imesh.delete_iTerrainCellFeederProperties
     __del__ = lambda self : None;

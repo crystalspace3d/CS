@@ -304,7 +304,6 @@ typedef unsigned char uint8;
 %apply float * INOUT { float & iG };
 %apply float * INOUT { float & iB };
 
-
 %include "cstypes.h"
 
 %define CS_WRAP_PTR_IMPLEMENT(PtrName)
@@ -484,11 +483,9 @@ TYPEMAP_OUT_csWrapPtr
 %ignore csArray::GetExtend;
 %ignore csArray::GetIndex;
 %ignore csArray::GetIterator;
-%ignore csArray::GetReverseIterator;
 %ignore csArray::InitRegion;
 %ignore csArray::InsertSorted;
 %ignore csArray::Iterator;
-%ignore csArray::ReverseIterator;
 %ignore csArray::Length;
 %ignore csArray::PushSmart;
 %ignore csArray::Section;
@@ -500,6 +497,7 @@ TYPEMAP_OUT_csWrapPtr
 %ignore csArray::TransferTo;
 %ignore csArray::operator=;
 %ignore csArray::operator[];
+%ignore csArray::Iterator;
 /* The following is a bit ugly but otherwise there is no way pass the
    necessary directives to swig between template declarations.        */
 template <typename Threshold = csArrayThresholdVariable>
@@ -574,15 +572,12 @@ void SetCoreSCFPointer(iSCF *scf_pointer)
 
 %include "csutil/flags.h"
 
-%ignore CS::Utility::StringSet::GlobalIterator;
-%ignore CS::Utility::StringSet::GetIterator;
-%ignore CS::Utility::GetIterator;
+%ignore csStringSet::GlobalIterator;
+%ignore csStringSet::GetIterator;
+DEPRECATED_METHOD(csStringSet,Clear,Empty);
 DEPRECATED_METHOD(iStringArray,Length,GetSize);
 DEPRECATED_METHOD(iStringArray,DeleteAll,Empty);
-/* %apply unsigned long { csStringID }; */
-%include "iutil/strset.h"
 %include "csutil/strset.h"
-DEPRECATED_METHOD(CS::Utility::StringSet,Clear,Empty);
 %ignore csSet::GlobalIterator;
 %ignore csSet::GetIterator;
 %include "csutil/set.h"
@@ -632,11 +627,10 @@ SET_HELPER(csStringID)
 %ignore csArray<csPluginRequest>::GetExtend;
 %ignore csArray<csPluginRequest>::GetIndex;
 %ignore csArray<csPluginRequest>::GetIterator;
-%ignore csArray<csPluginRequest>::GetReverseIterator;
 %ignore csArray<csPluginRequest>::InitRegion;
 %ignore csArray<csPluginRequest>::InsertSorted;
 %ignore csArray<csPluginRequest>::Iterator;
-%ignore csArray<csPluginRequest>::ReverseIterator;
+%ignore csArray<csPluginRequest>::Iterator;
 %ignore csArray<csPluginRequest>::PushSmart;
 %ignore csArray<csPluginRequest>::Put;
 %ignore csArray<csPluginRequest>::Section;
@@ -664,6 +658,7 @@ SET_HELPER(csStringID)
 {
   ITERATOR_FUNCTIONS(iObjectIterator)
 }
+%include "iutil/strset.h"
 %ignore CS_QUERY_REGISTRY_TAG_is_deprecated;
 %include "iutil/objreg.h"
 %include "iutil/virtclk.h"

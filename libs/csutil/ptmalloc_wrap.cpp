@@ -148,7 +148,7 @@ namespace
     {
       const AllocatedBlock& block = allocatedPointers[i];
       
-      fprintf (f, ">>> addr %p  %lu bytes\n", 
+      fprintf (f, ">>> %p %lu\n", 
         block.address, (unsigned long)block.size);
       block.stack->Print (f);
       fflush (f);
@@ -156,8 +156,7 @@ namespace
   }
 
   template<bool keepLocation>
-  static bool mem_check_real (const void* p,
-                              const char* msg, bool condition,
+  static bool mem_check_real (const char* msg, bool condition,
                               const char* exprString,
                               csCallStack* stack, 
                               const char* file, int line)
@@ -168,8 +167,6 @@ namespace
       {
 	fprintf (stderr, 
 	  "Memory error:     %s\n", exprString);
-	fprintf (stderr, 
-	  "Memory block:     %p\n", p);
 	fprintf (stderr, 
 	  "Message:          %s\n", msg);
 	fflush (stderr);
@@ -207,8 +204,8 @@ namespace
     }
     return true;
   }
-  #define mem_check(keepLocation, p, msg, condition, stack, file, line) \
-    mem_check_real<keepLocation> (p, msg, condition, #condition, stack, file, line)
+  #define mem_check(keepLocation, msg, condition, stack, file, line) \
+    mem_check_real<keepLocation> (msg, condition, #condition, stack, file, line)
   
   static bool VerifyMemoryCookie (const AllocatedBlock& block)
   {
@@ -227,11 +224,11 @@ namespace
     p -= sizeof(indicator);
     
     // Verify cookies
-    ret &= mem_check (true, block.address,
+    ret &= mem_check (true,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
       theCookie == startCookie, block.stack, __FILE__, __LINE__);
-    ret &= mem_check (true, block.address,
+    ret &= mem_check (true,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)block.address + n) == endCookie, block.stack, 
@@ -275,7 +272,7 @@ namespace
   static int32 remainingActions = verifyFreq;
 
   template<bool keepLocation, bool doCheck>
-  static inline void* ptmalloc_debug (size_t n)
+  static void* ptmalloc_debug (size_t n)
   {
     if (doCheck)
     {
@@ -325,7 +322,7 @@ namespace
   }
   
   template<bool keepLocation, bool doCheck>
-  static inline void ptfree_debug (void* P)
+  static void ptfree_debug (void* P)
   { 
     if (P == 0) return;
     size_t locationSize = 0;
@@ -341,7 +338,7 @@ namespace
       - (sizeof(size_t) + locationSize));
     const CookieType endCookie = CookieSwap (startCookie);
     // Verify cookies
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
       *(CookieType*)p == startCookie, block ? block->stack : 0,
@@ -352,7 +349,7 @@ namespace
     {
       p -= sizeof (indicator);
     }
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)P + n) == endCookie, 
@@ -389,7 +386,7 @@ namespace
   }
   
   template<bool keepLocation, bool doCheck>
-  static inline void* ptrealloc_debug (void* P, size_t n)
+  static void* ptrealloc_debug (void* P, size_t n)
   { 
     if (P == 0) return ptmalloc_debug<keepLocation, doCheck> (n);
     if (n > maxRequest)
@@ -419,7 +416,7 @@ namespace
     const CookieType startCookie = GetCookie (p
       - (sizeof(size_t) + locationSize));
     const CookieType endCookie = CookieSwap (startCookie);
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
       *(CookieType*)p == startCookie, 
@@ -430,7 +427,7 @@ namespace
     {
       p -= sizeof (indicator);
     }
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)P + nOld) == endCookie, 
@@ -483,7 +480,7 @@ namespace
   }
   
   template<bool keepLocation, bool doCheck>
-  static inline void* ptcalloc_debug (size_t n, size_t s)
+  static void* ptcalloc_debug (size_t n, size_t s)
   { 
     // Overflow test lifted from dlmalloc
     const size_t halfSizeT = (~(size_t)0) >> (sizeof (size_t) * 4);
@@ -561,79 +558,6 @@ void* ptcalloc_checking (size_t n, size_t s)
 { 
   return ptcalloc_debug<true, true> (n, s);
 }
-
-#if defined(CS_EXTENSIVE_MEMDEBUG)
-void* cs_malloc (size_t n)
-{ 
-#ifdef CS_CHECKING_ALLOCATIONS
-  return ptmalloc_debug<true, true> (n);
-#else
-  return ptmalloc_debug<true, false> (n);
-#endif
-}
-
-void cs_free (void* p)
-{ 
-#ifdef CS_CHECKING_ALLOCATIONS
-  ptfree_debug<true, true> (p);
-#else
-  ptfree_debug<true, false> (p);
-#endif
-}
-
-void* cs_realloc (void* p, size_t n)
-{ 
-#ifdef CS_CHECKING_ALLOCATIONS
-  return ptrealloc_debug<true, true> (p, n);
-#else
-  return ptrealloc_debug<true, false> (p, n);
-#endif
-}
-
-void* cs_calloc (size_t n, size_t s)
-{ 
-#ifdef CS_CHECKING_ALLOCATIONS
-  return ptcalloc_debug<true, true> (n, s); 
-#else
-  return ptcalloc_debug<true, false> (n, s); 
-#endif
-}
-
-#else // defined(CS_EXTENSIVE_MEMDEBUG)
-void* cs_malloc (size_t n)
-{ 
-#ifdef CS_DEBUG
-  return ptmalloc_debug<false, false> (n);
-#else
-  return ptmalloc_::ptmalloc (n);
-#endif
-}
-void cs_free (void* p)
-{ 
-#ifdef CS_DEBUG
-  ptfree_debug<false, false> (p);
-#else
-  ptmalloc_::ptfree (p);
-#endif
-}
-void* cs_realloc (void* p, size_t n)
-{ 
-#ifdef CS_DEBUG
-  return ptrealloc_debug<false, false> (p, n);
-#else
-  return ptmalloc_::ptrealloc (p, n);
-#endif
-}
-CS_ATTRIBUTE_MALLOC void* cs_calloc (size_t n, size_t s)
-{ 
-#ifdef CS_DEBUG
-  return ptcalloc_debug<false, false> (n, s); 
-#else
-  return ptmalloc_::ptcalloc (n, s); 
-#endif
-}
-#endif
-
 
 /* Cygwin has funny issues with atexit() that ptmalloc seems to tickle.
  * So within ptmalloc we use our own single-use implementation of atexit()

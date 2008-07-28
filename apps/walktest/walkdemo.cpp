@@ -31,6 +31,7 @@
 #include "iengine/light.h"
 #include "iengine/material.h"
 #include "iengine/movable.h"
+#include "iengine/region.h"
 #include "iengine/sector.h"
 #include "iengine/portal.h"
 #include "iengine/sharevar.h"
@@ -1046,16 +1047,17 @@ void OpenPortal (iLoader *LevelLoader, iView* view, char* lev)
     scfQueryInterface<iThingFactoryState> (
     thing->GetMeshObject ()->GetFactory());
 
-  bool collectionExists = (Sys->Engine->GetCollection (lev) != 0);
-  iCollection* collection = Sys->Engine->CreateCollection (lev);
-  // If the collection did not already exist then we load the level in it.
-  if (!collectionExists)
+  bool regionExists = (Sys->Engine->GetRegions ()->FindByName (lev) != 0);
+  iRegion* cur_region = Sys->Engine->CreateRegion (lev);
+  // If the region did not already exist then we load the level in it.
+  if (!regionExists)
   {
     // @@@ No error checking!
     csString buf;
     buf.Format ("/lev/%s", lev);
     Sys->myVFS->ChDir (buf);
-    LevelLoader->LoadMapFile ("world", false, collection, true);
+    LevelLoader->LoadMapFile ("world", false, cur_region, true);
+    cur_region->Prepare ();
   }
 
   iMovable* tmov = thing->GetMovable ();
@@ -1064,13 +1066,13 @@ void OpenPortal (iLoader *LevelLoader, iView* view, char* lev)
   tmov->UpdateMove ();
 
   // First make a portal to the new level.
-  iCameraPosition* cp = collection->FindCameraPosition ("Start");
+  iCameraPosition* cp = cur_region->FindCameraPosition ("Start");
   const char* room_name;
   csVector3 topos;
   if (cp) { room_name = cp->GetSector (); topos = cp->GetPosition (); }
   else { room_name = "room"; topos.Set (0, 0, 0); }
   topos.y -= Sys->cfg_eye_offset;
-  iSector* start_sector = collection->FindSector (room_name);
+  iSector* start_sector = cur_region->FindSector (room_name);
   if (start_sector)
   {
     csPoly3D poly;
@@ -1088,10 +1090,10 @@ void OpenPortal (iLoader *LevelLoader, iView* view, char* lev)
     portal->GetFlags ().Set (CS_PORTAL_CLIPDEST);
     portal->SetWarp (view->GetCamera ()->GetTransform ().GetT2O (), topos, pos);
 
-    if (!collectionExists)
+    if (!regionExists)
     {
-      // Only if the collection did not already exist do we create a portal
-      // back. So even if multiple portals go to the collection we only have
+      // Only if the region did not already exist do we create a portal
+      // back. So even if multiple portals go to the region we only have
       // one portal back.
       int portalPolyBack;
       csRef<iMeshWrapper> thingBack = CreatePortalThing ("portalFrom",
@@ -1122,7 +1124,7 @@ void OpenPortal (iLoader *LevelLoader, iView* view, char* lev)
     }
   }
 
-  if (!collectionExists)
-    Sys->InitCollDet (Sys->Engine, collection);
+  if (!regionExists)
+    Sys->InitCollDet (Sys->Engine, cur_region);
 }
 

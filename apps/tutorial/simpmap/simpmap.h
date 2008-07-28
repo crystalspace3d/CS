@@ -57,10 +57,6 @@ private:
   /// A pointer to the view which contains the camera.
   csRef<iView> view;
 
-  csRef<iRenderManager> rm;
-
-  csRef<FramePrinter> printer;
-
   /// A pointer to the sector the camera will be in.
   iSector* room;
 
@@ -76,11 +72,16 @@ private:
 
   /**
    * Setup everything that needs to be rendered on screen. This routine
-   * is called from the event handler in response to a csevFrame
+   * is called from the event handler in response to a csevProcess
    * broadcast message.
    */
-  void Frame ();
+  void ProcessFrame ();
     
+  /**
+   * Finally render the screen. This routine is called from the event
+   * handler in response to a csevFinalProcess broadcast message.
+   */
+  void FinishFrame ();
     
   /// Here we will load our world from a map file.
   bool LoadMap ();

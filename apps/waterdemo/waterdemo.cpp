@@ -28,7 +28,6 @@
 #include "csutil/cmdhelp.h"
 #include "csutil/cscolor.h"
 #include "csutil/event.h"
-#include "csutil/common_handlers.h"
 #include "csutil/sysfunc.h"
 #include "iengine/camera.h"
 #include "iengine/engine.h"
@@ -197,6 +196,12 @@ void csWaterDemo::SetupFrame ()
     stop=false;
 }
 
+void csWaterDemo::FinishFrame ()
+{
+  r3d->FinishDraw();
+  r3d->Print (0);
+}
+
 bool csWaterDemo::HandleEvent (iEvent& ev)
 {
   if (ev.Name == FocusGained)
@@ -214,9 +219,14 @@ bool csWaterDemo::HandleEvent (iEvent& ev)
     CS_ASSERT(hasfocus == false);
     r3d->GetDriver2D()->SetMouseCursor (csmcArrow);
   }
-  else if (ev.Name == Frame)
+  else if (ev.Name == Process)
   {
     waterdemo->SetupFrame ();
+    return true;
+  }
+  else if (ev.Name == FinalProcess)
+  {
+    waterdemo->FinishFrame ();
     return true;
   }
   else if (ev.Name == KeyboardDown)
@@ -300,7 +310,8 @@ bool csWaterDemo::Initialize ()
 
   FocusGained = csevFocusGained (object_reg);
   FocusLost = csevFocusLost (object_reg);
-  Frame = csevFrame (object_reg);
+  Process = csevProcess (object_reg);
+  FinalProcess = csevFinalProcess (object_reg);
   KeyboardDown = csevKeyboardDown (object_reg);
 
   if (!csInitializer::SetupEventHandler (object_reg, SimpleEventHandler))
@@ -429,10 +440,6 @@ bool csWaterDemo::Initialize ()
     csQueryRegistryTagInterface<iStringSet> 
     (object_reg, "crystalspace.shared.stringset");
 
-  csRef<iShaderVarStringSet> stringsSvName = 
-    csQueryRegistryTagInterface<iShaderVarStringSet> 
-    (object_reg, "crystalspace.shader.variablenameset");
-
   //get a custom renderloop
   csRef<iRenderLoop> rl = engine->GetRenderLoopManager ()->Create ();
   
@@ -533,7 +540,7 @@ bool csWaterDemo::Initialize ()
     cubeMaker, CS_TEXTURE_3D | CS_TEXTURE_CLAMP | CS_TEXTURE_NOMIPMAPS);
 
   csRef<csShaderVariable> attvar (csPtr<csShaderVariable> (
-    new csShaderVariable (stringsSvName->Request ("tex diffuse"))));
+    new csShaderVariable (strings->Request ("tex diffuse"))));
   attvar->SetValue (tex);
   mat->AddVariable (attvar);  
 
@@ -615,8 +622,6 @@ bool csWaterDemo::Initialize ()
   int w = r3d->GetDriver2D ()->GetWidth()/2;
   int h = r3d->GetDriver2D ()->GetHeight()/2;
   r3d->GetDriver2D ()->SetMousePosition (w, h);
-
-  printer.AttachNew (new FramePrinter (object_reg));
 
   return true;
 }

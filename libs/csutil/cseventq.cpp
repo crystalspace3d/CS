@@ -57,10 +57,10 @@ csEventQueue::csEventQueue (iObjectRegistry* r, size_t iLength) :
   PostProcess = csevPostProcess (NameRegistry);
   FinalProcess = csevFinalProcess (NameRegistry);
 
-  csRef<TypedFrameEventDispatcher> PreProcessEventDispatcher;
-  csRef<TypedFrameEventDispatcher> ProcessEventDispatcher;
-  csRef<TypedFrameEventDispatcher> PostProcessEventDispatcher;
-  csRef<TypedFrameEventDispatcher> FinalProcessEventDispatcher;
+  csRef<iTypedFrameEventDispatcher> PreProcessEventDispatcher;
+  csRef<iTypedFrameEventDispatcher> ProcessEventDispatcher;
+  csRef<iTypedFrameEventDispatcher> PostProcessEventDispatcher;
+  csRef<iTypedFrameEventDispatcher> FinalProcessEventDispatcher;
   PreProcessEventDispatcher.AttachNew (
     new PreProcessFrameEventDispatcher (this));
   ProcessEventDispatcher.AttachNew (
@@ -131,7 +131,7 @@ iEvent *csEventQueue::CreateRawEvent ()
 csPtr<iEvent> csEventQueue::CreateEvent ()
 {
   iEvent *e = CreateRawEvent ();
-  e->Name = csInvalidStringID;
+  e->Name = 0;
   e->Broadcast = 0;
   e->Time = csGetTicks();
   return csPtr<iEvent>((iEvent*)e);

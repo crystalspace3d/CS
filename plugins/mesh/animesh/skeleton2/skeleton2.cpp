@@ -33,8 +33,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   SCF_IMPLEMENT_FACTORY(SkeletonSystem)
 
 
-  CS_LEAKGUARD_IMPLEMENT(SkeletonSystem);
-
   SkeletonSystem::SkeletonSystem (iBase* parent)
     : scfImplementationType (this, parent)
   {}
@@ -89,22 +87,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
 
 
-  CS_LEAKGUARD_IMPLEMENT(SkeletonFactory);
-
   SkeletonFactory::SkeletonFactory ()
     : scfImplementationType (this), cachedTransformsDirty (true), 
     orderListDirty (true)
   {}
-
-  BoneID SkeletonFactory::FindBone (const char *name) const
-  {
-    for (size_t i = 0; i < boneNames.GetSize (); i++)
-    {
-      if (!strcmp(name,boneNames[i]))
-        return (BoneID)i;
-    }
-    return InvalidBoneID;
-  }
 
   BoneID SkeletonFactory::CreateBone (BoneID parent)
   {
@@ -336,8 +322,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
 
 
-  CS_LEAKGUARD_IMPLEMENT(Skeleton);
-
   Skeleton::Skeleton (SkeletonFactory* factory)
     : scfImplementationType (this, factory), factory (factory), 
     cachedTransformsDirty (true), version (0), versionLastReset (0)
@@ -481,7 +465,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     currState.AttachNew (new csSkeletalState2);
     currState->Setup (allBones.GetSize ());
 
-    for (BoneID i = 0; i < allBones.GetSize (); ++i)
+    for (size_t i = 0; i < allBones.GetSize (); ++i)
     {
       if (allBones[i].created)
       {

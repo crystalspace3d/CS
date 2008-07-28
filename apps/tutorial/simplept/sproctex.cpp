@@ -18,7 +18,11 @@
 
 #include "simplept.h"
 
-csEngineProcTex::csEngineProcTex() : csProcTexture ()
+// Uncomment to render to a float texture
+//#define FLOAT_TEXTURE
+
+csEngineProcTex::csEngineProcTex() : csProcTexture (),
+  currentTarget (0), renderTargetState (true)
 {
   mat_w = 256;
   mat_h = 256;

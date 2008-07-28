@@ -36,8 +36,6 @@ namespace CS
         static const TypeInfoMap typeInfoMap[] = {
           {"bool", 
             {TypeInfo::VectorB, false, 1, TypeInfo::NoSemantics, TypeInfo::NoSpace, false}},
-          {"depth", 
-            {TypeInfo::Vector,  false, 1, TypeInfo::Depth,       TypeInfo::NoSpace, false}},
           {"direction",
             {TypeInfo::Vector,  false, 3, TypeInfo::Direction,   TypeInfo::NoSpace, false}},
           {"direction_camera",
@@ -58,8 +56,6 @@ namespace CS
             {TypeInfo::Vector,  false, 3, TypeInfo::NoSemantics, TypeInfo::NoSpace, false}},
           {"float4", 
             {TypeInfo::Vector,  false, 4, TypeInfo::NoSemantics, TypeInfo::NoSpace, false}},
-          {"int", 
-            {TypeInfo::VectorI, false, 1, TypeInfo::NoSemantics, TypeInfo::NoSpace, false}},
           {"normal",
             {TypeInfo::Vector,  false, 3, TypeInfo::Direction,   TypeInfo::NoSpace, true}},
           {"normal_camera",

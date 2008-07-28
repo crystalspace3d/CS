@@ -196,13 +196,10 @@ FrameSignpost_Logic3D::GenericSucc(csRef<iEventHandlerRegistry> &r1,
 	    csRef<iEventNameRegistry> &r2,
 	    csEventID e) const 
 {
+  static csHandlerID constraint[2] = { 0, CS_HANDLERLIST_END };
   if (e == csevFrame(r2))
   {
-    static csHandlerID constraint[2] =
-    {
-      FrameSignpost_3D2D::StaticID (r1), 
-      CS_HANDLERLIST_END
-    };
+    constraint[0] = FrameSignpost_3D2D::StaticID (r1);
     return constraint;
   }
   return 0;
@@ -223,13 +220,10 @@ FrameSignpost_3D2D::GenericSucc(csRef<iEventHandlerRegistry> &r1,
 				csRef<iEventNameRegistry> &r2,
 				csEventID e) const 
 {
+  static csHandlerID constraint[2] = { 0, CS_HANDLERLIST_END };
   if (e == csevFrame(r2))
   {
-    static csHandlerID constraint[2] =
-    {
-      FrameSignpost_2DConsole::StaticID (r1),
-      CS_HANDLERLIST_END
-    };
+    constraint[0] = FrameSignpost_2DConsole::StaticID (r1);
     return constraint;
   }
   return 0;
@@ -250,13 +244,10 @@ FrameSignpost_2DConsole::GenericSucc(csRef<iEventHandlerRegistry> &r1,
 				   csRef<iEventNameRegistry> &r2,
 				   csEventID e) const 
 {
+  static csHandlerID constraint[2] = { 0, CS_HANDLERLIST_END };
   if (e == csevFrame(r2))
   {
-    static csHandlerID constraint[2] =
-    { 
-      FrameSignpost_ConsoleDebug::StaticID (r1),
-      CS_HANDLERLIST_END
-    };
+    constraint[0] = FrameSignpost_ConsoleDebug::StaticID (r1);
     return constraint;
   }
   return 0;
@@ -277,13 +268,10 @@ FrameSignpost_ConsoleDebug::GenericSucc(csRef<iEventHandlerRegistry> &r1,
 					csRef<iEventNameRegistry> &r2,
 					csEventID e) const 
 {
+  static csHandlerID constraint[2] = { 0, CS_HANDLERLIST_END };
   if (e == csevFrame(r2))
   {
-    static csHandlerID constraint[2] =
-    { 
-      FrameSignpost_ConsoleDebug::StaticID (r1), 
-      CS_HANDLERLIST_END
-    };
+    constraint[0] = FrameSignpost_ConsoleDebug::StaticID (r1);
     return constraint;
   }
   return 0;

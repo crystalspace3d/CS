@@ -70,8 +70,6 @@ private:
   /// Current angle.
   float cur_angle;
 
-  csRef<FramePrinter> printer;
-
   /**
    * Handle keyboard events - ie key presses and releases.
    * This routine is called from the event handler in response to a 
@@ -84,7 +82,13 @@ private:
    * is called from the event handler in response to a cscmdProcess
    * broadcast message.
    */
-  void Frame ();
+  void ProcessFrame ();
+
+  /**
+   * Finally render the screen. This routine is called from the event
+   * handler in response to a cscmdFinalProcess broadcast message.
+   */
+  void FinishFrame ();
 
   /// Here we will create our little, simple world.
   bool CreateRoom ();

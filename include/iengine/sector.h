@@ -28,13 +28,10 @@
  * \addtogroup engine3d
  * @{ */
 
-#include "ivideo/rendermesh.h"
-
 #include "csutil/cscolor.h"
 #include "csutil/scf.h"
 #include "csutil/set.h"
 #include "csgeom/vector3.h"
-#include "csgeom/aabbtree.h"
 
 struct iMeshWrapper;
 struct iMeshGenerator;
@@ -42,6 +39,7 @@ struct iMeshList;
 struct iLightList;
 struct iLight;
 struct iVisibilityCuller;
+struct iLightSectorInfluence;
 
 struct iObject;
 
@@ -57,7 +55,6 @@ class csBox3;
 class csRenderMeshList;
 class csReversibleTransform;
 class csVector3;
-
 
 enum csFogMode
 {
@@ -168,19 +165,6 @@ struct csSectorHitBeamResult
 };
 
 /**
- * Container for render meshes for one mesh wrapper
- */
-struct csSectorVisibleRenderMeshes
-{
-  /// The mesh wrapper which is the source of the render meshes
-  iMeshWrapper* imesh;
-  /// Number of render meshes
-  int num;
-  /// Render meshes
-  csRenderMesh** rmeshes;
-};
-
-/**
  * The iSector interface is used to work with "sectors". A "sector"
  * is an empty region of space that can contain other objects (mesh
  * objects). A sector itself does not represent geometry but only
@@ -205,7 +189,7 @@ struct csSectorVisibleRenderMeshes
  */
 struct iSector : public virtual iBase
 {
-  SCF_INTERFACE(iSector,2,3,1);
+  SCF_INTERFACE(iSector,2,2,0);
   /// Get the iObject for this sector.
   virtual iObject *QueryObject () = 0;
 
@@ -494,17 +478,6 @@ struct iSector : public virtual iBase
    * with this sector visible. This will speed up later rendering.
    */
   virtual void PrecacheDraw () = 0;
-
-  /**
-   * Call all the sector callback functions
-   */
-  virtual void CallSectorCallbacks (iRenderView* rview) = 0;
-
-  /**
-   * Get the render meshes for a specific mesh wrapper. Also processes LOD.
-   */
-  virtual csSectorVisibleRenderMeshes* GetVisibleRenderMeshes (int& num,
-    iMeshWrapper* mesh, iRenderView *rview, uint32 frustum_mask) = 0;
 };
 
 

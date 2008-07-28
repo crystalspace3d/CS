@@ -34,8 +34,7 @@ private:
   csRef<iKeyboardDriver> kbd;
   csRef<iVirtualClock> vc;
   csRef<iView> view;
-  csRef<iCollideSystem> cdsys;
-  csRef<FramePrinter> printer;
+  csRef<iCollideSystem> cdsys; 
   iSector* room;
   int objcnt;
   int solver;
@@ -55,6 +54,7 @@ private:
   static bool SimpleEventHandler (iEvent& ev);
   bool HandleEvent (iEvent& ev);
   void SetupFrame ();
+  void FinishFrame ();
   void WriteShadow (int x,int y,int fg,const char *str,...);
   void Write(int x,int y,int fg,int bg,const char *str,...);
   
@@ -79,7 +79,6 @@ public:
 
   bool Initialize ();
   void Start ();
-  void Shutdown ();
 };
 
 #endif // __PHYSTUT_H__

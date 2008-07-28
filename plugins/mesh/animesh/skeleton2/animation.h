@@ -21,7 +21,6 @@
 
 #include "csutil/scf_implementation.h"
 #include "imesh/skeleton2anim.h"
-#include "csutil/leakguard.h"
 #include "csutil/parray.h"
 #include "csutil/refarr.h"
 #include "csutil/csstring.h"
@@ -36,8 +35,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
                               iSkeletonAnimPacketFactory2>
   {
   public:
-    CS_LEAKGUARD_DECLARE(AnimationPacketFactory);
-  
     AnimationPacketFactory ();
 
     //-- iSkeletonAnimPacketFactory2
@@ -68,8 +65,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
                               iSkeletonAnimPacket2>
   {
   public:
-    CS_LEAKGUARD_DECLARE(AnimationPacket);
-  
     AnimationPacket (AnimationPacketFactory* factory);
 
     //-- iSkeletonAnimPacket2
@@ -88,8 +83,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
                               iSkeletonAnimation2>
   {
   public:
-    CS_LEAKGUARD_DECLARE(Animation);
-  
     Animation (const char* name);
 
     //-- iSkeletonAnimation2

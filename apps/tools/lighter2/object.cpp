@@ -348,7 +348,7 @@ namespace lighter
       else
         svName.Format ("tex lightmap dir %d", i);
       csShaderVariable* sv = svc->GetVariable (
-        globalLighter->svStrings->Request (svName));
+        globalLighter->strings->Request (svName));
       if (sv != 0)
       {
         iTextureWrapper* tex;

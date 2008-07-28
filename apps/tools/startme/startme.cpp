@@ -33,7 +33,7 @@ StartMe::~StartMe ()
 {
 }
 
-void StartMe::Frame ()
+void StartMe::ProcessFrame ()
 {
   // First get elapsed time from the virtual clock.
   csTicks elapsed_time = vc->GetElapsedTicks ();
@@ -193,6 +193,13 @@ void StartMe::Frame ()
   }
 }
 
+void StartMe::FinishFrame ()
+{
+  // Just tell the 3D renderer that everything has been rendered.
+  g3d->FinishDraw ();
+  g3d->Print (0);
+}
+
 void StartMe::EnterDescriptionMode ()
 {
   description_selected = last_selected;
@@ -313,7 +320,6 @@ bool StartMe::OnInitialize(int /*argc*/, char* /*argv*/ [])
 
 void StartMe::OnExit()
 {
-  printer.Invalidate ();
 }
 
 bool StartMe::Application()
@@ -379,9 +385,6 @@ bool StartMe::Application()
   // Now we need to position the camera in our world.
   view->GetCamera ()->SetSector (room);
   view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 0, 0));
-  view->GetCamera ()->SetViewportSize (g2d->GetWidth(), g2d->GetHeight ());
-
-  printer.AttachNew (new FramePrinter (object_reg));
 
   // Get our font.
   font = g2d->GetFontServer ()->LoadFont (CSFONT_LARGE);

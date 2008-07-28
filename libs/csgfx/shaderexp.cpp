@@ -34,7 +34,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "csgfx/shaderexp.h"
 #include "csgfx/shadervar.h"
-#include "csgfx/shadervararrayhelper.h"
 #include "ivideo/shader/shader.h"
 
 #if defined(CS_DEBUG)
@@ -84,10 +83,7 @@ enum
 
   OP_FUNC_TIME,
   OP_FUNC_FRAME,
-  
-  OP_FUNC_MATRIX_COLUMN,
-  OP_FUNC_MATRIX_ROW,
-  
+
   // Pseudo-ops, special case weird stuff
   OP_PS_MAKE_VECTOR,
 
@@ -132,8 +128,6 @@ static const char* const opNames[OP_LAST] = {
   "MAX",
   "TIME",
   "FRAME",
-  "MATRIXCOLUMN",
-  "MATRIXROW",
   "!MAKEVECTOR",
   "!LIMIT",
   "!ATOM",
@@ -152,7 +146,6 @@ enum
   TYPE_VECTOR3,
   TYPE_VECTOR4,
   TYPE_VARIABLE, // a shader variable
-  TYPE_MATRIX,
 
   TYPE_LIMIT,
 
@@ -173,14 +166,13 @@ static const char* const typeNames[TYPE_LAST] = {
   "vec3",
   "vec4",
   "var",
-  "matrix",
   "!limit",
   "!oper",
   "!cons",
   "!accum"
 };
 
-struct cons : public CS::Memory::CustomAllocated
+struct cons 
 {
   csShaderExpression::oper_arg car;
   cons * cdr; // That's all it can be
@@ -239,9 +231,6 @@ static const op_args_info optimize_arg_table[] =
 
   { 0, 0, false }, // OP_FUNC_TIME
   { 0, 0, false }, // OP_FUNC_FRAME
-  
-  { 2, 2, false }, // OP_FUNC_MATRIX_COLUMN
-  { 2, 2, false }, // OP_FUNC_MATRIX_ROW
 
   { 2, 4, false }, // OP_PS_MAKE_VECTOR
 
@@ -255,7 +244,7 @@ static const op_args_info optimize_arg_table[] =
 CS_LEAKGUARD_IMPLEMENT (csShaderExpression);
 
 csShaderExpression::csShaderExpression(iObjectRegistry * objr) :
-  stack (0), svIndicesScratch (32), accstack_max (0)
+accstack_max(0)
 {
   obj_reg = objr;
 
@@ -284,32 +273,10 @@ void csShaderExpression::EvalError (const char* message, ...) const
   va_end (args);
 }
 
-size_t* csShaderExpression::AllocSVIndices (
-  const CS::Graphics::ShaderVarNameParser& parser)
+csShaderVariable* csShaderExpression::ResolveVar (csStringID name)
 {
-  const size_t num = parser.GetIndexNum();
-  if (num == 0) return 0;
-  
-  size_t* mem = (size_t*)svIndicesScratch.Alloc ((num+1) * sizeof (size_t));
-  size_t* p = mem;
-  
-  *p++ = num;
-  for (size_t n = 0; n < num; n++)
-    *p++ = parser.GetIndexValue (n);
-  return mem;
-}
-
-csShaderVariable* csShaderExpression::ResolveVar (const oper_arg::SvVarValue& var)
-{
-  if (!stack) return 0;
-  csShaderVariable* sv = csGetShaderVariableFromStack (*stack, var.id);
-  if ((sv != 0) && (var.indices != 0))
-  {
-    sv = CS::Graphics::ShaderVarArrayHelper::GetArrayItem (sv,
-      var.indices + 1, *var.indices,
-      CS::Graphics::ShaderVarArrayHelper::maFail);
-  }
-  return sv;
+  if (!stacks) return 0;
+  return csGetShaderVariableFromStack (stacks, name);
 }
 
 bool csShaderExpression::Parse(iDocumentNode * node)
@@ -317,8 +284,8 @@ bool csShaderExpression::Parse(iDocumentNode * node)
   errorMsg.Empty();
   cons * head = new cons;
 
-  strset = csQueryRegistryTagInterface<iShaderVarStringSet> (
-    obj_reg, "crystalspace.shader.variablenameset");
+  strset = csQueryRegistryTagInterface<iStringSet> (
+    obj_reg, "crystalspace.shared.stringset");
   if (!strset) 
   {
     ParseError ("Can't find string registry.");
@@ -384,9 +351,17 @@ bool csShaderExpression::Parse(iDocumentNode * node)
   return true;
 }
 
+bool csShaderExpression::Evaluate(csShaderVariable* var, 
+                                  csShaderVarStack& stacks)
+{
+  csRef<iShaderVarStack> wrapStacks;
+  wrapStacks.AttachNew (new scfArrayWrap <iShaderVarStack, 
+    csShaderVarStack> (stacks));
+  return Evaluate (var, wrapStacks);
+}
 
 bool csShaderExpression::Evaluate(csShaderVariable* var, 
-                                  csShaderVariableStack& stacks)
+                                  iShaderVarStack* stacks)
 {
 #ifdef SHADEREXP_DEBUG
   int debug_counter = 0;
@@ -400,7 +375,7 @@ bool csShaderExpression::Evaluate(csShaderVariable* var,
   }
 
   bool eval = true;
-  this->stack = &stacks;
+  this->stacks = stacks;
 
   oper_array::Iterator iter = opcodes.GetIterator();
 
@@ -447,7 +422,7 @@ bool csShaderExpression::Evaluate(csShaderVariable* var,
   bool ret = false;
   if (eval) ret = eval_argument(accstack.Get(0), var);
 
-  this->stack = 0;
+  this->stacks = 0;
 
   return ret;
 }
@@ -778,12 +753,6 @@ bool csShaderExpression::eval_variable(csShaderVariable * var, oper_arg & out)
     out.type = TYPE_VECTOR4;
     var->GetValue(out.vec4);
     break;
-    
-  case csShaderVariable::TRANSFORM:
-  case csShaderVariable::MATRIX:
-    out.type = TYPE_MATRIX;
-    var->GetValue(out.matrix);
-    break;
 
   default:
     EvalError ("Unknown type %d in shader variable, not usable in an expression.", 
@@ -845,8 +814,8 @@ bool csShaderExpression::eval_oper(int oper, oper_arg arg1, oper_arg arg2, oper_
     csShaderVariable* var = ResolveVar (arg1.var);
     if (!var)
     {
-      EvalError ("Cannot resolve variable name '%s' in symbol table.", 
-        strset->Request (arg1.var.id));
+      EvalError ("Cannot resolve variable name %s in symbol table.", 
+        strset->Request(arg1.var));
 
       return false;
     }
@@ -864,8 +833,8 @@ bool csShaderExpression::eval_oper(int oper, oper_arg arg1, oper_arg arg2, oper_
     csShaderVariable * var = ResolveVar (arg2.var);
     if (!var)
     {
-      EvalError ("Cannot resolve variable name '%s' in symbol table.", 
-        strset->Request (arg2.var.id));
+      EvalError ("Cannot resolve variable name %s in symbol table.", 
+        strset->Request(arg2.var));
 
       return false;
     }
@@ -889,8 +858,6 @@ bool csShaderExpression::eval_oper(int oper, oper_arg arg1, oper_arg arg2, oper_
   case OP_FUNC_POW: return eval_pow(arg1, arg2, output);
   case OP_FUNC_MIN: return eval_min(arg1, arg2, output);
   case OP_FUNC_MAX: return eval_max(arg1, arg2, output);
-  case OP_FUNC_MATRIX_COLUMN: return eval_matrix_column(arg1, arg2, output);
-  case OP_FUNC_MATRIX_ROW: return eval_matrix_row(arg1, arg2, output);
   case OP_INT_SELT12: return eval_selt12(arg1, arg2, output);
   case OP_INT_SELT34: return eval_selt34(arg1, arg2, output);
 
@@ -909,7 +876,7 @@ bool csShaderExpression::eval_oper(int oper, oper_arg arg1, oper_arg & output)
     if (!var)
     {
       EvalError ("Cannot resolve variable name '%s' in symbol table.", 
-        strset->Request (arg1.var.id));
+        strset->Request(arg1.var));
 
       return false;
     }
@@ -1422,72 +1389,6 @@ bool csShaderExpression::eval_frame(oper_arg & output) const
   return true;
 }
 
-bool csShaderExpression::eval_matrix_column(const oper_arg & arg1, 
-                                            const oper_arg & arg2,
-  	                                    oper_arg & output) const
-{
-  if (arg1.type != TYPE_MATRIX)
-  {
-    EvalError ("Argument 1 to matrix-column is not a matrix.");
-
-    return false;
-  }
-
-  if (arg2.type != TYPE_NUMBER)
-  {
-    EvalError ("Argument 2 to matrix-column is not a number.");
-
-    return false;
-  }
-
-  int colIndex = int (arg2.num);
-  if ((colIndex < 0) || (colIndex > 3))
-  {
-    EvalError ("Argument 2 to matrix-column is not between 0 and 3 inclusive.");
-
-    return false;
-  }
-
-  output.type = TYPE_VECTOR4;
-  output.vec4 = arg1.matrix.Col (colIndex);
-
-  return true;
-  
-}
-  	
-bool csShaderExpression::eval_matrix_row (const oper_arg & arg1, 
-                                          const oper_arg & arg2,
-  	                                  oper_arg & output) const
-{
-  if (arg1.type != TYPE_MATRIX)
-  {
-    EvalError ("Argument 1 to matrix-row is not a matrix.");
-
-    return false;
-  }
-
-  if (arg2.type != TYPE_NUMBER)
-  {
-    EvalError ("Argument 2 to matrix-row is not a number.");
-
-    return false;
-  }
-
-  int rowIndex = int (arg2.num);
-  if ((rowIndex < 0) || (rowIndex > 3))
-  {
-    EvalError ("Argument 2 to matrix-row is not between 0 and 3 inclusive.");
-
-    return false;
-  }
-
-  output.type = TYPE_VECTOR4;
-  output.vec4 = arg1.matrix.Row (rowIndex);
-
-  return true;
-  
-}
-  	
 bool csShaderExpression::eval_selt12(const oper_arg & arg1, const oper_arg & arg2, oper_arg & output) const 
 {
   if (arg1.type != TYPE_NUMBER || arg2.type != TYPE_NUMBER)
@@ -1799,9 +1700,7 @@ bool csShaderExpression::parse_sexp_atom (const char *& text, cons * head) {
     tmp2[size] = 0;
 
     head->car.type = TYPE_VARIABLE;
-    CS::Graphics::ShaderVarNameParser nameParse (tmp2);
-    head->car.var.id = strset->Request (nameParse.GetShaderVarName());
-    head->car.var.indices = AllocSVIndices (nameParse);
+    head->car.var = strset->Request (tmp2);
 
     text = tmp;
     if (quoted) text++;
@@ -1883,11 +1782,8 @@ bool csShaderExpression::parse_xml_atom(oper_arg & arg, csStringID type, const c
     } break;
 
   case TYPE_VARIABLE:
-    {
-      CS::Graphics::ShaderVarNameParser nameParse (val_str);
-      arg.var.id = strset->Request (nameParse.GetShaderVarName());
-      arg.var.indices = AllocSVIndices (nameParse);
-    }
+    arg.var = strset->Request(val_str);
+
     break;
 
   default:
@@ -2179,7 +2075,7 @@ void csShaderExpression::print_cons(const cons * head) const
       break;
 
     case TYPE_OPER:
-      csPrintf ("%s", GetOperName (cell->car.oper));
+      csPrintf ("%s", GetOperName ((csStringID)cell->car.oper));
       break;
 
     case TYPE_NUMBER:
@@ -2201,7 +2097,7 @@ void csShaderExpression::print_cons(const cons * head) const
       break;
 
     case TYPE_VARIABLE:
-      csPrintf (" \"%s\"", strset->Request (cell->car.var.id));
+      csPrintf (" \"%s\"", strset->Request(cell->car.var));
       break;
 
     default:
@@ -2245,7 +2141,7 @@ void csShaderExpression::print_ops(const oper_array & ops) const
         break;
 
       case TYPE_VARIABLE:
-        csPrintf (" %s", strset->Request(op.arg1.var.id));
+        csPrintf (" %s", strset->Request(op.arg1.var));
         break;
 
       case TYPE_ACCUM:
@@ -2279,7 +2175,7 @@ void csShaderExpression::print_ops(const oper_array & ops) const
         break;
 
       case TYPE_VARIABLE:
-        csPrintf (",%s", strset->Request(op.arg2.var.id));
+        csPrintf (",%s", strset->Request(op.arg2.var));
         break;
 
       case TYPE_ACCUM:
@@ -2315,7 +2211,7 @@ void csShaderExpression::print_result(const oper_arg & arg) const {
       break;
       
     case TYPE_VARIABLE:
-      csPrintf ("#<VARIABLEREF \"%s\">", strset->Request (arg.var.id));
+      csPrintf ("#<VARIABLEREF \"%s\">", strset->Request(arg.var));
       break;
       
     case TYPE_ACCUM:
@@ -2328,13 +2224,13 @@ void csShaderExpression::print_result(const oper_arg & arg) const {
   
 }
 
-const char* csShaderExpression::GetTypeName (unsigned int id)
+const char* csShaderExpression::GetTypeName (csStringID id)
 {
   CS_ASSERT (id < TYPE_LAST);
   return typeNames[id];
 }
 
-const char* csShaderExpression::GetOperName (unsigned int id)
+const char* csShaderExpression::GetOperName (csStringID id)
 {
   CS_ASSERT (id < OP_LAST);
   return opNames[id];
@@ -2344,7 +2240,7 @@ struct TokenTabEntry
 {
   const char* token;
   size_t tokenLen;
-  CS::StringIDValue id;
+  csStringID id;
 };
 
 static csStringID GetTokenID (const TokenTabEntry* tokenTab,
@@ -2396,8 +2292,6 @@ static const TokenTabEntry commonTokens[] = {
   {"floor", 5, OP_FUNC_FLOOR},
   {"frame", 5, OP_FUNC_FRAME},
   {"make-vector", 11, OP_PS_MAKE_VECTOR},
-  {"matrix-column", 13, OP_FUNC_MATRIX_COLUMN},
-  {"matrix-row", 10, OP_FUNC_MATRIX_ROW},
   {"max", 3, OP_FUNC_MAX},
   {"min", 3, OP_FUNC_MIN},
   {"norm", 4, OP_FUNC_NORMAL},
@@ -2447,7 +2341,6 @@ csStringID csShaderExpression::GetSexpTokenOp (const char* token)
 }
 
 static const TokenTabEntry xmlTypeTokens[] = {
-  {"matrix", 6, TYPE_MATRIX},
   {"num", 3, TYPE_NUMBER},
   {"var", 3, TYPE_VARIABLE},
   {"vec2", 4, TYPE_VECTOR2},

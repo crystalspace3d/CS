@@ -36,7 +36,7 @@ CEGUITest::~CEGUITest()
 {
 }
 
-void CEGUITest::Frame()
+void CEGUITest::ProcessFrame()
 {
   // First get elapsed time from the virtual clock.
   csTicks elapsed_time = vc->GetElapsedTicks ();
@@ -102,6 +102,12 @@ void CEGUITest::Frame()
   cegui->Render ();
 }
 
+void CEGUITest::FinishFrame()
+{
+  g3d->FinishDraw ();
+  g3d->Print (0);
+}
+
 bool CEGUITest::OnInitialize(int /*argc*/, char* /*argv*/ [])
 {
   if (!csInitializer::RequestPlugins(GetObjectRegistry(),
@@ -127,7 +133,6 @@ bool CEGUITest::OnInitialize(int /*argc*/, char* /*argv*/ [])
 
 void CEGUITest::OnExit()
 {
-  printer.Invalidate ();
 }
 
 bool CEGUITest::Application()
@@ -199,8 +204,6 @@ bool CEGUITest::Application()
   view.AttachNew(new csView (engine, g3d));
   iGraphics2D* g2d = g3d->GetDriver2D ();
   view->SetRectangle(0, 0, g2d->GetWidth(), g2d->GetHeight ());
-
-  printer.AttachNew (new FramePrinter (object_reg));
 
   CreateRoom();
   view->GetCamera()->SetSector (room);

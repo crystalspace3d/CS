@@ -519,10 +519,10 @@ namespace lighter
    // Still may need to fix up submesh materials...
     CS::ShaderVarName lightmapName[4] =
     { 
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 1"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 2"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 3")
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 1"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 2"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 3")
     };
     int numLMs = globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
 
@@ -779,7 +779,7 @@ namespace lighter
           else
             svName.Format ("tex lightmap dir %d", i);
           csShaderVariable* sv = svc->GetVariable (
-            globalLighter->svStrings->Request (svName));
+            globalLighter->strings->Request (svName));
           if (sv != 0)
           {
             iTextureWrapper* tex;

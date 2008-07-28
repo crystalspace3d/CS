@@ -92,7 +92,7 @@ namespace lighter
   };
 
   typedef float(*LightAttenuationFunc)(float squaredDistance, 
-    const csVector4& constants);
+    const csVector3& constants);
 
   /// Baseclass for lights
   class Light : public csRefCount
@@ -124,7 +124,7 @@ namespace lighter
     virtual csVector3 GetLightSamplePosition (float u1, float u2) = 0;
 
     // Properties
-    void SetAttenuation (csLightAttenuationMode mode, const csVector4& constants);
+    void SetAttenuation (csLightAttenuationMode mode, const csVector3& constants);
 
     // Getters/setters
     
@@ -221,7 +221,7 @@ namespace lighter
 
     // Atteunation related
     csLightAttenuationMode attenuationMode;
-    csVector4 attenuationConsts;
+    csVector3 attenuationConsts;
     LightAttenuationFunc attenuationFunc;
 
     // Common properties

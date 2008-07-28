@@ -68,10 +68,16 @@ private:
 
   /**
    * Setup everything that needs to be rendered on screen. This routine
-   * is called from the event handler in response to a csevFrame
+   * is called from the event handler in response to a csevProcess
    * broadcast message.
    */
-  void Frame ();
+  void ProcessFrame ();
+  
+  /**
+   * Finally render the screen. This routine is called from the event
+   * handler in response to a csevFinalProcess broadcast message.
+   */
+  void FinishFrame ();
   
   /// Here we will create our little, simple world.
   void CreateRoom ();
@@ -81,8 +87,6 @@ private:
   void CreateSprite (iMeshFactoryWrapper* imeshfact, const csVector3& pos);
 
   bool SetupModules ();
-
-  csRef<FramePrinter> printer;
 
 public:
 

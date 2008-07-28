@@ -615,18 +615,12 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\loadercontext.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\shadermgr.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\loadercontext.h">
-			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\nullshader.h">
 			</File>
@@ -642,9 +636,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\shadermgr.csplugin">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\shadermgr.tok">
 			</File>
 		</Filter>
 	</Files>

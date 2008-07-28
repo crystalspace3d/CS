@@ -32,7 +32,7 @@ ImposterTest::~ImposterTest ()
 {
 }
 
-void ImposterTest::Frame ()
+void ImposterTest::ProcessFrame ()
 {
   // First get elapsed time from the virtual clock.
   csTicks elapsed_time = vc->GetElapsedTicks ();
@@ -106,6 +106,13 @@ void ImposterTest::Frame ()
   view->Draw ();
 }
 
+void ImposterTest::FinishFrame ()
+{
+  // Just tell the 3D renderer that everything has been rendered.
+  g3d->FinishDraw ();
+  g3d->Print (0);
+}
+
 bool ImposterTest::OnKeyboard(iEvent& ev)
 {
   // We got a keyboard event.
@@ -162,7 +169,6 @@ bool ImposterTest::OnInitialize(int /*argc*/, char* /*argv*/ [])
 
 void ImposterTest::OnExit()
 {
-  printer.Invalidate ();
 }
 
 bool ImposterTest::Application()
@@ -231,8 +237,6 @@ bool ImposterTest::SetupModules()
   c->GetTransform ().SetOrigin (look_point
 	+ (orig - look_point).Unit () * distance);
   c->GetTransform ().LookAt (look_point-orig, csVector3(0,1,0) );
-
-  printer.AttachNew (new FramePrinter (object_reg));
 
   return true;
 }

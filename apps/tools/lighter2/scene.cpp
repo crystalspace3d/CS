@@ -1042,7 +1042,7 @@ namespace lighter
     csRef<iShaderVariableContext> matSVC = 
       scfQueryInterface<iShaderVariableContext> (material->GetMaterial());
     csRef<csShaderVariable> svTex =
-      matSVC->GetVariable (globalLighter->svStrings->Request ("tex diffuse"));
+      matSVC->GetVariable (globalLighter->strings->Request ("tex diffuse"));
     if (svTex.IsValid())
     {
       iTextureWrapper* texwrap = 0;
@@ -1508,7 +1508,7 @@ namespace lighter
         
       // ...and add current one
       iShaderVariableContext* meshSVs = meshwrap->GetSVContext ();
-      CS::ShaderVarName lightmapName (globalLighter->svStrings, "tex lightmap");
+      CS::ShaderVarName lightmapName (globalLighter->strings, "tex lightmap");
       csRef<csShaderVariable> lightmapSV = meshSVs->GetVariable (lightmapName);
       if (lightmapSV.IsValid())
       {
@@ -1910,23 +1910,23 @@ namespace lighter
     return mf.GetAllData ();
   }
     
-  iCollection* Scene::GetCollection (iObject* obj)
+  iRegion* Scene::GetRegion (iObject* obj)
   {
-    csRef<iCollectionArray> collections = globalLighter->engine->GetCollections ();
-    for (size_t i = 0; i < collections->GetSize(); i++)
+    iRegionList* regions = globalLighter->engine->GetRegions ();
+    for (int i = 0; i < regions->GetCount(); i++)
     {
-      iCollection* collection = collections->Get (i);
-      if (collection->IsParentOf (obj)) return collection;
+      iRegion* reg = regions->Get (i);
+      if (reg->IsInRegion (obj)) return reg;
     }
     return 0;
   }
   
   bool Scene::IsObjectFromBaseDir (iObject* obj, const char* baseDir)
   {
-    iCollection* collection = GetCollection (obj);
-    if (collection == 0) return true;
+    iRegion* reg = GetRegion (obj);
+    if (reg == 0) return true;
     
-    csRef<iSaverFile> saverFile (CS::GetChildObject<iSaverFile> (collection->QueryObject()));
+    csRef<iSaverFile> saverFile (CS::GetChildObject<iSaverFile> (reg->QueryObject()));
     if (saverFile.IsValid()) return true;
     
     return strncmp (saverFile->GetFile(), baseDir, strlen (baseDir)) == 0;

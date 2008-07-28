@@ -35,7 +35,6 @@
 #include "csutil/csevent.h"
 #include "csutil/stringarray.h"
 #include "csutil/sysfunc.h"
-#include "csutil/common_handlers.h"
 
 #include "iengine/camera.h"
 #include "iengine/engine.h"
@@ -110,9 +109,14 @@ void Cleanup ()
 
 static bool DemoEventHandler (iEvent& ev)
 {
-  if (ev.Name == System->Frame)
+  if (ev.Name == System->Process)
   {
     System->SetupFrame ();
+    return true;
+  }
+  else if (ev.Name == System->FinalProcess)
+  {
+    System->FinishFrame ();
     return true;
   }
   else
@@ -204,13 +208,15 @@ bool Demo::Initialize (int argc, const char* const argv[],
     return false;
   }
 
-  Frame = csevFrame (object_reg);
+  Process = csevProcess (object_reg);
+  FinalProcess = csevFinalProcess (object_reg);
   KeyboardDown = csevKeyboardDown (object_reg);
   MouseDown = csevMouseDown (object_reg, 0);
   MouseMove = csevMouseMove (object_reg, 0);
 
   csEventID events[] = {
-    Frame,
+    Process,
+    FinalProcess,
     KeyboardDown,
     MouseDown,
     MouseMove,
@@ -334,8 +340,6 @@ bool Demo::Initialize (int argc, const char* const argv[],
   col_yellow = myG2D->FindRGB (255, 255, 0);
   col_cyan = myG2D->FindRGB (0, 255, 255);
   col_green = myG2D->FindRGB (0, 255, 0);
-
-  printer.AttachNew (new FramePrinter (object_reg));
 
   return true;
 }
@@ -602,6 +606,12 @@ void Demo::SetupFrame ()
     GfxWrite (10, 10, col_black, message_error ? col_red : col_white, message);
     if (current_time > message_timer) message.Empty();
   }
+}
+
+void Demo::FinishFrame ()
+{
+  myG3D->FinishDraw ();
+  myG3D->Print (0);
 }
 
 void Demo::DrawEditInfo ()

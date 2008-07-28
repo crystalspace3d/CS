@@ -37,7 +37,7 @@ csShaderVariableFrameHolder::~csShaderVariableFrameHolder ()
 }
 
 csRef<csShaderVariable> csShaderVariableFrameHolder::GetFrameUniqueSV (
-  uint framenr, CS::ShaderVarStringID name)
+  uint framenr, csStringID name)
 {
   csRef<csShaderVariable> sv = AllocFrameSv (framenr);
   sv->SetName (name);

@@ -47,7 +47,8 @@ public:
   {
     return timer->HandleEvent (e);
   }
-  CS_EVENTHANDLER_PHASE_FRAME("crystalspace.timer")
+  CS_EVENTHANDLER_NAMES("crystalspace.timer")
+  CS_EVENTHANDLER_NIL_CONSTRAINTS
 };
 
 
@@ -57,14 +58,14 @@ public:
 csEventTimer::csEventTimer (iObjectRegistry* object_reg) : 
   scfImplementationType (this), 
   object_reg (object_reg),
-  Frame (csevFrame (object_reg))
+  FinalProcess (csevFinalProcess (object_reg))
 {
   csRef<iEventQueue> q = csQueryRegistry<iEventQueue> (object_reg);
   CS_ASSERT (q != 0);
   if (q != 0)
   {
     handler = new csTimerEventHandler (this);
-    q->RegisterListener (handler, Frame);
+    q->RegisterListener (handler, FinalProcess);
 
     handler->DecRef ();
   }
@@ -96,7 +97,7 @@ csEventTimer::~csEventTimer ()
 bool csEventTimer::HandleEvent (iEvent& event)
 {
   (void)event; // unused except for this assert so silence the warning
-  CS_ASSERT(event.Name == Frame);
+  CS_ASSERT(event.Name == FinalProcess);
 
   csTicks elapsed = vc->GetElapsedTicks ();
   minimum_time -= elapsed;

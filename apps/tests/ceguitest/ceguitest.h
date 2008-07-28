@@ -43,9 +43,9 @@ private:
   csRef<iView> view;
   csRef<iVFS> vfs;
   csRef<iCEGUI> cegui;
-  csRef<FramePrinter> printer;
 
-  void Frame();
+  void ProcessFrame();
+  void FinishFrame();
 
   bool OnKeyboard(iEvent&);
   void CreateRoom(); 

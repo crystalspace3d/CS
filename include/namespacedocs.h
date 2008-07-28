@@ -126,12 +126,6 @@ namespace CS
   }
 
   /**
-   * Classes for render manager plugin implementation
-   */
-  namespace RenderManager
-  {}
-
-  /**
    * Sound system classes
    */
   namespace SndSys

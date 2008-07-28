@@ -776,16 +776,83 @@ extern CS_CRYSTALSPACE_EXPORT CS_ATTRIBUTE_MALLOC void* ptcalloc_checking (
 #  endif
 #endif
 
+#if defined(CS_EXTENSIVE_MEMDEBUG)
+CS_FORCEINLINE CS_ATTRIBUTE_MALLOC void* cs_malloc (size_t n)
+{ 
+#ifdef CS_CHECKING_ALLOCATIONS
+  return ptmalloc_checking (n);
+#else
+  return ptmalloc_located (n);
+#endif
+}
+
+CS_FORCEINLINE void cs_free (void* p)
+{ 
+#ifdef CS_CHECKING_ALLOCATIONS
+  ptfree_checking (p);
+#else
+  ptfree_located (p);
+#endif
+}
+
+CS_FORCEINLINE void* cs_realloc (void* p, size_t n)
+{ 
+#ifdef CS_CHECKING_ALLOCATIONS
+  return ptrealloc_checking (p, n);
+#else
+  return ptrealloc_located (p, n);
+#endif
+}
+
+CS_FORCEINLINE CS_ATTRIBUTE_MALLOC void* cs_calloc (size_t n, size_t s)
+{ 
+#ifdef CS_CHECKING_ALLOCATIONS
+  return ptcalloc_checking (n, s); 
+#else
+  return ptcalloc_located (n, s); 
+#endif
+}
+
+#else // defined(CS_EXTENSIVE_MEMDEBUG)
 /**\name Default Crystal Space memory allocation
  * Always the same memory allocation functions as internally used by 
  * Crystal Space.
  */
 //@{
-extern CS_CRYSTALSPACE_EXPORT CS_ATTRIBUTE_MALLOC void* cs_malloc (size_t n);
-extern CS_CRYSTALSPACE_EXPORT void cs_free (void* p);
-extern CS_CRYSTALSPACE_EXPORT void* cs_realloc (void* p, size_t n);
-extern CS_CRYSTALSPACE_EXPORT void* cs_calloc (size_t n, size_t s);
+CS_FORCEINLINE CS_ATTRIBUTE_MALLOC void* cs_malloc (size_t n)
+{ 
+#ifdef CS_DEBUG
+  return ptmalloc_sentinel (n);
+#else
+  return ptmalloc (n);
+#endif
+}
+CS_FORCEINLINE void cs_free (void* p)
+{ 
+#ifdef CS_DEBUG
+  ptfree_sentinel (p);
+#else
+  ptfree (p);
+#endif
+}
+CS_FORCEINLINE void* cs_realloc (void* p, size_t n)
+{ 
+#ifdef CS_DEBUG
+  return ptrealloc_sentinel (p, n);
+#else
+  return ptrealloc (p, n);
+#endif
+}
+CS_FORCEINLINE CS_ATTRIBUTE_MALLOC void* cs_calloc (size_t n, size_t s)
+{ 
+#ifdef CS_DEBUG
+  return ptcalloc_sentinel (n, s); 
+#else
+  return ptcalloc (n, s); 
+#endif
+}
 //@}
+#endif
 
 #else // CS_NO_PTMALLOC
 CS_FORCEINLINE CS_ATTRIBUTE_MALLOC void* cs_malloc (size_t n)
@@ -1005,8 +1072,6 @@ namespace CS
 #if defined(CS_COMPILER_MSVC)
   #define CS_ALIGNED_MEMBER(Member, Align)				\
     __declspec(align(Align)) Member
-  #define CS_ALIGNED_STRUCT(Kind, Align)	                        \
-    __declspec(align(Align)) Kind
 #elif defined(CS_COMPILER_GCC)
   /**
    * Macro to align a class member (or local variable) to a specific byte
@@ -1021,23 +1086,9 @@ namespace CS
    * \endcode
    */
   #define CS_ALIGNED_MEMBER(Member, Align)				\
-    Member __attribute__((aligned(Align)))
-  /**
-   * Macro to declare a struct aligned to a specific byte boundary.
-   *
-   * Example:
-   * \code
-   * CS_STRUCT_ALIGN(struct, 16) MyStruct
-   * {
-   *   int x;
-   * };
-   * \endcode
-   */
-  #define CS_ALIGNED_STRUCT(Kind, Align)	                        \
-    Kind __attribute__((aligned(Align)))
+    Member __attribute((aligned(Align)))
 #else
   #define CS_ALIGNED_MEMBER(Member, Align)	Member
-  #define CS_ALIGNED_STRUCT(Kind, Align)	        Kind
 #endif
 
 // Macro used to define static implicit pointer conversion function.

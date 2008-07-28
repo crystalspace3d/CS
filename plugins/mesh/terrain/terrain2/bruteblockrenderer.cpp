@@ -42,7 +42,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Terrain2)
 SCF_IMPLEMENT_FACTORY (csTerrainBruteBlockRenderer)
 
 // File-static data
-static CS::ShaderVarStringID textureLodDistanceID = CS::InvalidShaderVarStringID;
+static csStringID textureLodDistanceID = csInvalidStringID;
 
 //-- Per cell properties class
 class TerrainBBCellRenderProperties :
@@ -1024,7 +1024,7 @@ TerrainCellRData::TerrainCellRData (iTerrainCell* cell,
 
   svAccessor.AttachNew (new TerrainBBSVAccessor (properties));
 
-  if (textureLodDistanceID == CS::InvalidShaderVarStringID)
+  if (textureLodDistanceID == csInvalidStringID)
   {
     textureLodDistanceID = renderer->GetStringSet ()->Request ("texture lod distance");
   }
@@ -1468,8 +1468,8 @@ bool csTerrainBruteBlockRenderer::Initialize (iObjectRegistry* objectReg)
 {
   objectRegistry = objectReg;
   graph3d = csQueryRegistry<iGraphics3D> (objectReg);
-  stringSet = csQueryRegistryTagInterface<iShaderVarStringSet> (objectReg,
-    "crystalspace.shader.variablenameset");
+  stringSet = csQueryRegistryTagInterface<iStringSet> (objectReg,
+    "crystalspace.shared.stringset");
 
   // Error getting globals
   if (!graph3d || !stringSet)

@@ -23290,10 +23290,13 @@
 				RelativePath="..\..\plugins\mesh\clouds\csClouds.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\clouds\csCloudsDynamcis.h">
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsDynamics.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\clouds\csCloudsRenderer.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudsStandards.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\clouds\csCloudsUtils.h">

@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.3.0: 4.16.2.3 World Definition Section</title>
+<title>Crystal Space 1.9.0: 5.11.2.3 World Definition Section</title>
 
-<meta name="description" content="Crystal Space 1.3.0: 4.16.2.3 World Definition Section">
-<meta name="keywords" content="Crystal Space 1.3.0: 4.16.2.3 World Definition Section">
+<meta name="description" content="Crystal Space 1.9.0: 5.11.2.3 World Definition Section">
+<meta name="keywords" content="Crystal Space 1.9.0: 5.11.2.3 World Definition Section">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -46,9 +46,9 @@ ul.toc {list-style: none}
 <tr><td valign="middle" align="left">[<a href="XML-World-Element-Section.html#0" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-Action-Section.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="Using-Crystal-Space.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-File-Format.html#0" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="Internals.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -59,7 +59,7 @@ ul.toc {list-style: none}
 <td valign="middle" align="left">[<a href="cs_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <hr size="1">
-<h4 class="subsubsection"> 4.16.2.3 World Definition Section </h4>
+<h4 class="subsubsection"> 5.11.2.3 World Definition Section </h4>
 
 <p>This section describes the world definition section.
 </p>
@@ -169,46 +169,25 @@ them for whatever purpose it needs. Here is an example:
 <p>Sectors can contain keys and addons.
 </p>
 <a name="2"></a>
-<h4 class="subsubheading"> Region Specification </h4>
-
-<p>With regions it is possible to group related objects (like textures,
-materials, mesh objects, mesh factories, sectors, sequences, triggers,
-shared variables, <small class="dots">...</small>).
-Regions are not a geometrical concept. It is possible to define a region which
-contains all wall geometry and a region which contains all moving geometry.
-Usually though, regions represent some area in the world. You can use
-regions to dynamically load/unload parts of the world. This is useful
-if you have really big worlds that don't fit in memory at once.
-</p>
-<a name="3"></a>
 <h4 class="subsubheading"> Collection Specification </h4>
 
-<p>A collection is similar to a region in some respects but the purpose
-is different. Basically a collection is a collection of some other
-objects which you want to tie together for some reason (other than
-dynamic loading). For example, using them in a scripting setup.
-</p>
-<p>Here is an example collection:
-</p>
-<table><tr><td>&nbsp;</td><td><pre class="example">&lt;collection name=&quot;carCol&quot;&gt;
-    &lt;meshobj&gt;car&lt;/meshobj&gt;
-    &lt;meshobj&gt;tire1&lt;/meshobj&gt;
-    &lt;meshobj&gt;tire2&lt;/meshobj&gt;
-    &lt;meshobj&gt;tire3&lt;/meshobj&gt;
-    &lt;meshobj&gt;tire4&lt;/meshobj&gt;
-    &lt;light&gt;lightname&lt;/light&gt;
-&lt;/collection&gt;
-</pre></td></tr></table>
-<p>Collections can also contain keys.
+<p>With collections it is possible to group related objects (like textures,
+materials, mesh objects, mesh factories, sectors, sequences, triggers,
+shared variables, <small class="dots">...</small>).
+Collections are not a geometrical concept. It is possible to define a collection which
+contains all wall geometry and a collection which contains all moving geometry.
+Usually though, collections represent some area in the world. You can use
+collections to dynamically load/unload parts of the world. This is useful
+if you have really big worlds that don't fit in memory at once.
 </p>
 <hr size="1">
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="XML-World-Element-Section.html#0" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-Action-Section.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="Using-Crystal-Space.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-File-Format.html#0" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="Internals.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>

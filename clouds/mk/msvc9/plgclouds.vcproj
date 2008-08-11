@@ -626,6 +626,9 @@
 			<File
 				RelativePath="..\..\plugins\mesh\clouds\csCloudsUtils.cpp">
 			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudSystem.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -644,6 +647,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\clouds\csCloudsUtils.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\clouds\csCloudSystem.h">
 			</File>
 		</Filter>
 		<Filter

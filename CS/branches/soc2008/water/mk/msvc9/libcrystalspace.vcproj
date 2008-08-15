@@ -794,6 +794,9 @@
 				RelativePath="..\..\libs\csplugincommon\render3d\txtmgr.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\debugcommon.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrexposure.cpp">
 			</File>
 			<File
@@ -807,6 +810,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\renderlayers.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\rendertree.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\renderview.cpp">
@@ -1196,16 +1202,10 @@
 				RelativePath="..\..\libs\csutil\staticvarcleanup.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\strhash.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\strhashr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\stringreader.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\strset.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\syspath.cpp">
@@ -1236,6 +1236,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\vfscache.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\vfshiercache.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\virtclk.cpp">
@@ -1593,7 +1596,10 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\render3d\txtmgr.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\context.h">
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\debugcommon.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\dependenttarget.h">
@@ -2299,6 +2305,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\vfscache.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\vfshiercache.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\vfsplat.h">

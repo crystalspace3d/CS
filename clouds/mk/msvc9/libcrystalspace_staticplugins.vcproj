@@ -3918,6 +3918,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libpathloader_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_libpathloader_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libphysldr_staticreg.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -4432,6 +4479,147 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_libreporter_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\librm_rlcompat_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\mk_msvc_librm_rlcompat_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\mk_msvc_librm_rlcompat_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_rlcompat_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_rlcompat_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_rlcompat_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_rlcompat_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_rlcompat_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_rlcompat_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\librm_shadow_pssm_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_shadow_pssm_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\librm_unshadowed_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\mk_msvc_librm_unshadowed_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\mk_msvc_librm_unshadowed_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_unshadowed_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_unshadowed_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_unshadowed_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_unshadowed_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_unshadowed_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\mk_msvc_librm_unshadowed_staticreg.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -8853,6 +9041,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\csparser\services\shader.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_csparser_services_shader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_csparser_services_shader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_csparser_services_shader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_csparser_services_shader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_csparser_services_shader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_csparser_services_shader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_csparser_services_shader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_csparser_services_shader.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\csparser\services\syntxldr.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -10733,50 +10968,50 @@
 					</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\plugins\engine\3d\region.cpp">
+				RelativePath="..\..\plugins\engine\3d\reflectomotron3000.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_engine_3d_reflectomotron3000.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="Release (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_engine_3d_reflectomotron3000.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="Debug (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_reflectomotron3000.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="Debug (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_reflectomotron3000.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="MemoryTracker (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_reflectomotron3000.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="MemoryTracker (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_reflectomotron3000.cpp.obj"/>
 					</FileConfiguration>
                                   					<FileConfiguration
 						Name="RefTracker (with static libs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_reflectomotron3000.cpp.obj"/>
 					</FileConfiguration>					<FileConfiguration
 						Name="RefTracker (with DLLs)|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_region.cpp.obj"/>
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_reflectomotron3000.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -10824,53 +11059,6 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_renderloop.cpp.obj"/>
-					</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\plugins\engine\3d\rview.cpp">
-                                  					<FileConfiguration
-						Name="Release (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_engine_3d_rview.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Release (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_engine_3d_rview.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="Debug (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_rview.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="Debug (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_rview.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="MemoryTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_rview.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="MemoryTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_rview.cpp.obj"/>
-					</FileConfiguration>
-                                  					<FileConfiguration
-						Name="RefTracker (with static libs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_rview.cpp.obj"/>
-					</FileConfiguration>					<FileConfiguration
-						Name="RefTracker (with DLLs)|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_engine_3d_rview.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -11955,6 +12143,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\animesh\object\morphtarget.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_object_morphtarget.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\skinning.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -12143,6 +12378,100 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\blendnode.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_blendnode.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_blendnode.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_blendnode.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_blendnode.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_blendnode.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_blendnode.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_blendnode.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_blendnode.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\fsmnode.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_fsmnode.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_fsmnode.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_fsmnode.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_fsmnode.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_fsmnode.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_fsmnode.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_fsmnode.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_fsmnode.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\skeleton2\nodes.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -12187,6 +12516,53 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_nodes.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\othernodes.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_othernodes.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_othernodes.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_othernodes.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_othernodes.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_othernodes.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_othernodes.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_othernodes.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_animesh_skeleton2_othernodes.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -14681,6 +15057,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\persist\terrain2\saver.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_terrain_persist_terrain2_saver.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\bruteblockrenderer.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -15524,6 +15947,53 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_mesh_thing_persist_standard_thingldr.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\misc\pathloader\pathloader.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_misc_pathloader_pathloader.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -16464,6 +16934,147 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_proctex_tlfunc_tlfunc.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\rm_compat.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_rendermanager_rlcompat_rm_compat.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_rendermanager_rlcompat_rm_compat.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_rlcompat_rm_compat.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_rlcompat_rm_compat.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_rlcompat_rm_compat.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_rlcompat_rm_compat.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_rlcompat_rm_compat.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_rlcompat_rm_compat.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_shadow_pssm_shadow_pssm.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\unshadowed.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_rendermanager_unshadowed_unshadowed.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_rendermanager_unshadowed_unshadowed.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_unshadowed_unshadowed.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_unshadowed_unshadowed.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_unshadowed_unshadowed.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_unshadowed_unshadowed.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_unshadowed_unshadowed.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_rendermanager_unshadowed_unshadowed.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -21120,6 +21731,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\loadercontext.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadermgr_loadercontext.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadermgr_loadercontext.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadermgr_loadercontext.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadermgr_loadercontext.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadermgr_loadercontext.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadermgr_loadercontext.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadermgr_loadercontext.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shadermgr_loadercontext.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\shadermgr.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -21496,6 +22154,147 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_clip.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_clip.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_clip.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_clip.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_clip.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_clip.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_clip.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_clip.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_clip.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_params.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_params.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_params.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_params.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_params.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_params.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_params.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_params.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_params.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_parse.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_parse.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_parse.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_parse.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_parse.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_parse.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_parse.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_parse.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgcommon_parse.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgfp.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -21587,6 +22386,53 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_glshader_cgvp.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_profile_limits.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_profile_limits.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_profile_limits.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_profile_limits.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_profile_limits.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_profile_limits.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_profile_limits.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\plugins_video_render3d_shader_shaderplugins_glshader_cg_profile_limits.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -23196,13 +24042,10 @@
 				RelativePath="..\..\plugins\engine\3d\portalcontainer.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\engine\3d\region.h">
+				RelativePath="..\..\plugins\engine\3d\reflectomotron3000.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\renderloop.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\engine\3d\rview.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\scenenode.h">
@@ -23295,6 +24138,9 @@
 				RelativePath="..\..\plugins\mesh\animesh\object\animesh.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\animesh\object\morphtarget.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\persist\skeleton2\skeleton2ldr.h">
 			</File>
 			<File
@@ -23304,7 +24150,16 @@
 				RelativePath="..\..\plugins\mesh\animesh\skeleton2\animation.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\blendnode.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\fsmnode.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\skeleton2\nodes.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\skeleton2\othernodes.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\skeleton2\skeleton2.h">
@@ -23466,6 +24321,9 @@
 				RelativePath="..\..\plugins\mesh\terrain\persist\terrain2\loader.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\terrain\persist\terrain2\saver.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\bruteblockrenderer.h">
 			</File>
 			<File
@@ -23515,6 +24373,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\thing\persist\standard\thingldr.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\misc\pathloader\pathloader.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\bullet.h">
@@ -23571,6 +24432,222 @@
 				RelativePath="..\..\plugins\proctex\tlfunc\tlfunc.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\operations.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\render.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\renderview.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadow_common.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\rm_compat.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\operations.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderview.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_common.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\operations.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\render.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\renderview.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\shadow_common.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\unshadowed.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\reporter\reporter.h">
 			</File>
 			<File
@@ -23599,6 +24676,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\sndsys\manager\sndmanager.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\renderer\openal\al_stringlists.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\sndsys\renderer\openal\listener.h">
@@ -23892,6 +24972,9 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\xmlshader.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\loadercontext.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadermgr\nullshader.h">
 			</File>
 			<File
@@ -23910,6 +24993,9 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\beautify_cg.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\cg_common.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\combiner_cg.h">
 			</File>
 			<File
@@ -23923,6 +25009,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgvp.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_fixed\glshader_ffp.h">

@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.3.0: 5.6.2 lighter2 Developer's Manual</title>
+<title>Crystal Space 1.9.0: 5.6.2 lighter2 Developer's Manual</title>
 
-<meta name="description" content="Crystal Space 1.3.0: 5.6.2 lighter2 Developer's Manual">
-<meta name="keywords" content="Crystal Space 1.3.0: 5.6.2 lighter2 Developer's Manual">
+<meta name="description" content="Crystal Space 1.9.0: 5.6.2 lighter2 Developer's Manual">
+<meta name="keywords" content="Crystal Space 1.9.0: 5.6.2 lighter2 Developer's Manual">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -82,7 +82,7 @@ object options respectively a <samp>&lsquo;meshfact&rsquo;</samp> node for mesh 
 </p>
 <p>Here, <samp>&lsquo;name=&quot;lighter2&quot;&rsquo;</samp> is used by <code>lighter2</code> to identify keys 
 containing options.  <samp>&lsquo;editoronly=&quot;yes&quot;&rsquo;</samp> instructs the engine to discard
-the key-value-pait during normal execution in order to conserve memory (since
+the key-value-pair during normal execution in order to conserve memory (since
 the <code>lighter2</code>-specific settings are simply not needed).  The actual
 options are specified by a number of <samp>&lsquo;<em>option</em>=<em>value</em>&rsquo;</samp> pairs.
 </p>
@@ -100,7 +100,14 @@ options are specified by a number of <samp>&lsquo;<em>option</em>=<em>value</em>
 <dd><p>Values: floating point values
 </p>
 <p>Control lightmap density.
-</p></dd>
+</p>
+</dd>
+<dt> <code>noselfshadow</code></dt>
+<dd><p>Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>
+</p>
+<p>Disables casting of shadows from an object onto itself.
+</p>
+</dd>
 </dl>
 
 

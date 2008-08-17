@@ -21,25 +21,71 @@ static char const metainfo_clouds[] =
 "<plugin>"
 "  <scf>"
 "    <classes>"
+"	<class>"
+"        <name>crystalspace.mesh.cloudsystem</name>"
+"        <implementation>csCloudSystem</implementation>"
+"        <description>Represents a field of many clouds</description>"
+"	  <requires>"
+"		<class>crystalspace.mesh.clouds</class>"
+"	  </requires>"
+"      </class>"
 "      <class>"
 "        <name>crystalspace.mesh.clouds</name>"
 "        <implementation>csClouds</implementation>"
 "        <description>Dynamic cloud simulation and rendering system</description>"
+"	  <requires>"
+"		<class>crystalspace.mesh.clouds_dynamics</class>"
+"		<class>crystalspace.mesh.clouds_renderer</class>"
+"	  </requires>"
+"      </class>"
+"      <class>"
+"        <name>crystalspace.mesh.clouds_dynamics</name>"
+"        <implementation>csCloudsDynamics</implementation>"
+"        <description>Dynamic simulation of clouds</description>"
+"      </class>"
+"      <class>"
+"        <name>crystalspace.mesh.clouds_renderer</name>"
+"        <implementation>csCloudsRenderer</implementation>"
+"        <description>Cloud rendering using imposters for voxel volumes</description>"
 "      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>";
+  #ifndef csCloudSystem_FACTORY_REGISTER_DEFINED 
+  #define csCloudSystem_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csCloudSystem) 
+  #endif
   #ifndef csClouds_FACTORY_REGISTER_DEFINED 
   #define csClouds_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csClouds) 
+  #endif
+  #ifndef csCloudsDynamics_FACTORY_REGISTER_DEFINED 
+  #define csCloudsDynamics_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csCloudsDynamics) 
+  #endif
+  #ifndef csCloudsRenderer_FACTORY_REGISTER_DEFINED 
+  #define csCloudsRenderer_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(csCloudsRenderer) 
   #endif
 
 class clouds
 {
 SCF_REGISTER_STATIC_LIBRARY(clouds,metainfo_clouds)
+  #ifndef csCloudSystem_FACTORY_REGISTERED 
+  #define csCloudSystem_FACTORY_REGISTERED 
+    csCloudSystem_StaticInit csCloudSystem_static_init__; 
+  #endif
   #ifndef csClouds_FACTORY_REGISTERED 
   #define csClouds_FACTORY_REGISTERED 
     csClouds_StaticInit csClouds_static_init__; 
+  #endif
+  #ifndef csCloudsDynamics_FACTORY_REGISTERED 
+  #define csCloudsDynamics_FACTORY_REGISTERED 
+    csCloudsDynamics_StaticInit csCloudsDynamics_static_init__; 
+  #endif
+  #ifndef csCloudsRenderer_FACTORY_REGISTERED 
+  #define csCloudsRenderer_FACTORY_REGISTERED 
+    csCloudsRenderer_StaticInit csCloudsRenderer_static_init__; 
   #endif
 public:
  clouds();

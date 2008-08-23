@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.16.2.3 World Definition Section</title>
+<title>Crystal Space 1.9.0: 5.11.2.3 World Definition Section</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.16.2.3 World Definition Section">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.16.2.3 World Definition Section">
+<meta name="description" content="Crystal Space 1.9.0: 5.11.2.3 World Definition Section">
+<meta name="keywords" content="Crystal Space 1.9.0: 5.11.2.3 World Definition Section">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -46,9 +46,9 @@ ul.toc {list-style: none}
 <tr><td valign="middle" align="left">[<a href="XML-World-Element-Section.html#0" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-Action-Section.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="Using-Crystal-Space.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-File-Format.html#0" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="Internals.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -59,7 +59,7 @@ ul.toc {list-style: none}
 <td valign="middle" align="left">[<a href="cs_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <hr size="1">
-<h4 class="subsubsection"> 4.16.2.3 World Definition Section </h4>
+<h4 class="subsubsection"> 5.11.2.3 World Definition Section </h4>
 
 <p>This section describes the world definition section.
 </p>
@@ -79,33 +79,10 @@ type levels there are usually sector walls.
 </p>
 <table><tr><td>&nbsp;</td><td><pre class="example">&lt;sector name=&quot;room&quot;&gt;
   &lt;meshobj name=&quot;walls&quot;&gt;
-    &lt;plugin&gt;crystalspace.mesh.loader.thing&lt;/plugin&gt;
+    &lt;plugin&gt;crystalspace.mesh.loader.genmesh&lt;/plugin&gt;
     &lt;zfill /&gt;
     &lt;params&gt;
-      &lt;v x=&quot;-10&quot; y=&quot;-1&quot; z=&quot;10&quot;/&gt; &lt;v x=&quot;10&quot; y=&quot;-1&quot; z=&quot;10&quot;/&gt;
-      &lt;v x=&quot;-10&quot; y=&quot;-1&quot; z=&quot;-10&quot;/&gt; &lt;v x=&quot;10&quot; y=&quot;-1&quot; z=&quot;-10&quot;/&gt;
-      &lt;v x=&quot;-10&quot; y=&quot;4&quot; z=&quot;10&quot;/&gt; &lt;v x=&quot;10&quot; y=&quot;4&quot; z=&quot;10&quot;/&gt;
-      &lt;v x=&quot;-10&quot; y=&quot;4&quot; z=&quot;-10&quot;/&gt; &lt;v x=&quot;10&quot; y=&quot;4&quot; z=&quot;-10&quot;/&gt;
-      &lt;material&gt;wood&lt;/material&gt;
-      &lt;texlen&gt;4&lt;/texlen&gt;
-      &lt;p name=&quot;up&quot;&gt;
-        &lt;v&gt;6&lt;/v&gt; &lt;v&gt;7&lt;/v&gt; &lt;v&gt;5&lt;/v&gt; &lt;v&gt;4&lt;/v&gt;
-      &lt;/p&gt;
-      &lt;p name=&quot;down&quot;&gt;
-        &lt;v&gt;3&lt;/v&gt; &lt;v&gt;2&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
-      &lt;/p&gt;
-      &lt;p name=&quot;back&quot;&gt;
-        &lt;v&gt;7&lt;/v&gt; &lt;v&gt;6&lt;/v&gt; &lt;v&gt;2&lt;/v&gt; &lt;v&gt;3&lt;/v&gt;
-      &lt;/p&gt;
-      &lt;p name=&quot;front&quot;&gt;
-        &lt;v&gt;4&lt;/v&gt; &lt;v&gt;5&lt;/v&gt; &lt;v&gt;1&lt;/v&gt; &lt;v&gt;0&lt;/v&gt;
-      &lt;/p&gt;
-      &lt;p name=&quot;left&quot;&gt;
-        &lt;v&gt;6&lt;/v&gt; &lt;v&gt;4&lt;/v&gt; &lt;v&gt;0&lt;/v&gt; &lt;v&gt;2&lt;/v&gt;
-      &lt;/p&gt;
-      &lt;p name=&quot;right&quot;&gt;
-        &lt;v&gt;5&lt;/v&gt; &lt;v&gt;7&lt;/v&gt; &lt;v&gt;3&lt;/v&gt; &lt;v&gt;1&lt;/v&gt;
-      &lt;/p&gt;
+      ...
     &lt;/params&gt;
   &lt;/meshobj&gt;
   &lt;light&gt;
@@ -118,7 +95,7 @@ type levels there are usually sector walls.
 <p>In the above example we create a sector called <samp>&lsquo;room&rsquo;</samp> which contains
 one mesh object (the outer walls of the sector) and one light. Any type
 of mesh object can be placed in a sector. In this example we use the
-<samp>&lsquo;thing&rsquo;</samp> mesh object.
+<samp>&lsquo;genmesh&rsquo;</samp> mesh object.
 </p>
 <p>There are some other things you can specify in a sector. By default a
 sector will use the <samp>&lsquo;frustvis&rsquo;</samp> visibility culler. This visibility culler
@@ -185,9 +162,9 @@ if you have really big worlds that don't fit in memory at once.
 <tr><td valign="middle" align="left">[<a href="XML-World-Element-Section.html#0" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-Action-Section.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="Using-Crystal-Space.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-File-Format.html#0" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="Internals.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>

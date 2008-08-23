@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.16.2.2 World Element Section</title>
+<title>Crystal Space 1.9.0: 5.11.2.2 World Element Section</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.16.2.2 World Element Section">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.16.2.2 World Element Section">
+<meta name="description" content="Crystal Space 1.9.0: 5.11.2.2 World Element Section">
+<meta name="keywords" content="Crystal Space 1.9.0: 5.11.2.2 World Element Section">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -46,9 +46,9 @@ ul.toc {list-style: none}
 <tr><td valign="middle" align="left">[<a href="XML-Init-Section.html#0" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-World-Definition-Section.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="Using-Crystal-Space.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-File-Format.html#0" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="Internals.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -59,7 +59,7 @@ ul.toc {list-style: none}
 <td valign="middle" align="left">[<a href="cs_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <hr size="1">
-<h4 class="subsubsection"> 4.16.2.2 World Element Section </h4>
+<h4 class="subsubsection"> 5.11.2.2 World Element Section </h4>
 
 <p>This section describes the world element section.
 </p>
@@ -102,32 +102,12 @@ that are all on the same plane. Here is an example of both:
         &lt;v&gt;18&lt;/v&gt;
     &lt;/params&gt;
 &lt;/addon&gt;
-
-&lt;addon&gt;
-    &lt;plugin&gt;crystalspace.mesh.loader.thing.plane&lt;/plugin&gt;
-    &lt;params&gt;
-        &lt;name&gt;floor_plane&lt;/name&gt;
-        &lt;orig x=&quot;-20&quot; y=&quot;-1&quot; z=&quot;20&quot; /&gt;
-        &lt;first x=&quot;-19&quot; y=&quot;-1&quot; z=&quot;20&quot; /&gt;
-        &lt;firstlen&gt;5&lt;/firstlen&gt;
-        &lt;second x=&quot;-20&quot; y=&quot;-1&quot; z=&quot;19&quot; /&gt;
-        &lt;secondlen&gt;5&lt;/secondlen&gt;
-    &lt;/params&gt;
-&lt;/addon&gt;
 </pre></td></tr></table>
 <p>I will only explain the second example here as bezier curves are likely
 to change in the not-too-distant future. Important in both examples is
 that the part inside the <samp>&lsquo;params&rsquo;</samp> block is parsed by the addon itself.
 It is also possible to specify the parameters of a plugin in another
 <small>XML</small> file in which case you can use <samp>&lsquo;paramsfile&rsquo;</samp>.
-</p>
-<p>The plane addon that is used above defines a horizontal texture plane at
-location <em>y</em> equal to <samp>&lsquo;-1&rsquo;</samp>. The dimension of the texture on
-that plane will be 5x5 units. This means that in the space of a 5x5 unit
-block the texture will be shown exactly one time. If the polygons are bigger
-then that then tiling will be used. When you define <samp>&lsquo;thing&rsquo;</samp> mesh objects
-you can use this plane if the polygon happens to be at <em>y</em> equal to
-<samp>&lsquo;-1&rsquo;</samp>.
 </p>
 <a name="2"></a>
 <h4 class="subsubheading"> Mesh Factory Section </h4>
@@ -177,9 +157,9 @@ define mesh objects you can create them from that factory. In case of
 <tr><td valign="middle" align="left">[<a href="XML-Init-Section.html#0" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-World-Definition-Section.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="Using-Crystal-Space.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="XML-File-Format.html#0" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="Internals.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>

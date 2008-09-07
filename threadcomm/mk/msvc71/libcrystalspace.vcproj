@@ -2049,6 +2049,9 @@
 				RelativePath="..\..\libs\..\include\csutil\list.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\listaccessqueue.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\measuretime.h">
 			</File>
 			<File

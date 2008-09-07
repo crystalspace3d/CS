@@ -621,6 +621,9 @@
 				RelativePath="..\..\plugins\csparser\csloadercontext.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\csparser\csparser.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\csparser\csthreadedloader.cpp">
 			</File>
 			<File
@@ -653,6 +656,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\csparser\csthreadedloader.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\csparser\ldrplug.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\csparser\loadtex.h">

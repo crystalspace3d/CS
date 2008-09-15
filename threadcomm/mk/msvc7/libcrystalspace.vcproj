@@ -27,7 +27,7 @@
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release7\build\libcrystalspace\crystalspace.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
@@ -60,7 +60,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7""
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -75,7 +75,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
@@ -100,7 +100,7 @@
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
 				ProgramDatabaseFileName="..\..\out\release7\build\libcrystalspace\crystalspace-1.9-vc7.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
@@ -135,7 +135,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7""
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -150,7 +150,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
@@ -174,7 +174,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace\crystalspace.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
@@ -205,7 +205,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7""
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -220,7 +220,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
@@ -245,7 +245,7 @@
 
 
 				ProgramDatabaseFileName="..\..\out\debug7\build\libcrystalspace\crystalspace-1.9-vc7_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
@@ -278,7 +278,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7""
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -293,7 +293,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
@@ -317,7 +317,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace\crystalspace.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
@@ -348,7 +348,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7""
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -363,7 +363,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
@@ -388,7 +388,7 @@
 
 
 				ProgramDatabaseFileName="..\..\out\debug7\build\libcrystalspace\crystalspace-1.9-vc7_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
@@ -421,7 +421,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7""
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -436,7 +436,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
@@ -460,7 +460,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug7\build\libcrystalspace\crystalspace.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
@@ -491,7 +491,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7""
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -506,7 +506,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
@@ -531,7 +531,7 @@
 
 
 				ProgramDatabaseFileName="..\..\out\debug7\build\libcrystalspace\crystalspace-1.9-vc7_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
@@ -564,7 +564,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7""
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -579,7 +579,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_7";PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_7\&quot;;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\libs;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				Culture="1033"/>
 			<Tool
@@ -794,6 +794,9 @@
 				RelativePath="..\..\libs\csplugincommon\render3d\txtmgr.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\autofx_reflrefr.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\debugcommon.cpp">
 			</File>
 			<File
@@ -804,6 +807,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\lightsetup.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\portalsetup.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\posteffects.cpp">
@@ -1205,10 +1211,16 @@
 				RelativePath="..\..\libs\csutil\strhashr.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\stringconv.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\stringreader.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\syspath.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\systemopenmanager.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\threading\win32_thread.cpp">
@@ -2238,6 +2250,9 @@
 				RelativePath="..\..\libs\..\include\csutil\stringarray.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\stringconv.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\stringreader.h">
 			</File>
 			<File
@@ -2248,6 +2263,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\syspath.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\systemopenmanager.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threadevent.h">
@@ -2277,7 +2295,13 @@
 				RelativePath="..\..\libs\..\include\csutil\threading\mutex.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\pthread_tls.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\thread.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\tls.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\win32_apifuncs.h">
@@ -2290,6 +2314,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\win32_thread.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\win32_tls.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threadjobqueue.h">

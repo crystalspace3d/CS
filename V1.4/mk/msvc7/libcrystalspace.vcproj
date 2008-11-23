@@ -908,6 +908,9 @@
 				RelativePath="..\..\libs\cstool\saverref.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\cstool\simplestaticlighter.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\cstool\smartfileopen.cpp">
 			</File>
 			<File
@@ -1690,6 +1693,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\saverref.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\simplestaticlighter.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\smartfileopen.h">

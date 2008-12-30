@@ -1,9 +1,0 @@
-SubDir TOP apps tools docconv ;
-
-Description docconv : "Document Converter" ;
-
-Application docconv
-	: [ Wildcard *.cpp *.h ]
-	: console
-;
-LinkWith docconv : crystalspace ;

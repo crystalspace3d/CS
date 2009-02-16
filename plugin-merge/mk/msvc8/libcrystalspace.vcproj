@@ -641,9 +641,6 @@
 				RelativePath="..\..\libs\csgeom\poly3d.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csgeom\polyaa.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csgeom\polyclip.cpp">
 			</File>
 			<File
@@ -666,9 +663,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\tcovbuf.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csgeom\textrans.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\transfrm.cpp">
@@ -1076,9 +1070,6 @@
 				RelativePath="..\..\libs\csutil\generic\appdir.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\generic\csprocessorcap.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\generic\findlib.cpp">
 			</File>
 			<File
@@ -1407,9 +1398,6 @@
 				RelativePath="..\..\libs\..\include\csgeom\poly3d.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csgeom\polyaa.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csgeom\polyclip.h">
 			</File>
 			<File
@@ -1441,9 +1429,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\tcovbuf.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgeom\textrans.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\transfrm.h">
@@ -1935,9 +1920,6 @@
 				RelativePath="..\..\libs\..\include\csutil\csppulse.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\csprocessorcap.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csutil\csshlib.h">
 			</File>
 			<File
@@ -2355,7 +2337,7 @@
 				RelativePath="..\..\libs\..\include\csutil\win32\callstack.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csutil\win32\csconfig.h">
+				RelativePath="..\..\libs\..\include\csutil\win32\csconfig-msvc.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\win32\csosdefs.h">

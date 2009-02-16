@@ -7,14 +7,14 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-		<Platform
-			Name="Win32"/>
+		<Platform Name="Win32"/>
+		<Platform Name="x64"/>
 	</Platforms>
 	<Configurations>
-  		<Configuration
+      		<Configuration
 			Name="Release (with static libs)|Win32"
-			OutputDirectory="..\..\out\release71\build\applighter2\"
-			IntermediateDirectory="..\..\out\release71\build\applighter2\"
+			OutputDirectory="..\..\out\release71\build\applighter2\Win32"
+			IntermediateDirectory="..\..\out\release71\build\applighter2\Win32"
 			ConfigurationType="1"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -28,19 +28,20 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\applighter2\lighter2.pdb"
+				ProgramDataBaseFileName="..\..\out\release71\build\applighter2\Win32\lighter2.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\applighter2\applighter2.pch"
-				AssemblerListingLocation="..\..\out\release71\build\applighter2\"
-				ObjectFile="..\..\out\release71\build\applighter2\"
+				PrecompiledHeaderFile="..\..\out\release71\build\applighter2\Win32\applighter2.pch"
+				AssemblerListingLocation="..\..\out\release71\build\applighter2\Win32"
+				ObjectFile="..\..\out\release71\build\applighter2\Win32"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="false"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -52,7 +53,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\lighter2.exe"
-				ProgramDatabaseFile="..\..\out\release71\build\applighter2\lighter2.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\applighter2\Win32\lighter2.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -68,7 +69,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\applighter2\applighter2.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\applighter2\Win32\applighter2.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
@@ -87,10 +88,10 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-  		<Configuration
+    		<Configuration
 			Name="Release (with DLLs)|Win32"
-			OutputDirectory="..\..\out\release71\build\applighter2\"
-			IntermediateDirectory="..\..\out\release71\build\applighter2\"
+			OutputDirectory="..\..\out\release71\build\applighter2\Win32"
+			IntermediateDirectory="..\..\out\release71\build\applighter2\Win32"
 			ConfigurationType="1"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -104,19 +105,20 @@
 				RuntimeLibrary="2"
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\applighter2\lighter2.pdb"
+				ProgramDataBaseFileName="..\..\out\release71\build\applighter2\Win32\lighter2.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71\build\applighter2\applighter2.pch"
-				AssemblerListingLocation="..\..\out\release71\build\applighter2\"
-				ObjectFile="..\..\out\release71\build\applighter2\"
+				PrecompiledHeaderFile="..\..\out\release71\build\applighter2\Win32\applighter2.pch"
+				AssemblerListingLocation="..\..\out\release71\build\applighter2\Win32"
+				ObjectFile="..\..\out\release71\build\applighter2\Win32"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="false"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -128,7 +130,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\lighter2.exe"
-				ProgramDatabaseFile="..\..\out\release71\build\applighter2\lighter2.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\applighter2\Win32\lighter2.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -144,7 +146,540 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71\build\applighter2\applighter2.tlb"/>
+				TypeLibraryName="..\..\out\release71\build\applighter2\Win32\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+          		<Configuration
+			Name="Debug (with static libs)|Win32"
+			OutputDirectory="..\..\out\debug71\build\applighter2\Win32"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\Win32"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\Win32\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\Win32"
+				ObjectFile="..\..\out\debug71\build\applighter2\Win32"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="4"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug71\build\applighter2\Win32\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+    		<Configuration
+			Name="Debug (with DLLs)|Win32"
+			OutputDirectory="..\..\out\debug71\build\applighter2\Win32"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\Win32"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\Win32\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\Win32"
+				ObjectFile="..\..\out\debug71\build\applighter2\Win32"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="4"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug71\build\applighter2\Win32\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+          		<Configuration
+			Name="MemoryTracker (with static libs)|Win32"
+			OutputDirectory="..\..\out\debug71\build\applighter2\Win32"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\Win32"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\Win32\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\Win32"
+				ObjectFile="..\..\out\debug71\build\applighter2\Win32"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="4"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug71\build\applighter2\Win32\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+    		<Configuration
+			Name="MemoryTracker (with DLLs)|Win32"
+			OutputDirectory="..\..\out\debug71\build\applighter2\Win32"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\Win32"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\Win32\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\Win32"
+				ObjectFile="..\..\out\debug71\build\applighter2\Win32"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="4"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug71\build\applighter2\Win32\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+          		<Configuration
+			Name="RefTracker (with static libs)|Win32"
+			OutputDirectory="..\..\out\debug71\build\applighter2\Win32"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\Win32"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\Win32\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\Win32"
+				ObjectFile="..\..\out\debug71\build\applighter2\Win32"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="4"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug71\build\applighter2\Win32\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+    		<Configuration
+			Name="RefTracker (with DLLs)|Win32"
+			OutputDirectory="..\..\out\debug71\build\applighter2\Win32"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\Win32"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\Win32\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\Win32"
+				ObjectFile="..\..\out\debug71\build\applighter2\Win32"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="4"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\Win32\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug71\build\applighter2\Win32\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+            		<Configuration
+			Name="Release (with static libs)|x64"
+			OutputDirectory="..\..\out\release71\build\applighter2\x64"
+			IntermediateDirectory="..\..\out\release71\build\applighter2\x64"
+			ConfigurationType="1"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				StringPooling="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				RuntimeLibrary="2"
+				DebugInformationFormat="3"
+				BufferSecurityCheck="FALSE"
+				ProgramDataBaseFileName="..\..\out\release71\build\applighter2\x64\lighter2.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\release71\build\applighter2\x64\applighter2.pch"
+				AssemblerListingLocation="..\..\out\release71\build\applighter2\x64"
+				ObjectFile="..\..\out\release71\build\applighter2\x64"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="3"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\release71\build\applighter2\x64\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="17"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\release71\build\applighter2\x64\applighter2.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
@@ -164,9 +699,86 @@
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
     		<Configuration
-			Name="Debug (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\applighter2\"
-			IntermediateDirectory="..\..\out\debug71\build\applighter2\"
+			Name="Release (with DLLs)|x64"
+			OutputDirectory="..\..\out\release71\build\applighter2\x64"
+			IntermediateDirectory="..\..\out\release71\build\applighter2\x64"
+			ConfigurationType="1"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				StringPooling="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				RuntimeLibrary="2"
+				DebugInformationFormat="3"
+				BufferSecurityCheck="FALSE"
+				ProgramDataBaseFileName="..\..\out\release71\build\applighter2\x64\lighter2.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\release71\build\applighter2\x64\applighter2.pch"
+				AssemblerListingLocation="..\..\out\release71\build\applighter2\x64"
+				ObjectFile="..\..\out\release71\build\applighter2\x64"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="3"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\release71\build\applighter2\x64\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="17"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\release71\build\applighter2\x64\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\release71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+          		<Configuration
+			Name="Debug (with static libs)|x64"
+			OutputDirectory="..\..\out\debug71\build\applighter2\x64"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\x64"
 			ConfigurationType="1"
 			CharacterSet="2"
 			UseOfMFC="0"
@@ -181,19 +793,20 @@
 				UsePrecompiledHeader="1"
 				PrecompiledHeaderThrough="common.h"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\applighter2.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\applighter2\"
-				ObjectFile="..\..\out\debug71\build\applighter2\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\x64\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\x64"
+				ObjectFile="..\..\out\debug71\build\applighter2\x64"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="false"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -203,13 +816,13 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\lighter2.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
+				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
@@ -219,7 +832,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\applighter2\applighter2.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\applighter2\x64\applighter2.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -238,10 +851,10 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-  		<Configuration
-			Name="Debug (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\applighter2\"
-			IntermediateDirectory="..\..\out\debug71\build\applighter2\"
+    		<Configuration
+			Name="Debug (with DLLs)|x64"
+			OutputDirectory="..\..\out\debug71\build\applighter2\x64"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\x64"
 			ConfigurationType="1"
 			CharacterSet="2"
 			UseOfMFC="0"
@@ -256,19 +869,20 @@
 				UsePrecompiledHeader="1"
 				PrecompiledHeaderThrough="common.h"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\applighter2.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\applighter2\"
-				ObjectFile="..\..\out\debug71\build\applighter2\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\x64\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\x64"
+				ObjectFile="..\..\out\debug71\build\applighter2\x64"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="false"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -278,13 +892,13 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\lighter2.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
+				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
@@ -294,7 +908,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\applighter2\applighter2.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\applighter2\x64\applighter2.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -313,10 +927,10 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
-			Name="MemoryTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\applighter2\"
-			IntermediateDirectory="..\..\out\debug71\build\applighter2\"
+          		<Configuration
+			Name="MemoryTracker (with static libs)|x64"
+			OutputDirectory="..\..\out\debug71\build\applighter2\x64"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\x64"
 			ConfigurationType="1"
 			CharacterSet="2"
 			UseOfMFC="0"
@@ -331,19 +945,20 @@
 				UsePrecompiledHeader="1"
 				PrecompiledHeaderThrough="common.h"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\applighter2.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\applighter2\"
-				ObjectFile="..\..\out\debug71\build\applighter2\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\x64\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\x64"
+				ObjectFile="..\..\out\debug71\build\applighter2\x64"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="false"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -353,13 +968,13 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\lighter2.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
+				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
@@ -369,82 +984,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\applighter2\applighter2.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-  		<Configuration
-			Name="MemoryTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\applighter2\"
-			IntermediateDirectory="..\..\out\debug71\build\applighter2\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				DebugInformationFormat="4"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="1"
-				PrecompiledHeaderThrough="common.h"
-
-				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\lighter2.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\applighter2.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\applighter2\"
-				ObjectFile="..\..\out\debug71\build\applighter2\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\lighter2.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\lighter2.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\applighter2\applighter2.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\applighter2\x64\applighter2.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -464,9 +1004,9 @@
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
     		<Configuration
-			Name="RefTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\applighter2\"
-			IntermediateDirectory="..\..\out\debug71\build\applighter2\"
+			Name="MemoryTracker (with DLLs)|x64"
+			OutputDirectory="..\..\out\debug71\build\applighter2\x64"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\x64"
 			ConfigurationType="1"
 			CharacterSet="2"
 			UseOfMFC="0"
@@ -481,19 +1021,96 @@
 				UsePrecompiledHeader="1"
 				PrecompiledHeaderThrough="common.h"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				OptimizeForProcessor="1"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\x64\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\x64"
+				ObjectFile="..\..\out\debug71\build\applighter2\x64"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="false"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="3"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				OutputFile="..\..\lighter2.exe"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
+				SubSystem="1"
+				AdditionalOptions=" "
+				AdditionalDependencies="zlib.lib"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				TargetMachine="17"/>
+			<Tool
+				Name="VCLibrarianTool"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug71\build\applighter2\x64\applighter2.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
+				/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=71"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\lighter2;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
+          		<Configuration
+			Name="RefTracker (with static libs)|x64"
+			OutputDirectory="..\..\out\debug71\build\applighter2\x64"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\x64"
+			ConfigurationType="1"
+			CharacterSet="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
+				RuntimeTypeInfo="TRUE"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="1"
+				PrecompiledHeaderThrough="common.h"
+
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\applighter2.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\applighter2\"
-				ObjectFile="..\..\out\debug71\build\applighter2\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\x64\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\x64"
+				ObjectFile="..\..\out\debug71\build\applighter2\x64"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="false"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -503,13 +1120,13 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\lighter2.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
+				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
@@ -519,7 +1136,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\applighter2\applighter2.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\applighter2\x64\applighter2.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -538,10 +1155,10 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-  		<Configuration
-			Name="RefTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\applighter2\"
-			IntermediateDirectory="..\..\out\debug71\build\applighter2\"
+    		<Configuration
+			Name="RefTracker (with DLLs)|x64"
+			OutputDirectory="..\..\out\debug71\build\applighter2\x64"
+			IntermediateDirectory="..\..\out\debug71\build\applighter2\x64"
 			ConfigurationType="1"
 			CharacterSet="2"
 			UseOfMFC="0"
@@ -556,19 +1173,20 @@
 				UsePrecompiledHeader="1"
 				PrecompiledHeaderThrough="common.h"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\applighter2.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\applighter2\"
-				ObjectFile="..\..\out\debug71\build\applighter2\"
+				PrecompiledHeaderFile="..\..\out\debug71\build\applighter2\x64\applighter2.pch"
+				AssemblerListingLocation="..\..\out\debug71\build\applighter2\x64"
+				ObjectFile="..\..\out\debug71\build\applighter2\x64"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="false"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -578,13 +1196,13 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\lighter2.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\lighter2.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\applighter2\x64\lighter2.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
+				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
@@ -594,7 +1212,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\applighter2\applighter2.tlb"/>
+				TypeLibraryName="..\..\out\debug71\build\applighter2\x64\applighter2.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
@@ -613,7 +1231,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-  	</Configurations>
+      	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"

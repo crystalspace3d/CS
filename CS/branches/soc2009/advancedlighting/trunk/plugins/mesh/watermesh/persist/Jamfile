@@ -1,3 +1,0 @@
-SubDir TOP plugins mesh watermesh persist ;
-
-SubInclude TOP plugins mesh watermesh persist standard ;

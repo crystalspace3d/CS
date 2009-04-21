@@ -1,5 +1,0 @@
-
-#ifdef SWIGPYTHON
-
-#endif // SWIGPYTHON
-

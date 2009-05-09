@@ -122,7 +122,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
                         OutputFile="..\..\crystalspace-1.9-vc71.dll"
-				ImportLibrary="..\..\out\release71\libs\Win32\libcrystalspace.lib"
+				ImportLibrary="..\..\out\release71\libs\libcrystalspace.lib"
 				ProgramDatabaseFile="..\..\out\release71\build\libcrystalspace\Win32\crystalspace-1.9-vc71.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -265,7 +265,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace-1.9-vc71_d.dll"
-				ImportLibrary="..\..\out\debug71\libs\Win32\libcrystalspace_d.lib"
+				ImportLibrary="..\..\out\debug71\libs\libcrystalspace_d.lib"
 				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\Win32\crystalspace-1.9-vc71_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -408,7 +408,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace-1.9-vc71_d.dll"
-				ImportLibrary="..\..\out\debug71\libs\Win32\libcrystalspace_d.lib"
+				ImportLibrary="..\..\out\debug71\libs\libcrystalspace_d.lib"
 				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\Win32\crystalspace-1.9-vc71_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -551,7 +551,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace-1.9-vc71_d.dll"
-				ImportLibrary="..\..\out\debug71\libs\Win32\libcrystalspace_d.lib"
+				ImportLibrary="..\..\out\debug71\libs\libcrystalspace_d.lib"
 				ProgramDatabaseFile="..\..\out\debug71\build\libcrystalspace\Win32\crystalspace-1.9-vc71_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -776,6 +776,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\render3d\normalizationcube.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\autofx_framebuffertex.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\autofx_reflrefr.cpp">
@@ -1571,6 +1574,9 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\render3d\normalizationcube.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
 			</File>
 			<File
@@ -2262,6 +2268,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\pthread_tls.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\rwmutex.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\thread.h">

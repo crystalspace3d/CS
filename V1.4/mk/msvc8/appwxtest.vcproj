@@ -29,7 +29,7 @@
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release8\build\appwxtest\wxtest.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -55,7 +55,7 @@
 				ProgramDatabaseFile="..\..\out\release8\build\appwxtest\wxtest.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_gl.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28u-vc8.lib wxmsw28u_core-vc8.lib wxmsw28u_gl-vc8.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -64,7 +64,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -79,7 +79,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;PROJECTGEN_VERSION=8"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -105,7 +105,7 @@
 				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release8\build\appwxtest\wxtest.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -131,7 +131,7 @@
 				ProgramDatabaseFile="..\..\out\release8\build\appwxtest\wxtest.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_gl.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28u-vc8.lib wxmsw28u_core-vc8.lib wxmsw28u_gl-vc8.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -140,7 +140,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -155,7 +155,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;PROJECTGEN_VERSION=8"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -180,7 +180,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8\build\appwxtest\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -204,7 +204,7 @@
 				ProgramDatabaseFile="..\..\out\debug8\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28u-vc8_d.lib wxmsw28u_core-vc8_d.lib wxmsw28u_gl-vc8_d.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -213,7 +213,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -228,7 +228,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=8"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -253,7 +253,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8\build\appwxtest\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -277,7 +277,7 @@
 				ProgramDatabaseFile="..\..\out\debug8\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28u-vc8_d.lib wxmsw28u_core-vc8_d.lib wxmsw28u_gl-vc8_d.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -286,7 +286,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -301,7 +301,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=8"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -326,7 +326,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8\build\appwxtest\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -350,7 +350,7 @@
 				ProgramDatabaseFile="..\..\out\debug8\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28u-vc8_d.lib wxmsw28u_core-vc8_d.lib wxmsw28u_gl-vc8_d.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -359,7 +359,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -374,7 +374,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=8"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -399,7 +399,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8\build\appwxtest\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -423,7 +423,7 @@
 				ProgramDatabaseFile="..\..\out\debug8\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28u-vc8_d.lib wxmsw28u_core-vc8_d.lib wxmsw28u_gl-vc8_d.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -432,7 +432,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -447,7 +447,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=8"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -472,7 +472,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8\build\appwxtest\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -496,7 +496,7 @@
 				ProgramDatabaseFile="..\..\out\debug8\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28u-vc8_d.lib wxmsw28u_core-vc8_d.lib wxmsw28u_gl-vc8_d.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -505,7 +505,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -520,7 +520,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=8"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -545,7 +545,7 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8\build\appwxtest\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -569,7 +569,7 @@
 				ProgramDatabaseFile="..\..\out\debug8\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28u-vc8_d.lib wxmsw28u_core-vc8_d.lib wxmsw28u_gl-vc8_d.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -578,7 +578,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -593,7 +593,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=8"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=8"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool

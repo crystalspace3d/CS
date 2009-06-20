@@ -641,9 +641,6 @@
 				RelativePath="..\..\libs\csgeom\poly3d.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csgeom\polyaa.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csgeom\polyclip.cpp">
 			</File>
 			<File
@@ -666,9 +663,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\tcovbuf.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csgeom\textrans.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgeom\transfrm.cpp">
@@ -1175,6 +1169,9 @@
 				RelativePath="..\..\libs\csutil\regexp.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\rootedhiercache.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\scanstr.cpp">
 			</File>
 			<File
@@ -1404,9 +1401,6 @@
 				RelativePath="..\..\libs\..\include\csgeom\poly3d.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csgeom\polyaa.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csgeom\polyclip.h">
 			</File>
 			<File
@@ -1438,9 +1432,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\tcovbuf.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csgeom\textrans.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\transfrm.h">
@@ -2152,6 +2143,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\regexp.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\rootedhiercache.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\scanstr.h">

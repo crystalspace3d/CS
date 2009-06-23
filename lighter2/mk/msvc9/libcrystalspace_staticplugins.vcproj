@@ -56,7 +56,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\release9\libs\Win32\libcrystalspace_staticplugins.lib"
+				OutputFile="..\..\out\release9\libs\libcrystalspace_staticplugins.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -128,7 +128,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\release9\libs\Win32\libcrystalspace_staticplugins.lib"
+				OutputFile="..\..\out\release9\libs\libcrystalspace_staticplugins.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -198,7 +198,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9\libs\Win32\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -268,7 +268,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9\libs\Win32\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -338,7 +338,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9\libs\Win32\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -408,7 +408,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9\libs\Win32\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -478,7 +478,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9\libs\Win32\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -548,7 +548,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9\libs\Win32\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -620,7 +620,7 @@
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\release9-x64\libs\x64\libcrystalspace_staticplugins.lib"
+				OutputFile="..\..\out\release9-x64\libs\libcrystalspace_staticplugins.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -692,7 +692,7 @@
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\release9-x64\libs\x64\libcrystalspace_staticplugins.lib"
+				OutputFile="..\..\out\release9-x64\libs\libcrystalspace_staticplugins.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -762,7 +762,7 @@
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9-x64\libs\x64\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9-x64\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -832,7 +832,7 @@
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9-x64\libs\x64\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9-x64\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -902,7 +902,7 @@
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9-x64\libs\x64\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9-x64\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -972,7 +972,7 @@
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9-x64\libs\x64\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9-x64\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -1042,7 +1042,7 @@
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9-x64\libs\x64\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9-x64\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -1112,7 +1112,7 @@
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug9-x64\libs\x64\libcrystalspace_staticplugins_d.lib"
+				OutputFile="..\..\out\debug9-x64\libs\libcrystalspace_staticplugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -6453,6 +6453,100 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libvproc_std_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libwatermesh_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermesh_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermesh_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermesh_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermesh_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermesh_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermesh_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermesh_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermesh_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libwatermeshldr_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermeshldr_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermeshldr_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermeshldr_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermeshldr_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermeshldr_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermeshldr_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermeshldr_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\mk_msvc_libwatermeshldr_staticreg.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -15010,6 +15104,147 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\watermesh\object\oceancell.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_oceancell.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_oceancell.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_oceancell.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_oceancell.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_oceancell.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_oceancell.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_oceancell.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_oceancell.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\watermesh\object\watermesh.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_watermesh.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_watermesh.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_watermesh.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_watermesh.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_watermesh.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_watermesh.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_watermesh.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_object_watermesh.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_persist_standard_watermeshldr.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_persist_standard_watermeshldr.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_persist_standard_watermeshldr.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_persist_standard_watermeshldr.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_persist_standard_watermeshldr.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_persist_standard_watermeshldr.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_persist_standard_watermeshldr.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\plugins_mesh_watermesh_persist_standard_watermeshldr.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\misc\pathloader\pathloader.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -22618,6 +22853,15 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\threadeddatafeeder.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\watermesh\object\oceancell.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\watermesh\object\watermesh.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\misc\pathloader\pathloader.h">

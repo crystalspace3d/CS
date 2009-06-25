@@ -7,11 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-		<Platform Name="Win32"/>
-		<Platform Name="x64"/>
-	</Platforms>
+  		<Platform Name="Win32"/>
+    		<Platform Name="x64"/>
+  	</Platforms>
 	<Configurations>
-      		<Configuration
+            		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release9\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\release9\build\libvsh_static_plugins\"
@@ -50,7 +50,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9.lib lib3ds.lib cal3d-vc9.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9.lib lib3ds.lib cal3d-vc9.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -83,7 +83,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release9\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\release9\build\libvsh_static_plugins\"
@@ -123,10 +123,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
                         OutputFile="..\..\vsh_static_plugins-1.9-vc9.dll"
-				ImportLibrary="..\..\out\release9\libs\Win32\libvsh_static_plugins.lib"
+				ImportLibrary="..\..\out\release9\libs\libvsh_static_plugins.lib"
 				ProgramDatabaseFile="..\..\out\release9\build\libvsh_static_plugins\Win32\vsh_static_plugins-1.9-vc9.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9.lib lib3ds.lib cal3d-vc9.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9.lib lib3ds.lib cal3d-vc9.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -158,7 +158,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
@@ -195,7 +195,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -228,7 +228,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
@@ -266,10 +266,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\vsh_static_plugins-1.9-vc9_d.dll"
-				ImportLibrary="..\..\out\debug9\libs\Win32\libvsh_static_plugins_d.lib"
+				ImportLibrary="..\..\out\debug9\libs\libvsh_static_plugins_d.lib"
 				ProgramDatabaseFile="..\..\out\debug9\build\libvsh_static_plugins\Win32\vsh_static_plugins-1.9-vc9_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -301,7 +301,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
@@ -338,7 +338,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -371,7 +371,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
@@ -409,10 +409,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\vsh_static_plugins-1.9-vc9_d.dll"
-				ImportLibrary="..\..\out\debug9\libs\Win32\libvsh_static_plugins_d.lib"
+				ImportLibrary="..\..\out\debug9\libs\libvsh_static_plugins_d.lib"
 				ProgramDatabaseFile="..\..\out\debug9\build\libvsh_static_plugins\Win32\vsh_static_plugins-1.9-vc9_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -444,7 +444,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
@@ -481,7 +481,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -514,7 +514,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libvsh_static_plugins\"
@@ -552,10 +552,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\vsh_static_plugins-1.9-vc9_d.dll"
-				ImportLibrary="..\..\out\debug9\libs\Win32\libvsh_static_plugins_d.lib"
+				ImportLibrary="..\..\out\debug9\libs\libvsh_static_plugins_d.lib"
 				ProgramDatabaseFile="..\..\out\debug9\build\libvsh_static_plugins\Win32\vsh_static_plugins-1.9-vc9_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -587,7 +587,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-            		<Configuration
+                        		<Configuration
 			Name="Release (with static libs)|x64"
 			OutputDirectory="..\..\out\release9-x64\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\release9-x64\build\libvsh_static_plugins\"
@@ -626,7 +626,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9.lib lib3ds.lib cal3d-vc9.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9.lib lib3ds.lib cal3d-vc9.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -659,7 +659,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|x64"
 			OutputDirectory="..\..\out\release9-x64\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\release9-x64\build\libvsh_static_plugins\"
@@ -699,10 +699,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
                         OutputFile="..\..\vsh_static_plugins-1.9-vc9-x64.dll"
-				ImportLibrary="..\..\out\release9-x64\libs\x64\libvsh_static_plugins.lib"
+				ImportLibrary="..\..\out\release9-x64\libs\libvsh_static_plugins.lib"
 				ProgramDatabaseFile="..\..\out\release9-x64\build\libvsh_static_plugins\x64\vsh_static_plugins-1.9-vc9-x64.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9.lib lib3ds.lib cal3d-vc9.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9.lib lib3ds.lib cal3d-vc9.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -734,7 +734,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
@@ -771,7 +771,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -804,7 +804,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
@@ -842,10 +842,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\vsh_static_plugins-1.9-vc9-x64_d.dll"
-				ImportLibrary="..\..\out\debug9-x64\libs\x64\libvsh_static_plugins_d.lib"
+				ImportLibrary="..\..\out\debug9-x64\libs\libvsh_static_plugins_d.lib"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\libvsh_static_plugins\x64\vsh_static_plugins-1.9-vc9-x64_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -877,7 +877,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
@@ -914,7 +914,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -947,7 +947,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
@@ -985,10 +985,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\vsh_static_plugins-1.9-vc9-x64_d.dll"
-				ImportLibrary="..\..\out\debug9-x64\libs\x64\libvsh_static_plugins_d.lib"
+				ImportLibrary="..\..\out\debug9-x64\libs\libvsh_static_plugins_d.lib"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\libvsh_static_plugins\x64\vsh_static_plugins-1.9-vc9-x64_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -1020,7 +1020,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
@@ -1057,7 +1057,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -1090,7 +1090,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libvsh_static_plugins\"
@@ -1128,10 +1128,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\vsh_static_plugins-1.9-vc9-x64_d.dll"
-				ImportLibrary="..\..\out\debug9-x64\libs\x64\libvsh_static_plugins_d.lib"
+				ImportLibrary="..\..\out\debug9-x64\libs\libvsh_static_plugins_d.lib"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\libvsh_static_plugins\x64\vsh_static_plugins-1.9-vc9-x64_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc9_d.lib lib3ds.lib cal3d-vc9_d.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -1163,7 +1163,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      	</Configurations>
+            	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"

@@ -7,11 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-		<Platform Name="Win32"/>
-		<Platform Name="x64"/>
-	</Platforms>
+  		<Platform Name="Win32"/>
+    		<Platform Name="x64"/>
+  	</Platforms>
 	<Configurations>
-      		<Configuration
+            		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release8\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\release8\build\libcrystalspace_directx\"
@@ -83,7 +83,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release8\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\release8\build\libcrystalspace_directx\"
@@ -123,7 +123,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
                         OutputFile="..\..\crystalspace_directx-1.9-vc8.dll"
-				ImportLibrary="..\..\out\release8\libs\Win32\libcrystalspace_directx.lib"
+				ImportLibrary="..\..\out\release8\libs\libcrystalspace_directx.lib"
 				ProgramDatabaseFile="..\..\out\release8\build\libcrystalspace_directx\Win32\crystalspace_directx-1.9-vc8.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
@@ -158,7 +158,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
@@ -228,7 +228,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
@@ -266,7 +266,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_directx-1.9-vc8_d.dll"
-				ImportLibrary="..\..\out\debug8\libs\Win32\libcrystalspace_directx_d.lib"
+				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_directx_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_directx\Win32\crystalspace_directx-1.9-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
@@ -301,7 +301,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
@@ -371,7 +371,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
@@ -409,7 +409,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_directx-1.9-vc8_d.dll"
-				ImportLibrary="..\..\out\debug8\libs\Win32\libcrystalspace_directx_d.lib"
+				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_directx_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_directx\Win32\crystalspace_directx-1.9-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
@@ -444,7 +444,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
@@ -514,7 +514,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_directx\"
@@ -552,7 +552,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_directx-1.9-vc8_d.dll"
-				ImportLibrary="..\..\out\debug8\libs\Win32\libcrystalspace_directx_d.lib"
+				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_directx_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_directx\Win32\crystalspace_directx-1.9-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
@@ -587,7 +587,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-            		<Configuration
+                        		<Configuration
 			Name="Release (with static libs)|x64"
 			OutputDirectory="..\..\out\release8-x64\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\release8-x64\build\libcrystalspace_directx\"
@@ -659,7 +659,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|x64"
 			OutputDirectory="..\..\out\release8-x64\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\release8-x64\build\libcrystalspace_directx\"
@@ -699,7 +699,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
                         OutputFile="..\..\crystalspace_directx-1.9-vc8-x64.dll"
-				ImportLibrary="..\..\out\release8-x64\libs\x64\libcrystalspace_directx.lib"
+				ImportLibrary="..\..\out\release8-x64\libs\libcrystalspace_directx.lib"
 				ProgramDatabaseFile="..\..\out\release8-x64\build\libcrystalspace_directx\x64\crystalspace_directx-1.9-vc8-x64.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
@@ -734,7 +734,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
@@ -804,7 +804,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
@@ -842,7 +842,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_directx-1.9-vc8-x64_d.dll"
-				ImportLibrary="..\..\out\debug8-x64\libs\x64\libcrystalspace_directx_d.lib"
+				ImportLibrary="..\..\out\debug8-x64\libs\libcrystalspace_directx_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\libcrystalspace_directx\x64\crystalspace_directx-1.9-vc8-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
@@ -877,7 +877,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
@@ -947,7 +947,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
@@ -985,7 +985,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_directx-1.9-vc8-x64_d.dll"
-				ImportLibrary="..\..\out\debug8-x64\libs\x64\libcrystalspace_directx_d.lib"
+				ImportLibrary="..\..\out\debug8-x64\libs\libcrystalspace_directx_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\libcrystalspace_directx\x64\crystalspace_directx-1.9-vc8-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
@@ -1020,7 +1020,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
@@ -1090,7 +1090,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_directx\"
@@ -1128,7 +1128,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_directx-1.9-vc8-x64_d.dll"
-				ImportLibrary="..\..\out\debug8-x64\libs\x64\libcrystalspace_directx_d.lib"
+				ImportLibrary="..\..\out\debug8-x64\libs\libcrystalspace_directx_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\libcrystalspace_directx\x64\crystalspace_directx-1.9-vc8-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="dsound.lib ddraw.lib dinput.lib"
@@ -1163,7 +1163,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      	</Configurations>
+            	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"

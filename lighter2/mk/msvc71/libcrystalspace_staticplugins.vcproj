@@ -7,11 +7,10 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-		<Platform Name="Win32"/>
-		<Platform Name="x64"/>
-	</Platforms>
+  		<Platform Name="Win32"/>
+    	</Platforms>
 	<Configurations>
-      		<Configuration
+            		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release71\build\libcrystalspace_staticplugins\"
 			IntermediateDirectory="..\..\out\release71\build\libcrystalspace_staticplugins\"
@@ -50,7 +49,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71.lib lib3ds.lib cal3d-vc71.lib ode.lib bulletcollision-vc71.lib bulletdynamics-vc71.lib bulletmath-vc71.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71.lib lib3ds.lib cal3d-vc71.lib ode.lib bulletcollision-vc71.lib bulletdynamics-vc71.lib bulletmath-vc71.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -83,7 +82,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release71\build\libcrystalspace_staticplugins\"
 			IntermediateDirectory="..\..\out\release71\build\libcrystalspace_staticplugins\"
@@ -122,7 +121,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71.lib lib3ds.lib cal3d-vc71.lib ode.lib bulletcollision-vc71.lib bulletdynamics-vc71.lib bulletmath-vc71.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71.lib lib3ds.lib cal3d-vc71.lib ode.lib bulletcollision-vc71.lib bulletdynamics-vc71.lib bulletmath-vc71.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -155,7 +154,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
@@ -192,7 +191,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -225,7 +224,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
@@ -262,7 +261,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -295,7 +294,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
@@ -332,7 +331,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -365,7 +364,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
@@ -402,7 +401,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -435,7 +434,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
@@ -472,7 +471,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -505,7 +504,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
 			IntermediateDirectory="..\..\out\debug71\build\libcrystalspace_staticplugins\"
@@ -542,7 +541,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -575,571 +574,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-            		<Configuration
-			Name="Release (with static libs)|x64"
-			OutputDirectory="..\..\out\release71-x64\build\libcrystalspace_staticplugins\"
-			IntermediateDirectory="..\..\out\release71-x64\build\libcrystalspace_staticplugins\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
-				AssemblerListingLocation="..\..\out\release71-x64\build\libcrystalspace_staticplugins\"
-				ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71.lib lib3ds.lib cal3d-vc71.lib ode.lib bulletcollision-vc71.lib bulletdynamics-vc71.lib bulletmath-vc71.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\release71-x64\libs\libcrystalspace_staticplugins.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release71-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-    		<Configuration
-			Name="Release (with DLLs)|x64"
-			OutputDirectory="..\..\out\release71-x64\build\libcrystalspace_staticplugins\"
-			IntermediateDirectory="..\..\out\release71-x64\build\libcrystalspace_staticplugins\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
-				AssemblerListingLocation="..\..\out\release71-x64\build\libcrystalspace_staticplugins\"
-				ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71.lib lib3ds.lib cal3d-vc71.lib ode.lib bulletcollision-vc71.lib bulletdynamics-vc71.lib bulletmath-vc71.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\release71-x64\libs\libcrystalspace_staticplugins.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release71-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release71-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-          		<Configuration
-			Name="Debug (with static libs)|x64"
-			OutputDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			IntermediateDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
-				AssemblerListingLocation="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug71-x64\libs\libcrystalspace_staticplugins_d.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-    		<Configuration
-			Name="Debug (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			IntermediateDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
-				AssemblerListingLocation="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug71-x64\libs\libcrystalspace_staticplugins_d.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-          		<Configuration
-			Name="MemoryTracker (with static libs)|x64"
-			OutputDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			IntermediateDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
-				AssemblerListingLocation="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug71-x64\libs\libcrystalspace_staticplugins_d.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-    		<Configuration
-			Name="MemoryTracker (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			IntermediateDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
-				AssemblerListingLocation="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug71-x64\libs\libcrystalspace_staticplugins_d.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-          		<Configuration
-			Name="RefTracker (with static libs)|x64"
-			OutputDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			IntermediateDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
-				AssemblerListingLocation="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug71-x64\libs\libcrystalspace_staticplugins_d.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-    		<Configuration
-			Name="RefTracker (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			IntermediateDirectory="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
-				AssemblerListingLocation="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc71_d.lib lib3ds.lib cal3d-vc71_d.lib ode.lib bulletcollision-vc71_d.lib bulletdynamics-vc71_d.lib bulletmath-vc71_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="..\..\out\debug71-x64\libs\libcrystalspace_staticplugins_d.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      	</Configurations>
+              	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"
@@ -5560,6 +4995,53 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsyssoft_staticreg.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libsndsysspeex_staticreg.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsysspeex_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsysspeex_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsysspeex_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsysspeex_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsysspeex_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsysspeex_staticreg.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsysspeex_staticreg.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\mk_msvc_libsndsysspeex_staticreg.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -12848,6 +12330,53 @@
 					</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\emit\object\partgen.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\plugins_mesh_emit_object_partgen.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\plugins_mesh_emit_object_partgen.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_mesh_emit_object_partgen.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_mesh_emit_object_partgen.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_mesh_emit_object_partgen.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_mesh_emit_object_partgen.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_mesh_emit_object_partgen.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_mesh_emit_object_partgen.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\emit\persist\standard\emitldr.cpp">
                                   					<FileConfiguration
 						Name="Release (with static libs)|Win32">
@@ -16652,6 +16181,147 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_ogg_oggstream2.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\element\speex\speexdata.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexdata.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexdata.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexdata.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexdata.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexdata.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexdata.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexdata.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexdata.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\element\speex\speexloader.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexloader.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexloader.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexloader.cpp.obj"/>
+					</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\element\speex\speexstream.cpp">
+                                  					<FileConfiguration
+						Name="Release (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexstream.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Release (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\release71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexstream.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="Debug (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexstream.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="Debug (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexstream.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="MemoryTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexstream.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="MemoryTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexstream.cpp.obj"/>
+					</FileConfiguration>
+                                  					<FileConfiguration
+						Name="RefTracker (with static libs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexstream.cpp.obj"/>
+					</FileConfiguration>					<FileConfiguration
+						Name="RefTracker (with DLLs)|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="..\..\out\debug71-x64\build\libcrystalspace_staticplugins\plugins_sndsys_element_speex_speexstream.cpp.obj"/>
 					</FileConfiguration>
 			</File>
 			<File
@@ -22720,6 +22390,9 @@
 				RelativePath="..\..\plugins\mesh\emit\object\emit.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\emit\object\partgen.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\emit\persist\standard\emitldr.h">
 			</File>
 			<File
@@ -22921,6 +22594,9 @@
 				RelativePath="..\..\plugins\proctex\tlfunc\tlfunc.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
 			</File>
 			<File
@@ -22993,6 +22669,9 @@
 				RelativePath="..\..\plugins\rendermanager\rlcompat\rm_compat.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
 			</File>
 			<File
@@ -23063,6 +22742,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
@@ -23153,6 +22835,15 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\sndsys\element\ogg\oggstream2.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\element\speex\speexdata.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\element\speex\speexloader.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\sndsys\element\speex\speexstream.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\sndsys\element\wav\wavdata2.h">

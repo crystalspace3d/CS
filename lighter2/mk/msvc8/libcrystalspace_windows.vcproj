@@ -7,11 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-		<Platform Name="Win32"/>
-		<Platform Name="x64"/>
-	</Platforms>
+  		<Platform Name="Win32"/>
+    		<Platform Name="x64"/>
+  	</Platforms>
 	<Configurations>
-      		<Configuration
+            		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release8\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\release8\build\libcrystalspace_windows\"
@@ -83,7 +83,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release8\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\release8\build\libcrystalspace_windows\"
@@ -123,7 +123,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
                         OutputFile="..\..\crystalspace_windows-1.9-vc8.dll"
-				ImportLibrary="..\..\out\release8\libs\Win32\libcrystalspace_windows.lib"
+				ImportLibrary="..\..\out\release8\libs\libcrystalspace_windows.lib"
 				ProgramDatabaseFile="..\..\out\release8\build\libcrystalspace_windows\Win32\crystalspace_windows-1.9-vc8.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies=""
@@ -158,7 +158,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
@@ -228,7 +228,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
@@ -266,7 +266,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_windows-1.9-vc8_d.dll"
-				ImportLibrary="..\..\out\debug8\libs\Win32\libcrystalspace_windows_d.lib"
+				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_windows_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_windows\Win32\crystalspace_windows-1.9-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies=""
@@ -301,7 +301,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
@@ -371,7 +371,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
@@ -409,7 +409,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_windows-1.9-vc8_d.dll"
-				ImportLibrary="..\..\out\debug8\libs\Win32\libcrystalspace_windows_d.lib"
+				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_windows_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_windows\Win32\crystalspace_windows-1.9-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies=""
@@ -444,7 +444,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
@@ -514,7 +514,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8\build\libcrystalspace_windows\"
@@ -552,7 +552,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_windows-1.9-vc8_d.dll"
-				ImportLibrary="..\..\out\debug8\libs\Win32\libcrystalspace_windows_d.lib"
+				ImportLibrary="..\..\out\debug8\libs\libcrystalspace_windows_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8\build\libcrystalspace_windows\Win32\crystalspace_windows-1.9-vc8_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies=""
@@ -587,7 +587,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-            		<Configuration
+                        		<Configuration
 			Name="Release (with static libs)|x64"
 			OutputDirectory="..\..\out\release8-x64\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\release8-x64\build\libcrystalspace_windows\"
@@ -659,7 +659,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|x64"
 			OutputDirectory="..\..\out\release8-x64\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\release8-x64\build\libcrystalspace_windows\"
@@ -699,7 +699,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
                         OutputFile="..\..\crystalspace_windows-1.9-vc8-x64.dll"
-				ImportLibrary="..\..\out\release8-x64\libs\x64\libcrystalspace_windows.lib"
+				ImportLibrary="..\..\out\release8-x64\libs\libcrystalspace_windows.lib"
 				ProgramDatabaseFile="..\..\out\release8-x64\build\libcrystalspace_windows\x64\crystalspace_windows-1.9-vc8-x64.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies=""
@@ -734,7 +734,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
@@ -804,7 +804,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
@@ -842,7 +842,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_windows-1.9-vc8-x64_d.dll"
-				ImportLibrary="..\..\out\debug8-x64\libs\x64\libcrystalspace_windows_d.lib"
+				ImportLibrary="..\..\out\debug8-x64\libs\libcrystalspace_windows_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\libcrystalspace_windows\x64\crystalspace_windows-1.9-vc8-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies=""
@@ -877,7 +877,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
@@ -947,7 +947,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
@@ -985,7 +985,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_windows-1.9-vc8-x64_d.dll"
-				ImportLibrary="..\..\out\debug8-x64\libs\x64\libcrystalspace_windows_d.lib"
+				ImportLibrary="..\..\out\debug8-x64\libs\libcrystalspace_windows_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\libcrystalspace_windows\x64\crystalspace_windows-1.9-vc8-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies=""
@@ -1020,7 +1020,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
@@ -1090,7 +1090,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\libcrystalspace_windows\"
@@ -1128,7 +1128,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
                         OutputFile="..\..\crystalspace_windows-1.9-vc8-x64_d.dll"
-				ImportLibrary="..\..\out\debug8-x64\libs\x64\libcrystalspace_windows_d.lib"
+				ImportLibrary="..\..\out\debug8-x64\libs\libcrystalspace_windows_d.lib"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\libcrystalspace_windows\x64\crystalspace_windows-1.9-vc8-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies=""
@@ -1163,13 +1163,16 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      	</Configurations>
+            	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"
 			Filter="">
 			<File
 				RelativePath="..\..\libs\csplugincommon\win32\customcursor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\win32\icontools.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\win32\staticvarcleanup.cpp">
@@ -1183,6 +1186,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\win32\..\..\..\include\csplugincommon\win32\customcursor.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\win32\..\..\..\include\csplugincommon\win32\icontools.h">
 			</File>
 		</Filter>
 	</Files>

@@ -7,11 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-		<Platform Name="Win32"/>
-		<Platform Name="x64"/>
-	</Platforms>
+  		<Platform Name="Win32"/>
+    		<Platform Name="x64"/>
+  	</Platforms>
 	<Configurations>
-      		<Configuration
+            		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release9\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\release9\build\appviewmesh_static\"
@@ -55,7 +55,7 @@
 				ProgramDatabaseFile="..\..\out\release9\build\appviewmesh_static\Win32\viewmesh_static.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib cal3d-vc9.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib cal3d-vc9.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -87,7 +87,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release9\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\release9\build\appviewmesh_static\"
@@ -131,7 +131,7 @@
 				ProgramDatabaseFile="..\..\out\release9\build\appviewmesh_static\Win32\viewmesh_static.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib cal3d-vc9.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib cal3d-vc9.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -163,7 +163,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9\build\appviewmesh_static\"
@@ -204,7 +204,7 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appviewmesh_static\Win32\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -236,7 +236,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9\build\appviewmesh_static\"
@@ -277,7 +277,7 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appviewmesh_static\Win32\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -309,7 +309,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9\build\appviewmesh_static\"
@@ -350,7 +350,7 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appviewmesh_static\Win32\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -382,7 +382,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9\build\appviewmesh_static\"
@@ -423,7 +423,7 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appviewmesh_static\Win32\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -455,7 +455,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9\build\appviewmesh_static\"
@@ -496,7 +496,7 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appviewmesh_static\Win32\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -528,7 +528,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9\build\appviewmesh_static\"
@@ -569,7 +569,7 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appviewmesh_static\Win32\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -601,7 +601,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-            		<Configuration
+                        		<Configuration
 			Name="Release (with static libs)|x64"
 			OutputDirectory="..\..\out\release9-x64\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\release9-x64\build\appviewmesh_static\"
@@ -645,7 +645,7 @@
 				ProgramDatabaseFile="..\..\out\release9-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib cal3d-vc9.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib cal3d-vc9.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -677,7 +677,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Release (with DLLs)|x64"
 			OutputDirectory="..\..\out\release9-x64\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\release9-x64\build\appviewmesh_static\"
@@ -721,7 +721,7 @@
 				ProgramDatabaseFile="..\..\out\release9-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib cal3d-vc9.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib cal3d-vc9.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -753,7 +753,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="Debug (with static libs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
@@ -794,7 +794,7 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -826,7 +826,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="Debug (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
@@ -867,7 +867,7 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -899,7 +899,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="MemoryTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
@@ -940,7 +940,7 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -972,7 +972,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="MemoryTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
@@ -1013,7 +1013,7 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -1045,7 +1045,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-          		<Configuration
+                		<Configuration
 			Name="RefTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
@@ -1086,7 +1086,7 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -1118,7 +1118,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-    		<Configuration
+      		<Configuration
 			Name="RefTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\appviewmesh_static\"
@@ -1159,7 +1159,7 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib openal32.lib libmng.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib cal3d-vc9_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib dsound.lib ddraw.lib dinput.lib freetype2.lib lib3ds.lib ode.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib libmng.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="17"/>
@@ -1191,7 +1191,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      	</Configurations>
+            	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"

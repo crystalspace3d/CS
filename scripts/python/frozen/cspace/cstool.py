@@ -209,10 +209,6 @@ class csView(scfView):
     def SetEngine(*args): return _cstool.csView_SetEngine(*args)
     def GetCamera(*args): return _cstool.csView_GetCamera(*args)
     def SetCamera(*args): return _cstool.csView_SetCamera(*args)
-    def GetPerspectiveCamera(*args): return _cstool.csView_GetPerspectiveCamera(*args)
-    def SetPerspectiveCamera(*args): return _cstool.csView_SetPerspectiveCamera(*args)
-    def GetCustomMatrixCamera(*args): return _cstool.csView_GetCustomMatrixCamera(*args)
-    def SetCustomMatrixCamera(*args): return _cstool.csView_SetCustomMatrixCamera(*args)
     def GetContext(*args): return _cstool.csView_GetContext(*args)
     def SetContext(*args): return _cstool.csView_SetContext(*args)
     def SetRectangle(*args): return _cstool.csView_SetRectangle(*args)
@@ -223,7 +219,6 @@ class csView(scfView):
     def UpdateClipper(*args): return _cstool.csView_UpdateClipper(*args)
     def GetClipper(*args): return _cstool.csView_GetClipper(*args)
     def Draw(*args): return _cstool.csView_Draw(*args)
-    def GetMeshFilter(*args): return _cstool.csView_GetMeshFilter(*args)
 csView_swigregister = _cstool.csView_swigregister
 csView_swigregister(csView)
 
@@ -320,78 +315,6 @@ csEngineTools_swigregister = _cstool.csEngineTools_swigregister
 csEngineTools_swigregister(csEngineTools)
 csEngineTools_FindShortestDistance = _cstool.csEngineTools_FindShortestDistance
 csEngineTools_FindScreenTarget = _cstool.csEngineTools_FindScreenTarget
-
-class TextureMapper(object):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    __swig_destroy__ = _cstool.delete_TextureMapper
-    __del__ = lambda self : None;
-    def Map(*args): return _cstool.TextureMapper_Map(*args)
-TextureMapper_swigregister = _cstool.TextureMapper_swigregister
-TextureMapper_swigregister(TextureMapper)
-
-class TableTextureMapper(TextureMapper):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _cstool.new_TableTextureMapper(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cstool.delete_TableTextureMapper
-    __del__ = lambda self : None;
-    def Map(*args): return _cstool.TableTextureMapper_Map(*args)
-TableTextureMapper_swigregister = _cstool.TableTextureMapper_swigregister
-TableTextureMapper_swigregister(TableTextureMapper)
-
-class DensityTextureMapper(TextureMapper):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _cstool.new_DensityTextureMapper(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cstool.delete_DensityTextureMapper
-    __del__ = lambda self : None;
-    def Map(*args): return _cstool.DensityTextureMapper_Map(*args)
-DensityTextureMapper_swigregister = _cstool.DensityTextureMapper_swigregister
-DensityTextureMapper_swigregister(DensityTextureMapper)
-
-class Primitives(object):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    CS_PRIMBOX_INSIDE = _cstool.Primitives_CS_PRIMBOX_INSIDE
-    CS_PRIMBOX_SMOOTH = _cstool.Primitives_CS_PRIMBOX_SMOOTH
-    GenerateBox = staticmethod(_cstool.Primitives_GenerateBox)
-    GenerateQuad = staticmethod(_cstool.Primitives_GenerateQuad)
-    GenerateTesselatedQuad = staticmethod(_cstool.Primitives_GenerateTesselatedQuad)
-    GenerateCapsule = staticmethod(_cstool.Primitives_GenerateCapsule)
-    GenerateSphere = staticmethod(_cstool.Primitives_GenerateSphere)
-    def __init__(self, *args): 
-        this = _cstool.new_Primitives(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cstool.delete_Primitives
-    __del__ = lambda self : None;
-Primitives_swigregister = _cstool.Primitives_swigregister
-Primitives_swigregister(Primitives)
-Primitives_GenerateBox = _cstool.Primitives_GenerateBox
-Primitives_GenerateQuad = _cstool.Primitives_GenerateQuad
-Primitives_GenerateTesselatedQuad = _cstool.Primitives_GenerateTesselatedQuad
-Primitives_GenerateCapsule = _cstool.Primitives_GenerateCapsule
-Primitives_GenerateSphere = _cstool.Primitives_GenerateSphere
-
-class csPrimitives(Primitives):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _cstool.new_csPrimitives(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _cstool.delete_csPrimitives
-    __del__ = lambda self : None;
-csPrimitives_swigregister = _cstool.csPrimitives_swigregister
-csPrimitives_swigregister(csPrimitives)
 
 class Primitive(object):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -615,7 +538,7 @@ class csMemoryPen(iPen):
 csMemoryPen_swigregister = _cstool.csMemoryPen_swigregister
 csMemoryPen_swigregister(csMemoryPen)
 
-class scfProcTexture(core.csObject,iengine.iTextureWrapper,csgfx.iProcTexture):
+class scfProcTexture(core.csObject,iengine.iTextureWrapper,core.iProcTexture):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
@@ -648,7 +571,6 @@ class csProcTexture(scfProcTexture):
     __del__ = lambda self : None;
     def GetG3D(*args): return _cstool.csProcTexture_GetG3D(*args)
     def GetG2D(*args): return _cstool.csProcTexture_GetG2D(*args)
-    def GetObjectRegistry(*args): return _cstool.csProcTexture_GetObjectRegistry(*args)
     def DisableAutoUpdate(*args): return _cstool.csProcTexture_DisableAutoUpdate(*args)
     def Initialize(*args): return _cstool.csProcTexture_Initialize(*args)
     def PrepareAnim(*args): return _cstool.csProcTexture_PrepareAnim(*args)

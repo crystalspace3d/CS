@@ -775,7 +775,7 @@ rule MsvcProject
     $(MSVCGEN_VARIABLES)
     : notfile : $(respdir) ;
   MsvcRmTemps msvcgen : $(respfile) ;
-  
+
   # Only include source and headers files for now.  In the future, we also
   # want to include .cfg files and any other textual resources which which the
   # user might care to read/view in the MSVC IDE.
@@ -1266,12 +1266,15 @@ rule StaticPluginLibrary
   for t in $(targets)
   {
     sources += $(STATICPLUGINS.SOURCES.$(t)) ;
+    extlibs += $($(t).EXTERNALLIBS) ;
+    _MsvcDefine $(name) : $(STATICPLUGINS.$(t).MSVC_DEFINES) ;
   }
 
   $(name)_STATIC = "yes" ;
   # Set up library
   Library $(name) : $(sources) ;
   MsvcDefine $(name) : CS_STATIC_LINKED ;
+  ExternalLibs $(name) : [ RemoveDups $(extlibs) ] ;
 
   # Write out needed CFLAGS, LFLAGS
   local outdir = [ Property msvcgen : outdircommon ] ;
@@ -1441,31 +1444,6 @@ rule LibDepends
       }
     }
   }
-}
-
-rule RelayLibs
-{
-  local extlib ;
-  
-  local outdir = [ Property msvcgen : outdir$(MSVC_VERSION) ] ;
-  local outdircommon = [ Property msvcgen : outdircommon ] ;
-  if "$(outdircommon)" = ""
-  {
-    outdircommon = $(outdir) ;
-  }
-  
-  for extlib in $(>)
-  {
-    local relayfile = $(extlib).fake_stub.c ;
-    MakeLocate $(relayfile) : $(outdircommon) ;
-    WHATEVER on $(relayfile) = $(3) ;
-    WriteRelayLibStub $(relayfile) ;
-    Depends msvcgen : $(relayfile) ;
-
-    MsvcExtraFile1 $(<) : $(relayfile:R=$(outdircommon)) ;
-  }
-
-  ExternalLibs $(<) : $(>) ;
 }
 
 rule MsvcClassifyMode

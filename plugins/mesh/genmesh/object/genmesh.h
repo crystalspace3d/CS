@@ -36,10 +36,12 @@
 #include "csutil/refarr.h"
 #include "csutil/parray.h"
 #include "csutil/pooledscfclass.h"
-#include "csutil/scfarray.h"
 #include "csutil/weakref.h"
 #include "iengine/light.h"
+#include "iengine/lightmgr.h"
+#include "iengine/shadcast.h"
 #include "imesh/genmesh.h"
+#include "imesh/lighting.h"
 #include "imesh/object.h"
 #include "iutil/comp.h"
 #include "iutil/eventh.h"
@@ -59,6 +61,7 @@ struct iEngine;
 struct iMaterialWrapper;
 struct iMovable;
 struct iObjectRegistry;
+struct iShadowBlockList;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
 {
@@ -100,7 +103,7 @@ public:
 
   void AddVariable (csShaderVariable *variable)
   { }
-  csShaderVariable* GetVariable (CS::ShaderVarStringID name) const
+  csShaderVariable* GetVariable (csStringID name) const
   { 
     csShaderVariable* sv = context1->GetVariable (name); 
     if (sv == 0)
@@ -111,10 +114,10 @@ public:
   { 
     return context1->GetShaderVariables();
   }
-  void PushVariables (csShaderVariableStack& stack) const
+  void PushVariables (iShaderVarStack* stacks) const
   { 
-    context2->PushVariables (stack);
-    context1->PushVariables (stack);
+    context2->PushVariables (stacks);
+    context1->PushVariables (stacks);
   }
 
   bool IsEmpty () const { return context1->IsEmpty() && context2->IsEmpty(); }
@@ -122,14 +125,17 @@ public:
   void ReplaceVariable (csShaderVariable *variable) { }
   void Clear () { }
   bool RemoveVariable  (csShaderVariable *) { return false; }
-  bool RemoveVariable  (CS::ShaderVarStringID) { return false; }
+  bool RemoveVariable  (csStringID) { return false; }
 };
 
 /**
  * Genmesh version of mesh object.
  */
-class csGenmeshMeshObject : public scfImplementation2<csGenmeshMeshObject, 
+class csGenmeshMeshObject : public scfImplementation5<csGenmeshMeshObject, 
 						      iMeshObject,
+						      iLightingInfo,
+						      iShadowCaster,
+						      iShadowReceiver,
 						      iGeneralMeshState>
 {
 private:
@@ -145,27 +151,34 @@ private:
 
   size_t factory_user_rb_state;
 
+  iMovable* lighting_movable;
+
   csDirtyAccessArray<csRenderMesh*> renderMeshes;
   mutable SubMeshProxiesContainer subMeshes;
   mutable uint factorySubMeshesChangeNum;
   void UpdateSubMeshProxies () const;
 
   csUserRenderBufferManager userBuffers;
-  csArray<CS::ShaderVarStringID> user_buffer_names;
+  csArray<csStringID> user_buffer_names;
 
   csGenmeshMeshObjectFactory* factory;
   iMeshWrapper* logparent;
   csRef<iMeshObjectDrawCallback> vis_cb;
+  bool do_lighting;
   bool do_manual_colors;
   csColor4 base_color;
   float current_lod;
   uint32 current_features;
   csFlags flags;
 
+  bool do_shadows;
+  bool do_shadow_rec;
+
   struct LegacyLightingData
   {
     csColor4* lit_mesh_colors;
     int num_lit_mesh_colors;	// Should be equal to factory number.
+    csColor4* static_mesh_colors;
     
     csRef<iRenderBuffer> color_buffer;
     
@@ -174,9 +187,30 @@ private:
     
     void SetColorNum (int num);
     void Free();
-    void Clear(const csColor4& base_color);
+    void Clear();
   };
   LegacyLightingData legacyLighting;
+
+  /**
+   * Global sector wide dynamic ambient version.
+   */
+  uint32 dynamic_ambient_version;
+
+  csHash<csShadowArray*, csPtrKey<iLight> > pseudoDynInfo;
+
+  // If we are using the iLightingInfo lighting system then this
+  // is an array of lights that affect us right now.
+  csSet<csPtrKey<iLight> > affecting_lights;
+  // In case we are not using the iLightingInfo system then we
+  // GetRenderMeshes() will updated the following array:
+  csArray<iLightSectorInfluence*> relevant_lights;
+
+  // If the following flag is dirty then some of the affecting lights
+  // has changed and we need to recalculate.
+  bool lighting_dirty;
+
+  // choose whether to draw shadow caps or not
+  bool shadow_caps;
 
   bool initialized;
 
@@ -184,12 +218,35 @@ private:
   long cur_movablenr;
 
   /**
+   * Clears out the pseudoDynInfo hash and frees the memory allocated by the
+   * shadow maps.
+   */
+  void ClearPseudoDynLights ();
+
+  /**
    * Setup this object. This function will check if setup is needed.
    */
   void SetupObject ();
 
-  /// Get positions buffer
-  iRenderBuffer* GetPositions();
+  /**
+   * Make sure the 'lit_mesh_colors' array has the right size.
+   * Also clears the pseudo-dynamic light hash if the vertex count
+   * changed!
+   */
+  void CheckLitColors ();
+
+  /**
+   * Process one light and add the values to the genmesh light table.
+   * The given transform is the full movable transform.
+   */
+  void UpdateLightingOne (const csReversibleTransform& trans, iLight* light);
+
+  /**
+   * Update lighting using the iLightingInfo system.
+   */
+  void UpdateLighting (
+      const csArray<iLightSectorInfluence*>& lights, iMovable* movable);
+
 public:
   /// Constructor.
   csGenmeshMeshObject (csGenmeshMeshObjectFactory* factory);
@@ -212,22 +269,23 @@ public:
   
   /**\name iGeneralMeshState implementation
    * @{ */
-  void SetLighting (bool l) { }
-  bool IsLighting () const { return false; }
+  void SetLighting (bool l) { do_lighting = l; }
+  bool IsLighting () const { return do_lighting; }
   void SetManualColors (bool m) { do_manual_colors = m; }
   bool IsManualColors () const { return do_manual_colors; }
   const csBox3& GetObjectBoundingBox ();
   void SetObjectBoundingBox (const csBox3& bbox);
   void GetRadius (float& rad, csVector3& cent);
-  void SetShadowCasting (bool m) { }
-  bool IsShadowCasting () const { return true; }
-  void SetShadowReceiving (bool m) { }
-  bool IsShadowReceiving () const { return false; }
+  void SetShadowCasting (bool m) { do_shadows = m; }
+  bool IsShadowCasting () const { return do_shadows; }
+  void SetShadowReceiving (bool m) { do_shadow_rec = m; }
+  bool IsShadowReceiving () const { return do_shadow_rec; }
   iGeneralMeshSubMesh* FindSubMesh (const char* name) const; 
   /** @} */
 
   iVirtualClock* vc;
   csRef<iGenMeshAnimationControl> anim_ctrl;
+  csRef<iGenMeshAnimationControl1_4> anim_ctrl2;
   void SetAnimationControl (iGenMeshAnimationControl* anim_ctrl);
   iGenMeshAnimationControl* GetAnimationControl () const { return anim_ctrl; }
   const csVector3* AnimControlGetVertices ();
@@ -265,6 +323,22 @@ public:
   iRenderBuffer* GetRenderBuffer (const char* name);
   iRenderBuffer* GetRenderBuffer (csRenderBufferName name);
 
+  /**\name Shadow and lighting system
+   * @{ */
+  char* GenerateCacheName ();
+  void InitializeDefault (bool clear);
+  bool ReadFromCache (iCacheManager* cache_mgr);
+  bool WriteToCache (iCacheManager* cache_mgr);
+  void PrepareLighting ();
+
+  void AppendShadows (iMovable* movable, iShadowBlockList* shadows,
+    	const csVector3& origin);
+  void CastShadows (iMovable* movable, iFrustumView* fview);
+  void LightChanged (iLight* light);
+  void LightDisconnect (iLight* light);
+  void DisconnectAllLights ();
+  /** @} */
+
   /**\name iMeshObject implementation
    * @{ */
   virtual iMeshObjectFactory* GetFactory () const;
@@ -288,7 +362,7 @@ public:
     csVector3& isect, float *pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
   	csVector3& isect, float* pr, int* polygon_idx = 0,
-	iMaterialWrapper** material = 0, csArray<iMaterialWrapper*>* materials = 0);
+	iMaterialWrapper** material = 0);
   virtual void SetMeshWrapper (iMeshWrapper* lp)
   {
     logparent = lp;
@@ -300,13 +374,14 @@ public:
   virtual bool SetColor (const csColor& col)
   {
     base_color.Set (col);
+    lighting_dirty = true;
     return true;
   }
   virtual bool GetColor (csColor& col) const { col = base_color; return true; }
   virtual bool SetMaterialWrapper (iMaterialWrapper* mat);
   virtual iMaterialWrapper* GetMaterialWrapper () const
   { return subMeshes.GetDefaultSubmesh()->SubMeshProxy::GetMaterial(); }
-
+  virtual void InvalidateMaterialHandles () { }
   /**
    * see imesh/object.h for specification. The default implementation
    * does nothing.
@@ -378,7 +453,7 @@ public:
   bool do_fullbright;
 
   csWeakRef<iGraphics3D> g3d;
-  csRef<iShaderVarStringSet> svstrings;
+  csRef<iStringSet> strings;
 
   struct KnownBuffers
   {
@@ -393,7 +468,7 @@ public:
   KnownBuffers knownBuffers;
     
   csUserRenderBufferManager userBuffers;
-  csArray<CS::ShaderVarStringID> user_buffer_names;
+  csArray<csStringID> user_buffer_names;
    
   struct LegacyBuffers
   {
@@ -412,7 +487,7 @@ public:
   };
   LegacyBuffers legacyBuffers;
   void CreateLegacyBuffers();
-  void ClearLegacyBuffers (uint mask = (uint)CS_BUFFER_ALL_MASK);
+  void ClearLegacyBuffers (uint mask = CS_BUFFER_ALL_MASK);
   void UpdateFromLegacyBuffers();
   
   SubMeshesContainer subMeshes;
@@ -449,9 +524,6 @@ public:
 
   /// Update tangent and bitangent buffers
   void UpdateTangentsBitangents ();
-  
-  /// Get positions buffer
-  iRenderBuffer* GetPositions();
 public:
   CS_LEAKGUARD_DECLARE (csGenmeshMeshObjectFactory);
 
@@ -465,6 +537,7 @@ public:
   iObjectRegistry* object_reg;
   iMeshFactoryWrapper* logparent;
   csRef<csGenmeshMeshObjectType> genmesh_type;
+  csRef<iLightManager> light_mgr;
   csFlags flags;
 
   iEngine* engine;
@@ -541,12 +614,12 @@ public:
   /**
    * Get the string ID's for the anonymous buffers
    */
-  const csArray<CS::ShaderVarStringID>& GetUserBufferNames ()
+  const csArray<csStringID>& GetUserBufferNames ()
   { return user_buffer_names; }
   const csUserRenderBufferManager& GetUserBuffers()
   { return userBuffers; }
-  iShaderVarStringSet* GetSVStrings()
-  { return svstrings; }
+  iStringSet* GetStrings()
+  { return strings; }
 
   void ClearSubMeshes ();
   void AddSubMesh (unsigned int *triangles,

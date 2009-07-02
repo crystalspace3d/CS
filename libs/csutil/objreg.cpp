@@ -103,16 +103,11 @@ void csObjectRegistryIterator::Add (iBase* obj, char const* tag)
 //-------------------------------------------------------------------------
 
 csObjectRegistry::csObjectRegistry () 
-: scfImplementationType (this), clearing (false)
+  : scfImplementationType (this), clearing (false)
 {
 #if defined(CS_DEBUG) || defined (CS_MEMORY_TRACKER)
   if (iSCF::SCF == 0)
-  {
-    static const char highlight[] = CS_ANSI_FR CS_ANSI_TEXT_BOLD_ON "%s" CS_ANSI_RST " ";
-    csFPrintf(stderr, highlight, "Warning - scfInitialize() has been called for you.\n"
-      "Your program will crash in optimise mode if you do not do this yourself!\n\n");
     scfInitialize (0); // Make sure we've got an iSCF::SCF
-  }
   iSCF::SCF->object_reg = this;
 #endif
 }
@@ -126,10 +121,9 @@ csObjectRegistry::~csObjectRegistry ()
 
 void csObjectRegistry::Clear ()
 {
-  CS::Threading::RecursiveMutexScopedLock lock(registryLock);
-
   clearing = true;
-  for (size_t i = registry.GetSize (); i > 0; i--)
+  size_t i;
+  for (i = registry.GetSize (); i > 0; i--)
   {
     // Take special care to ensure that this object is no longer on the list
     // before calling DecRef(), since we don't want some other object asking
@@ -146,8 +140,6 @@ bool csObjectRegistry::Register (iBase* obj, char const* tag)
 {
   if (obj == 0)
     return false;
-
-  CS::Threading::RecursiveMutexScopedLock lock(registryLock);
 
   CS_ASSERT (registry.GetSize () == tags.GetSize ());
   if (!clearing)
@@ -174,12 +166,11 @@ bool csObjectRegistry::Register (iBase* obj, char const* tag)
 
 void csObjectRegistry::Unregister (iBase* obj, char const* tag)
 {
-  CS::Threading::RecursiveMutexScopedLock lock(registryLock);
-
   CS_ASSERT (registry.GetSize () == tags.GetSize ());
   if (!clearing && obj != 0)
   {
-    for (size_t i = registry.GetSize (); i-- > 0;)
+    size_t i;
+    for (i = registry.GetSize (); i-- > 0;)
     {
       iBase* b = registry[i];
       if (b == obj)
@@ -187,11 +178,11 @@ void csObjectRegistry::Unregister (iBase* obj, char const* tag)
         const char* t = tags[i];
         if ((t == 0 && tag == 0) || (t != 0 && tag != 0 && !strcmp (tag, t)))
         {
-          registry.DeleteIndex (i);
-          tags.DeleteIndex (i);
+	  registry.DeleteIndex (i);
+	  tags.DeleteIndex (i);
           b->DecRef ();
-          if (tag != 0) // For a tagged object, we're done.
-            break;
+	  if (tag != 0) // For a tagged object, we're done.
+	    break;
         }
       }
     }
@@ -200,10 +191,9 @@ void csObjectRegistry::Unregister (iBase* obj, char const* tag)
 
 iBase* csObjectRegistry::Get (char const* tag)
 {
-  CS::Threading::RecursiveMutexScopedLock lock(registryLock);
-
   CS_ASSERT (registry.GetSize () == tags.GetSize ());
-  for (size_t i = registry.GetSize (); i > 0; i--)
+  size_t i;
+  for (i = registry.GetSize (); i > 0; i--)
   {
     const char* t = tags[i - 1];
     if (t && !strcmp (tag, t))
@@ -218,10 +208,9 @@ iBase* csObjectRegistry::Get (char const* tag)
 
 iBase* csObjectRegistry::Get (char const* tag, scfInterfaceID id, int version)
 {
-  CS::Threading::RecursiveMutexScopedLock lock(registryLock);
-
   CS_ASSERT (registry.GetSize () == tags.GetSize ());
-  for (size_t i = registry.GetSize (); i > 0; i--)
+  size_t i;
+  for (i = registry.GetSize (); i > 0; i--)
   {
     const char* t = tags[i - 1];
     if (t && !strcmp (tag, t))
@@ -231,11 +220,11 @@ iBase* csObjectRegistry::Get (char const* tag, scfInterfaceID id, int version)
       if (!interf)
       {
         csPrintf (CS_ANSI_FY CS_ANSI_TEXT_BOLD_ON 
-          "WARNING! Suspicious: object with tag '%s' does not implement "
-          "interface '%s'!\n" CS_ANSI_RST, t, 
-          iSCF::SCF->GetInterfaceName(id));
-        fflush (stdout);
-        return 0;
+	  "WARNING! Suspicious: object with tag '%s' does not implement "
+	  "interface '%s'!\n" CS_ANSI_RST, t, 
+	  iSCF::SCF->GetInterfaceName(id));
+	fflush (stdout);
+	return 0;
       }
       return b; //do not return interf.  
     }
@@ -244,13 +233,12 @@ iBase* csObjectRegistry::Get (char const* tag, scfInterfaceID id, int version)
 }
 
 csPtr<iObjectRegistryIterator> csObjectRegistry::Get (
-  scfInterfaceID id, int version)
+	scfInterfaceID id, int version)
 {
   csObjectRegistryIterator* iterator = new csObjectRegistryIterator ();
+  size_t i;
 
-  CS::Threading::RecursiveMutexScopedLock lock(registryLock);
-
-  for (size_t i = registry.GetSize (); i > 0; i--)
+  for (i = registry.GetSize (); i > 0; i--)
   {
     iBase* b = registry[i - 1];
     void* interf = b->QueryInterface (id, version);
@@ -267,10 +255,9 @@ csPtr<iObjectRegistryIterator> csObjectRegistry::Get (
 csPtr<iObjectRegistryIterator> csObjectRegistry::Get ()
 {
   csObjectRegistryIterator* iterator = new csObjectRegistryIterator ();
+  size_t i;
 
-  CS::Threading::RecursiveMutexScopedLock lock(registryLock);
-
-  for (size_t i = registry.GetSize (); i > 0; i--)
+  for (i = registry.GetSize (); i > 0; i--)
   {
     iBase* b = registry[i - 1];
     const char* t = tags[i - 1];

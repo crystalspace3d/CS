@@ -96,7 +96,7 @@ void Tri3DTest::Frame()
   //c->SetTransform (ot);
   //g3d->SetWorldToCamera(csReversibleTransform());
 
-  rm->RenderView (view);
+  view->Draw ();
 
   // if the user wants the item to be displayed triangulated, 
   // then do so
@@ -197,8 +197,6 @@ void Tri3DTest::OnExit()
 
 bool Tri3DTest::Application()
 {
-  // Open the main system. This will open all the previously loaded plug-ins.
-  // i.e. all windows will be opened.
   if (!OpenApplication(GetObjectRegistry()))
     return ReportError("Error opening system!");
 
@@ -262,7 +260,6 @@ bool Tri3DTest::SetupModules ()
   // Let the engine prepare all lightmaps for use and also free all images 
   // that were loaded for the texture manager.
   engine->Prepare ();
-  rm = engine->GetRenderManager();
 
   // these are used store the current orientation of the camera
   rotY = rotX = 0;

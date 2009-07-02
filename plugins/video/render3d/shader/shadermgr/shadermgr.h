@@ -49,8 +49,6 @@
 CS_PLUGIN_NAMESPACE_BEGIN(ShaderManager)
 {
 
-class PlexHierarchicalCache;
-
 typedef csHash<csRef<iShaderVariableAccessor>,csStringBase> csSVAHash;
 
 class csShaderManager : 
@@ -65,9 +63,7 @@ private:
   csRef<iVirtualClock> vc;
   csRef<iTextureManager> txtmgr;
   csRef<iStringSet> strings;
-  csRef<iShaderVarStringSet> stringsSvName;
   csRef<iEventHandler> weakEventHandler;
-  csRef<PlexHierarchicalCache> shaderCache;
 
   bool do_verbose;
 
@@ -83,7 +79,7 @@ private:
   csRef<csShaderVariable> sv_time;
   void UpdateStandardVariables();
 
-  csShaderVariableStack shaderVarStack;
+  csRef<iShaderVarStack> shaderVarStack;
 
   csSet<csStringID> neutralTags;
   csSet<csStringID> forbiddenTags;
@@ -105,14 +101,6 @@ private:
   csEventID SystemOpen;
   csEventID SystemClose;
 
-#define CS_TOKEN_ITEM_FILE \
-  "plugins/video/render3d/shader/shadermgr/shadermgr.tok"
-#include "cstool/tokenlist.h"
-#undef CS_TOKEN_ITEM_FILE
-  csStringHash xmltokens;
-    
-  void AddDefaultVariables();
-  void LoadDefaultVariables();
 public:
   csShaderManager(iBase* parent);
   virtual ~csShaderManager();
@@ -153,7 +141,7 @@ public:
   void Report (int severity, const char* msg, ...);
 
   /// Get the shadervariablestack used to handle shadervariables on rendering
-  virtual csShaderVariableStack& GetShaderVariableStack ()
+  virtual iShaderVarStack* GetShaderVariableStack ()
   {
     return shaderVarStack;
   }
@@ -179,20 +167,6 @@ public:
   {
     return activeLights;
   }
-
-  virtual iShaderVarStringSet* GetSVNameStringset () const
-  {
-    return stringsSvName;
-  }
-  
-  iHierarchicalCache* GetShaderCache();
-  
-  void AddSubShaderCache (iHierarchicalCache* cache,
-    int priority = cachePriorityApp);
-  iHierarchicalCache* AddSubCacheDirectory (const char* cacheDir,
-    int priority = cachePriorityApp, bool readOnly = false);
-  void RemoveSubShaderCache (iHierarchicalCache* cache);
-  void RemoveAllSubShaderCaches ();
   /** @} */
 
   /**\name iComponent implementation

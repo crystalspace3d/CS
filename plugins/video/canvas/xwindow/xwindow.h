@@ -43,8 +43,11 @@
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
 
-class csXWindow : public scfImplementation3<csXWindow, iXWindow, 
-  iEventPlug, iComponent>
+class csXWindow : 
+  public scfImplementation3<csXWindow,
+                            iXWindow, 
+                            iEventPlug,
+                            iComponent>
 {
   /// The Object Registry
   iObjectRegistry *object_reg;
@@ -160,7 +163,8 @@ public:
 #endif
 
   struct EventHandler : 
-    public scfImplementation1<EventHandler, iEventHandler>
+    public scfImplementation1<EventHandler, 
+                              iEventHandler>
   {
   private:
     csWeakRef<csXWindow> parent;
@@ -170,8 +174,7 @@ public:
       EventHandler::parent = parent;
     }
     virtual ~EventHandler () { }
-    virtual bool HandleEvent (iEvent& e)
-    { return parent ? parent->HandleEvent(e) : false; }
+    virtual bool HandleEvent (iEvent& e) { return parent ? parent->HandleEvent(e) : false; }
     CS_EVENTHANDLER_PHASE_LOGIC("crystalspace.window")
   };
   csRef<EventHandler> scfiEventHandler;

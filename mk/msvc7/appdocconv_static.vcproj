@@ -7,10 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-  		<Platform Name="Win32"/>
-    	</Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
 	<Configurations>
-            		<Configuration
+  		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release7\build\appdocconv_static\"
 			IntermediateDirectory="..\..\out\release7\build\appdocconv_static\"
@@ -25,9 +26,10 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32"
+				ProgramDataBaseFileName="..\..\out\release7\build\appdocconv_static\docconv_static.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -36,10 +38,9 @@
 				ObjectFile="..\..\out\release7\build\appdocconv_static\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -51,10 +52,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\release7\build\appdocconv_static\Win32\docconv_static.pdb"
+				ProgramDatabaseFile="..\..\out\release7\build\appdocconv_static\docconv_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7.lib lib3ds.lib cal3d-vc7.lib ode.lib bulletcollision-vc7.lib bulletdynamics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -63,7 +64,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -78,7 +79,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -86,7 +87,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release7\build\appdocconv_static\"
 			IntermediateDirectory="..\..\out\release7\build\appdocconv_static\"
@@ -101,9 +102,10 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release7\build\appdocconv_static\docconv_static.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -112,10 +114,9 @@
 				ObjectFile="..\..\out\release7\build\appdocconv_static\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -127,10 +128,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\release7\build\appdocconv_static\Win32\docconv_static.pdb"
+				ProgramDatabaseFile="..\..\out\release7\build\appdocconv_static\docconv_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7.lib lib3ds.lib cal3d-vc7.lib ode.lib bulletcollision-vc7.lib bulletdynamics-vc7.lib bulletmath-vc7.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -139,7 +140,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -154,7 +155,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -162,7 +163,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\appdocconv_static\"
 			IntermediateDirectory="..\..\out\debug7\build\appdocconv_static\"
@@ -174,11 +175,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -187,10 +189,9 @@
 				ObjectFile="..\..\out\debug7\build\appdocconv_static\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -200,10 +201,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -212,7 +213,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -227,7 +228,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -235,7 +236,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\appdocconv_static\"
 			IntermediateDirectory="..\..\out\debug7\build\appdocconv_static\"
@@ -247,11 +248,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -260,10 +262,9 @@
 				ObjectFile="..\..\out\debug7\build\appdocconv_static\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -273,10 +274,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -285,7 +286,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -300,7 +301,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -308,7 +309,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\appdocconv_static\"
 			IntermediateDirectory="..\..\out\debug7\build\appdocconv_static\"
@@ -320,11 +321,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -333,10 +335,9 @@
 				ObjectFile="..\..\out\debug7\build\appdocconv_static\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -346,10 +347,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -358,7 +359,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -373,7 +374,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -381,7 +382,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\appdocconv_static\"
 			IntermediateDirectory="..\..\out\debug7\build\appdocconv_static\"
@@ -393,11 +394,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -406,10 +408,9 @@
 				ObjectFile="..\..\out\debug7\build\appdocconv_static\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -419,10 +420,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -431,7 +432,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -446,7 +447,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -454,7 +455,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\appdocconv_static\"
 			IntermediateDirectory="..\..\out\debug7\build\appdocconv_static\"
@@ -466,11 +467,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -479,10 +481,9 @@
 				ObjectFile="..\..\out\debug7\build\appdocconv_static\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -492,10 +493,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -504,7 +505,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -519,7 +520,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -527,7 +528,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\appdocconv_static\"
 			IntermediateDirectory="..\..\out\debug7\build\appdocconv_static\"
@@ -539,11 +540,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -552,10 +554,9 @@
 				ObjectFile="..\..\out\debug7\build\appdocconv_static\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -565,10 +566,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\docconv_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib dsound.lib ddraw.lib dinput.lib freetype2.lib CEGUIBase-vc7_d.lib lib3ds.lib cal3d-vc7_d.lib ode.lib bulletcollision-vc7_d.lib bulletdynamics-vc7_d.lib bulletmath-vc7_d.lib vorbisfile.lib vorbis.lib ogg.lib speex.lib openal32.lib opengl32.lib libmng.lib libjpeg.lib libpng.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -577,7 +578,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -592,7 +593,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=7"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=7"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -600,153 +601,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
-			Name="ThreadChecker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug7\build\appdocconv_static\"
-			IntermediateDirectory="..\..\out\debug7\build\appdocconv_static\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\appdocconv_static\appdocconv_static.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\appdocconv_static\"
-				ObjectFile="..\..\out\debug7\build\appdocconv_static\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\appdocconv_static\appdocconv_static.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug7\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug7\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="ThreadChecker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug7\build\appdocconv_static\"
-			IntermediateDirectory="..\..\out\debug7\build\appdocconv_static\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\appdocconv_static\appdocconv_static.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\appdocconv_static\"
-				ObjectFile="..\..\out\debug7\build\appdocconv_static\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\docconv_static.exe"
-				ProgramDatabaseFile="..\..\out\debug7\build\appdocconv_static\Win32\docconv_static.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\appdocconv_static\appdocconv_static.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug7\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug7\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\docconv;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-              	</Configurations>
+  	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"

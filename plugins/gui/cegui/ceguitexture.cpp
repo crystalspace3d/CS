@@ -72,7 +72,7 @@ void csCEGUITexture::loadFromFile (const CEGUI::String &filename,
     return;
 
   hTxt = txt->GetTextureHandle();
-  hTxt->SetTextureClass ("cegui");
+  hTxt->SetTextureClass ("nocompress");
 }
 
 void csCEGUITexture::loadFromMemory (const void *buffPtr, 
@@ -104,7 +104,7 @@ CEGUI::Renderer* csCEGUITexture::getRenderer () const
   return renderer;
 }
 
-iTextureHandle* csCEGUITexture::GetTexHandle () const
+iTextureHandle* csCEGUITexture::GetTexHandle () 
 {
   return hTxt;
 }

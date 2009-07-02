@@ -93,12 +93,7 @@ namespace CS
    * Platform specific code and wrappers
    */
   namespace Platform
-  {
-    /**
-     * Win32-specific classes and functions
-     */
-    namespace Win32 {}
-  }
+  {}
 
   /**
    * Implementation of all plugins
@@ -127,19 +122,6 @@ namespace CS
      * Common code for plugins implementing shader weaver combiners
      */
     namespace ShaderWeaver
-    {}
-  }
-
-  /**
-   * Classes for render manager plugin implementation
-   */
-  namespace RenderManager
-  {
-    /**
-     * Classes for "automatic effects" (usually providing special textures or
-     * similar on an if-uses basis).
-     */
-    namespace AutoFX
     {}
   }
 

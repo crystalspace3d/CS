@@ -45,8 +45,10 @@
 #include <GL/gl.h>
 #endif
 
-class csGraphics2DGLEmbed : public scfImplementationExt1<csGraphics2DGLEmbed,
-  csGraphics2DGLCommon, iOpenGLInterface>
+class csGraphics2DGLEmbed : public scfImplementationExt1<
+			      				csGraphics2DGLEmbed,
+			      				csGraphics2DGLCommon,
+							iOpenGLInterface>
 {
 public:
   csGraphics2DGLEmbed (iBase *iParent);

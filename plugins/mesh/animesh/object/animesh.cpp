@@ -42,17 +42,17 @@ CS_IMPLEMENT_PLUGIN
 CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 {
 
-  static CS::ShaderVarStringID svNameVertexUnskinned = CS::InvalidShaderVarStringID;
-  static CS::ShaderVarStringID svNameNormalUnskinned = CS::InvalidShaderVarStringID;
-  static CS::ShaderVarStringID svNameTangentUnskinned = CS::InvalidShaderVarStringID;
-  static CS::ShaderVarStringID svNameBinormalUnskinned = CS::InvalidShaderVarStringID;
+  static csStringID svNameVertexUnskinned = csInvalidStringID;
+  static csStringID svNameNormalUnskinned = csInvalidStringID;
+  static csStringID svNameTangentUnskinned = csInvalidStringID;
+  static csStringID svNameBinormalUnskinned = csInvalidStringID;
 
-  static CS::ShaderVarStringID svNameBoneIndex = CS::InvalidShaderVarStringID;
-  static CS::ShaderVarStringID svNameBoneWeight = CS::InvalidShaderVarStringID;
-  static CS::ShaderVarStringID svNameBoneTransforms = CS::InvalidShaderVarStringID;
+  static csStringID svNameBoneIndex = csInvalidStringID;
+  static csStringID svNameBoneWeight = csInvalidStringID;
+  static csStringID svNameBoneTransforms = csInvalidStringID;
 
-  static CS::ShaderVarStringID svNameBoneTransformsReal = CS::InvalidShaderVarStringID;
-  static CS::ShaderVarStringID svNameBoneTransformsDual = CS::InvalidShaderVarStringID;
+  static csStringID svNameBoneTransformsReal = csInvalidStringID;
+  static csStringID svNameBoneTransformsDual = csInvalidStringID;
 
 
   SCF_IMPLEMENT_FACTORY(AnimeshObjectType);
@@ -69,9 +69,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
   bool AnimeshObjectType::Initialize (iObjectRegistry* object_reg)
   {
-    csRef<iShaderVarStringSet> strset =
-      csQueryRegistryTagInterface<iShaderVarStringSet> (
-        object_reg, "crystalspace.shader.variablenameset");
+    csRef<iStringSet> strset = csQueryRegistryTagInterface<iStringSet> (
+      object_reg, "crystalspace.shared.stringset");
 
     // Get the SV names
     svNameVertexUnskinned = strset->Request ("position unskinned");
@@ -661,7 +660,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
         meshPtr->buffers = sm->bufferHolders[j];
 
         meshPtr->object2world = o2wt;
-        meshPtr->bbox = GetObjectBoundingBox();
         meshPtr->geometryInstance = factory;
         meshPtr->variablecontext = sm->svContexts[j];
 
@@ -716,10 +714,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
   bool AnimeshObject::HitBeamObject (const csVector3& start, const csVector3& end,
     csVector3& isect, float* pr, int* polygon_idx,
-    iMaterialWrapper** material, csArray<iMaterialWrapper*>* materials)
+    iMaterialWrapper** material)
   {
     return csIntersect3::BoxSegment (factory->factoryBB, csSegment3 (start, end),
-      isect, pr) != 0;
+      isect, pr);
   }
 
   void AnimeshObject::SetMeshWrapper (iMeshWrapper* lp)
@@ -766,6 +764,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
   uint AnimeshObject::GetMixMode () const
   {
     return mixMode;
+  }
+
+  void AnimeshObject::InvalidateMaterialHandles ()
+  {
   }
 
   void AnimeshObject::PositionChild (iMeshObject* child,csTicks current_time)

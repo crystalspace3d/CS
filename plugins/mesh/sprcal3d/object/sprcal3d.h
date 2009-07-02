@@ -37,9 +37,12 @@
 #include "csutil/refarr.h"
 #include "csutil/sysfunc.h"
 #include "csutil/weakref.h"
+#include "iengine/light.h"
+#include "iengine/lightmgr.h"
 #include "iengine/lod.h"
 #include "iengine/material.h"
 #include "iengine/mesh.h"
+#include "imesh/lighting.h"
 #include "imesh/object.h"
 #include "imesh/spritecal3d.h"
 #include "imesh/skeleton.h"
@@ -192,6 +195,8 @@ public:
 
 class csSpriteCal3DMeshObject;
 
+#include "csutil/deprecated_warn_off.h"
+
 class csCal3dSkeletonFactory;
 
 /**
@@ -243,6 +248,7 @@ public:
   iVirtualClock* vc;
 
   csWeakRef<iGraphics3D> g3d;
+  csRef<iLightManager> light_mgr;
 
   /**
    * Reference to the engine (optional because sprites can also be
@@ -395,9 +401,10 @@ class csCal3dSkeleton;
  * a skeleton).
  */
 class csSpriteCal3DMeshObject :
-  public scfImplementationExt3<csSpriteCal3DMeshObject,
+  public scfImplementationExt4<csSpriteCal3DMeshObject,
 			       csObjectModel,
 			       iMeshObject,
+			       iLightingInfo,
 			       iSpriteCal3DState,
 			       iLODControl>
 {
@@ -445,25 +452,23 @@ private:
   protected:
     csSpriteCal3DMeshObject* meshobj;
     int mesh;
-    uint normalVersion, binormalVersion, tangentVersion;
+    uint colorVersion, normalVersion;
     int vertexCount;
 
-    csRef<iRenderBuffer> binormal_buffer;
-    csRef<iRenderBuffer> tangent_buffer;
     csRef<iRenderBuffer> normal_buffer;
+    csRef<iRenderBuffer> color_buffer;
 
-    void UpdateNormals (csRenderBufferHolder* holder);
-    void UpdateBinormals (csRenderBufferHolder* holder);
-    void UpdateTangents (csRenderBufferHolder* holder);
+    void UpdateNormals (CalRenderer* render, int meshIndex,
+      CalMesh* calMesh, size_t vertexCount);
   public:
     iMovable* movable;
-	
+
     MeshAccessor (csSpriteCal3DMeshObject* meshobj, int mesh) :
       scfImplementationType (this)
     {
       MeshAccessor::meshobj = meshobj;
       MeshAccessor::mesh = mesh;
-      normalVersion = binormalVersion = tangentVersion = (uint)-1;
+      colorVersion = normalVersion = (uint)-1;
       vertexCount = meshobj->ComputeVertexCount (mesh);
     }
 
@@ -493,6 +498,7 @@ private:
     void UpdatePosition (float delta, CalModel*);
   };
 
+  csRef<iStringSet> strings;
   csWeakRef<iGraphics3D> G3D;
 
   /* The deal with meshes, submeshes and attached meshes:
@@ -510,6 +516,7 @@ private:
   uint meshVersion;
   csBox3 object_bbox;
   uint bboxVersion;
+  bool lighting_dirty;
 
   /** A mesh attached to the model.  These form the list of meshes that
     * the current model has attached to it.
@@ -549,6 +556,12 @@ private:
   int FindAnimCycleNamePos(char const*) const;
   void ClearAnimCyclePos(int pos, float delay);
 
+  void InitSubmeshLighting (int mesh, int submesh, CalRenderer *pCalRenderer,
+    iMovable* movable, csColor* colors);
+  void UpdateLightingSubmesh (const csArray<iLightSectorInfluence*>& lights,
+      iMovable*, CalRenderer*, int mesh, int submesh, float* have_normals,
+      csColor* colors);
+
 public:
   float updateanim_sqdistance1;
   int updateanim_skip1;		// 0 is normal, > 0 is skip
@@ -577,13 +590,24 @@ public:
   /// Get the factory.
   csSpriteCal3DMeshObjectFactory* GetFactory3D () const { return factory; }
 
+  /**\name iLightingInfo interface
+   * @{ */
+  void InitializeDefault (bool /*clear*/) {}
+  bool ReadFromCache (iCacheManager* /*cache_mgr*/) { return true; }
+  bool WriteToCache (iCacheManager* /*cache_mgr*/) { return true; }
+  virtual void PrepareLighting () { }
+  void LightChanged (iLight* light);
+  void LightDisconnect (iLight* light);
+  void DisconnectAllLights ();
+  /** @} */
+
   /**\name iMeshObject implementation
    * @{ */
   virtual bool HitBeamOutline (const csVector3& start, const csVector3& end,
       csVector3& intersect, float* pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
       csVector3& intersect, float* pr, int* = 0,
-      iMaterialWrapper** = 0, csArray<iMaterialWrapper*>* materials = 0);
+      iMaterialWrapper** = 0);
 
   virtual bool SetColor (const csColor& /*col*/)
   {
@@ -606,7 +630,7 @@ public:
   }
   virtual void SetMixMode (uint) { }
   virtual uint GetMixMode () const { return CS_FX_COPY; }
-
+  virtual void InvalidateMaterialHandles () { }
   /**
    * See imesh/object.h for specification. The default implementation
    * does nothing.
@@ -1018,6 +1042,8 @@ public:
   void UpdateNotify (const csTicks &current_ticks);
 
 };
+
+#include "csutil/deprecated_warn_on.h"
 
 /**
  * Sprite Cal3D type. This is the plugin you have to use to create instances

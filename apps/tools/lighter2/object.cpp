@@ -57,13 +57,6 @@ namespace lighter
 
   bool ObjectFactory::PrepareLightmapUV (LightmapUVFactoryLayouter* uvlayout)
   {
-    if (factoryWrapper->GetFlags().Check (CS_ENTITY_NOLIGHTING))
-    {
-      unlayoutedPrimitives.DeleteAll();
-      noModify = true;
-      return true;
-    }
-    
     BeginSubmeshRemap ();
     if (lightPerVertex)
     {
@@ -215,7 +208,7 @@ namespace lighter
 
   Object::Object (ObjectFactory* fact)
     : lightPerVertex (fact->lightPerVertex), sector (0), litColors (0), 
-      litColorsPD (0), factory (fact), lightInfluences (0)
+      litColorsPD (0), factory (fact)
   {
     if (factory->noSelfShadow)
       objFlags.Set (OBJECT_FLAG_NOSELFSHADOW);
@@ -225,7 +218,6 @@ namespace lighter
   {
     delete[] litColors;
     delete[] litColorsPD;
-    delete lightInfluences;
   }
 
   bool Object::Initialize (Sector* sector)
@@ -243,7 +235,6 @@ namespace lighter
 
     const csReversibleTransform transform = meshWrapper->GetMovable ()->
       GetFullTransform ();
-    objectToWorld = transform;
 
     //Copy over data, transform the radprimitives..
     vertexData = factory->vertexData;
@@ -263,49 +254,46 @@ namespace lighter
     }
     ComputeBoundingSphere ();
 
-    if (!objFlags.Check (OBJECT_FLAG_NOLIGHT))
+    const LightRefArray& allPDLights = sector->allPDLights;
+    csBitArray pdBits;
+    pdBits.SetSize (allPDLights.GetSize());
+    for (size_t i = 0; i < allPDLights.GetSize(); i++)
     {
-      const LightRefArray& allPDLights = sector->allPDLights;
-      csBitArray pdBits;
-      pdBits.SetSize (allPDLights.GetSize());
-      for (size_t i = 0; i < allPDLights.GetSize(); i++)
+      if (bsphere.TestIntersect (allPDLights[i]->GetBoundingSphere()))
+        pdBits.SetBit (i);
+    }
+
+    unsigned int i = 0;
+    this->allPrimitives.SetCapacity (factory->layoutedPrimitives.GetSize ());
+    for(size_t j = 0; j < factory->layoutedPrimitives.GetSize (); ++j)
+    {
+      FactoryPrimitiveArray& factPrims = factory->layoutedPrimitives[j].primitives;
+      PrimitiveArray& allPrimitives =
+        this->allPrimitives.GetExtend (j);
+
+      allPrimitives.SetCapacity (allPrimitives.GetSize() + factPrims.GetSize());
+      for (i = 0; i < factPrims.GetSize(); i++)
       {
-	if (bsphere.TestIntersect (allPDLights[i]->GetBoundingSphere()))
-	  pdBits.SetBit (i);
+        Primitive newPrim (vertexData);
+        
+        Primitive& prim = allPrimitives[allPrimitives.Push (newPrim)];
+        //prim.SetOriginalPrimitive (&factPrims[i]);
+        prim.SetTriangle (factPrims[i].GetTriangle ()); 
+        prim.ComputePlane ();
       }
 
-      unsigned int i = 0;
-      this->allPrimitives.SetCapacity (factory->layoutedPrimitives.GetSize ());
-      for(size_t j = 0; j < factory->layoutedPrimitives.GetSize (); ++j)
+      if (!lightPerVertex)
       {
-	FactoryPrimitiveArray& factPrims = factory->layoutedPrimitives[j].primitives;
-	PrimitiveArray& allPrimitives =
-	  this->allPrimitives.GetExtend (j);
-
-	allPrimitives.SetCapacity (allPrimitives.GetSize() + factPrims.GetSize());
-	for (i = 0; i < factPrims.GetSize(); i++)
-	{
-	  Primitive newPrim (vertexData, j);
-	  
-	  Primitive& prim = allPrimitives[allPrimitives.Push (newPrim)];
-	  //prim.SetOriginalPrimitive (&factPrims[i]);
-	  prim.SetTriangle (factPrims[i].GetTriangle ()); 
-	  prim.ComputePlane ();
-	}
-
-	if (!lightPerVertex)
-	{
-	  // FIXME: probably separate out to allow for better progress display
-	  LightmapUVObjectLayouter* layout = 
-	    factory->layoutedPrimitives[j].factory;
-	  const size_t group = factory->layoutedPrimitives[j].group;
-	  size_t layoutID = layout->LayoutUVOnPrimitives (allPrimitives, 
-	    group, sector, pdBits);
-	  if (layoutID == (size_t)~0) return false;
-	  lmLayouts.Push (LMLayoutingInfo (layout, layoutID, group));
-	}
-
+        // FIXME: probably separate out to allow for better progress display
+        LightmapUVObjectLayouter* layout = 
+          factory->layoutedPrimitives[j].factory;
+        const size_t group = factory->layoutedPrimitives[j].group;
+        size_t layoutID = layout->LayoutUVOnPrimitives (allPrimitives, 
+          group, sector, pdBits);
+        if (layoutID == (size_t)~0) return false;
+        lmLayouts.Push (LMLayoutingInfo (layout, layoutID, group));
       }
+
     }
 
     factory.Invalidate();
@@ -360,7 +348,7 @@ namespace lighter
       else
         svName.Format ("tex lightmap dir %d", i);
       csShaderVariable* sv = svc->GetVariable (
-        globalLighter->svStrings->Request (svName));
+        globalLighter->strings->Request (svName));
       if (sv != 0)
       {
         iTextureWrapper* tex;
@@ -380,8 +368,7 @@ namespace lighter
     const csFlags& meshFlags = wrapper->GetFlags ();
     if (meshFlags.Check (CS_ENTITY_NOSHADOWS))
       objFlags.Set (OBJECT_FLAG_NOSHADOW);
-    if (meshFlags.Check (CS_ENTITY_NOLIGHTING)
-	|| factory->factoryWrapper->GetFlags().Check (CS_ENTITY_NOLIGHTING))
+    if (meshFlags.Check (CS_ENTITY_NOLIGHTING))
       objFlags.Set (OBJECT_FLAG_NOLIGHT);
 
     if (globalLighter->rayDebug.EnableForMesh (meshName))
@@ -403,7 +390,7 @@ namespace lighter
             strcmp (vNoSelfShadow, "yes") == 0);
 	}
 
-        if (!factory->lightPerVertex && !objFlags.Check (OBJECT_FLAG_NOLIGHT))
+        if (!factory->lightPerVertex)
         {
           /* Disallow "disabling" of per-vertex lighting in an object when
            * it's enabled for the factory. */
@@ -487,7 +474,7 @@ namespace lighter
 
   void Object::FillLightmapMask (LightmapMaskPtrDelArray& masks)
   {
-    if (lightPerVertex || objFlags.Check (OBJECT_FLAG_NOLIGHT)) return;
+    if (lightPerVertex) return;
 
     // And fill it with data
     for (size_t i = 0; i < allPrimitives.GetSize(); i++)
@@ -588,69 +575,7 @@ namespace lighter
                       tang[1], bitang[1], normal[1],
                       tang[2], bitang[2], normal[2]);
   }
-  
-  LightInfluences& Object::GetLightInfluences (uint groupID, Light* light)
-  {
-    if (!lightInfluences)
-      lightInfluences = new LightInfluencesHash;
-  
-    GroupAndLight key (light, groupID);
-    csRef<LightInfluencesRC>& infl = lightInfluences->GetOrCreate (key);
-    
-    if (!infl.IsValid())
-    {
-      float minU = FLT_MAX, minV = FLT_MAX, maxU = -FLT_MAX, maxV = -FLT_MAX;
-      const PrimitiveArray& groupPrims = allPrimitives[groupID];
-      for (size_t p = 0; p < groupPrims.GetSize(); p++)
-      {
-        const Primitive& prim = groupPrims[p];
-        CS_ASSERT(prim.GetGroupID() == groupID);
-        
-        const csVector2& primMinUV = prim.GetMinUV();
-        if (primMinUV.x < minU) minU = primMinUV.x;
-        if (primMinUV.y < minV) minV = primMinUV.y;
-        
-        const csVector2& primMaxUV = prim.GetMaxUV();
-        if (primMaxUV.x > maxU) maxU = primMaxUV.x;
-        if (primMaxUV.y > maxV) maxV = primMaxUV.y;
-      }
-      
-      uint inflOffsX = uint (floorf (minU));
-      uint inflOffsY = uint (floorf (minV));
-      uint inflW = uint (ceilf (maxU)) - inflOffsX;
-      uint inflH = uint (ceilf (maxV)) - inflOffsY;
-      infl.AttachNew (
-        new LightInfluencesRC (inflW, inflH, inflOffsX, inflOffsY));
-    }
-    
-    return *infl;
-  }
 
-  csArray<Light*> Object::GetLightsAffectingGroup (uint groupID) const
-  {
-    csArray<Light*> lights;
-    if (lightInfluences)
-    {
-      csSet<csPtrKey<Light> > lightsSeen;
-      
-      LightInfluencesHash::GlobalIterator inflIt = 
-	lightInfluences->GetIterator();
-      
-      while (inflIt.HasNext())
-      {
-	GroupAndLight key (0, 0);
-	inflIt.Next (key);
-	if ((key.groupID == groupID) && !lightsSeen.Contains (key.light))
-	{
-	  lights.Push (key.light);
-	  lightsSeen.AddNoTest (key.light);
-	}
-      }
-    }
-    
-    return lights;
-  }
-  
   void Object::RenormalizeLightmapUVs (const LightmapPtrDelArray& lightmaps,
                                        csVector2* lmcoords)
   {

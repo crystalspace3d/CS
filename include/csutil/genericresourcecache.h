@@ -135,69 +135,6 @@ namespace CS
       };
       
       /**
-       * Reuse condition: a resource is reused if only one reference is held 
-       * to it. (The resource type must be a csRef<>.)
-       */
-      class ReuseIfOnlyOneRef
-      {
-      public:
-	struct AddParameter
-	{
-	  AddParameter () {}
-	};
-	struct StoredAuxiliaryInfo
-	{
-	  template<typename ResourceCacheType>
-	  StoredAuxiliaryInfo (const ResourceCacheType& cache, 
-	    const AddParameter& param) {}
-	};
-	
-	template<typename ResourceCacheType>
-	void MarkActive (const ResourceCacheType& cache,
-	    StoredAuxiliaryInfo& elementInfo)
-	{ }
-  
-	template<typename ResourceCacheType>
-	bool IsReusable (const ResourceCacheType& cache,
-	  const StoredAuxiliaryInfo& elementInfo,
-	  const typename ResourceCacheType::CachedType& data)
-	{
-	  return data->GetRefCount() == 1;
-	}
-      };
-      
-      /**
-       * Reuse condition: allow immediate reuse.
-       */
-      class ReuseAlways
-      {
-      public:
-	struct AddParameter
-	{
-	  AddParameter () {}
-	};
-	struct StoredAuxiliaryInfo
-	{
-	  template<typename ResourceCacheType>
-	  StoredAuxiliaryInfo (const ResourceCacheType& cache, 
-	    const AddParameter& param) {}
-	};
-	
-	template<typename ResourceCacheType>
-	void MarkActive (const ResourceCacheType& cache,
-	    StoredAuxiliaryInfo& elementInfo)
-	{ }
-  
-	template<typename ResourceCacheType>
-	bool IsReusable (const ResourceCacheType& cache,
-	  const StoredAuxiliaryInfo& elementInfo,
-	  const typename ResourceCacheType::CachedType& data)
-	{
-	  return true;
-	}
-      };
-      
-      /**
        * Purge condition: a resource is purged after a certain time has passed
        */
       template<typename TimeType = uint>
@@ -243,38 +180,6 @@ namespace CS
 	}
       };
 
-      /**
-       * Purge condition: a resource is purged if only one reference is held 
-       * to it. (The resource type must be a csRef<>.)
-       */
-      class PurgeIfOnlyOneRef
-      {
-      public:
-	struct AddParameter
-	{
-	  AddParameter () {}
-	};
-	struct StoredAuxiliaryInfo
-	{
-	  template<typename ResourceCacheType>
-	  StoredAuxiliaryInfo (const ResourceCacheType& cache, 
-	    const AddParameter& param) {}
-	};
-	
-	template<typename ResourceCacheType>
-	void MarkActive (const ResourceCacheType& cache,
-	    StoredAuxiliaryInfo& elementInfo)
-	{ }
-  
-	template<typename ResourceCacheType>
-	bool IsPurgeable (const ResourceCacheType& cache,
-	  StoredAuxiliaryInfo& elementInfo,
-	  const typename ResourceCacheType::CachedType& data)
-	{
-	  return data->GetRefCount() == 1;
-	}
-      };
-      
     } // namespace ResourceCache
     
     /**
@@ -391,7 +296,7 @@ namespace CS
 	  RBTraverser (csBlockAllocator<Element>& elementAlloc) :
 	    elementAlloc (elementAlloc) {}
 	  
-	  void operator() (Element* el)
+	  void Process (Element* el)
 	  {
 	    elementAlloc.Free (el);
 	  }
@@ -456,7 +361,7 @@ namespace CS
 	SearchDataTraverser (T* entry, Element*& ret) 
 	  : entry (entry), ret (ret) {}
 	
-        bool operator() (Element* el)
+        bool Process (Element* el)
 	{
 	  if (&(el->data) == entry)
 	  {
@@ -506,7 +411,6 @@ namespace CS
       
       ~GenericResourceCache()
       {
-        availableResources.Destroy ();
       }
 
       /**
@@ -534,7 +438,7 @@ namespace CS
       public:
 	VerifyTraverser (Element* el) : el (el) {}
 	
-        bool operator() (Element* el)
+        bool Process (Element* el)
 	{
 	  CS_ASSERT(el != this->el);
 	  return true;

@@ -42,10 +42,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
 
-// Bullet includes.
-#include "btBulletDynamicsCommon.h"
-#include "btBulletCollisionCommon.h"
-
 #include "csutil/custom_new_enable.h"
 
 #include "bullet.h"

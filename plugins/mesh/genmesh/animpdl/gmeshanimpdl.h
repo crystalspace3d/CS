@@ -34,6 +34,7 @@
 #include "iengine/light.h"
 #include "imesh/genmesh.h"
 #include "imesh/gmeshanim.h"
+#include "imesh/lighting.h"
 #include "iutil/comp.h"
 #include "iutil/eventh.h"
 #include "ivideo/rndbuf.h"
@@ -124,8 +125,10 @@ public:
  * Genmesh animation control.
  */
 class GenmeshAnimationPDL :
-  public scfImplementation1<GenmeshAnimationPDL,
-    iGenMeshAnimationControl>
+  public scfImplementation3<GenmeshAnimationPDL,
+    iGenMeshAnimationControl, 
+    iGenMeshAnimationControl1_4, 
+    iLightingInfo>
 {
 private:
   csRef<GenmeshAnimationPDLFactory> factory;
@@ -175,6 +178,7 @@ public:
   virtual bool AnimatesTexels () const { return false; }
   virtual bool AnimatesNormals () const { return false; }
   virtual bool AnimatesColors () const { return true; }
+  virtual void Update(csTicks current) { }
   virtual void Update(csTicks current, int num_verts, uint32 version_id);
   virtual const csVector3* UpdateVertices (csTicks current,
   	const csVector3* verts, int num_verts, uint32 version_id);
@@ -184,6 +188,33 @@ public:
   	const csVector3* normals, int num_normals, uint32 version_id);
   virtual const csColor4* UpdateColors (csTicks current,
   	const csColor4* colors, int num_colors, uint32 version_id);
+  /** @} */
+
+  /**\name iLightingInfo implementation
+   * @{ */
+  void DisconnectAllLights ()
+  { 
+    colorsBuffer.lightsDirty = true;
+    colorsBuffer.lights.DeleteAll ();
+    for (size_t i = 0; i < buffers.GetSize(); i++)
+    {
+      buffers[i].lightsDirty = true;
+      buffers[i].lights.DeleteAll ();
+    }
+  }
+  void InitializeDefault (bool /*clear*/) {}
+  void LightChanged (iLight* /*light*/) 
+  {
+    colorsBuffer.lightsDirty = true;
+    for (size_t i = 0; i < buffers.GetSize(); i++)
+    {
+      buffers[i].lightsDirty = true;
+    }
+  }
+  void LightDisconnect (iLight* light);
+  void PrepareLighting () {}
+  bool ReadFromCache (iCacheManager* /*cache_mgr*/) { return true; }
+  bool WriteToCache (iCacheManager* /*cache_mgr*/) { return true; }
   /** @} */
 };
 

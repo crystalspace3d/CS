@@ -39,7 +39,8 @@
 
 /// XLIB version.
 class csGraphics2DGLX : public scfImplementationExt1<csGraphics2DGLX , 
-  csGraphics2DGLCommon, iOpenGLInterface>
+						       csGraphics2DGLCommon, 
+						       iOpenGLInterface>
 {
   csRef<iXWindow> xwin;
   // The display context
@@ -108,7 +109,8 @@ public:
   { return xwin->SetMouseCursor (iShape);}
 
   virtual bool SetMouseCursor (iImage *image, const csRGBcolor* keycolor, 
-    int hotspot_x, int hotspot_y, csRGBcolor fg, csRGBcolor bg)
+                               int hotspot_x, int hotspot_y,
+			       csRGBcolor fg, csRGBcolor bg)
   { 
     return xwin->SetMouseCursor (image, keycolor, hotspot_x, hotspot_y,
       fg, bg);

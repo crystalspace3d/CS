@@ -47,6 +47,7 @@
 
 #define CS_MKDIR(p) mkdir(p, 0755)
 
+#define CS_SOFTWARE_2D_DRIVER "crystalspace.graphics2d.x2d"
 #define CS_OPENGL_2D_DRIVER   "crystalspace.graphics2d.glx"
 #define CS_SOUND_DRIVER       "crystalspace.sound.driver.oss"
 #define CS_SNDSYS_DRIVER      "crystalspace.sndsys.software.driver.alsa"

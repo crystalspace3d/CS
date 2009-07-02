@@ -181,8 +181,7 @@ typedef uintptr_t GLsizeiptr;
       allclear &= funcTest;
 
 #define EXTMGR_REPORT_INIT_RESULT(exttype, nameNC)			\
-      CS_##nameNC = allclear;						\
-      if (CS_##nameNC) 					                \
+      if (CS_##nameNC = allclear) 					\
       {									\
         CS_##nameNC &= config->GetBool (cfgkey, defaultUse);		\
         if (CS_##nameNC)						\

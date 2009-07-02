@@ -1,12 +1,7 @@
 %module csgfx
 %import "bindings/core.i"
 %{
-#include "igraphic.h"
-#include "itexture.h"
-#include "csgeom.h"
-#include "csgfx.h"
-#include "csutil.h"
-#include "cstool/initapp.h"
+#include "crystalspace.h"
 %}
 
 #ifndef SWIGIMPORTED

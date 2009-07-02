@@ -114,8 +114,9 @@ static float GetFloat (char*& p)
  * Loads a csSprite3DBinFactoryLoader
  */
 csPtr<iBase> csSprite3DBinFactoryLoader::Parse (iDataBuffer* data,
-				       iStreamSource*, iLoaderContext* ldr_context,
-				       iBase* context, iStringArray*)
+				       iStreamSource*,
+				       iLoaderContext* ldr_context,
+				       iBase* context)
 {
   csRef<iPluginManager> plugin_mgr (
     csQueryRegistry<iPluginManager> (object_reg));

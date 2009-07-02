@@ -29,13 +29,14 @@
 #include "csutil/weakref.h"
 #include "csutil/leakguard.h"
 #include "csutil/hash.h"
-#include "csutil/threading/rwmutex.h"
 #include "iutil/selfdestruct.h"
 #include "csgfx/shadervarcontext.h"
 #include "imesh/object.h"
+#include "imesh/lighting.h"
 #include "iengine/mesh.h"
 #include "iengine/imposter.h"
 #include "iengine/viscull.h"
+#include "iengine/shadcast.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/shader/shader.h"
 
@@ -45,19 +46,13 @@
 #include "scenenode.h"
 #include "light.h"
 
-struct iMeshLoaderIterator;
 struct iMeshWrapper;
 struct iMovable;
 struct iRenderView;
 struct iSharedVariable;
 class csEngine;
+class csLight;
 class csMeshWrapper;
-
-CS_PLUGIN_NAMESPACE_BEGIN(Engine)
-{
-  class csLight;
-}
-CS_PLUGIN_NAMESPACE_END(Engine)
 
 /**
  * General list of meshes.
@@ -65,10 +60,8 @@ CS_PLUGIN_NAMESPACE_END(Engine)
 class csMeshList : public scfImplementation1<csMeshList, iMeshList>
 {
 private:
-  csRefArrayObject<iMeshWrapper, CS::Container::ArrayAllocDefault,
-    csArrayCapacityVariableGrow> list;
+  csRefArrayObject<iMeshWrapper> list;
   csHash<iMeshWrapper*, csString> meshes_hash;
-  mutable CS::Threading::ReadWriteMutex meshLock;
 
   class NameChangeListener : public scfImplementation1<NameChangeListener,
   	iObjectNameChangeListener>
@@ -101,15 +94,17 @@ public:
   csMeshList (int cap, int thresshold);
   virtual ~csMeshList ();
 
+  /// Find a mesh in <name>:<childname>:<childname> notation.
+  iMeshWrapper *FindByNameWithChild (const char *Name) const;
+
   /// Override PrepareMesh
   virtual void PrepareMesh (iMeshWrapper*) { }
   /// Override FreeMesh
   virtual void FreeMesh (iMeshWrapper*) { }
 
-  virtual int GetCount () const;
-  virtual iMeshWrapper *Get (int n) const;
+  virtual int GetCount () const { return (int)list.GetSize () ; }
+  virtual iMeshWrapper *Get (int n) const { return list.Get (n); }
   virtual int Add (iMeshWrapper *obj);
-  void AddBatch (csRef<iMeshLoaderIterator> itr);
   virtual bool Remove (iMeshWrapper *obj);
   virtual bool Remove (int n);
   virtual void RemoveAll ();
@@ -117,6 +112,13 @@ public:
   virtual iMeshWrapper *FindByName (const char *Name) const;
 };
 
+struct LSIAndDist
+{
+  csLightSectorInfluence* lsi;
+  // An indication of how powerful this light affects the object.
+  // Higher values mean more influence.
+  float influence;
+};
 
 struct ExtraRenderMeshData
 {
@@ -201,12 +203,30 @@ protected:
   csRef<csLODListener> var_min_render_dist_listener;
   csRef<csLODListener> var_max_render_dist_listener;
 
+  csEngine* engine;
+
 protected:
   virtual void InternalRemove() { SelfDestruct(); }
 
 private:
   /// Mesh object corresponding with this csMeshWrapper.
   csRef<iMeshObject> meshobj;
+  /// For optimization purposes we keep the iLightingInfo interface here.
+  csRef<iLightingInfo> light_info;
+  /**
+   * For optimization purposes we keep the iShadowReceiver interface here.
+   * Also for maintaining the special version of the shadow receiver that
+   * multiplexes in case of static lod.
+   */
+  csRef<iShadowReceiver> shadow_receiver;
+  bool shadow_receiver_valid;
+  /**
+   * For optimization purposes we keep the iShadowCaster interface here.
+   * Also for maintaining the special version of the shadow caster that
+   * multiplexes in case of static lod.
+   */
+  csRef<iShadowCaster> shadow_caster;
+  bool shadow_caster_valid;
 
   /**
    * For optimization purposes we keep the portal container interface here
@@ -228,14 +248,33 @@ private:
 
   csImposterMesh *imposter_mesh;
 
+  /**
+   * Array of lights affecting this mesh object. This is calculated
+   * by the csLightManager class.
+   */
+  csDirtyAccessArray<iLightSectorInfluence*> relevant_lights;
+#define MAX_INF_LIGHTS 100
+  static LSIAndDist relevant_lights_cache[MAX_INF_LIGHTS];
+
+  // This is a mirror of 'relevant_lights' which we use to detect if
+  // a light has been removed or changed. It is only used in case we
+  // are not updating all the time (if CS_LIGHTINGUPDATE_ALWAYSUPDATE is
+  // not set).
+  struct LightRef
+  {
+    csWeakRef<iLightSectorInfluence> lsi;
+    uint32 light_nr;
+  };
+  csSafeCopyArray<LightRef> relevant_lights_ref;
+  bool relevant_lights_valid;
+  size_t relevant_lights_max;
+  csFlags relevant_lights_flags;
+
   // In case the mesh has CS_ENTITY_NOCLIP set then this will
   // contain the value of the last frame number and camera pointer.
   // This is used to detect if we can skip rendering the mesh.
   iCamera* last_camera;
   uint last_frame_number;
-
-  // Shadervar for alpha fading.
-  csRef<csShaderVariable> fadeFactors;
 
 public:
   CS_LEAKGUARD_DECLARE (csMeshWrapper);
@@ -244,8 +283,6 @@ public:
   csFlags flags;
   /// Culler flags.
   csFlags culler_flags;
-
-  csEngine* engine;
 
   /**
    * Clear this object from all sector portal lists.
@@ -288,8 +325,11 @@ public:
   csMeshWrapper (csEngine* engine, iMeshObject* meshobj = 0);
 
   /// Set the mesh factory.
-  virtual void SetFactory (iMeshFactoryWrapper* factory);
-
+  virtual void SetFactory (iMeshFactoryWrapper* factory)
+  {
+    csMeshWrapper::factory = factory;
+    SetParentContext (factory ? factory->GetSVContext() : 0);
+  }
   /// Get the mesh factory.
   virtual iMeshFactoryWrapper* GetFactory () const
   {
@@ -303,6 +343,8 @@ public:
 
   virtual iPortalContainer* GetPortalContainer () const
   { return portal_container; }
+  virtual iShadowReceiver* GetShadowReceiver ();
+  virtual iShadowCaster* GetShadowCaster ();
 
   /// For iVisibilityObject: Get the object model.
   virtual iObjectModel* GetObjectModel ()
@@ -381,7 +423,17 @@ public:
     return draw_cb_vector.Get (idx);
   }
 
-  virtual void SetLightingUpdate (int flags, int num_lights){}
+  virtual void SetLightingUpdate (int flags, int num_lights);
+
+  /**
+   * Get the array of relevant lights for this object.
+   */
+  const csArray<iLightSectorInfluence*>& GetRelevantLights (
+  	int maxLights, bool desireSorting);
+  /**
+   * Forcibly invalidate relevant lights.
+   */
+  void InvalidateRelevantLights () { relevant_lights_valid = false; }
 
   /**
    * Draw this mesh object given a camera transformation.
@@ -469,8 +521,6 @@ public:
   void SetLODFade (float fade);
   void UnsetLODFade ();
 
-  void SetDefaultEnvironmentTexture ();
-
   //---------- Bounding volume and beam functions -----------------//
 
   virtual csSphere GetRadius () const;
@@ -552,6 +602,10 @@ public:
     return this;
   }
   virtual iMeshWrapper* FindChildByName (const char* name);
+  virtual iLightingInfo* GetLightingInfo () const
+  {
+    return light_info;
+  }
   virtual csFlags& GetFlags ()
   {
     return flags;

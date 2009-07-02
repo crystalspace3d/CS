@@ -175,7 +175,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   //-- Object
   ParticlesMeshObject::ParticlesMeshObject (ParticlesMeshFactory* factory)
     : scfImplementationType (this), 
-    factory (factory), vertexSetup (0), delayedAdvance(0),
+    factory (factory), vertexSetup (0),
     meshWrapper (0), mixMode (CS_FX_COPY), lastUpdateTime (0),
     lastFrameNumber (0), totalParticleTime (0.0f),
     radius (1.0f), minRadius (1.0f), rawBuffer (0), particleAllocatedSize (0),
@@ -527,7 +527,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     mesh->worldspace_origin = obj2world.GetOrigin (); //@@TODO: use real center
     mesh->geometryInstance = (void*)this;
     mesh->object2world = obj2world;
-    mesh->bbox = GetObjectBoundingBox();
 
     SetupIndexBuffer (mesh->buffers, obj2cam);
     SetupVertexBuffer (mesh->buffers, obj2cam);
@@ -781,14 +780,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   
   void ParticlesMeshObject::Advance (csTicks time)
   {
-    // Check that we have a meshwrapper.
-    if(!meshWrapper)
-    {
-      // Delay the advance until we do.
-      delayedAdvance += time;
-      return;
-    }
-
     // Advance particle system in slices of that duration
     const csTicks advanceSlice = 50;
   

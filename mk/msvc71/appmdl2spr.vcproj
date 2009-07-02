@@ -7,10 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-  		<Platform Name="Win32"/>
-    	</Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
 	<Configurations>
-            		<Configuration
+  		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release71\build\appmdl2spr\"
 			IntermediateDirectory="..\..\out\release71\build\appmdl2spr\"
@@ -25,8 +26,9 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDataBaseFileName="..\..\out\release71\build\appmdl2spr\mdl2spr.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -36,10 +38,9 @@
 				ObjectFile="..\..\out\release71\build\appmdl2spr\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -51,7 +52,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\release71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\appmdl2spr\mdl2spr.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -86,7 +87,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release71\build\appmdl2spr\"
 			IntermediateDirectory="..\..\out\release71\build\appmdl2spr\"
@@ -101,8 +102,9 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDataBaseFileName="..\..\out\release71\build\appmdl2spr\mdl2spr.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -112,10 +114,9 @@
 				ObjectFile="..\..\out\release71\build\appmdl2spr\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -127,7 +128,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\release71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\appmdl2spr\mdl2spr.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -162,7 +163,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\appmdl2spr\"
 			IntermediateDirectory="..\..\out\debug71\build\appmdl2spr\"
@@ -174,10 +175,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -187,10 +189,9 @@
 				ObjectFile="..\..\out\debug71\build\appmdl2spr\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -200,7 +201,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -235,7 +236,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\appmdl2spr\"
 			IntermediateDirectory="..\..\out\debug71\build\appmdl2spr\"
@@ -247,10 +248,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -260,10 +262,9 @@
 				ObjectFile="..\..\out\debug71\build\appmdl2spr\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -273,7 +274,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -308,7 +309,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\appmdl2spr\"
 			IntermediateDirectory="..\..\out\debug71\build\appmdl2spr\"
@@ -320,10 +321,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -333,10 +335,9 @@
 				ObjectFile="..\..\out\debug71\build\appmdl2spr\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -346,7 +347,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -381,7 +382,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\appmdl2spr\"
 			IntermediateDirectory="..\..\out\debug71\build\appmdl2spr\"
@@ -393,10 +394,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -406,10 +408,9 @@
 				ObjectFile="..\..\out\debug71\build\appmdl2spr\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -419,7 +420,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -454,7 +455,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\appmdl2spr\"
 			IntermediateDirectory="..\..\out\debug71\build\appmdl2spr\"
@@ -466,10 +467,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -479,10 +481,9 @@
 				ObjectFile="..\..\out\debug71\build\appmdl2spr\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -492,7 +493,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -527,7 +528,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\appmdl2spr\"
 			IntermediateDirectory="..\..\out\debug71\build\appmdl2spr\"
@@ -539,10 +540,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -552,10 +554,9 @@
 				ObjectFile="..\..\out\debug71\build\appmdl2spr\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -565,7 +566,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\mdl2spr.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
@@ -600,153 +601,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
-			Name="ThreadChecker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\appmdl2spr\"
-			IntermediateDirectory="..\..\out\debug71\build\appmdl2spr\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appmdl2spr\appmdl2spr.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appmdl2spr\"
-				ObjectFile="..\..\out\debug71\build\appmdl2spr\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appmdl2spr\appmdl2spr.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\import\md22spr;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="ThreadChecker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\appmdl2spr\"
-			IntermediateDirectory="..\..\out\debug71\build\appmdl2spr\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\appmdl2spr\appmdl2spr.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\appmdl2spr\"
-				ObjectFile="..\..\out\debug71\build\appmdl2spr\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\mdl2spr.exe"
-				ProgramDatabaseFile="..\..\out\debug71\build\appmdl2spr\Win32\mdl2spr.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\appmdl2spr\appmdl2spr.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\apps\import\md22spr;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-              	</Configurations>
+  	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"

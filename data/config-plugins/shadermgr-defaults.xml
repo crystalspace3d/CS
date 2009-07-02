@@ -1,3 +1,0 @@
-<shadervars>
-  <shadervar name="tex shadow noise" type="texture">/lib/std/shadow_noise.png</shadervar>
-</shadervars>

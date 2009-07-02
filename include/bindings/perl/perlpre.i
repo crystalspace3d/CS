@@ -472,5 +472,6 @@ _TYPEMAP_csArray(double,		newSVnv,	SvNV)
 %rename (ClassifyPolygon) Classify(const csPlane3&, csVector3*, int);
 %rename (ComputePolygonNormal) ComputeNormal(csVector3*, int);
 %rename (ComputePolygonPlane) ComputePlane(csVector3*, int);
+%ignore iThingFactoryState::AddPolygon(int, ...);
 
 #endif // SWIGPERL5

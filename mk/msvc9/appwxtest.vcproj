@@ -7,11 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-  		<Platform Name="Win32"/>
-    		<Platform Name="x64"/>
-  	</Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
 	<Configurations>
-            		<Configuration
+  		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release9\build\appwxtest\"
 			IntermediateDirectory="..\..\out\release9\build\appwxtest\"
@@ -26,9 +26,10 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32"
+				ProgramDataBaseFileName="..\..\out\release9\build\appwxtest\wxtest.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -37,10 +38,9 @@
 				ObjectFile="..\..\out\release9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -52,10 +52,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\release9\build\appwxtest\Win32\wxtest.pdb"
+				ProgramDatabaseFile="..\..\out\release9\build\appwxtest\wxtest.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_gl.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -64,7 +64,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -79,7 +79,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -87,7 +87,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release9\build\appwxtest\"
 			IntermediateDirectory="..\..\out\release9\build\appwxtest\"
@@ -102,9 +102,10 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9\build\appwxtest\wxtest.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -113,10 +114,9 @@
 				ObjectFile="..\..\out\release9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -128,10 +128,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\release9\build\appwxtest\Win32\wxtest.pdb"
+				ProgramDatabaseFile="..\..\out\release9\build\appwxtest\wxtest.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_gl.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -140,7 +140,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -155,7 +155,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -163,7 +163,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appwxtest\"
 			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
@@ -175,11 +175,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -188,10 +189,9 @@
 				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -201,10 +201,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -213,7 +213,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -228,7 +228,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -236,7 +236,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appwxtest\"
 			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
@@ -248,11 +248,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -261,10 +262,9 @@
 				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -274,10 +274,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -286,7 +286,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -301,7 +301,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -309,7 +309,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appwxtest\"
 			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
@@ -321,11 +321,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -334,10 +335,9 @@
 				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -347,10 +347,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -359,7 +359,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -374,7 +374,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -382,7 +382,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appwxtest\"
 			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
@@ -394,11 +394,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -407,10 +408,9 @@
 				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -420,10 +420,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -432,7 +432,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -447,7 +447,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -455,7 +455,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appwxtest\"
 			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
@@ -467,11 +467,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -480,10 +481,9 @@
 				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -493,10 +493,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -505,7 +505,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -520,7 +520,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -528,7 +528,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug9\build\appwxtest\"
 			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
@@ -540,11 +540,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
@@ -553,10 +554,9 @@
 				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -566,10 +566,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\wxtest.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_gl.lib opengl32.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -578,7 +578,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -593,7 +593,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
 				Culture="1033"/>
 			<Tool
@@ -601,889 +601,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
-			Name="ThreadChecker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug9\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
-				ObjectFile="..\..\out\debug9\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="ThreadChecker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug9\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
-				ObjectFile="..\..\out\debug9\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                        		<Configuration
-			Name="Release (with static libs)|x64"
-			OutputDirectory="..\..\out\release9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\release9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			WholeProgramOptimization="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\release9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="2"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="Release (with DLLs)|x64"
-			OutputDirectory="..\..\out\release9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\release9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			WholeProgramOptimization="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\release9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="2"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                		<Configuration
-			Name="Debug (with static libs)|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="Debug (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                		<Configuration
-			Name="MemoryTracker (with static libs)|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="MemoryTracker (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                		<Configuration
-			Name="RefTracker (with static libs)|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="RefTracker (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                		<Configuration
-			Name="ThreadChecker (with static libs)|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="ThreadChecker (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
-			ConfigurationType="1"
-			CharacterSet="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
-				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxtest.exe"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
-				SubSystem="1"
-				AdditionalOptions=" "
-				AdditionalDependencies="wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib opengl32.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-            	</Configurations>
+  	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"
@@ -1502,9 +620,6 @@
 		<Filter
 			Name="Resource Files"
 			Filter="">
-			<File
-				RelativePath="..\..\mk\msvc\appwxtest.manifest">
-			</File>
 			<File
 				RelativePath="..\..\mk\msvc\appwxtest.rc">
 			</File>

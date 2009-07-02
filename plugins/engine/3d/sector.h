@@ -1,6 +1,6 @@
 /*
     Copyright (C) 1998-2006 by Jorrit Tyberghein
-              (C) 2004-2008 by Marten Svanfeldt
+              (C) 2004 by Marten Svanfeldt
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,7 +20,6 @@
 #ifndef __CS_SECTOR_H__
 #define __CS_SECTOR_H__
 
-#include "csgeom/aabbtree.h"
 #include "csgeom/math3d.h"
 #include "cstool/rendermeshlist.h"
 #include "csutil/scf_implementation.h"
@@ -32,7 +31,6 @@
 #include "csutil/nobjvec.h"
 #include "csutil/refarr.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/threadmanager.h"
 #include "iutil/selfdestruct.h"
 #include "iengine/portalcontainer.h"
 #include "iengine/sector.h"
@@ -40,7 +38,6 @@
 #include "ivideo/graph3d.h"
 #include "ivideo/rndbuf.h"
 #include "ivideo/shader/shader.h"
-
 #include "plugins/engine/3d/light.h"
 #include "plugins/engine/3d/meshobj.h"
 #include "plugins/engine/3d/meshgen.h"
@@ -51,9 +48,35 @@ class csSector;
 class csMeshMeshList;
 class csMeshWrapper;
 class csMeshGenerator;
+class csKDTree;
 struct iVisibilityCuller;
 struct iRenderView;
 struct iMeshWrapper;
+struct iFrustumView;
+
+/// A list of lights for a sector.
+class csSectorLightList : public csLightList
+{
+public:
+  /// constructor
+  csSectorLightList ();
+  /// destructor
+  virtual ~csSectorLightList ();
+  /// Set the sector.
+  void SetSector (csSector* s) { sector = s; }
+
+  /// Override PrepareLight
+  virtual void PrepareLight (iLight* light);
+  /// Override FreeLight
+  virtual void FreeLight (iLight* item);
+
+  /// Get the kdtree for this light list.
+  csKDTree* GetLightKDTree () const { return kdtree; }
+
+private:
+  csSector* sector;
+  csKDTree* kdtree; // kdtree to help find lights faster.
+};
 
 /// A list of meshes for a sector.
 class csSectorMeshList : public csMeshList
@@ -75,87 +98,6 @@ private:
   csSector* sector;
 };
 
-CS_PLUGIN_NAMESPACE_BEGIN(Engine)
-{
-  struct LightExtraAABBNodeData
-  {
-    /// Light types flags
-    enum
-    {
-      ltStatic = 1,
-      ltDynamic = 2
-    };
-    uint32 lightTypes;
-    
-    static uint GetLightType (csLightDynamicType dynType)
-    {
-      if (dynType == CS_LIGHT_DYNAMICTYPE_DYNAMIC)
-        return ltDynamic;
-      else
-        return ltStatic;
-    }
-    static uint GetLightType (csLight* light)
-    {
-      return GetLightType (light->csLight::GetDynamicType());
-    }
-    
-    LightExtraAABBNodeData() : lightTypes (0) {}
-  
-    void LeafAddObject (csLight* light)
-    {
-      lightTypes |= GetLightType (light);
-    }
-    
-    void LeafUpdateObjects (csLight** lights, uint numLights)
-    {
-      lightTypes = 0;
-      for (uint i = 0; i < numLights; i++)
-      {
-        lightTypes |= GetLightType (lights[i]);
-      }
-    }
-    
-    void NodeUpdate (const LightExtraAABBNodeData& child1,
-      const LightExtraAABBNodeData& child2)
-    {
-      lightTypes = child1.lightTypes | child2.lightTypes;
-    }
-  };
-}
-CS_PLUGIN_NAMESPACE_END(Engine)
-
-/// A list of lights for a sector.
-class csSectorLightList : public csLightList
-{
-public:
-  typedef CS::Geometry::AABBTree<
-    CS_PLUGIN_NAMESPACE_NAME(Engine)::csLight, 2,
-    CS_PLUGIN_NAMESPACE_NAME(Engine)::LightExtraAABBNodeData>  LightAABBTree;
-  /// constructor
-  csSectorLightList (csSector* s);
-  /// destructor
-  virtual ~csSectorLightList ();
-
-  /// Override PrepareLight
-  virtual void PrepareLight (iLight* light);
-  /// Override FreeLight
-  virtual void FreeLight (iLight* item);
-
-  /// Get the AABB-tree  for this light list.
-  const LightAABBTree& GetLightAABBTree () const 
-  { return lightTree; }
-
-  void UpdateLightBounds (CS_PLUGIN_NAMESPACE_NAME(Engine)::csLight* light,
-    const csBox3& oldBox);
-
-private:
-  csSector* sector;
-  /**
-   * AABB-tree with all lights in sector
-   */
-  LightAABBTree lightTree;
-};
-
 #include "csutil/deprecated_warn_off.h"
 
 /**
@@ -165,10 +107,9 @@ private:
 class csSector : public scfImplementationExt3<csSector, 
                                               csObject,
                                               iSector,
-					                                    iSelfDestruct,
+					      iSelfDestruct,
                                               scfFakeInterface<iShaderVariableContext> >,
-                 public CS::ShaderVariableContextImpl,
-                 public ThreadedCallable<csSector>
+                 public CS::ShaderVariableContextImpl
 {
   // Friends
   friend class csEngine;
@@ -202,9 +143,6 @@ public:
 
   virtual csRenderMeshList* GetVisibleMeshes (iRenderView *);
 
-  virtual csSectorVisibleRenderMeshes* GetVisibleRenderMeshes (int& num,
-    iMeshWrapper* mesh, iRenderView *rview, uint32 frustum_mask);
-
   virtual const csSet<csPtrKey<iMeshWrapper> >& GetPortalMeshes () const
   { return portalMeshes; }
 
@@ -230,9 +168,8 @@ public:
   virtual void DecRecLevel ()
   { drawBusy--; }
 
-  THREADED_CALLABLE_DECL1(csSector, SetRenderLoop, csThreadReturn,
-    iRenderLoop*, rl, MED, false, false);
-
+  virtual void SetRenderLoop (iRenderLoop* rl)
+  { renderloop = rl; }
   virtual iRenderLoop* GetRenderLoop ()
   { return renderloop; }
   /** @} */
@@ -270,8 +207,11 @@ public:
   virtual iLightList* GetLights ()
   { return &lights; }
 
-  THREADED_CALLABLE_DECL1(csSector, AddLight, csThreadReturn,
-    csRef<iLight>, light, MED, false, false);
+  virtual void ShineLights ()
+  { ShineLightsInt ((csProgressPulse*)0); }
+  
+  virtual void ShineLights (iMeshWrapper* mesh)
+  { ShineLightsInt (mesh); }
 
   virtual void SetDynamicAmbientLight (const csColor& color);
 
@@ -280,9 +220,6 @@ public:
 
   virtual uint GetDynamicAmbientVersion () const
   { return dynamicAmbientLightVersion; }
-
-  const csSectorLightList::LightAABBTree& GetLightAABBTree () const
-  { return lights.GetLightAABBTree (); }
   /** @} */
 
   /**\name Visculling
@@ -294,6 +231,9 @@ public:
   	iDocumentNode* culler_params = 0);
 
   virtual iVisibilityCuller* GetVisibilityCuller ();
+
+  virtual void CheckFrustum (iFrustumView* lview);
+  
 
   virtual csSectorHitBeamResult HitBeamPortals (const csVector3& start,
   	const csVector3& end);
@@ -307,40 +247,47 @@ public:
 
   /**\name Callbacks
    * @{ */
-  THREADED_CALLABLE_DECL1(csSector, SetSectorCallback, csThreadReturn,
-    csRef<iSectorCallback>, cb, MED, false, false)
+  virtual void SetSectorCallback (iSectorCallback* cb)
+  { sectorCallbackList.Push (cb); }
 
-  THREADED_CALLABLE_DECL1(csSector, RemoveSectorCallback, csThreadReturn,
-    csRef<iSectorCallback>, cb, MED, false, false)
+  virtual void RemoveSectorCallback (iSectorCallback* cb)
+  { sectorCallbackList.Delete (cb); }
 
   virtual int GetSectorCallbackCount () const 
   { return (int) sectorCallbackList.GetSize (); }
 
   virtual iSectorCallback* GetSectorCallback (int idx) const
   { return sectorCallbackList.Get (idx); }
-
-  virtual void CallSectorCallbacks (iRenderView* rview)
-  {
-    int numSectorCB = (int)sectorCallbackList.GetSize ();
-    while (numSectorCB-- > 0)
-    {
-      iSectorCallback* cb = sectorCallbackList.Get (numSectorCB);
-      cb->Traverse (this, rview);
-    }
-  }
   /** @} */
 
   /**\name Lighting
    * @{ */
-  virtual void SetLightCulling (bool enable) {}
-  virtual bool IsLightCullingEnabled () const { return false; }
-  virtual void AddLightVisibleCallback (iLightVisibleCallback* cb) {}
-  virtual void RemoveLightVisibleCallback (iLightVisibleCallback* cb) {}
-  void FireLightVisibleCallbacks (iLight* light) {}
+  virtual void SetLightCulling (bool enable);
+  virtual bool IsLightCullingEnabled () const { return use_lightculling; }
+  virtual void AddLightVisibleCallback (iLightVisibleCallback* cb);
+  virtual void RemoveLightVisibleCallback (iLightVisibleCallback* cb);
+  void FireLightVisibleCallbacks (iLight* light);
+  /// If true we use light culling.
+  bool use_lightculling;
+  /**
+   * Register a light to the visibility culler.
+   */
+  void RegisterLightToCuller (csLight* light);
 
-  void UpdateLightBounds (CS_PLUGIN_NAMESPACE_NAME(Engine)::csLight* light,
-    const csBox3& oldBox);
+  /**
+   * Unregister a light from the visibility culler.
+   */
+  void UnregisterLightToCuller (csLight* light);
 
+  void CleanupLSI ();
+  void AddLSI (csLightSectorInfluence* inf);
+  void RemoveLSI (csLightSectorInfluence* inf);
+  const csLightSectorInfluences& GetLSI () const { return influences; }
+  /**
+   * Get the array of relevant lights for this sector.
+   */
+  const csArray<iLightSectorInfluence*>& GetRelevantLights (
+  	int maxLights, bool desireSorting);
   /** @} */
 
   /**\name Mesh generators
@@ -356,7 +303,6 @@ public:
   }
   iMeshGenerator* GetMeshGeneratorByName (const char* name);
   void RemoveMeshGenerator (size_t idx);
-  void RemoveMeshGenerator (const char* name);
   void RemoveMeshGenerators ();
   /** @} */
 
@@ -416,6 +362,32 @@ private:
    * that the sector needs to know this.
    */
   void RelinkMesh (iMeshWrapper* mesh);
+
+  /**
+   * Check visibility in a frustum way for all things and polygons in
+   * this sector and possibly traverse through portals to other sectors.
+   * This version doesn't init the 2D culler cube so it can be used
+   * for recursing.
+   */
+  void RealCheckFrustum (iFrustumView* lview);
+
+  /**
+   * The whole setup starts with csEngine::shine_lights calling
+   * csSector::shine_lights for every sector in the engine.
+   * This function will call csLight::shine_lightmaps for every
+   * light in the sector.
+   * csLight::shine_light will generate a view frustum from the
+   * center of the light and use that to light all polygons that
+   * are hit by the frustum.
+   */
+  void ShineLightsInt (csProgressPulse* = 0);
+
+  /// Version of shine_lights() which only affects one mesh object.
+  void ShineLightsInt (iMeshWrapper*, csProgressPulse* = 0);
+
+  /// Get the kdtree for the light list.
+  csKDTree* GetLightKDTree () const 
+  { return lights.GetLightKDTree (); }
 
   /**
    * Intersect world-space segment with polygons of this sector. Return
@@ -483,7 +455,7 @@ private:
   csRefArray<iLightVisibleCallback> lightVisibleCallbackList;
 
   /**
-   * All lights in this sector.
+   * All static and pseudo-dynamic lights in this sector.
    * This vector contains objects of type iLight*.
    */
   csSectorLightList lights;
@@ -498,14 +470,20 @@ private:
   /// Engine handle.
   csEngine* engine;
 
-  /// Required by ThreadedCallable
-  iObjectRegistry* GetObjectRegistry() const;
-
   /// Optional renderloop.
   iRenderLoop* renderloop;
 
   /// Fog information.
   csFog fog;
+
+  /// List of light/sector influences.
+  csLightSectorInfluences influences;
+  /**
+   * Array of lights affecting this mesh object. This is calculated
+   * by the csLightManager class.
+   */
+  csDirtyAccessArray<iLightSectorInfluence*> relevant_lights;
+  bool relevant_lights_dirty;
 
   /**
    * The visibility culler for this sector or 0 if none.
@@ -535,15 +513,6 @@ private:
   csArray<visibleMeshCacheHolder> visibleMeshCache;
   csPDelArray<csRenderMeshList> usedMeshLists;
 
-  // These are used by GetVisibleRenderMeshes
-  csSectorVisibleRenderMeshes oneVisibleMesh[2];
-  csDirtyAccessArray<csSectorVisibleRenderMeshes> renderMeshesScratch;
-  void MarkMeshAndChildrenVisible (iMeshWrapper* mesh, 
-    iRenderView* rview, uint32 frustum_mask,
-    bool doFade = false, float fade = 1.0f);
-  void ObjectVisible (csMeshWrapper* cmesh, iRenderView* rview, 
-    uint32 frustum_mask, bool doFade, float fade);
-
   /**
    * Visibilty number for last VisTest call
    */
@@ -567,7 +536,6 @@ private:
   struct SVNamesHolder
   {
     CS::ShaderVarName dynamicAmbient;
-    CS::ShaderVarName lightAmbient;
     CS::ShaderVarName fogColor;
     CS::ShaderVarName fogMode;
     CS::ShaderVarName fogFadeStart;
@@ -577,25 +545,12 @@ private:
   };
   CS_DECLARE_STATIC_CLASSVAR_REF(svNames, SVNames, SVNamesHolder);
   csRef<csShaderVariable> svDynamicAmbient;
-  csRef<csShaderVariable> svLightAmbient;
   csRef<csShaderVariable> svFogColor;
   csRef<csShaderVariable> svFogMode;
   csRef<csShaderVariable> svFogFadeStart;
   csRef<csShaderVariable> svFogFadeEnd;
   csRef<csShaderVariable> svFogLimit;
   csRef<csShaderVariable> svFogDensity;
-  
-  class LightAmbientAccessor :
-    public scfImplementation1<LightAmbientAccessor,
-                              iShaderVariableAccessor>
-  {
-    csSector* sector;
-  public:
-    LightAmbientAccessor (csSector* sector) : scfImplementationType (this),
-      sector (sector) {}
-      
-    void PreGetValue (csShaderVariable* sv);
-  };
 };
 
 #include "csutil/deprecated_warn_on.h"
@@ -606,7 +561,6 @@ class csSectorList : public scfImplementation1<csSectorList, iSectorList>
 private:
   csRefArrayObject<iSector> list;
   csHash<iSector*, csString> sectors_hash;
-  mutable CS::Threading::ReadWriteMutex sectorLock;
 
   class NameChangeListener : public scfImplementation1<NameChangeListener,
   	iObjectNameChangeListener>
@@ -643,10 +597,9 @@ public:
   /// Override FreeSector.
   virtual void FreeSector (iSector* item);
 
-  virtual int GetCount () const;
-  virtual iSector *Get (int n) const;
+  virtual int GetCount () const { return (int)list.GetSize (); }
+  virtual iSector *Get (int n) const { return list.Get (n); }
   virtual int Add (iSector *obj);
-  void AddBatch (csRef<iSectorLoaderIterator> itr);
   virtual bool Remove (iSector *obj);
   virtual bool Remove (int n);
   virtual void RemoveAll ();

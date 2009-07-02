@@ -1,9 +1,7 @@
 %module isndsys
 %import "bindings/core.i"
 %{
-#include "csgeom.h"
-#include "csutil.h"
-#include "isndsys.h"
+#include "crystalspace.h"
 %}
 
 #ifndef SWIGIMPORTED

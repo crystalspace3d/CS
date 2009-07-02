@@ -52,6 +52,35 @@ csEventQueue::csEventQueue (iObjectRegistry* r, size_t iLength) :
   EventTree = csEventTree::CreateRootNode(HandlerRegistry, NameRegistry, this);
 
   Frame = csevFrame (NameRegistry);
+  PreProcess = csevPreProcess (NameRegistry);
+  ProcessEvent = csevProcess (NameRegistry);
+  PostProcess = csevPostProcess (NameRegistry);
+  FinalProcess = csevFinalProcess (NameRegistry);
+
+  csRef<iTypedFrameEventDispatcher> PreProcessEventDispatcher;
+  csRef<iTypedFrameEventDispatcher> ProcessEventDispatcher;
+  csRef<iTypedFrameEventDispatcher> PostProcessEventDispatcher;
+  csRef<iTypedFrameEventDispatcher> FinalProcessEventDispatcher;
+  PreProcessEventDispatcher.AttachNew (
+    new PreProcessFrameEventDispatcher (this));
+  ProcessEventDispatcher.AttachNew (
+    new ProcessFrameEventDispatcher (this));
+  PostProcessEventDispatcher.AttachNew (
+    new PostProcessFrameEventDispatcher (this));
+  FinalProcessEventDispatcher.AttachNew (
+    new FinalProcessFrameEventDispatcher (this));
+
+  if (!RegisterListener (PreProcessEventDispatcher)
+    || !Subscribe (PreProcessEventDispatcher, Frame) 
+    || !RegisterListener (ProcessEventDispatcher)
+    || !Subscribe (ProcessEventDispatcher, Frame) 
+    || !RegisterListener (PostProcessEventDispatcher)
+    || !Subscribe (PostProcessEventDispatcher, Frame) 
+    || !RegisterListener (FinalProcessEventDispatcher)
+    || !Subscribe (FinalProcessEventDispatcher, Frame))
+  {
+    CS_ASSERT(0);
+  }
 }
 
 csEventQueue::~csEventQueue ()
@@ -67,7 +96,7 @@ csEventQueue::~csEventQueue ()
     EventPool->Free();
     EventPool = e;
   }
-  RemoveAllListeners();
+  csEventTree::DeleteRootNode (EventTree); // Magic!
   EventTree = 0;
 }
 
@@ -102,7 +131,7 @@ iEvent *csEventQueue::CreateRawEvent ()
 csPtr<iEvent> csEventQueue::CreateEvent ()
 {
   iEvent *e = CreateRawEvent ();
-  e->Name = csInvalidStringID;
+  e->Name = 0;
   e->Broadcast = 0;
   e->Time = csGetTicks();
   return csPtr<iEvent>((iEvent*)e);
@@ -271,7 +300,6 @@ void csEventQueue::Dispatch (iEvent& e)
   csEventTree *epoint = EventHash.Get(e.Name, 0);
   if (!epoint)
   {
-    CS::Threading::ScopedReadLock lock(etreeMutex);
     epoint = EventTree->FindNode(e.Name, this);
   }
   CS_ASSERT(epoint);
@@ -285,17 +313,9 @@ csHandlerID csEventQueue::RegisterListener (iEventHandler * listener)
   std::cerr << "Registering listener (no events) " <<
   	listener->GenericName() << std::endl;
 #endif
-  mutex.UpgradeLock();
   size_t index = handlers.FindSortedKey (
     csArrayCmp<iEventHandler*, iEventHandler*> (listener));
-
-  if (index == csArrayItemNotFound)
-  {
-    mutex.UpgradeUnlockAndWriteLock();
-    handlers.InsertSorted (listener);
-    mutex.WriteUnlockAndUpgradeLock();
-  }
-  mutex.UpgradeUnlock();
+  if (index == csArrayItemNotFound) handlers.InsertSorted (listener);
   return HandlerRegistry->RegisterID (listener);
 }
 
@@ -308,7 +328,6 @@ bool csEventQueue::Subscribe (iEventHandler *listener, const csEventID &ename)
   csHandlerID handler = HandlerRegistry->GetID (listener);
   CS_ASSERT_MSG("Event listener not registered prior to subscription",
     handler != CS_HANDLER_INVALID);
-  CS::Threading::ScopedWriteLock lock(etreeMutex);
   bool ret = EventTree->Subscribe (handler, ename, this);
 #ifdef ADB_DEBUG
   EventTree->Dump();
@@ -324,7 +343,6 @@ bool csEventQueue::Subscribe (iEventHandler *listener, const csEventID ename[])
   csHandlerID handler = HandlerRegistry->GetID (listener);
   CS_ASSERT_MSG("Event listenere not registered prior to subscription",
     handler != CS_HANDLER_INVALID);
-  CS::Threading::ScopedWriteLock lock(etreeMutex);
   for (int ecount=0 ; ename[ecount]!=CS_EVENTLIST_END ; ecount++)
   {
 #ifdef ADB_DEBUG
@@ -360,15 +378,12 @@ void csEventQueue::Unsubscribe (iEventHandler *listener, const csEventID ename[]
 #endif
   csHandlerID handler = HandlerRegistry->GetID (listener);
   if (handler == CS_HANDLER_INVALID) return;
+  for (int iter=0 ; ename[iter] != CS_EVENTLIST_END ; iter++)
   {
-    CS::Threading::ScopedWriteLock lock(etreeMutex);
-    for (int iter=0 ; ename[iter] != CS_EVENTLIST_END ; iter++)
-    {
 #ifdef ADB_DEBUG
-      std::cerr << " " << NameRegistry->GetString(ename[iter]);
+    std::cerr << " " << NameRegistry->GetString(ename[iter]);
 #endif
-      EventTree->Unsubscribe(handler, ename[iter], this);
-    }
+    EventTree->Unsubscribe(handler, ename[iter], this);
   }
   HandlerRegistry->ReleaseID (handler);
 #ifdef ADB_DEBUG
@@ -384,10 +399,7 @@ void csEventQueue::Unsubscribe (iEventHandler *listener, const csEventID &ename)
 #endif
   csHandlerID handler = HandlerRegistry->GetID (listener);
   if (handler == CS_HANDLER_INVALID) return;
-  {
-    CS::Threading::ScopedWriteLock lock(etreeMutex);
-    EventTree->Unsubscribe (handler, ename, this);
-  }
+  EventTree->Unsubscribe (handler, ename, this);
   HandlerRegistry->ReleaseID (handler);
 }
 
@@ -401,13 +413,9 @@ void csEventQueue::RemoveListener (iEventHandler* listener)
   if (handler == CS_HANDLER_INVALID) return;
   EventTree->Unsubscribe (handler, CS_EVENT_INVALID, this);
   HandlerRegistry->ReleaseID (handler);
-
-  mutex.UpgradeLock();
   size_t index = handlers.FindSortedKey (
     csArrayCmp<iEventHandler*, iEventHandler*> (listener));
-  mutex.UpgradeUnlockAndWriteLock();
   handlers.DeleteIndex (index);
-  mutex.WriteUnlock();
 }
 
 void csEventQueue::RemoveAllListeners ()
@@ -417,16 +425,12 @@ void csEventQueue::RemoveAllListeners ()
 #endif
   CS_ASSERT(EventTree != 0);
   /* Release all handler IDs */
-  mutex.UpgradeLock();
   for (size_t i = 0; i < handlers.GetSize(); i++)
   {
     iEventHandler* handler = handlers[i];
     HandlerRegistry->ReleaseID (handler);
   }
-  mutex.UpgradeUnlockAndWriteLock();
   handlers.DeleteAll();
-  mutex.WriteUnlock();
-  CS::Threading::ScopedWriteLock lock(etreeMutex);
   csEventTree::DeleteRootNode (EventTree); // Magic!
   EventTree = csEventTree::CreateRootNode (HandlerRegistry, NameRegistry, this);
 }

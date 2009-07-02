@@ -103,159 +103,6 @@ class csLoadResult(object):
 csLoadResult_swigregister = _imap.csLoadResult_swigregister
 csLoadResult_swigregister(csLoadResult)
 
-class csLoaderReturn(object):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    def __init__(self, *args): 
-        this = _imap.new_csLoaderReturn(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _imap.delete_csLoaderReturn
-    __del__ = lambda self : None;
-    def IsFinished(*args): return _imap.csLoaderReturn_IsFinished(*args)
-    def WasSuccessful(*args): return _imap.csLoaderReturn_WasSuccessful(*args)
-    def GetResultPtr(*args): return _imap.csLoaderReturn_GetResultPtr(*args)
-    def GetResultRefPtr(*args): return _imap.csLoaderReturn_GetResultRefPtr(*args)
-    def MarkFinished(*args): return _imap.csLoaderReturn_MarkFinished(*args)
-    def MarkSuccessful(*args): return _imap.csLoaderReturn_MarkSuccessful(*args)
-    def SetResult(*args): return _imap.csLoaderReturn_SetResult(*args)
-    def Copy(*args): return _imap.csLoaderReturn_Copy(*args)
-    def Wait(*args): return _imap.csLoaderReturn_Wait(*args)
-    def SetWaitPtrs(*args): return _imap.csLoaderReturn_SetWaitPtrs(*args)
-csLoaderReturn_swigregister = _imap.csLoaderReturn_swigregister
-csLoaderReturn_swigregister(csLoaderReturn)
-
-class iSectorLoaderIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Next(*args): return _imap.iSectorLoaderIterator_Next(*args)
-    def HasNext(*args): return _imap.iSectorLoaderIterator_HasNext(*args)
-    __swig_destroy__ = _imap.delete_iSectorLoaderIterator
-    __del__ = lambda self : None;
-iSectorLoaderIterator_swigregister = _imap.iSectorLoaderIterator_swigregister
-iSectorLoaderIterator_swigregister(iSectorLoaderIterator)
-
-class iMeshFactLoaderIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Next(*args): return _imap.iMeshFactLoaderIterator_Next(*args)
-    def HasNext(*args): return _imap.iMeshFactLoaderIterator_HasNext(*args)
-    __swig_destroy__ = _imap.delete_iMeshFactLoaderIterator
-    __del__ = lambda self : None;
-iMeshFactLoaderIterator_swigregister = _imap.iMeshFactLoaderIterator_swigregister
-iMeshFactLoaderIterator_swigregister(iMeshFactLoaderIterator)
-
-class iMeshLoaderIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Next(*args): return _imap.iMeshLoaderIterator_Next(*args)
-    def HasNext(*args): return _imap.iMeshLoaderIterator_HasNext(*args)
-    __swig_destroy__ = _imap.delete_iMeshLoaderIterator
-    __del__ = lambda self : None;
-iMeshLoaderIterator_swigregister = _imap.iMeshLoaderIterator_swigregister
-iMeshLoaderIterator_swigregister(iMeshLoaderIterator)
-
-class iCamposLoaderIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Next(*args): return _imap.iCamposLoaderIterator_Next(*args)
-    def HasNext(*args): return _imap.iCamposLoaderIterator_HasNext(*args)
-    __swig_destroy__ = _imap.delete_iCamposLoaderIterator
-    __del__ = lambda self : None;
-iCamposLoaderIterator_swigregister = _imap.iCamposLoaderIterator_swigregister
-iCamposLoaderIterator_swigregister(iCamposLoaderIterator)
-
-class iTextureLoaderIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Next(*args): return _imap.iTextureLoaderIterator_Next(*args)
-    def HasNext(*args): return _imap.iTextureLoaderIterator_HasNext(*args)
-    __swig_destroy__ = _imap.delete_iTextureLoaderIterator
-    __del__ = lambda self : None;
-iTextureLoaderIterator_swigregister = _imap.iTextureLoaderIterator_swigregister
-iTextureLoaderIterator_swigregister(iTextureLoaderIterator)
-
-class iMaterialLoaderIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Next(*args): return _imap.iMaterialLoaderIterator_Next(*args)
-    def HasNext(*args): return _imap.iMaterialLoaderIterator_HasNext(*args)
-    __swig_destroy__ = _imap.delete_iMaterialLoaderIterator
-    __del__ = lambda self : None;
-iMaterialLoaderIterator_swigregister = _imap.iMaterialLoaderIterator_swigregister
-iMaterialLoaderIterator_swigregister(iMaterialLoaderIterator)
-
-class iSharedVarLoaderIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Next(*args): return _imap.iSharedVarLoaderIterator_Next(*args)
-    def HasNext(*args): return _imap.iSharedVarLoaderIterator_HasNext(*args)
-    __swig_destroy__ = _imap.delete_iSharedVarLoaderIterator
-    __del__ = lambda self : None;
-iSharedVarLoaderIterator_swigregister = _imap.iSharedVarLoaderIterator_swigregister
-iSharedVarLoaderIterator_swigregister(iSharedVarLoaderIterator)
-
-class iThreadedLoader(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def GetLoaderSectors(*args): return _imap.iThreadedLoader_GetLoaderSectors(*args)
-    def GetLoaderMeshFactories(*args): return _imap.iThreadedLoader_GetLoaderMeshFactories(*args)
-    def GetLoaderMeshes(*args): return _imap.iThreadedLoader_GetLoaderMeshes(*args)
-    def GetLoaderCameraPositions(*args): return _imap.iThreadedLoader_GetLoaderCameraPositions(*args)
-    def GetLoaderTextures(*args): return _imap.iThreadedLoader_GetLoaderTextures(*args)
-    def GetLoaderMaterials(*args): return _imap.iThreadedLoader_GetLoaderMaterials(*args)
-    def GetLoaderSharedVariables(*args): return _imap.iThreadedLoader_GetLoaderSharedVariables(*args)
-    def LoadImage(*args): return _imap.iThreadedLoader_LoadImage(*args)
-    def LoadImageWait(*args): return _imap.iThreadedLoader_LoadImageWait(*args)
-    def LoadTexture(*args): return _imap.iThreadedLoader_LoadTexture(*args)
-    def LoadTextureWait(*args): return _imap.iThreadedLoader_LoadTextureWait(*args)
-    def LoadSoundSysData(*args): return _imap.iThreadedLoader_LoadSoundSysData(*args)
-    def LoadSoundSysDataWait(*args): return _imap.iThreadedLoader_LoadSoundSysDataWait(*args)
-    def LoadSoundStream(*args): return _imap.iThreadedLoader_LoadSoundStream(*args)
-    def LoadSoundStreamWait(*args): return _imap.iThreadedLoader_LoadSoundStreamWait(*args)
-    def LoadSoundWrapper(*args): return _imap.iThreadedLoader_LoadSoundWrapper(*args)
-    def LoadSoundWrapperWait(*args): return _imap.iThreadedLoader_LoadSoundWrapperWait(*args)
-    def LoadMeshObjectFactory(*args): return _imap.iThreadedLoader_LoadMeshObjectFactory(*args)
-    def LoadMeshObjectFactoryWait(*args): return _imap.iThreadedLoader_LoadMeshObjectFactoryWait(*args)
-    def LoadMeshObject(*args): return _imap.iThreadedLoader_LoadMeshObject(*args)
-    def LoadMeshObjectWait(*args): return _imap.iThreadedLoader_LoadMeshObjectWait(*args)
-    def LoadShader(*args): return _imap.iThreadedLoader_LoadShader(*args)
-    def LoadShaderWait(*args): return _imap.iThreadedLoader_LoadShaderWait(*args)
-    def LoadMapFile(*args): return _imap.iThreadedLoader_LoadMapFile(*args)
-    def LoadMapFileWait(*args): return _imap.iThreadedLoader_LoadMapFileWait(*args)
-    def LoadMap(*args): return _imap.iThreadedLoader_LoadMap(*args)
-    def LoadMapWait(*args): return _imap.iThreadedLoader_LoadMapWait(*args)
-    def LoadLibraryFile(*args): return _imap.iThreadedLoader_LoadLibraryFile(*args)
-    def LoadLibraryFileWait(*args): return _imap.iThreadedLoader_LoadLibraryFileWait(*args)
-    def LoadLibrary(*args): return _imap.iThreadedLoader_LoadLibrary(*args)
-    def LoadLibraryWait(*args): return _imap.iThreadedLoader_LoadLibraryWait(*args)
-    def LoadFile(*args): return _imap.iThreadedLoader_LoadFile(*args)
-    def LoadFileWait(*args): return _imap.iThreadedLoader_LoadFileWait(*args)
-    def LoadBuffer(*args): return _imap.iThreadedLoader_LoadBuffer(*args)
-    def LoadBufferWait(*args): return _imap.iThreadedLoader_LoadBufferWait(*args)
-    def LoadNode(*args): return _imap.iThreadedLoader_LoadNode(*args)
-    def LoadNodeWait(*args): return _imap.iThreadedLoader_LoadNodeWait(*args)
-    def AddSectorToList(*args): return _imap.iThreadedLoader_AddSectorToList(*args)
-    def AddMeshFactToList(*args): return _imap.iThreadedLoader_AddMeshFactToList(*args)
-    def AddMeshToList(*args): return _imap.iThreadedLoader_AddMeshToList(*args)
-    def AddCamposToList(*args): return _imap.iThreadedLoader_AddCamposToList(*args)
-    def AddTextureToList(*args): return _imap.iThreadedLoader_AddTextureToList(*args)
-    def AddMaterialToList(*args): return _imap.iThreadedLoader_AddMaterialToList(*args)
-    def AddSharedVarToList(*args): return _imap.iThreadedLoader_AddSharedVarToList(*args)
-    def MarkSyncDone(*args): return _imap.iThreadedLoader_MarkSyncDone(*args)
-    __swig_destroy__ = _imap.delete_iThreadedLoader
-    __del__ = lambda self : None;
-iThreadedLoader_swigregister = _imap.iThreadedLoader_swigregister
-iThreadedLoader_swigregister(iThreadedLoader)
-
 class iLoader(core.iBase):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
@@ -273,6 +120,8 @@ class iLoader(core.iBase):
     def LoadLibraryFile(*args): return _imap.iLoader_LoadLibraryFile(*args)
     def LoadLibrary(*args): return _imap.iLoader_LoadLibrary(*args)
     def Load(*args): return _imap.iLoader_Load(*args)
+    def SetAutoRegions(*args): return _imap.iLoader_SetAutoRegions(*args)
+    def GetAutoRegions(*args): return _imap.iLoader_GetAutoRegions(*args)
     scfGetVersion = staticmethod(_imap.iLoader_scfGetVersion)
     __swig_destroy__ = _imap.delete_iLoader
     __del__ = lambda self : None;
@@ -285,7 +134,6 @@ class iLoaderPlugin(core.iBase):
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def Parse(*args): return _imap.iLoaderPlugin_Parse(*args)
-    def IsThreadSafe(*args): return _imap.iLoaderPlugin_IsThreadSafe(*args)
     scfGetVersion = staticmethod(_imap.iLoaderPlugin_scfGetVersion)
     __swig_destroy__ = _imap.delete_iLoaderPlugin
     __del__ = lambda self : None;
@@ -298,7 +146,6 @@ class iBinaryLoaderPlugin(core.iBase):
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def Parse(*args): return _imap.iBinaryLoaderPlugin_Parse(*args)
-    def IsThreadSafe(*args): return _imap.iBinaryLoaderPlugin_IsThreadSafe(*args)
     scfGetVersion = staticmethod(_imap.iBinaryLoaderPlugin_scfGetVersion)
     __swig_destroy__ = _imap.delete_iBinaryLoaderPlugin
     __del__ = lambda self : None;
@@ -311,9 +158,9 @@ class iSaver(core.iBase):
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def SaveMapFile(*args): return _imap.iSaver_SaveMapFile(*args)
-    def SaveAllCollections(*args): return _imap.iSaver_SaveAllCollections(*args)
-    def SaveCollectionFile(*args): return _imap.iSaver_SaveCollectionFile(*args)
-    def SaveCollection(*args): return _imap.iSaver_SaveCollection(*args)
+    def SaveAllRegions(*args): return _imap.iSaver_SaveAllRegions(*args)
+    def SaveRegionFile(*args): return _imap.iSaver_SaveRegionFile(*args)
+    def SaveRegion(*args): return _imap.iSaver_SaveRegion(*args)
     def SavePortal(*args): return _imap.iSaver_SavePortal(*args)
     __swig_destroy__ = _imap.delete_iSaver
     __del__ = lambda self : None;

@@ -29,13 +29,14 @@
 #include "csutil/weakref.h"
 #include "csutil/leakguard.h"
 #include "csutil/hash.h"
-#include "csutil/threading/rwmutex.h"
 #include "iutil/selfdestruct.h"
 #include "csgfx/shadervarcontext.h"
 #include "imesh/object.h"
+#include "imesh/lighting.h"
 #include "iengine/mesh.h"
 #include "iengine/imposter.h"
 #include "iengine/viscull.h"
+#include "iengine/shadcast.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/shader/shader.h"
 
@@ -45,19 +46,13 @@
 #include "scenenode.h"
 #include "light.h"
 
-struct iMeshFactLoaderIterator;
 struct iMeshWrapper;
 struct iMovable;
 struct iRenderView;
 struct iSharedVariable;
 class csEngine;
+class csLight;
 class csMeshFactoryWrapper;
-
-CS_PLUGIN_NAMESPACE_BEGIN(Engine)
-{
-  class csLight;
-}
-CS_PLUGIN_NAMESPACE_END(Engine)
 
 /**
  * A list of mesh factories.
@@ -66,11 +61,9 @@ class csMeshFactoryList : public scfImplementation1<csMeshFactoryList,
 	iMeshFactoryList>
 {
 private:
-  csRefArrayObject<iMeshFactoryWrapper, CS::Container::ArrayAllocDefault,
-    csArrayCapacityFixedGrow<64> > list;
+  csRefArrayObject<iMeshFactoryWrapper> list;
   csHash<iMeshFactoryWrapper*, csString>
   	factories_hash;
-  mutable CS::Threading::ReadWriteMutex meshFactLock;
 
   class NameChangeListener : public scfImplementation1<NameChangeListener,
   	iObjectNameChangeListener>
@@ -106,10 +99,9 @@ public:
   virtual void PrepareFactory (iMeshFactoryWrapper*) { }
   virtual void FreeFactory (iMeshFactoryWrapper*) { }
 
-  virtual int GetCount () const;
-  virtual iMeshFactoryWrapper *Get (int n) const;
+  virtual int GetCount () const { return (int)list.GetSize (); }
+  virtual iMeshFactoryWrapper *Get (int n) const { return list.Get (n); }
   virtual int Add (iMeshFactoryWrapper *obj);
-  void AddBatch (csRef<iMeshFactLoaderIterator> itr);
   virtual bool Remove (iMeshFactoryWrapper *obj);
   virtual bool Remove (int n);
   virtual void RemoveAll ();
@@ -175,15 +167,6 @@ private:
 
   /// Class for keeping track of imposter information.
   csImposterFactory* imposter_factory;
-
-  // Factory to be instanced.
-  iMeshFactoryWrapper* instanceFactory;
-
-  // Array of transform vars for the imposter instances.
-  csRef<csShaderVariable> transformVars;
-
-  // Instance transform shadervar.
-  CS::ShaderVarStringID varTransform;
 
 protected:
   virtual void InternalRemove() { SelfDestruct(); }
@@ -282,36 +265,6 @@ public:
     return render_priority;
   }
   void SetRenderPriorityRecursive (long rp);
-
-  /**
-   * Sets the instance factory.
-   */
-  virtual void SetInstanceFactory(iMeshFactoryWrapper* meshfact)
-  {
-    instanceFactory = meshfact;
-    meshFact = instanceFactory->GetMeshObjectFactory();
-  }
-
-  /**
-   * Returns the instance factory.
-   */
-  virtual iMeshFactoryWrapper* GetInstanceFactory() const
-  {
-    return instanceFactory;
-  }
-
-  /**
-   * Adds a (pseudo-)instance of the instance factory at the given position.
-   */
-  virtual void AddInstance(csVector3& position, csMatrix3& rotation);
-
-  /**
-   * Returns the instancing transforms array shadervar/
-   */
-  virtual csShaderVariable* GetInstances() const
-  {
-    return transformVars;
-  }
 
   //---------- iImposter Functions -----------------//
 

@@ -24,7 +24,6 @@
 #include "imap/services.h"
 #include "imesh/animesh.h"
 #include "imesh/object.h"
-#include "iutil/stringarray.h"
 #include "iutil/document.h"
 #include "iutil/plugin.h"
 #include "ivaria/reporter.h"
@@ -416,8 +415,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
         {
           const char* factname = child->GetContentsValue ();
           iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
-
-          if(!fact)
+          if (!fact)
           {
             synldr->ReportError (msgid, child, 
               "Couldn't find factory '%s'!", factname);

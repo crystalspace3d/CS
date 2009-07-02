@@ -26,6 +26,8 @@
   INTERFACE_APPLY(iCollection)
   INTERFACE_APPLY(iCollectionArray)
   INTERFACE_APPLY(iEngine)
+  INTERFACE_APPLY(iFrustumView)
+  INTERFACE_APPLY(iFrustumViewUserdata)
   INTERFACE_APPLY(iLight)
   INTERFACE_APPLY(iLightIterator)
   INTERFACE_APPLY(iLightList)
@@ -41,9 +43,6 @@
   INTERFACE_APPLY(iProcTexture)
   INTERFACE_APPLY(iRenderLoop)
   INTERFACE_APPLY(iRenderLoopManager)
-  INTERFACE_APPLY(iRenderManager)
-  INTERFACE_APPLY(iRenderManagerPostEffects)
-  INTERFACE_APPLY(iRenderManagerTargets)
   INTERFACE_APPLY(iSceneNode)
   INTERFACE_APPLY(iSceneNodeArray)
   INTERFACE_APPLY(iSector)
@@ -129,6 +128,8 @@
   INTERFACE_APPLY(iTerrainFactory)
   INTERFACE_APPLY(iTerrainFactoryState)
   INTERFACE_APPLY(iTerrainObjectState)
+  INTERFACE_APPLY(iThingState)
+  INTERFACE_APPLY(iThingFactoryState)
   INTERFACE_APPLY(iObjectModel)
   INTERFACE_APPLY(iObjectModelListener)
   INTERFACE_APPLY(iTriangleMeshIterator)
@@ -219,7 +220,6 @@
   INTERFACE_APPLY(iDocumentNodeIterator)
   INTERFACE_APPLY(iDocumentSystem)
   INTERFACE_APPLY(iEvent)
-  INTERFACE_APPLY(iEventAttributeIterator)
   INTERFACE_APPLY(iEventHandler)
   INTERFACE_APPLY(iEventPlug)
   INTERFACE_APPLY(iEventQueue)
@@ -227,6 +227,8 @@
   INTERFACE_APPLY(iEventOutlet)
   INTERFACE_APPLY(iFactory)
   INTERFACE_APPLY(iFile)
+  INTERFACE_APPLY(iImage)
+  INTERFACE_APPLY(iImageIO)
   INTERFACE_APPLY(iJoystickDriver)
   INTERFACE_APPLY(iKeyboardDriver)
   INTERFACE_APPLY(iMouseDriver)
@@ -250,11 +252,7 @@
 
 #define CSTOOL_APPLY_FOR_EACH_INTERFACE
 
-%define CSGFX_APPLY_FOR_EACH_INTERFACE
-  INTERFACE_APPLY(iImage)
-  INTERFACE_APPLY(iImageIO)
-  INTERFACE_APPLY(iShaderVarStringSet)
-%enddef
+#define CSGFX_APPLY_FOR_EACH_INTERFACE
 
 
 %define APPLY_FOR_ALL_INTERFACES

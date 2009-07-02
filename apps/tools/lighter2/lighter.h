@@ -63,7 +63,7 @@ namespace lighter
     csRef<iCommandLineParser> cmdLine;
     csRef<iConfigManager> configMgr;
     iObjectRegistry *objectRegistry;
-    csRef<iShaderVarStringSet> svStrings;
+    csRef<iStringSet> strings;
     csRef<iJobQueue> jobManager;
     csRef<iSyntaxService> syntaxService;
 
@@ -124,7 +124,6 @@ namespace lighter
     Statistics::Progress progPostprocSector;
     Statistics::Progress progPostprocLM;
     Statistics::Progress progSaveMeshesPostLight;
-    Statistics::Progress progSpecMaps;
     Statistics::Progress progSaveResult;
     Statistics::Progress progCleanLightingData;
     Statistics::Progress progApplyWorldChanges;

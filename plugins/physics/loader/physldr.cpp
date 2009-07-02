@@ -137,7 +137,7 @@ bool csPhysicsLoader::Initialize (iObjectRegistry* object_reg)
 }
 
 csPtr<iBase> csPhysicsLoader::Parse (iDocumentNode* node,
-		iStreamSource*, iLoaderContext* ldr_context,
+		iStreamSource*, iLoaderContext* /*ldr_context*/,
 		iBase* /*context*/)
 {
   engine = csQueryRegistry<iEngine> (object_reg);
@@ -169,7 +169,7 @@ csPtr<iBase> csPhysicsLoader::Parse (iDocumentNode* node,
 	if (attr)
 	  system->QueryObject ()->SetName (attr->GetValue ());
       }
-      if (!ParseSystem (child, system, ldr_context))
+      if (!ParseSystem (child, system))
       {
 	return 0;
       }
@@ -182,8 +182,7 @@ csPtr<iBase> csPhysicsLoader::Parse (iDocumentNode* node,
   return csPtr<iBase>(dynamics);
 }
 
-bool csPhysicsLoader::ParseSystem (iDocumentNode* node, iDynamicSystem* system,
-                                   iLoaderContext* ldr_context)
+bool csPhysicsLoader::ParseSystem (iDocumentNode* node, iDynamicSystem* system)
 {
   // Get name for system
   const char *name = node->GetAttributeValue ("name");
@@ -248,7 +247,7 @@ bool csPhysicsLoader::ParseSystem (iDocumentNode* node, iDynamicSystem* system,
 	  {
             csRef<iRigidBody> body = system->CreateBody ();
             group->AddBody (body);
-            if (!ParseBody (gchild, body, ldr_context))
+            if (!ParseBody (gchild, body))
 	    {
 	      return false;
 	    }
@@ -264,7 +263,7 @@ bool csPhysicsLoader::ParseSystem (iDocumentNode* node, iDynamicSystem* system,
       case XMLTOKEN_COLLIDERCONVEXMESH:
       {
 	if (!ParseSystemColliderMesh (child, system,
-                            id == XMLTOKEN_COLLIDERCONVEXMESH, ldr_context)) return false;
+                            id == XMLTOKEN_COLLIDERCONVEXMESH)) return false;
 	break;
       }
       case XMLTOKEN_COLLIDERSPHERE:
@@ -290,7 +289,7 @@ bool csPhysicsLoader::ParseSystem (iDocumentNode* node, iDynamicSystem* system,
       case XMLTOKEN_BODY:
       {
         csRef<iRigidBody> body = system->CreateBody ();
-        if (!ParseBody (child, body, ldr_context)) return false;
+        if (!ParseBody (child, body)) return false;
         break;
       }
       case XMLTOKEN_JOINT:
@@ -355,7 +354,7 @@ bool csPhysicsLoader::ParseSystem (iDocumentNode* node, iDynamicSystem* system,
   return true;
 }
 
-bool csPhysicsLoader::ParseBody (iDocumentNode* node, iRigidBody* body, iLoaderContext* ldr_context)
+bool csPhysicsLoader::ParseBody (iDocumentNode* node, iRigidBody* body)
 {
   const char *name = node->GetAttributeValue ("name");
   body->QueryObject()->SetName (name);
@@ -380,19 +379,15 @@ bool csPhysicsLoader::ParseBody (iDocumentNode* node, iRigidBody* body, iLoaderC
         break;
       case XMLTOKEN_MESH:
         if (child->GetContentsValue ())
-        {
-          csRef<iMeshWrapper> m;
-          while(!m.IsValid())
-          {
-            m = ldr_context->FindMeshObject (child->GetContentsValue ());
-          }
+	{
+          iMeshWrapper *m = engine->FindMeshObject (child->GetContentsValue ());
           if (m)
-          {
-            body->SetTransform (m->GetMovable()->GetTransform());
+	  {
+	    body->SetTransform (m->GetMovable()->GetTransform());
             body->AttachMesh (m);
           }
-          else
-          {
+	  else
+	  {
             synldr->ReportError ("crystalspace.dynamics.loader",
               child, "Unable to find mesh in engine");
             return false;
@@ -405,7 +400,7 @@ bool csPhysicsLoader::ParseBody (iDocumentNode* node, iRigidBody* body, iLoaderC
           child, "Currently unable to parse a bone, sorry.");
         break;
       case XMLTOKEN_COLLIDER:
-        if (!ParseCollider (child, body, ldr_context))
+        if (!ParseCollider (child, body))
 	{
           synldr->ReportError ("crystalspace.dynamics.loader",
             child, "Currently unable to parse a bone, sorry.");
@@ -421,8 +416,7 @@ bool csPhysicsLoader::ParseBody (iDocumentNode* node, iRigidBody* body, iLoaderC
   return true;
 }
 
-bool csPhysicsLoader::ParseCollider (iDocumentNode* node, iRigidBody* body,
-                                     iLoaderContext* ldr_context)
+bool csPhysicsLoader::ParseCollider (iDocumentNode* node, iRigidBody* body)
 {
   float f = node->GetAttributeValueAsFloat ("friction");
   float d = node->GetAttributeValueAsFloat ("density");
@@ -440,46 +434,42 @@ bool csPhysicsLoader::ParseCollider (iDocumentNode* node, iRigidBody* body,
     {
       case XMLTOKEN_COLLIDERMESH:
       case XMLTOKEN_COLLIDERCONVEXMESH:
-        {
-          if (!child->GetAttributeValue ("mesh"))
+      {
+        if (!child->GetAttributeValue ("mesh"))
+	{
+	  synldr->ReportError ("crystalspace.dynamics.loader",
+	    child, "No mesh specified for collidermesh");
+	  return false;
+        }
+        iMeshWrapper *m = engine->FindMeshObject (child->GetAttributeValue (
+				"mesh"));
+	csOrthoTransform t;
+	ParseTransform (child, t);
+        if (m)
+	{
+          if (id == XMLTOKEN_COLLIDERMESH)
           {
-            synldr->ReportError ("crystalspace.dynamics.loader",
-              child, "No mesh specified for collidermesh");
-            return false;
-          }
-          // Wait for load - assume it will exist eventually.
-          csRef<iMeshWrapper> m;
-          while(!m.IsValid())
-          {
-            m = ldr_context->FindMeshObject (child->GetAttributeValue ("mesh"));
-          }
-          csOrthoTransform t;
-          ParseTransform (child, t);
-          if (m)
-          {
-            if (id == XMLTOKEN_COLLIDERMESH)
-            {
-              if (s > 0)
-                body->AttachColliderMesh (m, t, f, d, e, s);
-              else  //no softness parameter, so use default
-                body->AttachColliderMesh (m, t, f, d, e);
-            }
-            else
-            {
-              if (s > 0)
-                body->AttachColliderConvexMesh (m, t, f, d, e, s);
-              else  //no softness parameter, so use default
-                body->AttachColliderConvexMesh (m, t, f, d, e);
-            }
-
+            if (s > 0)
+              body->AttachColliderMesh (m, t, f, d, e, s);
+            else  //no softness parameter, so use default
+              body->AttachColliderMesh (m, t, f, d, e);
           }
           else
           {
-            synldr->ReportError ("crystalspace.dynamics.loader",
-              child, "Unable to find collider mesh in engine");
-            return false;
+            if (s > 0)
+              body->AttachColliderConvexMesh (m, t, f, d, e, s);
+            else  //no softness parameter, so use default
+              body->AttachColliderConvexMesh (m, t, f, d, e);
           }
-          break;
+
+        }
+	else
+	{
+          synldr->ReportError ("crystalspace.dynamics.loader",
+            child, "Unable to find collider mesh in engine");
+          return false;
+        }
+        break;
       }
       case XMLTOKEN_COLLIDERSPHERE:
       {
@@ -527,20 +517,13 @@ bool csPhysicsLoader::ParseCollider (iDocumentNode* node, iRigidBody* body,
 }
 
 bool csPhysicsLoader::ParseSystemColliderMesh (
-  iDocumentNode* node, iDynamicSystem* system, bool convex,
-  iLoaderContext* ldr_context)
+  iDocumentNode* node, iDynamicSystem* system, bool convex)
 {
   float f = node->GetAttributeValueAsFloat ("friction");
   float e = node->GetAttributeValueAsFloat ("elasticity");
   float s = node->GetAttributeValueAsFloat ("softness");
   if (!node->GetContentsValue ()) { return false; }
-
-  // Wait for load - assume it will exist eventually.
-  csRef<iMeshWrapper> m;
-  while(!m.IsValid())
-  {
-    m = ldr_context->FindMeshObject (node->GetContentsValue ());
-  }
+  iMeshWrapper *m = engine->FindMeshObject (node->GetContentsValue ());
   if (m)
   {
     if (convex)

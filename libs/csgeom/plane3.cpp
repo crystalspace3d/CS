@@ -46,13 +46,17 @@ void csPlane3::Set (
 
 csVector3 csPlane3::FindPoint () const
 {
-  switch (norm.DominantAxis())
+  if (norm.x >= norm.y && norm.x >= norm.z)
   {
-    case CS_AXIS_X: return csVector3 (-DD / norm.x, 0, 0);
-    case CS_AXIS_Y: return csVector3 (0, -DD / norm.y, 0);
-    default:
-      CS_ASSERT(false);
-    case CS_AXIS_Z: return csVector3 (0, 0, -DD / norm.z);
+    return csVector3 (-DD / norm.x, 0, 0);
+  }
+  else if (norm.y >= norm.x && norm.y >= norm.z)
+  {
+    return csVector3 (0, -DD / norm.y, 0);
+  }
+  else
+  {
+    return csVector3 (0, 0, -DD / norm.z);
   }
 }
 

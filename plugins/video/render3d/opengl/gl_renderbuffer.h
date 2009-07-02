@@ -87,12 +87,9 @@ private:
   // Internal constants
   enum
   {
-    // Bit 0: indicates whether the buffer is a vertex or index buffer
-    VBO_BUFFER_IS_VERTEX = 0,
-    VBO_BUFFER_IS_INDEX = 1,
-    // Bit 1: if set, buffer is static
-    VBO_BUFFER_IS_STATIC = 2,
-    VBO_BUFFER_TYPE_COUNT = 4,
+    VBO_BUFFER_VERTEX = 0,
+    VBO_BUFFER_INDEX = 1,
+    VBO_BUFFER_TYPE_COUNT = 2,
 
     // Smallest allocation slot is 256 byte
     VBO_MIN_SLOT_SIZE_PO2 = 8,

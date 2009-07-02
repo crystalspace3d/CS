@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.12.1.1 Shader System Overview</title>
+<title>Crystal Space 1.4.0: 4.12.1.1 Shader System Overview</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.12.1.1 Shader System Overview">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.12.1.1 Shader System Overview">
+<meta name="description" content="Crystal Space 1.4.0: 4.12.1.1 Shader System Overview">
+<meta name="keywords" content="Crystal Space 1.4.0: 4.12.1.1 Shader System Overview">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -174,7 +174,8 @@ together to produce a certain effect or appearance.
 <p>Shader programs in Crystal Space are abstracted into plugins.  Plugins exist
 for e.g. <small>ARB</small> vertex or fragment programs, Cg vertex or fragment programs
 or fixed function pipeline setup (not actually &ldquo;true&rdquo; programs, but by
-Crystal Space provided by shader program plugins as well).
+Crystal Space provided by shader program plugins as well).  Even the software
+renderer's rasterization is realized as a shader plugin.
 </p>
 <p>A Crystal Space-specific feature grouped into shader programs is the support
 for &ldquo;vertex processors&rdquo;.  These are not shader programs in the sense of being
@@ -210,9 +211,9 @@ subset of what shader variables are used for; other uses include passing
 around data inside the engine itself.
 </p>
 <p>Shader variables are identified by a name which is a string ID obtained
-from the global <code>iShaderVarStringSet</code>.  Note that a name is not unique
-to an instance of a variable.  Indeed, commonly multiple variables will have
-the same name; there is no global single namespace of variables, which one is
+from the global <code>iStringSet</code>.  Note that a name is not unique to an
+instance of a variable.  Indeed, commonly multiple variables will have the
+same name; there is no global single namespace of variables, which one is 
 chosen depends on what variables are attached to the different contexts -
 see below.
 </p>

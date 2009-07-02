@@ -2521,73 +2521,73 @@ SWIG_Python_MustGetPtr(PyObject *obj, swig_type_info *ty, int argnum, int flags)
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_AllocatorType swig_types[0]
-#define SWIGTYPE_p_CS__Memory__AllocatorMalloc swig_types[1]
-#define SWIGTYPE_p_CS__StringIDT_CS__StringSetTag__General_t swig_types[2]
-#define SWIGTYPE_p_CS__Utility__StringSetT_CS__StringSetTag__General_t swig_types[3]
-#define SWIGTYPE_p_CapacityHandlerType swig_types[4]
-#define SWIGTYPE_p_ElementHandlerType swig_types[5]
-#define SWIGTYPE_p_HashType swig_types[6]
-#define SWIGTYPE_p_SndSysFilterLocation swig_types[7]
-#define SWIGTYPE_p_TagType swig_types[8]
-#define SWIGTYPE_p_ThisType swig_types[9]
-#define SWIGTYPE_p_ValueType swig_types[10]
-#define SWIGTYPE_p__1_basetype swig_types[11]
-#define SWIGTYPE_p__csKeyCharType swig_types[12]
-#define SWIGTYPE_p__csKeyEventType swig_types[13]
-#define SWIGTYPE_p__csKeyModifierNumType swig_types[14]
-#define SWIGTYPE_p__csKeyModifierType swig_types[15]
-#define SWIGTYPE_p__csKeyModifiers swig_types[16]
-#define SWIGTYPE_p__csMouseEventType swig_types[17]
-#define SWIGTYPE_p_char swig_types[18]
-#define SWIGTYPE_p_csArrayCapacityFixedGrowT_16_t swig_types[19]
-#define SWIGTYPE_p_csArrayCapacityVariableGrow swig_types[20]
-#define SWIGTYPE_p_csConfigFile swig_types[21]
-#define SWIGTYPE_p_csListenerProperties swig_types[22]
-#define SWIGTYPE_p_csObject swig_types[23]
-#define SWIGTYPE_p_csRefArrayT_iObject_t swig_types[24]
-#define SWIGTYPE_p_csSndSysRendererSoftware swig_types[25]
-#define SWIGTYPE_p_csSndSysSoundFormat swig_types[26]
-#define SWIGTYPE_p_csSourceParameters3D swig_types[27]
-#define SWIGTYPE_p_csVector3 swig_types[28]
-#define SWIGTYPE_p_float swig_types[29]
-#define SWIGTYPE_p_iBase swig_types[30]
-#define SWIGTYPE_p_iCacheManager swig_types[31]
-#define SWIGTYPE_p_iClipper2D swig_types[32]
-#define SWIGTYPE_p_iCommandLineParser swig_types[33]
-#define SWIGTYPE_p_iComponent swig_types[34]
-#define SWIGTYPE_p_iConfigFile swig_types[35]
-#define SWIGTYPE_p_iConfigIterator swig_types[36]
-#define SWIGTYPE_p_iConfigManager swig_types[37]
-#define SWIGTYPE_p_iDataBuffer swig_types[38]
-#define SWIGTYPE_p_iDebugHelper swig_types[39]
-#define SWIGTYPE_p_iDocument swig_types[40]
-#define SWIGTYPE_p_iDocumentAttribute swig_types[41]
-#define SWIGTYPE_p_iDocumentAttributeIterator swig_types[42]
-#define SWIGTYPE_p_iDocumentNode swig_types[43]
-#define SWIGTYPE_p_iDocumentNodeIterator swig_types[44]
-#define SWIGTYPE_p_iDocumentSystem swig_types[45]
-#define SWIGTYPE_p_iEvent swig_types[46]
-#define SWIGTYPE_p_iEventAttributeIterator swig_types[47]
-#define SWIGTYPE_p_iEventCord swig_types[48]
-#define SWIGTYPE_p_iEventHandler swig_types[49]
-#define SWIGTYPE_p_iEventNameRegistry swig_types[50]
-#define SWIGTYPE_p_iEventOutlet swig_types[51]
-#define SWIGTYPE_p_iEventPlug swig_types[52]
-#define SWIGTYPE_p_iEventQueue swig_types[53]
-#define SWIGTYPE_p_iFactory swig_types[54]
-#define SWIGTYPE_p_iFile swig_types[55]
-#define SWIGTYPE_p_iJoystickDriver swig_types[56]
-#define SWIGTYPE_p_iKeyComposer swig_types[57]
-#define SWIGTYPE_p_iKeyboardDriver swig_types[58]
-#define SWIGTYPE_p_iMouseDriver swig_types[59]
-#define SWIGTYPE_p_iObject swig_types[60]
-#define SWIGTYPE_p_iObjectIterator swig_types[61]
-#define SWIGTYPE_p_iObjectNameChangeListener swig_types[62]
-#define SWIGTYPE_p_iObjectRegistry swig_types[63]
-#define SWIGTYPE_p_iObjectRegistryIterator swig_types[64]
-#define SWIGTYPE_p_iPath swig_types[65]
-#define SWIGTYPE_p_iPluginIterator swig_types[66]
-#define SWIGTYPE_p_iPluginManager swig_types[67]
+#define SWIGTYPE_p_CapacityHandlerType swig_types[1]
+#define SWIGTYPE_p_ElementHandlerType swig_types[2]
+#define SWIGTYPE_p_FileFormatDescription swig_types[3]
+#define SWIGTYPE_p_HashType swig_types[4]
+#define SWIGTYPE_p_SndSysFilterLocation swig_types[5]
+#define SWIGTYPE_p_ThisType swig_types[6]
+#define SWIGTYPE_p_ValueType swig_types[7]
+#define SWIGTYPE_p__1_basetype swig_types[8]
+#define SWIGTYPE_p__csKeyCharType swig_types[9]
+#define SWIGTYPE_p__csKeyEventType swig_types[10]
+#define SWIGTYPE_p__csKeyModifierNumType swig_types[11]
+#define SWIGTYPE_p__csKeyModifierType swig_types[12]
+#define SWIGTYPE_p__csKeyModifiers swig_types[13]
+#define SWIGTYPE_p__csMouseEventType swig_types[14]
+#define SWIGTYPE_p_char swig_types[15]
+#define SWIGTYPE_p_csArrayT_csImageIOFileFormatDescription_const_p_csArrayElementHandlerT_csImageIOFileFormatDescription_const_p_t_CS__Memory__AllocatorMalloc_csArrayCapacityDefault_t swig_types[16]
+#define SWIGTYPE_p_csConfigFile swig_types[17]
+#define SWIGTYPE_p_csListenerProperties swig_types[18]
+#define SWIGTYPE_p_csObject swig_types[19]
+#define SWIGTYPE_p_csRefArrayT_iObject_t swig_types[20]
+#define SWIGTYPE_p_csSndSysRendererSoftware swig_types[21]
+#define SWIGTYPE_p_csSndSysSoundFormat swig_types[22]
+#define SWIGTYPE_p_csSourceParameters3D swig_types[23]
+#define SWIGTYPE_p_csVector3 swig_types[24]
+#define SWIGTYPE_p_float swig_types[25]
+#define SWIGTYPE_p_iAnimatedImage swig_types[26]
+#define SWIGTYPE_p_iBase swig_types[27]
+#define SWIGTYPE_p_iCacheManager swig_types[28]
+#define SWIGTYPE_p_iClipper2D swig_types[29]
+#define SWIGTYPE_p_iCommandLineParser swig_types[30]
+#define SWIGTYPE_p_iComponent swig_types[31]
+#define SWIGTYPE_p_iConfigFile swig_types[32]
+#define SWIGTYPE_p_iConfigIterator swig_types[33]
+#define SWIGTYPE_p_iConfigManager swig_types[34]
+#define SWIGTYPE_p_iDataBuffer swig_types[35]
+#define SWIGTYPE_p_iDebugHelper swig_types[36]
+#define SWIGTYPE_p_iDocument swig_types[37]
+#define SWIGTYPE_p_iDocumentAttribute swig_types[38]
+#define SWIGTYPE_p_iDocumentAttributeIterator swig_types[39]
+#define SWIGTYPE_p_iDocumentNode swig_types[40]
+#define SWIGTYPE_p_iDocumentNodeIterator swig_types[41]
+#define SWIGTYPE_p_iDocumentSystem swig_types[42]
+#define SWIGTYPE_p_iEvent swig_types[43]
+#define SWIGTYPE_p_iEventAttributeIterator swig_types[44]
+#define SWIGTYPE_p_iEventCord swig_types[45]
+#define SWIGTYPE_p_iEventHandler swig_types[46]
+#define SWIGTYPE_p_iEventNameRegistry swig_types[47]
+#define SWIGTYPE_p_iEventOutlet swig_types[48]
+#define SWIGTYPE_p_iEventPlug swig_types[49]
+#define SWIGTYPE_p_iEventQueue swig_types[50]
+#define SWIGTYPE_p_iFactory swig_types[51]
+#define SWIGTYPE_p_iFile swig_types[52]
+#define SWIGTYPE_p_iImage swig_types[53]
+#define SWIGTYPE_p_iImageIO swig_types[54]
+#define SWIGTYPE_p_iJoystickDriver swig_types[55]
+#define SWIGTYPE_p_iKeyComposer swig_types[56]
+#define SWIGTYPE_p_iKeyboardDriver swig_types[57]
+#define SWIGTYPE_p_iMouseDriver swig_types[58]
+#define SWIGTYPE_p_iObject swig_types[59]
+#define SWIGTYPE_p_iObjectIterator swig_types[60]
+#define SWIGTYPE_p_iObjectNameChangeListener swig_types[61]
+#define SWIGTYPE_p_iObjectRegistry swig_types[62]
+#define SWIGTYPE_p_iObjectRegistryIterator swig_types[63]
+#define SWIGTYPE_p_iPath swig_types[64]
+#define SWIGTYPE_p_iPluginIterator swig_types[65]
+#define SWIGTYPE_p_iPluginManager swig_types[66]
+#define SWIGTYPE_p_iProcTexture swig_types[67]
 #define SWIGTYPE_p_iReporter swig_types[68]
 #define SWIGTYPE_p_iReporterIterator swig_types[69]
 #define SWIGTYPE_p_iReporterListener swig_types[70]
@@ -2612,37 +2612,35 @@ SWIG_Python_MustGetPtr(PyObject *obj, swig_type_info *ty, int argnum, int flags)
 #define SWIGTYPE_p_iSndSysSource3DDoppler swig_types[89]
 #define SWIGTYPE_p_iSndSysSourceOpenAL swig_types[90]
 #define SWIGTYPE_p_iSndSysSourceSoftware swig_types[91]
-#define SWIGTYPE_p_iSndSysStream swig_types[92]
-#define SWIGTYPE_p_iSndSysStreamCallback swig_types[93]
-#define SWIGTYPE_p_iSndSysWrapper swig_types[94]
-#define SWIGTYPE_p_iString swig_types[95]
-#define SWIGTYPE_p_iStringArray swig_types[96]
-#define SWIGTYPE_p_iStringSet swig_types[97]
-#define SWIGTYPE_p_iStringSetBaseT_CS__StringSetTag__General_t swig_types[98]
-#define SWIGTYPE_p_iThreadManager swig_types[99]
-#define SWIGTYPE_p_iThreadReturn swig_types[100]
-#define SWIGTYPE_p_iTriangleMesh swig_types[101]
-#define SWIGTYPE_p_iVFS swig_types[102]
-#define SWIGTYPE_p_iVirtualClock swig_types[103]
-#define SWIGTYPE_p_int swig_types[104]
-#define SWIGTYPE_p_int16_t swig_types[105]
-#define SWIGTYPE_p_int64_t swig_types[106]
-#define SWIGTYPE_p_int8_t swig_types[107]
-#define SWIGTYPE_p_long_long swig_types[108]
-#define SWIGTYPE_p_p_void swig_types[109]
-#define SWIGTYPE_p_scfImplementation1T_csConfigFile_iConfigFile_t swig_types[110]
-#define SWIGTYPE_p_scfImplementation1T_csObject_iObject_t swig_types[111]
-#define SWIGTYPE_p_scfImplementationExt1T_csPath_csObject_iPath_t swig_types[112]
-#define SWIGTYPE_p_size_t swig_types[113]
-#define SWIGTYPE_p_uint16_t swig_types[114]
-#define SWIGTYPE_p_uint32_t swig_types[115]
-#define SWIGTYPE_p_uint64_t swig_types[116]
-#define SWIGTYPE_p_uint8_t swig_types[117]
-#define SWIGTYPE_p_unsigned_int swig_types[118]
-#define SWIGTYPE_p_unsigned_long swig_types[119]
-#define SWIGTYPE_p_unsigned_long_long swig_types[120]
-static swig_type_info *swig_types[122];
-static swig_module_info swig_module = {swig_types, 121, 0, 0, 0, 0};
+#define SWIGTYPE_p_iSndSysSourceSoftware3D swig_types[92]
+#define SWIGTYPE_p_iSndSysStream swig_types[93]
+#define SWIGTYPE_p_iSndSysStreamCallback swig_types[94]
+#define SWIGTYPE_p_iSndSysWrapper swig_types[95]
+#define SWIGTYPE_p_iString swig_types[96]
+#define SWIGTYPE_p_iStringArray swig_types[97]
+#define SWIGTYPE_p_iStringSet swig_types[98]
+#define SWIGTYPE_p_iTriangleMesh swig_types[99]
+#define SWIGTYPE_p_iVFS swig_types[100]
+#define SWIGTYPE_p_iVirtualClock swig_types[101]
+#define SWIGTYPE_p_int swig_types[102]
+#define SWIGTYPE_p_int16_t swig_types[103]
+#define SWIGTYPE_p_int64_t swig_types[104]
+#define SWIGTYPE_p_int8_t swig_types[105]
+#define SWIGTYPE_p_long_long swig_types[106]
+#define SWIGTYPE_p_p_void swig_types[107]
+#define SWIGTYPE_p_scfImplementation1T_csConfigFile_iConfigFile_t swig_types[108]
+#define SWIGTYPE_p_scfImplementation1T_csObject_iObject_t swig_types[109]
+#define SWIGTYPE_p_scfImplementationExt1T_csPath_csObject_iPath_t swig_types[110]
+#define SWIGTYPE_p_size_t swig_types[111]
+#define SWIGTYPE_p_uint16_t swig_types[112]
+#define SWIGTYPE_p_uint32_t swig_types[113]
+#define SWIGTYPE_p_uint64_t swig_types[114]
+#define SWIGTYPE_p_unsigned_char swig_types[115]
+#define SWIGTYPE_p_unsigned_int swig_types[116]
+#define SWIGTYPE_p_unsigned_long swig_types[117]
+#define SWIGTYPE_p_unsigned_long_long swig_types[118]
+static swig_type_info *swig_types[120];
+static swig_module_info swig_module = {swig_types, 119, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2740,9 +2738,7 @@ namespace swig {
 }
 
 
-#include "csgeom.h"
-#include "csutil.h"
-#include "isndsys.h"
+#include "crystalspace.h"
 
 
 /* Funtions to set the modules global SCF pointer, this is needed
@@ -3138,6 +3134,29 @@ SWIGINTERN int iSndSysSource_scfGetVersion(){ return scfInterfaceTraits<iSndSysS
 SWIGINTERN void delete_iSndSysSource(iSndSysSource *self){ if (self) self->DecRef (); }
 SWIGINTERN int iSndSysSource3D_scfGetVersion(){ return scfInterfaceTraits<iSndSysSource3D>::GetVersion(); }
 SWIGINTERN void delete_iSndSysSource3D(iSndSysSource3D *self){ if (self) self->DecRef (); }
+
+SWIGINTERN int
+SWIG_AsVal_unsigned_SS_char (PyObject * obj, unsigned char *val)
+{
+  unsigned long v;
+  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v > UCHAR_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = static_cast< unsigned char >(v);
+    }
+  }  
+  return res;
+}
+
+
+SWIGINTERNINLINE PyObject *
+SWIG_From_unsigned_SS_char  (unsigned char value)
+{    
+  return SWIG_From_unsigned_SS_long  (value);
+}
+
 
 SWIGINTERN int
 SWIG_AsVal_bool (PyObject *obj, bool *val)
@@ -4889,6 +4908,7 @@ SWIGINTERN PyObject *_wrap_iSndSysLoader_LoadSound__SWIG_0(PyObject *SWIGUNUSEDP
   arg3 = reinterpret_cast< char * >(buf3);
   result = (arg1)->LoadSound(arg2,(char const *)arg3);
   {
+    /*@SWIG:/tmp/tmp0/V1.4/include/bindings/python/pythpre.i,114,TYPEMAP_OUT_csRef_BODY@*/
     csRef<iSndSysData> ref((csPtr<iSndSysData>&)result); /* explicit cast */
     
     if (!ref.IsValid())
@@ -4898,6 +4918,7 @@ SWIGINTERN PyObject *_wrap_iSndSysLoader_LoadSound__SWIG_0(PyObject *SWIGUNUSEDP
     }
     ref->IncRef();
     resultobj = SWIG_NewPointerObj((void *)(iSndSysData *)ref, SWIGTYPE_p_iSndSysData, 1);
+    /*@SWIG@*/
   }
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   return resultobj;
@@ -4932,6 +4953,7 @@ SWIGINTERN PyObject *_wrap_iSndSysLoader_LoadSound__SWIG_1(PyObject *SWIGUNUSEDP
   arg2 = reinterpret_cast< iDataBuffer * >(argp2);
   result = (arg1)->LoadSound(arg2);
   {
+    /*@SWIG:/tmp/tmp0/V1.4/include/bindings/python/pythpre.i,114,TYPEMAP_OUT_csRef_BODY@*/
     csRef<iSndSysData> ref((csPtr<iSndSysData>&)result); /* explicit cast */
     
     if (!ref.IsValid())
@@ -4941,6 +4963,7 @@ SWIGINTERN PyObject *_wrap_iSndSysLoader_LoadSound__SWIG_1(PyObject *SWIGUNUSEDP
     }
     ref->IncRef();
     resultobj = SWIG_NewPointerObj((void *)(iSndSysData *)ref, SWIGTYPE_p_iSndSysData, 1);
+    /*@SWIG@*/
   }
   return resultobj;
 fail:
@@ -5516,6 +5539,7 @@ SWIGINTERN PyObject *_wrap_iSndSysSource_GetStream(PyObject *SWIGUNUSEDPARM(self
   arg1 = reinterpret_cast< iSndSysSource * >(argp1);
   result = (arg1)->GetStream();
   {
+    /*@SWIG:/tmp/tmp0/V1.4/include/bindings/python/pythpre.i,114,TYPEMAP_OUT_csRef_BODY@*/
     csRef<iSndSysStream> ref((csRef<iSndSysStream>&)result); /* explicit cast */
     
     if (!ref.IsValid())
@@ -5525,6 +5549,7 @@ SWIGINTERN PyObject *_wrap_iSndSysSource_GetStream(PyObject *SWIGUNUSEDPARM(self
     }
     ref->IncRef();
     resultobj = SWIG_NewPointerObj((void *)(iSndSysStream *)ref, SWIGTYPE_p_iSndSysStream, 1);
+    /*@SWIG@*/
   }
   return resultobj;
 fail:
@@ -6467,6 +6492,310 @@ SWIGINTERN PyObject *iSndSysSource3DDoppler_swigregister(PyObject *SWIGUNUSEDPAR
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_SetPosition(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  csVector3 arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_SetPosition",2,2,&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_SetPosition" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_csVector3,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iSndSysSourceSoftware3D_SetPosition" "', argument " "2"" of type '" "csVector3""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "iSndSysSourceSoftware3D_SetPosition" "', argument " "2"" of type '" "csVector3""'");
+    } else {
+      csVector3 * temp = reinterpret_cast< csVector3 * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  (arg1)->SetPosition(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_GetPosition(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  csVector3 result;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_GetPosition",1,1,&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_GetPosition" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  result = (arg1)->GetPosition();
+  resultobj = SWIG_NewPointerObj((new csVector3(static_cast< const csVector3& >(result))), SWIGTYPE_p_csVector3, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_SetDirection(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  csVector3 arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_SetDirection",2,2,&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_SetDirection" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_csVector3,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iSndSysSourceSoftware3D_SetDirection" "', argument " "2"" of type '" "csVector3""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "iSndSysSourceSoftware3D_SetDirection" "', argument " "2"" of type '" "csVector3""'");
+    } else {
+      csVector3 * temp = reinterpret_cast< csVector3 * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  (arg1)->SetDirection(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_GetDirection(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  csVector3 result;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_GetDirection",1,1,&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_GetDirection" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  result = (arg1)->GetDirection();
+  resultobj = SWIG_NewPointerObj((new csVector3(static_cast< const csVector3& >(result))), SWIGTYPE_p_csVector3, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_SetDirectionalRadiation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_SetDirectionalRadiation",2,2,&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_SetDirectionalRadiation" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "iSndSysSourceSoftware3D_SetDirectionalRadiation" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = static_cast< float >(val2);
+  (arg1)->SetDirectionalRadiation(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_GetDirectionalRadiation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_GetDirectionalRadiation",1,1,&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_GetDirectionalRadiation" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  result = (float)(arg1)->GetDirectionalRadiation();
+  resultobj = SWIG_From_float(static_cast< float >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_SetMinimumDistance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_SetMinimumDistance",2,2,&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_SetMinimumDistance" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "iSndSysSourceSoftware3D_SetMinimumDistance" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = static_cast< float >(val2);
+  (arg1)->SetMinimumDistance(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_SetMaximumDistance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_SetMaximumDistance",2,2,&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_SetMaximumDistance" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "iSndSysSourceSoftware3D_SetMaximumDistance" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = static_cast< float >(val2);
+  (arg1)->SetMaximumDistance(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_GetMinimumDistance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_GetMinimumDistance",1,1,&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_GetMinimumDistance" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  result = (float)(arg1)->GetMinimumDistance();
+  resultobj = SWIG_From_float(static_cast< float >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSndSysSourceSoftware3D_GetMaximumDistance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSndSysSourceSoftware3D_GetMaximumDistance",1,1,&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSndSysSourceSoftware3D_GetMaximumDistance" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  result = (float)(arg1)->GetMaximumDistance();
+  resultobj = SWIG_From_float(static_cast< float >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_iSndSysSourceSoftware3D(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  iSndSysSourceSoftware3D *arg1 = (iSndSysSourceSoftware3D *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"delete_iSndSysSourceSoftware3D",1,1,&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iSndSysSourceSoftware3D, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_iSndSysSourceSoftware3D" "', argument " "1"" of type '" "iSndSysSourceSoftware3D *""'"); 
+  }
+  arg1 = reinterpret_cast< iSndSysSourceSoftware3D * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *iSndSysSourceSoftware3D_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_UnpackTuple(args,(char*)"swigregister", 1, 1,&obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_iSndSysSourceSoftware3D, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Freq_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   csSndSysSoundFormat *arg1 = (csSndSysSoundFormat *) 0 ;
@@ -6525,8 +6854,8 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Bits_set(PyObject *SWIGUNUSEDPARM
   uint8 arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -6536,19 +6865,11 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Bits_set(PyObject *SWIGUNUSEDPARM
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "csSndSysSoundFormat_Bits_set" "', argument " "1"" of type '" "csSndSysSoundFormat *""'"); 
   }
   arg1 = reinterpret_cast< csSndSysSoundFormat * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_uint8_t,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "csSndSysSoundFormat_Bits_set" "', argument " "2"" of type '" "uint8""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "csSndSysSoundFormat_Bits_set" "', argument " "2"" of type '" "uint8""'");
-    } else {
-      uint8 * temp = reinterpret_cast< uint8 * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
+  ecode2 = SWIG_AsVal_unsigned_SS_char(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "csSndSysSoundFormat_Bits_set" "', argument " "2"" of type '" "uint8""'");
+  } 
+  arg2 = static_cast< uint8 >(val2);
   if (arg1) (arg1)->Bits = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -6571,8 +6892,8 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Bits_get(PyObject *SWIGUNUSEDPARM
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "csSndSysSoundFormat_Bits_get" "', argument " "1"" of type '" "csSndSysSoundFormat *""'"); 
   }
   arg1 = reinterpret_cast< csSndSysSoundFormat * >(argp1);
-  result =  ((arg1)->Bits);
-  resultobj = SWIG_NewPointerObj((new uint8(static_cast< const uint8& >(result))), SWIGTYPE_p_uint8_t, SWIG_POINTER_OWN |  0 );
+  result = (uint8) ((arg1)->Bits);
+  resultobj = SWIG_From_unsigned_SS_char(static_cast< unsigned char >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6585,8 +6906,8 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Channels_set(PyObject *SWIGUNUSED
   uint8 arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -6596,19 +6917,11 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Channels_set(PyObject *SWIGUNUSED
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "csSndSysSoundFormat_Channels_set" "', argument " "1"" of type '" "csSndSysSoundFormat *""'"); 
   }
   arg1 = reinterpret_cast< csSndSysSoundFormat * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_uint8_t,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "csSndSysSoundFormat_Channels_set" "', argument " "2"" of type '" "uint8""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "csSndSysSoundFormat_Channels_set" "', argument " "2"" of type '" "uint8""'");
-    } else {
-      uint8 * temp = reinterpret_cast< uint8 * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
+  ecode2 = SWIG_AsVal_unsigned_SS_char(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "csSndSysSoundFormat_Channels_set" "', argument " "2"" of type '" "uint8""'");
+  } 
+  arg2 = static_cast< uint8 >(val2);
   if (arg1) (arg1)->Channels = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -6631,8 +6944,8 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Channels_get(PyObject *SWIGUNUSED
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "csSndSysSoundFormat_Channels_get" "', argument " "1"" of type '" "csSndSysSoundFormat *""'"); 
   }
   arg1 = reinterpret_cast< csSndSysSoundFormat * >(argp1);
-  result =  ((arg1)->Channels);
-  resultobj = SWIG_NewPointerObj((new uint8(static_cast< const uint8& >(result))), SWIGTYPE_p_uint8_t, SWIG_POINTER_OWN |  0 );
+  result = (uint8) ((arg1)->Channels);
+  resultobj = SWIG_From_unsigned_SS_char(static_cast< unsigned char >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6645,8 +6958,8 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Flags_set(PyObject *SWIGUNUSEDPAR
   uint8 arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -6656,19 +6969,11 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Flags_set(PyObject *SWIGUNUSEDPAR
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "csSndSysSoundFormat_Flags_set" "', argument " "1"" of type '" "csSndSysSoundFormat *""'"); 
   }
   arg1 = reinterpret_cast< csSndSysSoundFormat * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_uint8_t,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "csSndSysSoundFormat_Flags_set" "', argument " "2"" of type '" "uint8""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "csSndSysSoundFormat_Flags_set" "', argument " "2"" of type '" "uint8""'");
-    } else {
-      uint8 * temp = reinterpret_cast< uint8 * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
-  }
+  ecode2 = SWIG_AsVal_unsigned_SS_char(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "csSndSysSoundFormat_Flags_set" "', argument " "2"" of type '" "uint8""'");
+  } 
+  arg2 = static_cast< uint8 >(val2);
   if (arg1) (arg1)->Flags = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -6691,8 +6996,8 @@ SWIGINTERN PyObject *_wrap_csSndSysSoundFormat_Flags_get(PyObject *SWIGUNUSEDPAR
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "csSndSysSoundFormat_Flags_get" "', argument " "1"" of type '" "csSndSysSoundFormat *""'"); 
   }
   arg1 = reinterpret_cast< csSndSysSoundFormat * >(argp1);
-  result =  ((arg1)->Flags);
-  resultobj = SWIG_NewPointerObj((new uint8(static_cast< const uint8& >(result))), SWIGTYPE_p_uint8_t, SWIG_POINTER_OWN |  0 );
+  result = (uint8) ((arg1)->Flags);
+  resultobj = SWIG_From_unsigned_SS_char(static_cast< unsigned char >(result));
   return resultobj;
 fail:
   return NULL;
@@ -7659,6 +7964,7 @@ SWIGINTERN PyObject *_wrap_iSndSysRenderer_CreateStream(PyObject *SWIGUNUSEDPARM
   arg3 = static_cast< int >(val3);
   result = (arg1)->CreateStream(arg2,arg3);
   {
+    /*@SWIG:/tmp/tmp0/V1.4/include/bindings/python/pythpre.i,114,TYPEMAP_OUT_csRef_BODY@*/
     csRef<iSndSysStream> ref((csPtr<iSndSysStream>&)result); /* explicit cast */
     
     if (!ref.IsValid())
@@ -7668,6 +7974,7 @@ SWIGINTERN PyObject *_wrap_iSndSysRenderer_CreateStream(PyObject *SWIGUNUSEDPARM
     }
     ref->IncRef();
     resultobj = SWIG_NewPointerObj((void *)(iSndSysStream *)ref, SWIGTYPE_p_iSndSysStream, 1);
+    /*@SWIG@*/
   }
   return resultobj;
 fail:
@@ -7700,6 +8007,7 @@ SWIGINTERN PyObject *_wrap_iSndSysRenderer_CreateSource(PyObject *SWIGUNUSEDPARM
   arg2 = reinterpret_cast< iSndSysStream * >(argp2);
   result = (arg1)->CreateSource(arg2);
   {
+    /*@SWIG:/tmp/tmp0/V1.4/include/bindings/python/pythpre.i,114,TYPEMAP_OUT_csRef_BODY@*/
     csRef<iSndSysSource> ref((csPtr<iSndSysSource>&)result); /* explicit cast */
     
     if (!ref.IsValid())
@@ -7709,6 +8017,7 @@ SWIGINTERN PyObject *_wrap_iSndSysRenderer_CreateSource(PyObject *SWIGUNUSEDPARM
     }
     ref->IncRef();
     resultobj = SWIG_NewPointerObj((void *)(iSndSysSource *)ref, SWIGTYPE_p_iSndSysSource, 1);
+    /*@SWIG@*/
   }
   return resultobj;
 fail:
@@ -7794,6 +8103,7 @@ SWIGINTERN PyObject *_wrap_iSndSysRenderer_GetListener(PyObject *SWIGUNUSEDPARM(
   arg1 = reinterpret_cast< iSndSysRenderer * >(argp1);
   result = (arg1)->GetListener();
   {
+    /*@SWIG:/tmp/tmp0/V1.4/include/bindings/python/pythpre.i,114,TYPEMAP_OUT_csRef_BODY@*/
     csRef<iSndSysListener> ref((csRef<iSndSysListener>&)result); /* explicit cast */
     
     if (!ref.IsValid())
@@ -7803,6 +8113,7 @@ SWIGINTERN PyObject *_wrap_iSndSysRenderer_GetListener(PyObject *SWIGUNUSEDPARM(
     }
     ref->IncRef();
     resultobj = SWIG_NewPointerObj((void *)(iSndSysListener *)ref, SWIGTYPE_p_iSndSysListener, 1);
+    /*@SWIG@*/
   }
   return resultobj;
 fail:
@@ -8513,6 +8824,18 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"iSndSysSource3DDoppler_GetVelocity", _wrap_iSndSysSource3DDoppler_GetVelocity, METH_VARARGS, NULL},
 	 { (char *)"delete_iSndSysSource3DDoppler", _wrap_delete_iSndSysSource3DDoppler, METH_VARARGS, NULL},
 	 { (char *)"iSndSysSource3DDoppler_swigregister", iSndSysSource3DDoppler_swigregister, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_SetPosition", _wrap_iSndSysSourceSoftware3D_SetPosition, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_GetPosition", _wrap_iSndSysSourceSoftware3D_GetPosition, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_SetDirection", _wrap_iSndSysSourceSoftware3D_SetDirection, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_GetDirection", _wrap_iSndSysSourceSoftware3D_GetDirection, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_SetDirectionalRadiation", _wrap_iSndSysSourceSoftware3D_SetDirectionalRadiation, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_GetDirectionalRadiation", _wrap_iSndSysSourceSoftware3D_GetDirectionalRadiation, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_SetMinimumDistance", _wrap_iSndSysSourceSoftware3D_SetMinimumDistance, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_SetMaximumDistance", _wrap_iSndSysSourceSoftware3D_SetMaximumDistance, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_GetMinimumDistance", _wrap_iSndSysSourceSoftware3D_GetMinimumDistance, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_GetMaximumDistance", _wrap_iSndSysSourceSoftware3D_GetMaximumDistance, METH_VARARGS, NULL},
+	 { (char *)"delete_iSndSysSourceSoftware3D", _wrap_delete_iSndSysSourceSoftware3D, METH_VARARGS, NULL},
+	 { (char *)"iSndSysSourceSoftware3D_swigregister", iSndSysSourceSoftware3D_swigregister, METH_VARARGS, NULL},
 	 { (char *)"csSndSysSoundFormat_Freq_set", _wrap_csSndSysSoundFormat_Freq_set, METH_VARARGS, NULL},
 	 { (char *)"csSndSysSoundFormat_Freq_get", _wrap_csSndSysSoundFormat_Freq_get, METH_VARARGS, NULL},
 	 { (char *)"csSndSysSoundFormat_Bits_set", _wrap_csSndSysSoundFormat_Bits_set, METH_VARARGS, NULL},
@@ -8623,6 +8946,9 @@ static void *_p_iPluginIteratorTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory
 static void *_p_iDocumentTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iDocument *) x));
 }
+static void *_p_iImageIOTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iBase *)  ((iImageIO *) x));
+}
 static void *_p_iDocumentNodeTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iDocumentNode *) x));
 }
@@ -8636,7 +8962,7 @@ static void *_p_iEventCordTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iEventCord *) x));
 }
 static void *_p_iStringSetTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((iBase *) (iStringSetBase< CS::StringSetTag::General > *) ((iStringSet *) x));
+    return (void *)((iBase *)  ((iStringSet *) x));
 }
 static void *_p_iFactoryTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iFactory *) x));
@@ -8679,12 +9005,6 @@ static void *_p_iSndSysRendererSoftwareTo_p_iBase(void *x, int *SWIGUNUSEDPARM(n
 }
 static void *_p_iSCFTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iSCF *) x));
-}
-static void *_p_iThreadReturnTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((iBase *)  ((iThreadReturn *) x));
-}
-static void *_p_iStringSetBaseT_CS__StringSetTag__General_tTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((iBase *)  ((iStringSetBase< CS::StringSetTag::General > *) x));
 }
 static void *_p_scfImplementation1T_csObject_iObject_tTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *) (iObject *) ((scfImplementation1< csObject,iObject > *) x));
@@ -8761,23 +9081,32 @@ static void *_p_iStringArrayTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) 
 static void *_p_iEventHandlerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iEventHandler *) x));
 }
+static void *_p_iProcTextureTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iBase *)  ((iProcTexture *) x));
+}
 static void *_p_iEventPlugTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iEventPlug *) x));
+}
+static void *_p_iImageTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iBase *)  ((iImage *) x));
 }
 static void *_p_iSndSysWrapperTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iSndSysWrapper *) x));
 }
+static void *_p_iSndSysSourceSoftware3DTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iBase *) (iSndSysSource *)(iSndSysSourceSoftware *) ((iSndSysSourceSoftware3D *) x));
+}
 static void *_p_iSndSysRendererTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iSndSysRenderer *) x));
-}
-static void *_p_iSndSysRendererCallbackTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((iBase *)  ((iSndSysRendererCallback *) x));
 }
 static void *_p_iSndSysStreamCallbackTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iSndSysStreamCallback *) x));
 }
 static void *_p_iSndSysLoaderTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iSndSysLoader *) x));
+}
+static void *_p_iSndSysRendererCallbackTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iBase *)  ((iSndSysRendererCallback *) x));
 }
 static void *_p_iSndSysManagerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iSndSysManager *) x));
@@ -8788,14 +9117,14 @@ static void *_p_iConfigManagerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)
 static void *_p_iCacheManagerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iCacheManager *) x));
 }
-static void *_p_iThreadManagerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((iBase *)  ((iThreadManager *) x));
-}
 static void *_p_iPluginManagerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iPluginManager *) x));
 }
 static void *_p_iTriangleMeshTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iTriangleMesh *) x));
+}
+static void *_p_iAnimatedImageTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iBase *)  ((iAnimatedImage *) x));
 }
 static void *_p_scfImplementation1T_csConfigFile_iConfigFile_tTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *) (iConfigFile *) ((scfImplementation1< csConfigFile,iConfigFile > *) x));
@@ -8815,17 +9144,23 @@ static void *_p_iSndSysSource3DTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory
 static void *_p_iSndSysListenerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iSndSysListener *) x));
 }
-static void *_p_iReporterListenerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((iBase *)  ((iReporterListener *) x));
-}
 static void *_p_iObjectNameChangeListenerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iObjectNameChangeListener *) x));
+}
+static void *_p_iReporterListenerTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iBase *)  ((iReporterListener *) x));
 }
 static void *_p_iFileTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iFile *) x));
 }
 static void *_p_iDocumentAttributeTo_p_iBase(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iBase *)  ((iDocumentAttribute *) x));
+}
+static void *_p_iSndSysSourceSoftware3DTo_p_iSndSysSourceSoftware(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iSndSysSourceSoftware *)  ((iSndSysSourceSoftware3D *) x));
+}
+static void *_p_iSndSysSourceSoftware3DTo_p_iSndSysSource(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((iSndSysSource *) (iSndSysSourceSoftware *) ((iSndSysSourceSoftware3D *) x));
 }
 static void *_p_iSndSysSourceSoftwareTo_p_iSndSysSource(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((iSndSysSource *)  ((iSndSysSourceSoftware *) x));
@@ -8840,14 +9175,11 @@ static void *_p_scfImplementationExt1T_csPath_csObject_iPath_tTo_p_iObject(void 
     return (void *)((iObject *) (scfImplementation1< csObject,iObject > *)(csObject *) ((scfImplementationExt1< csPath,csObject,iPath > *) x));
 }
 static swig_type_info _swigt__p_AllocatorType = {"_p_AllocatorType", "AllocatorType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CS__Memory__AllocatorMalloc = {"_p_CS__Memory__AllocatorMalloc", "CS::Container::ArrayAllocDefault *|CS::Memory::AllocatorMalloc *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CS__StringIDT_CS__StringSetTag__General_t = {"_p_CS__StringIDT_CS__StringSetTag__General_t", "csStringID *|csEventID *|CS::StringID< CS::StringSetTag::General > *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CS__Utility__StringSetT_CS__StringSetTag__General_t = {"_p_CS__Utility__StringSetT_CS__StringSetTag__General_t", "CS::Utility::StringSet< CS::StringSetTag::General > *|csStringSet *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CapacityHandlerType = {"_p_CapacityHandlerType", "CapacityHandlerType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ElementHandlerType = {"_p_ElementHandlerType", "ElementHandlerType *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_FileFormatDescription = {"_p_FileFormatDescription", "FileFormatDescription *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_HashType = {"_p_HashType", "HashType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SndSysFilterLocation = {"_p_SndSysFilterLocation", "enum SndSysFilterLocation *|SndSysFilterLocation *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_TagType = {"_p_TagType", "TagType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ThisType = {"_p_ThisType", "ThisType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ValueType = {"_p_ValueType", "ValueType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__1_basetype = {"_p__1_basetype", "$1_basetype *", 0, 0, (void*)0, 0};
@@ -8858,8 +9190,7 @@ static swig_type_info _swigt__p__csKeyModifierType = {"_p__csKeyModifierType", "
 static swig_type_info _swigt__p__csKeyModifiers = {"_p__csKeyModifiers", "_csKeyModifiers *|csKeyModifiers *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__csMouseEventType = {"_p__csMouseEventType", "enum _csMouseEventType *|csMouseEventType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_csArrayCapacityFixedGrowT_16_t = {"_p_csArrayCapacityFixedGrowT_16_t", "CS::Container::ArrayCapacityDefault *|csArrayCapacityFixedGrow< 16 > *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_csArrayCapacityVariableGrow = {"_p_csArrayCapacityVariableGrow", "csArrayCapacityDefault *|csArrayCapacityVariableGrow *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_csArrayT_csImageIOFileFormatDescription_const_p_csArrayElementHandlerT_csImageIOFileFormatDescription_const_p_t_CS__Memory__AllocatorMalloc_csArrayCapacityDefault_t = {"_p_csArrayT_csImageIOFileFormatDescription_const_p_csArrayElementHandlerT_csImageIOFileFormatDescription_const_p_t_CS__Memory__AllocatorMalloc_csArrayCapacityDefault_t", "csImageIOFileFormatDescriptions *|csArray< csImageIOFileFormatDescription const *,csArrayElementHandler< csImageIOFileFormatDescription const * >,CS::Memory::AllocatorMalloc,csArrayCapacityDefault > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_csListenerProperties = {"_p_csListenerProperties", "csListenerProperties *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_csRefArrayT_iObject_t = {"_p_csRefArrayT_iObject_t", "csRefArray< iObject > *|csObjectContainer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_csSndSysRendererSoftware = {"_p_csSndSysRendererSoftware", "csSndSysRendererSoftware *", 0, 0, (void*)0, 0};
@@ -8877,6 +9208,7 @@ static swig_type_info _swigt__p_iObjectRegistryIterator = {"_p_iObjectRegistryIt
 static swig_type_info _swigt__p_iEventAttributeIterator = {"_p_iEventAttributeIterator", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iPluginIterator = {"_p_iPluginIterator", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iDocument = {"_p_iDocument", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_iImageIO = {"_p_iImageIO", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iDocumentNode = {"_p_iDocumentNode", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iObjectRegistry = {"_p_iObjectRegistry", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iEventNameRegistry = {"_p_iEventNameRegistry", 0, 0, 0, 0, 0};
@@ -8890,7 +9222,6 @@ static swig_type_info _swigt__p_iConfigFile = {"_p_iConfigFile", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iDebugHelper = {"_p_iDebugHelper", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iDocumentSystem = {"_p_iDocumentSystem", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iKeyComposer = {"_p_iKeyComposer", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_iThreadReturn = {"_p_iThreadReturn", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iEventOutlet = {"_p_iEventOutlet", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_scfImplementation1T_csConfigFile_iConfigFile_t = {"_p_scfImplementation1T_csConfigFile_iConfigFile_t", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iVirtualClock = {"_p_iVirtualClock", 0, 0, 0, 0, 0};
@@ -8906,20 +9237,21 @@ static swig_type_info _swigt__p_iJoystickDriver = {"_p_iJoystickDriver", 0, 0, 0
 static swig_type_info _swigt__p_iMouseDriver = {"_p_iMouseDriver", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iStringArray = {"_p_iStringArray", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iEventHandler = {"_p_iEventHandler", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_iProcTexture = {"_p_iProcTexture", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iEventPlug = {"_p_iEventPlug", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iVFS = {"_p_iVFS", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iConfigManager = {"_p_iConfigManager", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iCacheManager = {"_p_iCacheManager", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_iThreadManager = {"_p_iThreadManager", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iPluginManager = {"_p_iPluginManager", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iTriangleMesh = {"_p_iTriangleMesh", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_iAnimatedImage = {"_p_iAnimatedImage", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iKeyboardDriver = {"_p_iKeyboardDriver", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_iStringSetBaseT_CS__StringSetTag__General_t = {"_p_iStringSetBaseT_CS__StringSetTag__General_t", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_scfImplementation1T_csObject_iObject_t = {"_p_scfImplementation1T_csObject_iObject_t", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_iReporterListener = {"_p_iReporterListener", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iObjectNameChangeListener = {"_p_iObjectNameChangeListener", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_iReporterListener = {"_p_iReporterListener", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iFile = {"_p_iFile", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iDocumentAttribute = {"_p_iDocumentAttribute", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_iImage = {"_p_iImage", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_iDataBuffer = {"_p_iDataBuffer", "iDataBuffer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_iObject = {"_p_iObject", "iObject *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_iSCF = {"_p_iSCF", "iSCF *", 0, 0, (void*)0, 0};
@@ -8943,6 +9275,7 @@ static swig_type_info _swigt__p_iSndSysSource3DDirectionalSimple = {"_p_iSndSysS
 static swig_type_info _swigt__p_iSndSysSource3DDoppler = {"_p_iSndSysSource3DDoppler", "iSndSysSource3DDoppler *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_iSndSysSourceOpenAL = {"_p_iSndSysSourceOpenAL", "iSndSysSourceOpenAL *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_iSndSysSourceSoftware = {"_p_iSndSysSourceSoftware", "iSndSysSourceSoftware *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_iSndSysSourceSoftware3D = {"_p_iSndSysSourceSoftware3D", "iSndSysSourceSoftware3D *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_iSndSysStream = {"_p_iSndSysStream", "iSndSysStream *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_iSndSysStreamCallback = {"_p_iSndSysStreamCallback", "iSndSysStreamCallback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_iSndSysWrapper = {"_p_iSndSysWrapper", "iSndSysWrapper *", 0, 0, (void*)0, 0};
@@ -8956,21 +9289,18 @@ static swig_type_info _swigt__p_size_t = {"_p_size_t", "size_t *", 0, 0, (void*)
 static swig_type_info _swigt__p_uint16_t = {"_p_uint16_t", "uint16 *|uint16_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_uint32_t = {"_p_uint32_t", "uint32_t *|uint32 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_uint64_t = {"_p_uint64_t", "uint64_t *|uint64 *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_uint8_t = {"_p_uint8_t", "uint8 *|uint8_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "CS::StringIDValue *|unsigned int *|uint *|csTicks *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "unsigned long *|scfInterfaceID *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *|uint8 *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "unsigned int *|uint *|csTicks *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "csStringID *|unsigned long *|csEventID *|scfInterfaceID *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_long_long = {"_p_unsigned_long_long", "ulonglong *|unsigned long long *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_AllocatorType,
-  &_swigt__p_CS__Memory__AllocatorMalloc,
-  &_swigt__p_CS__StringIDT_CS__StringSetTag__General_t,
-  &_swigt__p_CS__Utility__StringSetT_CS__StringSetTag__General_t,
   &_swigt__p_CapacityHandlerType,
   &_swigt__p_ElementHandlerType,
+  &_swigt__p_FileFormatDescription,
   &_swigt__p_HashType,
   &_swigt__p_SndSysFilterLocation,
-  &_swigt__p_TagType,
   &_swigt__p_ThisType,
   &_swigt__p_ValueType,
   &_swigt__p__1_basetype,
@@ -8981,8 +9311,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p__csKeyModifiers,
   &_swigt__p__csMouseEventType,
   &_swigt__p_char,
-  &_swigt__p_csArrayCapacityFixedGrowT_16_t,
-  &_swigt__p_csArrayCapacityVariableGrow,
+  &_swigt__p_csArrayT_csImageIOFileFormatDescription_const_p_csArrayElementHandlerT_csImageIOFileFormatDescription_const_p_t_CS__Memory__AllocatorMalloc_csArrayCapacityDefault_t,
   &_swigt__p_csConfigFile,
   &_swigt__p_csListenerProperties,
   &_swigt__p_csObject,
@@ -8992,6 +9321,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_csSourceParameters3D,
   &_swigt__p_csVector3,
   &_swigt__p_float,
+  &_swigt__p_iAnimatedImage,
   &_swigt__p_iBase,
   &_swigt__p_iCacheManager,
   &_swigt__p_iClipper2D,
@@ -9018,6 +9348,8 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_iEventQueue,
   &_swigt__p_iFactory,
   &_swigt__p_iFile,
+  &_swigt__p_iImage,
+  &_swigt__p_iImageIO,
   &_swigt__p_iJoystickDriver,
   &_swigt__p_iKeyComposer,
   &_swigt__p_iKeyboardDriver,
@@ -9030,6 +9362,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_iPath,
   &_swigt__p_iPluginIterator,
   &_swigt__p_iPluginManager,
+  &_swigt__p_iProcTexture,
   &_swigt__p_iReporter,
   &_swigt__p_iReporterIterator,
   &_swigt__p_iReporterListener,
@@ -9054,15 +9387,13 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_iSndSysSource3DDoppler,
   &_swigt__p_iSndSysSourceOpenAL,
   &_swigt__p_iSndSysSourceSoftware,
+  &_swigt__p_iSndSysSourceSoftware3D,
   &_swigt__p_iSndSysStream,
   &_swigt__p_iSndSysStreamCallback,
   &_swigt__p_iSndSysWrapper,
   &_swigt__p_iString,
   &_swigt__p_iStringArray,
   &_swigt__p_iStringSet,
-  &_swigt__p_iStringSetBaseT_CS__StringSetTag__General_t,
-  &_swigt__p_iThreadManager,
-  &_swigt__p_iThreadReturn,
   &_swigt__p_iTriangleMesh,
   &_swigt__p_iVFS,
   &_swigt__p_iVirtualClock,
@@ -9079,21 +9410,18 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_uint16_t,
   &_swigt__p_uint32_t,
   &_swigt__p_uint64_t,
-  &_swigt__p_uint8_t,
+  &_swigt__p_unsigned_char,
   &_swigt__p_unsigned_int,
   &_swigt__p_unsigned_long,
   &_swigt__p_unsigned_long_long,
 };
 
 static swig_cast_info _swigc__p_AllocatorType[] = {  {&_swigt__p_AllocatorType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CS__Memory__AllocatorMalloc[] = {  {&_swigt__p_CS__Memory__AllocatorMalloc, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CS__StringIDT_CS__StringSetTag__General_t[] = {  {&_swigt__p_CS__StringIDT_CS__StringSetTag__General_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CS__Utility__StringSetT_CS__StringSetTag__General_t[] = {  {&_swigt__p_CS__Utility__StringSetT_CS__StringSetTag__General_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CapacityHandlerType[] = {  {&_swigt__p_CapacityHandlerType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ElementHandlerType[] = {  {&_swigt__p_ElementHandlerType, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_FileFormatDescription[] = {  {&_swigt__p_FileFormatDescription, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_HashType[] = {  {&_swigt__p_HashType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SndSysFilterLocation[] = {  {&_swigt__p_SndSysFilterLocation, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_TagType[] = {  {&_swigt__p_TagType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ThisType[] = {  {&_swigt__p_ThisType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ValueType[] = {  {&_swigt__p_ValueType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__1_basetype[] = {  {&_swigt__p__1_basetype, 0, 0, 0},{0, 0, 0, 0}};
@@ -9104,8 +9432,7 @@ static swig_cast_info _swigc__p__csKeyModifierType[] = {  {&_swigt__p__csKeyModi
 static swig_cast_info _swigc__p__csKeyModifiers[] = {  {&_swigt__p__csKeyModifiers, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__csMouseEventType[] = {  {&_swigt__p__csMouseEventType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_csArrayCapacityFixedGrowT_16_t[] = {  {&_swigt__p_csArrayCapacityFixedGrowT_16_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_csArrayCapacityVariableGrow[] = {  {&_swigt__p_csArrayCapacityVariableGrow, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_csArrayT_csImageIOFileFormatDescription_const_p_csArrayElementHandlerT_csImageIOFileFormatDescription_const_p_t_CS__Memory__AllocatorMalloc_csArrayCapacityDefault_t[] = {  {&_swigt__p_csArrayT_csImageIOFileFormatDescription_const_p_csArrayElementHandlerT_csImageIOFileFormatDescription_const_p_t_CS__Memory__AllocatorMalloc_csArrayCapacityDefault_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_csListenerProperties[] = {  {&_swigt__p_csListenerProperties, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_csRefArrayT_iObject_t[] = {  {&_swigt__p_csRefArrayT_iObject_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_csSndSysRendererSoftware[] = {  {&_swigt__p_csSndSysRendererSoftware, 0, 0, 0},{0, 0, 0, 0}};
@@ -9122,6 +9449,7 @@ static swig_cast_info _swigc__p_iObjectRegistryIterator[] = {{&_swigt__p_iObject
 static swig_cast_info _swigc__p_iEventAttributeIterator[] = {{&_swigt__p_iEventAttributeIterator, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iPluginIterator[] = {{&_swigt__p_iPluginIterator, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iDocument[] = {{&_swigt__p_iDocument, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iImageIO[] = {{&_swigt__p_iImageIO, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iDocumentNode[] = {{&_swigt__p_iDocumentNode, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iObjectRegistry[] = {{&_swigt__p_iObjectRegistry, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iEventNameRegistry[] = {{&_swigt__p_iEventNameRegistry, 0, 0, 0},{0, 0, 0, 0}};
@@ -9135,7 +9463,6 @@ static swig_cast_info _swigc__p_iConfigFile[] = {{&_swigt__p_iConfigFile, 0, 0, 
 static swig_cast_info _swigc__p_iDebugHelper[] = {{&_swigt__p_iDebugHelper, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iDocumentSystem[] = {{&_swigt__p_iDocumentSystem, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iKeyComposer[] = {{&_swigt__p_iKeyComposer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_iThreadReturn[] = {{&_swigt__p_iThreadReturn, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iEventOutlet[] = {{&_swigt__p_iEventOutlet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_scfImplementation1T_csConfigFile_iConfigFile_t[] = {{&_swigt__p_scfImplementation1T_csConfigFile_iConfigFile_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iVirtualClock[] = {{&_swigt__p_iVirtualClock, 0, 0, 0},{0, 0, 0, 0}};
@@ -9151,21 +9478,22 @@ static swig_cast_info _swigc__p_iJoystickDriver[] = {{&_swigt__p_iJoystickDriver
 static swig_cast_info _swigc__p_iMouseDriver[] = {{&_swigt__p_iMouseDriver, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iStringArray[] = {{&_swigt__p_iStringArray, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iEventHandler[] = {{&_swigt__p_iEventHandler, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iProcTexture[] = {{&_swigt__p_iProcTexture, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iEventPlug[] = {{&_swigt__p_iEventPlug, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iVFS[] = {{&_swigt__p_iVFS, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iConfigManager[] = {{&_swigt__p_iConfigManager, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iCacheManager[] = {{&_swigt__p_iCacheManager, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_iThreadManager[] = {{&_swigt__p_iThreadManager, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iPluginManager[] = {{&_swigt__p_iPluginManager, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iTriangleMesh[] = {{&_swigt__p_iTriangleMesh, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iAnimatedImage[] = {{&_swigt__p_iAnimatedImage, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iKeyboardDriver[] = {{&_swigt__p_iKeyboardDriver, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_iStringSetBaseT_CS__StringSetTag__General_t[] = {{&_swigt__p_iStringSetBaseT_CS__StringSetTag__General_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_scfImplementation1T_csObject_iObject_t[] = {{&_swigt__p_scfImplementation1T_csObject_iObject_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_iReporterListener[] = {{&_swigt__p_iReporterListener, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iObjectNameChangeListener[] = {{&_swigt__p_iObjectNameChangeListener, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iReporterListener[] = {{&_swigt__p_iReporterListener, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iFile[] = {{&_swigt__p_iFile, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iDocumentAttribute[] = {{&_swigt__p_iDocumentAttribute, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_iBase[] = {  {&_swigt__p_iDocumentNodeIterator, _p_iDocumentNodeIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iDocumentAttributeIterator, _p_iDocumentAttributeIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iConfigIterator, _p_iConfigIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iReporterIterator, _p_iReporterIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iObjectIterator, _p_iObjectIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iObjectRegistryIterator, _p_iObjectRegistryIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iEventAttributeIterator, _p_iEventAttributeIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iPluginIterator, _p_iPluginIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iDocument, _p_iDocumentTo_p_iBase, 0, 0},  {&_swigt__p_iDocumentNode, _p_iDocumentNodeTo_p_iBase, 0, 0},  {&_swigt__p_iObjectRegistry, _p_iObjectRegistryTo_p_iBase, 0, 0},  {&_swigt__p_iEventNameRegistry, _p_iEventNameRegistryTo_p_iBase, 0, 0},  {&_swigt__p_iEventCord, _p_iEventCordTo_p_iBase, 0, 0},  {&_swigt__p_iStringSet, _p_iStringSetTo_p_iBase, 0, 0},  {&_swigt__p_scfImplementationExt1T_csPath_csObject_iPath_t, _p_scfImplementationExt1T_csPath_csObject_iPath_tTo_p_iBase, 0, 0},  {&_swigt__p_iFactory, _p_iFactoryTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysData, _p_iSndSysDataTo_p_iBase, 0, 0},  {&_swigt__p_iClipper2D, _p_iClipper2DTo_p_iBase, 0, 0},  {&_swigt__p_csConfigFile, _p_csConfigFileTo_p_iBase, 0, 0},  {&_swigt__p_iConfigFile, _p_iConfigFileTo_p_iBase, 0, 0},  {&_swigt__p_iDebugHelper, _p_iDebugHelperTo_p_iBase, 0, 0},  {&_swigt__p_iDocumentSystem, _p_iDocumentSystemTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSourceSoftware, _p_iSndSysSourceSoftwareTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysRendererSoftware, _p_iSndSysRendererSoftwareTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource3DDoppler, _p_iSndSysSource3DDopplerTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysListenerDoppler, _p_iSndSysListenerDopplerTo_p_iBase, 0, 0},  {&_swigt__p_iKeyComposer, _p_iKeyComposerTo_p_iBase, 0, 0},  {&_swigt__p_iThreadReturn, _p_iThreadReturnTo_p_iBase, 0, 0},  {&_swigt__p_iEventOutlet, _p_iEventOutletTo_p_iBase, 0, 0},  {&_swigt__p_scfImplementation1T_csConfigFile_iConfigFile_t, _p_scfImplementation1T_csConfigFile_iConfigFile_tTo_p_iBase, 0, 0},  {&_swigt__p_iVirtualClock, _p_iVirtualClockTo_p_iBase, 0, 0},  {&_swigt__p_iPath, _p_iPathTo_p_iBase, 0, 0},  {&_swigt__p_iReporter, _p_iReporterTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSoftwareFilter3D, _p_iSndSysSoftwareFilter3DTo_p_iBase, 0, 0},  {&_swigt__p_iObject, _p_iObjectTo_p_iBase, 0, 0},  {&_swigt__p_csObject, _p_csObjectTo_p_iBase, 0, 0},  {&_swigt__p_iSCF, _p_iSCFTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysStream, _p_iSndSysStreamTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource, _p_iSndSysSourceTo_p_iBase, 0, 0},  {&_swigt__p_iEventQueue, _p_iEventQueueTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource3DDirectional, _p_iSndSysSource3DDirectionalTo_p_iBase, 0, 0},  {&_swigt__p_iEvent, _p_iEventTo_p_iBase, 0, 0},  {&_swigt__p_iString, _p_iStringTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSourceOpenAL, _p_iSndSysSourceOpenALTo_p_iBase, 0, 0},  {&_swigt__p_iComponent, _p_iComponentTo_p_iBase, 0, 0},  {&_swigt__p_iCommandLineParser, _p_iCommandLineParserTo_p_iBase, 0, 0},  {&_swigt__p_iJoystickDriver, _p_iJoystickDriverTo_p_iBase, 0, 0},  {&_swigt__p_iMouseDriver, _p_iMouseDriverTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSoftwareDriver, _p_iSndSysSoftwareDriverTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSoftwareOutputFilter, _p_iSndSysSoftwareOutputFilterTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource3DDirectionalSimple, _p_iSndSysSource3DDirectionalSimpleTo_p_iBase, 0, 0},  {&_swigt__p_iStringArray, _p_iStringArrayTo_p_iBase, 0, 0},  {&_swigt__p_iEventHandler, _p_iEventHandlerTo_p_iBase, 0, 0},  {&_swigt__p_iEventPlug, _p_iEventPlugTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysWrapper, _p_iSndSysWrapperTo_p_iBase, 0, 0},  {&_swigt__p_iVFS, _p_iVFSTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysRenderer, _p_iSndSysRendererTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysRendererCallback, _p_iSndSysRendererCallbackTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysStreamCallback, _p_iSndSysStreamCallbackTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysLoader, _p_iSndSysLoaderTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysManager, _p_iSndSysManagerTo_p_iBase, 0, 0},  {&_swigt__p_iConfigManager, _p_iConfigManagerTo_p_iBase, 0, 0},  {&_swigt__p_iCacheManager, _p_iCacheManagerTo_p_iBase, 0, 0},  {&_swigt__p_iThreadManager, _p_iThreadManagerTo_p_iBase, 0, 0},  {&_swigt__p_iPluginManager, _p_iPluginManagerTo_p_iBase, 0, 0},  {&_swigt__p_iTriangleMesh, _p_iTriangleMeshTo_p_iBase, 0, 0},  {&_swigt__p_iDataBuffer, _p_iDataBufferTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysRendererOpenAL, _p_iSndSysRendererOpenALTo_p_iBase, 0, 0},  {&_swigt__p_iKeyboardDriver, _p_iKeyboardDriverTo_p_iBase, 0, 0},  {&_swigt__p_iStringSetBaseT_CS__StringSetTag__General_t, _p_iStringSetBaseT_CS__StringSetTag__General_tTo_p_iBase, 0, 0},  {&_swigt__p_scfImplementation1T_csObject_iObject_t, _p_scfImplementation1T_csObject_iObject_tTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource3D, _p_iSndSysSource3DTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysListener, _p_iSndSysListenerTo_p_iBase, 0, 0},  {&_swigt__p_iReporterListener, _p_iReporterListenerTo_p_iBase, 0, 0},  {&_swigt__p_iObjectNameChangeListener, _p_iObjectNameChangeListenerTo_p_iBase, 0, 0},  {&_swigt__p_iBase, 0, 0, 0},  {&_swigt__p_iFile, _p_iFileTo_p_iBase, 0, 0},  {&_swigt__p_iDocumentAttribute, _p_iDocumentAttributeTo_p_iBase, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iImage[] = {{&_swigt__p_iImage, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iBase[] = {  {&_swigt__p_iDocumentNodeIterator, _p_iDocumentNodeIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iDocumentAttributeIterator, _p_iDocumentAttributeIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iConfigIterator, _p_iConfigIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iReporterIterator, _p_iReporterIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iObjectIterator, _p_iObjectIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iObjectRegistryIterator, _p_iObjectRegistryIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iEventAttributeIterator, _p_iEventAttributeIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iPluginIterator, _p_iPluginIteratorTo_p_iBase, 0, 0},  {&_swigt__p_iDocument, _p_iDocumentTo_p_iBase, 0, 0},  {&_swigt__p_iImageIO, _p_iImageIOTo_p_iBase, 0, 0},  {&_swigt__p_iDocumentNode, _p_iDocumentNodeTo_p_iBase, 0, 0},  {&_swigt__p_iObjectRegistry, _p_iObjectRegistryTo_p_iBase, 0, 0},  {&_swigt__p_iEventNameRegistry, _p_iEventNameRegistryTo_p_iBase, 0, 0},  {&_swigt__p_iEventCord, _p_iEventCordTo_p_iBase, 0, 0},  {&_swigt__p_iStringSet, _p_iStringSetTo_p_iBase, 0, 0},  {&_swigt__p_scfImplementationExt1T_csPath_csObject_iPath_t, _p_scfImplementationExt1T_csPath_csObject_iPath_tTo_p_iBase, 0, 0},  {&_swigt__p_iFactory, _p_iFactoryTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysData, _p_iSndSysDataTo_p_iBase, 0, 0},  {&_swigt__p_iClipper2D, _p_iClipper2DTo_p_iBase, 0, 0},  {&_swigt__p_csConfigFile, _p_csConfigFileTo_p_iBase, 0, 0},  {&_swigt__p_iConfigFile, _p_iConfigFileTo_p_iBase, 0, 0},  {&_swigt__p_iDebugHelper, _p_iDebugHelperTo_p_iBase, 0, 0},  {&_swigt__p_iDocumentSystem, _p_iDocumentSystemTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSourceSoftware, _p_iSndSysSourceSoftwareTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysRendererSoftware, _p_iSndSysRendererSoftwareTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource3DDoppler, _p_iSndSysSource3DDopplerTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysListenerDoppler, _p_iSndSysListenerDopplerTo_p_iBase, 0, 0},  {&_swigt__p_iKeyComposer, _p_iKeyComposerTo_p_iBase, 0, 0},  {&_swigt__p_iEventOutlet, _p_iEventOutletTo_p_iBase, 0, 0},  {&_swigt__p_scfImplementation1T_csConfigFile_iConfigFile_t, _p_scfImplementation1T_csConfigFile_iConfigFile_tTo_p_iBase, 0, 0},  {&_swigt__p_iVirtualClock, _p_iVirtualClockTo_p_iBase, 0, 0},  {&_swigt__p_iPath, _p_iPathTo_p_iBase, 0, 0},  {&_swigt__p_iReporter, _p_iReporterTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSoftwareFilter3D, _p_iSndSysSoftwareFilter3DTo_p_iBase, 0, 0},  {&_swigt__p_iObject, _p_iObjectTo_p_iBase, 0, 0},  {&_swigt__p_csObject, _p_csObjectTo_p_iBase, 0, 0},  {&_swigt__p_iSCF, _p_iSCFTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysStream, _p_iSndSysStreamTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource, _p_iSndSysSourceTo_p_iBase, 0, 0},  {&_swigt__p_iEventQueue, _p_iEventQueueTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource3DDirectional, _p_iSndSysSource3DDirectionalTo_p_iBase, 0, 0},  {&_swigt__p_iEvent, _p_iEventTo_p_iBase, 0, 0},  {&_swigt__p_iString, _p_iStringTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSourceOpenAL, _p_iSndSysSourceOpenALTo_p_iBase, 0, 0},  {&_swigt__p_iComponent, _p_iComponentTo_p_iBase, 0, 0},  {&_swigt__p_iCommandLineParser, _p_iCommandLineParserTo_p_iBase, 0, 0},  {&_swigt__p_iJoystickDriver, _p_iJoystickDriverTo_p_iBase, 0, 0},  {&_swigt__p_iMouseDriver, _p_iMouseDriverTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSoftwareDriver, _p_iSndSysSoftwareDriverTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSoftwareOutputFilter, _p_iSndSysSoftwareOutputFilterTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource3DDirectionalSimple, _p_iSndSysSource3DDirectionalSimpleTo_p_iBase, 0, 0},  {&_swigt__p_iStringArray, _p_iStringArrayTo_p_iBase, 0, 0},  {&_swigt__p_iEventHandler, _p_iEventHandlerTo_p_iBase, 0, 0},  {&_swigt__p_iProcTexture, _p_iProcTextureTo_p_iBase, 0, 0},  {&_swigt__p_iEventPlug, _p_iEventPlugTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysWrapper, _p_iSndSysWrapperTo_p_iBase, 0, 0},  {&_swigt__p_iVFS, _p_iVFSTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSourceSoftware3D, _p_iSndSysSourceSoftware3DTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysRenderer, _p_iSndSysRendererTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysStreamCallback, _p_iSndSysStreamCallbackTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysRendererCallback, _p_iSndSysRendererCallbackTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysLoader, _p_iSndSysLoaderTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysManager, _p_iSndSysManagerTo_p_iBase, 0, 0},  {&_swigt__p_iConfigManager, _p_iConfigManagerTo_p_iBase, 0, 0},  {&_swigt__p_iCacheManager, _p_iCacheManagerTo_p_iBase, 0, 0},  {&_swigt__p_iPluginManager, _p_iPluginManagerTo_p_iBase, 0, 0},  {&_swigt__p_iTriangleMesh, _p_iTriangleMeshTo_p_iBase, 0, 0},  {&_swigt__p_iAnimatedImage, _p_iAnimatedImageTo_p_iBase, 0, 0},  {&_swigt__p_iDataBuffer, _p_iDataBufferTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysRendererOpenAL, _p_iSndSysRendererOpenALTo_p_iBase, 0, 0},  {&_swigt__p_iKeyboardDriver, _p_iKeyboardDriverTo_p_iBase, 0, 0},  {&_swigt__p_scfImplementation1T_csObject_iObject_t, _p_scfImplementation1T_csObject_iObject_tTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysSource3D, _p_iSndSysSource3DTo_p_iBase, 0, 0},  {&_swigt__p_iSndSysListener, _p_iSndSysListenerTo_p_iBase, 0, 0},  {&_swigt__p_iObjectNameChangeListener, _p_iObjectNameChangeListenerTo_p_iBase, 0, 0},  {&_swigt__p_iReporterListener, _p_iReporterListenerTo_p_iBase, 0, 0},  {&_swigt__p_iBase, 0, 0, 0},  {&_swigt__p_iFile, _p_iFileTo_p_iBase, 0, 0},  {&_swigt__p_iDocumentAttribute, _p_iDocumentAttributeTo_p_iBase, 0, 0},  {&_swigt__p_iImage, _p_iImageTo_p_iBase, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iDataBuffer[] = {  {&_swigt__p_iDataBuffer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iObject[] = {  {&_swigt__p_scfImplementationExt1T_csPath_csObject_iPath_t, _p_scfImplementationExt1T_csPath_csObject_iPath_tTo_p_iObject, 0, 0},  {&_swigt__p_iObject, 0, 0, 0},  {&_swigt__p_csObject, _p_csObjectTo_p_iObject, 0, 0},  {&_swigt__p_scfImplementation1T_csObject_iObject_t, _p_scfImplementation1T_csObject_iObject_tTo_p_iObject, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSCF[] = {  {&_swigt__p_iSCF, 0, 0, 0},{0, 0, 0, 0}};
@@ -9182,13 +9510,14 @@ static swig_cast_info _swigc__p_iSndSysSoftwareDriver[] = {  {&_swigt__p_iSndSys
 static swig_cast_info _swigc__p_iSndSysSoftwareFilter3D[] = {  {&_swigt__p_iSndSysSoftwareFilter3D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysSoftwareFilter3DProperties[] = {  {&_swigt__p_iSndSysSoftwareFilter3DProperties, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysSoftwareOutputFilter[] = {  {&_swigt__p_iSndSysSoftwareOutputFilter, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_iSndSysSource[] = {  {&_swigt__p_iSndSysSource, 0, 0, 0},  {&_swigt__p_iSndSysSourceSoftware, _p_iSndSysSourceSoftwareTo_p_iSndSysSource, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iSndSysSource[] = {  {&_swigt__p_iSndSysSourceSoftware3D, _p_iSndSysSourceSoftware3DTo_p_iSndSysSource, 0, 0},  {&_swigt__p_iSndSysSource, 0, 0, 0},  {&_swigt__p_iSndSysSourceSoftware, _p_iSndSysSourceSoftwareTo_p_iSndSysSource, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysSource3D[] = {  {&_swigt__p_iSndSysSource3D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysSource3DDirectional[] = {  {&_swigt__p_iSndSysSource3DDirectional, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysSource3DDirectionalSimple[] = {  {&_swigt__p_iSndSysSource3DDirectionalSimple, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysSource3DDoppler[] = {  {&_swigt__p_iSndSysSource3DDoppler, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysSourceOpenAL[] = {  {&_swigt__p_iSndSysSourceOpenAL, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_iSndSysSourceSoftware[] = {  {&_swigt__p_iSndSysSourceSoftware, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iSndSysSourceSoftware[] = {  {&_swigt__p_iSndSysSourceSoftware3D, _p_iSndSysSourceSoftware3DTo_p_iSndSysSourceSoftware, 0, 0},  {&_swigt__p_iSndSysSourceSoftware, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_iSndSysSourceSoftware3D[] = {  {&_swigt__p_iSndSysSourceSoftware3D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysStream[] = {  {&_swigt__p_iSndSysStream, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysStreamCallback[] = {  {&_swigt__p_iSndSysStreamCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_iSndSysWrapper[] = {  {&_swigt__p_iSndSysWrapper, 0, 0, 0},{0, 0, 0, 0}};
@@ -9202,21 +9531,18 @@ static swig_cast_info _swigc__p_size_t[] = {  {&_swigt__p_size_t, 0, 0, 0},{0, 0
 static swig_cast_info _swigc__p_uint16_t[] = {  {&_swigt__p_uint16_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_uint32_t[] = {  {&_swigt__p_uint32_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_uint64_t[] = {  {&_swigt__p_uint64_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_uint8_t[] = {  {&_swigt__p_uint8_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long[] = {  {&_swigt__p_unsigned_long, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long_long[] = {  {&_swigt__p_unsigned_long_long, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_AllocatorType,
-  _swigc__p_CS__Memory__AllocatorMalloc,
-  _swigc__p_CS__StringIDT_CS__StringSetTag__General_t,
-  _swigc__p_CS__Utility__StringSetT_CS__StringSetTag__General_t,
   _swigc__p_CapacityHandlerType,
   _swigc__p_ElementHandlerType,
+  _swigc__p_FileFormatDescription,
   _swigc__p_HashType,
   _swigc__p_SndSysFilterLocation,
-  _swigc__p_TagType,
   _swigc__p_ThisType,
   _swigc__p_ValueType,
   _swigc__p__1_basetype,
@@ -9227,8 +9553,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p__csKeyModifiers,
   _swigc__p__csMouseEventType,
   _swigc__p_char,
-  _swigc__p_csArrayCapacityFixedGrowT_16_t,
-  _swigc__p_csArrayCapacityVariableGrow,
+  _swigc__p_csArrayT_csImageIOFileFormatDescription_const_p_csArrayElementHandlerT_csImageIOFileFormatDescription_const_p_t_CS__Memory__AllocatorMalloc_csArrayCapacityDefault_t,
   _swigc__p_csConfigFile,
   _swigc__p_csListenerProperties,
   _swigc__p_csObject,
@@ -9238,6 +9563,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_csSourceParameters3D,
   _swigc__p_csVector3,
   _swigc__p_float,
+  _swigc__p_iAnimatedImage,
   _swigc__p_iBase,
   _swigc__p_iCacheManager,
   _swigc__p_iClipper2D,
@@ -9264,6 +9590,8 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_iEventQueue,
   _swigc__p_iFactory,
   _swigc__p_iFile,
+  _swigc__p_iImage,
+  _swigc__p_iImageIO,
   _swigc__p_iJoystickDriver,
   _swigc__p_iKeyComposer,
   _swigc__p_iKeyboardDriver,
@@ -9276,6 +9604,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_iPath,
   _swigc__p_iPluginIterator,
   _swigc__p_iPluginManager,
+  _swigc__p_iProcTexture,
   _swigc__p_iReporter,
   _swigc__p_iReporterIterator,
   _swigc__p_iReporterListener,
@@ -9300,15 +9629,13 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_iSndSysSource3DDoppler,
   _swigc__p_iSndSysSourceOpenAL,
   _swigc__p_iSndSysSourceSoftware,
+  _swigc__p_iSndSysSourceSoftware3D,
   _swigc__p_iSndSysStream,
   _swigc__p_iSndSysStreamCallback,
   _swigc__p_iSndSysWrapper,
   _swigc__p_iString,
   _swigc__p_iStringArray,
   _swigc__p_iStringSet,
-  _swigc__p_iStringSetBaseT_CS__StringSetTag__General_t,
-  _swigc__p_iThreadManager,
-  _swigc__p_iThreadReturn,
   _swigc__p_iTriangleMesh,
   _swigc__p_iVFS,
   _swigc__p_iVirtualClock,
@@ -9325,7 +9652,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_uint16_t,
   _swigc__p_uint32_t,
   _swigc__p_uint64_t,
-  _swigc__p_uint8_t,
+  _swigc__p_unsigned_char,
   _swigc__p_unsigned_int,
   _swigc__p_unsigned_long,
   _swigc__p_unsigned_long_long,

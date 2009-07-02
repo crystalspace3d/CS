@@ -79,7 +79,6 @@
 		inline_				bool			AABBAABBOverlap(const Point& b, const Point& Pb);
 		inline_				bool			TriBoxOverlap();
 			// Init methods
-    using CS::Plugin::csOpcode::Opcode::Collider::InitQuery;
 							bool			InitQuery(AABBCache& cache, const CollisionAABB& box);
 	};
 

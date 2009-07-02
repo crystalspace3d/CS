@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.2.4.10 Game Class</title>
+<title>Crystal Space 1.4.0: 4.2.4.10 Game Class</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.2.4.10 Game Class">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.2.4.10 Game Class">
+<meta name="description" content="Crystal Space 1.4.0: 4.2.4.10 Game Class">
+<meta name="keywords" content="Crystal Space 1.4.0: 4.2.4.10 Game Class">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -386,7 +386,10 @@ bool Game::SetupGame ()
 </pre></td></tr></table>
 <p>Here we setup the game by creating the maze (<code>Maze::CreateGeometry()</code>)
 and then creating all factories (<code>CreateFactories()</code>). After that
-we create <code>iEngine::Prepare()</code>.
+we create <code>iEngine::Prepare()</code>. In <code>CreateGeometry()</code> we used
+<code>iEngine::SetLightingCacheMode()</code> to disable caching of lightmaps.
+This will be used in <code>Prepare()</code> so that the lightmaps are calculated
+right away.
 </p>
 <p>After that setup collision detection.
 </p>

@@ -32,6 +32,8 @@
 #include "iengine/engine.h"
 #include "iengine/lightmgr.h"
 #include "iengine/material.h"
+#include "iengine/shadcast.h"
+#include "imesh/lighting.h"
 #include "imesh/object.h"
 #include "imesh/terrain2.h"
 #include "iutil/comp.h"
@@ -76,8 +78,6 @@ public:
     return dataFeeder;
   }
 
-  void CellSizeUpdate (csTerrainCell* cell);
-
   // ------------ iTerrainSystem implementation ------------
   virtual iTerrainCell* GetCell (const char* name, bool loadData = false);
   virtual iTerrainCell* GetCell (const csVector2& pos, bool loadData = false);
@@ -89,7 +89,7 @@ public:
   virtual void SetMaterialPalette (const csRefArray<iMaterialWrapper>& array);
 
   virtual bool CollideSegment (const csVector3& start, const csVector3& end,
-    bool oneHit, iTerrainVector3Array* points, csArray<iMaterialWrapper*>* materials);
+    bool oneHit, iTerrainVector3Array* points);
   virtual csTerrainColliderCollideSegmentResult CollideSegment (
       const csVector3& start, const csVector3& end, bool use_ray);
 
@@ -139,8 +139,10 @@ public:
         const csVector3& end, csVector3& isect, float* pr);
 
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
-        csVector3& isect, float* pr, int* polygon_idx,
-        iMaterialWrapper** material, csArray<iMaterialWrapper*>* materials);
+        csVector3& isect, float* pr, int* polygon_idx ,
+        iMaterialWrapper** material );
+
+  virtual void InvalidateMaterialHandles ();
 
   // ------------ iObjectModel implementation ------------
   virtual iTerrainSystem* GetTerrainColldet () { return this; }
@@ -167,10 +169,6 @@ private:
   bool autoPreload, bbStarted;
 
   void ComputeBBox();
-
-  bool HitBeamOutline (const csVector3& start,
-    const csVector3& end, csVector3& isect, float* pr,
-    csArray<iMaterialWrapper*>* materials);
 };
 
 }

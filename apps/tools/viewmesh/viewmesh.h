@@ -39,6 +39,7 @@
 #include "iengine/material.h"
 #include "iengine/mesh.h"
 #include "iengine/movable.h"
+#include "iengine/region.h"
 #include "iengine/sector.h"
 #include "imap/loader.h"
 #include "imap/writer.h"
@@ -52,7 +53,7 @@ class ViewMesh : public csApplicationFramework, public csBaseEventHandler
 {
  private:
 
-  csRef<iCollection> collection;
+  csRef<iRegion> region;
 
   csVector3 camTarget;
   float     camDist;

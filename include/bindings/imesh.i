@@ -4,16 +4,7 @@
 %import "bindings/csgeom.i"
 %import "bindings/ivideo.i"
 %{
-#include "csgeom.h"
-#include "csgfx.h"
-#include "cstool/initapp.h"
-#include "csutil.h"
-#include "igraphic.h"
-#include "imesh.h"
-#include "itexture.h"
-#include "iutil.h"
-#include "ivaria.h"
-#include "ivideo.h"
+#include "crystalspace.h"
 %}
 
 #ifndef SWIGIMPORTED

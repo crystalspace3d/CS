@@ -28,7 +28,6 @@
  * \addtogroup gfx3d
  * @{ */
 
-#include "csgeom/box.h"
 #include "csgeom/transfrm.h"
 #include "csgeom/vector3.h"
 
@@ -61,268 +60,200 @@ namespace Graphics
   {
     switch (cullMode)
     {
-      case cullNormal:
-        return cullFlipped;
-      case cullFlipped:
-        return cullNormal;
-      case cullDisabled: 
-        return cullDisabled;
+      case cullNormal:   return cullFlipped;
+      case cullFlipped:  return cullNormal;
+      case cullDisabled: return cullDisabled;
     }
     // Should not happen ...
     return cullNormal;
   }
+
+/**
+ * Mesh render mode information. Contains the Z, mix and alpha modes to use
+ * for rendering a mesh. 
+ * \remarks Is separate from CS::Graphics::CoreRenderMesh to allow preprocessing steps 
+ *  to modify the mode data. 
+ */
+struct RenderMeshModes
+{
+  RenderMeshModes () : z_buf_mode ((csZBufMode)~0), mixmode (CS_FX_COPY),
+    renderPrio (-1), flipCulling (false), cullMode (cullNormal),
+    alphaType (csAlphaMode::alphaNone)
+  {
+  }
+
+  RenderMeshModes (RenderMeshModes const& x) :
+    z_buf_mode (x.z_buf_mode),
+    mixmode (x.mixmode),
+    renderPrio (x.renderPrio),
+    flipCulling (x.flipCulling),
+    cullMode (x.cullMode),
+    alphaType (x.alphaType),
+    buffers (x.buffers)
+  {
+  }
+
+  ~RenderMeshModes () { }
+
+  /// Z mode to use
+  csZBufMode z_buf_mode;
+
+  /// mixmode to use
+  uint mixmode;
   
-  /**
-   * Alpha test function.
-   * The alpha test function specifies how the source pixel alpha value 
-   * (left side of comparison) and alpha test threshold value (right side of
-   * comparison) are compared. If the comparison is \c true, the pixel is
-   * drawn; otherwise, it is discarded.
-   */
-  enum AlphaTestFunction
-  {
-    /**
-     * Draw pixel if source alpha value is greater or equal than the threshold
-     * value.
-     */
-    atfGreaterEqual,
-    /**
-     * Draw pixel if source alpha value is greater than the threshold
-     * value.
-     */
-    atfGreater,
-    /**
-     * Draw pixel if source alpha value is lower or equal than the threshold
-     * value.
-     */
-    atfLowerEqual,
-    /**
-     * Draw pixel if source alpha value is lower than the threshold
-     * value.
-     */
-    atfLower
-  };
+  /// Mesh render priority
+  RenderPriority renderPrio;
+
+  // Deprecated in 1.3.
+  // ***NOTE*** Though deprecated, actual compiler-based deprecation is not
+  // presently enabled since the inline constructors references this variable
+  // and cause a Niagara of warnings to flood the build. Worse, even if
+  // external projects fix their own code to avoid this variable, they still
+  // get penalized by warnings because of the constructors (over which code
+  // external projects have no control). One way to avoid this problem would be
+  // to un-inline the constructors and then disable the deprecation warning
+  // only when compiling the implementation file containing the constructors. A
+  // potential difficulty with this approach, however, is that there is no
+  // obvious location in the CS/libs hierarchy for such an implementation file
+  // to reside.  Since it is considered very unlikely that external projects
+  // will be accessing this variable, and since un-inlining the constructors is
+  // perhaps unnecessarily complicated, the decision was made instead to remove
+  // the compiler-based deprecation attribute, but retain the
+  // documentation-based deprecation warning. If real-world experience shows
+  // that removing the compiler attribute was the wrong approach, then the
+  // un-inlining approach can instead be implemented.
+  // CS_DEPRECATED_VAR_MSG("Use cullMode instead", bool flipCulling );
+  bool flipCulling;
   
+  /// Mesh culling mode
+  MeshCullMode cullMode;
+
+  /// Alpha mode this mesh is drawn.
+  csAlphaMode::AlphaType alphaType;
+
+  /// Holder of default render buffers
+  csRef<csRenderBufferHolder> buffers;
+};
+
+/**
+ * Start and end for a  range of indices to render.
+ * The indices are used in the range from \a start (inclusive) to \a end
+ * (exclusive): start <= n < end
+ */
+struct RenderMeshIndexRange
+{
+  unsigned int start;
+  unsigned int end;
+};
+
+/**
+ * Data required by the renderer to draw a mesh.
+ */
+struct CoreRenderMesh
+{
   /**
-   * Alpha test options.
-   * These options take effect if:
-   * - The mixmode alpha test type (bits #CS_MIXMODE_ALPHATEST_MASK)
-   *   is #CS_MIXMODE_ALPHATEST_ENABLE.
-   * - The alpha test type (bits #CS_MIXMODE_ALPHATEST_MASK)
-   *   is #CS_MIXMODE_ALPHATEST_AUTO and the alpha type used is 
-   *   csAlphaMode::alphaBinary.
+   * To make debugging easier we add the name of the mesh object
+   * here in debug mode.
    */
-  struct AlphaTestOptions
-  {
-    /**
-     * Threshold value the source pixel alpha is compared against.
-     * Default is 0.5
-     */
-    float threshold;
-    /**
-     * Comparison between source pixel alpha and threshold value.
-     * Default atfGreaterEqual
-     */
-    AlphaTestFunction func;
-    
-    AlphaTestOptions() : threshold (0.5f), func (atfGreaterEqual) {}
-  };
+  const char* db_mesh_name;
 
+  CoreRenderMesh () : db_mesh_name ("<unknown>"), clip_portal (0), 
+    clip_plane (0), clip_z_plane (0), do_mirror (false), indexstart (0), 
+    indexend (0), multiRanges (0), rangesNum (0)
+  {
+  }
+
+  ~CoreRenderMesh () {}
+
+  /// Clipping parameter
+  int clip_portal;
+
+  /// Clipping parameter
+  int clip_plane;
+
+  /// Clipping parameter
+  int clip_z_plane;
+
+  // @@@ FIXME: should prolly be handled by component managing rendering
   /**
-   * Mesh render mode information. Contains the Z, mix and alpha modes to use
-   * for rendering a mesh. 
-   * \remarks Is separate from CS::Graphics::CoreRenderMesh to allow preprocessing steps 
-   *  to modify the mode data. 
+   * Mirror mode - whether the mesh should be mirrored.
+   * Essentially toggles between back- and front-face culling. 
+   * It should be set to \p true if \a object2camera contains a negative
+   * scaling. Basically, in almost any case it should be set to the camera's
+   * mirror mode.
+   *
+   * \code
+   * iCamera* camera;
+   * csRenderMesh myMesh;
+   *   ...
+   * myMesh.object2camera = camera->GetTransform () / 
+   *   movable->GetFullTransform ();
+   * myMesh.do_mirror = camera->IsMirrored ();
+   * \endcode
    */
-  struct RenderMeshModes
-  {
-    RenderMeshModes () : z_buf_mode ((csZBufMode)~0), mixmode (CS_FX_COPY),
-      renderPrio (-1), cullMode (cullNormal),
-      alphaType (csAlphaMode::alphaNone), zoffset (false), doInstancing (false)
-    {
-    }
+  bool do_mirror;
 
-    RenderMeshModes (RenderMeshModes const& x) :
-      z_buf_mode (x.z_buf_mode),
-      mixmode (x.mixmode),
-      renderPrio (x.renderPrio),
-      cullMode (x.cullMode),
-      alphaType (x.alphaType),
-      alphaTest (x.alphaTest),
-      zoffset (x.zoffset),
-      buffers (x.buffers),
-      doInstancing (x.doInstancing),
-      instParamNum (x.instParamNum),
-      instParamsTargets (x.instParamsTargets),
-      instanceNum (x.instanceNum),
-      instParams (x.instParams)	
-    {
-    }
+  /// Mesh type
+  csRenderMeshType meshtype;
 
-    ~RenderMeshModes () { }
-
-    /// Z mode to use
-    csZBufMode z_buf_mode;
-
-    /// mixmode to use
-    uint mixmode;
-    
-    /// Mesh render priority
-    RenderPriority renderPrio;
-
-    /// Mesh culling mode
-    MeshCullMode cullMode;
-
-    /**
-     * Alpha mode this mesh is drawn.
-     * 
-     * - If the mixmode mode type (bits #CS_MIXMODE_TYPE_MASK) is
-     *   #CS_MIXMODE_TYPE_AUTO, the alpha type affects blending.
-     * - If the mixmode alpha test type (bits #CS_MIXMODE_ALPHATEST_MASK)
-     *   is #CS_MIXMODE_ALPHATEST_AUTO, the alpha type affects whether alpha
-     *   test is used or not.
-     */
-    csAlphaMode::AlphaType alphaType;
-    
-    /// Alpha test setting (take effect when mixmode enables alpha test)
-    AlphaTestOptions alphaTest;
-    
-    /// Whether Z value offsetting should be enabled.
-    bool zoffset;
-
-    /// Holder of default render buffers
-    csRef<csRenderBufferHolder> buffers;
-
-    bool doInstancing; 
-    size_t instParamNum; 
-    const csVertexAttrib* instParamsTargets; 
-    size_t instanceNum; 
-    csShaderVariable** const * instParams;
-  };
-
+  /** @{ */
   /**
-  * Start and end for a  range of indices to render.
-  * The indices are used in the range from \a start (inclusive) to \a end
-  * (exclusive): start <= n < end
-  */
-  struct RenderMeshIndexRange
-  {
-    unsigned int start;
-    unsigned int end;
-  };
-
-  /**
-  * Data required by the renderer to draw a mesh.
-  */
-  struct CoreRenderMesh
-  {
-    /**
-     * To make debugging easier we add the name of the mesh object
-     * here in debug mode.
-     */
-    const char* db_mesh_name;
-
-    CoreRenderMesh () : db_mesh_name ("<unknown>"), clip_portal (0), 
-      clip_plane (0), clip_z_plane (0), do_mirror (false),
-      multiRanges (0), rangesNum (0), indexstart (0), indexend (0)
-    {
-    }
-
-    ~CoreRenderMesh () {}
-
-    /// Clipping parameter
-    int clip_portal;
-
-    /// Clipping parameter
-    int clip_plane;
-
-    /// Clipping parameter
-    int clip_z_plane;
-
-    // @@@ FIXME: should prolly be handled by component managing rendering
-    /**
-     * Mirror mode - whether the mesh should be mirrored.
-     * Essentially toggles between back- and front-face culling. 
-     * It should be set to \p true if \a object2camera contains a negative
-     * scaling. Basically, in almost any case it should be set to the camera's
-     * mirror mode.
-     *
-     * \code
-     * iCamera* camera;
-     * csRenderMesh myMesh;
-     *   ...
-     * myMesh.object2camera = camera->GetTransform () / 
-     *   movable->GetFullTransform ();
-     * myMesh.do_mirror = camera->IsMirrored ();
-     * \endcode
-     */
-    bool do_mirror;
-
-    /// Mesh type
-    csRenderMeshType meshtype;
-    /**
-    * Index ranges to render. If ranges are specified they have precedence
-    * over \a indexstart and \a indexend.
-    */
-    RenderMeshIndexRange* multiRanges;
-    /// Number of index ranges in \a multiRanges.
-    size_t rangesNum;
-
-    /** @{ */
-    /**
-     * Start and end of the range of indices to use. The indices are
-     * used in the range from \a indexstart (inclusive) to \a indexend
-     * (exclusive): indexstart <= n < indexend
-     */
-    unsigned int indexstart;
-    unsigned int indexend;
-    /** @} */
-
-    /**
-     * Material used for this mesh.
-     * Used for e.g. sorting by material.
-     */
-    iMaterialWrapper* material;
-
-    /** 
-     * Transform object space -> world space.
-     * \remarks 'this' space is object space, 'other' space is world space
-     */
-    csReversibleTransform object2world;
-    
-    /// Render mesh bounding box, object space
-    csBox3 bbox;
-  };
-
-  /**
-   * Mesh data as returned by mesh plugins. Contains both the data needed for
-   * rendering as well as some additional data for preprocessing.
+   * Start and end of the range of indices to use. The indices are
+   * used in the range from \a indexstart (inclusive) to \a indexend
+   * (exclusive): indexstart <= n < indexend
    */
-  struct RenderMesh : public CoreRenderMesh, public RenderMeshModes
+  unsigned int indexstart;
+  unsigned int indexend;
+  /** @} */
+  /**
+   * Index ranges to render. If ranges are specified they have precedence
+   * over \a indexstart and \a indexend.
+   */
+  RenderMeshIndexRange* multiRanges;
+  /// Number of index ranges in \a multiRanges.
+  size_t rangesNum;
+
+  /**
+   * Material used for this mesh.
+   * Used for e.g. sorting by material.
+   */
+  iMaterialWrapper* material;
+
+  /** 
+   * Transform object space -> world space.
+   * \remarks 'this' space is object space, 'other' space is world space
+   */
+  csReversibleTransform object2world;
+};
+
+/**
+ * Mesh data as returned by mesh plugins. Contains both the data needed for
+ * rendering as well as some additional data for preprocessing.
+ */
+struct RenderMesh : public CoreRenderMesh, public RenderMeshModes
+{
+  RenderMesh () : geometryInstance (0), portal (0)
   {
-    RenderMesh () : geometryInstance (0), portal (0)
-    {
-    }
+  }
 
-    ~RenderMesh () {}
+  ~RenderMesh () {}
 
-    /**
-     * Some unique ID for the geometry used to render this mesh.
-     * Used for sorting purposes, and is allowed to be 0, although
-     * that means non-optimal mesh sorting at rendering.
-     */
-    void *geometryInstance;
+  /**
+   * Some unique ID for the geometry used to render this mesh.
+   * Used for sorting purposes, and is allowed to be 0, although
+   * that means non-optimal mesh sorting at rendering.
+   */
+  void *geometryInstance;
 
-    /// Pointer to a portalcontainer, if there is any
-    iPortalContainer* portal;
+  /// Pointer to a portalcontainer, if there is any
+  iPortalContainer* portal;
 
-    /// \todo Document me!
-    csRef<iShaderVariableContext> variablecontext;
+  /// \todo Document me!
+  csRef<iShaderVariableContext> variablecontext;
 
-    /// Worldspace origin of the mesh
-    csVector3 worldspace_origin;
-  };
-
+  /// Worldspace origin of the mesh
+  csVector3 worldspace_origin;
+};
 } // namespace Graphics
 } // namespace CS
 

@@ -203,8 +203,7 @@ struct bdNodeChildTab
 };
 
 /// Binary document node attribute
-// POD struct to avoid warnings.
-struct bdNodeAttributePOD
+struct bdNodeAttribute
 {
   /// Value, same as in node value
   uint32 value;
@@ -212,18 +211,10 @@ struct bdNodeAttributePOD
   uint32 nameID;
   /// Attribute flags
   uint32 flags;
-};
-
-/// Binary document node attribute (extra C++ methods)
-struct bdNodeAttribute : public bdNodeAttributePOD
-{
+  
   bdNodeAttribute() {}
-  bdNodeAttribute (uint32 value, uint32 nameID, uint32 flags)
-  {
-    this->value = value;
-    this->nameID = nameID;
-    this->flags = flags;
-  }
+  bdNodeAttribute (uint32 value, uint32 nameID, uint32 flags) :
+    value (value), nameID (nameID), flags (flags) {}
 };
 
 /// Binary document node attribute table
@@ -361,7 +352,7 @@ private:
   friend struct csBinaryDocument;
 
   /// Owning node.
-  csRef<csBinaryDocNode> parentNode;
+  csBinaryDocNode* parentNode;
   /**
    * Where we are in the children list.
    */
@@ -537,33 +528,9 @@ private:
   csBdNode* root;	
   csBinaryDocNode::Pool nodePool;
   csBinaryDocAttribute::Pool attrPool;
-
-  template<typename T>
-  struct csBdAllocator :
-    public CS::Memory::AllocatorSafe<csBlockAllocator<T> >
-  {
-    typedef csBlockAllocator<T> WrappedAllocatorType;
-    typedef CS::Memory::AllocatorSafe<WrappedAllocatorType> AllocatorSafeType;
-
-    csBdAllocator (const size_t& a1) : AllocatorSafeType (a1)
-    {
-    }
-
-    CS_ATTRIBUTE_MALLOC T* Alloc ()
-    {
-      CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-      return WrappedAllocatorType::Alloc ();
-    }
-
-    void Free (T* p)
-    {
-      CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-      WrappedAllocatorType::Free(p);
-    }
-  };
-
-  csBdAllocator<csBdAttr> attrAlloc;
-  csBdAllocator<csBdNode> nodeAlloc;
+  
+  csBlockAllocator<csBdAttr>* attrAlloc;
+  csBlockAllocator<csBdNode>* nodeAlloc;
 
   csStringHash* outStrHash;
   iFile* outStrStorage;

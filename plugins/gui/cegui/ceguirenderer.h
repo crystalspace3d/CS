@@ -38,7 +38,6 @@
 #include "csgeom/vector2.h"
 #include "csgeom/vector3.h"
 #include "csgeom/vector4.h"
-#include "csutil/dirtyaccessarray.h"
 #include "csutil/parray.h"
 #include "csutil/ref.h"
 #include "csutil/scf.h"
@@ -174,6 +173,29 @@ private:
     queueing = setting;
   }
 
+  struct RenderQuad
+  {
+    csVector2 tex[4];
+    csVector4 color[4];
+    csVector3 vertex[4];
+    uint indices[6];
+  };
+
+  struct QuadInfo
+  {
+    csCEGUITexture* texid;
+    CEGUI::Rect	position;
+    float z;
+    CEGUI::Rect	texPosition;
+
+    csVector4 topLeftColor;
+    csVector4 topRightColor;
+    csVector4 bottomLeftColor;
+    csVector4 bottomRightColor;
+
+    CEGUI::QuadSplitMode splitMode;
+  };
+
   /// Create an empty texture.
   virtual CEGUI::Texture* createTexture ();
 
@@ -247,6 +269,12 @@ private:
    */
   void UpdateMeshList();
 
+  /**
+   * Prepare a quad for rendering. This fills a RenderQuad structure
+   * with vertex, index, color, and texcoord information.
+   */
+  void PrepareQuad (const QuadInfo quad, RenderQuad& rquad) const;
+
   /// Render a quad directly instead of queueing it.
   void RenderQuadDirect (const CEGUI::Rect& dest_rect, float z, 
     const CEGUI::Texture* tex, const CEGUI::Rect& texture_rect, 
@@ -255,29 +283,24 @@ private:
   /// Convert a CEGUI::colour to a CS csVector4 color
   csVector4 ColorToCS (const CEGUI::colour &color) const;
 
+  csArray<QuadInfo> quadList;
+
+  bool newQuadAdded;
+
   CEGUI::Rect m_displayArea;
 
-#define BUFFER_ARRAY(T, ElementStep)		\
-  csDirtyAccessArray<T,				\
-    csArrayElementHandler<T>,			\
-    CS::Container::ArrayAllocDefault,		\
-    csArrayCapacityFixedGrow<ElementStep*2048> >
-  BUFFER_ARRAY(csVector2, 4) tcBuf;
-  BUFFER_ARRAY(csVector4, 4) colBuf;
-  BUFFER_ARRAY(csVector3, 4) vertBuf;
-  BUFFER_ARRAY(uint, 6) indexBuf;
-#undef BUFFER_ARRAY
-  csRef<csRenderBufferHolder> bufHolder;
-  bool buffersDirty;
+  RenderQuad myBuff[2048];
 
   bool queueing;
-  size_t queueStart;
-  const csCEGUITexture* texture;
+  int m_bufferPos;
+  csCEGUITexture* texture;
 
   //!< List used to track textures.
   csPDelArray<csCEGUITexture> textureList;
 
-  csDirtyAccessArray<csSimpleRenderMesh> meshList;
+  csPDelArray<csSimpleRenderMesh> meshList;
+
+  bool meshIsValid;
 
   /// Maximum supported texture size (in pixels).
   uint m_maxTextureSize;

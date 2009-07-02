@@ -35,14 +35,14 @@ class csGLRender2TextureFramebuf : public csGLRender2TextureBackend
 protected:
   //@{
   /// Current render targets.
-  RTAttachment<> colorTarget;
-  RTAttachment<> depthTarget;
+  RTAttachment colorTarget;
+  RTAttachment depthTarget;
   bool targetsSet;
   //@}
   /// If true then the current render target has been put on screen.
   bool rt_onscreen;
   /// Render target dimensions
-  int txt_w, txt_h, txt_d;
+  int txt_w, txt_h;
   R2TViewportHelper viewportHelper;
 
   enum InternalFormatClass { ifColor, ifDepth };
@@ -55,13 +55,9 @@ protected:
     csGLBasicTextureHandle* tex);
   static GLenum GetInternalFormatColor (GLenum texInternalFormat);
   static GLenum GetInternalFormatDepth (GLenum texInternalFormat);
-  static GLenum GetBaseFormat (InternalFormatClass fmtClass,
-    csGLBasicTextureHandle* tex);
-  static GLenum GetBaseFormatColor (GLenum texInternalFormat);
-  static GLenum GetBaseFormatDepth (GLenum texInternalFormat);
 
   csDirtyAccessArray<uint8> pixelScratch;
-  void GrabFramebuffer (const RTAttachment<>& target, InternalFormatClass fmtClass);
+  void GrabFramebuffer (const RTAttachment& target, InternalFormatClass fmtClass);
 public:
   csGLRender2TextureFramebuf (csGLGraphics3D* G3D) 
     : csGLRender2TextureBackend (G3D), targetsSet (false), 
@@ -80,8 +76,7 @@ public:
   iTextureHandle* GetRenderTarget (csRenderTargetAttachment attachment, int* subtexture) const;
 
   virtual void BeginDraw (int drawflags);
-  virtual CS::Math::Matrix4 FixupProjection (
-    const CS::Math::Matrix4& projectionMatrix);
+  virtual void SetupProjection ();
   virtual void FinishDraw ();
   virtual void SetClipRect (const csRect& clipRect);
   virtual void SetupClipPortalDrawing ();

@@ -1,6 +1,0 @@
-SubDir TOP plugins mesh watermesh object ;
-
-Description watermesh : "Water mesh type object plugin" ;
-Plugin watermesh : [ Wildcard *.cpp *.h ] ;
-LinkWith watermesh : crystalspace ;
-CompileGroups watermesh : meshes ;

@@ -32,11 +32,12 @@
 #include "csutil/refarr.h"
 #include "csutil/sysfunc.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/scfarray.h"
 #include "csutil/weakref.h"
 #include "iengine/lightmgr.h"
 #include "iengine/mesh.h"
+#include "iengine/shadcast.h"
 #include "imesh/objmodel.h"
+#include "imesh/lighting.h"
 #include "imesh/object.h"
 #include "imesh/terrain.h"
 #include "iutil/comp.h"
@@ -168,9 +169,11 @@ public:
 #include "csutil/deprecated_warn_off.h"
 
 class csTerrainObject : 
-  public scfImplementationExt2<csTerrainObject,
+  public scfImplementationExt4<csTerrainObject,
                                csObjectModel,
                                iMeshObject,
+                               iShadowReceiver,
+                               iLightingInfo,
                                iTerrainObjectState>
 {
 private:
@@ -274,7 +277,7 @@ private:
 
   // If we are using the iLightingInfo lighting system then this
   // is an array of lights that affect us right now.
-  //csSet<csPtrKey<iLight> > affecting_lights;
+  csSet<csPtrKey<iLight> > affecting_lights;
   csHash<csShadowArray*, csPtrKey<iLight> > pseudoDynInfo;
   void UpdateColors (iMovable* movable);
   //=============
@@ -407,11 +410,12 @@ public:
     csVector3& isect, float* pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
     csVector3& isect, float* pr, int* polygon_idx = 0,
-    iMaterialWrapper** material = 0, csArray<iMaterialWrapper*>* materials = 0);
+    iMaterialWrapper** material = 0);
 
   virtual void BuildDecal(const csVector3* pos, float decalRadius,
           iDecalBuilder* decalBuilder);
 
+  virtual void InvalidateMaterialHandles () { }
   virtual void PositionChild (iMeshObject* /*child*/,
   	csTicks /*current_time*/) { }
 
@@ -419,6 +423,15 @@ public:
   void AddListener (iObjectModelListener* listener);
   void RemoveListener (iObjectModelListener* listener);
 
+  // For lighting.
+  void CastShadows (iMovable* movable, iFrustumView* fview);
+  void InitializeDefault (bool clear);
+  bool ReadFromCache (iCacheManager* cache_mgr);
+  bool WriteToCache (iCacheManager* cache_mgr);
+  void PrepareLighting ();
+  void LightChanged (iLight* light);
+  void LightDisconnect (iLight* light);
+  void DisconnectAllLights ();
   char* GenerateCacheName ();
   void SetStaticLighting (bool enable);
 

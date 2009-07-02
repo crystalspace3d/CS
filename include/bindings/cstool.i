@@ -3,12 +3,7 @@
 %import "bindings/iengine.i"
 %import "bindings/ivaria.i"
 %{
-#include "csgeom.h"
-#include "csgfx.h"
-#include "csutil.h"
-#include "cstool.h"
-#include "iengine.h"
-#include "ivaria.h"
+#include "crystalspace.h"
 %}
 
 #ifndef SWIGIMPORTED

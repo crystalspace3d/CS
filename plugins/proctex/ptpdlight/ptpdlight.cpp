@@ -365,7 +365,7 @@ ProctexPDLight::ProctexPDLight (ProctexPDLightLoader* loader, iImage* img) :
 {
   mat_w = img->GetWidth();
   mat_h = img->GetHeight();
-  if (loader->doMMX) state.Set ((uint32)stateDoMMX);
+  if (loader->doMMX) state.Set (stateDoMMX);
 }
 
 ProctexPDLight::ProctexPDLight (ProctexPDLightLoader* loader, int w, int h) : 
@@ -376,7 +376,7 @@ ProctexPDLight::ProctexPDLight (ProctexPDLightLoader* loader, int w, int h) :
 {
   mat_w = w;
   mat_h = h;
-  if (loader->doMMX) state.Set ((uint32)stateDoMMX);
+  if (loader->doMMX) state.Set (stateDoMMX);
 }
 
 ProctexPDLight::~ProctexPDLight ()
@@ -443,6 +443,8 @@ bool ProctexPDLight::PrepareAnim ()
     if (light.light)
     {
       success = true;
+      light.light->AddAffectedLightingInfo (
+        static_cast<iLightingInfo*> (this));
       dirtyLights.Add ((iLight*)light.light);
 
       LightColorState colorState;
@@ -484,7 +486,7 @@ void ProctexPDLight::Animate (csTicks current_time)
 
     CS_PROFILER_ZONE(ProctexPDLight_Animate)
 #ifdef CS_SUPPORTS_MMX
-    if (state.Check ((uint32)stateDoMMX))
+    if (state.Check (stateDoMMX))
       Animate_MMX ();
     else
 #endif
@@ -496,6 +498,50 @@ void ProctexPDLight::Animate (csTicks current_time)
 
     csTicks endTime = csGetTicks();
     loader->RecordUpdateTime (endTime-startTime);
+  }
+}
+
+void ProctexPDLight::DisconnectAllLights ()
+{ 
+  lights.DeleteAll ();
+  lightBits.SetSize (0); 
+  tilesDirty.Clear ();
+  tilesDirty.FlipAllBits ();
+  dirtyLights.DeleteAll ();
+  lightColorStates.DeleteAll ();
+}
+
+void ProctexPDLight::LightChanged (iLight* light) 
+{ 
+  dirtyLights.Add (light);
+  const LightColorState& colorState = 
+    *lightColorStates.GetElementPointer (light);
+  const csColor& lightColor = light->GetColor ();
+  /* When the light color difference to the value last used at updating
+     is below the amount needed for a visible difference an update of the
+     texture because of this light isn't needed. */
+  if ((fabsf (colorState.lastColor.red - lightColor.red) 
+      >= colorState.minChangeThresh.red)
+    || (fabsf (colorState.lastColor.green - lightColor.green) 
+      >= colorState.minChangeThresh.green)
+    || (fabsf (colorState.lastColor.blue - lightColor.blue) 
+      >= colorState.minChangeThresh.blue))
+    state.Set (stateDirty); 
+}
+
+void ProctexPDLight::LightDisconnect (iLight* light)
+{
+  for (size_t i = 0; i < lights.GetSize(); i++)
+  {
+    if (lights[i].light == light)
+    {
+      lights.DeleteIndexFast (i);
+      lightColorStates.DeleteAll (light);
+      state.Set (stateDirty);
+      dirtyLights.Add (light);
+      lightBits.SetSize (lights.GetSize ());
+      return;
+    }
   }
 }
 

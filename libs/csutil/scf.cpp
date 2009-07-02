@@ -159,7 +159,7 @@ public:
 
 class scfSharedLibrary;
 
-static csStringSet* libraryNames = 0; 
+static class csStringSet* libraryNames = 0; 
 static char const* get_library_name(csStringID s)
 { return s != csInvalidStringID ? libraryNames->Request(s) : "{none}"; }
 
@@ -360,7 +360,7 @@ class scfClassRegistry : public csPDelArray<scfFactory>
 {
   typedef csPDelArray<scfFactory> superclass;
 public:
-  scfClassRegistry () : superclass(16) {}
+  scfClassRegistry () : superclass(16, 16) {}
   static int CompareClass (scfFactory* const& Item, char const* const& key)
   { return strcmp (Item->ClassID, key); }
   size_t FindClass(char const* name, bool assume_sorted = false) const
@@ -379,7 +379,7 @@ public:
 //----------------------------------------- Class factory implementation ----//
 
 #ifdef CS_REF_TRACKER
-static csStringHash* classIDs = 0; 
+static class csStringHash* classIDs = 0; 
 #endif
 
 scfFactory::scfFactory (const char *iClassID, const char *iLibraryName,
@@ -678,6 +678,15 @@ static unsigned int parse_verbosity(int argc, const char* const argv[])
   return v;
 }
 
+/* Flag indicating whether external linkage was used when building the 
+ * application. Determines whether SCF scans for plugins at startup.
+ */
+#ifdef CS_BUILD_SHARED_LIBS
+const bool scfStaticallyLinked = false;
+#else
+extern bool scfStaticallyLinked;
+#endif
+
 void scfInitialize (csPathsList const* pluginPaths, unsigned int verbose)
 {
   if (!PrivateSCF)
@@ -687,11 +696,10 @@ void scfInitialize (csPathsList const* pluginPaths, unsigned int verbose)
   PrivateSCF->ScanPluginsInt (pluginPaths, 0);
 }
 
-void scfInitialize (int argc, const char* const argv[],
-		    bool scanDefaultPluginPaths)
+void scfInitialize (int argc, const char* const argv[])
 {
   unsigned int const verbosity = parse_verbosity(argc, argv);
-  if (!scanDefaultPluginPaths)
+  if (scfStaticallyLinked)
     scfInitialize (0, verbosity);
   else
   {
@@ -1235,7 +1243,7 @@ bool csSCF::ClassRegistered (const char *iClassID)
 char const* csSCF::GetInterfaceName (scfInterfaceID i) const
 {
   CS::Threading::RecursiveMutexScopedLock lock (mutex);
-  return InterfaceRegistry.Request (i);
+  return InterfaceRegistry.Request(i);
 }
 
 scfInterfaceID csSCF::GetInterfaceID (const char *iInterface)

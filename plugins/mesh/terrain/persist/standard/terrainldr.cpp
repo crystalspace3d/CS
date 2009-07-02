@@ -35,7 +35,6 @@
 #include "iutil/object.h"
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
-#include "iutil/stringarray.h"
 #include "iutil/vfs.h"
 #include "ivaria/terraform.h"
 
@@ -85,6 +84,9 @@ bool csTerrainFactoryLoader::Initialize (iObjectRegistry* objreg)
 csPtr<iBase> csTerrainFactoryLoader::Parse (iDocumentNode* node,
   iStreamSource*, iLoaderContext* /*ldr_context*/, iBase* /*context*/)
 {
+  synldr->Report ("crystalspace.terrainloader.parse",
+		CS_REPORTER_SEVERITY_WARNING,
+		node, "Terrain objects are deprecated! Please use terrain2 instead!");
   csRef<iPluginManager> plugin_mgr = 
     csQueryRegistry<iPluginManager> (object_reg);
 
@@ -269,6 +271,9 @@ bool csTerrainObjectLoader::Initialize (iObjectRegistry* objreg)
 csPtr<iBase> csTerrainObjectLoader::Parse (iDocumentNode* node, 
   iStreamSource*, iLoaderContext* ldr_context, iBase* /*context*/)
 {
+  synldr->Report ("crystalspace.terrainloader.parse",
+		CS_REPORTER_SEVERITY_WARNING,
+		node, "Terrain objects are deprecated! Please use terrain2 instead!");
   csRef<iMeshObject> mesh;
   csRef<iTerrainObjectState> state;
   bool palette_set = false;
@@ -288,14 +293,12 @@ csPtr<iBase> csTerrainObjectLoader::Parse (iDocumentNode* node,
         const char* factname = child->GetContentsValue ();
         csRef<iMeshFactoryWrapper> fact = ldr_context->FindMeshFactory (
           factname);
-
-        if(!fact)
+        if (!fact)
         {
           synldr->ReportError ("crystalspace.terrain.object.loader",
             child, "Couldn't find factory '%s'!", factname);
           return 0;
         }
-
         mesh = fact->GetMeshObjectFactory ()->NewInstance ();
         state = scfQueryInterface<iTerrainObjectState> (mesh);
 	if (!state)

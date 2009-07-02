@@ -47,15 +47,14 @@
 #include "ivideo/graph3d.h"
 #include "ivideo/fontserv.h"
 
-struct iCommandLineParser;
-struct iConfigManager;
+struct iObjectRegistry;
 struct iEvent;
 struct iEventHandler;
 struct iEventQueue;
-struct iObjectRegistry;
 struct iPluginManager;
-struct iThreadManager;
 struct iVirtualClock;
+struct iCommandLineParser;
+struct iConfigManager;
 struct iSystemOpenManager;
 struct iVerbosityManager;
 
@@ -106,7 +105,6 @@ struct iVerbosityManager;
   CS_REQUEST_PLUGIN("crystalspace.engine.3d", iEngine)
 /// Request map loader.
 #define CS_REQUEST_LEVELLOADER \
-  CS_REQUEST_PLUGIN("crystalspace.level.threadedloader", iThreadedLoader), \
   CS_REQUEST_PLUGIN("crystalspace.level.loader", iLoader)
 /// Request map writer.
 #define CS_REQUEST_LEVELSAVER \
@@ -182,7 +180,6 @@ public:
    * - CreateCommandLineParser()
    * - CreateVerbosityManager()
    * - CreateConfigManager()
-   * - CreateThreadManager()
    * - CreateInputDrivers()
    * - CreateStringSet()
    * - csPlatformStartup()
@@ -196,26 +193,16 @@ public:
    * should be retained when doing so.
    * \param argc argc argument from main().
    * \param argv argv argument from main().
-   * \param scanDefaultPluginPaths Whether the default plugin paths are scanned.
-   *   Forwarded to InitializeSCF(), see there for more information.
    * \return This function will return the pointer to the object registry where
    * all the created objects will be registered.
    */
-  static iObjectRegistry* CreateEnvironment(int argc, char const* const argv[],
-    bool scanDefaultPluginPaths = true);
+  static iObjectRegistry* CreateEnvironment(int argc, char const* const argv[]);
 
   /**
    * This very important function initializes the SCF sub-system.
    * Without this you can do almost nothing in CS.
-   * \param argc argc argument from main().
-   * \param argv argv argument from main().
-   * \param scanDefaultPluginPaths Whether the default plugin paths provided by
-   *   csGetPluginPaths() are scanned. Otherwise, no plugin scanning is done.
-   *   In this case the csPathsList* version of scfInitialize() should be
-   *   invoked manually if some paths should be scanned for plugins.
    */
-  static bool InitializeSCF (int argc, char const* const argv[],
-    bool scanDefaultPluginPaths = true);
+  static bool InitializeSCF (int argc, char const* const argv[]);
 
   /**
    * This function should be called second. It will create the object
@@ -239,12 +226,6 @@ public:
    * the default event queue (using 0 tag).
    */
   static iEventQueue* CreateEventQueue (iObjectRegistry*);
-
-  /**
-   * This function creates the thread manager, which coordinates
-   * the thread queue system in CS.
-   */
-  static iThreadManager* CreateThreadManager (iObjectRegistry*);
 
   /**
    * Create the virtual clock. This clock is responsible for keeping
@@ -284,20 +265,12 @@ public:
   static bool CreateInputDrivers (iObjectRegistry*);
 
   /**
-   * Create the global shared string sets and register them with the registry.
-   * The first can be used if multiple, distinct modules want to share string IDs.
+   * Create the global shared string set and register it with the registry.
+   * This can be used if multiple, distinct modules want to share string IDs.
    * The set can be requested with:
    * \code
    * csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
    *   object_reg, "crystalspace.shared.stringset");
-   * \endcode
-   *
-   * The second string set is used for shader variable names and can be
-   * requested by:
-   * \code
-   * csRef<iShaderVarStringSet> strings =
-   *   csQueryRegistryTagInterface<iShaderVarStringSet> (
-   *     objectRegistry, "crystalspace.shader.variablenameset");
    * \endcode
    */
   static bool CreateStringSet (iObjectRegistry*);
@@ -396,7 +369,7 @@ public:
    * that are sent through the event manager. Use this function to know
    * about keyboard, mouse and other events. Note that you also have to
    * use this function to be able to render something as rendering
-   * happens as a result of one event (csevFrame).
+   * happens as a result of one event (csevProcess).
    */
   static bool SetupEventHandler (iObjectRegistry*, iEventHandler*, const csEventID[]);
 

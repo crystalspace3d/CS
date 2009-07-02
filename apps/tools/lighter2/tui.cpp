@@ -36,9 +36,8 @@ namespace lighter
   {
   }
 
-  void TUI::Initialize (iObjectRegistry* objReg)
+  void TUI::Initialize ()
   {
-    object_reg = objReg;
     simpleMode = globalLighter->configMgr->GetBool ("lighter2.simpletui", false);
   }
 
@@ -104,8 +103,8 @@ namespace lighter
     CS_ANSI_FW CS_ANSI_BW "D" CS_ANSI_RST " "
   };
 
-  THREADED_CALLABLE_IMPL4(TUI, Report, iReporter* reporter, int severity,
-    const char* msgId, const char* description)
+  bool TUI::Report (iReporter* reporter, int severity, const char* msgId,
+    const char* description)
   {
     csStringArray descrSplit;
     descrSplit.SplitString (description, "\n");
@@ -329,7 +328,6 @@ namespace lighter
 
   void TUI::DrawSimple ()
   {
-    bool doFlush = false;
     const char* lt = (const char*)lastTask;
     const char* tn = globalStats.progress.GetTaskName ();
     if ((lt == 0 && tn != 0) || (lt != 0 && lastTask != tn))
@@ -340,7 +338,6 @@ namespace lighter
       csPrintf ("\n% 4d %% - %s ", 
         globalStats.progress.GetOverallProgress(),
         lastTask.GetDataSafe());
-      doFlush = true;
 
       // Print new task and global progress
       lastTaskProgress = 0;
@@ -352,10 +349,8 @@ namespace lighter
         prevWasReporter = false;
         csPrintf (".");
         lastTaskProgress += 10;
-        doFlush = true;
       }
     }
-    if (doFlush) fflush (stdout);
   }
 
   void TUI::DrawSimpleEnd ()

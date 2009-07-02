@@ -26,8 +26,6 @@
 
 #include "csextern.h"
 
-#include "csutil/customallocated.h"
-
 #define CS_VOIDED_PTR ((intptr_t)-1)
 
 template <class T> class csRef;
@@ -84,7 +82,7 @@ template <class T> class csRef;
  *   section "Correctly Using Smart Pointers".
  */
 template <class T>
-class csPtr : public CS::Memory::CustomAllocated
+class  csPtr
 {
 private:
   friend class csRef<T>;
@@ -132,7 +130,7 @@ public:
  *   section "Correctly Using Smart Pointers".
  */
 template <class T>
-class csRef : public CS::Memory::CustomAllocated
+class  csRef
 {
 private:
   T* obj;

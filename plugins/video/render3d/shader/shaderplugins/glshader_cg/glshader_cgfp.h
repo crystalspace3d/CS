@@ -40,16 +40,11 @@ private:
   csGLStateCache* statecache;
 
   csRef<iShaderProgram> pswrap;
-  
-  bool TryCompile (uint loadFlags, const ProfileLimitsPair& limits);
 public:
-  ProfileLimitsPair cacheLimits;
-  
   CS_LEAKGUARD_DECLARE (csShaderGLCGFP);
 
-  csShaderGLCGFP (csGLShader_CG* shaderPlug,
-    const ProfileLimitsPair& cacheLimits) : 
-    csShaderGLCGCommon (shaderPlug, progFP), cacheLimits (cacheLimits) { }
+  csShaderGLCGFP (csGLShader_CG* shaderPlug) : 
+    csShaderGLCGCommon (shaderPlug, "cgfp") { }
 
   /// Sets this program to be the one used when rendering
   virtual void Activate ();
@@ -60,29 +55,17 @@ public:
   /// Setup states needed for proper operation of the shader
   virtual void SetupState (const CS::Graphics::RenderMesh* mesh,
     CS::Graphics::RenderMeshModes& modes,
-    const csShaderVariableStack& stack);
+    const iShaderVarStack* stacks);
 
   /// Reset states to original
   virtual void ResetState ();
 
   /// Compile a program
-  virtual bool Compile (iHierarchicalCache* cache, csRef<iString>*);
-  
-  bool Precache (const ProfileLimitsPair& limitsPair,
-    const char* tag, iHierarchicalCache* cache);
+  virtual bool Compile();
 
   virtual int ResolveTU (const char* binding);
 
-  virtual void GetUsedShaderVars (csBitArray& bits) const
-  {
-    if (pswrap.IsValid())
-    {
-      pswrap->GetUsedShaderVars (bits);
-      return;
-    }
-
-    csShaderGLCGCommon::GetUsedShaderVars (bits);
-  }
+  virtual const char* GetProgramType() { return "fragment"; }
 };
 
 }

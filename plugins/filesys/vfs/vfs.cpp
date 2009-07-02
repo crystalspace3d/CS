@@ -35,7 +35,6 @@
 #include "csutil/strset.h"
 #include "csutil/sysfunc.h"
 #include "csutil/syspath.h"
-#include "csutil/threading/rwmutex.h"
 #include "csutil/util.h"
 #include "csutil/vfsplat.h"
 #include "iutil/databuff.h"
@@ -51,8 +50,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(VFS)
 
 // Characters ignored in VFS paths (except in middle)
 #define CS_VFSSPACE		" \t"
-
-typedef csStringFast<CS_MAXPATHLEN> PathString;
 
 //***********************************************************
 // NOTE on naming convention: public classes begin with "cs"
@@ -214,30 +211,24 @@ public:
   }
 };
 
+/// This class is thread-safe because it is global.
 class VfsArchiveCache : public CS::Memory::CustomAllocated
 {
 private:
-  csPDelArray<VfsArchive, CS::Container::ArrayAllocDefault,
-    csArrayCapacityFixedGrow<8> > array;
-
-  CS::Threading::ReadWriteMutex m;
+  csPDelArray<VfsArchive> array;
 
 public:
-  VfsArchiveCache () : array (8)
+  VfsArchiveCache () : array (8, 8)
   {
   }
   virtual ~VfsArchiveCache ()
   {
-    {
-      CS::Threading::ScopedWriteLock lock(m);
-      array.DeleteAll ();
-    }
+    array.DeleteAll ();
   }
 
   /// Find a given archive file.
-  size_t FindKey (const char* Key)
+  size_t FindKey (const char* Key) const
   {
-    CS::Threading::ScopedReadLock lock(m);
     size_t i;
     for (i = 0; i < array.GetSize (); i++)
       if (strcmp (array[i]->GetName (), Key) == 0)
@@ -247,49 +238,43 @@ public:
 
   VfsArchive *Get (size_t iIndex)
   {
-    CS::Threading::ScopedReadLock lock(m);
     return array.Get (iIndex);
   }
 
-  size_t Length ()
+  size_t Length () const
   {
-    CS::Threading::ScopedReadLock lock(m);
     return array.GetSize ();
   }
 
   void Push (VfsArchive* ar)
   {
-    CS::Threading::ScopedWriteLock lock(m);
     array.Push (ar);
   }
 
   void DeleteAll ()
   {
-    CS::Threading::ScopedWriteLock lock(m);
     array.DeleteAll ();
   }
 
   void FlushAll ()
   {
-    CS::Threading::ScopedWriteLock lock(m);
     size_t i = 0;
     while (i < array.GetSize ())
     {
       array[i]->Flush ();
       if (array[i]->RefCount == 0)
       {
-        array.DeleteIndex (i);
+	array.DeleteIndex (i);
       }
       else
       {
-        i++;
+	i++;
       }
     }
   }
 
   void CheckUp ()
   {
-    CS::Threading::ScopedWriteLock lock(m);
     size_t i = array.GetSize ();
     while (i > 0)
     {
@@ -353,7 +338,7 @@ private:
   // Copy a string from src to dst and expand all variables
   csString Expand (csVFS *Parent, char const *src);
   // Find a file either on disk or in archive - in this node only
-  bool FindFile (const char *Suffix, PathString& RealPath, csArchive *&) const;
+  bool FindFile (const char *Suffix, char *RealPath, csArchive *&) const;
 };
 
 // The global archive cache
@@ -542,34 +527,18 @@ void DiskFile::MakeDir (const char *PathBase, const char *PathSuffix)
 {
   bool const debug = IsVerbose(csVFS::VERBOSITY_DEBUG);
   size_t pbl = strlen (PathBase);
-  size_t pl = pbl + strlen (PathSuffix);
-  char *path = (char*)cs_malloc (pl+1);
-  char *cur;
+  size_t pl = pbl + strlen (PathSuffix) + 1;
+  char *path = (char*)cs_malloc (pl);
+  char *cur = path + pbl;
   char *prev = 0;
 
   strcpy (path, PathBase);
-  strcpy (path+pbl, PathSuffix);
+  strcpy (cur, PathSuffix);
 
   // Convert all VFS_PATH_SEPARATOR's in path into CS_PATH_SEPARATOR's
   for (size_t n = 0; n < pl; n++)
     if (path [n] == VFS_PATH_SEPARATOR)
       path [n] = CS_PATH_SEPARATOR;
-    
-  cur = strchr (path, CS_PATH_SEPARATOR);
-  if (cur == 0)
-  {
-    cur = path + pl;
-  }
-  else if ((cur == path)
-#ifdef CS_PLATFORM_WIN32
-    // Skip drive root dir
-    || (*(cur-1) == ':')
-#endif
-    )
-  {
-    cur = strchr (cur+1, CS_PATH_SEPARATOR);
-    if (cur == 0) cur = path + pl;
-  }
 
   while (cur != prev)
   {
@@ -579,10 +548,7 @@ void DiskFile::MakeDir (const char *PathBase, const char *PathSuffix)
     *cur = 0;
     if (debug)
       csPrintf ("VFS_DEBUG: Trying to create directory \"%s\"\n", path);
-    errno = 0;
     CS_MKDIR (path);
-    if (debug && errno != 0)
-      csPrintf ("VFS_DEBUG: Couldn't create directory \"%s\", errno=%d\n", path, errno);
     *cur = oldchar;
     if (*cur)
       cur++;
@@ -1339,7 +1305,7 @@ iFile* VfsNode::Open (int Mode, const char *FileName)
   return f;
 }
 
-bool VfsNode::FindFile (const char *Suffix, PathString& RealPath,
+bool VfsNode::FindFile (const char *Suffix, char *RealPath,
   csArchive *&Archive) const
 {
   // Look through all RPathV's for file or directory
@@ -1351,8 +1317,8 @@ bool VfsNode::FindFile (const char *Suffix, PathString& RealPath,
     {
       // rpath is a directory
       size_t rl = strlen (rpath);
-      RealPath.Replace (rpath, rl);
-      RealPath.Append (Suffix);
+      memcpy (RealPath, rpath, rl);
+      strcpy (RealPath + rl, Suffix);
       Archive = 0;
       if (access (RealPath, F_OK) == 0)
         return true;
@@ -1377,7 +1343,7 @@ bool VfsNode::FindFile (const char *Suffix, PathString& RealPath,
       if (a->FileExists (Suffix, 0))
       {
         Archive = a;
-        RealPath = Suffix;
+        strcpy (RealPath, Suffix);
         return true;
       }
     }
@@ -1391,7 +1357,7 @@ bool VfsNode::FindFile (const char *Suffix, PathString& RealPath,
 
 bool VfsNode::Delete (const char *Suffix)
 {
-  PathString fname;
+  char fname [CS_MAXPATHLEN + 1];
   csArchive *a;
   if (!FindFile (Suffix, fname, a))
     return false;
@@ -1400,13 +1366,6 @@ bool VfsNode::Delete (const char *Suffix)
     return a->DeleteFile (fname);
   else
   {
-    // Remove trailing path separator. (At least needed on Win32.)
-    if ((fname[fname.Length()-1] == CS_PATH_SEPARATOR)
-	|| (fname[fname.Length()-1] == '/'))
-    {
-      fname.Truncate (fname.Length()-1);
-    }
-
     struct stat s;
     if (stat (fname, &s) != 0) return false;
     if (s.st_mode & _S_IFDIR)
@@ -1418,14 +1377,14 @@ bool VfsNode::Delete (const char *Suffix)
 
 bool VfsNode::Exists (const char *Suffix)
 {
-  PathString fname;
+  char fname [CS_MAXPATHLEN + 1];
   csArchive *a;
   return FindFile (Suffix, fname, a);
 }
 
 bool VfsNode::GetFileTime (const char *Suffix, csFileTime &oTime) const
 {
-  PathString fname;
+  char fname [CS_MAXPATHLEN + 1];
   csArchive *a;
   if (!FindFile (Suffix, fname, a))
     return false;
@@ -1451,7 +1410,7 @@ bool VfsNode::GetFileTime (const char *Suffix, csFileTime &oTime) const
 
 bool VfsNode::SetFileTime (const char *Suffix, const csFileTime &iTime)
 {
-  PathString fname;
+  char fname [CS_MAXPATHLEN + 1];
   csArchive *a;
   if (!FindFile (Suffix, fname, a))
     return false;
@@ -1473,7 +1432,7 @@ bool VfsNode::SetFileTime (const char *Suffix, const csFileTime &iTime)
 
 bool VfsNode::GetFileSize (const char *Suffix, size_t &oSize)
 {
-  PathString fname;
+  char fname [CS_MAXPATHLEN + 1];
   csArchive *a;
   if (!FindFile (Suffix, fname, a))
     return false;
@@ -1509,28 +1468,24 @@ SCF_IMPLEMENT_FACTORY (csVFS)
 
 csVFS::csVFS (iBase *iParent) :
   scfImplementationType(this, iParent),
-  syncDir(false),
   basedir(0),
   resdir(0),
   appdir(0),
+  dirstack(8,8),
   object_reg(0),
   auto_name_counter(0),
   verbosity(VERBOSITY_NONE)
 {
-  dirstack = new csStringArray(8,8);
   heap.AttachNew (new HeapRefCounted);
-  mainDir = (char*)cs_malloc (2);
-  cwd.SetValue((char*)cs_malloc (2));
+  cwd = (char*)cs_malloc (2);
   cwd [0] = VFS_PATH_SEPARATOR;
   cwd [1] = 0;
-  initElem = size_t(-1);
   ArchiveCache = new VfsArchiveCache ();
 }
 
 csVFS::~csVFS ()
 {
   cs_free (cwd);
-  cs_free (mainDir);
   cs_free (basedir);
   cs_free (resdir);
   cs_free (appdir);
@@ -1685,53 +1640,57 @@ bool csVFS::AddLink (const char *VirtualPath, const char *RealPath)
   return true;
 }
 
-char *csVFS::_ExpandPath (const char *Path, bool IsDir)
+char *csVFS::_ExpandPath (const char *Path, bool IsDir) const
 {
-  csStringFast<VFS_MAX_PATH_LEN> outname;
-  size_t inp = 0, namelen = strlen (Path);
+  char outname [VFS_MAX_PATH_LEN + 1];
+  size_t inp = 0, outp = 0, namelen = strlen (Path);
 
   // Copy 'Path' to 'outname', processing FS macros during the way
-  while (inp < namelen)
+  while ((outp < sizeof (outname) - 1) && (inp < namelen))
   {
     // Get next path component
-    csStringFast<VFS_MAX_PATH_LEN> tmp;
+    char tmp [VFS_MAX_PATH_LEN + 1];
+    size_t ptmp = 0;
     while ((inp < namelen) && (Path [inp] != VFS_PATH_SEPARATOR))
-      tmp << Path [inp++];
+      tmp [ptmp++] = Path [inp++];
+    tmp [ptmp] = 0;
 
     // If this is the very first component, append it to cwd
-    if (!tmp.IsEmpty() && (outname.Length() == 0))
+    if ((ptmp > 0) && (outp == 0))
     {
-      outname = GetCwd ();
+      strcpy (outname, GetCwd ());
+      outp = strlen (outname);
     } /* endif */
 
     // Check if path component is ".."
-    if (tmp == "..")
+    if (strcmp (tmp, "..") == 0)
     {
-      size_t outp = outname.Length();
       // Skip back all '/' we encounter
       while ((outp > 0) && (outname [outp - 1] == VFS_PATH_SEPARATOR))
         outp--;
       // Skip back until we find another '/'
       while ((outp > 0) && (outname [outp - 1] != VFS_PATH_SEPARATOR))
         outp--;
-      outname.Truncate (outp);
     }
     // Check if path component is "."
-    else if (tmp == ".")
+    else if (strcmp (tmp, ".") == 0)
     {
       // do nothing
     }
     // Check if path component is "~"
-    else if (tmp == "~")
+    else if (strcmp (tmp, "~") == 0)
     {
       // Strip entire output path; start from scratch
-      outname = "/~/";
+      strcpy (outname, "/~/");
+      outp = 3;
     }
     else
     {
-      outname += tmp;
+      size_t sl = strlen (tmp);
+      memcpy (&outname [outp], tmp, sl);
+      outp += sl;
       if (IsDir || (inp < namelen))
-        outname << VFS_PATH_SEPARATOR;
+        outname [outp++] = VFS_PATH_SEPARATOR;
     } /* endif */
 
     // Skip all '/' in source path
@@ -1740,10 +1699,13 @@ char *csVFS::_ExpandPath (const char *Path, bool IsDir)
   } /* endwhile */
 
   // Allocate a new string and return it
-  return CS::StrDup (outname);
+  char *ret = (char*)cs_malloc (outp + 1);
+  memcpy (ret, outname, outp);
+  ret [outp] = 0;
+  return ret;
 }
 
-csPtr<iDataBuffer> csVFS::ExpandPath (const char *Path, bool IsDir)
+csPtr<iDataBuffer> csVFS::ExpandPath (const char *Path, bool IsDir) const
 {
   char *xp = _ExpandPath (Path, IsDir);
   return csPtr<iDataBuffer> (new CS::DataBuffer<> (xp, strlen (xp) + 1));
@@ -1782,7 +1744,7 @@ VfsNode *csVFS::GetNode (const char *Path, char *NodePrefix,
 }
 
 bool csVFS::PreparePath (const char *Path, bool IsDir, VfsNode *&Node,
-  char *Suffix, size_t SuffixSize)
+  char *Suffix, size_t SuffixSize) const
 {
   Node = 0; *Suffix = 0;
   char *fname = _ExpandPath (Path, IsDir);
@@ -1794,7 +1756,7 @@ bool csVFS::PreparePath (const char *Path, bool IsDir, VfsNode *&Node,
   return (Node != 0);
 }
 
-bool csVFS::CheckIfMounted(char const* virtual_path)
+bool csVFS::CheckIfMounted(char const* virtual_path) const
 {
   bool ok = false;
   CS::Threading::RecursiveMutexScopedLock lock(mutex);
@@ -1807,39 +1769,6 @@ bool csVFS::CheckIfMounted(char const* virtual_path)
   return ok;
 }
 
-void csVFS::CheckCurrentDir()
-{
-  if(size_t(initElem.GetValue()) != size_t(-1) &&
-    (initElem.GetValue() == 0 || !threadInit[size_t(initElem.GetValue()-1)]))
-  {
-    if(initElem.GetValue() == 0)
-    {
-      CS::Threading::RecursiveMutexScopedLock lock (mutex);
-      initElem = threadInit.Push(true)+1;
-    }
-    else
-    {
-      threadInit[size_t(initElem.GetValue()-1)] = true;
-    }
-
-    cs_free(cwd);
-    if(syncDir)
-    {
-      char* dir = (char*)cs_malloc(strlen(mainDir)+1);
-      cwd.SetValue(dir);
-      memcpy(dir, mainDir, strlen(mainDir)+1);
-    }
-    else
-    {
-      cwd.SetValue((char*)cs_malloc (2));
-      cwd [0] = VFS_PATH_SEPARATOR;
-      cwd [1] = 0;
-    }
-
-    dirstack = new csStringArray(8,8);
-  }
-}
-
 bool csVFS::ChDir (const char *Path)
 {
   CS::Threading::RecursiveMutexScopedLock lock (mutex);
@@ -1847,40 +1776,17 @@ bool csVFS::ChDir (const char *Path)
   char *newwd = _ExpandPath (Path, true);
   if (!newwd)
     return false;
-  CheckCurrentDir();
-  cs_free(cwd);
-  char* dir = (char*)cs_malloc(strlen(newwd)+1);
-  cwd.SetValue(dir);
-  memcpy(dir, newwd, strlen(newwd)+1);
+  cs_free (cwd);
+  cwd = newwd;
   ArchiveCache->CheckUp ();
   return true;
 }
 
-const char* csVFS::GetCwd ()
-{
-  CheckCurrentDir();
-  return cwd;
-}
-
-void csVFS::SetSyncDir(const char* Path)
-{
-  cs_free(mainDir);
-  mainDir = (char*)cs_malloc(strlen(Path)+1);
-  memcpy(mainDir, Path, strlen(Path)+1);
-  syncDir = true;
-
-  for(uint i=0; i<threadInit.GetSize(); i++)
-  {
-    threadInit[i] = false;
-  }
-}
-
 void csVFS::PushDir (char const* Path)
 {
-  CheckCurrentDir();
   { // Scope.
     CS::Threading::RecursiveMutexScopedLock lock (mutex);
-    dirstack.GetValue()->Push (cwd);
+    dirstack.Push (cwd);
   }
   if (Path != 0)
     ChDir(Path);
@@ -1889,16 +1795,15 @@ void csVFS::PushDir (char const* Path)
 bool csVFS::PopDir ()
 {
   CS::Threading::RecursiveMutexScopedLock lock (mutex);
-  CheckCurrentDir();
-  if (!dirstack.GetValue()->GetSize ())
+  if (!dirstack.GetSize ())
     return false;
-  char *olddir = (char *) dirstack.GetValue()->Pop ();
+  char *olddir = (char *) dirstack.Pop ();
   bool retcode = ChDir (olddir);
   delete[] olddir;
   return retcode;
 }
 
-bool csVFS::Exists (const char *Path)
+bool csVFS::Exists (const char *Path) const
 {
   if (!Path)
     return false;
@@ -1941,7 +1846,7 @@ csRef<iStringArray> csVFS::MountRoot (const char *Path)
       }
 
       csString real_dir(s);
-      if (slen > 0 && ((c = real_dir.GetAt(slen - 1)) == '/' || c == '\\'))
+      if (slen > 0 && (c = real_dir.GetAt(slen - 1)) == '/' || c == '\\')
         real_dir.Truncate(slen - 1);
       real_dir << "$/";
 
@@ -1955,7 +1860,7 @@ csRef<iStringArray> csVFS::MountRoot (const char *Path)
   return v;
 }
 
-csPtr<iStringArray> csVFS::FindFiles (const char *Path)
+csPtr<iStringArray> csVFS::FindFiles (const char *Path) const
 {
   CS::Threading::RecursiveMutexScopedLock lock (mutex);
   scfStringArray *fl = new scfStringArray;		// the output list
@@ -2377,7 +2282,7 @@ bool csVFS::ChDirAuto (const char* path, const csStringArray* paths,
   return ChDir (tryvfspath);
 }
 
-bool csVFS::GetFileTime (const char *FileName, csFileTime &oTime)
+bool csVFS::GetFileTime (const char *FileName, csFileTime &oTime) const
 {
   if (!FileName)
     return false;

@@ -28,12 +28,10 @@
  * \addtogroup gfx3d
  * @{ */
 
-#include "csgfx/textureformatstrings.h"
 #include "csutil/scf_interface.h"
 #include "cstypes.h"
 #include "ivideo/graph3d.h"
 
-struct iDataBuffer;
 struct iGraphics2D;
 struct iGraphics3D;
 
@@ -52,7 +50,7 @@ struct iGraphics3D;
  */
 struct iTextureHandle : public virtual iBase
 {
-  SCF_INTERFACE(iTextureHandle, 5,0,0);
+  SCF_INTERFACE(iTextureHandle, 4,0,3);
   /// Retrieve the flags set for this texture
   virtual int GetFlags () const = 0;
 
@@ -88,6 +86,16 @@ struct iTextureHandle : public virtual iBase
    */
   virtual void GetOriginalDimensions (int& mw, int& mh) = 0;
 
+  // CHANGED TO ADD SUPPORT FOR CUBEMAPS AND 3D TEXTURES
+  // done by Phil Aumayr (phil@rarebyte.com)
+  enum //CS_DEPRECATED_TYPE
+  {
+    CS_TEX_IMG_1D = 0,
+    CS_TEX_IMG_2D,
+    CS_TEX_IMG_3D,
+    CS_TEX_IMG_CUBEMAP,
+    CS_TEX_IMG_RECT
+  };
   /**
    * Texture Depth Indices are used for Cubemap interface
    */
@@ -116,6 +124,14 @@ struct iTextureHandle : public virtual iBase
    */
   virtual void GetOriginalDimensions (int& mw, int& mh, int &md) = 0;
 
+  /**
+   * Get the texture target. Note the texture target is determined by the
+   * image from which the texture was created and possibly the texture flags.
+   * \deprecated Deprecated in 1.3. Use GetTextureType() instead
+   */
+  CS_DEPRECATED_METHOD_MSG("Use GetTextureType() instead")
+  virtual int GetTextureTarget () const = 0;
+
   /// Format of the pixel data that is passed to iTextureHandle->Blit()
   enum TextureBlitDataFormat
   {
@@ -139,6 +155,19 @@ struct iTextureHandle : public virtual iBase
    * Get the original image name.
    */
   virtual const char* GetImageName () const = 0;
+
+  /**
+   * Query the private object associated with this handle.
+   * For internal usage by the 3D driver.
+   */
+  virtual void *GetPrivateObject () = 0;
+
+  /**
+   * Query if the texture has an alpha channel.<p>
+   * This depends both on whenever the original image had an alpha channel
+   * and of the fact whenever the renderer supports alpha maps at all.
+   */
+  virtual bool GetAlphaMap () = 0;
 
   /// Get the type of alpha associated with the texture.
   virtual csAlphaMode::AlphaType GetAlphaType () const = 0;
@@ -258,19 +287,6 @@ struct iTextureHandle : public virtual iBase
     natureDirect = 1
   };
   virtual BlitBufferNature GetBufferNature (uint8* buf) = 0;
-  
-  /// Set the highest and lowest used mipmap for this texture.
-  virtual void SetMipmapLimits (int maxMip, int minMip = 0) = 0;
-  /// Get the highest and lowest used mipmap for this texture.
-  virtual void GetMipmapLimits (int& maxMip, int& minMip) = 0;
-  
-  /**
-   * Read back the data of the texture in the given format.
-   * \remarks To facilitate asynchronous transfers it's better to access
-   *   the actual data in a delayed fashion.
-   */
-  virtual csPtr<iDataBuffer> Readback (
-    const CS::StructuredTextureFormat& format, int mip = 0) = 0;
 };
 
 /** @} */

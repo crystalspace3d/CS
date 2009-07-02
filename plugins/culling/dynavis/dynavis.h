@@ -55,6 +55,9 @@ struct iMovable;
 struct iMeshWrapper;
 struct iBugPlug;
 struct iMeshWrapper;
+struct iShadowCaster;
+struct iShadowReceiver;
+struct iThingState;
 
 #define VIEWMODE_STATS 0
 #define VIEWMODE_STATSOVERLAY 1
@@ -98,6 +101,7 @@ public:
   csVisibilityObjectHistory* history;
   // Optional data for shadows. Both fields can be 0.
   csRef<iMeshWrapper> mesh;
+  csRef<iShadowCaster> caster;
 
   csVisibilityObjectWrapper () :
     scfImplementationType (this)
@@ -179,10 +183,7 @@ class csDynaVis :
 {
 public:
   // List of objects to iterate over (after VisTest()).
-  typedef csArray<iVisibilityObject*, csArrayElementHandler<iVisibilityObject*>,
-    CS::Container::ArrayAllocDefault, csArrayCapacityFixedGrow<256> >
-    VistestObjectsArray;
-  VistestObjectsArray vistest_objects;
+  csArray<iVisibilityObject*> vistest_objects;
   bool vistest_objects_inuse;	// If true the vector is in use.
 
 private:
@@ -198,26 +199,22 @@ private:
   // those go off to infinity.
   csBox3 kdtree_box;
   csTiledCoverageBuffer* tcovbuf;
-  csArray<csVisibilityObjectWrapper*,
-    csArrayElementHandler<csVisibilityObjectWrapper*>,
-    CS::Container::ArrayAllocDefault, 
-    csArrayCapacityFixedGrow<256> > visobj_vector;
+  csArray<csVisibilityObjectWrapper*> visobj_vector;
   csObjectModelManager* model_mgr;
   csWriteQueue* write_queue;
 
   // List of occluders that were used this frame.
-  csArray<csOccluderInfo, csArrayElementHandler<csOccluderInfo>,
-    CS::Container::ArrayAllocDefault, csArrayCapacityFixedGrow<128> > occluder_info;
+  csArray<csOccluderInfo> occluder_info;
 
   int scr_width, scr_height;	// Screen dimensions.
   int reduce_buf;
-  CS::Math::Matrix4 camProj;
+  float fov, sx, sy;
   csReversibleTransform cam_trans;	// Cache of the camera transform.
 
   uint32 current_vistest_nr;
 
   // For Debug_Dump(g3d): keep the last original camera.
-  csRef<iCamera> debug_camera;
+  iCamera* debug_camera;
   float debug_lx, debug_rx, debug_ty, debug_by;	// Frustum.
 
   // Count the number of objects marked as visible.
@@ -329,7 +326,7 @@ public:
   virtual void RegisterVisObject (iVisibilityObject* visobj);
   virtual void UnregisterVisObject (iVisibilityObject* visobj);
   virtual bool VisTest (iRenderView* rview, 
-    iVisibilityCullerListener *viscallback, int w = 0, int h = 0);
+    iVisibilityCullerListener *viscallback);
   virtual void PrecacheCulling () { VisTest ((iRenderView*)0, 0); }
   virtual csPtr<iVisibilityObjectIterator> VisTest (const csBox3& box);
   virtual csPtr<iVisibilityObjectIterator> VisTest (const csSphere& sphere);
@@ -347,6 +344,7 @@ public:
     const csVector3& end, csVector3& isect, float* pr = 0,
     iMeshWrapper** p_mesh = 0, int* poly_idx = 0,
     bool accurate = true);
+  virtual void CastShadows (iFrustumView* fview);
   virtual const char* ParseCullerParameters (iDocumentNode*) { return 0; }
 
   // Debugging functions.

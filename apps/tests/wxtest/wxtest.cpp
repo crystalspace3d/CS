@@ -33,7 +33,6 @@
 #include "cstool/csview.h"
 #include "cstool/initapp.h"
 #include "cstool/genmeshbuilder.h"
-#include "cstool/simplestaticlighter.h"
 #include "wxtest.h"
 #include "iutil/eventq.h"
 #include "iutil/event.h"
@@ -186,9 +185,8 @@ bool Simple::HandleEvent (iEvent& ev)
     if((ev.Name == KeyboardDown) &&
        (csKeyEventHelper::GetCookedCode (&ev) == CSKEY_ESC))
     {
-      /* Close the main window, which will trigger an application exit.
-         CS-specific cleanup happens in OnClose(). */
-      Close();
+      csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+      if (q) q->GetEventOutlet()->Broadcast (csevQuit(object_reg));
       return true;
     }
   }
@@ -332,11 +330,9 @@ bool Simple::Initialize ()
     return false;
   }
 
-  /* Manually focus the GL canvas.
-     This is so it receives keyboard events (and conveniently translate these
-     into CS keyboard events/update the CS keyboard state).
-   */
-  wxwin->GetWindow()->SetFocus ();
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
 
   // Load the texture from the standard library.  This is located in
   // CS/data/standard.zip and mounted as /lib/std using the Virtual
@@ -366,6 +362,10 @@ bool Simple::Initialize ()
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, "walls", "walls_factory", &box);
+
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
 
   csRef<iLight> light;
@@ -384,9 +384,6 @@ bool Simple::Initialize ()
   ll->Add (light);
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
 
   view = csPtr<iView> (new csView (engine, g3d));
   view->GetCamera ()->SetSector (room);
@@ -409,18 +406,6 @@ void Simple::PushFrame ()
   if (vc)
     vc->Advance();
   q->Process();
-}
-
-void Simple::OnClose(wxCloseEvent& event)
-{
-  csPrintf("got close event\n");
-  
-  // Tell CS we're going down
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
-  if (q) q->GetEventOutlet()->Broadcast (csevQuit(object_reg));
-  
-  // WX will destroy the 'Simple' instance
-  simple = 0;
 }
 
 void Simple::OnIconize(wxIconizeEvent& event)
@@ -528,6 +513,8 @@ void MyApp::OnIdle() {
 
 int MyApp::OnExit()
 {
+  simple->Shutdown ();
+  simple = 0;
   csInitializer::DestroyApplication (object_reg);
   return 0;
 }

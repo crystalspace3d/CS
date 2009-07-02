@@ -20,7 +20,7 @@
 #ifdef _MSC_VER
 #include <io.h>
 #include <stdarg.h>
-#if defined(_DEBUG) && !defined(DEBUG_PYTHON)
+#ifndef DEBUG_PYTHON
 #undef _DEBUG
 #define RESTORE__DEBUG
 #endif

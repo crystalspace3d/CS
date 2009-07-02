@@ -20,9 +20,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef __GLSHADER_CGCOMMON_H__
 #define __GLSHADER_CGCOMMON_H__
 
-#include "cg_common.h"
-
-#include "csplugincommon/opengl/shaderplugin.h"
 #include "csplugincommon/shader/shaderplugin.h"
 #include "csplugincommon/shader/shaderprogram.h"
 #include "csgfx/shadervarcontext.h"
@@ -30,40 +27,21 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csutil/strhash.h"
 #include "csutil/leakguard.h"
 
-using namespace CS::PluginCommon;
+#include "glshader_cg.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(GLShaderCg)
 {
 
-  class csGLShader_CG;
-  struct ProfileLimits;
-  struct ProfileLimitsPair;
-
-  struct iShaderProgramCG : public virtual iBase
+  struct iShaderDestinationResolverCG : public virtual iBase
   {
-    SCF_INTERFACE(iShaderProgramCG, 0,0,1);
+    SCF_INTERFACE(iShaderDestinationResolverCG, 0,0,1);
 
-    virtual const csSet<csString>& GetUnusedParameters () = 0;
+    virtual const csArray<csString>& GetUnusedParameters () = 0;
   };
-  
-  struct ShaderParameter
-  {
-    bool assumeConstant;
-    CGparameter param;
-    uint baseSlot;
-    CGtype paramType;
-    csArray<ShaderParameter*> arrayItems;
-    
-    ShaderParameter() : assumeConstant (false), param (0),
-      baseSlot ((uint)~0),
-      paramType ((CGtype)0) {}
-  };
-  
-  class ParamValueCache;
 
 class csShaderGLCGCommon : public scfImplementationExt1<csShaderGLCGCommon,
                                                         csShaderProgram,
-                                                        iShaderProgramCG>
+                                                        iShaderDestinationResolverCG>
 {
 protected:
   csStringHash xmltokens;
@@ -72,132 +50,41 @@ protected:
 #include "cstool/tokenlist.h"
 #undef CS_TOKEN_ITEM_FILE
 
-  csRef<csGLShader_CG> shaderPlug;
+  csGLShader_CG* shaderPlug;
 
   CGprogram program;
   CGprofile programProfile;
+  csString cg_profile;
   csString entrypoint;
-  csRefArray<iDocumentNode> cacheKeepNodes;
-  csString objectCode;
-  csString objectCodeCachePathArc, objectCodeCachePathItem;
 
-  enum ProgramType
-  {
-    progVP, progFP
-  };
-  ProgramType programType;
+  bool validProgram;
+
+  const char* programType;
   ArgumentArray compilerArgs;
-  csRef<iShaderProgramCG> cgResolve;
-  csSet<csString> unusedParams;
-  
-  struct Clip
-  {
-    ShaderProgramPluginGL::ClipPlanes::ClipSpace space;
-    
-    ProgramParam plane;
-    ProgramParam distance;
-    int distComp;
-    bool distNeg;
-  };
-  csArray<Clip> clips;
-  // Magic SV names
-  enum
-  {
-    svClipPackedDist0 = 0xffff41,
-    svClipPackedDist1 = 0xffff42,
-    svClipPlane = 0xffff23 // must be lowest of the 'magic' values
-  };
-  csRef<csShaderVariable> clipPackedDists[2];
-  csRef<csShaderVariable> clipPlane[6];
-  bool ParseClip (iDocumentNode* node);
-  bool ParseVmap (iDocumentNode* node);
+  csRef<iShaderDestinationResolverCG> cgResolve;
+  csArray<csString> unusedParams;
 
   csString debugFN;
-  void EnsureDumpFile();
 
-  void FreeShaderParam (ShaderParameter* sparam);
-  void FillShaderParam (ShaderParameter* sparam, CGparameter param);
-  void GetShaderParamSlot (ShaderParameter* sparam);
-  /**
-   * Go over variablemaps and fetch Cg parameters for them
-   */
-  void GetParamsFromVmap();
-  //@{
-  /**
-   * Set properties for a mapped parameter which can only be determined
-   * after compilation
-   */
-  void GetPostCompileParamProps ();
-  bool GetPostCompileParamProps (ShaderParameter* sparam);
-  //@}
-
-  void PrecacheClear();
-
-  enum
-  {
-    loadLoadToGL = 1,
-    loadIgnoreErrors = 2,
-    loadApplyVmap = 4,
-    loadIgnoreConfigProgramOpts = 8,
-    loadFlagUnusedV2FForInit = 16
-  };
-  bool DefaultLoadProgram (iShaderProgramCG* cgResolve,
-    const char* programStr, ProgramType type,
-    const ProfileLimitsPair& customLimits, 
-    uint flags = loadLoadToGL | loadApplyVmap | loadFlagUnusedV2FForInit);
-  csString GetPreprocessedProgram (const char* programStr);
+  bool DefaultLoadProgram (iShaderDestinationResolverCG* cgResolve,
+    const char* programStr, CGGLenum type, 
+    CGprofile maxProfile, bool compiled = false, bool doLoad = true);
   void DoDebugDump ();
   void WriteAdditionalDumpInfo (const char* description, const char* content);
-  const char* GetProgramType()
-  {
-    switch (programType)
-    {
-      case progVP: return "vertex";
-      case progFP: return "fragment";
-    }
-    return 0;
-  }
-  
-  void ClipsToVmap ();
-  void OutputClipPreamble (csString& str);
-  void WriteClipApplications (csString& str);
-  
-  void CollectUnusedParameters (csSet<csString>& unusedParams);
-  template<typename Setter>
-  void SetParameterValue (const Setter& setter,
-    ShaderParameter* sparam, csShaderVariable* var);
-  void SetParameterValueCg (ShaderParameter* sparam, csShaderVariable* var);
+  virtual const char* GetProgramType() = 0;
+  void CollectUnusedParameters ();
+  void SetParameterValue (CGparameter param, csShaderVariable* var);
   
   void SVtoCgMatrix3x3 (csShaderVariable* var, float* matrix);
   void SVtoCgMatrix4x4 (csShaderVariable* var, float* matrix);
-
-  template<typename Array, typename ParamSetter>
-  void ApplyVariableMapArray (const Array& array, const ParamSetter& setter,
-    const csShaderVariableStack& stack);
-  void ApplyVariableMapArrays (const csShaderVariableStack& stack);
-  
-  bool WriteToCacheWorker (iHierarchicalCache* cache, const ProfileLimits& limits,
-    const ProfileLimitsPair& limitsPair, const char* tag, csString& failReason);
-  bool WriteToCache (iHierarchicalCache* cache, const ProfileLimits& limits,
-    const ProfileLimitsPair& limitsPair, const char* tag);
-  
-  bool TryLoadFromCompileCache (const char* source, const ProfileLimits& limits,
-    iHierarchicalCache* cache);
-  bool LoadObjectCodeFromCompileCache (const ProfileLimits& limits,
-    iHierarchicalCache* cache);
-  bool WriteToCompileCache (const char* source, const ProfileLimits& limits,
-    iHierarchicalCache* cache, csString& failReason);
-    
-  bool GetProgramNode (iDocumentNode* passProgNode);
 public:
   CS_LEAKGUARD_DECLARE (csShaderGLCGCommon);
 
-  csShaderGLCGCommon (csGLShader_CG* shaderPlug, ProgramType type);
+  csShaderGLCGCommon (csGLShader_CG* shaderPlug, const char* type);
   virtual ~csShaderGLCGCommon ();
 
-  virtual bool Precache (const ProfileLimitsPair& limitsPair,
-    const char* tag, iHierarchicalCache* cache) = 0;
-    
+  void SetValid(bool val) { validProgram = val; }
+
   ////////////////////////////////////////////////////////////////////
   //                      iShaderProgram
   ////////////////////////////////////////////////////////////////////
@@ -211,13 +98,13 @@ public:
   /// Setup states needed for proper operation of the shader
   virtual void SetupState (const CS::Graphics::RenderMesh* mesh,
     CS::Graphics::RenderMeshModes& modes,
-    const csShaderVariableStack& stack);
+    const iShaderVarStack* stacks);
 
   /// Reset states to original
   virtual void ResetState ();
 
   /// Check if valid
-  virtual bool IsValid () { return program != 0;} 
+  virtual bool IsValid () { return validProgram;} 
 
   /// Loads from a document-node
   virtual bool Load (iShaderDestinationResolver*, iDocumentNode* node);
@@ -227,12 +114,8 @@ public:
     csArray<csShaderVarMapping>&)
   { return false; }
 
-  const csSet<csString>& GetUnusedParameters ()
+  const csArray<csString>& GetUnusedParameters ()
   { return unusedParams; }
-  
-  virtual iShaderProgram::CacheLoadResult LoadFromCache (
-    iHierarchicalCache* cache, iBase* previous, iDocumentNode* programNode,
-    csRef<iString>* failReason = 0, csRef<iString>* = 0);
 };
 
 }

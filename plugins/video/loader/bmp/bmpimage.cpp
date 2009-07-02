@@ -167,12 +167,6 @@ void csBMPImageIO::SetDithering (bool)
 {
 }
 
-static inline int PadToFourBytes (int n)
-{
-  // (4-n) may get negative, but the logic still works correctly
-  return (4 - n) & 0x3;
-}
-
 csPtr<iDataBuffer> csBMPImageIO::Save (iImage *Image,
     iImageIO::FileFormatDescription *, const char* extraoptions)
 {
@@ -208,7 +202,7 @@ csPtr<iDataBuffer> csBMPImageIO::Save (iImage *Image,
   int w = Image->GetWidth ();
   int h = Image->GetHeight ();
   // BMPs need 4-byte alignment.
-  int pad = PadToFourBytes (w * bytesPerPixel);
+  int pad = (4 - (w * bytesPerPixel) & 0x3) & 0x3;
   size_t len = sizeof (bmpHeader)-2 + h*(w*bytesPerPixel+pad) + 256*(palette?4:0);
   bmpHeader hdr;
   hdr.bfTypeLo = 'B';
@@ -389,37 +383,33 @@ bool ImageBMPFile::LoadWindowsBitmap (uint8* iBuffer, size_t iSize)
         rl = rl1 = *iPtr++;
         clridx = clridx1 = *iPtr++;
         if (rl == 0)
+           if (clridx == 0)
         {
-          if (clridx == 0)
+    	  // new scanline
+          if (!blip)
           {
-    	      // new scanline
-            if (!blip)
-            {
-              // if we didnt already jumped to the new line, do it now
-              buffer_x  = 0;
-              buffer_y -= Width;
-            }
-            continue;
+            // if we didnt already jumped to the new line, do it now
+            buffer_x  = 0;
+            buffer_y -= Width;
           }
-          else if (clridx == 1)
-          {
-            // end of bitmap
-            break;
-          }
-          else if (clridx == 2)
-          {
-            // next 2 bytes mean column- and scanline- offset
-            buffer_x += *iPtr++;
-            buffer_y -= (Width * (*iPtr++));
-            continue;
-          }
-          else if (clridx > 2)
-            rl1 = clridx;
+          continue;
         }
+        else if (clridx == 1)
+          // end of bitmap
+          break;
+        else if (clridx == 2)
+        {
+          // next 2 bytes mean column- and scanline- offset
+          buffer_x += *iPtr++;
+          buffer_y -= (Width * (*iPtr++));
+          continue;
+        }
+        else if (clridx > 2)
+          rl1 = clridx;
 
         for ( i = 0; i < rl1; i++ )
         {
-          if (!rl) { clridx1 = *iPtr++; }
+          if (!rl) clridx1 = *iPtr++;
           buffer [buffer_y + buffer_x] = clridx1;
 
           if (++buffer_x >= Width)
@@ -445,7 +435,7 @@ bool ImageBMPFile::LoadWindowsBitmap (uint8* iBuffer, size_t iSize)
 
     int x;
     // BMPs need 4-byte alignment.
-    int pad = PadToFourBytes (Width*3);
+    int pad = (4 - (Width*3) & 0x3) & 0x3;
 
     while (iPtr < iBuffer + iSize && buffer_y >= 0)
     {

@@ -109,6 +109,8 @@ void StartMe::Frame ()
 
   light_v = camera->InvPerspective (p, DEMO_MESH_Z-3);
   pointer_light->SetCenter (light_v);
+  pointer_light->Setup ();
+  pointer_light->Setup ();
 
   csVector3 start_v, end_v;
   start_v = camera->InvPerspective (p, DEMO_MESH_Z-4);
@@ -357,6 +359,10 @@ bool StartMe::Application()
   // We use the full window to draw the world.
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
 
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
+
   LoadConfig ();
 
   // Load textures.
@@ -373,8 +379,7 @@ bool StartMe::Application()
   // Now we need to position the camera in our world.
   view->GetCamera ()->SetSector (room);
   view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 0, 0));
-  view->GetCamera ()->SetViewportSize (g2d->GetWidth(), g2d->GetHeight ());
-
+  
   printer.AttachNew (new FramePrinter (object_reg));
 
   // Get our font.

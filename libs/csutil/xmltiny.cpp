@@ -106,7 +106,7 @@ csTinyXmlNodeIterator::csTinyXmlNodeIterator (
   csTinyXmlNodeIterator::value = value ? StrDup (value) : 0;
 
   TiDocumentNodeChildren* node_children = 0;
-  if (parent && parent->GetTiNode() &&
+  if (parent && 
     ((parent->GetTiNode()->Type() == TiDocumentNode::ELEMENT)
       || (parent->GetTiNode()->Type() == TiDocumentNode::DOCUMENT)))
     node_children = parent->GetTiNodeChildren ();
@@ -167,7 +167,7 @@ csTinyXmlNode::csTinyXmlNode (csTinyXmlDocument* doc)
 
 csTinyXmlNode::~csTinyXmlNode ()
 {
-  if (node && node->Type () == TiDocumentNode::ELEMENT)
+  if (node->Type () == TiDocumentNode::ELEMENT)
   {
     static_cast<TiXmlElement*> ((TiDocumentNode*)node)->ShrinkAttributes ();
   }
@@ -244,8 +244,8 @@ csRef<iDocumentNodeIterator> csTinyXmlNode::GetNodes (const char* value)
 
 csRef<iDocumentNode> csTinyXmlNode::GetNode (const char* value)
 {
-  if (!node || ((node->Type() != TiDocumentNode::ELEMENT)
-    && (node->Type() != TiDocumentNode::DOCUMENT))) return 0;
+  if ((node->Type() != TiDocumentNode::ELEMENT)
+    && (node->Type() != TiDocumentNode::DOCUMENT)) return 0;
   TiDocumentNodeChildren* node_children = GetTiNodeChildren ();
   csRef<iDocumentNode> child;
   TiDocumentNode* c = node_children->FirstChild (value);

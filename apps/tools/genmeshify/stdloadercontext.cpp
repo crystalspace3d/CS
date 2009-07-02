@@ -26,10 +26,31 @@ namespace genmeshify
 {
 
 StdLoaderContext::StdLoaderContext (App* app, iEngine* Engine, 
-                                    iCollection* collection, bool checkDupes) : 
-  scfImplementationType (this), app (app), Engine (Engine), checkDupes (checkDupes),
-      collection(collection)
+                                    iBase* base, bool checkDupes) : 
+  scfImplementationType (this), app (app), Engine (Engine), checkDupes (checkDupes)
 {
+  csRef<iRegion> region (scfQueryInterfaceSafe<iRegion>(base));
+  if(region)
+  {
+    InitRegion(region);
+  }
+  else
+  {
+    csRef<iCollection> collection (scfQueryInterfaceSafe<iCollection>(base));
+    InitCollection(collection);
+  }
+}
+
+void StdLoaderContext::InitCollection(iCollection* collection)
+{
+  StdLoaderContext::collection = collection;
+  StdLoaderContext::region = NULL;
+}
+
+void StdLoaderContext::InitRegion(iRegion* region)
+{
+  StdLoaderContext::collection = NULL;
+  StdLoaderContext::region = region;
 }
 
 StdLoaderContext::~StdLoaderContext ()
@@ -42,7 +63,7 @@ iSector* StdLoaderContext::FindSector (const char* name)
   return s;
 }
 
-iMaterialWrapper* StdLoaderContext::FindMaterial (const char* filename, bool doLoad)
+iMaterialWrapper* StdLoaderContext::FindMaterial (const char* filename)
 {
   iMaterialWrapper* mat = Engine->FindMaterial(filename, 0);
   if (mat)
@@ -62,7 +83,11 @@ iMaterialWrapper* StdLoaderContext::FindMaterial (const char* filename, bool doL
     iMaterialWrapper *mat = Engine->GetMaterialList ()
       	->NewMaterial (material, n);
 
-    if(collection)
+    if(region)
+    {
+      region->QueryObject ()->ObjAdd (mat->QueryObject ());
+    }
+    else if(collection)
     {
       collection->Add(mat->QueryObject());
     }
@@ -94,7 +119,11 @@ iMaterialWrapper* StdLoaderContext::FindNamedMaterial (const char* name,
     iMaterialWrapper *mat = Engine->GetMaterialList ()
       	->NewMaterial (material, n);
 
-    if(collection)
+    if(region)
+    {
+      region->QueryObject ()->ObjAdd (mat->QueryObject ());
+    }
+    else if(collection)
     {
       collection->Add(mat->QueryObject());
     }
@@ -106,7 +135,7 @@ iMaterialWrapper* StdLoaderContext::FindNamedMaterial (const char* name,
 }
 
 
-iMeshFactoryWrapper* StdLoaderContext::FindMeshFactory (const char* name, bool notify)
+iMeshFactoryWrapper* StdLoaderContext::FindMeshFactory (const char* name)
 {
   iMeshFactoryWrapper* fact = Engine->FindMeshFactory (name, 0);
   return fact;
@@ -141,7 +170,7 @@ iShader* StdLoaderContext::FindShader (const char *name)
   return shader;
 }
 
-iTextureWrapper* StdLoaderContext::FindTexture (const char* name, bool doLoad)
+iTextureWrapper* StdLoaderContext::FindTexture (const char* name)
 {
   iTextureWrapper* result = Engine->GetTextureList ()->FindByName (name);
 
@@ -149,9 +178,18 @@ iTextureWrapper* StdLoaderContext::FindTexture (const char* name, bool doLoad)
   {
     app->Report (CS_REPORTER_SEVERITY_NOTIFY, 
       "Could not find texture '%s'. Attempting to load.", name);
-    csRef<iTextureWrapper> rc = app->loader->LoadTexture(name, name,
+    if(region)
+    {
+      csRef<iTextureWrapper> rc = app->loader->LoadTexture(name, name,
+        CS_TEXTURE_3D, 0, true, false, true, region);
+      result = rc;
+    }
+    else
+    {
+      csRef<iTextureWrapper> rc = app->loader->LoadTexture(name, name,
         CS_TEXTURE_3D, 0, true, false, true, collection);
-    result = rc;
+      result = rc;
+    }
   }
   return result;
 }
@@ -165,9 +203,18 @@ iTextureWrapper* StdLoaderContext::FindNamedTexture (const char* name,
   {
     app->Report (CS_REPORTER_SEVERITY_NOTIFY, 
       "Could not find texture '%s'. Attempting to load.", name);
-    csRef<iTextureWrapper> rc = app->loader->LoadTexture(name, filename,
+    if(region)
+    {
+      csRef<iTextureWrapper> rc = app->loader->LoadTexture(name, filename,
+        CS_TEXTURE_3D, 0, false, false, true, region);
+      result = rc;
+    }
+    else
+    {
+      csRef<iTextureWrapper> rc = app->loader->LoadTexture(name, filename,
         CS_TEXTURE_3D, 0, false, false, true, collection);
-    result = rc;
+      result = rc;
+    }
   }
   return result;
 }

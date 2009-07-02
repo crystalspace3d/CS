@@ -22,64 +22,37 @@
 
 //CS_LEAKGUARD_IMPLEMENT (csShaderVariable);
 
-CS_IMPLEMENT_STATIC_CLASSVAR (csShaderVariable, matrixAlloc, MatrixAlloc,
-    csBlockAllocator<csMatrix3>, (1024));
-CS_IMPLEMENT_STATIC_CLASSVAR (csShaderVariable, matrix4Alloc, Matrix4Alloc,
-    csBlockAllocator<CS::Math::Matrix4>, (1024));
-CS_IMPLEMENT_STATIC_CLASSVAR (csShaderVariable, transformAlloc, TransformAlloc,
-    csBlockAllocator<csReversibleTransform>, (1024));
-CS_IMPLEMENT_STATIC_CLASSVAR (csShaderVariable, arrayAlloc,
-    ShaderVarArrayAlloc, csBlockAllocator<csShaderVariable::SvArrayType>, (1024));
-CS_IMPLEMENT_STATIC_CLASSVAR (csShaderVariable, accessorAlloc,
-    AccessorValuesAlloc, csBlockAllocator<csShaderVariable::AccessorValues>, (1024));
-
-
 csShaderVariable::csShaderVariable () :
-  csRefCount (), 
-  nameAndType (nameMask | (UNKNOWN << typeShift)),
-  accessor (0)
+  csRefCount (), Name (csInvalidStringID), Type (UNKNOWN), VectorValue (0),
+  accessorData (0)
 {
   // Zero out the data as good as we can
   Int = 0;
-  memset (&Vector, 0, sizeof (Vector));
   texture.HandValue = 0;
   texture.WrapValue = 0;
 }
 
-csShaderVariable::csShaderVariable (CS::ShaderVarStringID name) :
-  csRefCount (), nameAndType ((name & nameMask) | (UNKNOWN << typeShift)),
-  accessor (0)
+csShaderVariable::csShaderVariable (csStringID name) :
+  csRefCount (), Name (name), Type (UNKNOWN), VectorValue (0), accessorData (0)
 {
-  CS_ASSERT((name == CS::InvalidShaderVarStringID)
-    || (uint(name) < nameMask));
   // Zero out the data as good as we can
   Int = 0;
-  memset (&Vector, 0, sizeof (Vector));
   texture.HandValue = 0;
   texture.WrapValue = 0;
 }
 
 csShaderVariable::csShaderVariable (const csShaderVariable& other)
-  : csRefCount (), nameAndType (other.nameAndType)
+  : csRefCount (), Name (other.Name), Type (other.Type), VectorValue (other.VectorValue),
+  accessor (other.accessor), accessorData (other.accessorData)
 {
-  if (other.accessor)
-    AllocAccessor (*other.accessor);
-  else
-    accessor = 0;
-
   // Handle payload
-  switch (GetTypeI())
+  switch (Type)
   {
   case UNKNOWN:
     break;
-  case INT:
-    Int = other.Int;
-    break;
+  case INT:      
   case FLOAT:
-  case VECTOR2:
-  case VECTOR3:
-  case VECTOR4:
-    memcpy (&Vector, &other.Vector, sizeof (Vector));
+    Int = other.Int;
     break;
 
   case TEXTURE:
@@ -96,20 +69,22 @@ csShaderVariable::csShaderVariable (const csShaderVariable& other)
       RenderBuffer->IncRef ();
     break;
 
-  case MATRIX3X3:
-    MatrixValuePtr = MatrixAlloc()->Alloc (*other.MatrixValuePtr);
+  case VECTOR2:      
+  case VECTOR3:      
+  case VECTOR4:
+    Int = other.Int;
     break;
 
-  case MATRIX4X4:
-    Matrix4ValuePtr = Matrix4Alloc()->Alloc ();
+  case MATRIX:    
+    MatrixValuePtr = new csMatrix3 (*other.MatrixValuePtr);
     break;
 
   case TRANSFORM:
-    TransformPtr = TransformAlloc()->Alloc (*other.TransformPtr);
+    TransformPtr = new csReversibleTransform (*other.TransformPtr);
     break;
 
   case ARRAY:
-    ShaderVarArray = ShaderVarArrayAlloc()->Alloc ();
+    ShaderVarArray = new csRefArray<csShaderVariable>;
     *ShaderVarArray = *other.ShaderVarArray;
     break;
 
@@ -120,7 +95,7 @@ csShaderVariable::csShaderVariable (const csShaderVariable& other)
 
 csShaderVariable::~csShaderVariable ()
 {
-  switch (GetTypeI())
+  switch (Type)
   {
   case UNKNOWN:     
   case INT:      
@@ -139,71 +114,50 @@ csShaderVariable::~csShaderVariable ()
       RenderBuffer->DecRef ();
     break;
 
-  case VECTOR2:
-  case VECTOR3:
+  case VECTOR2:      
+  case VECTOR3:      
   case VECTOR4:
     break; //Nothing to deallocate      
 
-  case MATRIX3X3:
-    MatrixAlloc()->Free (MatrixValuePtr);
-    break;
-
-  case MATRIX4X4:
-    Matrix4Alloc()->Free (Matrix4ValuePtr);
+  case MATRIX:
+    delete MatrixValuePtr;
     break;
 
   case TRANSFORM:
-    TransformAlloc()->Free (TransformPtr);
+    delete TransformPtr;
     break;
 
   case ARRAY:
-    ShaderVarArrayAlloc()->Free (ShaderVarArray);
+    delete ShaderVarArray;
     break;
 
   default:
     ;
   }
-
-  if (accessor != 0)
-  {
-    AccessorValuesAlloc()->Free (accessor);
-  }
 }
 
 csShaderVariable& csShaderVariable::operator= (const csShaderVariable& copyFrom)
 {
-  SetName (copyFrom.GetName());
+  Name = copyFrom.Name;
   //Type = copyFrom.Type;
-  if (copyFrom.accessor != 0)
-  {
-    AllocAccessor (*copyFrom.accessor);
-  }
-  else
-  {
-    FreeAccessor ();
-  }
+  VectorValue = copyFrom.VectorValue;
+  accessor = copyFrom.accessor;  
+  accessorData = copyFrom.accessorData;
 
-  VariableType oldType = GetTypeI();
-  NewType (copyFrom.GetTypeI());
+  NewType (copyFrom.Type);
 
   // Handle payload
-  switch (GetTypeI())
+  switch (Type)
   {
   case UNKNOWN:
     break;
 
   case INT:      
+  case FLOAT:
     Int = copyFrom.Int;
     break; 
 
   case TEXTURE:
-    if (oldType == TEXTURE)
-    {
-      if (texture.HandValue)
-	texture.HandValue->DecRef ();
-      if (texture.WrapValue)
-	texture.WrapValue->DecRef ();
-    }
     texture = copyFrom.texture;
     if (texture.HandValue)
       texture.HandValue->IncRef ();
@@ -212,36 +166,26 @@ csShaderVariable& csShaderVariable::operator= (const csShaderVariable& copyFrom)
     break;
 
   case RENDERBUFFER:
-    if (oldType == RENDERBUFFER)
-    {
-      if (RenderBuffer)
-	RenderBuffer->DecRef ();
-    }
     RenderBuffer = copyFrom.RenderBuffer;
     if (RenderBuffer)
       RenderBuffer->IncRef ();
     break;
 
-  case FLOAT:
-  case VECTOR2:
-  case VECTOR3:
+  case VECTOR2:      
+  case VECTOR3:      
   case VECTOR4:
-    memcpy (&Vector, &copyFrom.Vector, sizeof (Vector));
-    break;
+    break; //Nothing to copy more than whats done above      
 
-  case MATRIX3X3:
-    *MatrixValuePtr = *copyFrom.MatrixValuePtr;
-    break;
-
-  case MATRIX4X4:
-    *Matrix4ValuePtr = *copyFrom.Matrix4ValuePtr;
+  case MATRIX:
+    MatrixValuePtr = new csMatrix3 (*copyFrom.MatrixValuePtr);
     break;
 
   case TRANSFORM:
-    *TransformPtr = *copyFrom.TransformPtr;
+    TransformPtr = new csReversibleTransform (*copyFrom.TransformPtr);
     break;
 
   case ARRAY:
+    ShaderVarArray = new csRefArray<csShaderVariable>;
     *ShaderVarArray = *copyFrom.ShaderVarArray;
     break;
 
@@ -254,13 +198,13 @@ csShaderVariable& csShaderVariable::operator= (const csShaderVariable& copyFrom)
 
 void csShaderVariable::NewType (VariableType nt)
 {
-  if (GetTypeI() == nt)
+  if (Type == nt)
     return;
 
-  switch (GetTypeI())
+  switch (Type)
   {
-  case UNKNOWN:
-  case INT:
+  case UNKNOWN:     
+  case INT:      
   case FLOAT:
     break; //Nothing to deallocate
 
@@ -281,20 +225,16 @@ void csShaderVariable::NewType (VariableType nt)
   case VECTOR4:
     break; //Nothing to deallocate      
   
-  case MATRIX3X3:
-    MatrixAlloc()->Free (MatrixValuePtr);
-    break;
-  
-  case MATRIX4X4:
-    Matrix4Alloc()->Free (Matrix4ValuePtr);
+  case MATRIX:
+    delete MatrixValuePtr;
     break;
   
   case TRANSFORM:
-    TransformAlloc()->Free (TransformPtr);
+    delete TransformPtr;
     break;
 
   case ARRAY:
-    ShaderVarArrayAlloc()->Free (ShaderVarArray);
+    delete ShaderVarArray;
     break;
 
   default:
@@ -303,48 +243,32 @@ void csShaderVariable::NewType (VariableType nt)
 
   switch (nt)
   {
-  case INT:      
-  case TEXTURE:
-  case RENDERBUFFER:
   case UNKNOWN:     
+  case INT:      
   case FLOAT:
+  case TEXTURE:    
+  case RENDERBUFFER:
   case VECTOR2:      
   case VECTOR3:      
   case VECTOR4:
     break; //Nothing to allocate      
 
-  case MATRIX3X3:
-    MatrixValuePtr = MatrixAlloc()->Alloc ();
-    break;
-
-  case MATRIX4X4:
-    Matrix4ValuePtr = Matrix4Alloc()->Alloc ();
+  case MATRIX:
+    MatrixValuePtr = new csMatrix3;
     break;
 
   case TRANSFORM:
-    TransformPtr = TransformAlloc()->Alloc ();
+    TransformPtr = new csReversibleTransform;
     break;
 
   case ARRAY:
-    ShaderVarArray = ShaderVarArrayAlloc()->Alloc ();
+    ShaderVarArray = new csRefArray<csShaderVariable>;
     break;
 
   default:
     ;
   }
   
-  nameAndType &= nameMask;
-  nameAndType |= nt << typeShift;
-}
-
-void csShaderVariable::AllocAccessor (const AccessorValues& other)
-{
-  accessor = AccessorValuesAlloc()->Alloc (other);
-}
-
-void csShaderVariable::FreeAccessor ()
-{
-  AccessorValuesAlloc()->Free (accessor);
-  accessor = 0;
+  Type = nt;
 }
 

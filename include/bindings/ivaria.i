@@ -1,10 +1,7 @@
 %module ivaria
 %import "bindings/core.i"
 %{
-#include "csgeom.h"
-#include "csutil.h"
-#include "imesh.h"
-#include "ivaria.h"
+#include "crystalspace.h"
 %}
 
 #ifndef SWIGIMPORTED

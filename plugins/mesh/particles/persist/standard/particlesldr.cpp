@@ -30,7 +30,6 @@
 #include "iutil/document.h"
 #include "iutil/plugin.h"
 #include "iutil/object.h"
-#include "iutil/stringarray.h"
 
 CS_IMPLEMENT_PLUGIN
 
@@ -880,12 +879,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
       case XMLTOKEN_FACTORY:
         {
           const char* factname = child->GetContentsValue ();
-          iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
+	  iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
 
-          if(!fact)
+          if (!fact)
           {
             synldr->ReportError ("crystalspace.particleloader.parsesystem",
               child, "Could not find factory '%s'!", factname);
+
             return 0;
           }
 

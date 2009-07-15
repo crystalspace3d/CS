@@ -621,6 +621,9 @@
 			Name="Resource Files"
 			Filter="">
 			<File
+				RelativePath="..\..\mk\msvc\appsndtest.manifest">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\appsndtest.rc">
 			</File>
 		</Filter>

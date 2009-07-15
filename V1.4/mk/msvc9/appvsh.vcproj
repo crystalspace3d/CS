@@ -614,6 +614,9 @@
 			Name="Resource Files"
 			Filter="">
 			<File
+				RelativePath="..\..\mk\msvc\appvsh.manifest">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\appvsh.rc">
 			</File>
 		</Filter>

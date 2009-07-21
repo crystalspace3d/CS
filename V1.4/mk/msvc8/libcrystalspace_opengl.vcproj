@@ -645,6 +645,13 @@
 				RelativePath="..\..\libs\csplugincommon\opengl\..\..\..\include\csplugincommon\opengl\glstates.h">
 			</File>
 		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="">
+			<File
+				RelativePath="..\..\mk\msvc\libcrystalspace_opengl.rc">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

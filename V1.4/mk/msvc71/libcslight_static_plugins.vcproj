@@ -599,6 +599,13 @@
 				RelativePath="..\..\mk\msvc\appcslight_static_staticuse.cpp">
 			</File>
 		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="">
+			<File
+				RelativePath="..\..\mk\msvc\libcslight_static_plugins.rc">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

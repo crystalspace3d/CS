@@ -35,7 +35,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csutil/randomgen.h"
 #include "csutil/hash.h"
 #include "csutil/sysfunc.h"
-#include "csutil/scfarray.h"
 #include "cstool/rbuflock.h"
 
 #include "ivideo/graph3d.h"
@@ -172,6 +171,8 @@ csSpriteCal3DMeshObjectFactory::csSpriteCal3DMeshObjectFactory (
   calCoreModel("no name")
 {
   csSpriteCal3DMeshObjectFactory::object_reg = object_reg;
+
+  light_mgr = csQueryRegistry<iLightManager> (object_reg);
 
   skel_factory.AttachNew (new csCal3dSkeletonFactory ());
 }
@@ -868,6 +869,9 @@ csSpriteCal3DMeshObject::csSpriteCal3DMeshObject (iBase *pParent,
 //      "Error creating model instance");
 //    return;
 //  }
+  
+  strings = csQueryRegistryTagInterface<iStringSet> (object_reg, 
+    "crystalspace.shared.stringset");
   G3D = csQueryRegistry<iGraphics3D> (object_reg);
 
   // set the material set of the whole model
@@ -1036,9 +1040,123 @@ void csSpriteCal3DMeshObject::GetObjectBoundingBox (csBox3& bbox,
   bbox = object_bbox;
 }
 
+void csSpriteCal3DMeshObject::LightChanged (iLight*)
+{
+  lighting_dirty = true;
+}
+
+void csSpriteCal3DMeshObject::LightDisconnect (iLight* /*light*/)
+{
+  lighting_dirty = true;
+}
+
+void csSpriteCal3DMeshObject::DisconnectAllLights ()
+{
+  lighting_dirty = true;
+}
+
 void csSpriteCal3DMeshObject::SetUserData(void *data)
 {
   calModel.setUserData(data);
+}
+
+void csSpriteCal3DMeshObject::UpdateLightingSubmesh (
+    const csArray<iLightSectorInfluence*>& lights, 
+    iMovable* movable,
+    CalRenderer *pCalRenderer,
+    int mesh, int submesh, float *meshNormals,
+    csColor* colors)
+{
+  int vertCount;
+  vertCount = pCalRenderer->getVertexCount();
+
+  int i;
+
+  // Do the lighting.
+  csReversibleTransform trans = movable->GetFullTransform ();
+  // the object center in world coordinates. "0" because the object
+  // center in object space is obviously at (0,0,0).
+  csColor color;
+
+  size_t num_lights = lights.GetSize ();
+
+  // Make sure colors array exists and set all to ambient
+  InitSubmeshLighting (mesh, submesh, pCalRenderer, movable, colors);
+
+  // Update Lighting for all relevant lights
+  for (size_t l = 0; l < num_lights; l++)
+  {
+    iLight* li = lights[l]->GetLight ();
+    // Compute light position in object coordinates
+    // @@@ Can be optimized a bit. E.g. store obj_light_pos so it can be
+    //  reused by submesh lighting.
+    csVector3 wor_light_pos = li->GetMovable ()->GetFullPosition ();
+    csVector3 obj_light_pos = trans.Other2This (wor_light_pos);
+    float obj_sq_dist = csSquaredDist::PointPoint (obj_light_pos, 0);
+    if (obj_sq_dist >= csSquare (li->GetCutoffDistance ())) return;
+    float in_obj_dist = (obj_sq_dist >= SMALL_EPSILON)?
+        csQisqrt (obj_sq_dist):1.0f;
+
+    csColor light_color = li->GetColor () * (256.0f / CS_NORMAL_LIGHT_LEVEL)
+      * li->GetBrightnessAtDistance (csQsqrt (obj_sq_dist));
+
+    int normal_index=0;
+    for (i = 0; i < vertCount; i++)
+    {
+      csVector3 normal(meshNormals[normal_index],
+        meshNormals[normal_index+1],
+        meshNormals[normal_index+2]);
+        
+      normal_index+=3;
+      float cosinus;
+      if (obj_sq_dist < SMALL_EPSILON) 
+        cosinus = 1;
+      else 
+        cosinus = obj_light_pos * normal; 
+      // because the vector from the object center to the light center
+      // in object space is equal to the position of the light
+
+      if (cosinus > 0)
+      {
+        color = light_color;
+        if (obj_sq_dist >= SMALL_EPSILON) 
+            cosinus *= in_obj_dist;
+        if (cosinus < 1.0f) 
+            color *= cosinus;
+        colors[i] += color;
+      }
+    }
+  }
+
+  // Clamp all vertex colors to 2.
+  for (i = 0 ; i < vertCount; i++)
+    colors[i].Clamp (2.0f, 2.0f, 2.0f);
+}
+
+void csSpriteCal3DMeshObject::InitSubmeshLighting (int /*mesh*/, int /*submesh*/,
+                           CalRenderer *pCalRenderer,
+                           iMovable* movable, 
+                           csColor* colors)
+{
+  int vertCount = pCalRenderer->getVertexCount();
+
+  // Set all colors to ambient light.
+  csColor col;
+  if (((csSpriteCal3DMeshObjectFactory*)factory)->engine)
+  {
+    ((csSpriteCal3DMeshObjectFactory*)factory)->engine->GetAmbientLight (col);
+    //    col += color;  // no inherent color in cal3d sprites
+    iSector* sect = movable->GetSectors ()->Get (0);
+    if (sect)
+      col += sect->GetDynamicAmbientLight ();
+  }
+  else
+  {
+    //    col = color;
+    col.Set (0, 0, 0);
+  }
+  for (int i = 0 ; i < vertCount ; i++)
+    colors[i] = col;
 }
 
 bool csSpriteCal3DMeshObject::HitBeamOutline (const csVector3& start,
@@ -1169,7 +1287,7 @@ bool csSpriteCal3DMeshObject::HitBeamOutline (const csVector3& start,
 
 bool csSpriteCal3DMeshObject::HitBeamObject (const csVector3& start,
     const csVector3& end, csVector3& isect, float* pr, int* polygon_idx,
-    iMaterialWrapper** material, csArray<iMaterialWrapper*>* materials)
+    iMaterialWrapper** material)
 {
   if (material) *material = 0;
   //Checks all of the cal3d bounding boxes of each bone to see if they hit
@@ -1467,7 +1585,6 @@ csRenderMesh** csSpriteCal3DMeshObject::GetRenderMeshes (int &n,
     rm->do_mirror = camera->IsMirrored ();
     rm->worldspace_origin = wo;
     rm->object2world = o2wt;
-    rm->bbox = GetObjectBoundingBox(); // @@@ FIXME: could be tighter (submesh bbox)
 
     // @@@ Hacky.
     ((MeshAccessor*)rm->buffers->GetAccessor())->movable = movable;
@@ -1517,6 +1634,7 @@ bool csSpriteCal3DMeshObject::Advance (csTicks current_time)
     }
   }
   meshVersion++;
+  lighting_dirty = true;
   //vertices_dirty = true;
   return true;
 }
@@ -2153,145 +2271,108 @@ iShaderVariableContext* csSpriteCal3DMeshObject::GetCoreMeshShaderVarContext (
 
 //----------------------------------------------------------------------
 
-void csSpriteCal3DMeshObject::MeshAccessor::UpdateNormals (csRenderBufferHolder* holder)
+void csSpriteCal3DMeshObject::MeshAccessor::UpdateNormals (
+  CalRenderer* render, int meshIndex, CalMesh* calMesh, size_t vertexCount)
 {
   if (normal_buffer == 0)
   {
     normal_buffer = csRenderBuffer::CreateRenderBuffer (
       vertexCount, CS_BUF_DYNAMIC,
       CS_BUFCOMP_FLOAT, 3);
-    holder->SetRenderBuffer (CS_BUFFER_NORMAL, normal_buffer);
   }
 
-  if (meshobj->meshVersion != normalVersion)
+  csRenderBufferLock<float> normalLock (normal_buffer);
+
+  int vertOffs = 0;
+  for (int submesh = 0; submesh < calMesh->getSubmeshCount();
+    submesh++)
   {
-    CalRenderer* render = meshobj->calModel.getRenderer();
-    CalMesh* calMesh = meshobj->calModel.getMesh (mesh);
+    render->selectMeshSubmesh (meshIndex, submesh);
 
-    csRenderBufferLock<float> normalLock (normal_buffer);
+    render->getNormals (normalLock.Lock() + vertOffs * 3);
 
-    int vertOffs = 0;
-    for (int submesh = 0; submesh < calMesh->getSubmeshCount();
-      submesh++)
-    {
-      render->selectMeshSubmesh ((int)MeshIndex(), submesh);
-
-      render->getNormals (normalLock.Lock() + vertOffs * 3);
-
-      vertOffs += render->getVertexCount();
-    }
-
-    normalVersion = meshobj->meshVersion;
-  }
-}
-
-void csSpriteCal3DMeshObject::MeshAccessor::UpdateBinormals (csRenderBufferHolder* holder)
-{
-  if (binormal_buffer == 0)
-  {
-    binormal_buffer = csRenderBuffer::CreateRenderBuffer (
-      vertexCount, CS_BUF_DYNAMIC, CS_BUFCOMP_FLOAT, 3);
-    holder->SetRenderBuffer (CS_BUFFER_BINORMAL, binormal_buffer);
+    vertOffs += render->getVertexCount();
   }
 
-  if (meshobj->meshVersion != binormalVersion)
-  {
-    UpdateNormals(holder);
-    UpdateTangents(holder);
-
-    CalRenderer* render = meshobj->calModel.getRenderer();
-    CalMesh* calMesh = meshobj->calModel.getMesh (mesh);
-
-    csRenderBufferLock<csVector3> normalLock (normal_buffer);
-    csRenderBufferLock<csVector3> binormalLock (binormal_buffer);
-    csRenderBufferLock<csVector4> tangentLock (tangent_buffer);
-
-    for (int submesh = 0; submesh < calMesh->getSubmeshCount(); submesh++)
-    {
-      render->selectMeshSubmesh ((int)MeshIndex(), submesh);
-
-      for (int vertex = 0; vertex < render->getVertexCount(); vertex++)
-      {
-        int idx = submesh * render->getVertexCount() + vertex;
-        binormalLock.Get(idx).Cross(normalLock.Get(idx),
-          csVector3(tangentLock.Get(idx).x, tangentLock.Get(idx).y, tangentLock.Get(idx).z));
-        binormalLock.Get(idx) *= tangentLock.Get(idx).w;
-      }
-    }
-
-    binormalVersion = meshobj->meshVersion;
-  }
-}
-
-void csSpriteCal3DMeshObject::MeshAccessor::UpdateTangents (csRenderBufferHolder* holder)
-{
-  if (tangent_buffer == 0)
-  {
-    tangent_buffer = csRenderBuffer::CreateRenderBuffer (
-      vertexCount, CS_BUF_DYNAMIC, CS_BUFCOMP_FLOAT, 4);
-    holder->SetRenderBuffer (CS_BUFFER_TANGENT, tangent_buffer);
-  }
-
-  if (meshobj->meshVersion != tangentVersion)
-  {
-    CalRenderer* render = meshobj->calModel.getRenderer();
-    CalMesh* calMesh = meshobj->calModel.getMesh (mesh);
-
-    csRenderBufferLock<float> tangentLock (tangent_buffer);
-
-    int vertOffs = 0;
-    for (int submesh = 0; submesh < calMesh->getSubmeshCount(); submesh++)
-    {
-      render->selectMeshSubmesh ((int)MeshIndex(), submesh);
-
-      if(!render->isTangentsEnabled(0))
-      {
-        calMesh->getSubmesh(submesh)->enableTangents(0, true);
-      }
-
-      render->getTangentSpaces (0, tangentLock.Lock() + vertOffs * 4);
-
-      vertOffs += render->getVertexCount();
-    }
-
-    tangentVersion = meshobj->meshVersion;
-  }
+  normalVersion = meshobj->meshVersion;
 }
 
 void csSpriteCal3DMeshObject::MeshAccessor::PreGetBuffer 
   (csRenderBufferHolder* holder, csRenderBufferName buffer)
 {
-  if (!holder)
-    return;
-
-  switch(buffer)
+  if (!holder) return;
+  if (buffer == CS_BUFFER_POSITION)
   {
-  case CS_BUFFER_POSITION:
-    {
-      holder->SetRenderBuffer (CS_BUFFER_POSITION, 
-        meshobj->GetVertexBufferCal (mesh, 0));
-    }
-  case CS_BUFFER_NORMAL:
-    {
-      UpdateNormals (holder);
-      break;
-    }
-  case CS_BUFFER_TANGENT:
-    {
-      UpdateTangents (holder);
-      break;
-    }
-  case CS_BUFFER_BINORMAL:
-    {
-      UpdateBinormals (holder);
-      break;
-    }
-  default:
-    {
-      meshobj->factory->DefaultGetBuffer (mesh, holder, buffer);
-      break;
-    }
+    holder->SetRenderBuffer (CS_BUFFER_POSITION, 
+    meshobj->GetVertexBufferCal (mesh, 0));
   }
+  else if (buffer == CS_BUFFER_COLOR)
+  {
+    if (meshobj->meshVersion != colorVersion)
+    {
+      CalRenderer* render = meshobj->calModel.getRenderer();
+      CalMesh* calMesh = meshobj->calModel.getMesh (mesh);
+
+      int submesh;
+      if (color_buffer == 0)
+      {
+        color_buffer = csRenderBuffer::CreateRenderBuffer (
+          vertexCount, CS_BUF_DYNAMIC,
+          CS_BUFCOMP_FLOAT, 3);
+      }
+
+      render->beginRendering();
+
+      int meshIndex = (int)MeshIndex();
+      if (meshobj->meshVersion != normalVersion)
+        UpdateNormals (render, meshIndex, calMesh, (size_t)vertexCount);
+
+      csRenderBufferLock<float> normalLock (normal_buffer);
+      csRenderBufferLock<float> colorLock (color_buffer);
+
+      int vertOffs = 0;
+      for (submesh = 0; submesh < calMesh->getSubmeshCount();
+        submesh++)
+      {
+        render->selectMeshSubmesh (meshIndex, submesh);
+
+        const csArray<iLightSectorInfluence*>& relevant_lights =
+        meshobj->factory->light_mgr->GetRelevantLights (
+          meshobj->logparent, -1, false);
+
+        meshobj->UpdateLightingSubmesh (relevant_lights, 
+                    movable,
+                    render,
+                    mesh,
+                    submesh,
+                    normalLock.Lock() + vertOffs * 3, 
+                    (csColor*)(colorLock.Lock() + vertOffs * 3));
+
+        vertOffs += render->getVertexCount();
+      }
+      render->endRendering();
+
+      colorVersion = meshobj->meshVersion;
+    }
+
+    holder->SetRenderBuffer (CS_BUFFER_COLOR, color_buffer);
+  }
+  else if (buffer == CS_BUFFER_NORMAL)
+  {
+    if (meshobj->meshVersion != normalVersion)
+    {
+      CalRenderer* render = meshobj->calModel.getRenderer();
+      CalMesh* calMesh = meshobj->calModel.getMesh (mesh);
+
+      render->beginRendering();
+      UpdateNormals (render, (int)MeshIndex(), calMesh, (size_t)vertexCount);
+      render->endRendering();
+    }
+
+    holder->SetRenderBuffer (CS_BUFFER_NORMAL, normal_buffer);
+  }
+  else
+    meshobj->factory->DefaultGetBuffer (mesh, holder, buffer);
 }
 
 //---------------------------csCal3dSkeleton---------------------------

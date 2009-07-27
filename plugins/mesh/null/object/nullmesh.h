@@ -51,8 +51,6 @@ public:
     box = csNullmeshMeshFactory::box;
   }
 
-  virtual void SetHitBeamMeshObject (iMeshObject* mesh) {}
-
   virtual csFlags& GetFlags () { return factory_flags; }
   virtual csPtr<iMeshObject> NewInstance ();
   virtual csPtr<iMeshObjectFactory> Clone () { return 0; }
@@ -77,6 +75,8 @@ private:
   csBox3 box;
   csFlags factory_flags;
 };
+
+#include "csutil/deprecated_warn_off.h"
 
 /**
  * Nullmesh version of mesh object.
@@ -105,9 +105,6 @@ public:
     box = csNullmeshMeshObject::box;
   }
 
-  virtual void SetHitBeamMeshObject (iMeshObject* mesh)
-  { hitbeam_mesh = mesh; }
-
   //----------------------- iMeshObject implementation ------------------------
   virtual iMeshObjectFactory* GetFactory () const
   {
@@ -131,7 +128,7 @@ public:
     csVector3& isect, float *pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
     csVector3& isect, float* pr, int* polygon_idx = 0,
-    iMaterialWrapper** material = 0, csArray<iMaterialWrapper*>* materials = 0);
+    iMaterialWrapper** material = 0);
   virtual void SetMeshWrapper (iMeshWrapper* lp) { logparent = lp; }
   virtual iMeshWrapper* GetMeshWrapper () const { return logparent; }
 
@@ -148,7 +145,7 @@ public:
   virtual iMaterialWrapper* GetMaterialWrapper () const { return 0; }
   virtual void SetMixMode (uint) { }
   virtual uint GetMixMode () const { return CS_FX_COPY; }
-
+  virtual void InvalidateMaterialHandles () { }
   /**
   * see imesh/object.h for specification. The default implementation
   * does nothing.
@@ -164,12 +161,13 @@ private:
   iMeshObjectFactory* factory;
   iMeshObjectType* nullmesh_type;
   iMeshWrapper* logparent;
-  iMeshObject* hitbeam_mesh;
   csRef<iMeshObjectDrawCallback> vis_cb;
   float radius;
   csBox3 box;
   csFlags object_flags;
 };
+
+#include "csutil/deprecated_warn_on.h"
 
 /**
  * Genmesh type. This is the plugin you have to use to create instances

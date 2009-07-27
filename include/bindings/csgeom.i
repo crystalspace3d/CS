@@ -1,9 +1,7 @@
 %module csgeom
 %import "bindings/core.i"
 %{
-#include "csgeom.h"
-#include "csutil.h"
-#include "cstool/initapp.h"
+#include "crystalspace.h"
 %}
 
 #ifndef SWIGIMPORTED

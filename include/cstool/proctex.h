@@ -29,7 +29,6 @@
 #include "csutil/csobject.h"
 #include "csutil/ref.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/threadmanager.h"
 #include "itexture/iproctex.h"
 #include "itexture/itexfact.h"
 #include "iengine/texture.h"
@@ -64,7 +63,7 @@ struct iProcTexCallback : public virtual iBase
  */
 class CS_CRYSTALSPACE_EXPORT csProcTexture : 
   public scfImplementationExt2<csProcTexture, csObject, iTextureWrapper,
-  iProcTexture>, public ThreadedCallable<csProcTexture>
+  iProcTexture>
 {
   friend struct csProcTexCallback;
   friend class csProcTexEventHandler;
@@ -72,7 +71,7 @@ class CS_CRYSTALSPACE_EXPORT csProcTexture :
 private:
   // Setup the procedural event handler (used for updating visible
   // proc textures).
-  THREADED_CALLABLE_DECL1(csProcTexture, SetupProcEventHandler, csThreadReturn, iObjectRegistry*, object_reg, HIGH, false, false);
+  static iEventHandler* SetupProcEventHandler (iObjectRegistry* object_reg);
   csRef<iEventHandler> proceh;
 
 protected:
@@ -83,7 +82,7 @@ protected:
   int texFlags;
 
   // Texture wrapper.
-  csRef<iTextureWrapper> tex;
+  iTextureWrapper* tex;
   // Dimensions of texture.
   int mat_w, mat_h;
   csRef<iImage> proc_image;
@@ -152,9 +151,8 @@ public:
   csProcTexture (iTextureFactory* p = 0, iImage* image = 0);
   virtual ~csProcTexture ();
 
-  iGraphics3D* GetG3D () const { return g3d; }
-  iGraphics2D* GetG2D () const { return g2d; }
-  iObjectRegistry* GetObjectRegistry () const { return object_reg; }
+  iGraphics3D* GetG3D () { return g3d; }
+  iGraphics2D* GetG2D () { return g2d; }
 
   /**
    * Disable auto-update. By default csProcTexture will register

@@ -18,7 +18,6 @@ SubInclude TOP plugins mesh ;
 SubInclude TOP plugins misc ;
 SubInclude TOP plugins physics ;
 SubInclude TOP plugins proctex ;
-SubInclude TOP plugins rendermanager ;
 SubInclude TOP plugins reporter ;
 SubInclude TOP plugins sequence ;
 SubInclude TOP plugins sndsys ;
@@ -32,7 +31,10 @@ SubInclude TOP plugins video ;
 if [ Property build : projgen ] = msvc
 {
   StaticPluginLibrary crystalspace_staticplugins : 
+    _cspace
     cspython
+    csvosa3dl
+    wxgl
   ;
 }
 else

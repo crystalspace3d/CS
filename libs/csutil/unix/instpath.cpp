@@ -22,9 +22,7 @@
 #include <unistd.h>
 
 #include "cssysdef.h"
-/* Small hack: include the _template_ as only the major & minor version is
-   needed here */
-#include "csver.h.template"
+#include "csver.h"
 #include "csutil/util.h"
 #include "csutil/sysfunc.h"
 #include "csutil/syspath.h"

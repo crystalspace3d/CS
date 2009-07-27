@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.2.1.3 Creating a &ldquo;World&rdquo;</title>
+<title>Crystal Space 1.4.0: 4.2.1.3 Creating a &ldquo;World&rdquo;</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.2.1.3 Creating a &ldquo;World&rdquo;">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.2.1.3 Creating a &ldquo;World&rdquo;">
+<meta name="description" content="Crystal Space 1.4.0: 4.2.1.3 Creating a &ldquo;World&rdquo;">
+<meta name="keywords" content="Crystal Space 1.4.0: 4.2.1.3 Creating a &ldquo;World&rdquo;">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -70,7 +70,9 @@ wanted to have?  No?  Ok then, let's create some 3D stuff.
 sector and a function <code>CreateRoom()</code> to the <samp>&lsquo;Simple&rsquo;</samp> class
 header file:
 </p>
-<table><tr><td>&nbsp;</td><td><pre class="example">
+<table><tr><td>&nbsp;</td><td><pre class="example">...
+struct iSector;
+...
 class Simple
 {
 private:
@@ -84,29 +86,31 @@ private:
 <p>Now add these chunks of code (texture manager, room, lights) to
 <tt>&lsquo;simple.cpp&rsquo;</tt>:
 </p>
-<table><tr><td>&nbsp;</td><td><pre class="example">bool Simple::SetupModules ()
+<table><tr><td>&nbsp;</td><td><pre class="example">bool Simple::Application ()
 {
+  ...
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine-&gt;SetLightingCacheMode (0);
   ...
   // These are used store the current orientation of the camera.
   rotY = rotX = 0;
   ...
   CreateRoom ()
-  
-  engine-&gt;Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
-
-  rm = engine-&gt;GetRenderManager();
   ...
 }
 ...
 void Simple::CreateRoom ()
 {
-  if (!loader-&gt;LoadTexture (&quot;brick&quot;, &quot;/lib/std/castle/brick1_d.jpg&quot;))
-    ReportError(&quot;Error loading 'brick1_d' texture!&quot;);
-  iMaterialWrapper* tm = engine-&gt;GetMaterialList ()-&gt;FindByName (&quot;brick&quot;);
-  
+  // Load the texture from the standard library.  This is located in
+  // CS/data/standard.zip and mounted as /lib/std using the Virtual
+  // File System (VFS) plugin.
+  if (!loader-&gt;LoadTexture (&quot;stone&quot;, &quot;/lib/std/stone4.gif&quot;))
+    ReportError(&quot;Error loading 'stone4' texture!&quot;);
+
+  iMaterialWrapper* tm =
+    engine-&gt;GetMaterialList ()-&gt;FindByName (&quot;stone&quot;);
+
   room = engine-&gt;CreateSector (&quot;room&quot;);
 
   // First we make a primitive for our geometry.
@@ -120,6 +124,10 @@ void Simple::CreateRoom ()
   // Now we make a factory and a mesh at once.
   csRef&lt;iMeshWrapper&gt; walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, &quot;walls&quot;, &quot;walls_factory&quot;, &amp;box);
+
+  csRef&lt;iGeneralMeshState&gt; mesh_state = scfQueryInterface&lt;
+    iGeneralMeshState&gt; (walls-&gt;GetMeshObject ());
+  mesh_state-&gt;SetShadowReceiving (true);
   walls-&gt;GetMeshObject ()-&gt;SetMaterialWrapper (tm);
 
   csRef&lt;iLight&gt; light;
@@ -136,18 +144,21 @@ void Simple::CreateRoom ()
   light = engine-&gt;CreateLight (0, csVector3 (0, 5, -3), 10,
         csColor (0, 1, 0));
   ll-&gt;Add (light);
+
+  engine-&gt;Prepare ();
 }
 </pre></td></tr></table>
 <p>This extra code first loads a texture with <code>LoadTexture()</code>.
 The first parameter is the name of the texture as it will be known in the
 engine; and the second is the
-actual filename on the <small>VFS</small> volume (see section <a href="VFS.html#0">Virtual File System (<small>VFS</small>)</a>). This function returns
-a <samp>&lsquo;iTextureWrapper&rsquo;</samp> which we
+actual filename on the <small>VFS</small> volume (see section <a href="VFS.html#0">Virtual File System (<small>VFS</small>)</a>).  Note, if you don't have
+the <tt>&lsquo;stone4.gif&rsquo;</tt> texture you can use another one.  The only requirement
+is that it must have sizes which are a power of 2 (e.g. 64x64); note that
+Crystal Space will scale them automatically if this requirement is not met
+but this can
+reduce quality. This function returns a <samp>&lsquo;iTextureWrapper&rsquo;</samp> which we
 don't use.  Instead we use the <samp>&lsquo;iMaterialWrapper&rsquo;</samp> which is created
 automatically by <code>LoadTexture()</code>.
-</p>
-<p>The next block of code shows how to add a normal map to the texture we just
-loaded.
 </p>
 <p>Then, we create our room with <code>CreateSector()</code>.  This room will initially
 be empty.  A room in Crystal Space is represented by <samp>&lsquo;iSector&rsquo;</samp> which is
@@ -192,6 +203,26 @@ object at the origin in the sector (i.e. <samp>&lsquo;0,0,0&rsquo;</samp>). If y
 that you have to use <code>iMeshWrapper::GetMovable()</code>. But in this example
 the origin is fine.
 </p>
+<p>There are only two more things to be done before our object is good for us. First
+we call <code>iGeneralMeshState::SetShadowReceiving(true)</code>. The <samp>&lsquo;iGeneralMeshState&rsquo;</samp>
+interface is the interface containing genmesh specific functions for genmesh
+objects. <samp>&lsquo;iGeneralFactoryState&rsquo;</samp> was the interface for genmesh specific
+functions for factories. To get access to these special interfaces we use the function
+<code>scfQueryInterface&lt;&gt;()</code> which is part of <small>SCF</small> (see section <a href="SCF.html#0">Shared Class Facility (<small>SCF</small>)</a>). This
+will see if the mesh object actually implements <samp>&lsquo;iGeneralMeshState&rsquo;</samp> (which
+should be the case here) and, if so, it will return a pointer to the
+implementation of <samp>&lsquo;iGeneralMeshState&rsquo;</samp>. 
+All mesh objects and factories implement some kind of state interface which is 
+used to set up or query the state of that mesh object or factory.
+Note that all interfaces which you query using <code>scfQueryInterface&lt;&gt;()</code>
+must be assigned to a variable of type <code>csRef&lt;&gt;</code>. This ensures that the
+reference to the interface is released once it is no longer needed.
+</p>
+<p>We use <code>SetShadowReceiving(true)</code> so that our
+object will be lit by a more accurate per-vertex method. If we don't use
+this then the genmesh will be lit according to the light that it receives
+at the center of the model.
+</p>
 <p>The last thing we have to do is to set a material to use for this mesh. You can
 set a material both on the factory (in which case all objects that are created
 from this factory will share it) or on the mesh. In this case we set it on the
@@ -218,17 +249,9 @@ There are some performance costs associated with pseudo-dynamic lights so
 it is not enabled by default.
 </p>
 <p>The call to <code>Prepare()</code> prepares the engine for rendering your scene.  It
-will prepare all textures and meshes.
-</p>
-<p>Using the <code>ShineLights()</code> function we generate static vertex lighting
-for our dynamically created geometry. Most of the times Crystal Space applications
-will probably load maps from disk and for that situation the lighting information
-(vertex and lightmaps) should already be present as calculated by the <samp>&lsquo;lighter2&rsquo;</samp>
-application. However, for dynamically generated geometry you can choose to either
-use some kind of hardware assisted lighting (by using the <samp>&lsquo;unshadowed&rsquo;</samp>
-render manager for example) or else you can use static lighting. <code>ShineLights()</code>
-is a convenience function that has the same end result as if the objects were
-lit using <samp>&lsquo;lighter2&rsquo;</samp> with vertex lighting.
+will prepare all textures and create all lightmaps if needed.  Only after this
+call can you start rendering your world, because lightmaps may have to be
+converted to a format more suitable for the chosen 3D renderer.
 </p>
 <p>Ok, now we have created our room and properly initialized it.  If you
 compile and run this application you would still see a black screen.  Why?

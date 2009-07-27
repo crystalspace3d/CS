@@ -29,6 +29,7 @@
 
 #include "csgeom/csrect.h"
 #include "csgeom/math.h"
+#include "csplugincommon/canvas/scrshot.h"
 #include "csplugincommon/opengl/assumedstate.h"
 #include "csplugincommon/opengl/glcommon2d.h"
 #include "csplugincommon/opengl/glstates.h"
@@ -40,6 +41,7 @@ csGraphics2DGLCommon::csGraphics2DGLCommon (iBase *iParent) :
     hasRenderTarget (false)
 {
   EventOutlet = 0;
+  screen_shot = 0;
   multiFavorQuality = false;
   fontCache = 0;
   useCombineTE = false;
@@ -59,6 +61,22 @@ bool csGraphics2DGLCommon::Initialize (iObjectRegistry *object_reg)
    * both need settings from that file. */
   config.AddConfig (object_reg, "/config/r3dopengl.cfg");
 
+  // Guesstimate pixel format. We don't really care about it anyway.
+#if !defined(CS_LITTLE_ENDIAN)
+    pfmt.RedMask =   0x000000FF;
+    pfmt.GreenMask = 0x0000FF00;
+    pfmt.BlueMask =  0x00FF0000;
+    pfmt.AlphaMask = 0xFF000000;
+#else 
+    pfmt.AlphaMask = 0xFF000000;
+    pfmt.RedMask =   0x00FF0000;
+    pfmt.GreenMask = 0x0000FF00;
+    pfmt.BlueMask =  0x000000FF;
+#endif
+  pfmt.PixelBytes = 4;
+  pfmt.PalEntries = 0;
+  pfmt.complete ();
+
   ext.Initialize (object_reg, this);
 
   multiFavorQuality = config->GetBool ("Video.OpenGL.MultisampleFavorQuality");
@@ -75,6 +93,8 @@ csGraphics2DGLCommon::~csGraphics2DGLCommon ()
 {
   Close ();
   
+  delete[] screen_shot;
+
   while (ssPool)
   {
     csGLScreenShot* next = ssPool->poolNext;
@@ -143,17 +163,17 @@ bool csGraphics2DGLCommon::Open ()
       // Sanity check
       if ((vMajor < 1) || ((vMajor == 1) && (vMinor < 1)))
       {
-	      Report (CS_REPORTER_SEVERITY_ERROR,
-	        "OpenGL >= 1.1 is required, but only %d.%d is present.",
-	        vMajor, vMinor);
+	Report (CS_REPORTER_SEVERITY_ERROR,
+	  "OpenGL >= 1.1 is required, but only %d.%d is present.",
+	  vMajor, vMinor);
       }
       if ((vMajor >= 1) || ((vMajor == 1) && (vMinor >= 2)))
       {
-	      //ext.InitGL_version_1_2 ();
+	//ext.InitGL_version_1_2 ();
       }
       if ((vMajor >= 1) || ((vMajor == 1) && (vMinor >= 3)))
       {
-	      //ext.InitGL_version_1_3 ();
+	//ext.InitGL_version_1_3 ();
       }
     }
   }
@@ -166,12 +186,15 @@ bool csGraphics2DGLCommon::Open ()
     (ext.CS_GL_ARB_texture_env_combine || ext.CS_GL_EXT_texture_env_combine);
   if (useCombineTE)
   {
-    for (GLint u = statecache->GetNumTexCoords(); u-- > 0; )
+    GLint texUnits;
+    glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &texUnits);
+    for (GLint u = texUnits - 1; u >= 0; u--)
     {
-      statecache->SetCurrentTCUnit (u);
-      statecache->ActivateTCUnit (csGLStateCache::activateTexEnv);
+      statecache->SetCurrentTU (u);
+      statecache->ActivateTU (csGLStateCache::activateTexEnv);
       glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
     }
+    statecache->ActivateTU (csGLStateCache::activateTexCoord);
   }
   ext.InitGL_ARB_multisample();
 
@@ -183,26 +206,28 @@ bool csGraphics2DGLCommon::Open ()
     if (glmultisamp)
     {
       if (glmultisamp != currentFormat[glpfvMultiSamples])
-	      Report (CS_REPORTER_SEVERITY_NOTIFY,
-	        "Multisample: actually %d samples", (int)glmultisamp);
+	Report (CS_REPORTER_SEVERITY_NOTIFY,
+	  "Multisample: actually %d samples",
+	  (int)glmultisamp);
 
       ext.InitGL_NV_multisample_filter_hint();
       if (ext.CS_GL_NV_multisample_filter_hint)
       {
-        glHint (GL_MULTISAMPLE_FILTER_HINT_NV,
-          multiFavorQuality ? GL_NICEST : GL_FASTEST);
+	glHint (GL_MULTISAMPLE_FILTER_HINT_NV,
+	  multiFavorQuality ? GL_NICEST : GL_FASTEST);
 	
-        GLint msHint;
-        glGetIntegerv (GL_MULTISAMPLE_FILTER_HINT_NV, &msHint);
-        Report (CS_REPORTER_SEVERITY_NOTIFY,
-          "Multisample settings: %s", ((msHint == GL_NICEST) ? "quality" :
-          ((msHint == GL_FASTEST) ? "performance" : "unknown")));
+	GLint msHint;
+	glGetIntegerv (GL_MULTISAMPLE_FILTER_HINT_NV, &msHint);
+	Report (CS_REPORTER_SEVERITY_NOTIFY,
+	  "Multisample settings: %s",
+	  ((msHint == GL_NICEST) ? "quality" :
+	  ((msHint == GL_FASTEST) ? "performance" : "unknown")));
       }
     }
     else
     {
       Report (CS_REPORTER_SEVERITY_NOTIFY,
-	      "Multisample: disabled");
+	"Multisample: disabled");
     }
   }
 
@@ -232,7 +257,7 @@ void csGraphics2DGLCommon::Close ()
 
 void csGraphics2DGLCommon::SetClipRect (int xmin, int ymin, int xmax, int ymax)
 {
-  if (fontCache) ((csGLFontCache*)fontCache)->FlushText ();
+  ((csGLFontCache*)fontCache)->FlushText ();
 
   csGraphics2D::SetClipRect (xmin, ymin, xmax, ymax);
   glScissor (vpLeft + ClipX1, fbHeight - (vpTop + ClipY2),
@@ -472,6 +497,11 @@ void csGraphics2DGLCommon::Clear (int color)
   glClear (GL_COLOR_BUFFER_BIT);
 }
 
+void csGraphics2DGLCommon::SetRGB (int i, int r, int g, int b)
+{
+  csGraphics2D::SetRGB (i, r, g, b);
+}
+
 void csGraphics2DGLCommon::DrawLine (
   float x1, float y1, float x2, float y2, int color)
 {
@@ -631,32 +661,133 @@ void csGraphics2DGLCommon::Blit (int x, int y, int w, int h,
   if (gl_alphaTest) statecache->Enable_GL_ALPHA_TEST ();
 }
 
-void csGraphics2DGLCommon::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB)
+unsigned char* csGraphics2DGLCommon::GetPixelAt (int x, int y)
 {
-  uint8 dummy;
-  csGraphics2DGLCommon::GetPixel (x, y, oR, oG, oB, dummy);
+  ((csGLFontCache*)fontCache)->FlushText ();
+
+  /// left as Height-y-1 to keep within offscreen bitmap.
+  /// but for opengl itself you'd need Height-y.
+  return screen_shot ?
+    (screen_shot + pfmt.PixelBytes * ((vpHeight - y - 1) * vpWidth + x)) : 0;
 }
 
-void csGraphics2DGLCommon::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB, uint8 &oA)
+csImageArea *csGraphics2DGLCommon::SaveArea (int x, int y, int w, int h)
 {
-  uint8 px[4];
-  if (!hasRenderTarget)
-    y = vpHeight - y;
-  glReadPixels (x, y, 1, 1, GL_RGBA,
-    GL_UNSIGNED_BYTE, px);
-  oR = px[0];
-  oG = px[1];
-  oB = px[2];
-  oA = px[3];
+  ((csGLFontCache*)fontCache)->FlushText ();
+
+  // For the time being copy data into system memory.
+#ifndef GL_VERSION_1_2
+  if (pfmt.PixelBytes != 1 && pfmt.PixelBytes != 4)
+    return 0;
+#endif
+  // Convert to Opengl co-ordinate system
+  y = vpHeight - (y + h);
+
+  if (x < 0)
+  { w += x; x = 0; }
+  if (x + w > vpWidth)
+    w = vpWidth - x;
+  if (y < 0)
+  { h += y; y = 0; }
+  if (y + h > vpHeight)
+    h = vpHeight - y;
+  if ((w <= 0) || (h <= 0))
+    return 0;
+
+  csImageArea *Area = new csImageArea (x, y, w, h);
+  if (!Area)
+    return 0;
+  int actual_width = pfmt.PixelBytes * w;
+  GLubyte* dest = new GLubyte [actual_width * h];
+  Area->data = (char *)dest;
+  if (!dest)
+  {
+    delete Area;
+    return 0;
+  }
+  statecache->Disable_GL_TEXTURE_2D ();
+  bool gl_alphaTest = (glIsEnabled(GL_ALPHA_TEST) == GL_TRUE);
+  if (gl_alphaTest) statecache->Disable_GL_ALPHA_TEST ();
+  //csGLStates::Disable_GL_DITHER ();
+  GLenum format, type;
+  switch (pfmt.PixelBytes)
+  {
+    case 1:
+      format = GL_COLOR_INDEX;
+      type = GL_UNSIGNED_BYTE;
+      break;
+#ifdef GL_VERSION_1_2
+    case 2:
+      format = GL_RGB;
+      type = GL_UNSIGNED_SHORT_5_6_5;
+      break;
+#endif
+    case 4:
+      format = GL_RGBA;
+      type = GL_UNSIGNED_BYTE;
+      break;
+    default:
+      delete Area;
+      return 0; // invalid format
+  }
+  glReadPixels (x, y, w, h, format, type, dest);
+
+  if (gl_alphaTest) statecache->Enable_GL_ALPHA_TEST ();
+  return Area;
+}
+
+void csGraphics2DGLCommon::RestoreArea (csImageArea *Area, bool Free)
+{
+  ((csGLFontCache*)fontCache)->FlushText ();
+
+  statecache->Disable_GL_TEXTURE_2D ();
+  bool gl_alphaTest = (glIsEnabled(GL_ALPHA_TEST) == GL_TRUE);
+  if (gl_alphaTest) statecache->Disable_GL_ALPHA_TEST ();
+  //csGLStates::Disable_GL_DITHER ();
+  if (Area)
+  {
+    GLenum format, type;
+    switch (pfmt.PixelBytes)
+    {
+      case 1:
+        format = GL_COLOR_INDEX;
+        type = GL_UNSIGNED_BYTE;
+        break;
+#ifdef GL_VERSION_1_2
+      case 2:
+        format = GL_RGB;
+        type = GL_UNSIGNED_SHORT_5_6_5;
+        break;
+#endif
+      case 4:
+        format = GL_RGBA;
+        type = GL_UNSIGNED_BYTE;
+        break;
+      default:
+        return; // invalid format
+    }
+    glRasterPos2i (Area->x, Area->y);
+    glDrawPixels (Area->w, Area->h, format, type, Area->data);
+    glFlush ();
+    if (Free)
+      FreeArea (Area);
+  } /* endif */
+
+  if (gl_alphaTest) statecache->Enable_GL_ALPHA_TEST ();
 }
 
 csPtr<iImage> csGraphics2DGLCommon::ScreenShot ()
 {
   ((csGLFontCache*)fontCache)->FlushText ();
 
+/*#ifndef GL_VERSION_1_2
+  if (pfmt.PixelBytes != 1 && pfmt.PixelBytes != 4)
+    return 0;
+#endif*/
+
   // Need to resolve pixel alignment issues
   int screen_width = vpWidth * (4);
-  uint8* screen_shot = new uint8 [screen_width * vpHeight];
+  if (!screen_shot) screen_shot = new uint8 [screen_width * vpHeight];
   //if (!screen_shot) return 0;
 
   glReadPixels (0, 0, vpWidth, vpHeight, GL_RGBA,
@@ -664,8 +795,6 @@ csPtr<iImage> csGraphics2DGLCommon::ScreenShot ()
 
   csGLScreenShot* ss = GetScreenShot ();
   ss->SetData (screen_shot);
-  
-  delete[] screen_shot;
 
   return ss;
 }
@@ -746,22 +875,22 @@ bool csGraphics2DGLCommon::DebugCommand (const char* cmdstr)
       csRef<iDataBuffer> buf = imgsaver->Save (images[i], "image/png");
       if (!buf)
       {
-	      Report (CS_REPORTER_SEVERITY_WARNING,
-	        "Could not save font cache page.");
+	Report (CS_REPORTER_SEVERITY_WARNING,
+	  "Could not save font cache page.");
       }
       else
       {
-	      outfn.Format ("%s%zu.png", dir, i);
-	      if (!vfs->WriteFile (outfn, (char*)buf->GetInt8 (), buf->GetSize ()))
-	      {
-	        Report (CS_REPORTER_SEVERITY_WARNING,
-	          "Could not write to %s.", outfn.GetData ());
-	      }
-	      else
-	      {
-	        Report (CS_REPORTER_SEVERITY_NOTIFY,
-	          "Dumped font cache page to %s", outfn.GetData ());
-	      }
+	outfn.Format ("%s%zu.png", dir, i);
+	if (!vfs->WriteFile (outfn, (char*)buf->GetInt8 (), buf->GetSize ()))
+	{
+	  Report (CS_REPORTER_SEVERITY_WARNING,
+	    "Could not write to %s.", outfn.GetData ());
+	}
+	else
+	{
+	  Report (CS_REPORTER_SEVERITY_NOTIFY,
+	    "Dumped font cache page to %s", outfn.GetData ());
+	}
       }
     }
 
@@ -894,7 +1023,7 @@ void csGraphics2DGLCommon::csGLPixelFormatPicker::ReadPickerValue (
       int val;
       if (sscanf (currentVal, "%d%c", &val, &dummy) == 1)
       {
-	      values.Push (val);
+	values.Push (val);
       }
       currentVal = comma ? comma + 1 : 0;
     }

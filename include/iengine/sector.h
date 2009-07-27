@@ -28,15 +28,10 @@
  * \addtogroup engine3d
  * @{ */
 
-#include "ivideo/rendermesh.h"
-
 #include "csutil/cscolor.h"
 #include "csutil/scf.h"
 #include "csutil/set.h"
 #include "csgeom/vector3.h"
-#include "csgeom/aabbtree.h"
-
-#include "iutil/threadmanager.h"
 
 struct iMeshWrapper;
 struct iMeshGenerator;
@@ -44,11 +39,13 @@ struct iMeshList;
 struct iLightList;
 struct iLight;
 struct iVisibilityCuller;
+struct iLightSectorInfluence;
 
 struct iObject;
 
 struct iRenderView;
 struct iRenderLoop;
+struct iFrustumView;
 struct iSector;
 struct iDocumentNode;
 
@@ -58,7 +55,6 @@ class csBox3;
 class csRenderMeshList;
 class csReversibleTransform;
 class csVector3;
-
 
 enum csFogMode
 {
@@ -93,7 +89,7 @@ struct csFog
 
 /**
  * Set a callback which is called when this sector is traversed.
- * The given context will be either an instance of iRenderView
+ * The given context will be either an instance of iRenderView, iFrustumView,
  * or else 0.
  *
  * This callback is used by:
@@ -169,19 +165,6 @@ struct csSectorHitBeamResult
 };
 
 /**
- * Container for render meshes for one mesh wrapper
- */
-struct csSectorVisibleRenderMeshes
-{
-  /// The mesh wrapper which is the source of the render meshes
-  iMeshWrapper* imesh;
-  /// Number of render meshes
-  int num;
-  /// Render meshes
-  csRenderMesh** rmeshes;
-};
-
-/**
  * The iSector interface is used to work with "sectors". A "sector"
  * is an empty region of space that can contain other objects (mesh
  * objects). A sector itself does not represent geometry but only
@@ -206,7 +189,7 @@ struct csSectorVisibleRenderMeshes
  */
 struct iSector : public virtual iBase
 {
-  SCF_INTERFACE(iSector,4,0,0);
+  SCF_INTERFACE(iSector,2,2,0);
   /// Get the iObject for this sector.
   virtual iObject *QueryObject () = 0;
 
@@ -281,7 +264,7 @@ struct iSector : public virtual iBase
    * Set the renderloop to use for this sector. If this is not set then
    * the default engine renderloop will be used.
    */
-  THREADED_INTERFACE1(SetRenderLoop, iRenderLoop* rl);
+  virtual void SetRenderLoop (iRenderLoop* rl) = 0;
 
   /**
    * Get the renderloop for this sector. If this returns 0 then it
@@ -319,11 +302,6 @@ struct iSector : public virtual iBase
   virtual void RemoveMeshGenerator (size_t idx) = 0;
 
   /**
-   * Remove a mesh generator.
-   */
-  virtual void RemoveMeshGenerator (const char* name) = 0;
-
-  /**
    * Remove all mesh generators.
    */
   virtual void RemoveMeshGenerators () = 0;
@@ -350,10 +328,10 @@ struct iSector : public virtual iBase
    */
   virtual iLightList* GetLights () = 0;
 
-  /**
-   * Add a light to the light lists in the main thread.
-   */
-  THREADED_INTERFACE1(AddLight, csRef<iLight> light);
+  /// Calculate lighting for all objects in this sector
+  virtual void ShineLights () = 0;
+  /// Version of ShineLights() which only affects one mesh object.
+  virtual void ShineLights (iMeshWrapper*) = 0;
 
   /**
    * Sets dynamic ambient light this sector. This works in addition
@@ -396,6 +374,12 @@ struct iSector : public virtual iBase
    * will be created and used for this sector.
    */
   virtual iVisibilityCuller* GetVisibilityCuller () = 0;
+
+  /**
+   * Check visibility in a frustum way for all things and polygons in
+   * this sector and possibly traverse through portals to other sectors.
+   */
+  virtual void CheckFrustum (iFrustumView* lview) = 0;  
 
   /**
    * Follow a beam from start to end and return the first polygon that
@@ -448,12 +432,12 @@ struct iSector : public virtual iBase
    * Set the sector callback. This will call IncRef() on the callback
    * So make sure you call DecRef() to release your own reference.
    */
-  THREADED_INTERFACE1(SetSectorCallback, csRef<iSectorCallback> cb);
+  virtual void SetSectorCallback (iSectorCallback* cb) = 0;
 
   /**
    * Remove a sector callback.
    */
-  THREADED_INTERFACE1(RemoveSectorCallback, csRef<iSectorCallback> cb);
+  virtual void RemoveSectorCallback (iSectorCallback* cb) = 0;
 
   /// Get the number of sector callbacks.
   virtual int GetSectorCallbackCount () const = 0;
@@ -494,17 +478,6 @@ struct iSector : public virtual iBase
    * with this sector visible. This will speed up later rendering.
    */
   virtual void PrecacheDraw () = 0;
-
-  /**
-   * Call all the sector callback functions
-   */
-  virtual void CallSectorCallbacks (iRenderView* rview) = 0;
-
-  /**
-   * Get the render meshes for a specific mesh wrapper. Also processes LOD.
-   */
-  virtual csSectorVisibleRenderMeshes* GetVisibleRenderMeshes (int& num,
-    iMeshWrapper* mesh, iRenderView *rview, uint32 frustum_mask) = 0;
 };
 
 

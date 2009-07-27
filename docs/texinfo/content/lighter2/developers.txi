@@ -41,6 +41,7 @@ Values: floating point values
 
 Control lightmap density.
 
+@table @code
 @item noselfshadow
 Values: @samp{yes}, @samp{no}
 

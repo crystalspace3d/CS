@@ -42,17 +42,18 @@ class CS_CRYSTALSPACE_EXPORT ThreadedJobQueue :
   public scfImplementation1<ThreadedJobQueue, iJobQueue>
 {
 public:
-  ThreadedJobQueue (size_t numWorkers = 1, ThreadPriority priority = THREAD_PRIO_NORMAL,
-    size_t numNonLowWorkers = 0);
+  ThreadedJobQueue (size_t numWorkers = 1, ThreadPriority priority = THREAD_PRIO_NORMAL);
   virtual ~ThreadedJobQueue ();
 
-  virtual void Enqueue (iJob* job, bool lowPriority = false);
+  virtual void Enqueue (iJob* job);
   virtual void PullAndRun (iJob* job);
-  virtual void PopAndRun();
   virtual void Unqueue (iJob* job, bool waitIfCurrent = true);
   virtual bool IsFinished ();
-  virtual void Wait (iJob* job);
-  virtual int32 GetQueueCount();
+
+  enum
+  {
+    MAX_WORKER_THREADS = 16
+  };
 
 private:
   
@@ -62,22 +63,21 @@ private:
   class QueueRunnable : public Runnable
   {
   public:
-    QueueRunnable (ThreadedJobQueue* queue, ThreadState* ts, bool doLow = true);
+    QueueRunnable (ThreadedJobQueue* queue, ThreadState* ts);
 
     virtual void Run ();
 
   private:
     ThreadedJobQueue* ownerQueue;
     ThreadState* threadState;
-    bool doLow;
   };
 
   // Per thread state
   struct ThreadState
   {
-    ThreadState (ThreadedJobQueue* queue, bool doLow = true)
+    ThreadState (ThreadedJobQueue* queue)
     {
-      runnable.AttachNew (new QueueRunnable (queue, this, doLow));
+      runnable.AttachNew (new QueueRunnable (queue, this));
       threadObject.AttachNew (new Thread (runnable, false));
     }
 
@@ -90,16 +90,13 @@ private:
   // Shared queue state
   typedef csFIFO<csRef<iJob> > JobFifo;
   JobFifo jobQueue;
-  JobFifo jobQueueL;
   Mutex jobMutex;
   Condition newJob;
 
-  ThreadState** allThreadState;
+  ThreadState* allThreadState[MAX_WORKER_THREADS];
   ThreadGroup allThreads;
   Mutex threadStateMutex;
-  // Condition to detect a finished job in any of the running threads
-  Mutex jobFinishedMutex;
-  Condition jobFinished;
+  Mutex jobFinishMutex;
 
   size_t numWorkerThreads;
   bool shutdownQueue;

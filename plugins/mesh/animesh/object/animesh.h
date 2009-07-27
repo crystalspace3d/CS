@@ -290,7 +290,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       const csVector3& end, csVector3& isect, float* pr);
     virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
       csVector3& isect, float* pr, int* polygon_idx,
-      iMaterialWrapper** material, csArray<iMaterialWrapper*>* materials);
+      iMaterialWrapper** material);
 
     virtual void SetMeshWrapper (iMeshWrapper* logparent);
     virtual iMeshWrapper* GetMeshWrapper () const;
@@ -305,6 +305,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
     virtual void SetMixMode (uint mode);
     virtual uint GetMixMode () const;
+
+    virtual void InvalidateMaterialHandles ();
 
     virtual void PositionChild (iMeshObject* child,csTicks current_time);
 

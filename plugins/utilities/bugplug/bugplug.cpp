@@ -47,7 +47,6 @@
 #include "csutil/flags.h"
 #include "csutil/regexp.h"
 #include "csutil/scanstr.h"
-#include "csutil/set.h"
 #include "csutil/scf.h"
 #include "csutil/snprintf.h"
 #include "csutil/sysfunc.h"
@@ -58,8 +57,7 @@
 #include "iengine/material.h"
 #include "iengine/mesh.h"
 #include "iengine/movable.h"
-#include "iengine/portalcontainer.h"
-#include "iengine/portal.h"
+#include "iengine/region.h"
 #include "iengine/rview.h"
 #include "iengine/sector.h"
 #include "iengine/viscull.h"
@@ -69,6 +67,7 @@
 #include "imap/saver.h"
 #include "imesh/genmesh.h"
 #include "imesh/object.h"
+#include "imesh/thing.h"
 #include "imesh/animesh.h"
 #include "imesh/skeleton2.h"
 #include "imesh/skeleton2anim.h"
@@ -258,9 +257,7 @@ bool csBugPlug::Initialize (iObjectRegistry *object_reg)
   }
 
   stringSet = csQueryRegistryTagInterface<iStringSet> (object_reg,
-    "crystalspace.shared.stringset");
-  stringSetSvName = csQueryRegistryTagInterface<iShaderVarStringSet> (object_reg,
-    "crystalspace.shader.variablenameset");
+      "crystalspace.shared.stringset");
   return true;
 }
 
@@ -327,35 +324,12 @@ void csBugPlug::SetupPlugin ()
   captureMIME = config->GetStr ("Bugplug.Capture.Image.MIME",
     "image/png");
   captureOptions = config->GetStr ("Bugplug.Capture.Image.Options");
-  
-  const char* framespeed = config->GetStr ("Bugplug.ShowFrameSpeed", "fps");
-  if (framespeed)
-  {
-    if (strcmp (framespeed, "fps") == 0)
-    {
-      do_fps = true;
-      display_time = false;
-    }
-    else if (strcmp (framespeed, "time") == 0)
-    {
-      do_fps = true;
-      display_time = true;
-    }
-    else if (strcmp (framespeed, "off") == 0)
-    {
-      do_fps = false;
-      display_time = false;
-    }
-    else
-    {
-      Report (CS_REPORTER_SEVERITY_WARNING,
-        "Invalid value '%s' for frame speed display", framespeed);
-    }
-  }
 
   initialized = true;
 
   Report (CS_REPORTER_SEVERITY_DEBUG, "BugPlug loaded...");
+
+  do_clear = false;
 }
 
 void csBugPlug::SwitchCuller (iSector* sector, const char* culler)
@@ -542,10 +516,27 @@ void csBugPlug::MouseButtonLeft (iCamera* camera)
       csVector2 (mouse_x, mouse_y), 100.0f, camera);
   iMeshWrapper* sel = result.mesh;
 
+  const char* poly_name = 0;
+  if (result.polygon_idx != -1)
+  {
+    csRef<iThingFactoryState> tfs = scfQueryInterface<iThingFactoryState> 
+      (sel->GetMeshObject ()->GetFactory());
+    if (tfs)
+    {
+      poly_name = tfs->GetPolygonName (result.polygon_idx);
+      Dump (tfs, result.polygon_idx);
+    }
+  }
+  else
+  {
+    poly_name = 0;
+  }
+
   csVector3 vw = result.isect;
   csVector3 v = camera->GetTransform ().Other2This (vw);
   Report (CS_REPORTER_SEVERITY_DEBUG,
-    "LMB down : c:(%f,%f,%f) w:(%f,%f,%f)", v.x, v.y, v.z, vw.x, vw.y, vw.z);
+    "LMB down : c:(%f,%f,%f) w:(%f,%f,%f) p:'%s'",
+    v.x, v.y, v.z, vw.x, vw.y, vw.z, poly_name ? poly_name : "<none>");
 
   if (sel)
   {
@@ -708,6 +699,11 @@ bool csBugPlug::ExecCommand (int cmd, const csString& args)
     case DEBUGCMD_DUMPSEC:
       Report (CS_REPORTER_SEVERITY_DEBUG, "Not implemented yet.");
       break;
+    case DEBUGCMD_CLEAR:
+      do_clear = !do_clear;
+      Report (CS_REPORTER_SEVERITY_DEBUG, "BugPlug %s screen clearing.",
+	  	do_clear ? "enabled" : "disabled");
+      break;
     case DEBUGCMD_EDGES:
       ToggleG3DState (G3DRENDERSTATE_EDGES, "edge drawing");
       {
@@ -715,6 +711,7 @@ bool csBugPlug::ExecCommand (int cmd, const csString& args)
 	  break;
 	bool v;
 	v = (G3D->GetRenderState (G3DRENDERSTATE_EDGES) != 0);
+	if (v && !do_clear) do_clear = true;
       }
       break;
     case DEBUGCMD_TEXTURE:
@@ -765,6 +762,23 @@ bool csBugPlug::ExecCommand (int cmd, const csString& args)
       break;
     case DEBUGCMD_SELECTMESH:
       EnterEditMode (cmd, "Enter mesh name regexp pattern:", "");
+      break;
+    case DEBUGCMD_DBLBUFF:
+      {
+	  bool state = G2D->GetDoubleBufferState ();
+	  state = !state;
+	  if (!G2D->DoubleBuffer (state))
+	  {
+	    Report (CS_REPORTER_SEVERITY_DEBUG,
+	    	"Double buffer not supported in current video mode!");
+	  }
+	  else
+	  {
+	    Report (CS_REPORTER_SEVERITY_DEBUG,
+	    	"BugPlug %s double buffering.",
+		state ? "enabled" : "disabled");
+	  }
+	}
       break;
     case DEBUGCMD_TERRVIS:
 	{
@@ -1124,39 +1138,24 @@ bool csBugPlug::ExecCommand (int cmd, const csString& args)
 	    }
 	  }
       break;
-    case DEBUGCMD_PRINTPORTALS:
-        {
-          if (catcher->camera)
-          {
-            iSector* sector = catcher->camera->GetSector();
-            printf("Printing portals for sector %s:\n", sector->QueryObject()->GetName());
-            csSet<csPtrKey<iMeshWrapper> > portalms = sector->GetPortalMeshes();
-            csSet<csPtrKey<iMeshWrapper> >::GlobalIterator itr = portalms.GetIterator();
-            while(itr.HasNext())
-            {
-              iPortalContainer* portalc = itr.Next()->GetPortalContainer();
-              if(portalc)
-              {
-                for(int i=0; i<portalc->GetPortalCount(); ++i)
-                {
-                  iPortal* portal = portalc->GetPortal(i);
-                  printf("Portal name: %s\n", portal->GetName());
-                  printf("Portal warp: %s\n", portal->GetWarp().Description().GetData());
-                  if(portal->GetSector())
-                  {
-                    printf("Portal target sector: %s\n", portal->GetSector()->QueryObject()->GetName());
-                  }
-                  else
-                  {
-                    printf("Portal target sector: Not resolved\n");
-                  }
-                  printf("Portal WS plane: %s\n", portal->GetWorldPlane().Description().GetData());
-                }
-              }
-            }
-          }
-          break;
-        }
+    case DEBUGCMD_UNPREPARE:
+	Report (CS_REPORTER_SEVERITY_DEBUG,
+	    	"Unprepare all things...");
+	{
+	  int i;
+	  iMeshList* ml = Engine->GetMeshes ();
+	  for (i = 0 ; i < ml->GetCount () ; i++)
+	  {
+	    iMeshWrapper* m = ml->Get (i);
+	    csRef<iThingState> th = 
+	    	scfQueryInterface<iThingState> (m->GetMeshObject ());
+	    if (th)
+	    {
+	      th->Unprepare ();
+	    }
+	  }
+	}
+      break;
     case DEBUGCMD_COLORSECTORS:
 	Report (CS_REPORTER_SEVERITY_DEBUG,
 	    	"Color all sectors...");
@@ -1536,6 +1535,13 @@ bool csBugPlug::HandleStartFrame (iEvent& /*event*/)
 
   if (shadow) shadow->ClearView ();
   
+  if (do_clear)
+  {
+    G3D->BeginDraw (CSDRAW_2DGRAPHICS | CSDRAW_CLEARZBUFFER);
+    int bgcolor_clear = G2D->FindRGB (0, 255, 255);
+    G2D->Clear (bgcolor_clear);
+  }
+
   if (do_profiler_reset)
   {
     CS_PROFILER_RESET();
@@ -1567,34 +1573,6 @@ static inline void BugplugBox (iGraphics2D* G2D,
   G2D->DrawLine (x+w, y, x+w, y+h, bordercolor);
   G2D->DrawLine (x+w, y+h, x, y+h, bordercolor);
   G2D->DrawLine (x, y+h, x, y, bordercolor);
-}
-
-static inline void DrawBox3D (iGraphics3D* G3D, 
-                              const csBox3& box,
-                              const csReversibleTransform& tr,
-                              int color)
-{
-  csVector3 vxyz = tr * box.GetCorner (CS_BOX_CORNER_xyz);
-  csVector3 vXyz = tr * box.GetCorner (CS_BOX_CORNER_Xyz);
-  csVector3 vxYz = tr * box.GetCorner (CS_BOX_CORNER_xYz);
-  csVector3 vxyZ = tr * box.GetCorner (CS_BOX_CORNER_xyZ);
-  csVector3 vXYz = tr * box.GetCorner (CS_BOX_CORNER_XYz);
-  csVector3 vXyZ = tr * box.GetCorner (CS_BOX_CORNER_XyZ);
-  csVector3 vxYZ = tr * box.GetCorner (CS_BOX_CORNER_xYZ);
-  csVector3 vXYZ = tr * box.GetCorner (CS_BOX_CORNER_XYZ);
-  float fov = G3D->GetPerspectiveAspect ();
-  G3D->DrawLine (vxyz, vXyz, fov, color);
-  G3D->DrawLine (vXyz, vXYz, fov, color);
-  G3D->DrawLine (vXYz, vxYz, fov, color);
-  G3D->DrawLine (vxYz, vxyz, fov, color);
-  G3D->DrawLine (vxyZ, vXyZ, fov, color);
-  G3D->DrawLine (vXyZ, vXYZ, fov, color);
-  G3D->DrawLine (vXYZ, vxYZ, fov, color);
-  G3D->DrawLine (vxYZ, vxyZ, fov, color);
-  G3D->DrawLine (vxyz, vxyZ, fov, color);
-  G3D->DrawLine (vxYz, vxYZ, fov, color);
-  G3D->DrawLine (vXyz, vXyZ, fov, color);
-  G3D->DrawLine (vXYz, vXYZ, fov, color);
 }
 
 bool csBugPlug::HandleFrame (iEvent& /*event*/)
@@ -1687,27 +1665,31 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
       if (!selected_meshes[k]) continue;
       iMovable* mov = selected_meshes[k]->GetMovable ();
       csReversibleTransform tr_o2c = tr_w2c / mov->GetFullTransform ();
-      csRenderMesh** rmeshes = 0;
-      int rmesh_num = 0;
       if (do_bbox)
       {
-        int bbox_color;
-        if (!rmeshes) rmeshes = 
-          selected_meshes[k]->GetMeshObject()->GetRenderMeshes (rmesh_num, rview, 
-            mov, ~0/*frustum_mask*/);
-        if (rmeshes != 0)
-        {
-	  bbox_color = G3D->GetDriver2D ()->FindRGB (255, 0, 255);
-          for (int n = 0; n < rmesh_num; n++)
-          {
-            DrawBox3D (G3D, rmeshes[n]->bbox, tr_o2c, bbox_color);
-          }
-        }
-        
-        bbox_color = G3D->GetDriver2D ()->FindRGB (0, 255, 255);
+        int bbox_color = G3D->GetDriver2D ()->FindRGB (0, 255, 255);
         const csBox3& bbox = selected_meshes[k]->GetMeshObject ()
 	  ->GetObjectModel ()->GetObjectBoundingBox ();
-	DrawBox3D (G3D, bbox, tr_o2c, bbox_color);
+        csVector3 vxyz = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_xyz);
+        csVector3 vXyz = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_Xyz);
+        csVector3 vxYz = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_xYz);
+        csVector3 vxyZ = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_xyZ);
+        csVector3 vXYz = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_XYz);
+        csVector3 vXyZ = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_XyZ);
+        csVector3 vxYZ = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_xYZ);
+        csVector3 vXYZ = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_XYZ);
+        G3D->DrawLine (vxyz, vXyz, fov, bbox_color);
+        G3D->DrawLine (vXyz, vXYz, fov, bbox_color);
+        G3D->DrawLine (vXYz, vxYz, fov, bbox_color);
+        G3D->DrawLine (vxYz, vxyz, fov, bbox_color);
+        G3D->DrawLine (vxyZ, vXyZ, fov, bbox_color);
+        G3D->DrawLine (vXyZ, vXYZ, fov, bbox_color);
+        G3D->DrawLine (vXYZ, vxYZ, fov, bbox_color);
+        G3D->DrawLine (vxYZ, vxyZ, fov, bbox_color);
+        G3D->DrawLine (vxyz, vxyZ, fov, bbox_color);
+        G3D->DrawLine (vxYz, vxYZ, fov, bbox_color);
+        G3D->DrawLine (vXyz, vXyZ, fov, bbox_color);
+        G3D->DrawLine (vXYz, vXYZ, fov, bbox_color);
       }
       if (do_rad)
       {
@@ -1730,13 +1712,14 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
         int denorm_color = G3D->GetDriver2D ()->FindRGB (128, 0, 255);
         int tang_color = G3D->GetDriver2D ()->FindRGB (255, 0, 0);
         int bitang_color = G3D->GetDriver2D ()->FindRGB (0, 255, 0);
+        int num;
         
-        if (!rmeshes) rmeshes = 
-          selected_meshes[k]->GetMeshObject()->GetRenderMeshes (rmesh_num, rview, 
-            mov, ~0/*frustum_mask*/);
+        csRenderMesh** rmeshes = 
+          selected_meshes[k]->GetMeshObject()->GetRenderMeshes (num, rview, 
+            selected_meshes[k]->GetMovable(), ~0/*frustum_mask*/);
         if (rmeshes != 0)
         {
-          for (int n = 0; n < rmesh_num; n++)
+          for (int n = 0; n < num; n++)
           {
             iRenderBuffer* bufPos = rmeshes[n]->buffers->GetRenderBuffer (
               CS_BUFFER_POSITION);
@@ -2103,8 +2086,7 @@ void csBugPlug::ExitEditMode ()
 
 void csBugPlug::DebugCmd (const char* cmd)
 {
-  CS_ALLOC_STACK_ARRAY(char, cmdstr, strlen (cmd)+1);
-  strcpy (cmdstr, cmd);
+  char* cmdstr = csStrNew (cmd);
   char* params;
   char* space = strchr (cmdstr, ' ');
   if (space == 0)
@@ -2149,12 +2131,12 @@ void csBugPlug::DebugCmd (const char* cmd)
       {
 	bool res = dbghelp->DebugCommand (params);
 	Report (CS_REPORTER_SEVERITY_DEBUG,
-	  "Execution of debug command '%s' on '%s' %s.",
-	  params, cmdstr,
+	  "Debug command execution %s.",
 	  res ? "successful" : "failed");
       }
     }
   }
+  delete[] cmdstr;
 }
 
 int csBugPlug::GetKeyCode (const char* keystring, bool& shift, bool& alt,
@@ -2238,6 +2220,7 @@ int csBugPlug::GetCommandCode (const char* cmdstr, csString& args)
   if (!strcmp (cmd, "dumpeng"))		return DEBUGCMD_DUMPENG;
   if (!strcmp (cmd, "dumpsec"))		return DEBUGCMD_DUMPSEC;
   if (!strcmp (cmd, "edges"))		return DEBUGCMD_EDGES;
+  if (!strcmp (cmd, "clear"))		return DEBUGCMD_CLEAR;
   if (!strcmp (cmd, "cacheclear"))	return DEBUGCMD_CACHECLEAR;
   if (!strcmp (cmd, "cachedump"))	return DEBUGCMD_CACHEDUMP;
   if (!strcmp (cmd, "texture"))		return DEBUGCMD_TEXTURE;
@@ -2249,6 +2232,7 @@ int csBugPlug::GetCommandCode (const char* cmdstr, csString& args)
   if (!strcmp (cmd, "mmx"))		return DEBUGCMD_MMX;
   if (!strcmp (cmd, "transp"))		return DEBUGCMD_TRANSP;
   if (!strcmp (cmd, "gamma"))		return DEBUGCMD_GAMMA;
+  if (!strcmp (cmd, "dblbuff"))		return DEBUGCMD_DBLBUFF;
   if (!strcmp (cmd, "dumpcam"))		return DEBUGCMD_DUMPCAM;
   if (!strcmp (cmd, "fov"))		return DEBUGCMD_FOV;
   if (!strcmp (cmd, "fovangle"))	return DEBUGCMD_FOVANGLE;
@@ -2285,6 +2269,7 @@ int csBugPlug::GetCommandCode (const char* cmdstr, csString& args)
   if (!strcmp (cmd, "shadowdebug"))	return DEBUGCMD_SHADOWDEBUG;
   if (!strcmp (cmd, "debugcmd"))	return DEBUGCMD_DEBUGCMD;
   if (!strcmp (cmd, "memorydump"))	return DEBUGCMD_MEMORYDUMP;
+  if (!strcmp (cmd, "unprepare"))	return DEBUGCMD_UNPREPARE;
   if (!strcmp (cmd, "colorsectors"))	return DEBUGCMD_COLORSECTORS;
   if (!strcmp (cmd, "switchculler"))	return DEBUGCMD_SWITCHCULLER;
   if (!strcmp (cmd, "selectmesh"))	return DEBUGCMD_SELECTMESH;
@@ -2302,7 +2287,6 @@ int csBugPlug::GetCommandCode (const char* cmdstr, csString& args)
   if (!strcmp (cmd, "meshnorm"))	return DEBUGCMD_MESHNORM;
   if (!strcmp (cmd, "toggle_fps_time")) return DEBUGCMD_TOGGLEFPSTIME;
   if (!strcmp (cmd, "meshskel"))        return DEBUGCMD_MESHSKEL;
-  if (!strcmp (cmd, "printportals"))    return DEBUGCMD_PRINTPORTALS;
 
   return DEBUGCMD_UNKNOWN;
 }
@@ -2611,6 +2595,22 @@ void csBugPlug::Dump (iCamera* c)
   Dump (4, trans.GetO2T (), "Camera matrix");
 }
 
+void csBugPlug::Dump (iThingFactoryState* fact, int polyidx)
+{
+  const char* poly_name = fact->GetPolygonName (polyidx);
+  if (!poly_name) poly_name = "<noname>";
+  Report (CS_REPORTER_SEVERITY_DEBUG, "Polygon '%s'",
+  	poly_name);
+  int nv = fact->GetPolygonVertexCount (polyidx);
+  int i;
+  int* idx = fact->GetPolygonVertexIndices (polyidx);
+  csString buf;
+  buf << "  Vertices: ";
+  for (i = 0 ; i < nv ; i++)
+    buf << idx[i] << ' ';
+  Report (CS_REPORTER_SEVERITY_DEBUG, buf);
+}
+
 bool csBugPlug::HandleEvent (iEvent& event)
 {
   if (CS_IS_KEYBOARD_EVENT(object_reg, event))
@@ -2717,7 +2717,11 @@ void csBugPlug::OneSector (iCamera* camera)
 void csBugPlug::CleanDebugSector ()
 {
   if (!debug_sector.sector) return;
-  Engine->RemoveCollection ("__BugPlug_region__");
+  iRegion* db_region = Engine->CreateRegion ("__BugPlug_region__");
+  db_region->DeleteAll ();
+
+  iRegionList* reglist = Engine->GetRegions ();
+  reglist->Remove (db_region);
 
   delete debug_sector.view;
 
@@ -2734,9 +2738,9 @@ void csBugPlug::SetupDebugSector ()
     return;
   }
 
-  iCollection* db_collection = Engine->CreateCollection ("__BugPlug_collection__");
+  iRegion* db_region = Engine->CreateRegion ("__BugPlug_region__");
   debug_sector.sector = Engine->CreateSector ("__BugPlug_sector__");
-  db_collection->Add (debug_sector.sector->QueryObject ());
+  db_region->QueryObject ()->ObjAdd (debug_sector.sector->QueryObject ());
 
   debug_sector.view = new csView (Engine, G3D);
   int w3d = G3D->GetWidth ();
@@ -2756,7 +2760,7 @@ iMaterialWrapper* csBugPlug::FindColor (float r, float g, float b)
   csRef<iMaterial> mat (Engine->CreateBaseMaterial (0));
 
   // Attach a new SV to it
-  csShaderVariable* var = mat->GetVariableAdd (stringSetSvName->Request (CS_MATERIAL_VARNAME_FLATCOLOR));
+  csShaderVariable* var = mat->GetVariableAdd (stringSet->Request (CS_MATERIAL_VARNAME_FLATCOLOR));
   var->SetValue (csColor (r,g,b));
 
   mw = Engine->GetMaterialList ()->NewMaterial (mat, name);
@@ -3272,7 +3276,7 @@ void csBugPlug::SaveMap ()
   do
   {
     name.Format ("/this/world%u.xml", i);
-    if ((exists = VFS->Exists (name))) i++;
+    if (exists = VFS->Exists (name)) i++;
   }
   while ((i > 0) && (exists));
 

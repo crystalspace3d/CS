@@ -37,7 +37,7 @@
 #include "csutil/ref.h"
 #include "csutil/refarr.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/threading/rwmutex.h"
+#include "csutil/threading/mutex.h"
 #include "csutil/weakref.h"
 #include "csutil/eventhandlers.h"
 #include "iutil/eventh.h"
@@ -98,9 +98,6 @@ private:
   csPoolEvent* EventPool;
   /// Registered event handler (used for proper cleanup in RemoveAllListeners())
   csRefArray<iEventHandler> handlers;
-  /// Mutex for thread safety.
-  CS::Threading::ReadWriteMutex mutex;
-  CS::Threading::ReadWriteMutex etreeMutex;
 
   // Enlarge the queue size.
   void Resize (size_t iLength);  
@@ -224,6 +221,104 @@ public:
   virtual bool IsEmpty () { return evqHead == evqTail; }
 
   csEventID Frame;
+  CS_DEPRECATED_VAR(csEventID PreProcess);
+  CS_DEPRECATED_VAR(csEventID ProcessEvent);
+  CS_DEPRECATED_VAR(csEventID PostProcess);
+  CS_DEPRECATED_VAR(csEventID FinalProcess);
+
+#include "csutil/deprecated_warn_off.h"
+
+  /**
+   * As a transitional measure, the csevPreProcess, csevProcess,
+   * csevPostProcess and csevFinalProcess events are actually sub-events
+   * dispatched by a csevFrame handler.  Each of the TypedFrameEventDispatcher
+   * child classes receives the csevFrame event in order and dispatches
+   * its name event.  Event handlers should either subscribe to these
+   * events or subscribe to csevFrame.  They may wish to use these
+   * event handlers as "milestones" relative to which they define their
+   * own order (e.g., "I can process the Frame event at any time between
+   * the handling of the Process event and the handling of the FinalProcess 
+   * event").
+   */
+  struct iTypedFrameEventDispatcher : public iEventHandler 
+  {
+  protected:
+    csWeakRef<csEventQueue> parent;
+    csEventID sendEvent;
+  public:
+    iTypedFrameEventDispatcher () 
+    {
+    }
+    virtual ~iTypedFrameEventDispatcher ()
+    {
+    }
+    CS_EVENTHANDLER_DEFAULT_INSTANCE_CONSTRAINTS
+    virtual bool HandleEvent (iEvent&) 
+    { 
+      parent->Notify (sendEvent);
+      return false;
+    }
+  };
+
+  class PreProcessFrameEventDispatcher 
+    : public scfImplementation2<PreProcessFrameEventDispatcher, 
+                                csEventQueue::iTypedFrameEventDispatcher, 
+                                scfFakeInterface<iEventHandler> > 
+  {
+  public:
+    PreProcessFrameEventDispatcher (csEventQueue* parent) 
+      : scfImplementationType (this)
+    {
+      iTypedFrameEventDispatcher::parent = parent;
+      sendEvent = parent->PreProcess;
+    }
+    CS_EVENTHANDLER_PHASE_LOGIC("crystalspace.deprecated.preprocess")
+  };
+  
+  class ProcessFrameEventDispatcher 
+    : public scfImplementation2<ProcessFrameEventDispatcher, 
+                                csEventQueue::iTypedFrameEventDispatcher, 
+                                scfFakeInterface<iEventHandler> > 
+  {
+  public:
+    ProcessFrameEventDispatcher (csEventQueue* parent) 
+      : scfImplementationType (this)
+    {
+      iTypedFrameEventDispatcher::parent = parent;
+      sendEvent = parent->ProcessEvent;
+    }
+    CS_EVENTHANDLER_PHASE_3D("crystalspace.deprecated.process")
+  };
+
+  class PostProcessFrameEventDispatcher 
+    : public scfImplementation2<PostProcessFrameEventDispatcher, 
+                                csEventQueue::iTypedFrameEventDispatcher, 
+                                scfFakeInterface<iEventHandler> > 
+  {
+  public:
+    PostProcessFrameEventDispatcher (csEventQueue* parent) 
+      : scfImplementationType (this)
+    {
+      iTypedFrameEventDispatcher::parent = parent;
+      sendEvent = parent->PostProcess;
+    }
+    CS_EVENTHANDLER_PHASE_2D("crystalspace.deprecated.postprocess")
+  };
+  
+  class FinalProcessFrameEventDispatcher 
+    : public scfImplementation2<FinalProcessFrameEventDispatcher, 
+                                csEventQueue::iTypedFrameEventDispatcher, 
+                                scfFakeInterface<iEventHandler> > 
+  {
+  public:
+    FinalProcessFrameEventDispatcher (csEventQueue* parent) 
+      : scfImplementationType (this)
+    {
+      iTypedFrameEventDispatcher::parent = parent;
+      sendEvent = parent->FinalProcess;
+    }
+    CS_EVENTHANDLER_PHASE_FRAME("crystalspace.deprecated.finalprocess")
+  };
 };
 
 #endif // __CS_CSEVENTQ_H__

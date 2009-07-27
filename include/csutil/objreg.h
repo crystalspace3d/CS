@@ -43,9 +43,6 @@ private:
   // True when this object is being cleared; prevents external changes.
   bool clearing;
 
-  // Lock for thread safety.
-  CS::Threading::RecursiveMutex registryLock;
-
 public:
   csObjectRegistry ();
   /// Client must explicitly call Clear().

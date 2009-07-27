@@ -7,10 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-  		<Platform Name="Win32"/>
-    	</Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
 	<Configurations>
-            		<Configuration
+  		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release7\build\plgglshader_cg\"
 			IntermediateDirectory="..\..\out\release7\build\plgglshader_cg\"
@@ -24,8 +25,9 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\release7\build\plgglshader_cg\glshader_cg.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -35,10 +37,9 @@
 				ObjectFile="..\..\out\release7\build\plgglshader_cg\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -50,12 +51,12 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\release7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDatabaseFile="..\..\out\release7\build\plgglshader_cg\glshader_cg.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\release7\build\plgglshader_cg\plgglshader_cg.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib cg.lib cgGL.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -87,7 +88,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release7\build\plgglshader_cg\"
 			IntermediateDirectory="..\..\out\release7\build\plgglshader_cg\"
@@ -101,8 +102,9 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\release7\build\plgglshader_cg\glshader_cg.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -112,10 +114,9 @@
 				ObjectFile="..\..\out\release7\build\plgglshader_cg\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -127,12 +128,12 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\release7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDatabaseFile="..\..\out\release7\build\plgglshader_cg\glshader_cg.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\release7\build\plgglshader_cg\plgglshader_cg.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib cg.lib cgGL.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -164,7 +165,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\plgglshader_cg\"
 			IntermediateDirectory="..\..\out\debug7\build\plgglshader_cg\"
@@ -175,10 +176,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -188,10 +190,9 @@
 				ObjectFile="..\..\out\debug7\build\plgglshader_cg\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -201,12 +202,12 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib cg.lib cgGL.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -238,7 +239,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\plgglshader_cg\"
 			IntermediateDirectory="..\..\out\debug7\build\plgglshader_cg\"
@@ -249,10 +250,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -262,10 +264,9 @@
 				ObjectFile="..\..\out\debug7\build\plgglshader_cg\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -275,12 +276,12 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib cg.lib cgGL.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -312,7 +313,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\plgglshader_cg\"
 			IntermediateDirectory="..\..\out\debug7\build\plgglshader_cg\"
@@ -323,10 +324,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -336,10 +338,9 @@
 				ObjectFile="..\..\out\debug7\build\plgglshader_cg\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -349,12 +350,12 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib cg.lib cgGL.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -386,7 +387,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\plgglshader_cg\"
 			IntermediateDirectory="..\..\out\debug7\build\plgglshader_cg\"
@@ -397,10 +398,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -410,10 +412,9 @@
 				ObjectFile="..\..\out\debug7\build\plgglshader_cg\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -423,12 +424,12 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib cg.lib cgGL.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -460,7 +461,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\plgglshader_cg\"
 			IntermediateDirectory="..\..\out\debug7\build\plgglshader_cg\"
@@ -471,10 +472,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -484,10 +486,9 @@
 				ObjectFile="..\..\out\debug7\build\plgglshader_cg\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -497,12 +498,12 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib cg.lib cgGL.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -534,7 +535,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug7\build\plgglshader_cg\"
 			IntermediateDirectory="..\..\out\debug7\build\plgglshader_cg\"
@@ -545,10 +546,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -558,10 +560,9 @@
 				ObjectFile="..\..\out\debug7\build\plgglshader_cg\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -571,12 +572,12 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\glshader_cg.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib cg.lib cgGL.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
 				TargetMachine="1"/>
@@ -608,155 +609,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
-			Name="ThreadChecker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug7\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug7\build\plgglshader_cg\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug7\build\plgglshader_cg\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug7\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug7\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="ThreadChecker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug7\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug7\build\plgglshader_cg\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug7\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug7\build\plgglshader_cg\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug7\build\plgglshader_cg\Win32\glshader_cg.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug7\build\plgglshader_cg\Win32\plgglshader_cg.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug7\build\plgglshader_cg\plgglshader_cg.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug7\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug7\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=7"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-              	</Configurations>
+  	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"
@@ -774,28 +627,10 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_clip.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_params.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_parse.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgfp.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgvp.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore_crc.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -803,9 +638,6 @@
 			Filter="">
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\beautify_cg.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\cg_common.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\combiner_cg.h">
@@ -821,12 +653,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgvp.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.h">
 			</File>
 		</Filter>
 		<Filter

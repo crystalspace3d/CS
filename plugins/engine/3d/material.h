@@ -53,7 +53,7 @@ private:
   /// Shader associated with material
   csHash<csRef<iShader>, csStringID> shaders;
   csEngine* engine;
-  csShaderVariable* GetVar (CS::ShaderVarStringID name, bool create = false);
+  csShaderVariable* GetVar (csStringID name, bool create = false);
 
   struct SVNamesHolder
   {
@@ -90,10 +90,10 @@ public:
   void SetTextureWrapper (iTextureWrapper* tex);
 
   /// Set a texture (pass 0 to set no texture)
-  void SetTextureWrapper (CS::ShaderVarStringID name, iTextureWrapper* tex);
+  void SetTextureWrapper (csStringID name, iTextureWrapper* tex);
 
   /// Get a texture (if none 0 is returned)
-  iTextureWrapper* GetTextureWrapper (CS::ShaderVarStringID name);
+  iTextureWrapper* GetTextureWrapper (csStringID name);
 
   /**\name iMaterial implementation
    * @{ */
@@ -111,10 +111,7 @@ public:
   /**
    * Get a texture from the material.
    */
-  virtual iTextureHandle *GetTexture (CS::ShaderVarStringID name);
-
-  virtual iShader* GetFirstShader (const csStringID* types,
-    size_t numTypes);
+  virtual iTextureHandle *GetTexture (csStringID name);
 
   /** @} */
 
@@ -191,7 +188,6 @@ class csMaterialList : public scfImplementation1<csMaterialList,
 private:
   csRefArrayObject<iMaterialWrapper> list;
   csHash<iMaterialWrapper*, csString> mat_hash;
-  mutable CS::Threading::ReadWriteMutex matLock;
 
   class NameChangeListener : public scfImplementation1<NameChangeListener,
   	iObjectNameChangeListener>
@@ -225,13 +221,9 @@ public:
 
   virtual iMaterialWrapper* NewMaterial (iMaterial* material,
   	const char* name);
-  virtual csPtr<iMaterialWrapper> CreateMaterial (iMaterial* material,
-  	const char* name);
-
-  virtual int GetCount () const;
-  virtual iMaterialWrapper* Get (int n) const;
+  virtual int GetCount () const { return (int)list.GetSize (); }
+  virtual iMaterialWrapper *Get (int n) const { return list[n]; }
   virtual int Add (iMaterialWrapper *obj);
-  void AddBatch (csRef<iMaterialLoaderIterator> itr);
   virtual bool Remove (iMaterialWrapper *obj);
   virtual bool Remove (int n);
   virtual void RemoveAll ();

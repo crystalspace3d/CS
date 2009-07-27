@@ -390,7 +390,7 @@ void csBinaryDocAttribute::SetValueAsFloat (float f)
 
 void csBinaryDocAttribute::Store (csMemFile* nodesFile)
 {
-  bdNodeAttributePOD diskAttr;
+  bdNodeAttribute diskAttr;
   size_t attrSize = sizeof (diskAttr);
 
   diskAttr.flags = attrPtr->flags & BD_VALUE_TYPE_MASK;
@@ -413,18 +413,13 @@ void csBinaryDocAttribute::Store (csMemFile* nodesFile)
     diskAttr.value = attrPtr->value;
 
   bool putFlagsInName = false;
-  const size_t nameSize = strlen (attrPtr->GetNameStr (node->doc))+1;
-  if (nameSize <= MAX_IMM_ATTR_NAME_STR)
+  const size_t nameLen = strlen (attrPtr->GetNameStr (node->doc));
+  if (nameLen < MAX_IMM_ATTR_NAME_STR)
   {
     diskAttr.flags |= BD_ATTR_NAME_IMMEDIATE;
     diskAttr.nameID = 0;
-    /* We really want to copy into nameID.
-     * Yes, it may spill over, that's by design.
-     * But since fortify will complain when that happens, directly
-     * copy into an offset of the diskAttr struct. */
-    memcpy ((char*)&diskAttr + offsetof (bdNodeAttributePOD, nameID),
-      attrPtr->GetNameStr (node->doc), nameSize);
-    putFlagsInName = (nameSize <= MAX_IMM_ATTR_NAME_STR_W_FLAGS);
+    strcpy ((char*)&diskAttr.nameID, attrPtr->GetNameStr (node->doc));
+    putFlagsInName = (nameLen < MAX_IMM_ATTR_NAME_STR_W_FLAGS);
   }
   else
   {
@@ -760,8 +755,9 @@ void csBinaryDocNode::DecRef ()
 {
   /* In case we're freed the doc's node pool will be accessed; to make sure
      it's valid keep a ref to the doc while we're (potentially) destructed */
-  csRef<csBinaryDocument> tmp(doc);
+  doc->csBinaryDocument::IncRef();
   scfPooledImplementationType::DecRef();
+  doc->csBinaryDocument::DecRef();
 }
 
 csBinaryDocNode::csBinaryDocNode (csBdNode* ptr,
@@ -1400,16 +1396,10 @@ void csBinaryDocNode::Store (csMemFile* nodesFile)
 	(diskNode.flags & ~BD_VALUE_TYPE_MASK) | BD_VALUE_TYPE_STR_IMMEDIATE;
     // Hack: cram one more byte into value, if possible
     if ((newFlags & BE (0xff)) == 0) maximmvalue++;
-    size_t vstrsize = strlen (nodeData->vstr)+1;
-    if (vstrsize <= maximmvalue)
+    if (strlen (nodeData->vstr) < maximmvalue)
     {
       diskNode.value = 0;
-      /* We really want to copy into value.
-       * Yes, it may spill over, that's by design.
-       * But since fortify will complain when that happens, copy into the
-       * diskNode struct directly, exploiting that value is the first
-       * member. */
-      memcpy (&diskNode, nodeData->vstr, vstrsize);
+      strcpy ((char*)&diskNode.value, nodeData->vstr);
       diskNode.flags = (diskNode.flags & ~BD_VALUE_TYPE_MASK) | 
 	BD_VALUE_TYPE_STR_IMMEDIATE;
     }
@@ -1510,7 +1500,7 @@ void csBinaryDocNode::Store (csMemFile* nodesFile)
 // =================================================
 
 csBinaryDocument::csBinaryDocument () : scfImplementationType (this),
-  root (0), attrAlloc (2000), nodeAlloc (2000), outStrHash (0)
+  root (0), attrAlloc (0), nodeAlloc (0), outStrHash (0)
 {
 }
 
@@ -1518,26 +1508,32 @@ csBinaryDocument::~csBinaryDocument ()
 {
   if (root && (root->flags & BD_NODE_MODIFIED))
     delete root;
+  delete attrAlloc;
+  delete nodeAlloc;
 }
 
 csBdAttr* csBinaryDocument::AllocBdAttr ()
 {
-  return attrAlloc.Alloc();
+  if (!attrAlloc) attrAlloc = new csBlockAllocator<csBdAttr> (2000);
+  return attrAlloc->Alloc();
 }
 
 void csBinaryDocument::FreeBdAttr (csBdAttr* attr)
 {
-  attrAlloc.Free (attr);
+  CS_ASSERT(attrAlloc);
+  attrAlloc->Free (attr);
 }
 
 csBdNode* csBinaryDocument::AllocBdNode ()
 {
-  return nodeAlloc.Alloc();
+  if (!nodeAlloc) nodeAlloc = new csBlockAllocator<csBdNode> (2000);
+  return nodeAlloc->Alloc();
 }
 
 void csBinaryDocument::FreeBdNode (csBdNode* node)
 {
-  nodeAlloc.Free (node);
+  CS_ASSERT(nodeAlloc);
+  nodeAlloc->Free (node);
 }
 
 #include "csutil/custom_new_disable.h"

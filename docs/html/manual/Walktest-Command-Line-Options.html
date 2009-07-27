@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 3.1.3 Command Line options</title>
+<title>Crystal Space 1.4.0: 3.1.3 Command Line options</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 3.1.3 Command Line options">
-<meta name="keywords" content="Crystal Space 1.9.0: 3.1.3 Command Line options">
+<meta name="description" content="Crystal Space 1.4.0: 3.1.3 Command Line options">
+<meta name="keywords" content="Crystal Space 1.4.0: 3.1.3 Command Line options">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -104,8 +104,8 @@ bindings which take effect when <em>not</em> in console mode.
 <dd><p>Draw logo (default 'logo').  This controls display of the Crystal Space logo in
 the top right of the display.
 </p></dd>
-<dt> <code>-collections</code></dt>
-<dd><p>Load every map in a separate collection (default off).
+<dt> <code>-regions</code></dt>
+<dd><p>Load every map in a separate region (default off).
 </p></dd>
 <dt> <code>-dupes</code></dt>
 <dd><p>Check for duplicate objects in multiple maps (default off).
@@ -128,6 +128,17 @@ the top right of the display.
 </p></dd>
 <dt> <code>-fov=&lt;val&gt;</code></dt>
 <dd><p>Field of Vision (0).
+</p></dd>
+<dt> <code>-[no]relight</code></dt>
+<dd><p>Force/inhibit recalculation of lightmaps (no) This must be used the first time
+a map is run, and if there have been enough changes to the geometry to require
+all the lightmaps to be recalculated.  For a large map, this can take a long
+time.  The generated lightmaps are cached in the directory containing the
+<tt>&lsquo;world&rsquo;</tt> map, but the engine nolonger automatically regenerates them if
+they are missing.
+</p></dd>
+<dt> <code>-lightqual=&lt;val&gt;</code></dt>
+<dd><p>Lighting quality (3).
 </p></dd>
 </dl>
 
@@ -154,7 +165,7 @@ the top right of the display.
 <dd><p>Display a help message.
 </p></dd>
 <dt> <code>-video=&lt;s&gt;</code></dt>
-<dd><p>The 3D rendering driver (opengl, <small class="dots">...</small>).
+<dd><p>The 3D rendering driver (opengl, software, <small class="dots">...</small>).
 </p></dd>
 <dt> <code>-canvas=&lt;s&gt;</code></dt>
 <dd><p>The 2D canvas driver (asciiart, x2d, <small class="dots">...</small>)

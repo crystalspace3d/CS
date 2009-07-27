@@ -177,7 +177,7 @@ const char* csDefaultsConfig::GetStr (const char* Key, const char* Def) const
 {
   NSString* keystring = [NSString stringWithCString:Key];
   if (KeyExists(keystring))
-    return [[[dict objectForKey:keystring] description] UTF8String];
+    return [[[dict objectForKey:keystring] description] lossyCString];
   return Def;
 }
 
@@ -186,7 +186,7 @@ bool csDefaultsConfig::GetBool (const char* Key, bool Def) const
   NSString* keystring = [NSString stringWithCString:Key];
   if (KeyExists(keystring))
   {
-    char const* s = [[[dict objectForKey:keystring] description] UTF8String];
+    char const* s = [[[dict objectForKey:keystring] description] lossyCString];
     char const c = tolower(s[0]);
     return c == 'y' || c == 't' || c == '1';
   }
@@ -316,7 +316,7 @@ csDefaultsIterator::csDefaultsIterator (
   
   // Create our inner csDefaultConfig for the subdomain..
   config = new csDefaultsConfig();
-  config->Open([domain UTF8String]);
+  config->Open([domain lossyCString]);
   
   // Nil out the rest.
   keyenum = nil;
@@ -342,7 +342,7 @@ iConfigFile* csDefaultsIterator::GetConfigFile () const
 
 const char* csDefaultsIterator::GetSubsection () const
 {
-  return [name UTF8String];
+  return [name lossyCString];
 }
 
 void csDefaultsIterator::Rewind ()
@@ -374,32 +374,32 @@ bool csDefaultsIterator::HasNext()
 
 const char* csDefaultsIterator::GetKey (bool Local) const
 {
-  return [currentkey UTF8String];
+  return [currentkey lossyCString];
 }
 
 int csDefaultsIterator::GetInt () const
 {
-  return config->GetInt([currentkey UTF8String], 0);
+  return config->GetInt([currentkey lossyCString], 0);
 }
 
 float csDefaultsIterator::GetFloat () const
 {
-  return config->GetFloat([currentkey UTF8String], 0.0f);
+  return config->GetFloat([currentkey lossyCString], 0.0f);
 }
 
 const char* csDefaultsIterator::GetStr () const
 {
-  return config->GetStr([currentkey UTF8String], 0);
+  return config->GetStr([currentkey lossyCString], 0);
 }
 
 bool csDefaultsIterator::GetBool () const
 {
-  return config->GetBool([currentkey UTF8String], false);
+  return config->GetBool([currentkey lossyCString], false);
 }
 
 csPtr<iStringArray> csDefaultsIterator::GetTuple () const
 {
-  return config->GetTuple([currentkey UTF8String]);
+  return config->GetTuple([currentkey lossyCString]);
 }
 
 const char* csDefaultsIterator::GetComment () const

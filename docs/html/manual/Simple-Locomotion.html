@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.2.1.5 Locomotion (Moving Around)</title>
+<title>Crystal Space 1.4.0: 4.2.1.5 Locomotion (Moving Around)</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.2.1.5 Locomotion (Moving Around)">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.2.1.5 Locomotion (Moving Around)">
+<meta name="description" content="Crystal Space 1.4.0: 4.2.1.5 Locomotion (Moving Around)">
+<meta name="keywords" content="Crystal Space 1.4.0: 4.2.1.5 Locomotion (Moving Around)">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -64,9 +64,9 @@ ul.toc {list-style: none}
 <p>Staring at that solid wall gets a bit boring after some time.  The problem is
 that we can't move the camera to change our view point.  Let's add some code
 to do exactly this.  Edit <tt>&lsquo;simple.cpp&rsquo;</tt> again and change
-<tt>&lsquo;Frame()&rsquo;</tt> as follows:
+<tt>&lsquo;ProcessFrame()&rsquo;</tt> as follows:
 </p>
-<table><tr><td>&nbsp;</td><td><pre class="example">void Simple::Frame ()
+<table><tr><td>&nbsp;</td><td><pre class="example">void Simple::ProcessFrame ()
 {
   // First get elapsed time from the virtual clock.
   csTicks elapsed_time = vc-&gt;GetElapsedTicks ();

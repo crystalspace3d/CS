@@ -20,21 +20,19 @@
 #define __TUI_H__
 
 #include "csutil/scf_implementation.h"
-#include "csutil/threadmanager.h"
 
 #include "ivaria/reporter.h"
 
 namespace lighter
 {
   /// Text-mode User Interface
-  class TUI : public ThreadedCallable<TUI>,
-              public scfImplementation1<TUI, iReporterListener>
+  class TUI : public scfImplementation1<TUI, iReporterListener>
   {
   public:
     TUI ();
 
     // Setup
-    void Initialize (iObjectRegistry* objReg);
+    void Initialize ();
 
     enum RedrawFlag
     {
@@ -57,8 +55,8 @@ namespace lighter
     void FinishDraw ();
 
     /// iReporterListener
-    THREADED_CALLABLE_DECL4(TUI, Report, csThreadReturn, iReporter*, reporter,
-      int, severity, const char*, msgId, const char*, description, HIGH, true, false);
+    virtual bool Report (iReporter* reporter, int severity, const char* msgId,
+      const char* description);
   private:
     csString GetProgressBar (uint percent) const;
 
@@ -100,9 +98,6 @@ namespace lighter
 
     // Last printed task
     csString lastTask; float lastTaskProgress;
-
-    iObjectRegistry* GetObjectRegistry() const { return object_reg; }
-    iObjectRegistry* object_reg;
   };
 
   extern TUI globalTUI;

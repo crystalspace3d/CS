@@ -25,15 +25,13 @@
 #include "cstool/csview.h"
 #include "iengine/camera.h"
 #include "iengine/engine.h"
-#include "iengine/rendermanager.h"
 
 
 csView::csView (iEngine *e, iGraphics3D* ig3d) 
   : scfImplementationType (this),
   Engine (e), G3D (ig3d), RectView (0), PolyView (0), AutoResize (true)
 {
-  csRef<iPerspectiveCamera> pcam = e->CreatePerspectiveCamera ();
-  SetPerspectiveCamera(pcam);
+  Camera = e->CreateCamera ();
 
   OldWidth = G3D->GetWidth ();
   OldHeight = G3D->GetHeight ();
@@ -62,32 +60,7 @@ iCamera *csView::GetCamera ()
 
 void csView::SetCamera (iCamera* c)
 {
-  CS_ASSERT_MSG("Null camera not allowed.", c != NULL); 
   Camera = c;
-}
-
-iPerspectiveCamera *csView::GetPerspectiveCamera ()
-{
-  csRef<iPerspectiveCamera> pcam = scfQueryInterfaceSafe<iPerspectiveCamera>(Camera);
-  return pcam;
-}
-
-void csView::SetPerspectiveCamera (iPerspectiveCamera* c)
-{
-  CS_ASSERT_MSG("Null camera not allowed.", c != NULL); 
-  Camera = c->GetCamera();
-}
-
-iCustomMatrixCamera* csView::GetCustomMatrixCamera ()
-{
-  csRef<iCustomMatrixCamera> cmcam = scfQueryInterfaceSafe<iCustomMatrixCamera>(Camera);
-  return cmcam;
-}
-
-void csView::SetCustomMatrixCamera (iCustomMatrixCamera* c)
-{
-  CS_ASSERT_MSG("Null camera not allowed.", c != 0); 
-  Camera = c->GetCamera();
 }
 
 iGraphics3D* csView::GetContext ()
@@ -147,10 +120,10 @@ void csView::UpdateView ()
   float scale_x = ((float)G3D->GetWidth ())  / ((float)OldWidth);
   float scale_y = ((float)G3D->GetHeight ()) / ((float)OldHeight);
 
-  GetPerspectiveCamera()->SetPerspectiveCenter (GetPerspectiveCamera()->GetShiftX() * scale_x,
-                                GetPerspectiveCamera()->GetShiftY() * scale_y);
+  Camera->SetPerspectiveCenter (Camera->GetShiftX() * scale_x,
+                                Camera->GetShiftY() * scale_y);
 
-  GetPerspectiveCamera()->SetFOVAngle (GetPerspectiveCamera()->GetFOVAngle(), G3D->GetWidth());
+  Camera->SetFOVAngle (Camera->GetFOVAngle(), G3D->GetWidth());
 
   OldWidth = G3D->GetWidth ();
   OldHeight = G3D->GetHeight ();
@@ -180,7 +153,11 @@ void csView::UpdateView ()
 
 void csView::Draw (iMeshWrapper* mesh)
 {
-  Engine->GetRenderManager()->RenderView (this);
+  UpdateClipper();
+  G3D->SetPerspectiveCenter ( (int)Camera->GetShiftX (),
+			      (int)Camera->GetShiftY () );
+
+  Engine->Draw (Camera, Clipper, mesh);
 }
 
 void csView::UpdateClipper ()
@@ -225,3 +202,4 @@ iClipper2D* csView::GetClipper ()
   UpdateClipper ();
   return Clipper;
 }
+

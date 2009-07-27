@@ -26,8 +26,7 @@
 #include "gl_render3d.h"
 #include "gl_txtmgr.h"
 #include "gl_txtmgr_imagetex.h"
-
-using namespace CS::Threading;
+#include "gl_txtmgr_lightmap.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 {
@@ -35,16 +34,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 CS_LEAKGUARD_IMPLEMENT(csGLTextureManager);
 
 static const csGLTextureClassSettings defaultSettings = 
-  {GL_RGB, GL_RGBA, false, false, true, true, false};
+  {GL_RGB, GL_RGBA, false, false, true, true};
 
 csGLTextureManager::csGLTextureManager (iObjectRegistry* object_reg,
         iGraphics2D* iG2D, iConfigFile *config,
         csGLGraphics3D *iG3D) : 
-  scfImplementationType (this), textures (16), compactTextures (false)
+  scfImplementationType (this), textures (16, 16), compactTextures (false)
 {
   csGLTextureManager::object_reg = object_reg;
 
-  texturesLock.Initialize();
   
   G3D = iG3D;
   max_tex_size = G3D->GetMaxTextureSize ();
@@ -58,9 +56,6 @@ csGLTextureManager::csGLTextureManager (iObjectRegistry* object_reg,
 
   G3D->ext->InitGL_ARB_pixel_buffer_object();
   hasPBO = G3D->ext->CS_GL_ARB_pixel_buffer_object;
-  
-  G3D->ext->InitGL_SGIS_texture_lod();
-  G3D->ext->InitGL_ARB_shadow ();
 
 #define CS_GL_TEXTURE_FORMAT(fmt)					    \
   textureFormats.Put (#fmt, TextureFormat (fmt, true));		
@@ -117,14 +112,12 @@ void csGLTextureManager::read_config (iConfigFile *config)
     ("Video.OpenGL.TextureDownsample", 0);
   texture_filter_anisotropy = config->GetFloat
     ("Video.OpenGL.TextureFilterAnisotropy", 1.0);
-  tweaks.disableRECTTextureCompression = config->GetBool
+  disableRECTTextureCompression = config->GetBool
     ("Video.OpenGL.DisableRECTTextureCompression", false);
-  tweaks.enableNonPowerOfTwo2DTextures = config->GetBool
+  enableNonPowerOfTwo2DTextures = config->GetBool
     ("Video.OpenGL.EnableNonPowerOfTwo2DTextures", false);
-  tweaks.disableGenerateMipmap = config->GetBool
+  disableGenerateMipmap = config->GetBool
     ("Video.OpenGL.DisableGenerateMipmap", false);
-  tweaks.generateMipMapsExcessOne = config->GetBool
-    ("Video.OpenGL.GenerateOneExcessMipMap", false);
   
   const char* filterModeStr = config->GetStr (
     "Video.OpenGL.TextureFilter", "trilinear");
@@ -243,10 +236,6 @@ void csGLTextureManager::ReadTextureClasses (iConfigFile* config)
       {
 	settings->allowMipSharpen = it->GetBool ();
       } 
-      else if (strcasecmp (optionName, "RenormalizeGeneratedMips") == 0)
-      {
-	settings->renormalizeGeneratedMips = it->GetBool ();
-      } 
       else
       {
 	G3D->Report (CS_REPORTER_SEVERITY_ERROR,
@@ -263,8 +252,6 @@ void csGLTextureManager::ReadTextureClasses (iConfigFile* config)
 
 void csGLTextureManager::Clear()
 {
-  MutexScopedLock lock(texturesLock);
-
   size_t i;
   for (i=0; i < textures.GetSize (); i++)
   {
@@ -272,6 +259,11 @@ void csGLTextureManager::Clear()
     if (tex != 0) tex->Clear ();
   }
   textures.DeleteAll ();
+  for (i = 0; i < superLMs.GetSize (); i++)
+  {
+    superLMs[i]->DeleteTexture();
+  }
+  superLMs.DeleteAll ();
 }
 
 void csGLTextureManager::UnsetTexture (GLenum target, GLuint texture)
@@ -281,21 +273,21 @@ void csGLTextureManager::UnsetTexture (GLenum target, GLuint texture)
 
   if (csGLGraphics3D::ext->CS_GL_ARB_multitexture)
   {
-    int oldIU = -1;
+    int oldTU = -1;
     for (int u = 0; u < statecache->GetNumImageUnits(); u++)
     {
       if (statecache->GetTexture (target, u) == texture)
       {
-	if (oldIU == -1)
-          oldIU = statecache->GetCurrentImageUnit ();
-        statecache->SetCurrentImageUnit (u);
+	if (oldTU == -1)
+          oldTU = statecache->GetCurrentTU ();
+        statecache->SetCurrentTU (u);
 	statecache->SetTexture (target, 0);
       }
     }
-    if (oldIU != -1)
+    if (oldTU != -1)
     {
-      statecache->SetCurrentImageUnit (oldIU);
-      statecache->ActivateImageUnit ();
+      statecache->SetCurrentTU (oldTU);
+      statecache->ActivateTU (csGLStateCache::activateImage);
     }
   }
   else
@@ -304,27 +296,7 @@ void csGLTextureManager::UnsetTexture (GLenum target, GLuint texture)
       statecache->SetTexture (target, 0);
   }
 }
-
-bool csGLTextureManager::ImageTypeSupported (csImageType imagetype,
-                                             iString* fail_reason)
-{
-  if ((imagetype == csimgCube)
-      && !G3D->ext->CS_GL_ARB_texture_cube_map)
-  {
-    if (fail_reason) fail_reason->Replace (
-      "Cubemap textures are not supported!");
-    return false;
-  }
-  if ((imagetype == csimg3D)
-      && !G3D->ext->CS_GL_EXT_texture3D)
-  {
-    if (fail_reason) fail_reason->Replace (
-      "3D textures are not supported!");
-    return false;
-  }
-  return true;
-}
-
+    
 csPtr<iTextureHandle> csGLTextureManager::RegisterTexture (iImage *image,
 	int flags, iString* fail_reason)
 {
@@ -335,18 +307,28 @@ csPtr<iTextureHandle> csGLTextureManager::RegisterTexture (iImage *image,
     return 0;
   }
 
-  if (!ImageTypeSupported (image->GetImageType(), fail_reason))
+  if ((image->GetImageType() == csimgCube)
+      && !G3D->ext->CS_GL_ARB_texture_cube_map)
+  {
+    if (fail_reason) fail_reason->Replace (
+      "Cubemap images are not supported!");
     return 0;
+  }
+  if ((image->GetImageType() == csimg3D)
+      && !G3D->ext->CS_GL_EXT_texture3D)
+  {
+    if (fail_reason) fail_reason->Replace (
+      "3D images are not supported!");
+    return 0;
+  }
 
   csGLTextureHandle *txt = new csGLTextureHandle (image, flags, G3D);
-
-  MutexScopedLock lock(texturesLock);
   CompactTextures ();
   textures.Push(txt);
   return csPtr<iTextureHandle> (txt);
 }
 
-csPtr<iTextureHandle> csGLTextureManager::CreateTexture (int w, int h, int d,
+csPtr<iTextureHandle> csGLTextureManager::CreateTexture (int w, int h,
       csImageType imagetype, const char* format, int flags,
       iString* fail_reason)
 {
@@ -363,12 +345,9 @@ csPtr<iTextureHandle> csGLTextureManager::CreateTexture (int w, int h, int d,
          is specified, an "argb" format (CS notation for GL_BGR(A)) could be
          substituted instead. Or does the driver handle that automatically?
    */
-   
-  if (!ImageTypeSupported (imagetype, fail_reason))
-    return 0;
 
   csGLBasicTextureHandle *txt = new csGLBasicTextureHandle (
-      w, h, d, imagetype, flags, G3D);
+      w, h, 1, imagetype, flags, G3D);
 
   if (!txt->SynthesizeUploadData (texFormat, fail_reason))
   {
@@ -376,7 +355,6 @@ csPtr<iTextureHandle> csGLTextureManager::CreateTexture (int w, int h, int d,
     return 0;
   }
 
-  MutexScopedLock lock(texturesLock);
   CompactTextures ();
   textures.Push(txt);
   return csPtr<iTextureHandle> (txt);
@@ -385,7 +363,7 @@ csPtr<iTextureHandle> csGLTextureManager::CreateTexture (int w, int h, int d,
 void csGLTextureManager::CompactTextures ()
 {
   if (!compactTextures) return;
-
+    
   size_t i = 0;
   while (i < textures.GetSize ())
   {
@@ -403,6 +381,13 @@ int csGLTextureManager::GetTextureFormat ()
   return CS_IMGFMT_TRUECOLOR | CS_IMGFMT_ALPHA;
 }
 
+csPtr<iSuperLightmap> csGLTextureManager::CreateSuperLightmap(int w, int h)
+{
+  csGLSuperLightmap* slm = new csGLSuperLightmap (this, w, h);
+  superLMs.Push (slm);
+  return csPtr<iSuperLightmap> (slm);
+}
+
 void csGLTextureManager::GetMaxTextureSize (int& w, int& h, int& aspect)
 {
   w = max_tex_size;
@@ -410,18 +395,49 @@ void csGLTextureManager::GetMaxTextureSize (int& w, int& h, int& aspect)
   aspect = max_tex_size;
 }
 
+void csGLTextureManager::DumpSuperLightmaps (iVFS* VFS, iImageIO* iio, 
+					     const char* dir)
+{
+  csString outfn;
+  for (size_t i = 0; i < superLMs.GetSize (); i++)
+  {
+    csRef<iImage> img = superLMs[i]->Dump ();
+    if (img)
+    {
+      csRef<iDataBuffer> buf = iio->Save (img, "image/png");
+      if (!buf)
+      {
+	G3D->Report (CS_REPORTER_SEVERITY_WARNING,
+	  "Could not save super lightmap.");
+      }
+      else
+      {
+	outfn.Format ("%s%zu.png", dir, i);
+	if (!VFS->WriteFile (outfn, (char*)buf->GetInt8 (), buf->GetSize ()))
+	{
+	  G3D->Report (CS_REPORTER_SEVERITY_WARNING,
+	    "Could not write to %s.", outfn.GetData ());
+	}
+	else
+	{
+	  G3D->Report (CS_REPORTER_SEVERITY_NOTIFY,
+	    "Dumped %dx%d SLM to %s", superLMs[i]->w, superLMs[i]->h,
+	    	outfn.GetData ());
+	}
+      }
+    }
+  }
+}
+
 void csGLTextureManager::DumpTextures (iVFS* VFS, iImageIO* iio, 
 				       const char* dir)
 {
   csString outfn;
-
-  MutexScopedLock lock(texturesLock);
-
   for (size_t i = 0; i < textures.GetSize (); i++)
   {
     if (!textures[i]) continue;
     
-    csRef<iImage> img = textures[i]->GetTextureFromGL ();
+    csRef<iImage> img = textures[i]->Dump ();
     if (img)
     {
       csRef<iDataBuffer> buf = iio->Save (img, "image/png");

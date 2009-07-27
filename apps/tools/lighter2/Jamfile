@@ -22,7 +22,8 @@ LinkWith lighter2_static : crystalspace ;
 FileListEntryApplications lighter2_static : app-tool-static ;
 
 LIGHTER2.PLUGINLIST =
-  bindoc
+  bezier
+  bezierldr
   csbmpimg
   csddsimg
   csgifimg
@@ -70,6 +71,8 @@ LIGHTER2.PLUGINLIST =
   stdrep
   bruteblock
   terrainldr
+  thing
+  thingldr
   xmlread
   xmlshader
   ;
@@ -94,6 +97,10 @@ if $(GL.AVAILABLE) = "yes"
 {
   LIGHTER2.PLUGINLIST += glshader_arb glshader_fixed ;
   if $(CG.AVAILABLE) = "yes" { LIGHTER2.PLUGINLIST += glshader_cg ; }
+}
+else
+{
+  LIGHTER2.PLUGINLIST += softshader ;
 }
 
 LinkStaticPlugins lighter2_static : $(LIGHTER2.PLUGINLIST) ;

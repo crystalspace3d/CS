@@ -183,6 +183,8 @@ public:
   }
 };
 
+#include "csutil/deprecated_warn_off.h"
+
 /**
  * Haze mesh object.
  */
@@ -235,7 +237,7 @@ private:
   };
   csFrameDataHolder<HazeRenderBuffer> renderBuffers;
   csFrameDataHolder<HazeRenderBuffer> indexBuffers;
-  static CS::ShaderVarStringID vertex_name, texel_name, index_name;
+  static csStringID vertex_name, texel_name, index_name;
 
   /**
    * Setup this object. This function will check if setup is needed.
@@ -326,8 +328,7 @@ public:
         csVector3&, float*)
   { return false; }
   virtual bool HitBeamObject (const csVector3&, const csVector3&,
-  	csVector3&, float*, int* = 0, iMaterialWrapper** = 0,
-    csArray<iMaterialWrapper*>* materials = 0) { return false; }
+  	csVector3&, float*, int* = 0, iMaterialWrapper** = 0) { return false; }
   virtual void SetMeshWrapper (iMeshWrapper* lp) { logparent = lp; }
   virtual iMeshWrapper* GetMeshWrapper () const { return logparent; }
 
@@ -342,7 +343,7 @@ public:
   virtual iMaterialWrapper* GetMaterialWrapper () const { return material; }
   virtual void SetMixMode (uint mode) { MixMode = mode; }
   virtual uint GetMixMode () const { return MixMode; }
-
+  virtual void InvalidateMaterialHandles () { }
   /**
    * see imesh/object.h for specification. The default implementation
    * does nothing.
@@ -380,6 +381,8 @@ public:
   virtual float GetLayerScale(int layer) const
   { return this->layers[layer]->scale; }
 };
+
+#include "csutil/deprecated_warn_on.h"
 
 /**
  * Factory for 2D sprites. This factory also implements iHazeFactoryState.

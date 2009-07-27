@@ -21,9 +21,7 @@
 
 // Include csconfig.h which contains the volatile configuration macros
 #if defined (CS_WIN32_CSCONFIG)
-  /* Use manually maintained settings when not building on environments not
-   * using configure (specifically, MSVC) */
-#  include <csutil/win32/csconfig-msvc.h>
+#  include <csutil/win32/csconfig.h>
 #else
 #  include <csconfig.h>
 #endif

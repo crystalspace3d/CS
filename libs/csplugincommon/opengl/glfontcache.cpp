@@ -53,7 +53,7 @@ const GLenum fontFilterMode = /*GL_LINEAR*/GL_NEAREST;
 //---------------------------------------------------------------------------
 
 csGLFontCache::csGLFontCache (csGraphics2DGLCommon* G2D) : 
-  cacheDataAlloc (512), verts2d (256), texcoords (256)
+  cacheDataAlloc (512), verts2d (256, 256), texcoords (256, 256)
 {
   csGLFontCache::G2D = G2D;
   statecache = G2D->statecache;
@@ -894,13 +894,12 @@ void csGLFontCache::BeginText ()
 {
   if (textWriting) return;
 
-  statecache->SetCurrentTCUnit (0);
-  statecache->ActivateTCUnit (csGLStateCache::activateTexCoord);
-  
   vaEnabled = statecache->IsEnabled_GL_VERTEX_ARRAY ();
   tcaEnabled = statecache->IsEnabled_GL_TEXTURE_COORD_ARRAY ();
   caEnabled = statecache->IsEnabled_GL_COLOR_ARRAY ();
 
+  statecache->SetCurrentTU (0);
+  statecache->ActivateTU (csGLStateCache::activateTexCoord);
   statecache->Enable_GL_VERTEX_ARRAY();
   statecache->Enable_GL_TEXTURE_COORD_ARRAY();
   statecache->Disable_GL_COLOR_ARRAY();

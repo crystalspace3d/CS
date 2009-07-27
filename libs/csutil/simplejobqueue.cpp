@@ -28,7 +28,7 @@ namespace Utility
     : scfImplementationType (this)
   {}
 
-  void SimpleJobQueue::Enqueue (iJob* job, bool lowPriority)
+  void SimpleJobQueue::Enqueue (iJob* job)
   {
     job->Run ();
   }
@@ -46,13 +46,5 @@ namespace Utility
     return true;
   }
 
-  int32 SimpleJobQueue::GetQueueCount()
-  {
-    return 0;
-  }
-
-  void SimpleJobQueue::Wait (iJob*) { }
-
-  void SimpleJobQueue::PopAndRun() { }
 }
 }

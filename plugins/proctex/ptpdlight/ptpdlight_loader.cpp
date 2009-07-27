@@ -82,8 +82,9 @@ bool ProctexPDLightLoader::Initialize(iObjectRegistry *object_reg)
 }
 
 csPtr<iBase> ProctexPDLightLoader::Parse (iDocumentNode* node,  
-				          iStreamSource*, iLoaderContext* /*ldr_context*/,
-  					      iBase* context)
+				          iStreamSource*,
+					  iLoaderContext* /*ldr_context*/,
+  					  iBase* context)
 {
   csRef<iLoader> LevelLoader = csQueryRegistry<iLoader> (object_reg);
   if (!LevelLoader) 

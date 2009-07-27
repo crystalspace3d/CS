@@ -78,7 +78,6 @@
 		inline_				bool			SphereAABBOverlap(const Point& center, const Point& extents);
 							bool			SphereTriOverlap(const Point& vert0, const Point& vert1, const Point& vert2);
 			// Init methods
-              using CS::Plugin::csOpcode::Opcode::Collider::InitQuery;
 							bool			InitQuery(SphereCache& cache, const Sphere& sphere, const Matrix4x4* worlds=null, const Matrix4x4* worldm=null);
 	};
 

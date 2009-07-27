@@ -180,7 +180,6 @@ csShortestDistanceResult csEngineTools::FindShortestDistance (
   return rc;
 }
 
-#include "csutil/deprecated_warn_off.h"
 csScreenTargetResult csEngineTools::FindScreenTarget (const csVector2& pos,
       float maxdist, iCamera* camera, iCollideSystem* cdsys)
 {
@@ -224,7 +223,6 @@ csScreenTargetResult csEngineTools::FindScreenTarget (const csVector2& pos,
   }
   return result;
 }
-#include "csutil/deprecated_warn_on.h"
 
 //----------------------------------------------------------------------
 

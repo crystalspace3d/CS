@@ -24,7 +24,6 @@
 #include "cstool/csview.h"
 #include "cstool/initapp.h"
 #include "cstool/genmeshbuilder.h"
-#include "cstool/simplestaticlighter.h"
 #include "csutil/cmdhelp.h"
 #include "csutil/cscolor.h"
 #include "csutil/event.h"
@@ -43,6 +42,7 @@
 #include "igraphic/imageio.h"
 #include "imesh/genmesh.h"
 #include "imesh/object.h"
+#include "imesh/thing.h"
 #include "iutil/cmdline.h"
 #include "iutil/comp.h"
 #include "iutil/databuff.h"
@@ -172,7 +172,7 @@ bool CsBench::SetupMaterials ()
   }
   material = engine->GetMaterialList ()->FindByName ("stone");
   csShaderVariable* normalSV = 
-    material->GetMaterial()->GetVariableAdd (stringsSvName->Request ("tex normal"));
+    material->GetMaterial()->GetVariableAdd (strings->Request ("tex normal"));
   iTextureWrapper* stoneDot3 = 
     engine->GetTextureList()->FindByName ("stone_normal");
   stoneDot3->SetTextureClass ("normalmap");
@@ -195,10 +195,11 @@ iSector* CsBench::CreateRoom (const char* name, const char* meshname,
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room2, meshname, meshname, &box);
-  walls->GetMeshObject ()->SetMaterialWrapper (material);
 
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (walls, engine, 4);
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
+  walls->GetMeshObject ()->SetMaterialWrapper (material);
 
   return room2;
 }
@@ -329,9 +330,6 @@ bool CsBench::Initialize (int argc, const char* const argv[],
   strings = csQueryRegistryTagInterface<iStringSet> 
     (object_reg, "crystalspace.shared.stringset");
   if (!strings) return ReportError ("No string set!");
-  stringsSvName = csQueryRegistryTagInterface<iShaderVarStringSet> 
-    (object_reg, "crystalspace.shader.variablenameset");
-  if (!stringsSvName) return ReportError ("No string set!");
 
   iGraphics2D* g2d = g3d->GetDriver2D ();
   iNativeWindow* nw = g2d->GetNativeWindow ();
@@ -359,14 +357,15 @@ bool CsBench::Initialize (int argc, const char* const argv[],
   if (!csInitializer::OpenApplication (object_reg))
     return ReportError ("Error opening system!");
 
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
+
   if (!SetupMaterials ()) return false;
   if (!CreateTestCaseSingleBigObject ()) return false;
   if (!CreateTestCaseMultipleObjects ()) return false;
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room_single, engine, 4);
 
   view = csPtr<iView> (new csView (engine, g3d));
   view->GetCamera ()->SetSector (room_single);
@@ -494,7 +493,7 @@ void CsBench::PerformShaderTest (const char* shaderPath, const char* shtype,
       csRef<iMaterial> matinput = engine->CreateBaseMaterial (
 	engine->GetTextureList ()->FindByName ("stone"));
       csShaderVariable* normalSV = 
-	matinput->GetVariableAdd (stringsSvName->Request ("tex normal"));
+	matinput->GetVariableAdd (strings->Request ("tex normal"));
       normalSV->SetValue (engine->GetTextureList()->FindByName (
       	"stone_normal"));
       matinput->SetShader (shadertype, shader);

@@ -1,6 +1,6 @@
 # configure.ac                                                 -*- Autoconf -*-
 #==============================================================================
-# Copyright (C)2003-2009 by Eric Sunshine <sunshine@sunshineco.com>
+# Copyright (C)2003-2008 by Eric Sunshine <sunshine@sunshineco.com>
 #
 # Autoconf input script for Crystal Space.  Process this file with
 # CS/bin/autogen.sh to produce a configure script.
@@ -13,7 +13,7 @@ AC_PREREQ([2.56])
 #	Keep this value synchronized with CS/include/csver.h.template,
 #	CS/docs/texinfo/version.txi, and CS/mk/autoconf/crystal.m4.
 #------------------------------------------------------------------------------
-m4_define([cs_version_number], [1.9])
+m4_define([cs_version_number], [1.4.0])
 
 
 
@@ -221,8 +221,6 @@ AC_DEFUN([CS_CHECK_RTLD],
 
 CS_CHECK_RTLD
 
-
-
 #------------------------------------------------------------------------------
 # Determine host platform.  Recognized platforms: Unix, Windows, Mac OS X.
 # Recognized families: Unix, Windows.
@@ -236,6 +234,16 @@ case $cs_host_target in
         CS_EMIT_BUILD_PROPERTY([COREAUDIO.AVAILABLE], [yes])
         CS_EMIT_BUILD_PROPERTY([COREAUDIO.LFLAGS],
 	    [-framework CoreAudio -framework AudioToolbox])
+        # Processor-specific optimizations.
+        AS_IF([test -n "$cs_cv_prog_cc_msse"],
+            [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS],
+             [$cs_cv_prog_cc_msse], [append])])
+        AS_IF([test -n "$cs_cv_prog_cc_msse2"],
+            [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS],
+             [$cs_cv_prog_cc_msse2], [append])])
+        AS_IF([test -n "$cs_cv_prog_cc_mfpmath_sse"],
+            [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS],
+             [$cs_cv_prog_cc_mfpmath_sse], [append])])
         ;;
 esac
 case $cs_host_family in
@@ -250,7 +258,6 @@ CS_HEADER_PROPERTY([CS_PLATFORM_NAME],
     [AS_ESCAPE(["])$cs_host_os_normalized[]AS_ESCAPE(["])])
 
 
-
 #------------------------------------------------------------------------------
 # Check for SIMD flags. These checks are performed after CS_CHECK_HOST() since
 # CS_CHECK_HOST() may alter the build environment in a way which affects these
@@ -258,21 +265,16 @@ CS_HEADER_PROPERTY([CS_PLATFORM_NAME],
 # binary build.
 #------------------------------------------------------------------------------
 CS_CHECK_BUILD_FLAGS([for -mmmx flag], [cs_cv_prog_cc_mmmx],
-    [CS_CREATE_TUPLE([-mmmx])], [],
-    [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS.MMX], [$cs_cv_prog_cc_mmmx],
-        [append])])
+    [CS_CREATE_TUPLE([-mmmx])])
 CS_CHECK_BUILD_FLAGS([for -msse flag], [cs_cv_prog_cc_msse],
-    [CS_CREATE_TUPLE([-msse])], [],
-    [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS], [$cs_cv_prog_cc_msse],
-        [append])])
+    [CS_CREATE_TUPLE([-msse])])
 CS_CHECK_BUILD_FLAGS([for -msse2 flag], [cs_cv_prog_cc_msse2],
-    [CS_CREATE_TUPLE([-msse2])], [],
-    [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS], [$cs_cv_prog_cc_msse2],
-        [append])])
+    [CS_CREATE_TUPLE([-msse2])])
 CS_CHECK_BUILD_FLAGS([for -mfpmath=sse flag], [cs_cv_prog_cc_mfpmath_sse],
-    [CS_CREATE_TUPLE([-mfpmath=sse])], [],
-    [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS], [$cs_cv_prog_cc_mfpmath_sse],
-        [append])])
+    [CS_CREATE_TUPLE([-mfpmath=sse])])
+
+AS_IF([test -n "$cs_cv_prog_cc_mmmx"],
+    [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS.MMX], [$cs_cv_prog_cc_mmmx],[+])])
 
 AS_IF([test -n "$cs_cv_prog_cc_mmmx"],
     [CS_CHECK_BUILD([for mmintrin.h],
@@ -1512,6 +1514,26 @@ AS_IF([test $cs_cv_libcal3d = yes],
 
 
 #------------------------------------------------------------------------------
+# Check for SDL.
+#------------------------------------------------------------------------------
+CS_CHECK_LIB_WITH([sdl],
+    [AC_LANG_PROGRAM(
+	[[#include <SDL.h>
+	#undef main]],
+	[SDL_Init(0); SDL_Quit();])])
+
+AS_IF([test $cs_cv_libsdl = yes],
+    [CS_CHECK_BUILD([if SDL is sufficiently recent], [cs_cv_sdl_recent],
+	[AC_LANG_PROGRAM(
+	    [[#include <SDL.h>
+	    #undef main]],
+	    [SDL_EnableKeyRepeat(0,0)])],
+	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libsdl], [SDL])], [], [],
+	[$cs_cv_libsdl_cflags], [$cs_cv_libsdl_lflags], [$cs_cv_libsdl_libs])])
+
+
+
+#------------------------------------------------------------------------------
 # Check for wxWidgets. Also check if it was built with OpenGL support since it
 # is required by the Crystal Space wxWidgets canvas.
 #
@@ -1709,8 +1731,7 @@ AC_DEFUN([CS_CHECK_LIBCG],
     AS_IF([test $cs_cv_libCg = yes],
 	[CS_CHECK_BUILD([if Cg is sufficiently recent], [cs_cv_libCg_recent],
 	    [AC_LANG_PROGRAM(
-	    	[[#include <Cg/cg.h>]], [cgSetErrorHandler(0,0);
-	    	CGprofile profile = CG_PROFILE_GPU_VP])],
+	    	[[#include <Cg/cg.h>]], [cgSetErrorHandler(0,0);])],
 	    [], [C++], [], [], [],
 	    [$cs_cv_libCg_cflags],
 	    [$cs_cv_libCg_lflags],
@@ -1778,6 +1799,27 @@ AS_IF([test $cs_host_family != windows],
 	    [[#include <alsa/asoundlib.h>]],
 	    [snd_pcm_hw_params_t* p; snd_pcm_hw_params_alloca(&p);])],
 	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libasound], [ALSA])])])
+
+
+
+#------------------------------------------------------------------------------
+# Check for Colour Ascii Art library (libcaca).
+#------------------------------------------------------------------------------
+# NOTE: Would solely pkg-config be used for caca detection the separate cucul 
+#  test could be dropped since it would be contained in caca.
+CS_CHECK_LIB_WITH([cucul],
+    [AC_LANG_PROGRAM([[#include <cucul.h>]], [cucul_create_canvas(0,0)])],
+    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcucul], [CUCUL])], [], [], [], [],
+    [libcucul])
+    
+CS_CHECK_LIB_WITH([caca],
+    [AC_LANG_PROGRAM([[#include <caca.h>]], [caca_create_display(0)])],
+    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcaca], [CACA])], [], 
+    [$cs_cv_libcucul_cflags], 
+    [$cs_cv_libcucul_lflags], 
+    [$cs_cv_libcucul_libs],
+    [libcaca])
+
 
 
 

@@ -28,11 +28,13 @@ int OSXGetUsername(char* buff, size_t sz)
   int ok = 0;
   if (buff != 0 && sz > 0)
   {
-    NSString* u = NSUserName();
-    size_t n = [u maximumLengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-    if (u != 0 && ![u isEqualToString:@""] && n < sz)
+    NSString* username = NSUserName();
+    if (username != 0 &&
+      ![username isEqualToString:@""] &&
+      [username cStringLength] < sz)
     {
-      [u getCString:buff maxLength:n encoding:NSUTF8StringEncoding];
+      [username getCString:buff maxLength:sz];
+      buff[sz - 1] = '\0';
       ok = 1;
     }
   }

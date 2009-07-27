@@ -35,7 +35,6 @@
 #include "ivideo/graph2d.h"
 #include "ivideo/material.h"
 #include "cstool/genmeshbuilder.h"
-#include "cstool/simplestaticlighter.h"
 
 // Hack: work around problems caused by #defining 'new'
 #if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
@@ -446,7 +445,7 @@ void ViewMesh::LoadTexture(const char* file, const char* name)
 {
   if (file && name)
   {
-    iTextureWrapper* txt = loader->LoadTexture (name, file, CS_TEXTURE_3D, 0, true, true, true, collection);
+    iTextureWrapper* txt = loader->LoadTexture (name, file, CS_TEXTURE_3D, 0, true, true, true, region);
     if (txt == 0)
     {
       ReportError("Cannot load texture '%s' from file '%s'.\n", name, file);
@@ -458,7 +457,7 @@ void ViewMesh::LoadTexture(const char* file, const char* name)
 
 void ViewMesh::LoadLibrary(const char* file)
 {
-  loader->LoadLibraryFile(file, collection);
+  loader->LoadLibraryFile(file, region);
 }
 
 bool ViewMesh::OnInitialize(int /*argc*/, char* /*argv*/ [])
@@ -530,7 +529,9 @@ bool ViewMesh::Application()
   iGraphics2D* g2d = g3d->GetDriver2D ();
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
 
-  collection = engine->CreateCollection ("viewmesh_region");
+  engine->SetLightingCacheMode (0);
+
+  region = engine->CreateRegion ("viewmesh_region");
   reloadFilename = "";
 
   csRef<iCommandLineParser> cmdline =
@@ -560,9 +561,6 @@ bool ViewMesh::Application()
   HandleCommandLine();
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
 
   rotY = rotX = 0;
 
@@ -635,6 +633,10 @@ bool ViewMesh::CreateRoom ()
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, "walls", "walls_factory", &box);
+
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
 
   csRef<iLight> light;
@@ -950,7 +952,7 @@ void ViewMesh::LoadSprite (const char* filename)
 
   printf ("Loading model '%s' from vfs dir '%s'\n",
 		  filename, vfs->GetCwd ()); fflush (stdout);
-  csLoadResult rc = loader->Load (filename, collection, false, true);
+  csLoadResult rc = loader->Load (filename, region, false, true);
 
   if (!rc.success)
     return;
@@ -964,7 +966,7 @@ void ViewMesh::LoadSprite (const char* filename)
     for (i = 0 ; i < factories->GetCount () ; i++)
     {
       iMeshFactoryWrapper* f = factories->Get (i);
-      if (collection->IsParentOf (f->QueryObject ()))
+      if (region->IsInRegion (f->QueryObject ()))
       {
         wrap = f;
         break;
@@ -1124,8 +1126,8 @@ void ViewMesh::AttachMesh (const char* file)
     }
   }
 
-  iCollection* collection = engine->CreateCollection ("viewmesh_region");
-  csLoadResult rc = loader->Load (file, collection, false, true);
+  iRegion* region = engine->CreateRegion ("viewmesh_region");
+  csLoadResult rc = loader->Load (file, region, false, true);
 
   if (!rc.success)
     return;
@@ -1139,7 +1141,7 @@ void ViewMesh::AttachMesh (const char* file)
     for (i = 0 ; i < factories->GetCount () ; i++)
     {
       iMeshFactoryWrapper* f = factories->Get (i);
-      if (collection->IsParentOf (f->QueryObject ()))
+      if (region->IsInRegion (f->QueryObject ()))
       {
         factory = f;
         break;
@@ -1465,8 +1467,6 @@ bool ViewMesh::SelAnimation (const CEGUI::EventArgs& e)
   CEGUI::Listbox* list = (CEGUI::Listbox*)winMgr->getWindow("Tab2/List");
 
   CEGUI::ListboxItem* item = list->getFirstSelectedItem();
-  if(!item) return false;
-
   const CEGUI::String& text = item->getText();
   if (text.empty()) return false;
 
@@ -2006,7 +2006,7 @@ bool ViewMesh::ReloadButton (const CEGUI::EventArgs& e)
   if (reloadFilename == "")
       return true;
 
-  collection->ReleaseAllObjects();
+  region->DeleteAll();
   LoadSprite(reloadFilename);
 
   return true;

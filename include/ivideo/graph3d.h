@@ -31,7 +31,6 @@
  
 #include "csutil/scf.h"
 
-#include "csgeom/matrix4.h"
 #include "csgeom/transfrm.h"
 #include "csutil/flags.h"
 #include "csutil/strset.h"
@@ -42,8 +41,10 @@ struct iClipper2D;
 struct iGraphics2D;
 struct iHalo;
 struct iRenderBuffer;
+struct iRendererLightmap;
 struct iShader;
 struct iShaderVariableContext;
+struct iShaderVarStack;
 struct iTextureHandle;
 struct iTextureManager;
 
@@ -63,7 +64,6 @@ namespace CS
   } // namespace Graphics
 } // namespace CS
 class csRenderBufferHolder;
-class csShaderVariableStack;
 
 
 /**\name iGraphics3D::BeginDraw() flags
@@ -76,8 +76,6 @@ class csShaderVariableStack;
 #define CSDRAW_CLEARZBUFFER 0x00000010
 /// Clear frame buffer ?
 #define CSDRAW_CLEARSCREEN  0x00000020
-/// Ignore clipping rectangle when clearing?
-#define CSDRAW_NOCLIPCLEAR  0x00000040
 /** @} */
 
 /**\name Type of clipper (for iGraphics3D::SetClipper())
@@ -148,15 +146,8 @@ enum csZBufMode
 // \todo Document me!
 #define CS_VATTRIB_SPECIFIC_FIRST    0
 #define CS_VATTRIB_SPECIFIC_LAST    15
-#define CS_VATTRIB_SPECIFIC_NUM     \
-  (CS_VATTRIB_SPECIFIC_LAST - CS_VATTRIB_SPECIFIC_FIRST + 1)
 #define CS_VATTRIB_GENERIC_FIRST   100
 #define CS_VATTRIB_GENERIC_LAST    (CS_VATTRIB_GENERIC_FIRST + 15)
-#define CS_VATTRIB_GENERIC_NUM     \
-  (CS_VATTRIB_GENERIC_LAST - CS_VATTRIB_GENERIC_FIRST + 1)
-#define CS_IATTRIB_FIRST           200 
-#define CS_IATTRIB_LAST            (CS_IATTRIB_FIRST + 0) 
-
 
 #define CS_VATTRIB_IS_GENERIC(va)   \
   ((va >= CS_VATTRIB_GENERIC_FIRST) && (va <=CS_VATTRIB_GENERIC_LAST))
@@ -225,11 +216,8 @@ enum csVertexAttrib
   CS_VATTRIB_12 = CS_VATTRIB_GENERIC_FIRST + 12,
   CS_VATTRIB_13 = CS_VATTRIB_GENERIC_FIRST + 13,
   CS_VATTRIB_14 = CS_VATTRIB_GENERIC_FIRST + 14,
-  CS_VATTRIB_15 = CS_VATTRIB_GENERIC_FIRST + 15,
+  CS_VATTRIB_15 = CS_VATTRIB_GENERIC_FIRST + 15
   //@}
-
-  /// Pseudo-instancing attribute: object-to-world matrix 
-  CS_IATTRIB_OBJECT2WORLD = CS_IATTRIB_FIRST + 0
 };
 
 /**\name Mix mode: Types
@@ -466,7 +454,7 @@ struct csAlphaMode
   {
     /// Ignore alpha
     alphaNone = 1,
-    /// Binary alpha (alpha test is used)
+    /// Binary alpha (pixels with alpha >0.5 are drawn, all others not)
     alphaBinary,
     /// 'Smooth' alpha (colors are mixed based on a pixel's alpha value)
     alphaSmooth
@@ -477,11 +465,8 @@ struct csAlphaMode
   {
     /// Alpha mode to use when autoAlphaMode is \p false
     AlphaType alphaType;
-    /** 
-     * String ID for texture to retrieve the alpha mode from when autoAlphaMode
-     * is \p true
-     */
-    CS::StringIDValue autoModeTexture;
+    /// Texture to retrieve the alpha mode from when autoAlphaMode is \p true
+    csStringID autoModeTexture;
   };
 };
 /** @} */
@@ -677,14 +662,6 @@ struct csSimpleRenderMesh
    * and only used once.
    */
   const uint* indices;
-  //@{
-  /**
-   * (optional) Range of indices to draw.
-   * If \a indexStart < indexEnd, this range is used. Otherwise,
-   * the default range (0..indexCount or all vertices) is used.
-   */
-  uint indexStart, indexEnd;
-  //@}
 
   /// Number of vertices
   uint vertexCount;
@@ -729,11 +706,8 @@ struct csSimpleRenderMesh
    *  effect, too.
    */
   csReversibleTransform object2world;
-  /// (Optional) Buffer holder with all vertex buffers.
-  csRef<csRenderBufferHolder> renderBuffers;
 
-  csSimpleRenderMesh () : indexCount(0), indices(0), indexStart (0),
-    indexEnd (0), texcoords(0), colors(0), 
+  csSimpleRenderMesh () : indexCount(0), indices(0), texcoords(0), colors(0), 
     texture (0), shader (0), dynDomain (0), z_buf_mode (CS_ZBUF_NONE), 
     mixmode (CS_FX_COPY)
   {  
@@ -757,30 +731,6 @@ enum csRenderTargetAttachment
   rtaNumAttachments
 };
 
-namespace CS
-{
-  namespace Graphics
-  {
-    struct TextureComparisonMode
-    {
-      enum Mode
-      {
-        compareNone,
-        compareR
-      };
-      Mode mode;
-      enum Function
-      {
-        funcLEqual,
-        funcGEqual
-      };
-      Function function;
-      
-      TextureComparisonMode() : mode (compareNone), function (funcLEqual) {}
-    };
-  } // namespace Graphics
-} // namespace CS
-
 /**
  * This is the standard 3D graphics interface.
  * All 3D graphics rasterizer servers for Crystal Space should implement this
@@ -797,7 +747,7 @@ namespace CS
  */
 struct iGraphics3D : public virtual iBase
 {
-  SCF_INTERFACE(iGraphics3D, 4, 0, 2);
+  SCF_INTERFACE(iGraphics3D, 3, 0, 0);
   
   /// Open the 3D graphics display.
   virtual bool Open () = 0;
@@ -844,7 +794,6 @@ struct iGraphics3D : public virtual iBase
    *   space, i.e. y=0 is at the bottom of the viewport, y=GetHeight() at the 
    *   top.
    */
-  CS_DEPRECATED_METHOD_MSG("Use explicit projection matrix instead")
   virtual void SetPerspectiveCenter (int x, int y) = 0;
 
   /**
@@ -853,17 +802,14 @@ struct iGraphics3D : public virtual iBase
    *   space, i.e. y=0 is at the bottom of the viewport, y=GetHeight() at the 
    *   top.
    */
-  CS_DEPRECATED_METHOD_MSG("Use explicit projection matrix instead")
   virtual void GetPerspectiveCenter (int& x, int& y) const = 0;
 
   /**
    * Set aspect ratio for perspective projection.
    */
-  CS_DEPRECATED_METHOD_MSG("Use explicit projection matrix instead")
   virtual void SetPerspectiveAspect (float aspect) = 0;
 
   /// Get aspect ratio.
-  CS_DEPRECATED_METHOD_MSG("Use explicit projection matrix instead")
   virtual float GetPerspectiveAspect () const = 0;
  
   /**
@@ -945,7 +891,7 @@ struct iGraphics3D : public virtual iBase
   /// Drawroutine. Only way to draw stuff
   virtual void DrawMesh (const CS::Graphics::CoreRenderMesh* mymesh,
                          const CS::Graphics::RenderMeshModes& modes,
-                         const csShaderVariableStack& stack) = 0;
+                         const iShaderVarStack* stacks) = 0;
   /**
   * Draw a csSimpleRenderMesh on the screen.
   * Simple render meshes are intended for cases where setting up
@@ -1009,8 +955,7 @@ struct iGraphics3D : public virtual iBase
 
   /**
   * Activate or deactivate all given textures depending on the value
-  * of the entry of \a textures for that unit (i.e. deactivate if 0). 
-  * If \a textures itself is 0 all specified units are deactivated.
+  * of 'textures' for that unit (i.e. deactivate if 0).
   */
   virtual void SetTextureState (int* units, iTextureHandle** textures,
     int count) = 0;
@@ -1079,16 +1024,10 @@ struct iGraphics3D : public virtual iBase
   /// Get the z buffer write/test mode
   virtual csZBufMode GetZMode () = 0;
 
-  /**
-   * \deprecated Deprecated in 1.3.
-   */
-  CS_DEPRECATED_METHOD_MSG("Nonfunctional. Use RenderMeshModes::zoffset instead")
+  /// Enables offsetting of Z values
   virtual void EnableZOffset () = 0;
 
-  /**
-   * \deprecated Deprecated in 1.3.
-   */
-  CS_DEPRECATED_METHOD_MSG("Nonfunctional. Use RenderMeshModes::zoffset instead")
+  /// Disables offsetting of Z values
   virtual void DisableZOffset () = 0;
 
   /// Controls shadow drawing
@@ -1119,6 +1058,13 @@ struct iGraphics3D : public virtual iBase
   /// Create a halo of the specified color and return a handle.
   virtual iHalo *CreateHalo (float iR, float iG, float iB,
     unsigned char *iAlpha, int iWidth, int iHeight) = 0;
+
+  /**
+   * Remove some polygon from the cache.
+   * You have to call this function before deleting a polygon
+   * (csPolygon3D destructor will do that).
+   */
+  virtual void RemoveFromCache (iRendererLightmap* rlm) = 0;
 
   /**
    * Set the world to camera transform.
@@ -1152,41 +1098,6 @@ struct iGraphics3D : public virtual iBase
    * Get the current drawflags
    */
   virtual int GetCurrentDrawFlags() const = 0;
-  
-  virtual const CS::Math::Matrix4& GetProjectionMatrix() = 0;
-  /**
-   * Set the projection matrix to use.
-   */
-  virtual void SetProjectionMatrix (const CS::Math::Matrix4& m) = 0;
-
-  /**
-   * Set the texture comparison modes for the given texture units.
-   */
-  virtual void SetTextureComparisonModes (int* units, 
-    CS::Graphics::TextureComparisonMode* texCompare,
-    int count) = 0;
-  
-  /**
-   * Copy the contents of the given render target attachments to the specified
-   * textures.
-   * \param num Number of attachment/texture pairs.
-   * \param attachments Array of attachments from which to copy.
-   * \param textures Array of texture to copy to.
-   * \param subtextures Optional array of subtextures
-   *   (cube map faces/volume slices) to copy to. If none is given a
-   *   subtexture 0 is assumed for all targets.
-   */
-  virtual void CopyFromRenderTargets (size_t num, 
-    csRenderTargetAttachment* attachments,
-    iTextureHandle** textures,
-    int* subtextures = 0) = 0;
-
-  /**
-   * Draw multiple csSimpleRenderMeshes.
-   * \sa DrawSimpleMesh
-   */
-  virtual void DrawSimpleMeshes (const csSimpleRenderMesh* meshes,
-    size_t numMeshes, uint flags = 0) = 0;
 };
 
 /** @} */

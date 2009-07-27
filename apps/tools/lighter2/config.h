@@ -40,8 +40,6 @@ namespace lighter
       bool doDirectLight;
       // HL2-style directional LMs
       bool directionalLMs;
-      // Whether to generate maps containing light directions for specular
-      bool specularDirectionMaps;
       // Number of threads to use for multicore parts
       uint numThreads;
       // Save buffers as binary
@@ -68,13 +66,6 @@ namespace lighter
 
       // Whether to store PD light maps as grayscale maps.
       bool grayPDMaps;
-    };
-    
-    // Terrain lighting properties
-    struct TerrainProperties
-    {
-      // Max lightmap sizes
-      uint maxLightmapU, maxLightmapV;
     };
 
     // Direct light (direct illumination) calculation settings
@@ -124,11 +115,6 @@ namespace lighter
       return lmProperties;
     }
 
-    const TerrainProperties& GetTerrainProperties () const
-    {
-      return terrainProperties;
-    }
-
     const DIProperties& GetDIProperties () const
     {
       return diProperties;
@@ -143,7 +129,6 @@ namespace lighter
     // Properties
     LighterProperties     lighterProperties;
     LightmapProperties    lmProperties;
-    TerrainProperties     terrainProperties;
     DIProperties          diProperties;
     DebugProperties       debugProperties;
   };

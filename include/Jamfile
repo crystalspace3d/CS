@@ -30,11 +30,10 @@ Recurse FilelistEntryHeader : .h .i .inc .fun .tok ;
 # they are specialized polymorphic files intended for inclusion several times
 # under different contexts.
 CS_MASTER_HEADER_REJECTS =
-  [ Wildcard [ ConcatDirs csplugincommon directx       ] : *.h ]
-  [ Wildcard [ ConcatDirs csplugincommon macosx        ] : *.h ]
-  [ Wildcard [ ConcatDirs csplugincommon opengl        ] : *.h ]
-  [ Wildcard [ ConcatDirs csplugincommon win32         ] : *.h ]
-  [ Wildcard [ ConcatDirs csplugincommon rendermanager ] : *.h ]
+  [ Wildcard [ ConcatDirs csplugincommon directx ] : *.h ]
+  [ Wildcard [ ConcatDirs csplugincommon macosx  ] : *.h ]
+  [ Wildcard [ ConcatDirs csplugincommon opengl  ] : *.h ]
+  [ Wildcard [ ConcatDirs csplugincommon win32   ] : *.h ]
   [ ConcatDirs cstool   tokenlist.h  ]
   [ ConcatDirs csutil   archive.h    ]
   [ ConcatDirs csutil   csosdefs.h   ]
@@ -79,16 +78,15 @@ CS_MASTER_HEADER_REJECTS +=
   [ ConcatDirs csutil threading pthread_condition.h ]
   [ ConcatDirs csutil threading pthread_mutex.h     ]
   [ ConcatDirs csutil threading pthread_thread.h    ]
-  [ ConcatDirs csutil threading pthread_tls.h       ]
   [ ConcatDirs csutil threading win32_apifuncs.h    ]
   [ ConcatDirs csutil threading win32_condition.h   ]
   [ ConcatDirs csutil threading win32_mutex.h       ]
-  [ ConcatDirs csutil threading win32_thread.h      ] 
-  [ ConcatDirs csutil threading win32_tls.h         ]
+  [ ConcatDirs csutil threading win32_thread.h      ]  
   ;
 
 {
   local CSWIN32LIBS_REJECTS =
+    caca.h
     CEGUI*.h
     d3d.h
     d3dcaps.h

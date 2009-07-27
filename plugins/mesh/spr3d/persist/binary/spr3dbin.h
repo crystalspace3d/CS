@@ -61,10 +61,7 @@ public:
 
   /// Parse data  and return a new object for it.
   virtual csPtr<iBase> Parse (iDataBuffer* data,
-    iStreamSource*, iLoaderContext* ldr_context, iBase* context,
-    iStringArray*);
-
-  virtual bool IsThreadSafe() { return true; }
+    iStreamSource*, iLoaderContext* ldr_context, iBase* context);
 };
 
 /**

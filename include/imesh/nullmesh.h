@@ -30,14 +30,13 @@
 
 class csVector3;
 class csBox3;
-struct iMeshObject;
 
 /**
  * This interface describes the API for the null mesh object.
  */
 struct iNullMeshState : public virtual iBase
 {
-  SCF_INTERFACE (iNullMeshState, 1, 0, 0);
+  SCF_INTERFACE (iNullMeshState, 0, 0, 2);
 
   /**
    * Set the radius of the sphere represented by this object.
@@ -55,14 +54,6 @@ struct iNullMeshState : public virtual iBase
   virtual void SetBoundingBox (const csBox3& box) = 0;
   /// Get the bounding box represented by this object.
   virtual void GetBoundingBox (csBox3& box) = 0;
-
-  /**
-   * Sets a mesh to perform hitbeam calculations on. Useful where you 
-   * want to use a different shape for these calculations to what you render.
-   * An example of this is having a nullmesh to represent an object entity
-   * while using pseudo-instancing on a different mesh object for the render.
-   */
-  virtual void SetHitBeamMeshObject (iMeshObject* mesh) = 0;
 };
 
 /**

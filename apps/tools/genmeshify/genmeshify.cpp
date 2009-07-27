@@ -83,9 +83,9 @@ namespace genmeshify
     vfs = csQueryRegistry<iVFS> (objectRegistry);
     if (!vfs) return Report ("No iVFS!");
 
-    svStrings = csQueryRegistryTagInterface<iShaderVarStringSet> (
-      objectRegistry, "crystalspace.shader.variablenameset");
-    if (!svStrings) return Report ("No shared shader var string set!");
+    strings = csQueryRegistryTagInterface<iStringSet> (
+      objectRegistry, "crystalspace.shared.stringset");
+    if (!strings) return Report ("No shared string set!");
 
     // Open the systems
     if (!csInitializer::OpenApplication (objectRegistry))

@@ -49,19 +49,10 @@ void ASndTest::CreateWorld ()
 
   // Create and prepare the world
   world = engine->CreateSector ("room");
-
-  // First we make a primitive for our geometry.
-  using namespace CS::Geometry;
-  DensityTextureMapper mapper (0.3f);
-  TesselatedBox box (csVector3 (-40, 0, 0), csVector3 (40, 10, 40));
-  box.SetLevel (3);
-  box.SetMapper (&mapper);
-  box.SetFlags (Primitives::CS_PRIMBOX_INSIDE);
-
-  // Now we make a factory and a mesh at once.
-  csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
-      engine, world, "walls", "walls_factory", &box);
-  walls->GetMeshObject ()->SetMaterialWrapper (tm);
+  csRef<iMeshWrapper> walls ( engine->CreateSectorWallsMesh (world, "walls"));
+  iMeshObject* walls_object = walls->GetMeshObject ();
+  iMeshObjectFactory* walls_factory = walls_object->GetFactory();
+  csRef<iThingFactoryState> walls_state = scfQueryInterface<iThingFactoryState> (walls_factory);
 
   // Prepare lighting
   csRef<iLight> light;
@@ -115,6 +106,11 @@ void ASndTest::CreateWorld ()
 
   csRef<iSndSysSource> sndsource;
   csRef<iSndSysSource3D> sndsource3d;
+
+  // Create the room
+  walls_state->AddInsideBox( csVector3 (-40, 0,  0), csVector3 ( 40, 10, 40));
+  walls_state->SetPolygonMaterial (CS_POLYRANGE_ALL, tm);
+  walls_state->SetPolygonTextureMapping (CS_POLYRANGE_ALL, 3);
 
   // Add some quick lighting
   light = engine->CreateLight (0, csVector3 (-30, 5, 10), 20, csColor (0.22f, 0.2f, 0.25f));
@@ -220,9 +216,6 @@ void ASndTest::CreateWorld ()
   listenerdoppler->SetDopplerFactor( 100 );
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (world, engine, 4);
 }
 
 void ASndTest::Frame ()
@@ -363,6 +356,8 @@ bool ASndTest::Application()
 
   sndloader = csQueryRegistry<iSndSysLoader> (GetObjectRegistry());
   if (!sndloader) return ReportError("Failed to locate Sound loader!");
+
+  engine->SetLightingCacheMode (0);
 
   CreateWorld ();
 

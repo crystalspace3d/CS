@@ -25,7 +25,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csutil/ref.h"
 #include "csutil/scanstr.h"
 #include "csutil/scf.h"
-#include "csutil/scfstr.h"
 #include "csutil/stringreader.h"
 #include "iutil/document.h"
 #include "iutil/string.h"
@@ -35,16 +34,14 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "iutil/databuff.h"
 
 #include "glshader_cgvp.h"
-#include "glshader_cgfp.h"
 #include "glshader_cg.h"
-#include "profile_limits.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(GLShaderCg)
 {
 
 CS_LEAKGUARD_IMPLEMENT (csShaderGLCGVP);
 
-bool csShaderGLCGVP::Compile (iHierarchicalCache* cache, csRef<iString>* tag)
+bool csShaderGLCGVP::Compile ()
 {
   if (!shaderPlug->enableVP) return false;
 
@@ -54,57 +51,25 @@ bool csShaderGLCGVP::Compile (iHierarchicalCache* cache, csRef<iString>* tag)
   csString programStr;
   programStr.Append ((char*)programBuffer->GetData(), programBuffer->GetSize());
 
-  bool ret = DefaultLoadProgram (cgResolve, programStr, progVP,
-    shaderPlug->currentLimits);
-
-  csString tagStr (csString("CG") + shaderPlug->currentLimits.ToString());
-  WriteToCache (cache, shaderPlug->currentLimits.vp, 
-    shaderPlug->currentLimits, tagStr);
-  tag->AttachNew (new scfString (tagStr));
+  CGprofile progProf = CG_PROFILE_UNKNOWN;
+  /* @@@ Hack: Make sure at least ARB_v_p is used.
+   * This is done because we don't completely support NV_vertex_program based
+   * profiles - those require "manual" binding of state matrices via 
+   * glTrackMatrixNV() which we don't support right now.
+   */
+  if (!cg_profile.IsEmpty())
+    progProf = cgGetProfile (cg_profile);
   
-  cacheKeepNodes.DeleteAll ();
-  return ret;
-}
-
-bool csShaderGLCGVP::Precache (const ProfileLimitsPair& limits,
-                               const char* tag,
-                               iHierarchicalCache* cache)
-{
-  PrecacheClear();
-
-  csRef<iDataBuffer> programBuffer = GetProgramData();
-  if (!programBuffer.IsValid())
+  if(progProf == CG_PROFILE_UNKNOWN)
+    progProf = cgGLGetLatestProfile (CG_GL_VERTEX);
+  if (progProf < CG_PROFILE_ARBVP1)
+    cg_profile = "arbvp1";
+  
+  if (!DefaultLoadProgram (cgResolve, programStr, CG_GL_VERTEX, 
+      shaderPlug->maxProfileVertex, false, true))
     return false;
-  csString programStr;
-  programStr.Append ((char*)programBuffer->GetData(), programBuffer->GetSize());
 
-  bool needBuild = true;
-  csString sourcePreproc;
-  {
-    csString programStr;
-    programStr.Append ((char*)programBuffer->GetData(), programBuffer->GetSize());
-    
-    // Get preprocessed result of pristine source
-    sourcePreproc = GetPreprocessedProgram (programStr);
-    if (!sourcePreproc.IsEmpty ())
-    {
-      // Check preprocessed source against cache
-      if (TryLoadFromCompileCache (sourcePreproc, limits.vp, cache))
-        needBuild = false;
-    }
-  }
-  
-  bool ret;
-  if (needBuild)
-    ret = DefaultLoadProgram (cgResolve, programStr, progVP, 
-      limits,
-      loadApplyVmap | loadFlagUnusedV2FForInit);
-  else
-    ret = true;
-
-  WriteToCache (cache, limits.vp, limits, csString("CG") + tag);
-
-  return ret;
+  return true;
 }
 
 csVertexAttrib csShaderGLCGVP::ResolveBufferDestination (const char* binding)

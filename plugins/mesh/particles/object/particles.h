@@ -311,6 +311,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     csRefArray<iParticleEffector> effectors;
   };
 
+#include "csutil/deprecated_warn_off.h"
+
   /**
   * Particle mesh object
   */
@@ -393,7 +395,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
       csVector3& isect, float* pr, int* polygon_idx = 0,
-      iMaterialWrapper** material = 0, csArray<iMaterialWrapper*>* materials = 0) 
+      iMaterialWrapper** material = 0) 
     {
       return false;
     }
@@ -401,13 +403,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     virtual void SetMeshWrapper (iMeshWrapper* logparent)
     {
       meshWrapper = logparent;
-
-      // Check for delayed advance.
-      if(delayedAdvance > 0)
-      {
-        Advance(delayedAdvance);
-        delayedAdvance = 0;
-      }
     }
 
     virtual iMeshWrapper* GetMeshWrapper () const 
@@ -451,6 +446,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     {
       return mixMode;
     }
+
+    virtual void InvalidateMaterialHandles ()
+    {}
 
     virtual void PositionChild (iMeshObject* child,csTicks current_time)
     {}
@@ -640,9 +638,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     ParticlesMeshFactory* factory;
 
     iVertexSetup* vertexSetup; //Helper object
-
-    // For delayed advance.
-    csTicks delayedAdvance;
     
     /**
      * Advance particle system by given amount of seconds.
@@ -722,6 +717,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     csRef<RenderBufferAccessor> renderBufferAccessor;
 
   };
+
+#include "csutil/deprecated_warn_on.h"
+
 }
 CS_PLUGIN_NAMESPACE_END(Particles)
 

@@ -7,10 +7,11 @@
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-  		<Platform Name="Win32"/>
-    	</Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
 	<Configurations>
-            		<Configuration
+  		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release71\build\plgwxgl\"
 			IntermediateDirectory="..\..\out\release71\build\plgwxgl\"
@@ -24,8 +25,9 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDataBaseFileName="..\..\out\release71\build\plgwxgl\wxgl.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -35,10 +37,9 @@
 				ObjectFile="..\..\out\release71\build\plgwxgl\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -50,10 +51,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\release71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\plgwxgl\wxgl.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release71\build\plgwxgl\Win32\plgwxgl.lib"
+				ImportLibrary="..\..\out\release71\build\plgwxgl\plgwxgl.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71.lib wxmsw28u_core-vc71.lib wxmsw28u_gl-vc71.lib"
 				SuppressStartupBanner="TRUE"
@@ -87,7 +88,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release71\build\plgwxgl\"
 			IntermediateDirectory="..\..\out\release71\build\plgwxgl\"
@@ -101,8 +102,9 @@
 				StringPooling="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
+				DebugInformationFormat="3"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDataBaseFileName="..\..\out\release71\build\plgwxgl\wxgl.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -112,10 +114,9 @@
 				ObjectFile="..\..\out\release71\build\plgwxgl\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -127,10 +128,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\release71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDatabaseFile="..\..\out\release71\build\plgwxgl\wxgl.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release71\build\plgwxgl\Win32\plgwxgl.lib"
+				ImportLibrary="..\..\out\release71\build\plgwxgl\plgwxgl.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71.lib wxmsw28u_core-vc71.lib wxmsw28u_gl-vc71.lib"
 				SuppressStartupBanner="TRUE"
@@ -164,7 +165,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\plgwxgl\"
 			IntermediateDirectory="..\..\out\debug71\build\plgwxgl\"
@@ -175,10 +176,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -188,10 +190,9 @@
 				ObjectFile="..\..\out\debug71\build\plgwxgl\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -201,10 +202,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgwxgl\Win32\plgwxgl.lib"
+				ImportLibrary="..\..\out\debug71\build\plgwxgl\plgwxgl.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71_d.lib wxmsw28u_core-vc71_d.lib wxmsw28u_gl-vc71_d.lib"
 				SuppressStartupBanner="TRUE"
@@ -238,7 +239,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="Debug (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\plgwxgl\"
 			IntermediateDirectory="..\..\out\debug71\build\plgwxgl\"
@@ -249,10 +250,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -262,10 +264,9 @@
 				ObjectFile="..\..\out\debug71\build\plgwxgl\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -275,10 +276,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgwxgl\Win32\plgwxgl.lib"
+				ImportLibrary="..\..\out\debug71\build\plgwxgl\plgwxgl.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71_d.lib wxmsw28u_core-vc71_d.lib wxmsw28u_gl-vc71_d.lib"
 				SuppressStartupBanner="TRUE"
@@ -312,7 +313,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\plgwxgl\"
 			IntermediateDirectory="..\..\out\debug71\build\plgwxgl\"
@@ -323,10 +324,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -336,10 +338,9 @@
 				ObjectFile="..\..\out\debug71\build\plgwxgl\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -349,10 +350,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgwxgl\Win32\plgwxgl.lib"
+				ImportLibrary="..\..\out\debug71\build\plgwxgl\plgwxgl.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71_d.lib wxmsw28u_core-vc71_d.lib wxmsw28u_gl-vc71_d.lib"
 				SuppressStartupBanner="TRUE"
@@ -386,7 +387,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\plgwxgl\"
 			IntermediateDirectory="..\..\out\debug71\build\plgwxgl\"
@@ -397,10 +398,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -410,10 +412,9 @@
 				ObjectFile="..\..\out\debug71\build\plgwxgl\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -423,10 +424,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgwxgl\Win32\plgwxgl.lib"
+				ImportLibrary="..\..\out\debug71\build\plgwxgl\plgwxgl.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71_d.lib wxmsw28u_core-vc71_d.lib wxmsw28u_gl-vc71_d.lib"
 				SuppressStartupBanner="TRUE"
@@ -460,7 +461,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
+    		<Configuration
 			Name="RefTracker (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\plgwxgl\"
 			IntermediateDirectory="..\..\out\debug71\build\plgwxgl\"
@@ -471,10 +472,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -484,10 +486,9 @@
 				ObjectFile="..\..\out\debug71\build\plgwxgl\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -497,10 +498,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgwxgl\Win32\plgwxgl.lib"
+				ImportLibrary="..\..\out\debug71\build\plgwxgl\plgwxgl.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71_d.lib wxmsw28u_core-vc71_d.lib wxmsw28u_gl-vc71_d.lib"
 				SuppressStartupBanner="TRUE"
@@ -534,7 +535,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      		<Configuration
+  		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
 			OutputDirectory="..\..\out\debug71\build\plgwxgl\"
 			IntermediateDirectory="..\..\out\debug71\build\plgwxgl\"
@@ -545,10 +546,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				MinimalRebuild="TRUE"
+				DebugInformationFormat="4"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -558,10 +560,9 @@
 				ObjectFile="..\..\out\debug71\build\plgwxgl\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -571,10 +572,10 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
+				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\wxgl.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgwxgl\Win32\plgwxgl.lib"
+				ImportLibrary="..\..\out\debug71\build\plgwxgl\plgwxgl.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71_d.lib wxmsw28u_core-vc71_d.lib wxmsw28u_gl-vc71_d.lib"
 				SuppressStartupBanner="TRUE"
@@ -608,155 +609,7 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-                		<Configuration
-			Name="ThreadChecker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgwxgl\"
-			IntermediateDirectory="..\..\out\debug71\build\plgwxgl\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgwxgl\plgwxgl.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgwxgl\"
-				ObjectFile="..\..\out\debug71\build\plgwxgl\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgwxgl\Win32\plgwxgl.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71_d.lib wxmsw28u_core-vc71_d.lib wxmsw28u_gl-vc71_d.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgwxgl\plgwxgl.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\canvas\wxgl;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="ThreadChecker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug71\build\plgwxgl\"
-			IntermediateDirectory="..\..\out\debug71\build\plgwxgl\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				PrecompiledHeaderFile="..\..\out\debug71\build\plgwxgl\plgwxgl.pch"
-				AssemblerListingLocation="..\..\out\debug71\build\plgwxgl\"
-				ObjectFile="..\..\out\debug71\build\plgwxgl\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\wxgl.dll"
-				ProgramDatabaseFile="..\..\out\debug71\build\plgwxgl\Win32\wxgl.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug71\build\plgwxgl\Win32\plgwxgl.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib wxbase28u-vc71_d.lib wxmsw28u_core-vc71_d.lib wxmsw28u_gl-vc71_d.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug71\build\plgwxgl\plgwxgl.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug71\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug71\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=71"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\canvas\wxgl;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-              	</Configurations>
+  	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"

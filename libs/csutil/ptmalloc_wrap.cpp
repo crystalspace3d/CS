@@ -148,7 +148,7 @@ namespace
     {
       const AllocatedBlock& block = allocatedPointers[i];
       
-      fprintf (f, ">>> addr %p  %lu bytes\n", 
+      fprintf (f, ">>> %p %lu\n", 
         block.address, (unsigned long)block.size);
       block.stack->Print (f);
       fflush (f);
@@ -156,8 +156,7 @@ namespace
   }
 
   template<bool keepLocation>
-  static bool mem_check_real (const void* p,
-                              const char* msg, bool condition,
+  static bool mem_check_real (const char* msg, bool condition,
                               const char* exprString,
                               csCallStack* stack, 
                               const char* file, int line)
@@ -168,8 +167,6 @@ namespace
       {
 	fprintf (stderr, 
 	  "Memory error:     %s\n", exprString);
-	fprintf (stderr, 
-	  "Memory block:     %p\n", p);
 	fprintf (stderr, 
 	  "Message:          %s\n", msg);
 	fflush (stderr);
@@ -207,8 +204,8 @@ namespace
     }
     return true;
   }
-  #define mem_check(keepLocation, p, msg, condition, stack, file, line) \
-    mem_check_real<keepLocation> (p, msg, condition, #condition, stack, file, line)
+  #define mem_check(keepLocation, msg, condition, stack, file, line) \
+    mem_check_real<keepLocation> (msg, condition, #condition, stack, file, line)
   
   static bool VerifyMemoryCookie (const AllocatedBlock& block)
   {
@@ -227,11 +224,11 @@ namespace
     p -= sizeof(indicator);
     
     // Verify cookies
-    ret &= mem_check (true, block.address,
+    ret &= mem_check (true,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
       theCookie == startCookie, block.stack, __FILE__, __LINE__);
-    ret &= mem_check (true, block.address,
+    ret &= mem_check (true,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)block.address + n) == endCookie, block.stack, 
@@ -341,7 +338,7 @@ namespace
       - (sizeof(size_t) + locationSize));
     const CookieType endCookie = CookieSwap (startCookie);
     // Verify cookies
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
       *(CookieType*)p == startCookie, block ? block->stack : 0,
@@ -352,7 +349,7 @@ namespace
     {
       p -= sizeof (indicator);
     }
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)P + n) == endCookie, 
@@ -419,7 +416,7 @@ namespace
     const CookieType startCookie = GetCookie (p
       - (sizeof(size_t) + locationSize));
     const CookieType endCookie = CookieSwap (startCookie);
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
       *(CookieType*)p == startCookie, 
@@ -430,7 +427,7 @@ namespace
     {
       p -= sizeof (indicator);
     }
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)P + nOld) == endCookie, 

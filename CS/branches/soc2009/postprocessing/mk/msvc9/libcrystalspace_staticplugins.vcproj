@@ -2676,6 +2676,9 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\valueset.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\forcedprioshader.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.cpp">
 			</File>
 			<File
@@ -4213,6 +4216,9 @@
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
 			</File>
 			<File
@@ -4576,6 +4582,9 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\valueset.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\forcedprioshader.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\foreignnodes.h">
 			</File>
 			<File
@@ -4693,6 +4702,9 @@
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
 			</File>
 			<File
@@ -4766,6 +4778,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">

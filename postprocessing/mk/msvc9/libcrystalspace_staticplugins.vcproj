@@ -2733,6 +2733,9 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\progcache.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.cpp">
 			</File>
 			<File
@@ -4637,6 +4640,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\progcache.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.h">

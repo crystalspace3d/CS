@@ -2637,6 +2637,9 @@
 				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_imagetex.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\opengl\pbo.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\combiner_default.cpp">
 			</File>
 			<File
@@ -2674,6 +2677,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\valueset.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\forcedprioshader.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.cpp">
@@ -2728,6 +2734,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\progcache.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.cpp">
@@ -4213,6 +4222,9 @@
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
 			</File>
 			<File
@@ -4525,6 +4537,9 @@
 				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_imagetex.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\opengl\pbo.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\weaver\basiciter.h">
 			</File>
 			<File
@@ -4574,6 +4589,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\valueset.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\forcedprioshader.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\foreignnodes.h">
@@ -4628,6 +4646,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\progcache.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.h">
@@ -4691,6 +4712,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
@@ -4766,6 +4790,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">

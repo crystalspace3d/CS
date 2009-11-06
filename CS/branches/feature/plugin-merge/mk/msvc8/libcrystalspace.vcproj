@@ -1566,6 +1566,9 @@
 				RelativePath="..\..\libs\csgfx\imagemanipulate.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgfx\imagememory.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgfx\imagetools.cpp">
 			</File>
 			<File
@@ -1576,9 +1579,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csgfx\lightsvcache.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csgfx\memimage.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csgfx\normalmaptools.cpp">
@@ -1648,6 +1648,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrexposure.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrexposure_luminance.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\hdrhelper.cpp">
@@ -2441,6 +2444,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\hdrexposure.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\hdrhelper.h">

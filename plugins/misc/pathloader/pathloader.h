@@ -63,8 +63,6 @@ public:
   	iStreamSource*, iLoaderContext* ldr_context,
   	iBase* context);
 
-  virtual bool IsThreadSafe() { return true; }
-
   /*
    * Functions not used atm, but might be useful at some point...
    */

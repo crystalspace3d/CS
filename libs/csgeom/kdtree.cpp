@@ -31,6 +31,14 @@ namespace
   {
     csBlockAllocator<csKDTree> tree_nodes;
     csBlockAllocator<csKDTreeChild> tree_children;
+
+    StaticContainer() {}
+
+    ~StaticContainer()
+    {
+      tree_nodes.Empty();
+      tree_children.Empty();
+    }
   };
   CS_IMPLEMENT_STATIC_VAR (TreeAlloc, StaticContainer, ());
 }

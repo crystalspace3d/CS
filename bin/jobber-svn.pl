@@ -249,8 +249,6 @@
 #         Archives with 'tar' and compresses with 'gzip'. Extension: .tgz
 #     $ARCHIVER_ZIP
 #         Archives and compresses with 'zip'. Extension: .zip
-#     $ARCHIVER_LZMA
-#         Archives with 'tar' and compresses with 'lzma'. Extension: .tar.lzma
 #
 #     Default: ($ARCHIVER_BZIP2, $ARCHIVER_GZIP, $ARCHIVER_ZIP)
 #
@@ -284,7 +282,7 @@ use warnings;
 $Getopt::Long::ignorecase = 0;
 
 my $PROG_NAME = 'jobber-svn.pl';
-my $PROG_VERSION = '40';
+my $PROG_VERSION = '38';
 my $AUTHOR_NAME = 'Eric Sunshine';
 my $AUTHOR_EMAIL = 'sunshine@sunshineco.com';
 my $COPYRIGHT = "Copyright (C) 2000-2005 by $AUTHOR_NAME <$AUTHOR_EMAIL>\nConverted for SVN support by Marten Svanfeldt";
@@ -301,10 +299,6 @@ my $ARCHIVER_ZIP = {
     'name'      => 'zip',
     'extension' => 'zip',
     'command'   => 'zip -q -r ~D ~S' };
-my $ARCHIVER_LZMA = {
-    'name'      => 'lzma',
-    'extension' => 'tar.lzma',
-    'command'   => 'tar --create --file=- ~S | lzma > ~D' };
 
 my $jobber_project_root = undef;
 my $jobber_svn_base_url = undef;
@@ -317,7 +311,7 @@ my $jobber_public_mode = undef;
 my $jobber_temp_dir = '/tmp';
 my @jobber_binary_override = ('(?i)\.(dsw|dsp)$');
 my @jobber_tasks = ();
-my @jobber_archivers = ($ARCHIVER_BZIP2, $ARCHIVER_GZIP, $ARCHIVER_ZIP, $ARCHIVER_LZMA);
+my @jobber_archivers = ($ARCHIVER_BZIP2, $ARCHIVER_GZIP, $ARCHIVER_ZIP);
 my %jobber_properties = ();
 
 # SVN binary name
@@ -325,7 +319,6 @@ my $jobber_svn_command = '/usr/bin/svn';
 
 my $CONFIG_FILE = undef;
 my $TESTING = undef;
-my $EXPORT = 1;
 my $CONV_DIR = undef;
 my $CAPTURED_OUTPUT = '';
 
@@ -333,7 +326,6 @@ my @SCRIPT_OPTIONS = (
     'set=s'     => \%jobber_properties,
     'config=s'  => \$CONFIG_FILE,
     'test!'     => \$TESTING,
-    'export!'   => \$EXPORT,
     'help'      => \&option_help,
     'version|V' => \&option_version,
     '<>'        => \&option_error
@@ -666,13 +658,6 @@ sub svn_commit {
 sub run_tasks {
     foreach my $task (@jobber_tasks) {
 	next unless exists($task->{'command'});
-	my $does_svn = exists($task->{'olddirs'});
-	my $does_export = exists($task->{'export'});
-	if ($does_export && !$EXPORT && !$does_svn)
-	{
-	      print "Skipping: $task->{'action'} $task->{'name'}.\n";
-	      next;
-	}
 	print "$task->{'action'} $task->{'name'}.\n";
 	run_command($task->{'command'});
     }
@@ -757,11 +742,6 @@ sub publish_browseable {
     foreach my $task (@jobber_tasks) {
 	next unless exists $task->{'export'}
 	    and (exists $task->{'olddirs'} or exists $task->{'newdirs'});
-	if (!$EXPORT)
-	{
-	    print "Skipped publishing $task->{'name'}.\n";
-	    next;
-	}
 	print "Publishing $task->{'name'}.\n";
 	next if $TESTING;
 	create_directory_deep($jobber_browseable_dir, $jobber_public_group)
@@ -828,11 +808,6 @@ sub publish_packages {
     foreach my $task (@jobber_tasks) {
 	next unless exists $task->{'export'}
 	    and (exists $task->{'olddirs'} or exists $task->{'newdirs'});
-	if (!$EXPORT)
-	{
-	    print "Skipped Packaging $task->{'name'}.\n";
-	    next;
-	}
 	print "Packaging $task->{'name'}.\n";
 
 	my @srclist = exists $task->{'newdirs'} ? 
@@ -1009,9 +984,6 @@ Options:
                  named jobber.cfg or .jobber.
     -t --test    Process all tasks but do not actually modify the SVN
                  repository or export any files.
-    --noexport
-		 Process all tasks and update the SVN repository but don't
-		 export any files.
     -h --help    Display this usage message.
     -V --version Display the version number of @{[basename($0)]}
 

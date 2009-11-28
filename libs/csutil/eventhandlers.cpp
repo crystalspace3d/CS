@@ -48,7 +48,6 @@ csHandlerID csEventHandlerRegistry::GetGenericID (const char *name)
   csString nameStr = name;
   CS_ASSERT (nameStr.FindFirst(':') == (size_t)-1);
   csHandlerID res;
-  mutex.UpgradeLock();
   if (names.Contains(nameStr)) 
   {
     res = names.Request(nameStr);
@@ -58,19 +57,15 @@ csHandlerID csEventHandlerRegistry::GetGenericID (const char *name)
     res = names.Request(nameStr);
     csString p;
     p = nameStr + ":pre";
-    mutex.UpgradeUnlockAndWriteLock();
     handlerPres.PutUnique(res, names.Request((const char *)p));
     p = nameStr + ":post";
     handlerPosts.PutUnique(res, names.Request((const char *)p));
-    mutex.WriteUnlockAndUpgradeLock();
   }
-  mutex.UpgradeUnlock();
   return res;
 }
 
 csHandlerID csEventHandlerRegistry::GetGenericPreBoundID (csHandlerID id)
 {
-  CS::Threading::ScopedReadLock lock(mutex);
   if (IsInstance(id))
     return GetGenericPreBoundID(instantiation.Get(id, CS_HANDLER_INVALID));
   return handlerPres.Get(id, CS_HANDLER_INVALID);
@@ -78,7 +73,6 @@ csHandlerID csEventHandlerRegistry::GetGenericPreBoundID (csHandlerID id)
 
 csHandlerID csEventHandlerRegistry::GetGenericPostBoundID (csHandlerID id)
 {
-  CS::Threading::ScopedReadLock lock(mutex);
   if (IsInstance(id))
     return GetGenericPostBoundID(instantiation.Get(id, CS_HANDLER_INVALID));
   return handlerPosts.Get(id, CS_HANDLER_INVALID);
@@ -86,20 +80,15 @@ csHandlerID csEventHandlerRegistry::GetGenericPostBoundID (csHandlerID id)
 
 csHandlerID csEventHandlerRegistry::RegisterID (iEventHandler *handler)
 {
-  mutex.UpgradeLock();
   csHandlerID res = handlerToID.Get (handler, CS_HANDLER_INVALID);
   if (res != CS_HANDLER_INVALID)
   {
     KnownEventHandler* knownHandler = idToHandler.GetElementPointer (res);
-    mutex.UpgradeUnlockAndWriteLock();
     knownHandler->refcount++;
-    mutex.WriteUnlock();
     return res;
   }
 
-  mutex.UpgradeUnlock();
   csHandlerID generic = GetGenericID (handler->GenericName());
-  mutex.WriteLock();
 
   csString iname;
   iname.Format ("%s:%" PRIu32, handler->GenericName(), instanceCounter++);
@@ -110,31 +99,25 @@ csHandlerID csEventHandlerRegistry::RegisterID (iEventHandler *handler)
   handlerToID.PutUnique (handler, res);
   idToHandler.PutUnique (res, handler);
 
-  mutex.WriteUnlock();
   return res;
 }
 
 csHandlerID csEventHandlerRegistry::GetID (iEventHandler *handler)
 {
-  CS::Threading::ScopedReadLock lock(mutex);
   csHandlerID res = handlerToID.Get (handler, CS_HANDLER_INVALID);
   return res;
 }
 
 csHandlerID csEventHandlerRegistry::GetID (const char *name)
 {
-  CS::Threading::ScopedReadLock lock(mutex);
   return names.Request (name);
 }
 
 void csEventHandlerRegistry::ReleaseID (csHandlerID id)
 {
-
   CS_ASSERT (IsInstance (id));
-  mutex.UpgradeLock();
   KnownEventHandler* knownHandler = idToHandler.GetElementPointer (id);
   CS_ASSERT (knownHandler);
-  mutex.UpgradeUnlockAndWriteLock();
   if ((--knownHandler->refcount) == 0)
   {
     handlerToID.DeleteAll (
@@ -142,30 +125,24 @@ void csEventHandlerRegistry::ReleaseID (csHandlerID id)
     idToHandler.DeleteAll (id);
     instantiation.DeleteAll (id);
   }
-  mutex.WriteUnlock();
 }
 
 void csEventHandlerRegistry::ReleaseID (iEventHandler *handler)
 {
-  mutex.ReadLock();
   csHandlerID id = handlerToID.Get (handler, CS_HANDLER_INVALID);
-  mutex.ReadUnlock();
   CS_ASSERT(id != CS_HANDLER_INVALID);
   ReleaseID (id);
 }
 
 const char * csEventHandlerRegistry::GetString (csHandlerID id)
 {
-  CS::Threading::ScopedReadLock lock(mutex);
   return names.Request(id);
 }
 
 iEventHandler *csEventHandlerRegistry::GetHandler (csHandlerID id)
 {
   CS_ASSERT(IsInstance(id));
-  mutex.ReadLock();
   const KnownEventHandler* knownHandler = idToHandler.GetElementPointer (id);
-  mutex.ReadUnlock();
   return knownHandler ? (iEventHandler*)(knownHandler->handler) : 
     (iEventHandler*)0;
 }
@@ -174,20 +151,17 @@ bool const csEventHandlerRegistry::IsInstanceOf (csHandlerID instanceid,
 	csHandlerID genericid)
 {
   CS_ASSERT(IsInstance(instanceid));
-  CS::Threading::ScopedReadLock lock(mutex);
   return (instantiation.Get (instanceid, CS_HANDLER_INVALID) == genericid);
 }
 
 bool const csEventHandlerRegistry::IsInstance (csHandlerID id)
 {
-  CS::Threading::ScopedReadLock lock(mutex);
   return (instantiation.Get (id, CS_HANDLER_INVALID) != CS_HANDLER_INVALID);
 }
 
 csHandlerID const csEventHandlerRegistry::GetGeneric (csHandlerID id)
 {
   CS_ASSERT(IsInstance(id));
-  CS::Threading::ScopedReadLock lock(mutex);
   return instantiation.Get (id, CS_HANDLER_INVALID);
 }
 
@@ -222,13 +196,10 @@ FrameSignpost_Logic3D::GenericSucc(csRef<iEventHandlerRegistry> &r1,
 	    csRef<iEventNameRegistry> &r2,
 	    csEventID e) const 
 {
+  static csHandlerID constraint[2] = { 0, CS_HANDLERLIST_END };
   if (e == csevFrame(r2))
   {
-    static csHandlerID constraint[2] =
-    {
-      FrameSignpost_3D2D::StaticID (r1), 
-      CS_HANDLERLIST_END
-    };
+    constraint[0] = FrameSignpost_3D2D::StaticID (r1);
     return constraint;
   }
   return 0;
@@ -249,13 +220,10 @@ FrameSignpost_3D2D::GenericSucc(csRef<iEventHandlerRegistry> &r1,
 				csRef<iEventNameRegistry> &r2,
 				csEventID e) const 
 {
+  static csHandlerID constraint[2] = { 0, CS_HANDLERLIST_END };
   if (e == csevFrame(r2))
   {
-    static csHandlerID constraint[2] =
-    {
-      FrameSignpost_2DConsole::StaticID (r1),
-      CS_HANDLERLIST_END
-    };
+    constraint[0] = FrameSignpost_2DConsole::StaticID (r1);
     return constraint;
   }
   return 0;
@@ -276,13 +244,10 @@ FrameSignpost_2DConsole::GenericSucc(csRef<iEventHandlerRegistry> &r1,
 				   csRef<iEventNameRegistry> &r2,
 				   csEventID e) const 
 {
+  static csHandlerID constraint[2] = { 0, CS_HANDLERLIST_END };
   if (e == csevFrame(r2))
   {
-    static csHandlerID constraint[2] =
-    { 
-      FrameSignpost_ConsoleDebug::StaticID (r1),
-      CS_HANDLERLIST_END
-    };
+    constraint[0] = FrameSignpost_ConsoleDebug::StaticID (r1);
     return constraint;
   }
   return 0;
@@ -303,13 +268,10 @@ FrameSignpost_ConsoleDebug::GenericSucc(csRef<iEventHandlerRegistry> &r1,
 					csRef<iEventNameRegistry> &r2,
 					csEventID e) const 
 {
+  static csHandlerID constraint[2] = { 0, CS_HANDLERLIST_END };
   if (e == csevFrame(r2))
   {
-    static csHandlerID constraint[2] =
-    { 
-      FrameSignpost_ConsoleDebug::StaticID (r1), 
-      CS_HANDLERLIST_END
-    };
+    constraint[0] = FrameSignpost_ConsoleDebug::StaticID (r1);
     return constraint;
   }
   return 0;

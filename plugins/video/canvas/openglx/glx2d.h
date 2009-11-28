@@ -39,7 +39,8 @@
 
 /// XLIB version.
 class csGraphics2DGLX : public scfImplementationExt1<csGraphics2DGLX , 
-  csGraphics2DGLCommon, iOpenGLInterface>
+						       csGraphics2DGLCommon, 
+						       iOpenGLInterface>
 {
   csRef<iXWindow> xwin;
   // The display context
@@ -92,13 +93,6 @@ public:
 
   virtual void SetTitle (const char* title)
   { xwin->SetTitle (title); }
-  
-  /** Sets the icon of this window with the provided one.
-   *
-   *  @param image the iImage to set as the icon of this window.
-   */
-  virtual void SetIcon (iImage *image)
-  { xwin->SetIcon (image); }
 
   virtual void SetFullScreen (bool yesno);
 
@@ -115,7 +109,8 @@ public:
   { return xwin->SetMouseCursor (iShape);}
 
   virtual bool SetMouseCursor (iImage *image, const csRGBcolor* keycolor, 
-    int hotspot_x, int hotspot_y, csRGBcolor fg, csRGBcolor bg)
+                               int hotspot_x, int hotspot_y,
+			       csRGBcolor fg, csRGBcolor bg)
   { 
     return xwin->SetMouseCursor (image, keycolor, hotspot_x, hotspot_y,
       fg, bg);

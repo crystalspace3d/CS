@@ -13,7 +13,7 @@ AC_PREREQ([2.56])
 #	Keep this value synchronized with CS/include/csver.h.template,
 #	CS/docs/texinfo/version.txi, and CS/mk/autoconf/crystal.m4.
 #------------------------------------------------------------------------------
-m4_define([cs_version_number], [1.9])
+m4_define([cs_version_number], [1.4.0])
 
 
 
@@ -221,8 +221,6 @@ AC_DEFUN([CS_CHECK_RTLD],
 
 CS_CHECK_RTLD
 
-
-
 #------------------------------------------------------------------------------
 # Determine host platform.  Recognized platforms: Unix, Windows, Mac OS X.
 # Recognized families: Unix, Windows.
@@ -248,7 +246,6 @@ case $cs_host_family in
     esac
 CS_HEADER_PROPERTY([CS_PLATFORM_NAME],
     [AS_ESCAPE(["])$cs_host_os_normalized[]AS_ESCAPE(["])])
-
 
 
 #------------------------------------------------------------------------------
@@ -1048,13 +1045,15 @@ AC_DEFUN([CS_CHECK_DIRECTX],
 	    #endif
 	    #define DIRECTINPUT_VERSION 0x0500
 	    #include <windows.h>
+	    #include <ddraw.h>
 	    #include <dsound.h>
 	    #include <dinput.h>]],
-	    [DirectSoundCreate$1(0,0,0); 
-	     DirectInputCreate8(0,0,0,0,0)])],
-	[CS_CREATE_TUPLE([],[],[-ldsound -ldinput8]) \
+	    [DirectDrawCreate(0,0,0); 
+	     DirectSoundCreate$1(0,0,0); 
+	     DirectInputCreate(0,0,0,0)])],
+	[CS_CREATE_TUPLE([],[],[-lddraw -ldsound -ldinput]) \
 	CS_CREATE_TUPLE([-I/usr/include/directx],[],
-	    [-ldsound -ldinput8])], 
+	    [-lddraw -ldsound -ldinput])], 
 	[C++], [CS_EMIT_BUILD_RESULT([cs_cv_libdirectx$1], [DIRECTX$1])])])
 
 AS_IF([test $cs_host_family = windows],
@@ -1452,6 +1451,26 @@ AS_IF([test $cs_cv_libcal3d = yes],
 
 
 #------------------------------------------------------------------------------
+# Check for SDL.
+#------------------------------------------------------------------------------
+CS_CHECK_LIB_WITH([sdl],
+    [AC_LANG_PROGRAM(
+	[[#include <SDL.h>
+	#undef main]],
+	[SDL_Init(0); SDL_Quit();])])
+
+AS_IF([test $cs_cv_libsdl = yes],
+    [CS_CHECK_BUILD([if SDL is sufficiently recent], [cs_cv_sdl_recent],
+	[AC_LANG_PROGRAM(
+	    [[#include <SDL.h>
+	    #undef main]],
+	    [SDL_EnableKeyRepeat(0,0)])],
+	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libsdl], [SDL])], [], [],
+	[$cs_cv_libsdl_cflags], [$cs_cv_libsdl_lflags], [$cs_cv_libsdl_libs])])
+
+
+
+#------------------------------------------------------------------------------
 # Check for wxWidgets. Also check if it was built with OpenGL support since it
 # is required by the Crystal Space wxWidgets canvas.
 #
@@ -1560,7 +1579,7 @@ AS_IF([test $cs_cv_libCEGUI = yes],
 	[AC_LANG_PROGRAM(
 	    [[#include <falagard/CEGUIFalWidgetLookManager.h>]],
 	    [CEGUI::WidgetLookManager::getSingleton();
-	    #if (CEGUI_VERSION_MAJOR == 0) && (CEGUI_VERSION_MINOR < 7)
+	    #if (CEGUI_VERSION_MAJOR == 0) && (CEGUI_VERSION_MINOR < 5)
 	    who took the ram from the ramalamadingdong?
 	    #endif
 	    ])],
@@ -1649,8 +1668,7 @@ AC_DEFUN([CS_CHECK_LIBCG],
     AS_IF([test $cs_cv_libCg = yes],
 	[CS_CHECK_BUILD([if Cg is sufficiently recent], [cs_cv_libCg_recent],
 	    [AC_LANG_PROGRAM(
-	    	[[#include <Cg/cg.h>]], [cgSetErrorHandler(0,0);
-	    	CGprofile profile = CG_PROFILE_GPU_VP])],
+	    	[[#include <Cg/cg.h>]], [cgSetErrorHandler(0,0);])],
 	    [], [C++], [], [], [],
 	    [$cs_cv_libCg_cflags],
 	    [$cs_cv_libCg_lflags],
@@ -1718,6 +1736,27 @@ AS_IF([test $cs_host_family != windows],
 	    [[#include <alsa/asoundlib.h>]],
 	    [snd_pcm_hw_params_t* p; snd_pcm_hw_params_alloca(&p);])],
 	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libasound], [ALSA])])])
+
+
+
+#------------------------------------------------------------------------------
+# Check for Colour Ascii Art library (libcaca).
+#------------------------------------------------------------------------------
+# NOTE: Would solely pkg-config be used for caca detection the separate cucul 
+#  test could be dropped since it would be contained in caca.
+CS_CHECK_LIB_WITH([cucul],
+    [AC_LANG_PROGRAM([[#include <cucul.h>]], [cucul_create_canvas(0,0)])],
+    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcucul], [CUCUL])], [], [], [], [],
+    [libcucul])
+    
+CS_CHECK_LIB_WITH([caca],
+    [AC_LANG_PROGRAM([[#include <caca.h>]], [caca_create_display(0)])],
+    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcaca], [CACA])], [], 
+    [$cs_cv_libcucul_cflags], 
+    [$cs_cv_libcucul_lflags], 
+    [$cs_cv_libcucul_libs],
+    [libcaca])
+
 
 
 
@@ -2295,22 +2334,6 @@ CS_CHECK_BUILD([for strtof], [cs_cv_strtof],
 	[strtof (0, 0)])],
     [], [],
     [CS_HEADER_PROPERTY([CS_HAVE_STRTOF])])
-
-
-
-#------------------------------------------------------------------------------
-# Check for bit operation builtins.
-#------------------------------------------------------------------------------
-AC_DEFUN([CS_CHECK_BUILTIN],
-    [CS_CHECK_BUILD([for $1], [cs_cv_func_$1],
-	[AC_LANG_PROGRAM(
-	    [],
-	    [$1(0)])],
-	[], [C++], [CS_HEADER_PROPERTY(AS_TR_CPP([CS_HAVE_$1]))],
-	[], [], [$cs_cv_prog_cxx_enable_pedantic])])
-CS_CHECK_BUILTIN(__builtin_clz)
-CS_CHECK_BUILTIN(__builtin_ctz)
-CS_CHECK_BUILTIN(__builtin_popcount)
 
 
 

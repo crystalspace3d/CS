@@ -1,8 +1,0 @@
-<library>
-    <textures />
-    <materials />
-    <meshfact name="Plane.029">
-        <plugin>spr2dFact</plugin>
-        <params />
-    </meshfact>
-</library>

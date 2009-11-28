@@ -25,7 +25,6 @@
 #include "csutil/array.h"
 #include "csutil/ref.h"
 #include "iutil/strset.h"
-#include "ivideo/shader/shader.h"
 
 /**\file
  * Helper to cache names of shader variables relevant to lighting.
@@ -44,19 +43,24 @@ public:
     lightDiffuse = 0,
     /// Specular color
     lightSpecular,
+    /// Position (object space)
+    lightPosition,
+    /// Position (camera space)
+    lightPositionCamera,
     /// Position (world space)
     lightPositionWorld,
-    /// Transform (from light to world space)
+    /// Transform (camera space)
+    lightTransformCamera,
+    /// Transform (world space)
     lightTransformWorld,
-    /// Inverse transform (from world to light space)
-    lightTransformWorldInverse,
     /// Attenuation vector
     lightAttenuation,
-    /**
-     * Attenuation texture
-     * \deprecated Deprecated in 1.3.
-     */
+    /// Attenuation texture
     lightAttenuationTex,
+    /// Direction (object space)
+    lightDirection,
+    /// Direction (camera space)
+    lightDirectionCamera,
     /// Direction (world space)
     lightDirectionWorld,
     /// Spot inner falloff
@@ -67,10 +71,6 @@ public:
     lightType,
     /// Attenuation mode (csLightAttenuationMode casted to int)
     lightAttenuationMode,
-    /// Shadow map projection matrix
-    lightShadowMapProjection,
-    /// Shadow map pixel sizes + dimensions
-    lightShadowMapPixelSize,
 
     /// Number of properties
     _lightCount
@@ -88,10 +88,13 @@ public:
     _varCount
   };
 private:
-  csRef<iShaderVarStringSet> strings;
-  CS::ShaderVarStringID defaultVars[_varCount];
-  
-  CS::ShaderVarStringID lightSVIdCache_unnumbered[_lightCount];
+  struct LightSvIdCacheEntry
+  {
+    csStringID ids[_lightCount];
+  };
+  csArray<LightSvIdCacheEntry> lightSVIdCache;
+  csRef<iStringSet> strings;
+  csStringID defaultVars[_varCount];
   
   void ClearDefVars ();
 public:
@@ -99,23 +102,25 @@ public:
    * Construct an instance.
    * \remarks The instance is only useable after a call to SetStrings().
    */
-  csLightShaderVarCache () { ClearDefVars (); }
+  csLightShaderVarCache () { ClearDefVars(); }
   
   /**
    * Set the string set to query the name identifiers from.
    * \remarks Changing the string set will clear the cached names.
    */
-  void SetStrings (iShaderVarStringSet* strings);
+  void SetStrings (iStringSet* strings);
   
   /**
-   * Obtain the name for for a lighting-relevant shader variable.
+   * Obtain the name for for a lighting-relevant shader variable whose name
+   * also depends on the number of a light.
    * A caching scheme is used to avoid having to re-request a name from the
    * given string set every time one is needed.
+   * \param num Number of the light that appears in the name
    * \param prop Light property for which a variable name is to be retrieved.
    * \return Name of the relevant variable, csInvalidStringID in case of an
    *   error.
    */
-  CS::ShaderVarStringID GetLightSVId (LightProperty prop);
+  csStringID GetLightSVId (size_t num, LightProperty prop);
     
   /** 
    * Obtain the name for for a lighting-relevant shader variable whose name
@@ -126,7 +131,7 @@ public:
    * \return Name of the relevant variable, csInvalidStringID in case of an
    *   error.
    */
-  CS::ShaderVarStringID GetDefaultSVId (DefaultSV var);
+  csStringID GetDefaultSVId (DefaultSV var);
 };
 
 #endif // __CS_CSGFX_SHADER_LIGHTSVCACHE_H__

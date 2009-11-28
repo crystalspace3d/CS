@@ -23,7 +23,6 @@
 #include "csutil/array.h"
 #include "csutil/weakref.h"
 #include "csutil/parray.h"
-#include "csutil/randomgen.h"
 #include "csutil/refarr.h"
 #include "csutil/hash.h"
 #include "csutil/set.h"
@@ -33,9 +32,11 @@
 #include "csgeom/box.h"
 #include "iengine/mesh.h"
 #include "iengine/meshgen.h"
+#include "imesh/instmesh.h"
 #include "ivaria/terraform.h"
 
 struct iSector;
+struct iInstancingMeshState;
 class csMeshGenerator;
 struct csMGCell;
 
@@ -56,18 +57,6 @@ struct csMGMesh
 };
 
 /**
- * Per-vertex information for instancing.
- */
-struct csMGInstVertexInfo
-{
-  csRef<csShaderVariable> transformVar;
-  csRef<csShaderVariable> fadeFactorVar;
-  csRef<csShaderVariable> windVar;
-  csRef<csShaderVariable> windSpeedVar;
-  float windRandVar;
-};
-
-/**
  * A single geometry (for a single lod level).
  */
 struct csMGGeom
@@ -76,9 +65,18 @@ struct csMGGeom
   float maxdistance;
   float sqmaxdistance;
 
-  csMGInstVertexInfo vertexInfoArray;
-  csRef<iMeshWrapper> mesh;
-  csArray<csMGInstVertexInfo> vertexinfo_setaside;
+  /**
+   * If this geometry is derived from an instmesh then this is the
+   * pointer to the mesh from which we can create instances.
+   * Not used (null) in case we use a 'normal' mesh type.
+   */
+  csRef<iMeshWrapper> instmesh;
+  csRef<iInstancingMeshState> instmesh_state;
+
+  /// For every lod level we have a cache of meshes.
+  csArray<csMGMesh> mesh_cache;
+  /// For every lod level we have a cache of meshes that are set aside.
+  csArray<csMGMesh> mesh_setaside;
 };
 
 struct csMGDensityMaterialFactor
@@ -115,16 +113,6 @@ private:
 
   csArray<csVector2> *positions;
   int celldim;
-
-  /// For wind.
-  csVector3 wind_direction;
-  float wind_bias;
-  float wind_speed;
-
-  csStringID colldetID;
-
-  void AddSVToMesh (iMeshWrapper* mesh, csShaderVariable* sv); 
-  void SetMeshBBox (iMeshWrapper* mesh, const csBox3& bbox); 
 
 public:
   csMeshGeneratorGeometry (csMeshGenerator* generator);
@@ -170,15 +158,6 @@ public:
     default_material_factor = factor;
   }
 
-  const csVector3& GetWindDirection() const { return wind_direction; }
-  virtual void SetWindDirection (float x, float z);
-
-  const float& GetWindBias() const { return wind_bias; }
-  virtual void SetWindBias (float bias);
-
-  const float& GetWindSpeed() const { return wind_speed; }
-  virtual void SetWindSpeed (float speed);
-
   void AddPosition (const csVector2 &pos);
 
   size_t GetManualPositionCount (size_t cidx) {return positions[cidx].GetSize ();}
@@ -191,7 +170,7 @@ public:
    * instance from an instmesh.
    */
   iMeshWrapper* AllocMesh (int cidx, const csMGCell& cell,
-      float sqdist, size_t& lod, csMGInstVertexInfo& vertexInfo);
+      float sqdist, size_t& lod, size_t& instance_id);
 
   /**
    * Set aside the mesh temporarily. This is called if we have a mesh that
@@ -203,7 +182,7 @@ public:
    * haven't been reused.
    */
   void SetAsideMesh (int cidx, iMeshWrapper* mesh,
-      size_t lod, csMGInstVertexInfo& vertexInfo);
+      size_t lod, size_t instance_id);
 
   /**
    * Free all meshes that were put aside and that were not reused by
@@ -214,10 +193,8 @@ public:
   /**
    * Move the mesh to some position.
    */
-  void MoveMesh (int cidx, iMeshWrapper* mesh, size_t lod,  
-    csMGInstVertexInfo& vertexInfo, const csVector3& position,  
-    const csMatrix3& matrix); 
-
+  void MoveMesh (int cidx, iMeshWrapper* mesh, size_t lod, size_t instance_id,
+      const csVector3& position, const csMatrix3& matrix);
 
   /**
    * Get the right lod level for the given squared distance.
@@ -229,8 +206,6 @@ public:
    * Check if this is the right mesh for the given LOD level.
    */
   bool IsRightLOD (float sqdist, size_t current_lod);
-
-  void UpdatePosition (const csVector3& pos);
 };
 
 /**
@@ -259,11 +234,6 @@ struct csMGPosition
   float random;
 
   /**
-   * The distance at which we were added. Used for density scaling.
-   */
-  float addedDist;
-
-  /**
    * Last used mixmode.
    */
   uint last_mixmode;
@@ -272,12 +242,15 @@ struct csMGPosition
   iMeshWrapper* mesh;
   /// The LOD level for the mesh above.
   size_t lod;
+  /**
+   * If the mesh on this position is an instmesh then this
+   * number is the id of the instance. Otherwise this id will
+   * be csArrayItemNotFound.
+   */
+  size_t instance_id;
 
-  /// Vertex info for instancing.
-  csMGInstVertexInfo vertexInfo;
-
-  csMGPosition () : last_mixmode (CS_FX_COPY), mesh (0) { } 
-
+  csMGPosition () : last_mixmode (CS_FX_COPY), mesh (0),
+		    instance_id (csArrayItemNotFound) { }
 };
 
 struct csMGCell;
@@ -303,28 +276,6 @@ struct csMGPositionBlock
 };
 
 /**
- * A map of available positions.
- */
-class PositionMap
-{
-public:
-  PositionMap(const csBox2& box);
-
-  /**
-   * Get a random available position. 
-   * \param xpos X position.
-   * \param zpos Z position.
-   * \param radius The radius from the (x, z) coordinates to mark off as used.
-   * \param minRadius The minimum radius used by all geometries.
-   */
-  bool GetRandomPosition(float& xpos, float& zpos, float& radius, float& minRadius);
-
-private:
-  csArray<csVector4> freeAreas;
-  csRandomGen posGen;
-};
-
-/**
  * The 2D x/z plane of the box used by the mesh generator is divided
  * in cells.
  */
@@ -339,17 +290,12 @@ struct csMGCell
   csMGPositionBlock* block;
 
   /**
-   * A map of all available positions.
-   */
-  PositionMap* positionMap;
-
-  /**
    * An array of meshes that are relevant in this cell (for calculating the
    * beam downwards).
    */
   csRefArray<iMeshWrapper> meshes;
 
-  csMGCell () : block (0), positionMap (0) { }
+  csMGCell () : block (0) { }
 };
 
 /**
@@ -366,9 +312,6 @@ private:
   /// The maximum radius for all geometries.
   float total_max_dist;
   float sq_total_max_dist;
-
-  /// The minimum radius of all geometries.
-  float minRadius;
 
   /// Random generator.
   csRandomFloatGen random;
@@ -404,7 +347,7 @@ private:
   float alpha_mindist, sq_alpha_mindist, alpha_maxdist;
   float alpha_scale;
 
-  csVector3 last_pos;
+  csVector2 last_pos;
 
   /**
    * If true the cells are correctly set up. This is cleared by
@@ -443,9 +386,7 @@ private:
    * the given position.
    * This function assumes the cell has a valid block.
    */
-  void AllocateMeshes (int cidx, csMGCell& cell, const csVector3& pos, 
-    const csVector3& delta);
-
+  void AllocateMeshes (int cidx, csMGCell& cell, const csVector3& pos);
 
   /**
    * Generate the positions in the given block.
@@ -479,9 +420,6 @@ private:
   void SetFade (csMGPosition& p, float factor);
   void SetFade (iMeshWrapper* mesh, uint mode);
 
-  /// Set wind data for a mesh.
-  void SetWindData (csMGPosition& p);
-
   /// Statistics.
   size_t CountPositions (int cidx, csMGCell& cell);
   size_t CountAllPositions ();
@@ -491,19 +429,13 @@ protected:
 
 public:
   csEngine* engine;
-  csRef<iStringSet> strings;
-  csRef<iShaderVarStringSet> SVstrings;
-  CS::ShaderVarStringID varTransform;
-  CS::ShaderVarStringID varFadeFactor;
-  CS::ShaderVarStringID varWind;
-  CS::ShaderVarStringID varWindSpeed;
+  csStringID varTransform;
 
   csMeshGenerator (csEngine* engine);
   virtual ~csMeshGenerator ();
 
   void SetSector (iSector* sector) { csMeshGenerator::sector = sector; }
   iSector* GetSector () { return sector; }
-  csRef<iStringSet> GetStringSet () { return strings; }
 
   /**
    * Allocate blocks. This function will allocate all blocks needed

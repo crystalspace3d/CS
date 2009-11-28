@@ -41,48 +41,24 @@ CS_LEAKGUARD_IMPLEMENT (csMeshFactoryWrapper);
 csMeshFactoryWrapper::csMeshFactoryWrapper (csEngine* engine,
                                             iMeshObjectFactory *meshFact)
   : scfImplementationType (this), meshFact (meshFact), parent (0),
-  zbufMode (CS_ZBUF_USE), engine (engine), min_imposter_distance(0),
-  imposter_instancing(false), imposter_renderReal(false)
+  zbufMode (CS_ZBUF_USE), engine (engine)
 {
   children.SetMeshFactory (this);
 
   render_priority = engine->GetObjectRenderPriority ();
-
-  instanceFactory = 0;
-
-  // Set up shader variable for instancing.
-  csRef<iShaderVarStringSet> SVstrings = csQueryRegistryTagInterface<iShaderVarStringSet> (
-    engine->objectRegistry, "crystalspace.shader.variablenameset");
-  varTransform = SVstrings->Request ("instancing transforms");
-  
-  /* Work around iShaderVariableContext cast not working before 
-     CS::ShaderVariableContextImpl construction */
-  csRefTrackerAccess::AddAlias (
-    static_cast<iShaderVariableContext*> (this),
-    this);
+  imposter_active = false;
+  imposter_factory = 0;
 }
 
 csMeshFactoryWrapper::csMeshFactoryWrapper (csEngine* engine)
   : scfImplementationType (this), parent (0), zbufMode (CS_ZBUF_USE), 
-  engine (engine), min_imposter_distance(0), imposter_instancing(false),
-  imposter_renderReal(false)
+  engine (engine)
 {
   children.SetMeshFactory (this);
 
   render_priority = engine->GetObjectRenderPriority ();
-
-  instanceFactory = 0;
-
-  // Set up shader variable for instancing.
-  csRef<iShaderVarStringSet> SVstrings = csQueryRegistryTagInterface<iShaderVarStringSet> (
-    engine->objectRegistry, "crystalspace.shader.variablenameset");
-  varTransform = SVstrings->Request ("instancing transforms");
-  
-  /* Work around iShaderVariableContext cast not working before 
-     CS::ShaderVariableContextImpl construction */
-  csRefTrackerAccess::AddAlias (
-    static_cast<iShaderVariableContext*> (this),
-    this);
+  imposter_active = false;
+  imposter_factory = 0;
 }
 
 csMeshFactoryWrapper::~csMeshFactoryWrapper ()
@@ -90,6 +66,7 @@ csMeshFactoryWrapper::~csMeshFactoryWrapper ()
   // This line MUST be here to ensure that the children are not
   // removed after the destructor has already finished.
   children.RemoveAll ();
+  delete imposter_factory;
 }
 
 void csMeshFactoryWrapper::SelfDestruct ()
@@ -248,71 +225,18 @@ void csMeshFactoryWrapper::AddFactoryToStaticLOD (int lod,
   meshes_for_lod.Push (fact);
 }
 
-bool csMeshFactoryWrapper::UpdateImposter(iMeshWrapper* mesh, iRenderView* rview)
+void csMeshFactoryWrapper::SetImposterActive (bool flag)
 {
-  // Check existing imposter meshes to see if we need to update.
-  for(size_t i=0; i<imposters.GetSize(); ++i)
+  imposter_active = flag;
+  if (imposter_active)
   {
-    if(imposters[i]->Update(mesh, rview))
-      return !imposter_renderReal || imposters[i]->Rendered();
-
-    if(!imposters[i]->IsInstancing())
-    {
-      imposters[i]->Destroy();
-      imposters.DeleteIndex(i);
-    }
+    if (!imposter_factory)
+      imposter_factory = new csImposterFactory (this);
   }
-
-  if(imposter_instancing)
+  else if (!imposter_active)
   {
-    // Check if we can add the instance to an existing imposter mesh.
-    for(size_t i=0; i<imposters.GetSize(); ++i)
-    {
-      if(imposters[i]->Add(mesh, rview))
-        return true;
-    }
+    delete imposter_factory;
   }
-
-  // Create a new imposter mesh.
-  csRef<iImposterMesh> imposter = csPtr<iImposterMesh>(new csImposterMesh(engine,
-    this, mesh, rview, imposter_instancing, imposter_shader));
-  imposters.Push(imposter);
-
-  return !imposter_renderReal;
-}
-
-void csMeshFactoryWrapper::RemoveImposter(iMeshWrapper* mesh)
-{
-  for(size_t i=0; i<imposters.GetSize(); ++i)
-  {
-    if(imposters[i]->Remove(mesh))
-    {
-      if(!imposters[i]->IsInstancing())
-      {
-        imposters[i]->Destroy();
-        imposters.DeleteIndexFast(i);
-      }
-      return;
-    }
-  }
-}
-
-void csMeshFactoryWrapper::AddInstance(csVector3& position, csMatrix3& rotation)
-{
-  if(!transformVars.IsValid())
-  {
-    transformVars.AttachNew (new csShaderVariable (varTransform));
-    transformVars->SetType (csShaderVariable::ARRAY);
-    transformVars->SetArraySize (0);
-  }
-
-  csRef<csShaderVariable> transformVar;
-  transformVar.AttachNew(new csShaderVariable);
-
-  csReversibleTransform tr(rotation.GetInverse(), position);
-  transformVar->SetValue (tr);
-
-  transformVars->AddVariableToArray(transformVar);
 }
 
 
@@ -320,7 +244,7 @@ void csMeshFactoryWrapper::AddInstance(csVector3& position, csMatrix3& rotation)
 // csMeshFactoryList
 //--------------------------------------------------------------------------
 csMeshFactoryList::csMeshFactoryList ()
-  : scfImplementationType (this), list (64)
+  : scfImplementationType (this), list (64, 64)
 {
   listener.AttachNew (new NameChangeListener (this));
 }
@@ -336,7 +260,6 @@ void csMeshFactoryList::NameChanged (iObject* object, const char* oldname,
   csRef<iMeshFactoryWrapper> mesh = 
     scfQueryInterface<iMeshFactoryWrapper> (object);
   CS_ASSERT (mesh != 0);
-  CS::Threading::ScopedWriteLock lock(meshFactLock);
   if (oldname) factories_hash.Delete (oldname, mesh);
   if (newname) factories_hash.Put (newname, mesh);
 }
@@ -345,33 +268,16 @@ int csMeshFactoryList::Add (iMeshFactoryWrapper *obj)
 {
   PrepareFactory (obj);
   const char* name = obj->QueryObject ()->GetName ();
-  CS::Threading::ScopedWriteLock lock(meshFactLock);
   if (name)
     factories_hash.Put (name, obj);
   obj->QueryObject ()->AddNameChangeListener (listener);
   return (int)list.Push (obj);
 }
 
-void csMeshFactoryList::AddBatch (csRef<iMeshFactLoaderIterator> itr)
-{
-  CS::Threading::ScopedWriteLock lock(meshFactLock);
-  while(itr->HasNext())
-  {
-    iMeshFactoryWrapper* obj = itr->Next();
-    PrepareFactory (obj);
-    const char* name = obj->QueryObject ()->GetName ();
-    if (name)
-      factories_hash.Put (name, obj);
-    obj->QueryObject ()->AddNameChangeListener (listener);
-    list.Push (obj);
-  }
-}
-
 bool csMeshFactoryList::Remove (iMeshFactoryWrapper *obj)
 {
   FreeFactory (obj);
   const char* name = obj->QueryObject ()->GetName ();
-  CS::Threading::ScopedWriteLock lock(meshFactLock);
   if (name)
     factories_hash.Delete (name, obj);
   obj->QueryObject ()->RemoveNameChangeListener (listener);
@@ -386,7 +292,6 @@ bool csMeshFactoryList::Remove (int n)
 
 void csMeshFactoryList::RemoveAll ()
 {
-  CS::Threading::ScopedWriteLock lock(meshFactLock);
   size_t i;
   for (i = 0 ; i < list.GetSize () ; i++)
   {
@@ -397,28 +302,14 @@ void csMeshFactoryList::RemoveAll ()
   list.DeleteAll ();
 }
 
-int csMeshFactoryList::GetCount () const 
-{
-  CS::Threading::ScopedReadLock lock(meshFactLock);
-  return (int)list.GetSize ();
-}
-
-iMeshFactoryWrapper* csMeshFactoryList::Get (int n) const
-{
-  CS::Threading::ScopedReadLock lock(meshFactLock);
-  return list.Get (n);
-}
-
 int csMeshFactoryList::Find (iMeshFactoryWrapper *obj) const
 {
-  CS::Threading::ScopedReadLock lock(meshFactLock);
   return (int)list.Find (obj);
 }
 
 iMeshFactoryWrapper *csMeshFactoryList::FindByName (
   const char *Name) const
 {
-  CS::Threading::ScopedReadLock lock(meshFactLock);
   if (!Name) return 0;
   return factories_hash.Get (Name, 0);
 }

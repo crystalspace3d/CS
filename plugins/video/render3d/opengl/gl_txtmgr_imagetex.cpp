@@ -137,7 +137,7 @@ void csGLTextureHandle::CreateMipMaps()
   bool compressedTarget;
   GLenum targetFormat; 
   if ((texType == iTextureHandle::texTypeRect)
-    && (txtmgr->tweaks.disableRECTTextureCompression))
+    && (txtmgr->disableRECTTextureCompression))
     /* @@@ Hack: Some ATI drivers can't grok generic compressed formats for 
      * RECT textures, so force an uncompressed format in this case. */
     targetFormat = (alphaType != csAlphaMode::alphaNone) ? 
@@ -215,20 +215,14 @@ void csGLTextureHandle::CreateMipMaps()
 	{
 	  cimg = csImageManipulate::Mipmap (thisImage, 1, tc);
 	}
-	if (mipskip == 0) // don't postprocess when doing skip...
+	if (txtmgr->sharpen_mipmaps 
+	  && (mipskip == 0) // don't sharpen when doing skip...
+	  && textureSettings->allowMipSharpen
+	  && (cimg->GetDepth() == 1) // @@@ sharpen not "depth-safe"
+	  && (!precompMip || textureSettings->sharpenPrecomputedMipmaps))
 	{
-	  if (txtmgr->sharpen_mipmaps 
-	    && textureSettings->allowMipSharpen
-	    && (cimg->GetDepth() == 1) // @@@ sharpen not "depth-safe"
-	    && (!precompMip || textureSettings->sharpenPrecomputedMipmaps))
-	  {
-	    cimg = csImageManipulate::Sharpen (cimg, txtmgr->sharpen_mipmaps, 
-	      tc);
-	  }
-	  if (!precompMip && textureSettings->renormalizeGeneratedMips)
-	  {
-	    cimg = csImageManipulate::RenormalizeNormals (cimg);
-	  }
+	  cimg = csImageManipulate::Sharpen (cimg, txtmgr->sharpen_mipmaps, 
+	    tc);
 	}
   #ifdef MIPMAP_DEBUG
 	csDebugImageWriter::DebugImageWrite (cimg,
@@ -369,9 +363,6 @@ bool csGLTextureHandle::MakeUploadData (bool allowCompressed,
         uploadData.image_data = imageRaw->GetUint8();
         if (glFormat.isCompressed)
 	  uploadData.compressedSize = imageRaw->GetSize();
-	  
-	if (desiredReadbackFormat.format == 0)
-	 SetDesiredReadbackFormat (texFormat);
       }
     }
   }
@@ -398,9 +389,6 @@ bool csGLTextureHandle::MakeUploadData (bool allowCompressed,
     //uploadData->size = n * 4;
     uploadData.sourceFormat.format = GL_RGBA;
     uploadData.sourceFormat.type = GL_UNSIGNED_BYTE;
-    
-    if (desiredReadbackFormat.format == 0)
-      SetDesiredReadbackFormat (CS::TextureFormatStrings::ConvertStructured ("abgr8"));
   }
   uploadData.storageFormat.targetFormat = targetFormat;
   uploadData.w = Image->GetWidth();

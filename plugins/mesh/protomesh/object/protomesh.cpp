@@ -40,7 +40,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "protomesh.h"
 
 
-
+CS_IMPLEMENT_PLUGIN
 
 using namespace CS::Plugins::ProtoMesh;
 
@@ -182,7 +182,6 @@ csRenderMesh** csProtoMeshObject::GetRenderMeshes (
   meshPtr->material = material;
   meshPtr->worldspace_origin = wo;
   meshPtr->object2world = o2wt;
-  meshPtr->bbox = factory->GetObjectBoundingBox();
   if (rmCreated)
   {
     meshPtr->buffers = bufferHolder;
@@ -222,7 +221,7 @@ bool csProtoMeshObject::HitBeamOutline (const csVector3& start,
 
 bool csProtoMeshObject::HitBeamObject (const csVector3& start,
                                        const csVector3& end, csVector3& isect, float *pr, int* polygon_idx,
-                                       iMaterialWrapper** material, csArray<iMaterialWrapper*>* materials)
+                                       iMaterialWrapper** material)
 {
   if (material) *material = csProtoMeshObject::material;
   if (polygon_idx) *polygon_idx = -1;

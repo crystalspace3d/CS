@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.2.3.2 Loading The Map</title>
+<title>Crystal Space 1.4.0: 4.2.3.2 Loading The Map</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.2.3.2 Loading The Map">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.2.3.2 Loading The Map">
+<meta name="description" content="Crystal Space 1.4.0: 4.2.3.2 Loading The Map">
+<meta name="keywords" content="Crystal Space 1.4.0: 4.2.3.2 Loading The Map">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -95,7 +95,8 @@ directory. Then, it will parse that file and create the geometry which
 is specified there.
 </p>
 <p>If loading is successful, then you must call <code>iEngine::Prepare()</code> to
-make sure that the necessary setup work is done (i.e. textures are registered
+make sure that all lightmaps are correctly loaded from the cache
+and other necessary setup work is done (i.e. textures are registered
 and so on). This is demonstrated in the code below, which you add to the
 <code>Application()</code> method, following the <code>SetRectangle()</code> invocation.
 We also add code to initialize collision detection for geometry in the map
@@ -112,6 +113,8 @@ which was just loaded.
   // Initialize collision objects for all loaded objects.
   csColliderHelper::InitializeCollisionWrappers (cdsys, engine);
 
+  // Let the engine prepare all lightmaps for use and also free all
+  // images that were loaded for the texture manager.
   engine-&gt;Prepare ();
 
   Run();

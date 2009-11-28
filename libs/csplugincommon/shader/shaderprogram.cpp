@@ -32,23 +32,8 @@
 
 #include "csplugincommon/shader/shaderprogram.h"
 
-void csShaderProgram::ProgramParam::SetValue (float val)
-{
-  var.AttachNew (new csShaderVariable (CS::InvalidShaderVarStringID));
-  var->SetValue (val);
-  valid = true;
-}
-
-void csShaderProgram::ProgramParam::SetValue (const csVector4& val)
-{
-  var.AttachNew (new csShaderVariable (CS::InvalidShaderVarStringID));
-  var->SetValue (val);
-  valid = true;
-}
-
-//---------------------------------------------------------------------------
-
 CS_LEAKGUARD_IMPLEMENT (csShaderProgram);
+
 
 csShaderProgram::csShaderProgram (iObjectRegistry* objectReg)
   : scfImplementationType (this)
@@ -57,8 +42,8 @@ csShaderProgram::csShaderProgram (iObjectRegistry* objectReg)
 
   csShaderProgram::objectReg = objectReg;
   synsrv = csQueryRegistry<iSyntaxService> (objectReg);
-  stringsSvName = csQueryRegistryTagInterface<iShaderVarStringSet> 
-    (objectReg, "crystalspace.shader.variablenameset");
+  strings = csQueryRegistryTagInterface<iStringSet> 
+    (objectReg, "crystalspace.shared.stringset");
   
   csRef<iVerbosityManager> verbosemgr (
     csQueryRegistry<iVerbosityManager> (objectReg));
@@ -87,7 +72,7 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
 
   // Var for static data
   csRef<csShaderVariable> var;
-  var.AttachNew (new csShaderVariable (CS::InvalidShaderVarStringID));
+  var.AttachNew (new csShaderVariable (csInvalidStringID));
 
   ProgramParamType paramType = ParamInvalid;
   if (strcmp (type, "shadervar") == 0)
@@ -101,19 +86,9 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
 	"Node has no contents");
       return false;
     }
-    
-    CS::Graphics::ShaderVarNameParser nameParse (value);
-    param.name = stringsSvName->Request (nameParse.GetShaderVarName());
-    for (size_t n = 0; n < nameParse.GetIndexNum(); n++)
-    {
-      param.indices.Push (nameParse.GetIndexValue (n));
-    }
+    param.name = stringsSvName->Request (value);
     param.valid = true;
     return true;
-  }
-  else if (strcmp (type, "int") == 0)
-  {
-    paramType = ParamInt;
   }
   else if (strcmp (type, "float") == 0)
   {
@@ -188,18 +163,10 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
     return false;
   }
 
-  const uint directValueTypes = ParamInt | ParamFloat | ParamVector2
-    | ParamVector3 | ParamVector4 | ParamMatrix | ParamTransform;
-  switch (paramType & directValueTypes)
+  switch ((paramType & 0x3F))
   {
     case ParamInvalid:
       return false;
-      break;
-    case ParamInt:
-      {
-	int x = node->GetContentsValueAsInt ();
-	var->SetValue (x);
-      }
       break;
     case ParamFloat:
       {
@@ -335,7 +302,7 @@ bool csShaderProgram::ParseCommon (iDocumentNode* child)
 	if (!varname)
 	{
 	  // "New style" variable mapping
-	  VariableMapEntry vme (CS::InvalidShaderVarStringID, destname);
+	  VariableMapEntry vme (csInvalidStringID, destname);
 	  if (!ParseProgramParam (child, vme.mappingParam,
 	    ParamFloat | ParamVector2 | ParamVector3 | ParamVector4))
 	    return false;
@@ -344,15 +311,8 @@ bool csShaderProgram::ParseCommon (iDocumentNode* child)
 	else
 	{
 	  // "Classic" variable mapping
-	  CS::Graphics::ShaderVarNameParser nameParse (varname);
-	  VariableMapEntry vme (
-	    stringsSvName->Request (nameParse.GetShaderVarName()),
-	    destname);
-	  for (size_t n = 0; n < nameParse.GetIndexNum(); n++)
-	  {
-	    vme.mappingParam.indices.Push (nameParse.GetIndexValue (n));
-	  }
-	  variablemap.Push (vme);
+	  variablemap.Push (VariableMapEntry (strings->Request (varname),
+	    destname));
 	}
       }
       break;
@@ -454,37 +414,10 @@ void csShaderProgram::DumpVariableMappings (csString& output)
   {
     const VariableMapEntry& vme = variablemap[v];
 
-    output << stringsSvName->Request (vme.name);
+    output << strings->Request (vme.name);
     output << '(' << vme.name << ") -> ";
     output << vme.destination << ' ';
     output << vme.userVal << ' ';
     output << '\n'; 
   }
-}
-
-void csShaderProgram::GetUsedShaderVarsFromVariableMappings (
-  csBitArray& bits) const
-{
-  for (size_t i = 0; i < variablemap.GetSize(); i++)
-  {
-    TryAddUsedShaderVarName (variablemap[i].name, bits);
-  }
-}
-
-void csShaderProgram::GetUsedShaderVars (csBitArray& bits) const
-{
-  GetUsedShaderVarsFromVariableMappings (bits);
-}
-
-iShaderProgram::CacheLoadResult csShaderProgram::LoadFromCache (
-  iHierarchicalCache* cache, iBase* previous, iDocumentNode* programNode,
-  csRef<iString>* failReason, csRef<iString>*)
-{
-  csRef<iShaderDestinationResolver> resolver =
-    scfQueryInterfaceSafe<iShaderDestinationResolver> (previous);
-  
-  if (Load (resolver, programNode))
-    return loadSuccessShaderValid;
-  else
-    return loadSuccessShaderInvalid;
 }

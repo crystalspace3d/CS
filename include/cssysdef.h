@@ -363,14 +363,10 @@ int vswprintf ();
 typedef void (*csStaticVarCleanupFN) (void (*p)());
 extern csStaticVarCleanupFN csStaticVarCleanup;
 
-#include "csutil/threading/mutex.h"
-static CS::Threading::Mutex staticVarLock;
-
 #ifndef CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION
 #  define CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION(Name)              \
 void Name (void (*p)())                                                \
 {                                                                      \
-  CS::Threading::MutexScopedLock lock(staticVarLock);                  \
   static void (**a)() = 0;                                             \
   static int lastEntry = 0;                                            \
   static int maxEntries = 0;                                           \
@@ -413,6 +409,21 @@ void Name (void (*p)())                                                \
 #  define CS_DECLARE_DEFAULT_STATIC_VARIABLE_REGISTRATION		\
     CS_CRYSTALSPACE_EXPORT 						\
     CS_DECLARE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_csutil);
+#endif
+
+/* scfStaticallyLinked - Flag indicating whether external linkage was used when 
+ * building the application. Determines whether SCF scans for plugins at 
+ * startup.
+ */
+/**\def CS_DEFINE_STATICALLY_LINKED_FLAG
+ * Define the scfStaticallyLinked variable.
+ */
+#if defined(CS_BUILD_SHARED_LIBS)
+#  define CS_DEFINE_STATICALLY_LINKED_FLAG
+#elif defined(CS_STATIC_LINKED)
+#  define CS_DEFINE_STATICALLY_LINKED_FLAG  bool scfStaticallyLinked = true;
+#else
+#  define CS_DEFINE_STATICALLY_LINKED_FLAG  bool scfStaticallyLinked = false;
 #endif
 
 #if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
@@ -458,11 +469,13 @@ void Name (void (*p)())                                                \
 #  if defined(CS_BUILD_SHARED_LIBS)
 #    define CS_IMPLEMENT_FOREIGN_DLL					    \
        CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION(csStaticVarCleanup_local); \
+       CS_DEFINE_STATICALLY_LINKED_FLAG					    \
        CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_local);   \
        CS_DEFINE_MEMTRACKER_MODULE
 #  else
 #    define CS_IMPLEMENT_FOREIGN_DLL					    \
        CS_DECLARE_DEFAULT_STATIC_VARIABLE_REGISTRATION			    \
+       CS_DEFINE_STATICALLY_LINKED_FLAG					    \
        CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_csutil);  \
        CS_DEFINE_MEMTRACKER_MODULE
 #  endif
@@ -488,6 +501,7 @@ void Name (void (*p)())                                                \
 #  ifndef CS_IMPLEMENT_PLUGIN
 #  define CS_IMPLEMENT_PLUGIN        					\
           CS_IMPLEMENT_PLATFORM_PLUGIN 					\
+	  CS_DEFINE_STATICALLY_LINKED_FLAG				\
 	  CS_DECLARE_DEFAULT_STATIC_VARIABLE_REGISTRATION		\
 	  CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_csutil);   \
           CS_DEFINE_MEMTRACKER_MODULE
@@ -497,6 +511,7 @@ void Name (void (*p)())                                                \
 
 #  ifndef CS_IMPLEMENT_PLUGIN
 #  define CS_IMPLEMENT_PLUGIN						\
+   CS_DEFINE_STATICALLY_LINKED_FLAG					\
    CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION(csStaticVarCleanup_local)	\
    CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_local);	\
    CS_IMPLEMENT_PLATFORM_PLUGIN                                         \
@@ -516,6 +531,7 @@ void Name (void (*p)())                                                \
 #ifndef CS_IMPLEMENT_APPLICATION
 #  define CS_IMPLEMENT_APPLICATION       				\
   CS_DECLARE_DEFAULT_STATIC_VARIABLE_REGISTRATION			\
+  CS_DEFINE_STATICALLY_LINKED_FLAG					\
   CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_csutil);	\
   CS_IMPLEMENT_PLATFORM_APPLICATION                                     \
   CS_DEFINE_MEMTRACKER_MODULE
@@ -960,21 +976,7 @@ namespace CS
 
 // gcc can perform usefull checking for printf/scanf format strings, just add
 // this define at the end of the function declaration
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4)
-/* Newer GCCs know different 'archetypes' of format string styles.
- * CS format strings are on the level of the GNU C library, so use that
- * archetype. */
-#  define CS_GNUC_PRINTF(format_idx, arg_idx) \
-     __attribute__((format (gnu_printf, format_idx, arg_idx)))
-#  define CS_GNUC_SCANF(format_idx, arg_idx) \
-     __attribute__((format (gnu_scanf, format_idx, arg_idx)))
-// Unfortunately, gcc doesn't support format argument checking for wide strings
-#  define CS_GNUC_WPRINTF(format_idx, arg_idx) \
-     /*__attribute__((format (__wprintf__, format_idx, arg_idx)))*/
-#  define CS_GNUC_WSCANF(format_idx, arg_idx) \
-     /*__attribute__((format (__wscanf__, format_idx, arg_idx)))*/
-#elif __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
-// Use default archetype for older versions.
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
 #  define CS_GNUC_PRINTF(format_idx, arg_idx) \
      __attribute__((format (__printf__, format_idx, arg_idx)))
 #  define CS_GNUC_SCANF(format_idx, arg_idx) \
@@ -1010,8 +1012,6 @@ namespace CS
 #if defined(CS_COMPILER_MSVC)
   #define CS_ALIGNED_MEMBER(Member, Align)				\
     __declspec(align(Align)) Member
-  #define CS_ALIGNED_STRUCT(Kind, Align)	                        \
-    __declspec(align(Align)) Kind
 #elif defined(CS_COMPILER_GCC)
   /**
    * Macro to align a class member (or local variable) to a specific byte
@@ -1026,23 +1026,9 @@ namespace CS
    * \endcode
    */
   #define CS_ALIGNED_MEMBER(Member, Align)				\
-    Member __attribute__((aligned(Align)))
-  /**
-   * Macro to declare a struct aligned to a specific byte boundary.
-   *
-   * Example:
-   * \code
-   * CS_STRUCT_ALIGN(struct, 16) MyStruct
-   * {
-   *   int x;
-   * };
-   * \endcode
-   */
-  #define CS_ALIGNED_STRUCT(Kind, Align)	                        \
-    Kind __attribute__((aligned(Align)))
+    Member __attribute((aligned(Align)))
 #else
   #define CS_ALIGNED_MEMBER(Member, Align)	Member
-  #define CS_ALIGNED_STRUCT(Kind, Align)	        Kind
 #endif
 
 // Macro used to define static implicit pointer conversion function.

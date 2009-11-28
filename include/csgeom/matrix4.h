@@ -28,7 +28,6 @@
  * @{ */
 
 #include "csextern.h"
-#include "csgeom/math.h"
 #include "csgeom/transfrm.h"
 #include "csgeom/vector4.h"
 #include "csutil/csstring.h"
@@ -101,9 +100,6 @@ namespace CS
     
       /// Return a textual representation of the matrix
       csString Description() const;
-	
-	  /// Return a csTransform object representation of the matrix
-	  csTransform GetTransform() const;
       
       /// Get the first row of this matrix as a vector.
       inline csVector4 Row1() const { return csVector4 (m11,m12,m13,m14); }
@@ -237,24 +233,6 @@ namespace CS
 
       /// Invert this matrix. 
       void Invert() { *this = GetInverse(); }
-    
-      /// Transpose this matrix.
-      inline void Transpose ()
-      {
-        CS::Swap (m12, m21); CS::Swap (m13, m31); CS::Swap (m14, m41); 
-        CS::Swap (m23, m32); CS::Swap (m24, m42); 
-        CS::Swap (m34, m43); 
-      }
-    
-      /// Return the transpose of this matrix.
-      Matrix4 GetTranspose () const
-      {
-	return Matrix4 (
-	  m11, m21, m31, m41,
-	  m12, m22, m32, m42,
-	  m13, m23, m33, m43,
-	  m14, m24, m34, m44);
-      }
     };
 
   } // namespace Math

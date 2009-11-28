@@ -92,7 +92,7 @@ namespace lighter
   };
 
   typedef float(*LightAttenuationFunc)(float squaredDistance, 
-    const csVector4& constants);
+    const csVector3& constants);
 
   /// Baseclass for lights
   class Light : public csRefCount
@@ -124,7 +124,7 @@ namespace lighter
     virtual csVector3 GetLightSamplePosition (float u1, float u2) = 0;
 
     // Properties
-    void SetAttenuation (csLightAttenuationMode mode, const csVector4& constants);
+    void SetAttenuation (csLightAttenuationMode mode, const csVector3& constants);
 
     // Getters/setters
     
@@ -221,7 +221,7 @@ namespace lighter
 
     // Atteunation related
     csLightAttenuationMode attenuationMode;
-    csVector4 attenuationConsts;
+    csVector3 attenuationConsts;
     LightAttenuationFunc attenuationFunc;
 
     // Common properties
@@ -240,7 +240,6 @@ namespace lighter
     bool realLight;
   };
   typedef csRefArray<Light> LightRefArray;
-
 
 
   // Point light source
@@ -275,108 +274,6 @@ namespace lighter
     }
 
     float radius;
-  };
-  
-  // Spot light source
-  class SpotLight : public Light
-  {
-  public:
-    SpotLight (Sector* owner);
-
-    virtual ~SpotLight();
-
-    virtual csColor SampleLight (const csVector3& point, const csVector3& n,
-      float u1, float u2, csVector3& lightVec, float& pdf, VisibilityTester& vistest,
-      const csPlane3* visLimitPlane = 0);
-
-    /**
-     * Return light power over S2 sphere
-    */
-    virtual csColor GetPower () const;
-
-    inline float GetRadius () const
-    {
-      return radius;
-    }
-
-    void SetRadius (float radius);
-
-    inline void GetFalloff (float& in, float &out) const
-    {
-      in = inner;
-      out = outer;
-    }
-
-    void SetFalloff (float inner, float outer);
-
-    inline csVector3 GetDirection () const
-    {
-      return dir;
-    }
-
-    void SetDirection (csVector3 direction);
-
-  protected:
-    /// Compute the light position from given sampling values
-    virtual csVector3 GetLightSamplePosition (float u1, float u2)
-    {
-      return GetPosition ();
-    }
-
-    float radius;
-    float inner;
-    float outer;
-    csVector3 dir;
-  };
-  
-  // Directional light source
-  class DirectionalLight : public Light
-  {
-  public:
-    DirectionalLight (Sector* owner);
-
-    virtual ~DirectionalLight();
-
-    virtual csColor SampleLight (const csVector3& point, const csVector3& n,
-      float u1, float u2, csVector3& lightVec, float& pdf, VisibilityTester& vistest,
-      const csPlane3* visLimitPlane = 0);
-
-    /**
-     * Return light power over S2 sphere
-    */
-    virtual csColor GetPower () const;
-
-    inline float GetRadius () const
-    {
-      return radius;
-    }
-
-    void SetRadius (float radius);
-
-    inline float GetLength () const
-    {
-      return length;
-    }
-
-    void SetLength (float length);
-
-    inline csVector3 GetDirection () const
-    {
-      return dir;
-    }
-
-    void SetDirection (csVector3 direction);
-
-  protected:
-    /// Compute the light position from given sampling values
-    virtual csVector3 GetLightSamplePosition (float u1, float u2)
-    {
-      return GetPosition ();
-    }
-
-    float radius;
-    float length;
-    csVector3 dir;
   };
   
   // Proxy light, used when light source is in different sector

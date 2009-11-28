@@ -718,7 +718,6 @@ TiDocument::TiDocument() :
   //  ignoreWhiteSpace = true;
   SetType (DOCUMENT);
   parse.document = this;
-  parse.document = this;
 }
 
 TiDocument::TiDocument( const char * documentName ) :
@@ -731,7 +730,6 @@ TiDocument::TiDocument( const char * documentName ) :
   value = documentName;
   errorId = TIXML_NO_ERROR;
   SetType (DOCUMENT);
-  parse.document = this;
   parse.document = this;
 }
 

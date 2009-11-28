@@ -30,21 +30,22 @@
 
 
 #include "csutil/scf.h"
-#include "iutil/comp.h"
 #include "iutil/objreg.h"
-#include "iutil/threadmanager.h"
 #include "ivaria/reporter.h"
+
+
+struct iComponent;
 
 /**
  * An iterator to iterate over all plugins in the plugin manager.
  */
 struct iPluginIterator : public virtual iBase
 {
-  SCF_INTERFACE(iPluginIterator, 3,0,0);
+  SCF_INTERFACE(iPluginIterator, 2,0,0);
   /// Are there more elements?
   virtual bool HasNext () = 0;
   /// Get next element.
-  virtual iComponent* Next () = 0;
+  virtual iBase* Next () = 0;
 };
 
 /**
@@ -60,157 +61,51 @@ struct iPluginIterator : public virtual iBase
  */
 struct iPluginManager : public virtual iBase
 {
-  SCF_INTERFACE(iPluginManager, 4, 0, 1);
-  
+  SCF_INTERFACE(iPluginManager, 2,1,0);
   /**
-   * LoadPluginInstance flags.
-   * \da LoadPluginInstance
-   */
-  enum
-  {
-    /// Initialize plugin
-    lpiInitialize = 1,
-    /// Report loading errors
-    lpiReportErrors = 2,
-    /// Load dependent plugins
-    lpiLoadDependencies = 4,
-    /// Return an existing instance of the plugin if it exists, else create a new one.
-    lpiReturnLoadedInstance = 8
-  };
-  
-  /**
-   * Load a plugin (optionally loading dependencies) and (optionally)
-   * initialize it.
-   * If the #lpiInitialize flag is given then the plugin will be initialized 
-   * (that is, the iComponent's Initialize() method is called) and QueryOptions()
+   * Load a plugin and (optionally) initialize it.
+   * If 'init' is true then the plugin will be initialized and QueryOptions()
    * will be called.
-   * If the #lpiReportErrors flag is given then loading failures are 
-   * reported using the reporter.
-   * If the #lpiLoadDependencies flag is given dependent plugins (as specified
-   * in the plugin's metadata) will be loaded as well. Note that dependencies
-   * are *always* loaded.
    * \param classID Class ID of the plugin to load.
-   * \param loadFlags Load options.
+   * \param init Whether the plugin should be initialized, that is, the
+   *   iComponent's Initialize() method should be called.
+   * \param report Whether to report loading failures using the reporter.
    */
-  virtual csPtr<iComponent> LoadPluginInstance (const char *classID,
-                                                uint loadFlags) = 0;
-  // Deprecated in 1.9
-  CS_DEPRECATED_METHOD_MSG("Use LoadPluginInstance()")
-  inline iBase* LoadPlugin (const char *classID, bool init = true, bool report = true)
-  {
-    uint flags = 0;
-    if (init) flags |= lpiInitialize;
-    if (report) flags |= lpiReportErrors;
-    csRef<iComponent> comp (LoadPluginInstance (classID, flags));
-    if (comp) comp->IncRef();
-    return (iBase*)comp;
-  }
+  virtual iBase *LoadPlugin (const char *classID,
+    bool init = true, bool report = true) = 0;
 
   /**
-   * Get one of the loaded plugins that supports given interface ID.
-   * \warning Usage of this function is usually not safe since multiple
+   * Get first of the loaded plugins that supports given interface ID.
+   * Warning! Usage of this function is usually not safe since multiple
    * plugins can implement the same interface and there is no way to know
-   * which one is the correct one.  This method will return a random plugin
-   * providing the given interface.
-   * It is usually better to use the object registry to obtain components
-   * with a certain interface.
+   * which one is the correct one. It is better to use the object registry
+   * to find about single loaded components.
    */
-  virtual csPtr<iComponent> QueryPluginInstance (const char *iInterface,
-                                                 int iVersion) = 0;
-  // Deprecated in 1.9
-  CS_DEPRECATED_METHOD_MSG("Use QueryPluginInstance()")
-  inline iBase* QueryPlugin (const char *iInterface, int iVersion)
-  {
-    csRef<iComponent> comp (QueryPluginInstance (iInterface, iVersion));
-    if (comp) comp->IncRef();
-    return (iBase*)comp;
-  }
-  
-  //@{
-  /**
-   * Find a plugin given its class ID.
-   * \warning It is valid to load multiple plugin instances for the same
-   * plugin class IDs. If this is the case, querying for an instance of a
-   * plugin class ID will return a random loaded plugin instance.
-   */
-  virtual csPtr<iComponent> QueryPluginInstance (const char* classID) = 0;
-  virtual csPtr<iComponent> QueryPluginInstance (const char* classID,
+  virtual iBase *QueryPlugin (const char *iInterface, int iVersion) = 0;
+  /// Find a plugin given his class ID.
+  virtual iBase *QueryPlugin (const char* classID,
   	const char *iInterface, int iVersion) = 0;
-  //@}
-  // Deprecated in 1.9
-  CS_DEPRECATED_METHOD_MSG("Use QueryPluginInstance()")
-  inline iBase* QueryPlugin (const char* classID,
-  	const char *iInterface, int iVersion)
-  {
-    csRef<iComponent> comp (QueryPluginInstance (classID, iInterface, iVersion));
-    if (comp) comp->IncRef();
-    return (iBase*)comp;
-  }
-  
-  /// Remove a plugin from the plugin manager's plugin list.
-  virtual bool UnloadPluginInstance (iComponent *obj) = 0;
-  // Deprecated in 1.9
-  CS_DEPRECATED_METHOD_MSG("Use UnloadPluginInstance()")
-  inline bool UnloadPlugin (iComponent *obj)
-  { return UnloadPluginInstance (obj); }
-  
+  /// Remove a plugin from system driver's plugin list.
+  virtual bool UnloadPlugin (iComponent *obj) = 0;
   /// Register a object that implements the iComponent interface as a plugin.
-  virtual bool RegisterPluginInstance (const char *classID, iComponent *obj) = 0;
-  // Deprecated in 1.9
-  CS_DEPRECATED_METHOD_MSG("Use RegisterPluginInstance()")
-  inline bool RegisterPlugin (const char *classID, iComponent *obj)
-  { return RegisterPluginInstance (classID, obj); }
+  virtual bool RegisterPlugin (const char *classID, iComponent *obj) = 0;
 
   /**
    * Get an iterator to iterate over all loaded plugins in the plugin manager.
    * This iterator will contain a copy of the plugins so it will not lock
    * the plugin manager while looping over the plugins.
    */
-  virtual csPtr<iPluginIterator> GetPluginInstances () = 0;
-  // Deprecated in 1.9
-  CS_DEPRECATED_METHOD_MSG("Use GetPluginInstances()")
-  inline csPtr<iPluginIterator> GetPlugins ()
-  { return GetPluginInstances (); }
+  virtual csPtr<iPluginIterator> GetPlugins () = 0;
   /// Unload all plugins from this plugin manager.
   virtual void Clear () = 0;
 
   /**
-   * Query all options supported by given plugin instance and place into
-   * OptionList.
+   * Query all options supported by given plugin and place into OptionList.
    * Normally this is done automatically by LoadPlugin() if 'init' is true.
    * If 'init' is not true then you can call this function AFTER calling
    * object->Initialize().
    */
   virtual void QueryOptions (iComponent* object) = 0;
-  
-  /**
-   * Set the class ID mapped to an object registry tag.
-   * Tag mappings are used in dependency resolution while plugin loading.
-   */
-  virtual bool SetTagClassIDMapping (const char* tag, const char* classID) = 0;
-  /// Remove a class ID mapping for a tag
-  virtual bool UnsetTagClassIDMapping (const char* tag) = 0;
-  /// Get the class ID mapped to a tag
-  virtual const char* GetTagClassIDMapping (const char* tag) = 0;
-  /**
-   * Get all tags mapped to that class ID.
-   * \a classID can be wildcard (ending in '.') which means all class IDs
-   * starting with \a classID are considered,
-   */
-  virtual csPtr<iStringArray> GetClassIDTags (const char* classID) = 0;
-  /**
-   * Load a plugin for a tag.
-   * Canonically equivalent to LoadTagPluginInstance (
-   * GetTagClassIDMapping (\a tag), \a loadFlags).
-   */
-  virtual csPtr<iComponent> LoadTagPluginInstance (const char* tag,
-    uint loadFlags) = 0;
-  /**
-   * Query a plugin for a tag.
-   * Canonically equivalent to QueryPluginInstance (GetTagClassIDMapping (\a tag)).
-   */
-  virtual csPtr<iComponent> QueryTagPluginInstance (const char* tag) = 0;
-  
 };
 
 
@@ -226,10 +121,19 @@ template<class Interface>
 inline csPtr<Interface> csQueryPluginClass (iPluginManager *mgr,
                                             const char* ClassID)
 {
-  csRef<iComponent> base = mgr->QueryPluginInstance (ClassID,
+  iBase* base = mgr->QueryPlugin (ClassID,
     scfInterfaceTraits<Interface>::GetName(),
     scfInterfaceTraits<Interface>::GetVersion());
-  return scfQueryInterfaceSafe<Interface> (base);
+
+  if (base == 0) return csPtr<Interface> (0);
+
+  Interface *x = (Interface*)base->QueryInterface (
+    scfInterfaceTraits<Interface>::GetID (),
+    scfInterfaceTraits<Interface>::GetVersion ());
+
+  base->DecRef (); //release our base interface
+
+  return csPtr<Interface> (x);
 }
 
 /**
@@ -240,7 +144,7 @@ inline csPtr<Interface> csQueryPluginClass (iPluginManager *mgr,
   csQueryPluginClass<Interface> (Object, ClassID)
 
 /**
- * Tell plugin manager to load a plugin (and its dependencies).
+ * Tell plugin manager to load a plugin.
  * \a Interface: Desired interface type (ex. iGraphics2D, iVFS, etc.).
  * \param mgr An object that implements iPluginManager.
  * \param ClassID The SCF class name (ex. crystalspace.graphics3d.software).
@@ -248,19 +152,23 @@ inline csPtr<Interface> csQueryPluginClass (iPluginManager *mgr,
 template<class Interface>
 inline csPtr<Interface> csLoadPlugin (iPluginManager *mgr,
                                       const char* ClassID,
-                                      bool report = true,
-                                      bool returnLoadedInstance = false)
+				      bool report = true)
 {
-  csRef<iComponent> base;
-  uint flags = iPluginManager::lpiInitialize | iPluginManager::lpiLoadDependencies;
-  if (report) flags |= iPluginManager::lpiReportErrors;
-  if (returnLoadedInstance) flags |= iPluginManager::lpiReturnLoadedInstance;
-  base = mgr->LoadPluginInstance (ClassID, flags);
-  return scfQueryInterfaceSafe<Interface> (base);
+  iBase* base = mgr->LoadPlugin (ClassID, true, report);
+
+  if (base == 0) return csPtr<Interface> (0);
+
+  Interface *x = (Interface*)base->QueryInterface (
+    scfInterfaceTraits<Interface>::GetID (),
+    scfInterfaceTraits<Interface>::GetVersion ());
+
+  base->DecRef (); //release our base interface
+
+  return csPtr<Interface> (x);
 }
 
 /**
- * Tell plugin manager to load a plugin (and its dependencies).
+ * Tell plugin manager to load a plugin.
  * \a Interface: Desired interface type (ex. iGraphics2D, iVFS, etc.).
  * \param object_reg object registry
  * \param ClassID The SCF class name (ex. crystalspace.graphics3d.software).
@@ -268,7 +176,7 @@ inline csPtr<Interface> csLoadPlugin (iPluginManager *mgr,
 template<class Interface>
 inline csPtr<Interface> csLoadPlugin (iObjectRegistry* object_reg,
                                       const char* ClassID,
-                                      bool report = true)
+				      bool report = true)
 {
   csRef<iPluginManager> mgr = csQueryRegistry<iPluginManager> (object_reg);
   if (!mgr) return 0;
@@ -284,12 +192,12 @@ inline csPtr<Interface> csLoadPlugin (iObjectRegistry* object_reg,
  */
 template<class Interface>
 inline csPtr<Interface> csLoadPluginCheck (iPluginManager *mgr,
-                                           const char* ClassID,
-                                           bool report = true)
+                                      const char* ClassID,
+				      bool report = true)
 {
   csRef<Interface> i = csQueryPluginClass<Interface> (mgr, ClassID);
   if (i) return (csPtr<Interface>) i;
-  i = csLoadPlugin<Interface> (mgr, ClassID, report, true);
+  i = csLoadPlugin<Interface> (mgr, ClassID, report);
   if (!i) return 0;
   return (csPtr<Interface>) i;
 }
@@ -330,14 +238,12 @@ inline csPtr<Interface> csLoadPluginCheck (iObjectRegistry* object_reg,
  * Same as csLoadPlugin() but does not bother asking for a interface.
  * This is useful for unconditionally loading plugins.
  */
-inline csPtr<iComponent> csLoadPluginAlways (iPluginManager *mgr,
-                                             const char* ClassID,
-				             bool report = true)
+inline csPtr<iBase> csLoadPluginAlways (iPluginManager *mgr,
+                                        const char* ClassID,
+				        bool report = true)
 {
-  uint flags =
-    iPluginManager::lpiInitialize | iPluginManager::lpiLoadDependencies;
-  if (report) flags |= iPluginManager::lpiReportErrors;
-  return mgr->LoadPluginInstance (ClassID, flags);
+  iBase* base = mgr->LoadPlugin (ClassID, true, report);
+  return csPtr<iBase> (base);
 }
 
 /**

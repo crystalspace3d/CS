@@ -35,7 +35,8 @@ csBaseEventHandler::csBaseEventHandler() :
   object_registry (0),
   self (CS_EVENT_INVALID)
 {
-  FrameEvent = CS_EVENT_INVALID;
+  FrameEvent = PreProcess = Process = PostProcess 
+    = FinalProcess = CS_EVENT_INVALID;
   eventh.AttachNew (new EventHandlerImpl (this));
 }
 
@@ -44,6 +45,10 @@ void csBaseEventHandler::Initialize (iObjectRegistry *r)
   object_registry = r;
   self = csEventHandlerRegistry::RegisterID (r, eventh);
   FrameEvent = csevFrame (r);
+  PreProcess = csevPreProcess (r);
+  Process = csevProcess (r);
+  PostProcess = csevPostProcess (r);
+  FinalProcess = csevFinalProcess (r);
 }
 
 csBaseEventHandler::~csBaseEventHandler()
@@ -109,6 +114,26 @@ bool csBaseEventHandler::HandleEvent (iEvent &event)
     Frame();
     return true;
   }
+  else if (event.Name == PreProcess)
+  {
+    PreProcessFrame ();
+    return true;
+  }
+  else if (event.Name == Process)
+  {
+    ProcessFrame ();
+    return true;
+  }
+  else if (event.Name == PostProcess)
+  {
+    PostProcessFrame ();
+    return true;
+  }
+  else if (event.Name == FinalProcess)
+  {
+    FinishFrame ();
+    return true;
+  }
   else if (CS_IS_KEYBOARD_EVENT(object_registry, event))
     return OnKeyboard(event);
   else if (CS_IS_MOUSE_EVENT(object_registry, event))
@@ -164,3 +189,7 @@ DefaultTrigger ( OnJoystickUp )
   { return; }
 
 DefaultVoidTrigger ( Frame )
+DefaultVoidTrigger ( PreProcessFrame )
+DefaultVoidTrigger ( ProcessFrame )
+DefaultVoidTrigger ( PostProcessFrame )
+DefaultVoidTrigger ( FinishFrame )

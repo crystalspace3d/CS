@@ -22,7 +22,6 @@
 #include "csutil/noncopyable.h"
 
 #include "light.h"
-#include "lightmap.h"
 #include "primitive.h"
 #include "raytracer.h"
 #include "sampler.h"
@@ -63,16 +62,15 @@ namespace lighter
 
     //-- Shade a lightmap element
     typedef csColor (DirectLighting::*LMElementShader)(Sector* sector, 
-      ElementProxy element, SamplerSequence<2>& lightSampler,
-      bool recordInfluence);
+      ElementProxy element, SamplerSequence<2>& lightSampler);
 
     // Shade a primitive element with direct lighting
     csColor UniformShadeAllLightsNonPD (Sector* sector, ElementProxy element,
-      SamplerSequence<2>& lightSampler, bool recordInfluence);
+      SamplerSequence<2>& lightSampler);
 
     // Shade a primitive element with direct lighting using a single light
     csColor UniformShadeRndLightNonPD (Sector* sector, ElementProxy element,
-      SamplerSequence<2>& lightSampler, bool recordInfluence);
+      SamplerSequence<2>& lightSampler);
 
     //-- Shade using one light
     // Shade a primitive element with direct lighting
@@ -82,30 +80,13 @@ namespace lighter
 
     // Shade a primitive element with direct lighting
     csColor UniformShadeOneLight (Sector* sector, ElementProxy element,
-      Light* light, SamplerSequence<2>& lightSampler, bool recordInfluence);
+      Light* light, SamplerSequence<2>& lightSampler);
 
     template<typename T>
     inline csColor UniformShadeElement (T& shade, ElementProxy element, 
-      SamplerSequence<2>& lightSampler, bool recordInfluence);
+      SamplerSequence<2>& lightSampler);
 
   private:
-    struct InfluenceRecorder
-    {
-      Object* obj;
-      size_t u, v;
-      const csMatrix3& ts;
-      uint primGroup;
-      float weight;
-    
-      InfluenceRecorder (Object* obj, size_t u, size_t v,
-        const csMatrix3& ts, uint primGroup,
-        float weight) : obj (obj), u (u), v (v), ts (ts),
-        primGroup (primGroup), weight (weight) {}
-      
-      void RecordInfluence (Light* light, const csVector3& direction,
-        const csColor& color);
-    };
-  
     struct ShadeAllLightsNonPD
     {
       DirectLighting& lighting;
@@ -116,7 +97,7 @@ namespace lighter
       inline csColor ShadeLight (Object* obj, const csVector3& point, 
         const csVector3& normal, SamplerSequence<2>& lightSampler, 
         const Primitive* shadowIgnorePrimitive = 0, 
-        bool fullIgnore = false, InfluenceRecorder* influenceRec = 0);
+        bool fullIgnore = false);
     };
 
     struct ShadeRndLightNonPD
@@ -131,7 +112,7 @@ namespace lighter
       inline csColor ShadeLight (Object* obj, const csVector3& point, 
         const csVector3& normal, SamplerSequence<2>& sampler, 
         const Primitive* shadowIgnorePrimitive = 0, 
-        bool fullIgnore = false, InfluenceRecorder* influenceRec = 0);
+        bool fullIgnore = false);
     };
     struct ShadeOneLight
     {
@@ -142,15 +123,14 @@ namespace lighter
       inline csColor ShadeLight (Object* obj, const csVector3& point, 
         const csVector3& normal, SamplerSequence<2>& sampler, 
         const Primitive* shadowIgnorePrimitive = 0, 
-        bool fullIgnore = false, InfluenceRecorder* influenceRec = 0);
+        bool fullIgnore = false);
     };
 
     // Methods...
     inline csColor ShadeLight (Light* light, Object* obj, 
       const csVector3& point, const csVector3& normal, 
-      SamplerSequence<2>& lightSampler, 
-      const Primitive* shadowIgnorePrimitive = 0, 
-      bool fullIgnore = false, csVector3* incomingLightVec = 0);
+      SamplerSequence<2>& lightSampler, const Primitive* shadowIgnorePrimitive = 0, 
+      bool fullIgnore = false);
 
     class ProgressState
     {

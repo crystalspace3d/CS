@@ -19,9 +19,8 @@ if $(COMPILER.C++FLAGS.PEDANTIC.ENABLE)
 
 # List of plugins which should be go into walkall.
 WALKALL.PLUGINLIST =
-  animesh
-  animeshldr
-  bindoc
+  bezier
+  bezierldr
   bugplug
   csconin
   csconout
@@ -49,8 +48,6 @@ WALKALL.PLUGINLIST =
   gmeshldr
   gmeshskelanim2
   skeleton
-  skeleton2
-  skeleton2ldr
   skelldr
   vproc_std
   haze
@@ -62,9 +59,6 @@ WALKALL.PLUGINLIST =
   rendloop_loader
   rendstep_std
   reporter
-  rm_rlcompat
-  rm_unshadowed
-  rm_shadow_pssm
   sequence
   shadermgr
   simpleformer
@@ -80,6 +74,8 @@ WALKALL.PLUGINLIST =
   spr3dldr
   stdpt
   stdrep
+  thing
+  thingldr
   xmlread
   xmlshader
   ;
@@ -101,10 +97,10 @@ if $(CAL3D.AVAILABLE) = "yes"
   ;WALKALL.PLUGINLIST += sprcal3d sprcal3dldr ;
 }
 
-# Plugins needed by GL renderer
+# Plugins needed by both software & GL renderers
 if $(X11.AVAILABLE) = "yes"
 {
-  WALKALL.PLUGINLIST += xwin ;
+  WALKALL.PLUGINLIST += xwin xextshm ;
   if $(XFREE86VM.AVAILABLE) = "yes" { WALKALL.PLUGINLIST += xext86vm ; }
 }
 
@@ -118,6 +114,16 @@ if $(GL.AVAILABLE) = "yes"
   if $(TARGET.OS) = "MACOS_X" { WALKALL.PLUGINLIST += glosx2d ; }
 
   if $(CG.AVAILABLE) = "yes" { WALKALL.PLUGINLIST += glshader_cg ; }
+}
+else
+{
+  WALKALL.PLUGINLIST += soft3d softshader ;
+
+  # Software canvases.
+  if $(X11.AVAILABLE) = "yes" { WALKALL.PLUGINLIST += x2d ; }
+  if $(DIRECTX.AVAILABLE) = "yes" { WALKALL.PLUGINLIST += ddraw2d ; }
+  if $(TARGET.OS) = "MACOS_X" { WALKALL.PLUGINLIST += cgdriver2d ; }
+  #if $(LIBCACA.AVAILABLE) = "yes" { WALKALL.PLUGINLIST += cacacanvas ; }
 }
 
 for p in $(WALKALL.PLUGINLIST)

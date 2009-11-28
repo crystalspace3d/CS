@@ -150,8 +150,6 @@ private:
   csVector2 position;
   csVector3 size;
   float step_x, step_z;
-  float minHeight, maxHeight;
-  csBox3 boundingBox;
   
   csRef<iTerrainCellRenderProperties> renderProperties;
   csRef<iTerrainCellCollisionProperties> collisionProperties;

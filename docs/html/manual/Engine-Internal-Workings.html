@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 6.3 The Engine Internals Explained</title>
+<title>Crystal Space 1.4.0: 6.3 The Engine Internals Explained</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 6.3 The Engine Internals Explained">
-<meta name="keywords" content="Crystal Space 1.9.0: 6.3 The Engine Internals Explained">
+<meta name="description" content="Crystal Space 1.4.0: 6.3 The Engine Internals Explained">
+<meta name="keywords" content="Crystal Space 1.4.0: 6.3 The Engine Internals Explained">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -71,6 +71,10 @@ how the Crystal Space engine works internally and for people who want
 to contribute to the engine proper. The sources for the 3D engine can be found
 in <tt>&lsquo;CS/plugins/engine/3d&rsquo;</tt>.
 </p>
+<p>Note: This discussion is specific to how the engine works in relation
+to the new renderer. The old renderer is still in Crystal Space at this moment
+but this discussion does not bear upon it.
+</p>
 <a name="1"></a>
 <h3 class="subheading"> Engine Data Structures </h3>
 
@@ -123,18 +127,18 @@ mesh objects are not in this list.
 they will be placed into this list.
 
 </li><li>
+<code>regions</code>: Class <samp>&lsquo;csRegion&rsquo;</samp>, interface <samp>&lsquo;iRegion&rsquo;</samp>.  Regions
+provide a way to organize your objects.  Every object (mesh, factory, material,
+light, sector, etc.) can be placed into a region. Note that a region is not
+a geometrical concept. You can use one region to contain all materials,
+and another to contain all mesh objects, for example. On the other hand, it is
+probably most useful to have regions that represent geometrical areas which
+you can load and unload from the engine (useful for making huge maps).
+
+</li><li>
 <code>textures</code>: Class <samp>&lsquo;csTextureWrapper&rsquo;</samp>, interface
 <samp>&lsquo;iTextureWrapper&rsquo;</samp>.  A texture is a processed image that can be used by the
 renderer.
-
-</li><li>
-<code>collections</code>: Class <samp>&lsquo;csCollection&rsquo;</samp>, interface <samp>&lsquo;iCollection&rsquo;</samp>.  Collections
-provide a way to organize your objects.  Every object (mesh, factory, material,
-light, sector, etc.) can be placed into a collection. Note that a collection is not
-a geometrical concept. You can use one collection to contain all materials,
-and another to contain all mesh objects, for example. On the other hand, it is
-probably most useful to have collections that represent geometrical areas which
-you can load and unload from the engine (useful for making huge maps).
 
 </li><li>
 <code>materials</code>: Class <samp>&lsquo;csMaterialWrapper&rsquo;</samp>, interface
@@ -184,7 +188,7 @@ numerical identifiers is faster than comparison of string identifiers.
 <code>cache_mgr</code>: Interface <samp>&lsquo;iCacheManager&rsquo;</samp>.  This is the default cache
 manager maintained by the engine.  The cache manager is responsible for storing
 data that is hard to compute.  Mesh objects and other plugins may use the cache
-manager to store, for example, shader and other stuff.
+manager to store, for example, lightmaps and other stuff.
 
 </li><li>
 <code>defaultRenderLoop</code>: Interface <samp>&lsquo;iRenderLoop&rsquo;</samp>. The default renderloop
@@ -419,15 +423,15 @@ Several imposter variables: not yet implemented.
 </li></ul>
 
 <a name="6"></a>
-<h3 class="subheading"> Engine Data Structures: csCollection </h3>
+<h3 class="subheading"> Engine Data Structures: csRegion </h3>
 
-<p>A collection is a group of iObjects.  It utilizes <samp>&lsquo;csObject&rsquo;</samp> to hold all
-objects that are in the collection.  The collection class implements the following
+<p>A region is a collection of objects.  It utilizes <samp>&lsquo;csObject&rsquo;</samp> to hold all
+objects that are in the region.  The region class implements the following
 interfaces:
 </p>
 <ul>
 <li>
-<code>iCollection</code>: The main entry point for the collection.
+<code>iRegion</code>: The main entry point for the region.
 </li><li>
 <code>iObject</code>: Allows attachment of game-specific data.
 </li></ul>

@@ -36,6 +36,9 @@
 
 #include "morphtarget.h"
 
+struct iEngine;
+struct iLightManager;
+
 CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 {
 
@@ -55,6 +58,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
     //-- iComponent
     virtual bool Initialize (iObjectRegistry*);
+  
+    csRef<iEngine> engine;
+    csRef<iLightManager> lightmgr;
   };
 
 
@@ -253,7 +259,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
     //-- iAnimatedMeshSocketFactory
     virtual const char* GetName () const;
-    virtual void SetName (const char*);
     virtual const csReversibleTransform& GetTransform () const;
     virtual void SetTransform (csReversibleTransform& tf);
     virtual BoneID GetBone () const;
@@ -313,7 +318,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       const csVector3& end, csVector3& isect, float* pr);
     virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
       csVector3& isect, float* pr, int* polygon_idx,
-      iMaterialWrapper** material, csArray<iMaterialWrapper*>* materials);
+      iMaterialWrapper** material);
 
     virtual void SetMeshWrapper (iMeshWrapper* logparent);
     virtual iMeshWrapper* GetMeshWrapper () const;
@@ -328,6 +333,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
     virtual void SetMixMode (uint mode);
     virtual uint GetMixMode () const;
+
+    virtual void InvalidateMaterialHandles ();
 
     virtual void PositionChild (iMeshObject* child,csTicks current_time);
 
@@ -362,6 +369,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
     void MorphVertices ();
 
     void PreskinLF ();
+    void UpdateLighting ();
+    void UpdateLighting (iLight* light);
+    template<typename Attenuation> void UpdateLighting (iLight* light);
 
     class RenderBufferAccessor :
       public scfImplementation1<RenderBufferAccessor, 
@@ -490,6 +500,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
     unsigned int skinVertexVersion, skinNormalVersion, skinTangentVersion, skinBinormalVersion;
     // Things we skinned in software last frame
     bool skinVertexLF, skinNormalLF, skinTangentLF, skinBinormalLF;
+    
+    // Used for SW lighting
+    iMovable*  lighting_movable;
+    csRef<iRenderBuffer> colorsLit;
   };
 
 }

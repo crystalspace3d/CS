@@ -103,9 +103,4 @@
   #endif
 #endif
 
-#ifndef IDI_SHIELD
-// Vista 'shield' icon
-#define IDI_SHIELD  MAKEINTRESOURCE(32518)
-#endif
-
 #endif // __CS_CSUTIL_WIN32_PSDK_COMPAT_H__

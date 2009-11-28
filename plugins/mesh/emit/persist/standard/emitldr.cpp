@@ -34,7 +34,6 @@
 #include "iengine/material.h"
 #include "iutil/vfs.h"
 #include "csutil/csstring.h"
-#include "iutil/stringarray.h"
 #include "iutil/object.h"
 #include "iutil/document.h"
 #include "iutil/objreg.h"
@@ -43,7 +42,7 @@
 #include "imap/ldrctxt.h"
 #include "ivaria/reporter.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 enum
 {
@@ -366,14 +365,12 @@ csPtr<iBase> csEmitLoader::Parse (iDocumentNode* node,
 	{
 	  const char* factname = child->GetContentsValue ();
 	  iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
-
-    if(!fact)
-    {
-      synldr->ReportError ("crystalspace.emitloader.parse",
-        child, "Cannot find factory '%s' for emit!", factname);
-        return 0;
-    }
-
+	  if (!fact)
+	  {
+	    synldr->ReportError ("crystalspace.emitloader.parse",
+		child, "Cannot find factory '%s' for emit!", factname);
+	    return 0;
+	  }
 	  mesh = fact->GetMeshObjectFactory ()->NewInstance ();
           partstate = scfQueryInterface<iParticleState> (mesh);
           emitstate = scfQueryInterface<iEmitState> (mesh);

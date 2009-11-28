@@ -1,7 +1,6 @@
 /*
     Copyright (C) 2005 by Jorrit Tyberghein
 	      (C) 2005 by Frank Richter
-              (C) 2009 by Marten Svanfeldt
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,7 +27,6 @@
 #include "csextern.h"
 #include "csutil/fifo.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/csstring.h"
 #include "iutil/job.h"
 
 #include "csutil/threading/condition.h"
@@ -48,61 +46,60 @@ public:
   virtual ~ThreadedJobQueue ();
 
   virtual void Enqueue (iJob* job);
-  virtual void Dequeue (iJob* job);
-  virtual void PullAndRun (iJob* job, bool waitForCompletion = false);
-  virtual bool IsFinished ();  
-  virtual int32 GetQueueCount();
-  virtual void WaitAll ();
+  virtual void PullAndRun (iJob* job);
+  virtual void Unqueue (iJob* job, bool waitIfCurrent = true);
+  virtual bool IsFinished ();
+
+  enum
+  {
+    MAX_WORKER_THREADS = 16
+  };
 
 private:
-
-  bool PullFromQueues (iJob* job);
   
   // Runnable
-  struct ThreadState;  
+  struct ThreadState;
 
   class QueueRunnable : public Runnable
   {
   public:
-    QueueRunnable (ThreadedJobQueue* queue, ThreadState* ts, unsigned int id);
+    QueueRunnable (ThreadedJobQueue* queue, ThreadState* ts);
 
     virtual void Run ();
-    virtual const char* GetName () const;
 
   private:
     ThreadedJobQueue* ownerQueue;
     ThreadState* threadState;
-    csString name;
   };
 
   // Per thread state
   struct ThreadState
   {
-    ThreadState (ThreadedJobQueue* queue, unsigned int id)
+    ThreadState (ThreadedJobQueue* queue)
     {
-      runnable.AttachNew (new QueueRunnable (queue, this, id));
+      runnable.AttachNew (new QueueRunnable (queue, this));
       threadObject.AttachNew (new Thread (runnable, false));
     }
 
     csRef<QueueRunnable> runnable;
     csRef<Thread> threadObject;
     csRef<iJob> currentJob;
-    
-    // 
-    Mutex tsMutex;
-    Condition tsNewJob;
-    Condition tsJobFinished;
-
-    csFIFO<csRef<iJob> > jobQueue;
+    Condition jobFinished;
   };
 
-  ThreadState** allThreadState;
-  ThreadGroup allThreads;
+  // Shared queue state
+  typedef csFIFO<csRef<iJob> > JobFifo;
+  JobFifo jobQueue;
+  Mutex jobMutex;
+  Condition newJob;
 
-  Mutex finishMutex;
+  ThreadState* allThreadState[MAX_WORKER_THREADS];
+  ThreadGroup allThreads;
+  Mutex threadStateMutex;
+  Mutex jobFinishMutex;
 
   size_t numWorkerThreads;
-  int32 shutdownQueue;
+  bool shutdownQueue;
   int32 outstandingJobs;
 };
 

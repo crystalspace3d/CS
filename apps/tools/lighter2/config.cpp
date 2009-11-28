@@ -34,7 +34,6 @@ namespace lighter
     //Setup defaults
     lighterProperties.doDirectLight = true;
     lighterProperties.directionalLMs = false;
-    lighterProperties.specularDirectionMaps = false;
     lighterProperties.numThreads = CS::Platform::GetProcessorCount();
     lighterProperties.saveBinaryBuffers = true;
     lighterProperties.checkDupes = true;
@@ -45,9 +44,6 @@ namespace lighter
     lmProperties.blackThreshold = lightValueEpsilon;
     lmProperties.normalsTolerance = 1.0f * (PI / 180.0f);
     lmProperties.grayPDMaps = true;
-    
-    terrainProperties.maxLightmapU = lmProperties.maxLightmapU;
-    terrainProperties.maxLightmapV = lmProperties.maxLightmapV;
 
     diProperties.pointLightMultiplier = 1.0f;
     diProperties.areaLightMultiplier = 1.0f;
@@ -63,8 +59,6 @@ namespace lighter
       lighterProperties.doDirectLight);
     lighterProperties.directionalLMs = cfgFile->GetBool ("lighter2.BumpLMs", 
       lighterProperties.directionalLMs);
-    lighterProperties.specularDirectionMaps = cfgFile->GetBool ("lighter2.SpecMaps", 
-      true) && lighterProperties.directionalLMs;
     lighterProperties.numThreads = cfgFile->GetInt ("lighter2.NumThreads", 
       lighterProperties.numThreads);
     lighterProperties.checkDupes = cfgFile->GetBool ("lighter2.CheckDupes",
@@ -83,11 +77,6 @@ namespace lighter
       lmProperties.blackThreshold);
     lmProperties.blackThreshold = csMax (lmProperties.blackThreshold,
       lightValueEpsilon); // Values lower than the LM precision don't make sense
-      
-    terrainProperties.maxLightmapU = cfgFile->GetInt ("lighter2.maxTerrainLightmapU", 
-      lmProperties.maxLightmapU);
-    terrainProperties.maxLightmapV = cfgFile->GetInt ("lighter2.maxTerrainLightmapV", 
-      lmProperties.maxLightmapV);
 
     float normalsToleranceAngle = cfgFile->GetFloat ("lighter2.normalsTolerance", 
       1.0f);

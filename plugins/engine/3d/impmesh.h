@@ -1,7 +1,6 @@
 /*
   Copyright (C) 2002 by Keith Fulton and Jorrit Tyberghein
-  Rewritten during Summer of Code 2006 by Christoph "Fossi" Mewes
-  Rewritten during Summer of Code 2009 by Michael Gist
+  Rewritten during Sommer of Code 2006 by Christoph "Fossi" Mewes
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -20,10 +19,7 @@
 #ifndef __CS_IMPMESH_H__
 #define __CS_IMPMESH_H__
 
-#include "cstool/objmodel.h"
 #include "csutil/nobjvec.h"
-#include "iengine/camera.h"
-#include "iengine/impman.h"
 #include "iengine/movable.h"
 #include "iengine/sector.h"
 #include "csgeom/poly3d.h"
@@ -32,267 +28,96 @@
 #include "cstool/rendermeshholder.h"
 #include "iengine/mesh.h"
 
+#include "impprctx.h"
+
 class csVector3;
 class csMatrix3;
 class csMovable;
+class csMeshWrapper;
 class csMeshFactoryWrapper;
 class csImposterMesh;
-class csEngine;
-struct iGraphics3D;
 struct iRenderView;
+struct iCamera;
 
-CS_PLUGIN_NAMESPACE_BEGIN(Engine)
+/**
+ * Class representing the factory/imposter relation.
+ */
+class csImposterFactory
 {
-  class csMeshWrapper;
-}
-CS_PLUGIN_NAMESPACE_END(Engine)
+private:
+  csImposterMesh* imposter_mesh;	// @@@ Temporary.
+  csMeshFactoryWrapper* meshfact;
+
+public:
+  csImposterFactory (csMeshFactoryWrapper* meshfact)
+    : imposter_mesh (0), meshfact (meshfact) { }
+
+  /**
+   * Get a valid imposter mesh for a given mesh.
+   * If possible this will reuse the previous imposter mesh if there is
+   * one and if it is still usable.
+   */
+  csImposterMesh* GetImposterMesh (csMeshWrapper* mesh,
+      csImposterMesh* old_imposter_mesh, iRenderView* rview);
+};
 
 /**
  * Class representing the mesh/imposter relation.
  */
-class csImposterMesh : public scfImplementationExt2<
-	csImposterMesh, csObjectModel, iImposterMesh, iMeshObject>
+class csImposterMesh
 {
 private:
-  // Imposter instance data.
-  struct Instance
-  {
-    iMeshWrapper* mesh;
-    csRef<csShaderVariable> transformVar;
-    csRef<csShaderVariable> fadeFactor;
+  csMeshWrapper *parent_mesh;// Who is this an imposter for.
+  csImposterProcTex *tex;    // Texture which is drawn on rect
+  csPoly3D cutout;           // Rect for cardboard cutout version
+  bool     ready;            // Whether texture must be redrawn
 
-    Instance(iMeshWrapper* mesh) : mesh(mesh)
-    {
-    }
-  };
-
-  // Array of imposter instances.
-  csArray<Instance*> instances;
-
-  // Mesh billboard for this imposter.
-  csRef<iMeshWrapper> mesh;
-
-  // Array of transform vars for the imposter instances.
-  csRef<csShaderVariable> transformVars;
-
-  // Array of fade factors for the imposter instances.
-  csRef<csShaderVariable> fadeFactors;
-
-  // Factory that we're created from.
-  iImposterFactory* fact;
-
-  csRef<iImposterManager> impman;
-
-  // Convenience shortcut
-  csEngine *engine;
-
-  // Whether or not we're instancing.
-  bool instance;
-
-  // True if we're ready to be removed.
-  bool removeMe;
-
-  // Shader to use on the imposter material.
-  csString shader;
-
-  // Flags that indicate that we have been updated.
-  bool materialUpdateNeeded;
-  bool matDirty;
-  bool meshDirty;
-
-  // Saved values for update checking.
+  //saved values for update checking
   csVector3 meshLocalDir;
   csVector3 cameraLocalDir;
 
-  // Rendermesh holder for this mesh
+  //screen bounding box helper
+  csScreenBoxResult res;
+
+  //rendermeshholder for this mesh
   csRenderMeshHolder rmHolder;
 
-  // Rect for billboard
-  csPoly3D vertices;
+  //flag that indices have been updated
+  bool dirty;
 
-  // Normals.
-  csVector3 normals;
+  //current height and width of the billboard
+  float height, width;
 
-  // Imposter material.
-  csRef<iMaterialWrapper> mat;
+  //imposter material
+  iMaterialWrapper *impostermat;
 
-  // Imposter meshes (for batched rendering).
-  csRefArray<csImposterMesh> imposterMeshes;
+  //direction the imposter is facing in world coordinates
+  csVector3 imposterDir;
 
-  // Number of meshes at last update.
-  size_t numImposterMeshes;
+  //convenience shortcut
+  csEngine *engine;
 
-  // Texture coordinates.
-  csBox2 texCoords;
+  // Get the current rotation vectors.
+  void GetLocalViewVectors (iCamera *cam);
 
-  // The camera this mesh is being viewed through.
-  csWeakRef<iCamera> camera;
+  void FindImposterRectangle (iCamera *camera);
+  void SetImposterReady (bool r, iRenderView* rview);
 
-  // The distance to the closest instance of this imposter.
-  size_t closestInstance;
-
-  // The closest instance of the mesh.
-  csWeakRef<iMeshWrapper> closestInstanceMesh;
-
-  // True if currently awaiting an update.
-  bool isUpdating;
-
-  // Flags for iMeshObject.
-  csFlags flags;
-
-  // Bounding box.
-  csBox3 bbox;
-
-  csRef<iGraphics3D> g3d;
-
-  iSector* sector;
-
-  // True if r2t has been performed for this imposter.
-  bool rendered;
-
-  // Current mesh being updated.
-  uint currentMesh;
-
-  // Number of meshes to update (for batching).
-  uint updatePerFrame;
-
-  void AddSVToMesh(iMeshWrapper* mesh, csShaderVariable* sv);
-
-  void CreateInstance(iMeshWrapper* pmesh);
-
-  void DestroyInstance(Instance* instance);
-
-  void InitMesh();
-
-  bool WithinTolerance(iRenderView *rview, iMeshWrapper* pmesh);
-
-  void SetupRenderMeshes(csRenderMesh*& mesh, bool rmCreated, iRenderView* rview);
-
-  void SetupRenderMeshesInstance(csRenderMesh*& mesh,  bool rmCreated, iCamera* camera);
-
-  // For batched imposter sorting.
-  static int ImposterMeshSort(csImposterMesh* const& f, csImposterMesh* const& s);
-
-  friend class csImposterManager;
+  friend class csImposterProcTex;
 
 public:
-  csImposterMesh (csEngine* engine, iSector* sector);
+  csImposterMesh (csEngine* engine, csMeshWrapper *parent);
+  ~csImposterMesh ();
 
-  csImposterMesh (csEngine* engine, iImposterFactory* fact,
-    iMeshWrapper* mesh, iRenderView* rview, bool instance, const char* shader);
-  virtual ~csImposterMesh () {}
+  bool CheckUpdateNeeded (iRenderView *rview, float tolerance,
+      	float camtolerance);
 
-  ///////////////////// iImposterMesh /////////////////////
+  csMeshWrapper* GetParentMesh () const { return parent_mesh; }
 
-  /**
-   * Whether this imposter is currently instancing any meshes.
-   */
-  virtual bool IsInstancing()
-  { return (!instance && !removeMe) || instances.GetSize() != 0; }
+  //returns the imposter billboard
+  csRenderMesh** GetRenderMesh (iRenderView *rview);
 
-  /**
-   * Add an instance of the passed mesh.
-   * Returns true if able to add an instance for this mesh.
-   * Returns false otherwise.
-   */
-  virtual bool Add(iMeshWrapper* mesh, iRenderView* rview);
-
-  /**
-   * Update the instance of the passed mesh.
-   * Returns false if the mesh instance was removed (no longer valid for this imposter).
-   * Returns true otherwise.
-   */
-  virtual bool Update(iMeshWrapper* mesh, iRenderView* rview);
-
-  /**
-   * Remove the instance of the passed mesh.
-   * Returns false if not currently instancing this mesh.
-   * Returns true otherwise.
-   */
-  virtual bool Remove(iMeshWrapper* mesh);
-
-  /**
-   * Destroy this imposter.
-   */
-  virtual void Destroy();
-
-  /**
-   * Query whether the r2t has been performed for this imposter.
-   */
-  virtual bool Rendered() const
-  {
-    return rendered;
-  }
-
-  ///////////////////// iObjectModel /////////////////////
-  virtual const csBox3& GetObjectBoundingBox()
-  {
-    return bbox;
-  }
-
-  virtual void SetObjectBoundingBox(const csBox3& box)
-  {
-      bbox = box;
-  }
-
-  virtual void GetRadius (float& rad, csVector3& cent)
-  {
-    instances[0]->mesh->GetMeshObject()->GetObjectModel()->GetRadius(rad, cent);
-  }
-
-  ///////////////////// iMeshObject /////////////////////
-  virtual csRenderMesh** GetRenderMeshes (int& num, iRenderView* rview, 
-    iMovable* movable, uint32 frustum_mask);
-
-  virtual iMeshWrapper* GetMeshWrapper () const
-  {
-    return mesh;
-  }
-
-  virtual bool SetMaterialWrapper (iMaterialWrapper* material)
-  {
-    mat = material;
-    return true;
-  }
-
-  virtual iMaterialWrapper* GetMaterialWrapper () const
-  {
-    return mat;
-  }
-
-  virtual bool SupportsHardTransform () const
-  {
-    return false;
-  }
-
-  virtual iObjectModel* GetObjectModel ()
-  {
-    return static_cast<iObjectModel*>(this);
-  }
-
-  virtual csFlags& GetFlags () { return flags; }
-
-  /// All of these are unsupported.
-  virtual iMeshObjectFactory* GetFactory () const { return 0; }
-  virtual csPtr<iMeshObject> Clone () { return csPtr<iMeshObject>(0); }
-  virtual void SetVisibleCallback (iMeshObjectDrawCallback* cb) {}
-  virtual iMeshObjectDrawCallback* GetVisibleCallback () const { return 0; }
-  virtual void NextFrame (csTicks current_time,const csVector3& pos,
-    uint currentFrame) {}
-  virtual void HardTransform (const csReversibleTransform& t) {}
-  virtual bool HitBeamOutline (const csVector3& start,
-  	const csVector3& end, csVector3& isect, float* pr) { return false; }
-  virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
-  	csVector3& isect, float* pr, int* polygon_idx = 0,
-	iMaterialWrapper** material = 0, csArray<iMaterialWrapper*>* materials = 0) { return false; }
-  virtual void SetMeshWrapper (iMeshWrapper* logparent) {}
-  virtual bool SetColor (const csColor& color) { return false; }
-  virtual bool GetColor (csColor& color) const { return false; }
-  virtual void SetMixMode (uint mode) {}
-  virtual uint GetMixMode () const { return 0; }
-  virtual void PositionChild (iMeshObject* child,csTicks current_time) {}
-  virtual void BuildDecal(const csVector3* pos, float decalRadius,
-    iDecalBuilder* decalBuilder) {}
+  bool GetImposterReady (iRenderView* rview);
 };
 
 #endif // __CS_IMPMESH_H__

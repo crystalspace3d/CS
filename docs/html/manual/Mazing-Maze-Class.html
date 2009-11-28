@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.2.4.5 Maze Class</title>
+<title>Crystal Space 1.4.0: 4.2.4.5 Maze Class</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.2.4.5 Maze Class">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.2.4.5 Maze Class">
+<meta name="description" content="Crystal Space 1.4.0: 4.2.4.5 Maze Class">
+<meta name="keywords" content="Crystal Space 1.4.0: 4.2.4.5 Maze Class">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -332,6 +332,9 @@ bool Maze::CreateLight (const csColor&amp; color,
 
 bool Maze::CreateGeometry ()
 {
+  // We don't need a lighting cache. Disable it.
+  app-&gt;GetEngine ()-&gt;SetLightingCacheMode (0);
+
   // Load the texture we are going to use for all walls.
   if (!app-&gt;GetLoader ()-&gt;LoadTexture (&quot;wall_texture&quot;, &quot;/lib/std/stone4.gif&quot;))
     return app-&gt;ReportError (&quot;Error loading 'stone4' texture!&quot;);

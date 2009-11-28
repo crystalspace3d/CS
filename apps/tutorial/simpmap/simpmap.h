@@ -57,8 +57,6 @@ private:
   /// A pointer to the view which contains the camera.
   csRef<iView> view;
 
-  csRef<iRenderManager> rm;
-
   csRef<FramePrinter> printer;
 
   /// A pointer to the sector the camera will be in.

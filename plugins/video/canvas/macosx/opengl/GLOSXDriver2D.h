@@ -52,12 +52,6 @@ public:
   // Set window title
   virtual void SetTitle(char *title);
 
-  /** Sets the icon of this window with the provided one.
-   *
-   *  @param image the iImage to set as the icon of this window.
-   */
-  virtual void SetIcon (iImage *image);
-
   // Flip video page (or dump to framebuffer)
   virtual void Print(csRect const* area = 0);
 
@@ -80,6 +74,9 @@ public:
   virtual void *GetProcAddress (const char *name); 
 	
 protected:
+  // Set up the function pointers for drawing based on the current Depth
+  virtual void SetupDrawingFunctions();
+
   // OpenGL context for drawing
   CGLContextObj context;
 };

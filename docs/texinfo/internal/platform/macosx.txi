@@ -36,6 +36,7 @@ these directories:
 @item @code{CS/libs/csutil/macosx}
 @item @code{CS/plugins/sound/driver/coreaudio}
 @item @code{CS/plugins/video/canvas/macosx/common}
+@item @code{CS/plugins/video/canvas/macosx/coregraphics}
 @item @code{CS/plugins/video/canvas/macosx/opengl}
 @end itemize
 

@@ -26,6 +26,8 @@
 #include "iutil/evdefs.h"
 #include "gmeshanim.h"
 
+CS_IMPLEMENT_PLUGIN
+
 SCF_IMPLEMENT_FACTORY (csGenmeshAnimationControlType)
 
 //-------------------------------------------------------------------------

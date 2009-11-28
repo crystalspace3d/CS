@@ -77,9 +77,6 @@ public:
   virtual void SetTitle (const char* title)
   { }
 
-  virtual void SetIcon (iImage *image)
-  { }
-
   virtual void SetFullScreen (bool yesno);
 
   virtual bool GetFullScreen ()

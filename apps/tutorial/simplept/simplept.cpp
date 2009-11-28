@@ -185,20 +185,7 @@ static bool SimpleEventHandler (iEvent& ev)
 {
   if (simple)
   {
-    if (ev.Name == csevProcess(simple->object_reg))
-    {
-      simple->SetupFrame ();
-      return true;
-    }
-    else if (ev.Name == csevFinalProcess(simple->object_reg))
-    {
-      simple->FinishFrame ();
-      return true;
-    }
-    else
-    {
-      return simple->HandleEvent (ev);
-    }
+    return simple->HandleEvent (ev);
   }
   else
     return false;
@@ -223,8 +210,7 @@ bool Simple::Initialize ()
     return false;
   }
 
-  Process = csevProcess (object_reg);
-  FinalProcess = csevFinalProcess (object_reg);
+  Frame = csevFrame (object_reg);
   KeyboardDown = csevKeyboardDown (object_reg);
 
   if (!csInitializer::SetupEventHandler (object_reg, SimpleEventHandler))
@@ -291,9 +277,6 @@ bool Simple::Initialize ()
     return false;
   }
 
-  rm = csQueryRegistryOrLoad<iRenderManager> (object_reg,
-    "crystalspace.rendermanager.test1");
-
   // Setup the texture manager
   iTextureManager* txtmgr = g3d->GetTextureManager ();
 
@@ -302,6 +285,10 @@ bool Simple::Initialize ()
   	"Simple Procedural Texture Crystal Space Application version 0.1.");
   	
   font = g3d->GetDriver2D()->GetFontServer()->LoadFont (CSFONT_LARGE, 10);
+
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
 
   // Create our world.
   csReport (object_reg, CS_REPORTER_SEVERITY_NOTIFY,
@@ -317,7 +304,7 @@ bool Simple::Initialize ()
   }
   iMaterialWrapper* tm = engine->GetMaterialList ()->FindByName ("stone");
   // Create the procedural texture and a material for it
-  //ProcTexture = new csEngineProcTex ();
+  ProcTexture = new csEngineProcTex ();
   // Find the pointer to VFS.
   csRef<iVFS> VFS (csQueryRegistry<iVFS> (object_reg));
   if (!VFS)
@@ -328,31 +315,7 @@ bool Simple::Initialize ()
     return false;
   }
 
-  VFS->PushDir ();
-  VFS->ChDir ("/lev/partsys/");
-  bool Success = (loader->LoadMapFile ("world", false));
-  VFS->PopDir ();
-
-  {
-    csRef<iTextureHandle> texHandle = 
-      g3d->GetTextureManager()->CreateTexture (256, 256, csimg2D, "rgb8",
-        CS_TEXTURE_3D);
-    targetTexture = engine->GetTextureList()->NewTexture (texHandle);
-  }
-  csRef<iMaterialWrapper> targetMat = engine->CreateMaterial ("rendertarget", targetTexture);
-  {
-    iSector *room = engine->GetSectors ()->FindByName ("room");
-    targetView = csPtr<iView> (new csView (engine, g3d));
-    targetView->GetCamera ()->GetTransform ().SetOrigin (csVector3 (-0.5,0,0));
-    targetView->GetCamera ()->SetSector (room);
-    targetView->SetRectangle (0, 0, 256, 256);
-    targetView->GetCamera ()->SetPerspectiveCenter (128, 128);
-    targetView->GetCamera ()->SetFOVAngle (targetView->GetCamera ()->GetFOVAngle(), 256);
-
-    rm->RegisterRenderTarget (targetTexture->GetTextureHandle(), targetView);
-  }
-
-  /*iMaterialWrapper* ProcMat = ProcTexture->Initialize (object_reg, engine,
+  iMaterialWrapper* ProcMat = ProcTexture->Initialize (object_reg, engine,
   	txtmgr, "procmat");
   if (!ProcMat)
   {
@@ -363,7 +326,7 @@ bool Simple::Initialize ()
   }
   ProcMat->QueryObject ()->ObjAdd (ProcTexture);
   ProcTexture->LoadLevel ();
-  ProcTexture->DecRef ();*/
+  ProcTexture->DecRef ();
   room = engine->CreateSector ("proctex-room");
   csRef<iMeshWrapper> walls = CS::Geometry::GeneralMeshBuilder
     ::CreateFactoryAndMesh (engine, room, "walls", "walls_factory");
@@ -372,6 +335,9 @@ bool Simple::Initialize ()
     scfQueryInterface<iGeneralFactoryState> (
 	walls_factory->GetMeshObjectFactory ());
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
 
   csColor4 black (0, 0, 0);
   walls_state->AddVertex (csVector3 (-8, -8, -5), csVector2 (0, 0),
@@ -408,10 +374,6 @@ bool Simple::Initialize ()
   room->GetLights ()->Add (light);
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
-
   csReport (object_reg, CS_REPORTER_SEVERITY_NOTIFY,
     	"crystalspace.application.simplept",
   	"Created.");
@@ -422,12 +384,19 @@ bool Simple::Initialize ()
   iGraphics2D* g2d = g3d->GetDriver2D ();
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
 
+  printer.AttachNew (new FramePrinter (object_reg));
+
   return true;
 }
 
 bool Simple::HandleEvent (iEvent& Event)
 {
-  if ((Event.Name == csevKeyboardDown(object_reg)) && 
+  if (Event.Name == Frame)
+  {
+    DrawFrame ();
+    return true;
+  }
+  else if ((Event.Name == csevKeyboardDown(object_reg)) && 
     (csKeyEventHelper::GetCookedCode (&Event) == CSKEY_ESC))
   {
     csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
@@ -445,7 +414,7 @@ bool Simple::HandleEvent (iEvent& Event)
   return false;
 }
 
-void Simple::SetupFrame ()
+void Simple::DrawFrame ()
 {
   // First get elapsed time from the system driver.
   csTicks elapsed_time, current_time;
@@ -453,11 +422,6 @@ void Simple::SetupFrame ()
   current_time = vc->GetCurrentTicks ();
 
   AnimateGenMesh (elapsed_time);
-
-  // move the r2t camera
-  csVector3 Position (-0.5, 0, 3 + sin (current_time / (10*1000.0))*3);
-  targetView->GetCamera ()->Move (Position
-    - targetView->GetCamera ()->GetTransform ().GetOrigin ());
 
   // Now rotate the camera according to keyboard state
   float speed = (elapsed_time / 1000.0) * (0.03 * 20);
@@ -477,18 +441,15 @@ void Simple::SetupFrame ()
     c->Move (CS_VEC_BACKWARD * 4 * speed);
 
   // Tell 3D driver we're going to display 3D things.
-  /*if (!g3d->BeginDraw (
+  if (!g3d->BeginDraw (
       engine->GetBeginDrawFlags () | CSDRAW_3DGRAPHICS))
-      return;*/
+      return;
 
   // Tell the camera to render into the frame buffer.
-  rm->RenderView (view);
-}
+  view->Draw ();
 
-void Simple::FinishFrame ()
-{
   g3d->FinishDraw ();
-  
+
   g3d->BeginDraw(CSDRAW_2DGRAPHICS);
   int fontHeight = font->GetTextHeight();
   int y = g3d->GetDriver2D()->GetHeight() - fontHeight;
@@ -501,13 +462,16 @@ void Simple::FinishFrame ()
     csString().Format ("current target: %s",
     ProcTexture->GetCurrentTarget()));
   g3d->FinishDraw ();
-  
-  g3d->Print (0);
 }
 
 void Simple::Start ()
 {
   csDefaultRunLoop(object_reg);
+}
+
+void Simple::Stop ()
+{
+  printer.Invalidate ();
 }
 
 /*---------------------------------------------------------------------*
@@ -527,6 +491,7 @@ int main (int argc, char* argv[])
   if (simple->Initialize ())
     simple->Start ();
 
+  simple->Stop ();
   delete simple; simple = 0;
 
   csInitializer::DestroyApplication (object_reg);

@@ -14,6 +14,7 @@
 #include "iutil/eventq.h"
 #include "ivaria/reporter.h"
 #include "csver.h"
+#include "csplugincommon/canvas/scrshot.h"
 #include "GLOSXDriver2D.h"
 
 #include <ApplicationServices/ApplicationServices.h>
@@ -27,7 +28,7 @@
 #define GLOSXDRIVER_REPORTER_ID "crystalspace.canvas.glosx"
 
 // Plugin stuff - create factory functions, etc
-
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY(GLOSXDriver2D)
 
@@ -95,6 +96,9 @@ bool GLOSXDriver2D::Open()
   if (OSXDriver2D::Open() == false)
       return false;
 
+  // Initialize function pointers
+  SetupDrawingFunctions();
+
   // Initialize currentFormat with bit-depth & other info
   values = OSXDelegate2D_getOpenGLPixelFormatValues(delegate);
 
@@ -142,10 +146,6 @@ void GLOSXDriver2D::SetTitle(char *title)
   csGraphics2DGLCommon::SetTitle(title);
 }
 
-void GLOSXDriver2D::SetIcon (iImage *image)
-{
-   //TODO: IMPLEMENT THIS FOR MACOSX.
-}
 
 // Print
 // Swap OpenGL buffers
@@ -197,6 +197,23 @@ bool GLOSXDriver2D::ToggleFullscreen()
   if (success == true)
     OSXDelegate2D_updateOpenGLContext(delegate);
   return success;
+}
+
+
+// SetupDrawingFunctions
+// Set up the function pointers for drawing based on the current Depth
+void GLOSXDriver2D::SetupDrawingFunctions()
+{
+  if (Depth == 32)
+  {
+    _DrawPixel = DrawPixel32;
+    _GetPixelAt = GetPixelAt32;
+  }
+  else	// Depth is 16
+  {
+    _DrawPixel = DrawPixel16;
+    _GetPixelAt = GetPixelAt16;
+  }
 }
 
 

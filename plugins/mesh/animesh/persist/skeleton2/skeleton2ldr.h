@@ -43,8 +43,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2Ldr)
       iStreamSource* ssource, iLoaderContext* ldr_context,
       iBase* context);
 
-    virtual bool IsThreadSafe() { return true; }
-
     //-- iComponent
     virtual bool Initialize (iObjectRegistry*);
 

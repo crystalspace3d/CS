@@ -36,6 +36,8 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 CS_LEAKGUARD_IMPLEMENT (csGLShader_FIXED);
 
+CS_IMPLEMENT_PLUGIN
+
 SCF_IMPLEMENT_FACTORY (csGLShader_FIXED)
 
 csGLShader_FIXED::csGLShader_FIXED(iBase* parent) : 
@@ -153,9 +155,8 @@ void csGLShader_FIXED::Open()
       || ext->CS_GL_ARB_texture_env_crossbar;
   }
   
-  csRef<iShaderVarStringSet> strings = 
-    csQueryRegistryTagInterface<iShaderVarStringSet> (object_reg,
-      "crystalspace.shader.variablenameset");
+  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
+    object_reg, "crystalspace.shared.stringset");
   lsvCache.SetStrings (strings);
 
   bool verbose = false;
@@ -185,13 +186,13 @@ bool csGLShader_FIXED::Initialize(iObjectRegistry* reg)
 
   csRef<iGraphics3D> r = csQueryRegistry<iGraphics3D> (object_reg);
 
-  csRef<iFactory> f = scfQueryInterfaceSafe<iFactory> (r);
+  csRef<iFactory> f = scfQueryInterface<iFactory> (r);
   if (f != 0 && strcmp ("crystalspace.graphics3d.opengl", 
       f->QueryClassID ()) == 0)
     enable = true;
 
   ext = 0;
-  if (r) r->GetDriver2D()->PerformExtension ("getextmanager", &ext);
+  r->GetDriver2D()->PerformExtension ("getextmanager", &ext);
 
   return true;
 }

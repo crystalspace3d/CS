@@ -98,14 +98,6 @@ class csRenderBufferLock
       return *p;
   #endif
     }
-    operator T*() const
-    {
-  #ifdef CS_DEBUG
-      return &(parent.Get (elemNum));
-  #else
-      return p;
-  #endif
-    }
   };
 
   csRenderBufferLock() {}

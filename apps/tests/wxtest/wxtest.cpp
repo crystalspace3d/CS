@@ -33,7 +33,6 @@
 #include "cstool/csview.h"
 #include "cstool/initapp.h"
 #include "cstool/genmeshbuilder.h"
-#include "cstool/simplestaticlighter.h"
 #include "wxtest.h"
 #include "iutil/eventq.h"
 #include "iutil/event.h"
@@ -332,6 +331,10 @@ bool Simple::Initialize ()
     return false;
   }
 
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
+
   /* Manually focus the GL canvas.
      This is so it receives keyboard events (and conveniently translate these
      into CS keyboard events/update the CS keyboard state).
@@ -366,6 +369,10 @@ bool Simple::Initialize ()
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, "walls", "walls_factory", &box);
+
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
 
   csRef<iLight> light;
@@ -384,9 +391,6 @@ bool Simple::Initialize ()
   ll->Add (light);
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
 
   view = csPtr<iView> (new csView (engine, g3d));
   view->GetCamera ()->SetSector (room);

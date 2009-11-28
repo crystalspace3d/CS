@@ -1,9 +1,11 @@
 SubDir TOP plugins mesh ;
 
 SubInclude TOP plugins mesh animesh ;
+SubInclude TOP plugins mesh bezier ;
 SubInclude TOP plugins mesh emit ;
 SubInclude TOP plugins mesh genmesh ;
 SubInclude TOP plugins mesh haze ;
+SubInclude TOP plugins mesh instmesh ;
 SubInclude TOP plugins mesh lghtng ;
 SubInclude TOP plugins mesh null ;
 SubInclude TOP plugins mesh particles ;
@@ -11,6 +13,6 @@ SubInclude TOP plugins mesh spr2d ;
 SubInclude TOP plugins mesh spr3d ;
 SubInclude TOP plugins mesh sprcal3d ;
 SubInclude TOP plugins mesh terrain ;
+SubInclude TOP plugins mesh thing ;
 SubInclude TOP plugins mesh protomesh ;
-SubInclude TOP plugins mesh watermesh ;
 SubInclude TOP plugins mesh skeleton ;

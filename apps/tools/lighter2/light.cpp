@@ -25,11 +25,11 @@
 #include "scene.h"
 
 // Attenuation functions
-static float LightAttnNone (float, const csVector4&);
-static float LightAttnLinear (float, const csVector4&);
-static float LightAttnInverse (float, const csVector4&);
-static float LightAttnRealistic (float, const csVector4&);
-static float LightAttnCLQ (float, const csVector4&);
+static float LightAttnNone (float, const csVector3&);
+static float LightAttnLinear (float, const csVector3&);
+static float LightAttnInverse (float, const csVector3&);
+static float LightAttnRealistic (float, const csVector3&);
+static float LightAttnCLQ (float, const csVector3&);
 
 static lighter::LightAttenuationFunc attnFuncTable[] = 
 {
@@ -56,7 +56,7 @@ namespace lighter
 
   }
 
-  void Light::SetAttenuation (csLightAttenuationMode mode, const csVector4& constants)
+  void Light::SetAttenuation (csLightAttenuationMode mode, const csVector3& constants)
   {
     attenuationMode = mode;
     attenuationConsts = constants;
@@ -286,141 +286,6 @@ namespace lighter
 
 
 
-  DirectionalLight::DirectionalLight (Sector* o)
-    : Light (o, true), radius (0.f), length (0.f) // initalize to zero to avoid bogus bounding sphere sizes
-  {}
-
-  DirectionalLight::~DirectionalLight ()
-  {}
-
-  csColor DirectionalLight::SampleLight (const csVector3& point, const csVector3& n,
-    float u1, float u2, csVector3& lightVec, float& pdf, VisibilityTester& vistest,
-    const csPlane3* visLimitPlane)
-  {
-    lightVec = position - point;
-
-    float dot = -dir * lightVec;
-
-    // project the point onto the light plane
-    csVector3 P = point - dir * dot;
-    // uncomment this define to have attenuation calculated based on the distance from point
-    // to light plane, as opposed to from point to light centre
-//#define ATTENUATION_POINT_P
-#ifdef ATTENUATION_POINT_P
-    float sqD = dot * dot;
-#else
-    float sqD = lightVec.SquaredNorm ();
-#endif // ATTENUATION_POINT_P
-    lightVec = -dir;
-
-    pdf = 1;
-
-    csSegment3 visSegment (P, point);
-
-    if (visLimitPlane)
-      csIntersect3::SegmentPlane (*visLimitPlane, visSegment);
-
-    vistest.AddSegment (ownerSector->kdTree, visSegment.Start (), visSegment.End ());
-
-    csColor res = color * ComputeAttenuation (sqD);
-
-    return res;
-  }
-
-  csColor DirectionalLight::GetPower () const
-  {
-    return color;
-  }
-
-  void DirectionalLight::SetRadius (float r)
-  {
-    radius = r;
-    //Update bs
-    boundingSphere.SetRadius (sqrtf (r * r + length * length));
-  }
-
-  void DirectionalLight::SetLength (float l)
-  {
-    length = l;
-    //Update bs
-    boundingSphere.SetRadius (sqrtf (radius * radius + l * l));
-  }
-
-  void DirectionalLight::SetDirection (csVector3 d)
-  {
-    dir = d;
-  }
-
-
-
-
-  SpotLight::SpotLight (Sector* o)
-    : Light (o, true)
-  {}
-
-  SpotLight::~SpotLight ()
-  {}
-
-  csColor SpotLight::SampleLight (const csVector3& point, const csVector3& n,
-    float u1, float u2, csVector3& lightVec, float& pdf, VisibilityTester& vistest,
-    const csPlane3* visLimitPlane)
-  {
-    lightVec = position - point;
-    float sqD = lightVec.SquaredNorm ();
-    float d = sqrtf (sqD);
-    lightVec /= d;
-    float dot = -dir * lightVec; // negate because dir points away from the light
-
-    // early out if we're out of the light cone
-    if (dot < outer)
-      return csColor (0.f);
-
-    csSegment3 visSegment (position, point);
-
-    pdf = 1;
-
-    if (visLimitPlane)
-      csIntersect3::SegmentPlane (*visLimitPlane, visSegment);
-
-    vistest.AddSegment (ownerSector->kdTree, visSegment.Start (), visSegment.End ());
-
-    float falloff;
-    // early out if no edge softening
-    if (fabs (outer - inner) < 0.0001)
-      falloff = 1.f;
-    else
-      falloff = csSmoothStep(dot, inner, outer);
-    csColor res = color * ComputeAttenuation (sqD) * falloff;
-
-    return res;
-  }
-
-  csColor SpotLight::GetPower () const
-  {
-    return color;
-  }
-
-  void SpotLight::SetRadius (float r)
-  {
-    radius = r;
-    //Update bs
-    boundingSphere.SetRadius (r);
-  }
-
-  void SpotLight::SetFalloff (float i, float o)
-  {
-    inner = i;
-    outer = o;
-  }
-
-  void SpotLight::SetDirection (csVector3 d)
-  {
-    dir = d;
-  }
-
-
-
-
   ProxyLight::ProxyLight (Sector* owner, Light* parentLight, const csFrustum& frustum,
     const csReversibleTransform& transform, const csPlane3& portalPlane)
     : Light (owner, parentLight->IsDeltaLight ()), parent (parentLight),
@@ -505,35 +370,35 @@ namespace lighter
 
 
 // Attenuation functions
-static float LightAttnNone (float, const csVector4&)
+static float LightAttnNone (float, const csVector3&)
 {
   /// no attenuation: *1
   return 1;
 }
 
-static float LightAttnLinear (float squaredDistance, const csVector4& c)
+static float LightAttnLinear (float squaredDistance, const csVector3& c)
 {
-  /// linear attenuation:  * (1 - distance * inverse_radius)
-  return csMax (0.0f, 1.0f - (sqrtf (squaredDistance) * c.w));
+  /// linear attenuation:  * (1 - distance / radius)
+  return csMax (0.0f, 1.0f - (sqrtf (squaredDistance) / c.x));
 }
 
-static float LightAttnInverse (float squaredDistance, const csVector4&)
+static float LightAttnInverse (float squaredDistance, const csVector3&)
 {
   /// inverse attenuation:  * 1 / distance
   return 1.0f / sqrtf(squaredDistance);
 }
 
-static float LightAttnRealistic (float squaredDistance, const csVector4&)
+static float LightAttnRealistic (float squaredDistance, const csVector3&)
 {
   /// realistic attenuation: * 1 / distance^2
   return 1.0f / squaredDistance;
 }
 
-static float LightAttnCLQ (float squaredDistance, const csVector4& c)
+static float LightAttnCLQ (float squaredDistance, const csVector3& c)
 {
   /** 
    * CLQ, Constant Linear Quadratic: 
    * * 1 / (constant1 + constant2*distance + constant3*distance^2)
    */
-  return c * csVector4 (1, sqrtf(squaredDistance), squaredDistance, 0);
+  return c * csVector3 (1, sqrtf(squaredDistance), squaredDistance);
 }

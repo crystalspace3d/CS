@@ -164,7 +164,7 @@ public:
     csVector3& isect, float *pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
   	csVector3& isect, float* pr, int* polygon_idx = 0,
-	iMaterialWrapper** material = 0, csArray<iMaterialWrapper*>* materials = 0);
+	iMaterialWrapper** material = 0);
   virtual void SetMeshWrapper (iMeshWrapper* lp)
   {
     logparent = lp;
@@ -182,7 +182,10 @@ public:
   virtual bool GetColor (csColor& col) const { col = color; return true; }
   virtual bool SetMaterialWrapper (iMaterialWrapper* mat);
   virtual iMaterialWrapper* GetMaterialWrapper () const { return material; }
-
+  virtual void InvalidateMaterialHandles ()
+  {
+    // We visit our material all the time so this is not needed here.
+  }
   virtual void PositionChild (iMeshObject* /*child*/, csTicks /*current_time*/)
   {
     // We don't support sockets.
@@ -221,6 +224,8 @@ public:
   void PreGetBuffer (csRenderBufferHolder* holder, csRenderBufferName buffer);
   /** @} */
 };
+
+#include "csutil/deprecated_warn_off.h"
 
 /**
  * Factory for proto meshes.
@@ -334,6 +339,8 @@ public:
 
   void PreGetBuffer (csRenderBufferHolder* holder, csRenderBufferName buffer);
 };
+
+#include "csutil/deprecated_warn_on.h"
 
 /**
  * Protomesh type. This is the plugin you have to use to create instances

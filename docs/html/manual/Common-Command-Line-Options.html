@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.5.1 Common Command Line Options</title>
+<title>Crystal Space 1.4.0: 4.5.1 Common Command Line Options</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.5.1 Common Command Line Options">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.5.1 Common Command Line Options">
+<meta name="description" content="Crystal Space 1.4.0: 4.5.1 Common Command Line Options">
+<meta name="keywords" content="Crystal Space 1.4.0: 4.5.1 Common Command Line Options">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -81,13 +81,13 @@ Command line options always override default values.
 </p>
 </dd>
 <dt> <code>-canvas=sdl2d</code></dt>
-<dd><p>Use this option to select the type of 2D canvas to use. You
-don't often have to use this as the 3D driver normally automatically selects
-the appropriate canvas plugin.
+<dd><p>Use this option to select the type of 2D canvas to use.
 </p>
 </dd>
 <dt> <code>-video=opengl</code></dt>
-<dd><p>Use this option to select type of display driver to use.
+<dd><p>(or software, ...).
+Use this option to select type of display driver to use.  Other options
+are <code>software</code>, <code>null</code>, etc.
 </p>
 </dd>
 <dt> <code>-fs</code></dt>
@@ -99,6 +99,13 @@ the appropriate canvas plugin.
 Crystal Space isn't behaving as it should. If you just specify <samp>&lsquo;-verbose&rsquo;</samp>
 you will get a lot of output. If your problem is not <small>SCF</small> related
 you can also do: <samp>&lsquo;-verbose=-scf&rsquo;</samp>.
+</p>
+</dd>
+<dt> <code>-relight</code></dt>
+<dd><p>Use this option to recalculate all lightmaps after you changed lighting
+or geometry in a level that you're trying. If you don't do this you either
+get the old lightmaps or no lightmaps at all. Note that this command
+is only for the old lightmap system as used by the thing mesh object.
 </p>
 </dd>
 <dt> <code>-fullbright</code></dt>

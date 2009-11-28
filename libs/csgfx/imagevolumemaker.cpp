@@ -28,17 +28,18 @@
 CS_LEAKGUARD_IMPLEMENT (csImageVolumeMaker);
 
 csImageVolumeMaker::csImageVolumeMaker (int format, int width, int height) :
-  scfImplementationType (this), manualName (false), Width (width),
-  Height (height), Depth (0), Format (format), data (0), palette (0), alpha (0)
+  scfImplementationType(this),
+  manualName (false), Width (width), Height (height), Depth (0),
+  Format (format), data (0), palette (0), alpha (0)
 { }
 
 csImageVolumeMaker::csImageVolumeMaker (iImage* source) :
-  scfImplementationType (this), manualName (false)
+  scfImplementationType(this), manualName (false)
 {
-  Format = source->GetFormat ();
-  Width = source->GetWidth ();
-  Height = source->GetHeight ();
-  Depth = source->GetDepth ();
+  Format = source->GetFormat();
+  Width = source->GetWidth();
+  Height = source->GetHeight();
+  Depth = source->GetDepth();
 
   data = 0;
   alpha = 0;
@@ -46,42 +47,42 @@ csImageVolumeMaker::csImageVolumeMaker (iImage* source) :
   switch (Format & CS_IMGFMT_MASK)
   {
     case CS_IMGFMT_PALETTED8:
-    {
-      if (Format & CS_IMGFMT_ALPHA)
       {
-        alpha = new uint8[Width * Height * Depth];
+	if (Format & CS_IMGFMT_ALPHA)
+	{
+	  alpha = new uint8[Width * Height * Depth];
+	}
+	data = new uint8[Width * Height * Depth];
+	palette = new csRGBpixel[256];
       }
-      data = new uint8[Width * Height * Depth];
-      palette = new csRGBpixel[256];
-    }
-    break;
+      break;
     case CS_IMGFMT_TRUECOLOR: 
-    {
-	    data = new csRGBpixel[Width * Height * Depth];
-    }
-    break;
+      {
+	data = new csRGBpixel[Width * Height * Depth];
+      }
+      break;
     default:
-    break;
+      break;
   }
-  memcpy (data, source->GetImageData (), csImageTools::ComputeDataSize (source));
+  memcpy (data, source->GetImageData(), csImageTools::ComputeDataSize (source));
   if (alpha != 0)
-    memcpy (alpha, source->GetAlpha (), Width * Height * Depth);
+    memcpy (alpha, source->GetAlpha(), Width * Height * Depth);
   if (palette != 0)
-    memcpy (palette, source->GetPalette (), sizeof (csRGBpixel) * 256);
+    memcpy (palette, source->GetPalette(), sizeof (csRGBpixel) * 256);
 }
 
-csImageVolumeMaker::~csImageVolumeMaker ()
+csImageVolumeMaker::~csImageVolumeMaker()
 {
   switch (Format & CS_IMGFMT_MASK)
   {
     case CS_IMGFMT_PALETTED8: 
       delete[] ((uint8*)data);
-    break;
+      break;
     case CS_IMGFMT_TRUECOLOR: 
       delete[] ((csRGBpixel*)data);
-    break;
+      break;
     default:
-    break;
+      break;
   }
   delete[] palette;
   delete[] alpha;
@@ -96,27 +97,27 @@ void csImageVolumeMaker::AppendPending ()
   switch (Format & CS_IMGFMT_MASK)
   {
     case CS_IMGFMT_PALETTED8:
-    {
-      if (Format & CS_IMGFMT_ALPHA)
       {
-        newAlpha = new uint8[Width * Height * newDepth];
-        if (alpha != 0)
-          memcpy (newAlpha, alpha, Width * Height * Depth);
+	if (Format & CS_IMGFMT_ALPHA)
+	{
+	  newAlpha = new uint8[Width * Height * newDepth];
+	  if (alpha != 0)
+	    memcpy (newAlpha, alpha, Width * Height * Depth);
+	}
+	newData = new uint8[Width * Height * newDepth];
+	if (data != 0)
+	  memcpy (newData, data, Width * Height * Depth);
       }
-      newData = new uint8[Width * Height * newDepth];
-      if (data != 0)
-        memcpy (newData, data, Width * Height * Depth);
-    }
-    break;
+      break;
     case CS_IMGFMT_TRUECOLOR: 
-    {
-      newData = new csRGBpixel[Width * Height * newDepth];
-      if (data != 0)
-        memcpy (newData, data, Width * Height * Depth * sizeof (csRGBpixel));
-    }
-    break;
+      {
+	newData = new csRGBpixel[Width * Height * newDepth];
+	if (data != 0)
+	  memcpy (newData, data, Width * Height * Depth * sizeof (csRGBpixel));
+      }
+      break;
     default:
-    return;
+      return;
   }
   csRef<iImage> image;
   csRef<csImageMemory> newImage;
@@ -131,14 +132,14 @@ void csImageVolumeMaker::AppendPending ()
   for (size_t i = 0; i < pendingImages.GetSize (); i++)
   {
     csRef<iImage> image (pendingImages[i]);
-    if (image->HasKeyColor ())
+    if (image->HasKeyColor())
     {
       Format = Format | CS_IMGFMT_ALPHA;
       if (newAlpha == 0)
       {
-        newAlpha = new uint8[Width * Height * newDepth];
-        memset (newAlpha, 0xff, Width * Height * newDepth);
-        curAlpha = newAlpha + (Depth * slicePix);
+	newAlpha = new uint8[Width * Height * newDepth];
+	memset (newAlpha, 0xff, Width * Height * newDepth);
+	curAlpha = newAlpha + (Depth * slicePix);
       }
       int kr, kg, kb;
       image->GetKeyColor (kr, kg, kb);
@@ -149,38 +150,38 @@ void csImageVolumeMaker::AppendPending ()
     {
       if (palette == 0)
       {
-        newImage.AttachNew (new csImageMemory (image, Format));
-        palette = new csRGBpixel[256];
-        memcpy (palette, newImage->GetPalette (), sizeof (csRGBpixel) * 256);
+	newImage.AttachNew (new csImageMemory (image, Format));
+	palette = new csRGBpixel[256];
+	memcpy (palette, newImage->GetPalette(), sizeof (csRGBpixel) * 256);
       }
       else
       {
-        newImage.AttachNew (new csImageMemory (image, 
-          (Format & ~CS_IMGFMT_MASK) | CS_IMGFMT_TRUECOLOR));
-        image = newImage;
-        size_t pixNum = image->GetWidth () * image->GetHeight ();
-        csRGBpixel* px = new csRGBpixel[pixNum];
-        memcpy (px, image->GetImageData (), pixNum * sizeof (csRGBpixel));
-        newImage.AttachNew (new csImageMemory (image->GetWidth (), 
-          image->GetHeight (), Format));
-        newImage->ConvertFromRGBA (px);
+	newImage.AttachNew (new csImageMemory (image, 
+	  (Format & ~CS_IMGFMT_MASK) | CS_IMGFMT_TRUECOLOR));
+	image = newImage;
+	size_t pixNum = image->GetWidth() * image->GetHeight();
+	csRGBpixel* px = new csRGBpixel[pixNum];
+	memcpy (px, image->GetImageData(), pixNum * sizeof (csRGBpixel));
+	newImage.AttachNew (new csImageMemory (image->GetWidth(), 
+	  image->GetHeight(), Format));
+	newImage->ConvertFromRGBA (px);
       }
       image = newImage;
     }
     else
     {
-      if (image->GetFormat () != Format)
+      if (image->GetFormat() != Format)
       {
-        newImage.AttachNew (new csImageMemory (image, Format));
-        image = newImage;
+	newImage.AttachNew (new csImageMemory (image, Format));
+	image = newImage;
       }
     }
     image = csImageManipulate::Rescale (image, Width, Height);
-    memcpy (curSlice, image->GetImageData (), sliceSize);
+    memcpy (curSlice, image->GetImageData(), sliceSize);
     curSlice += sliceSize;
     if (curAlpha != 0)
     {
-      memcpy (curAlpha, image->GetAlpha (), slicePix);
+      memcpy (curAlpha, image->GetAlpha(), slicePix);
       curAlpha += slicePix;
     }
   }
@@ -188,20 +189,20 @@ void csImageVolumeMaker::AppendPending ()
   {
     case CS_IMGFMT_PALETTED8: 
       delete[] ((uint8*)data);
-    break;
+      break;
     case CS_IMGFMT_TRUECOLOR: 
       delete[] ((csRGBpixel*)data);
-    break;
+      break;
   }
   data = newData;
   delete[] alpha; alpha = newAlpha;
   Depth = newDepth;
-  pendingImages.DeleteAll ();
+  pendingImages.DeleteAll();
 }
 
 const void* csImageVolumeMaker::GetImageData ()
 {
-  AppendPending ();
+  AppendPending();
   return data;
 }
 
@@ -219,21 +220,21 @@ int csImageVolumeMaker::GetFormat () const
 
 const csRGBpixel* csImageVolumeMaker::GetPalette ()
 {
-  AppendPending ();
+  AppendPending();
   return palette;
 }
 
 const uint8* csImageVolumeMaker::GetAlpha ()
 {
-  AppendPending ();
+  AppendPending();
   return alpha;
 }
 
 void csImageVolumeMaker::AddImage (iImage* source)
 {
-  if (Width == -1) Width = source->GetWidth ();
-  if (Height == -1) Height = source->GetHeight ();
-  if (Format == -1) Format = source->GetFormat ();
+  if (Width == -1) Width = source->GetWidth();
+  if (Height == -1) Height = source->GetHeight();
+  if (Format == -1) Format = source->GetFormat();
   if (!manualName)
   {
     if ((Depth + pendingImages.GetSize ()) == 0)
@@ -243,8 +244,8 @@ void csImageVolumeMaker::AddImage (iImage* source)
     }
     else
     {
-      char* newName = csStrNew (csString ().Format ("%s:%s", fName, 
-        source->GetName ()));
+      char* newName = csStrNew (csString().Format ("%s:%s", fName, 
+	source->GetName()));
       delete[] fName;
       fName = newName;
     }

@@ -7,10 +7,8 @@
     <plugins>
         <plugin name="genmeshFactory">crystalspace.mesh.loader.factory.genmesh</plugin>
         <plugin name="genmesh">crystalspace.mesh.loader.genmesh</plugin>
-        <!--<plugin name="terrainFact">crystalspace.mesh.loader.factory.terrain</plugin>
-	<plugin name="terrain">crystalspace.mesh.loader.terrain</plugin>-->
-        <plugin name="terrainFact">crystalspace.mesh.loader.factory.terrain2</plugin>
-        <plugin name="terrain">crystalspace.mesh.loader.terrain2</plugin>
+        <plugin name="terrainFact">crystalspace.mesh.loader.factory.terrain</plugin>
+        <plugin name="terrain">crystalspace.mesh.loader.terrain</plugin>
         <plugin name="foliageFact">crystalspace.mesh.loader.factory.foliage</plugin>
         <plugin name="foliage">crystalspace.mesh.loader.foliage</plugin>
         <!--
@@ -18,17 +16,12 @@
     <plugin name="inst">crystalspace.mesh.loader.instmesh</plugin>
     -->
     </plugins>
-    <library>lightmaps.cslib</library>
     <textures>
         <texture name="andrew_marble4.jpg">
             <file>/lib/stdtex/andrew_marble4.jpg</file>
         </texture>
         <texture name="stone4.gif">
             <file>/lib/std/stone4.gif</file>
-        </texture>
-        <texture name="stone4_n.png">
-            <file>stone4_n.png</file>
-            <class>normalmap</class>
         </texture>
         <texture name="grass.png">
             <file>/lev/terrain/grass.png</file>
@@ -60,16 +53,10 @@
     </textures>
     <shaders>
         <shader>
-            <file>/shader/terrain/splat.xml</file>
+            <file>/shader/terrain_fixed_base.xml</file>
         </shader>
         <shader>
-            <file>/shader/lighting/fullbright.xml</file>
-        </shader>
-        <shader>
-            <file>/shader/lighting/lighting_default_instance.xml</file>
-        </shader>
-        <shader>
-            <file>/shader/lighting/lighting_default_instance_binalpha.xml</file>
+            <file>/shader/terrain_fixed_splatting.xml</file>
         </shader>
     </shaders>
     <materials>
@@ -78,23 +65,22 @@
         </material>
         <material name="Base">
             <texture>materialmap_base.png</texture>
+            <shader type="ambient">terrain_fixed_base</shader>
         </material>
         <material name="Marble">
             <texture>andrew_marble4.jpg</texture>
             <shadervar name="texture scale" type="vector2">32,32</shadervar>
-            <shader type="terrain splat">terrain_splatting</shader>
+            <shader type="terrain splat">terrain_fixed_splatting</shader>
         </material>
         <material name="Stone">
             <texture>stone4.gif</texture>
-            <shader type="terrain splat">terrain_splatting</shader>
-            <shadervar name="tex normal" type="texture">stone4_n.png</shadervar>
-            <shadervar name="texture scale" type="vector2">256,256</shadervar>
-            <shadervar name="specular" type="vector3">0,0,0</shadervar>
+            <shadervar name="texture scale" type="vector2">128,128</shadervar>
+            <shader type="terrain splat">terrain_fixed_splatting</shader>
         </material>
         <material name="Grass">
             <texture>grass.png</texture>
             <shadervar name="texture scale" type="vector2">256,256</shadervar>
-            <shader type="terrain splat">terrain_splatting</shader>
+            <shader type="terrain splat">terrain_fixed_splatting</shader>
         </material>
         <material name="box1">
             <texture>grass.png</texture>
@@ -104,31 +90,24 @@
         </material>
         <material name="clouds">
             <texture>clouds</texture>
-            <shader type="base">lighting_fullbright</shader>
         </material>
         <material name="sky_up">
             <texture>sky_up</texture>
-            <shader type="base">lighting_fullbright</shader>
         </material>
         <material name="sky_down">
             <texture>sky_down</texture>
-            <shader type="base">lighting_fullbright</shader>
         </material>
         <material name="sky_left">
             <texture>sky_left</texture>
-            <shader type="base">lighting_fullbright</shader>
         </material>
         <material name="sky_right">
             <texture>sky_right</texture>
-            <shader type="base">lighting_fullbright</shader>
         </material>
         <material name="sky_front">
             <texture>sky_front</texture>
-            <shader type="base">lighting_fullbright</shader>
         </material>
         <material name="sky_back">
             <texture>sky_back</texture>
-            <shader type="base">lighting_fullbright</shader>
         </material>
     </materials>
     <library>grass.lib</library>
@@ -137,8 +116,14 @@
     <library>tree_skimp.lib</library>
     <library>treebark_bare.lib</library>
     <library>bush2.lib</library>
+    <addon>
+        <plugin>crystalspace.renderloop.loop.loader</plugin>
+        <paramsfile>/shader/std_rloop_terrainfixed.xml</paramsfile>
+    </addon>
     <settings>
         <clearzbuf>yes</clearzbuf>
+        <lightmapcellsize>16</lightmapcellsize>
+        <renderloop>std_rloop_terrainfixed</renderloop>
     </settings>
     <start>
         <sector>room</sector>
@@ -148,41 +133,44 @@
     </start>
     <meshfact name="skydome">
         <plugin>genmeshFactory</plugin>
-        <nolighting />
         <params>
             <sphere rimvertices="6" reversed="true">
                 <radius x="1000" y="1000" z="1000" />
             </sphere>
         </params>
     </meshfact>
+    <addon plugin="crystalspace.terraformer.simple.loader">
+        <name>simple</name>
+        <heightmap>/lev/terrain/heightmap_257x257.png</heightmap>
+        <!--<heightmap image="/lev/terrain/heightmap_2049x2049.png"/>-->
+        <scale x="256" y="32" z="256" />
+        <materialmap image="/lev/terrain/materialmap.png" />
+    </addon>
+    <!--
+    <meshfact name="squareInst">
+        <plugin>instFact</plugin>
+        <params>
+                <box>
+                    <min x="-.2" y="-.2" z="-.2" />
+                    <max x=".2" y=".2" z=".2" />
+                </box>
+                <material>box2</material>
+        </params>
+    </meshfact>
+    -->
     <meshfact name="TerrainFact">
         <plugin>terrainFact</plugin>
         <params>
-            <renderer>crystalspace.mesh.object.terrain2.bruteblockrenderer</renderer>
-            <collider>crystalspace.mesh.object.terrain2.collider</collider>
-            <feeder>crystalspace.mesh.object.terrain2.simpledatafeeder</feeder>
-            <maxloadedcells>-1</maxloadedcells>
-            <cells>
-                <celldefault>
-                    <gridsize width="257" height="257" />
-                    <materialmapsize width="512" height="512" />
-                    <size x="256" y="15" z="256" />
-                </celldefault>
-                <cell>
-                    <name>0</name>
-                    <position x="-127" y="-127" />
-                    <basematerial>Base</basematerial>
-                    <feederproperties>
-                        <param name="heightmap source">/lev/terrain/heightmap.png</param>
-                        <param name="materialmap source">/lev/terrain/materialmap.png</param>
-                    </feederproperties>
-                </cell>
-            </cells>
+            <plugin>crystalspace.mesh.object.terrain.bruteblock</plugin>
+            <terraformer>simple</terraformer>
+            <sampleregion>
+                <min x="-256" y="-256" />
+                <max x="256" y="256" />
+            </sampleregion>
         </params>
     </meshfact>
     <meshfact name="factory_room_sky">
         <plugin>crystalspace.mesh.loader.factory.genmesh</plugin>
-        <nolighting />
         <params>
             <numvt>24</numvt>
             <v x="-1000" y="1000" z="-1000" u="0.005" v="0.005" />
@@ -302,41 +290,62 @@
                     <e c0="11" />
                 </indexbuffer>
             </submesh>
+            <renderbuffer name="texture coordinate lightmap" components="2" type="float">
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+                <e c0="0" c1="0" />
+            </renderbuffer>
         </params>
     </meshfact>
     <sector name="room">
         <light name="sun">
             <center x="-50000" y="86030" z="0" />
-            <color red="1.25903" green="1.20995" blue="1.10420" />
+            <color red="0.85903" green="0.80995" blue="0.70420" />
             <radius>1000000</radius>
         </light>
         <meshobj name="Terrain">
             <plugin>terrain</plugin>
             <params>
                 <factory>TerrainFact</factory>
+                <material>Base</material>
                 <materialpalette>
                     <material>Grass</material>
                     <material>Marble</material>
                     <material>Stone</material>
                 </materialpalette>
-                <cells>
-                    <cell>
-                        <name>0</name>
-                        <renderproperties>
-                            <shadervar name="tex lightmap" type="texture">lightmaps_terrainf_0_png</shadervar>
-                            <shadervar name="tex lightmap dir 1" type="texture">lightmaps_terrainf_0_d1_png</shadervar>
-                            <shadervar name="texture lod distance" type="vector3">200.000000,200.000000,200.000000</shadervar>
-                            <shadervar name="tex lightmap dir 2" type="texture">lightmaps_terrainf_0_d2_png</shadervar>
-                            <shadervar name="tex lightmap dir 3" type="texture">lightmaps_terrainf_0_d3_png</shadervar>
-                        </renderproperties>
-                    </cell>
-                </cells>
+                <lodvalue name="splatting distance">200</lodvalue>
+                <lodvalue name="block resolution">16</lodvalue>
+                <lodvalue name="block split distance">8</lodvalue>
+                <lodvalue name="minimum block size">32</lodvalue>
+                <lodvalue name="cd resolution">256</lodvalue>
+                <staticlighting>yes</staticlighting>
+                <castshadows>yes</castshadows>
             </params>
             <move>
                 <v x="0" y="0" z="0" />
             </move>
             <priority>wall</priority>
-            <staticlit />
         </meshobj>
         <meshobj name="clouds">
             <plugin>genmesh</plugin>
@@ -395,15 +404,14 @@
             <geometry>
                 <factory maxdist="10" name="Grass" />
                 <factory maxdist="30" name="GrassLow" />
-                <radius>0.1</radius>
-                <density>1</density>
-                <!-- bugged? <materialfactor material="Grass" factor="1" /> -->
-                <defaultmaterialfactor>.1</defaultmaterialfactor>
+                <radius>1</radius>
+                <density>0.4</density>
+                <materialfactor material="Grass" factor="1" />
             </geometry>
             <geometry>
                 <factory maxdist="30" name="bush2" />
-                <radius>0.1</radius>
-                <density>0.4</density>
+                <radius>1</radius>
+                <density>0.04</density>
                 <materialfactor material="Marble" factor="1" />
                 <materialfactor material="Stone" factor="1" />
                 <defaultmaterialfactor>.1</defaultmaterialfactor>
@@ -411,27 +419,33 @@
             <geometry>
                 <factory maxdist="10" name="TallGrass" />
                 <factory maxdist="30" name="TallGrassLow" />
-                <radius>0.1</radius>
-                <density>.1</density>
-                <!-- bugged? <materialfactor material="Grass" factor="1" /> -->
-                <defaultmaterialfactor>.1</defaultmaterialfactor>
+                <radius>1</radius>
+                <density>.08</density>
+                <materialfactor material="Grass" factor="1" />
             </geometry>
             <geometry>
                 <factory maxdist="30" name="Rock" />
-                <radius>0.1</radius>
-                <density>.01</density>
+                <radius>1</radius>
+                <density>.010</density>
                 <materialfactor material="Marble" factor="1" />
                 <materialfactor material="Stone" factor="0" />
                 <defaultmaterialfactor>.3</defaultmaterialfactor>
             </geometry>
             <geometry>
                 <factory maxdist="30" name="RockSmall" />
-                <radius>0.1</radius>
+                <radius>1</radius>
                 <density>.10</density>
                 <materialfactor material="Marble" factor="1" />
                 <materialfactor material="Stone" factor="0" />
                 <defaultmaterialfactor>.3</defaultmaterialfactor>
             </geometry>
+            <!--
+        <geometry>
+	    <factory maxdist="30" name="squareInst" />
+	    <radius>1</radius>
+	    <density>.3</density>
+        </geometry>
+	-->
             <!--<densityscale mindist="26" maxdist="30" maxfactor="0" />-->
             <alphascale mindist="22" maxdist="30" />
             <samplebox>

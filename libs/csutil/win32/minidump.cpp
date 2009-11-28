@@ -28,7 +28,6 @@
 #include "csutil/sysfunc.h"
 #include "csutil/util.h"
 
-#include "csutil/win32/cachedll.h"
 #include "csutil/win32/callstack.h"
 #include "csutil/win32/win32.h"
 #include "csutil/win32/minidump.h"
@@ -36,6 +35,8 @@
 #include "iutil/databuff.h"
 #include "iutil/objreg.h"
 #include "ivaria/stdrep.h"
+
+#include "cachedll.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

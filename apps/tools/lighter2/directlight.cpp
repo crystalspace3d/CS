@@ -87,7 +87,7 @@ namespace lighter
 
   template<typename T>
   csColor DirectLighting::UniformShadeElement (T& shade, ElementProxy element, 
-    SamplerSequence<2>& lightSampler, bool recordInfluence)
+    SamplerSequence<2>& lightSampler)
   {
     csColor res (0);
 
@@ -122,23 +122,12 @@ namespace lighter
     }
 #endif
 
-    size_t u, v;
-    if (recordInfluence)
-    {
-      // @@@ redundant, outer primitive loop already does this
-      element.primitive.GetElementUV (element.element, u, v);
-      const csVector2& minUV = element.primitive.GetMinUV();
-      u += size_t (floorf (minUV.x));
-      v += size_t (floorf (minUV.y));
-    }
-
     for (size_t qi = 0; qi < 4; ++qi)
     {
       const csVector3 offsetVector = uVec * ElementQuadrantConstants[qi].x +
         vVec * ElementQuadrantConstants[qi].y;
 
       csVector3 pos = elementC + offsetVector;
-      
       const csVector3 normal = ComputeElementNormal (element, pos);
       if (elemType == Primitive::ELEMENT_BORDER)
       {
@@ -148,51 +137,19 @@ namespace lighter
         pos -= element.primitive.GetPlane().Normal() * fudge;
       }
 
-      if (recordInfluence)
-      {
-        csMatrix3 ts (element.primitive.GetObject()->ComputeTangentSpace (
-          &element.primitive, pos));
-        
-        InfluenceRecorder inflRec (element.primitive.GetObject(),
-          u, v, ts, element.primitive.GetGroupID(), 0.25f);
-	res += shade.ShadeLight (element.primitive.GetObject(), 
-	  pos, normal, lightSampler,
-	  &element.primitive,
-	  elemType == Primitive::ELEMENT_BORDER,
-	  &inflRec);
-      }
-      else
-      {
-	res += shade.ShadeLight (element.primitive.GetObject(), 
-	  pos, normal, lightSampler,
-	  &element.primitive,
-	  elemType == Primitive::ELEMENT_BORDER);
-      }
+      res += shade.ShadeLight (element.primitive.GetObject(), 
+        pos, normal, lightSampler, &element.primitive,
+        elemType == Primitive::ELEMENT_BORDER);
     }
     
-    return 0.25f * res;
+    return res * 0.25f;
   }
 
-  void DirectLighting::InfluenceRecorder::RecordInfluence (Light* light,
-    const csVector3& direction, const csColor& color)
-  {
-    csVector3 dirW_n (direction);
-    dirW_n.Normalize();
-    csVector3 dirO = obj->GetObjectToWorld().Other2ThisRelative (dirW_n);
-    csVector3 dirT = ts.GetInverse() * dirO;
-    dirT.Normalize();
-    
-    LightInfluences& influences =
-      obj->GetLightInfluences (primGroup, light);
-    ScopedSwapLock<LightInfluences> l (influences);
-    influences.AddDirection (u, v, dirT, color.Luminance() * weight);
-  }
-  
   csColor DirectLighting::ShadeAllLightsNonPD::ShadeLight (Object* obj, 
     const csVector3& point, const csVector3& normal, 
-    SamplerSequence<2>& lightSampler,
+    SamplerSequence<2>& lightSampler, 
     const Primitive* shadowIgnorePrimitive, 
-    bool fullIgnore, InfluenceRecorder* influenceRec)
+    bool fullIgnore)
   {
     csColor res (0);
     for (size_t i = 0; i < allLights.GetSize (); ++i)
@@ -200,33 +157,25 @@ namespace lighter
       if (!lighting.affectingLights.IsBitSet (i)) 
         continue;
 
-      csVector3 lightVec;
-      csColor litColor (lighting.ShadeLight (allLights[i], obj, point,
-        normal, lightSampler,
-        shadowIgnorePrimitive, fullIgnore, &lightVec));
-      
-      if (influenceRec)
-        influenceRec->RecordInfluence (allLights[i], lightVec, litColor);
-      res += litColor;
+      res += lighting.ShadeLight (allLights[i], obj, point,
+        normal, lightSampler, shadowIgnorePrimitive, fullIgnore);
     }
     return res;
   }
 
   // Shade a primitive element with direct lighting
   csColor DirectLighting::UniformShadeAllLightsNonPD (Sector* sector, 
-    ElementProxy element, SamplerSequence<2>& lightSampler,
-    bool recordInfluence)
+    ElementProxy element, SamplerSequence<2>& lightSampler)
   {
     const LightRefArray& allLights = sector->allNonPDLights;
     ShadeAllLightsNonPD shade (*this, allLights);
-    return UniformShadeElement (shade, element, lightSampler, recordInfluence);
+    return UniformShadeElement (shade, element, lightSampler);
   }
 
   csColor DirectLighting::ShadeRndLightNonPD::ShadeLight (Object* obj, 
     const csVector3& point, const csVector3& normal, 
-    SamplerSequence<2>& sampler, 
-    const Primitive* shadowIgnorePrimitive, 
-    bool fullIgnore, InfluenceRecorder* influenceRec)
+    SamplerSequence<2>& sampler, const Primitive* shadowIgnorePrimitive, 
+    bool fullIgnore)
   {
     float rndValues[3];
     
@@ -236,24 +185,19 @@ namespace lighter
     if (!lighting.affectingLights.IsBitSet (lightIdx)) 
       return csColor (0);
 
-    csVector3 lightVec;
-    csColor litColor (lighting.ShadeLight (allLights[lightIdx], obj, point,
-      normal, sampler,
-      shadowIgnorePrimitive, fullIgnore, &lightVec));
-    if (influenceRec)
-      influenceRec->RecordInfluence (allLights[lightIdx], lightVec, litColor);
-    return litColor;
+    return lighting.ShadeLight (allLights[lightIdx], obj, point,
+      normal, sampler, shadowIgnorePrimitive, fullIgnore);
   }
 
   // Shade a primitive element with direct lighting using a single light
   csColor DirectLighting::UniformShadeRndLightNonPD (Sector* sector, 
-    ElementProxy element, SamplerSequence<2>& sampler, bool recordInfluence)
+    ElementProxy element, SamplerSequence<2>& sampler)
   {
     SamplerSequence<3> lightSampler (sampler);
     const LightRefArray& allLights = sector->allNonPDLights;
 
     ShadeRndLightNonPD shade (*this, allLights, lightSampler);
-    return UniformShadeElement (shade, element, sampler, recordInfluence) 
+    return UniformShadeElement (shade, element, sampler) 
       * allLights.GetSize ();
   }
 
@@ -266,24 +210,18 @@ namespace lighter
 
   csColor DirectLighting::ShadeOneLight::ShadeLight (Object* obj, 
     const csVector3& point, const csVector3& normal, 
-    SamplerSequence<2>& sampler,
-    const Primitive* shadowIgnorePrimitive,
-    bool fullIgnore, InfluenceRecorder* influenceRec)
+    SamplerSequence<2>& sampler, const Primitive* shadowIgnorePrimitive,
+    bool fullIgnore)
   {
-    csVector3 lightVec;
-    csColor litColor (lighting.ShadeLight (light, obj, point,
-      normal, sampler,
-      shadowIgnorePrimitive, fullIgnore, &lightVec));
-    if (influenceRec)
-      influenceRec->RecordInfluence (light, lightVec, litColor);
-    return litColor;
+    return lighting.ShadeLight (light, obj, point,
+      normal, sampler, shadowIgnorePrimitive, fullIgnore);
   }
 
   csColor DirectLighting::UniformShadeOneLight (Sector* sector, ElementProxy element,
-    Light* light, SamplerSequence<2>& sampler, bool recordInfluence)
+    Light* light, SamplerSequence<2>& sampler)
   {
     ShadeOneLight shade (*this, light);
-    return UniformShadeElement (shade, element, sampler, recordInfluence);
+    return UniformShadeElement (shade, element, sampler);
   }
 
   class DirectLightingBorderIgnoreCb : public HitIgnoreCallback
@@ -308,12 +246,11 @@ namespace lighter
     const csVector3 rayDir;
     const csVector3 point;
   };
-  
+
   csColor DirectLighting::ShadeLight (Light* light, Object* obj, 
     const csVector3& point, const csVector3& normal, 
-    SamplerSequence<2>& lightSampler, 
-    const Primitive* shadowIgnorePrimitive, bool fullIgnore,
-    csVector3* incomingLightVec)
+    SamplerSequence<2>& lightSampler, const Primitive* shadowIgnorePrimitive,
+    bool fullIgnore)
   {
     // Some variables..
     VisibilityTester visTester (light, obj);
@@ -331,7 +268,6 @@ namespace lighter
     csColor lightColor = light->SampleLight (point, normal, lightSamples[0],
       lightSamples[1], lightVec, lightPdf, visTester);
 
-    if (incomingLightVec) *incomingLightVec = lightVec;
     if (lightPdf > 0.0f && !lightColor.IsBlack () &&
       (cosineTerm = normal * lightVec) > 0)
     {
@@ -350,7 +286,7 @@ namespace lighter
         return csColor (0, 0, 0);
       else if (occlusion == VisibilityTester::occlPartial)
         lightColor *= visTester.GetFilterColor ();
-        
+
       if (isDelta)
         return lightColor * fabsf (cosineTerm) / lightPdf;
       else
@@ -458,11 +394,7 @@ namespace lighter
           prim.GetGlobalLightmapID (), subLightmapNum, (Light*)0);
 
         ScopedSwapLock<Lightmap> lightLock (*normalLM);
-        
-        bool recordInfluence =
-          globalConfig.GetLighterProperties().specularDirectionMaps
-          && (subLightmapNum == 0);
-        
+
         pdLightLMs.Empty ();
         for (size_t pdli = 0; pdli < PDLights.GetSize (); ++pdli)
         {
@@ -502,8 +434,7 @@ namespace lighter
 
           // Shade non-PD lights
           csColor c;        
-          c = (this->*lmElementShader) (sector, ep, masterSampler,
-            recordInfluence);
+          c = (this->*lmElementShader) (sector, ep, masterSampler);          
 
           normalLM->SetAddPixel (u, v, c * pixelAreaPart);
 
@@ -515,8 +446,7 @@ namespace lighter
             Lightmap* lm = pdLightLMs[pdli];
             Light* pdl = PDLights[pdli];
 
-            c = UniformShadeOneLight (sector, ep, pdl, masterSampler,
-              recordInfluence);
+            c = UniformShadeOneLight (sector, ep, pdl, masterSampler);
 
             lm->SetAddPixel (u, v, c * pixelAreaPart);
           }

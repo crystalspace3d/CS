@@ -35,11 +35,10 @@
 #include "iutil/object.h"
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
-#include "iutil/stringarray.h"
 
 #include "loader.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(Terrain2Loader)
 {
@@ -483,14 +482,12 @@ csPtr<iBase> csTerrain2ObjectLoader::Parse (iDocumentNode* node,
         const char* factname = child->GetContentsValue ();
         csRef<iMeshFactoryWrapper> fact = ldr_context->FindMeshFactory (
           factname);
-
-        if(!fact)
+        if (!fact)
         {
           synldr->ReportError ("crystalspace.terrain.object.loader",
             child, "Couldn't find factory '%s'!", factname);
           return 0;
         }
-
         mesh = fact->GetMeshObjectFactory ()->NewInstance ();
         terrain = scfQueryInterface<iTerrainSystem> (mesh);
             

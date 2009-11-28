@@ -27,6 +27,7 @@
 #include "iengine/renderloop.h"
 #include "imap/services.h"
 #include "imap/ldrctxt.h"
+#include "iengine/region.h"
 #include "ivaria/reporter.h"
 #include "iengine/rendersteps/irenderstep.h"
 #include "iengine/rendersteps/icontainer.h"
@@ -37,7 +38,7 @@ CS_LEAKGUARD_IMPLEMENT (csRenderLoopLoader);
 
 // Plugin stuff
 
-
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY(csRenderLoopLoader)
 
@@ -112,6 +113,10 @@ csPtr<iBase> csRenderLoopLoader::Parse (iDocumentNode* node,
     if(ldr_context->GetCollection ())
     {
       ldr_context->GetCollection ()->Add (obj);
+    }
+    else if(ldr_context->GetRegion ())
+    {
+      ldr_context->GetRegion ()->QueryObject ()->ObjAdd (obj);
     }
   }
   

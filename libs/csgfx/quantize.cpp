@@ -122,17 +122,17 @@ struct csColorBox
       int g;
       for (g = Gm; g <= Gx; g++)
       {
-        uint16* hp = &quant->hist [INDEX (Rm, g, b)];
-        int r;
+        uint16 *hp = &quant->hist [INDEX (Rm, g, b)];
+	int r;
         for (r = Rx - Rm; r >= 0; r--, hp++)
-        {
+	{
           if (*hp)
           {
             PixelCount += *hp;
             ColorCount++;
-          }
-        }
-      }
+          } /* endif */
+	}
+      } /* endfor */
     }
   }
 
@@ -146,7 +146,7 @@ struct csColorBox
       uint8 b;
       for (b = Bm; b <= Bx; b++)
       {
-        uint16* hp = &quant->hist [INDEX (Rm, Gm, b)];
+        uint16 *hp = &quant->hist [INDEX (Rm, Gm, b)];
         for (g = Gx - Gm; g >= 0; g--, hp += HIST_R_MAX)
           if (*hp) return (Rm != iRm);
       }
@@ -162,7 +162,7 @@ struct csColorBox
     for (; Rx >= Rm; Rx--)
       for (uint8 b = Bm; b <= Bx; b++)
       {
-        uint16* hp = &quant->hist [INDEX (Rx, Gm, b)];
+        uint16 *hp = &quant->hist [INDEX (Rx, Gm, b)];
         for (g = Gx - Gm; g >= 0; g--, hp += HIST_R_MAX)
           if (*hp) return (Rx != iRx);
       }
@@ -174,12 +174,13 @@ struct csColorBox
   {
     uint8 iGm = Gm;
     int r;
+
     for (; Gm <= Gx; Gm++)
     {
       uint8 b;
       for (b = Bm; b <= Bx; b++)
       {
-        uint16* hp = &quant->hist [INDEX (Rm, Gm, b)];
+        uint16 *hp = &quant->hist [INDEX (Rm, Gm, b)];
         for (r = Rx - Rm; r >= 0; r--, hp++)
           if (*hp) return (Gm != iGm);
       }
@@ -197,7 +198,7 @@ struct csColorBox
       uint8 b;
       for (b = Bm; b <= Bx; b++)
       {
-        uint16* hp = &quant->hist [INDEX (Rm, Gx, b)];
+        uint16 *hp = &quant->hist [INDEX (Rm, Gx, b)];
         for (r = Rx - Rm; r >= 0; r--, hp++)
           if (*hp) return (Gx != iGx);
       }
@@ -215,7 +216,7 @@ struct csColorBox
       uint8 g;
       for (g = Gm; g <= Gx; g++)
       {
-        uint16* hp = &quant->hist [INDEX (Rm, g, Bm)];
+        uint16 *hp = &quant->hist [INDEX (Rm, g, Bm)];
         for (r = Rx - Rm; r >= 0; r--, hp++)
           if (*hp) return (Bm != iBm);
       }
@@ -233,7 +234,7 @@ struct csColorBox
       uint8 g;
       for (g = Gm; g <= Gx; g++)
       {
-        uint16* hp = &quant->hist [INDEX (Rm, g, Bx)];
+        uint16 *hp = &quant->hist [INDEX (Rm, g, Bx)];
         for (r = Rx - Rm; r >= 0; r--, hp++)
           if (*hp) return (Bx != iBx);
       }
@@ -262,7 +263,7 @@ struct csColorBox
     for (b = Bm; b <= Bx; b++)
       for (g = Gm; g <= Gx; g++)
       {
-        uint16* hp = &quant->hist [INDEX (Rm, g, b)];
+        uint16 *hp = &quant->hist [INDEX (Rm, g, b)];
         for (r = Rm; r <= Rx; r++, hp++)
           if (*hp)
           {
@@ -298,7 +299,7 @@ struct csColorBox
   }
 };
 
-int csColorQuantizer::compare_boxes (const void* i1, const void* i2)
+int csColorQuantizer::compare_boxes (const void *i1, const void *i2)
 {
   CS_ASSERT (((ColorIndex*)i1)->box != 0);
   CS_ASSERT (((ColorIndex*)i2)->box != 0);
@@ -344,8 +345,8 @@ void csColorQuantizer::End ()
   delete [] hist; hist = 0;
 }
 
-void csColorQuantizer::Count (csRGBpixel* image, int pixels,
-		csRGBpixel* transp)
+void csColorQuantizer::Count (csRGBpixel *image, int pixels,
+		csRGBpixel *transp)
 {
   // Sanity check
   if (!pixels || qState != qsCount)
@@ -354,10 +355,10 @@ void csColorQuantizer::Count (csRGBpixel* image, int pixels,
   hist_pixels += pixels;
 
   // Now, count all colors in image
-  uint32* src = (uint32*)image;
+  uint32 *src = (uint32 *)image;
   if (transp)
   {
-    uint32 tc = (*(uint32*)transp) & RGB_MASK;
+    uint32 tc = (*(uint32 *)transp) & RGB_MASK;
     while (pixels--)
     {
       uint32 pix = *src++;
@@ -379,7 +380,7 @@ void csColorQuantizer::Count (csRGBpixel* image, int pixels,
     }
 }
 
-void csColorQuantizer::Bias (csRGBpixel* colors, int count, int weight)
+void csColorQuantizer::Bias (csRGBpixel *colors, int count, int weight)
 {
   // Sanity check
   if (!count || qState != qsCount)
@@ -396,7 +397,7 @@ void csColorQuantizer::Bias (csRGBpixel* colors, int count, int weight)
     return;
 
   // Now, count all colors in image
-  uint32* src = (uint32*)colors;
+  uint32 *src = (uint32 *)colors;
   while (count--)
   {
     uint32 pix = *src++;
@@ -406,8 +407,8 @@ void csColorQuantizer::Bias (csRGBpixel* colors, int count, int weight)
   }
 }
 
-void csColorQuantizer::Palette (csRGBpixel*& outpalette,
-		int &maxcolors, csRGBpixel* transp)
+void csColorQuantizer::Palette (csRGBpixel *&outpalette,
+		int &maxcolors, csRGBpixel *transp)
 {
   // Sanity check
   if (qState != qsCount || !maxcolors)
@@ -470,8 +471,9 @@ void csColorQuantizer::Palette (csRGBpixel*& outpalette,
     int blen = (dstbox.Bx - dstbox.Bm) * (B_COEF << HIST_SHIFT_B);
 
     enum { axisR, axisG, axisB } axis =
-      (glen < rlen) ? ((rlen < blen) ? axisB : axisR) :
-      ((glen < blen) ? axisB : axisG);
+      (glen < rlen) ?
+        ((rlen < blen) ? axisB : axisR) :
+        ((glen < blen) ? axisB : axisG);
 
     //
     // We split each box into two by the plane that goes through given color
@@ -590,8 +592,8 @@ void csColorQuantizer::Palette (csRGBpixel*& outpalette,
   maxcolors = boxcount + delta;
 }
 
-void csColorQuantizer::Remap (csRGBpixel* image, int pixels,
-  uint8*& outimage, csRGBpixel* transp)
+void csColorQuantizer::Remap (csRGBpixel *image, int pixels,
+  uint8 *&outimage, csRGBpixel *transp)
 {
   // Sanity check
   if (qState != qsCount && qState != qsRemap)
@@ -603,7 +605,7 @@ void csColorQuantizer::Remap (csRGBpixel* image, int pixels,
   // will need just a byte per element, so we'll assign the address of
   // histogram memory block to a pointer of suitable type, and the second
   // half of histogram storage remains unused.
-  uint8* icmap = (uint8*)hist;
+  uint8 *icmap = (uint8 *)hist;
 
   int delta = transp ? 1 : 0;
   if (qState == qsCount)
@@ -611,20 +613,20 @@ void csColorQuantizer::Remap (csRGBpixel* image, int pixels,
     // Now, fill inverse colormap with color indices
     for (count = 0; count < boxcount; count++)
       box [color_index[count + delta].index - delta].FillInverseCMap (
-        icmap, count + delta);
+	icmap, count + delta);
     qState = qsRemap;
   }
 
   // Allocate the picture and the palette
   if (!outimage) outimage = new uint8 [pixels];
 
-  uint32* src = (uint32*)image;
-  uint8* dst = outimage;
+  uint32 *src = (uint32 *)image;
+  uint8 *dst = outimage;
   count = pixels;
 
   if (transp)
   {
-    uint32 tc = (*(uint32*)transp) & RGB_MASK;
+    uint32 tc = (*(uint32 *)transp) & RGB_MASK;
     while (count--)
     {
       uint32 pix = *src++;
@@ -642,9 +644,9 @@ void csColorQuantizer::Remap (csRGBpixel* image, int pixels,
     }
 }
 
-void csColorQuantizer::RemapDither ( csRGBpixel* image, int pixels,
-  int pixperline, csRGBpixel* palette, int colors, uint8*& outimage,
-  csRGBpixel* transp)
+void csColorQuantizer::RemapDither (
+  csRGBpixel *image, int pixels, int pixperline,
+  csRGBpixel *palette, int colors, uint8 *&outimage, csRGBpixel *transp)
 {
   // Sanity check
   if (qState != qsCount && qState != qsRemap)
@@ -677,8 +679,8 @@ void csColorQuantizer::RemapDither ( csRGBpixel* image, int pixels,
   // Allocate the picture and the palette
   if (!outimage) outimage = new uint8 [pixels];
 
-  csRGBpixel* src = image;
-  uint8* dst = outimage;
+  csRGBpixel *src = image;
+  uint8 *dst = outimage;
   count = pixels;
 
   CS_ALLOC_STACK_ARRAY (int, fserr, (2 * 3 * (pixperline + 2)));
@@ -696,10 +698,9 @@ void csColorQuantizer::RemapDither ( csRGBpixel* image, int pixels,
     //
     // Even lines are traversed left to right, odd lines backwards.
 
-    csRGBpixel* cursrc;
-    uint8* curdst;
-    int* curerr;
-    int* nexterr;
+    csRGBpixel *cursrc;
+    uint8 *curdst;
+    int *curerr, *nexterr;
     int dir;
 
     if (odd)
@@ -731,7 +732,7 @@ void csColorQuantizer::RemapDither ( csRGBpixel* image, int pixels,
     int err10g = 0, err01g = 0, err11g = 0;
     int err10b = 0, err01b = 0, err11b = 0;
 
-    int fspix;
+	int fspix;
     for (fspix = pixperline; fspix; fspix--,
       cursrc += dir, curdst += dir,
       curerr += dir3, nexterr += dir3)
@@ -766,21 +767,21 @@ void csColorQuantizer::RemapDither ( csRGBpixel* image, int pixels,
 
       err10r = r - realcolor.red;
       nexterr [0] = err01r + err10r * 3;		// * 3
-      err01r = err11r + err10r * 5;			    // * 5
-      err11r = err10r;					            // * 1
-      err10r *= 7;					                // * 7
+      err01r = err11r + err10r * 5;			// * 5
+      err11r = err10r;					// * 1
+      err10r *= 7;					// * 7
 
       err10g = g - realcolor.green;
       nexterr [1] = err01g + err10g * 3;		// * 3
-      err01g = err11g + err10g * 5;		     	// * 5
-      err11g = err10g;					            // * 1
-      err10g *= 7;					                // * 7
+      err01g = err11g + err10g * 5;			// * 5
+      err11g = err10g;					// * 1
+      err10g *= 7;					// * 7
 
       err10b = b - realcolor.blue;
       nexterr [2] = err01b + err10b * 3;		// * 3
-      err01b = err11b + err10b * 5;		     	// * 5
-      err11b = err10b;					            // * 1
-      err10b *= 7;					                // * 7
+      err01b = err11b + err10b * 5;			// * 5
+      err11b = err10b;					// * 1
+      err10b *= 7;					// * 7
     }
     // flush cached errors into error array
     nexterr [0] = err01r;
@@ -794,8 +795,8 @@ void csColorQuantizer::RemapDither ( csRGBpixel* image, int pixels,
   }
 }
 
-void csColorQuantizer::DoRGB (csRGBpixel* image, int pixels, int pixperline,
-  uint8*& outimage, csRGBpixel*& outpalette, int &maxcolors, bool dither)
+void csColorQuantizer::DoRGB (csRGBpixel *image, int pixels, int pixperline,
+  uint8 *&outimage, csRGBpixel *&outpalette, int &maxcolors, bool dither)
 {
   Begin ();
 
@@ -808,3 +809,4 @@ void csColorQuantizer::DoRGB (csRGBpixel* image, int pixels, int pixperline,
 
   End ();
 }
+

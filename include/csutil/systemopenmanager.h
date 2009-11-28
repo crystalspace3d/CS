@@ -28,9 +28,7 @@ struct iObjectRegistry;
 /**\file
  * Manager for system open events.
  */
-
-struct iObjectRegistry;
-
+ 
 namespace CS
 {
   namespace Base

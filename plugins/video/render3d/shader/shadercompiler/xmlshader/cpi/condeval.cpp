@@ -19,10 +19,7 @@
 
 #include "cssysdef.h"
 
-#include "csgfx/renderbuffer.h"
-#include "csutil/csendian.h"
 #include "csutil/scanstr.h"
-#include "ivideo/rendermesh.h"
 
 #include "condeval.h"
 #include "tokenhelper.h"
@@ -34,12 +31,6 @@ using namespace CS;
 
 CS_IMPLEMENT_STATIC_CLASSVAR_REF(Variables::Values, def,
   Def, ValueSet, ());
-IMPLEMENT_STATIC_CLASSVAR_DIRECT(Variables::Values, ValChainAlloc);
-
-void Variables::Values::ValChainKill()
-{
-  ValChainAlloc().~csBlockAllocator();
-}
 
 ValueSet& Variables::Values::GetMultiValue (uint num)
 {
@@ -73,7 +64,7 @@ ValueSet& Variables::Values::GetValue (int type)
       {
         d = &(*d)->nextPlease;
       }
-      *d = ValChainAlloc().Alloc();
+      *d = new ValueSetChain ();
       return (*d)->vs;
     }
   }
@@ -107,9 +98,7 @@ struct SliceAllocator
   static const size_t valueSetsPerSlice = 32;
   static const size_t sliceSize = valueSetsPerSlice * sizeof (ValueSet);
 
-  typedef CS::Memory::FixedSizeAllocatorSafe<sliceSize, TempHeapAlloc>
-    BlockAlloc;
-
+  typedef csFixedSizeAllocator<sliceSize, TempHeapAlloc> BlockAlloc;
   CS_DECLARE_STATIC_CLASSVAR_REF (sliceAlloc, SliceAlloc, 
     BlockAlloc);
 
@@ -130,101 +119,18 @@ struct SliceAllocator
 CS_IMPLEMENT_STATIC_CLASSVAR_REF(SliceAllocator, sliceAlloc,
   SliceAlloc, SliceAllocator::BlockAlloc, (32));
 
-struct SliceAllocatorBool
-{
-  static const size_t valueSetsPerSlice = 32;
-  static const size_t sliceSize = valueSetsPerSlice * sizeof (ValueSetBool);
-
-  typedef CS::Memory::FixedSizeAllocatorSafe<sliceSize, TempHeapAlloc>
-    BlockAlloc;
-
-  CS_DECLARE_STATIC_CLASSVAR_REF (sliceAlloc, SliceAllocBool, 
-    BlockAlloc);
-
-  static inline uint8* Alloc (size_t blocksize) 
-  {
-    return (uint8*)SliceAllocBool().Alloc (blocksize);
-  }
-  static inline void Free (uint8* p)
-  {
-    SliceAllocBool().Free (p);
-  }
-  static void CompactAllocator()
-  {
-    SliceAllocBool().Compact();
-  }
-  static void SetMemTrackerInfo (const char*) {}
-};
-CS_IMPLEMENT_STATIC_CLASSVAR_REF(SliceAllocatorBool, sliceAlloc,
-  SliceAllocBool, SliceAllocatorBool::BlockAlloc, (32));
-
-IMPLEMENT_STATIC_CLASSVAR_DIRECT(Variables, ValAlloc);
-void Variables::ValAllocKill()
-{
-  ValAlloc().~ValBlockAlloc();
-}
-
+CS_IMPLEMENT_STATIC_CLASSVAR_REF(Variables, valAlloc,
+  ValAlloc, Variables::ValBlockAlloc, (1024));
+size_t Variables::Values::deallocCount = 0;
 CS_IMPLEMENT_STATIC_CLASSVAR(Variables, def,
   Def, Variables::Values, ());
 CS_IMPLEMENT_STATIC_CLASSVAR_REF(Variables::CowBlockAllocator, 
   allocator, Allocator, Variables::CowBlockAllocator::BlockAlloc, (256));
 
-//---------------------------------------------------------------------------
-
-csConditionID ConditionIDMapper::GetConditionID (const CondOperation& operation,
-                                                 bool get_new)
+csConditionEvaluator::csConditionEvaluator (iStringSet* strings, 
+    const csConditionConstants& constants) :
+    strings(strings), nextConditionID(0), constants(constants)
 {
-  csConditionID id = conditions.Get (operation, (csConditionID)~0);
-  if ((id == (csConditionID)~0) && get_new)
-  {
-    id = nextConditionID++;
-    conditions.Put (operation, id);
-  }
-  return id;
-}
-
-CondOperation ConditionIDMapper::GetCondition (csConditionID condition)
-{
-  const CondOperation* op = conditions.GetKeyPointer (condition);
-  CS_ASSERT(op != 0);
-  return *op;
-}
-
-//---------------------------------------------------------------------------
-
-csConditionEvaluator::csConditionEvaluator (iShaderVarStringSet* strings, 
-  const csConditionConstants& constants) :
-  strings(strings), evalStackDepth (0), evalCache (evalCacheStack),
-  constants(constants)
-{
-}
-  
-size_t* csConditionEvaluator::AllocSVIndices (
-  const CS::Graphics::ShaderVarNameParser& parser)
-{
-  const size_t num = parser.GetIndexNum();
-  if (num == 0) return 0;
-
-  size_t* mem;
-  {
-    LockType lock (mutex);
-    mem = (size_t*)scratch.Alloc ((num+1) * sizeof (size_t));
-  }
-  size_t* p = mem;
-  
-  *p++ = num;
-  for (size_t n = 0; n < num; n++)
-    *p++ = parser.GetIndexValue (n);
-  return mem;
-}
-
-size_t* csConditionEvaluator::AllocSVIndices (size_t num)
-{
-  if (num == 0) return 0;
-  
-  LockType lock (mutex);
-  size_t* mem = (size_t*)scratch.Alloc ((num+1) * sizeof (size_t));
-  return mem;
 }
 
 const char* csConditionEvaluator::SetLastError (const char* msg, ...)
@@ -320,7 +226,7 @@ const char* csConditionEvaluator::OperandTypeDescription (OperandType t)
   }
 }
 
-csConditionID csConditionEvaluator::FindOptimizedConditionInternal (
+csConditionID csConditionEvaluator::FindOptimizedCondition (
   const CondOperation& operation)
 {
   CondOperation newOp = operation;
@@ -364,7 +270,7 @@ csConditionID csConditionEvaluator::FindOptimizedConditionInternal (
 	newNewOp.operation = opEqual;
 	newNewOp.right.type = operandBoolean;
 	newNewOp.right.boolVal = true;
-	return FindOptimizedConditionInternal (newNewOp);
+	return FindOptimizedCondition (newNewOp);
       }
     }
     if ((newOp.right.type == operandBoolean) && (newOp.right.boolVal == true))
@@ -378,7 +284,7 @@ csConditionID csConditionEvaluator::FindOptimizedConditionInternal (
 	newNewOp.operation = opEqual;
 	newNewOp.right.type = operandBoolean;
 	newNewOp.right.boolVal = true;
-	return FindOptimizedConditionInternal (newNewOp);
+	return FindOptimizedCondition (newNewOp);
       }
     }
   }
@@ -413,19 +319,18 @@ csConditionID csConditionEvaluator::FindOptimizedConditionInternal (
 	newNewOp.operation = opEqual;
 	newNewOp.right.type = operandBoolean;
 	newNewOp.right.boolVal = true;
-	return FindOptimizedConditionInternal (newNewOp);
+	return FindOptimizedCondition (newNewOp);
       }
     }
   }
 
-  return conditions.GetConditionID (operation);
-}
-
-csConditionID csConditionEvaluator::FindOptimizedCondition (
-  const CondOperation& operation)
-{
-  LockType lock (mutex);
-  return FindOptimizedConditionInternal (operation);
+  csConditionID id = conditions.Get (operation, (csConditionID)~0);
+  if (id == (csConditionID)~0)
+  {
+    id = nextConditionID++;
+    conditions.Put (operation, id);
+  }
+  return id;
 }
 
 const char* csConditionEvaluator::ResolveExpValue (const csExpressionToken& value,
@@ -536,7 +441,7 @@ const char* csConditionEvaluator::ResolveOperand (csExpression* expression,
   else
   {
     operand.type = operandOperation;
-    err = ProcessExpressionInternal (expression, operand.operation);
+    err = ProcessExpression (expression, operand.operation);
     if (err)
       return err;
     return 0;
@@ -550,12 +455,9 @@ const char* csConditionEvaluator::ResolveSVIdentifier (
 {
   if (expression->type == csExpression::Value)
   {
-    csExpressionToken::Extractor svIdentifier (expression->valueValue);
-    CS::Graphics::ShaderVarNameParser svParser (svIdentifier.Get());
-    
     operand.type = operandSV;
-    operand.svLocation.svName = strings->Request (svParser.GetShaderVarName());
-    operand.svLocation.indices = AllocSVIndices (svParser);
+    operand.svName = strings->Request (
+      csExpressionToken::Extractor (expression->valueValue).Get ());
     return 0;
   }
   else
@@ -580,16 +482,8 @@ const char* csConditionEvaluator::ResolveSVIdentifier (
        */
       return "Right subexpression is not of type 'value'";
     }
-    {
-      csExpressionToken::Extractor svIdentifier (expression->expressionValue.left->valueValue);
-      CS::Graphics::ShaderVarNameParser svParser (svIdentifier.Get());
-      
-      operand.type = operandSV;
-      operand.svLocation.svName = strings->Request (svParser.GetShaderVarName());
-      operand.svLocation.indices = AllocSVIndices (svParser);
-      operand.svLocation.bufferName = csRenderBuffer::GetBufferNameFromDescr (
-        svParser.GetShaderVarName());
-    }
+    operand.svName = strings->Request (
+      csExpressionToken::Extractor (expression->expressionValue.left->valueValue).Get ());
     const csExpressionToken& right = 
       expression->expressionValue.right->valueValue;
     if (TokenEquals (right.tokenStart, right.tokenLen, "int"))
@@ -654,24 +548,17 @@ const char* csConditionEvaluator::ResolveConst (csExpression* expression,
 }
 
 
-const char* csConditionEvaluator::ProcessExpressionInternal (
-  csExpression* expression, csConditionID& cond)
-{
-  CondOperation newOp;
-  const char* err = ProcessExpressionInternal (expression, newOp);
-  if (err) return err;
-  cond = FindOptimizedConditionInternal (newOp);
-  return 0;
-}
-
 const char* csConditionEvaluator::ProcessExpression (
   csExpression* expression, csConditionID& cond)
 {
-  LockType lock (mutex);
-  return ProcessExpressionInternal (expression, cond);
+  CondOperation newOp;
+  const char* err = ProcessExpression (expression, newOp);
+  if (err) return err;
+  cond = FindOptimizedCondition (newOp);
+  return 0;
 }
 
-const char* csConditionEvaluator::ProcessExpressionInternal (csExpression* expression, 
+const char* csConditionEvaluator::ProcessExpression (csExpression* expression, 
   CondOperation& operation)
 {
   const char* err;
@@ -703,7 +590,6 @@ const char* csConditionEvaluator::ProcessExpressionInternal (csExpression* expre
       newOp.operation = opEqual;
       err = ResolveOperand (expression, newOp.left);
       if (err != 0) return err;
-      newOp.right.Clear();
       newOp.right.type = operandBoolean;
       newOp.right.boolVal = true;
     }
@@ -719,7 +605,6 @@ const char* csConditionEvaluator::ProcessExpressionInternal (csExpression* expre
 	  csExpressionToken::Extractor (t).Get (), OperandTypeDescription (newOp.left.type),
 	  OperandTypeDescription (operandBoolean));
       }
-      newOp.right.Clear();
       newOp.right.type = operandBoolean;
       newOp.right.boolVal = false;
     }
@@ -842,9 +727,8 @@ const char* csConditionEvaluator::ProcessExpressionInternal (csExpression* expre
         newOpL.right.type = operandBoolean;
         newOpL.right.boolVal = true;
 
-        newOp.left.Clear();
         newOp.left.type = operandOperation;
-        newOp.left.operation = FindOptimizedConditionInternal (newOpL);
+        newOp.left.operation = FindOptimizedCondition (newOpL);
       }
 
       err = ResolveOperand (expression->expressionValue.right, newOp.right);
@@ -866,9 +750,8 @@ const char* csConditionEvaluator::ProcessExpressionInternal (csExpression* expre
         newOpR.right.type = operandBoolean;
         newOpR.right.boolVal = true;
 
-        newOp.right.Clear();
         newOp.right.type = operandOperation;
-        newOp.right.operation = FindOptimizedConditionInternal (newOpR);
+        newOp.right.operation = FindOptimizedCondition (newOpR);
       }
     }
     else if (TokenEquals (t.tokenStart, t.tokenLen, "||"))
@@ -894,9 +777,8 @@ const char* csConditionEvaluator::ProcessExpressionInternal (csExpression* expre
         newOpL.right.type = operandBoolean;
         newOpL.right.boolVal = true;
 
-        newOp.left.Clear();
         newOp.left.type = operandOperation;
-        newOp.left.operation = FindOptimizedConditionInternal (newOpL);
+        newOp.left.operation = FindOptimizedCondition (newOpL);
       }
 
       err = ResolveOperand (expression->expressionValue.right, newOp.right);
@@ -918,9 +800,8 @@ const char* csConditionEvaluator::ProcessExpressionInternal (csExpression* expre
         newOpR.right.type = operandBoolean;
         newOpR.right.boolVal = true;
 
-        newOp.right.Clear();
         newOp.right.type = operandOperation;
-        newOp.right.operation = FindOptimizedConditionInternal (newOpR);
+        newOp.right.operation = FindOptimizedCondition (newOpR);
       }
     }
     else
@@ -934,55 +815,29 @@ const char* csConditionEvaluator::ProcessExpressionInternal (csExpression* expre
   return 0;
 }
 
-const char* csConditionEvaluator::ProcessExpression (csExpression* expression, 
-  CondOperation& operation)
-{
-  LockType lock (mutex);
-  return ProcessExpressionInternal (expression, operation);
-}
-
-bool csConditionEvaluator::IsConditionPartOfInternal (csConditionID condition,
-  csConditionID containerCondition)
+bool csConditionEvaluator::IsConditionPartOf (csConditionID condition, 
+                                              csConditionID containerCondition)
 {
   if (condition == containerCondition) return true;
 
-  CondOperation op = conditions.GetCondition (containerCondition);
+  const CondOperation* op = conditions.GetKeyPointer (containerCondition);
+  CS_ASSERT (op != 0);
 
-  if (op.left.type == operandOperation)
+  if (op->left.type == operandOperation)
   {
-    if (IsConditionPartOfInternal (condition, op.left.operation)) return true;
+    if (IsConditionPartOf (condition, op->left.operation)) return true;
   }
-  if (op.right.type == operandOperation)
+  if (op->right.type == operandOperation)
   {
-    if (IsConditionPartOfInternal (condition, op.right.operation)) return true;
+    if (IsConditionPartOf (condition, op->right.operation)) return true;
   }
   return false;
 }
 
-bool csConditionEvaluator::IsConditionPartOf (csConditionID condition,
-  csConditionID containerCondition)
-{
-  LockType lock (mutex);
-  return IsConditionPartOfInternal (condition, containerCondition);
-}
-
 bool csConditionEvaluator::Evaluate (csConditionID condition, 
 				     const CS::Graphics::RenderMeshModes& modes,
-				     const csShaderVariableStack* stack)
+				     const iShaderVarStack* stacks)
 {
-  LockType lock (mutex);
-  EvaluatorShadervar eval (*this, modes, stack);
-  return EvaluateCachedInternal (eval, condition);
-}
-
-bool csConditionEvaluator::EvaluateCachedInternal (EvaluatorShadervar& eval,
-						   csConditionID condition)
-{
-  /* Assert we don't evaluate without an EnterEvaluation()
-     (otherwise, evaluation cache won't be cleared, causing problems down
-     the road) */
-  CS_ASSERT(evalCache->evalDepth > 0);
-
   if (condition == csCondAlwaysTrue)
     return true;
   else if (condition == csCondAlwaysFalse)
@@ -992,47 +847,24 @@ bool csConditionEvaluator::EvaluateCachedInternal (EvaluatorShadervar& eval,
    * are added (notably when a shader source is retrieved from an
    * external source). Make sure the cache is large enough.
    */
-  if (evalCache->condChecked.GetSize() < conditions.GetNumConditions ())
+  if (condChecked.GetSize() < GetNumConditions ())
   {
-    evalCache->condChecked.SetSize (conditions.GetNumConditions ());
-    evalCache->condResult.SetSize (conditions.GetNumConditions ());
+    condChecked.SetSize (GetNumConditions ());
+    condResult.SetSize (GetNumConditions ());
   }
 
-  if (evalCache->condChecked.IsBitSet (condition))
+  if (condChecked.IsBitSet (condition))
   {
-    return evalCache->condResult.IsBitSet (condition);
+    return condResult.IsBitSet (condition);
   }
 
-  bool result = EvaluateInternal (eval, condition);
+  EvaluatorShadervar eval (*this, modes, stacks);
+  bool result = Evaluate (eval, condition);
 
-  evalCache->condChecked.Set (condition, true);
-  evalCache->condResult.Set (condition, result);
+  condChecked.Set (condition, true);
+  condResult.Set (condition, result);
 
   return result;
-}
-
-void csConditionEvaluator::ForceConditionResults (
-  const csBitArray& condSet, const csBitArray& condResults)
-{
-  LockType lock (mutex);
-
-  /* Hack: it can happen that while evaluating a shader, new conditions 
-   * are added (notably when a shader source is retrieved from an
-   * external source). Make sure the cache is large enough.
-   */
-  if (evalCache->condChecked.GetSize() < conditions.GetNumConditions ())
-  {
-    evalCache->condChecked.SetSize (conditions.GetNumConditions ());
-    evalCache->condResult.SetSize (conditions.GetNumConditions ());
-  }
-  evalCache->condChecked.Clear();
-  evalCache->condResult.Clear();
-
-  for (size_t i = 0; i < condResults.GetSize(); i++)
-  {
-    evalCache->condChecked.Set (i, condSet[i]);
-    evalCache->condResult.Set (i, condResults[i]);
-  }
 }
 
 csConditionEvaluator::EvaluatorShadervar::BoolType 
@@ -1042,43 +874,45 @@ csConditionEvaluator::EvaluatorShadervar::Boolean (
   switch (operand.type)
   {
     case operandOperation:
-      return evaluator.EvaluateCachedInternal (*this, operand.operation);
+      return evaluator.Evaluate<EvaluatorShadervar> (*this, operand.operation);
     case operandBoolean:
       return operand.boolVal;
     case operandSV:
       {
-        return GetShaderVar (operand) != 0;
+        if (stacks && (stacks->GetSize() > operand.svName))
+	{
+	  csShaderVariable* sv = stacks->Get (operand.svName);
+	  return sv != 0;
+	}
       }
       break;
     case operandSVValueTexture:
       {
-	csShaderVariable* sv = GetShaderVar (operand);
-	if (sv != 0)
+	if (stacks && (stacks->GetSize() > operand.svName))
 	{
-	  iTextureHandle* th;
-	  if (sv->GetValue (th))
-	    return th != 0;
+	  csShaderVariable* sv = stacks->Get (operand.svName);
+	  if (sv != 0)
+	  {
+	    iTextureHandle* th;
+	    if (sv->GetValue (th))
+	      return th != 0;
+	  }
 	}
       }
       break;
     case operandSVValueBuffer:
+      //@@TODO: CHECK FOR DEFAULTBUFFERS
       {
-        iRenderBuffer* rb = 0;
-        if (operand.svLocation.bufferName != CS_BUFFER_NONE)
-        {
-          if (modes.buffers.IsValid())
-            rb = modes.buffers->GetRenderBuffer (
-              operand.svLocation.bufferName);
-        }
-        else
-        {
-	  csShaderVariable* sv = GetShaderVar (operand);
+	if (stacks && (stacks->GetSize() > operand.svName))
+	{
+	  csShaderVariable* sv = stacks->Get (operand.svName);
 	  if (sv != 0)
 	  {
-	    sv->GetValue (rb);
+	    iRenderBuffer* th;
+	    if (sv->GetValue (th))
+	      return th != 0;
 	  }
 	}
-	return rb != 0;
       }
       break;
     default:
@@ -1099,12 +933,15 @@ csConditionEvaluator::EvaluatorShadervar::Int (
       return (int)operand.floatVal;
     case operandSVValueFloat:
       {
-	csShaderVariable* sv = GetShaderVar (operand);
-	if (sv != 0)
+	if (stacks && (stacks->GetSize() > operand.svName))
 	{
-	  float v;
-	  if (sv->GetValue (v))
-	    return (int)v;
+	    csShaderVariable* sv = stacks->Get (operand.svName);
+	    if (sv != 0)
+	    {
+	      float v;
+	      if (sv->GetValue (v))
+		return (int)v;
+	    }
 	}
       }
       break;
@@ -1113,26 +950,32 @@ csConditionEvaluator::EvaluatorShadervar::Int (
     case operandSVValueZ:
     case operandSVValueW:
       {
-	csShaderVariable* sv = GetShaderVar (operand);
-	if (sv != 0)
+	if (stacks && (stacks->GetSize() > operand.svName))
 	{
-	  csVector4 v;
-	  if (sv->GetValue (v))
-	  {
-	    int c = operand.type - operandSVValueX;
-	    return (int)(v[c]);
-	  }
+	    csShaderVariable* sv = stacks->Get (operand.svName);
+	    if (sv != 0)
+	    {
+	      csVector4 v;
+	      if (sv->GetValue (v))
+	      {
+		int c = operand.type - operandSVValueX;
+		return (int)(v[c]);
+	      }
+	    }
 	}
       }
       break;
     case operandSVValueInt:
       {
-	csShaderVariable* sv = GetShaderVar (operand);
-	if (sv != 0)
+	if (stacks && (stacks->GetSize() > operand.svName))
 	{
-	  int v;
-	  if (sv->GetValue (v))
-	    return v;
+	  csShaderVariable* sv = stacks->Get (operand.svName);
+	  if (sv != 0)
+	  {
+	    int v;
+	    if (sv->GetValue (v))
+	      return v;
+	  }
 	}
       }
       break;
@@ -1155,12 +998,15 @@ csConditionEvaluator::EvaluatorShadervar::Float (
       return (float)operand.intVal;
     case operandSVValueFloat:
       {
-	csShaderVariable* sv = GetShaderVar (operand);
-	if (sv != 0)
+	if (stacks && (stacks->GetSize() > operand.svName))
 	{
-	  float v;
-	  if (sv->GetValue (v))
-	    return v;
+	  csShaderVariable* sv = stacks->Get (operand.svName);
+	  if (sv != 0)
+	  {
+	    float v;
+	    if (sv->GetValue (v))
+	      return v;
+	  }
 	}
       }
       break;
@@ -1169,26 +1015,32 @@ csConditionEvaluator::EvaluatorShadervar::Float (
     case operandSVValueZ:
     case operandSVValueW:
       {
-	csShaderVariable* sv = GetShaderVar (operand);
-	if (sv != 0)
+	if (stacks && (stacks->GetSize() > operand.svName))
 	{
-	  csVector4 v;
-	  if (sv->GetValue (v))
-	  {
-	    int c = operand.type - operandSVValueX;
-	    return v[c];
-	  }
+	    csShaderVariable* sv = stacks->Get (operand.svName);
+	    if (sv != 0)
+	    {
+	      csVector4 v;
+	      if (sv->GetValue (v))
+	      {
+		int c = operand.type - operandSVValueX;
+		return v[c];
+	      }
+	    }
 	}
       }
       break;
     case operandSVValueInt:
       {
-	csShaderVariable* sv = GetShaderVar (operand);
-	if (sv != 0)
+	if (stacks && (stacks->GetSize() > operand.svName))
 	{
-	  int v;
-	  if (sv->GetValue (v))
-	    return (float)v;
+          csShaderVariable* sv = stacks->Get (operand.svName);
+	  if (sv != 0)
+	  {
+	    int v;
+	    if (sv->GetValue (v))
+	      return (float)v;
+	  }
 	}
       }
       break;
@@ -1200,7 +1052,7 @@ csConditionEvaluator::EvaluatorShadervar::Float (
 }
 
 template<typename Evaluator>
-typename Evaluator::EvalResult csConditionEvaluator::EvaluateInternal (
+typename Evaluator::EvalResult csConditionEvaluator::Evaluate (
   Evaluator& eval, csConditionID condition)
 {
   typedef typename Evaluator::EvalResult EvResult;
@@ -1209,134 +1061,135 @@ typename Evaluator::EvalResult csConditionEvaluator::EvaluateInternal (
   typedef typename Evaluator::IntType EvInt;
   EvResult result (eval.GetDefaultResult());
 
-  CondOperation op = conditions.GetCondition (condition);
+  const CondOperation* op = conditions.GetKeyPointer (condition);
+  CS_ASSERT (op != 0);
 
-  switch (op.operation)
+  switch (op->operation)
   {
     case opAnd:
-      result = eval.LogicAnd (op.left, op.right);
+      result = eval.LogicAnd (op->left, op->right);
       break;
     case opOr:
-      result = eval.LogicOr (op.left, op.right);
+      result = eval.LogicOr (op->left, op->right);
       break;
     case opEqual:
       {
-	if ((op.left.type == operandFloat) 
-	  || (op.left.type == operandSVValueFloat)
-	  || (op.left.type == operandSVValueX)
-	  || (op.left.type == operandSVValueY)
-	  || (op.left.type == operandSVValueZ)
-	  || (op.left.type == operandSVValueW)
-	  || (op.right.type == operandFloat) 
-	  || (op.right.type == operandSVValueX) 
-	  || (op.right.type == operandSVValueY) 
-	  || (op.right.type == operandSVValueZ) 
-	  || (op.right.type == operandSVValueW) 
-	  || (op.right.type == operandSVValueFloat))
+	if ((op->left.type == operandFloat) 
+	  || (op->left.type == operandSVValueFloat)
+	  || (op->left.type == operandSVValueX)
+	  || (op->left.type == operandSVValueY)
+	  || (op->left.type == operandSVValueZ)
+	  || (op->left.type == operandSVValueW)
+	  || (op->right.type == operandFloat) 
+	  || (op->right.type == operandSVValueX) 
+	  || (op->right.type == operandSVValueY) 
+	  || (op->right.type == operandSVValueZ) 
+	  || (op->right.type == operandSVValueW) 
+	  || (op->right.type == operandSVValueFloat))
 	{
-	  EvFloat f1 (eval.Float (op.left));
-	  EvFloat f2 (eval.Float (op.right));
+	  EvFloat f1 (eval.Float (op->left));
+	  EvFloat f2 (eval.Float (op->right));
           result = f1 == f2;
 	}
-	else if (OpTypesCompatible (op.left.type, operandBoolean) 
-	  && OpTypesCompatible (op.right.type, operandBoolean))
+	else if (OpTypesCompatible (op->left.type, operandBoolean) 
+	  && OpTypesCompatible (op->right.type, operandBoolean))
 	{
-	  EvBool b1 (eval.Boolean (op.left));
-	  EvBool b2 (eval.Boolean (op.right));
+	  EvBool b1 (eval.Boolean (op->left));
+	  EvBool b2 (eval.Boolean (op->right));
 	  result = b1 == b2;
 	}
 	else
 	{
-	  EvInt i1 (eval.Int (op.left));
-	  EvInt i2 (eval.Int (op.right));
+	  EvInt i1 (eval.Int (op->left));
+	  EvInt i2 (eval.Int (op->right));
 	  result = i1 == i2;
 	}
 	break;
       }
     case opNEqual:
       {
-	if ((op.left.type == operandFloat) 
-	  || (op.left.type == operandSVValueFloat)
-	  || (op.left.type == operandSVValueX)
-	  || (op.left.type == operandSVValueY)
-	  || (op.left.type == operandSVValueZ)
-	  || (op.left.type == operandSVValueW)
-	  || (op.right.type == operandFloat) 
-	  || (op.right.type == operandSVValueX) 
-	  || (op.right.type == operandSVValueY) 
-	  || (op.right.type == operandSVValueZ) 
-	  || (op.right.type == operandSVValueW) 
-	  || (op.right.type == operandSVValueFloat))
+	if ((op->left.type == operandFloat) 
+	  || (op->left.type == operandSVValueFloat)
+	  || (op->left.type == operandSVValueX)
+	  || (op->left.type == operandSVValueY)
+	  || (op->left.type == operandSVValueZ)
+	  || (op->left.type == operandSVValueW)
+	  || (op->right.type == operandFloat) 
+	  || (op->right.type == operandSVValueX) 
+	  || (op->right.type == operandSVValueY) 
+	  || (op->right.type == operandSVValueZ) 
+	  || (op->right.type == operandSVValueW) 
+	  || (op->right.type == operandSVValueFloat))
 	{
-	  EvFloat f1 (eval.Float (op.left));
-	  EvFloat f2 (eval.Float (op.right));
+	  EvFloat f1 (eval.Float (op->left));
+	  EvFloat f2 (eval.Float (op->right));
           result = f1 != f2;
 	}
-	else if (OpTypesCompatible (op.left.type, operandBoolean) 
-	  && OpTypesCompatible (op.right.type, operandBoolean))
+	else if (OpTypesCompatible (op->left.type, operandBoolean) 
+	  && OpTypesCompatible (op->right.type, operandBoolean))
 	{
-	  EvBool b1 (eval.Boolean (op.left));
-	  EvBool b2 (eval.Boolean (op.right));
+	  EvBool b1 (eval.Boolean (op->left));
+	  EvBool b2 (eval.Boolean (op->right));
 	  result = b1 != b2;
 	}
 	else
 	{
-	  EvInt i1 (eval.Int (op.left));
-	  EvInt i2 (eval.Int (op.right));
+	  EvInt i1 (eval.Int (op->left));
+	  EvInt i2 (eval.Int (op->right));
 	  result = i1 != i2;
 	}
 	break;
       }
     case opLesser:
       {
-	if ((op.left.type == operandFloat) 
-	  || (op.left.type == operandSVValueFloat)
-	  || (op.left.type == operandSVValueX)
-	  || (op.left.type == operandSVValueY)
-	  || (op.left.type == operandSVValueZ)
-	  || (op.left.type == operandSVValueW)
-	  || (op.right.type == operandFloat) 
-	  || (op.right.type == operandSVValueX) 
-	  || (op.right.type == operandSVValueY) 
-	  || (op.right.type == operandSVValueZ) 
-	  || (op.right.type == operandSVValueW) 
-	  || (op.right.type == operandSVValueFloat))
+	if ((op->left.type == operandFloat) 
+	  || (op->left.type == operandSVValueFloat)
+	  || (op->left.type == operandSVValueX)
+	  || (op->left.type == operandSVValueY)
+	  || (op->left.type == operandSVValueZ)
+	  || (op->left.type == operandSVValueW)
+	  || (op->right.type == operandFloat) 
+	  || (op->right.type == operandSVValueX) 
+	  || (op->right.type == operandSVValueY) 
+	  || (op->right.type == operandSVValueZ) 
+	  || (op->right.type == operandSVValueW) 
+	  || (op->right.type == operandSVValueFloat))
 	{
-	  EvFloat f1 (eval.Float (op.left));
-	  EvFloat f2 (eval.Float (op.right));
+	  EvFloat f1 (eval.Float (op->left));
+	  EvFloat f2 (eval.Float (op->right));
 	  result = (f1 < f2);
 	}
 	else
 	{
-	  EvInt i1 (eval.Int (op.left));
-	  EvInt i2 (eval.Int (op.right));
+	  EvInt i1 (eval.Int (op->left));
+	  EvInt i2 (eval.Int (op->right));
 	  result = i1 < i2;
 	}
 	break;
       }
     case opLesserEq:
       {
-	if ((op.left.type == operandFloat) 
-	  || (op.left.type == operandSVValueFloat)
-	  || (op.left.type == operandSVValueX)
-	  || (op.left.type == operandSVValueY)
-	  || (op.left.type == operandSVValueZ)
-	  || (op.left.type == operandSVValueW)
-	  || (op.right.type == operandFloat) 
-	  || (op.right.type == operandSVValueX) 
-	  || (op.right.type == operandSVValueY) 
-	  || (op.right.type == operandSVValueZ) 
-	  || (op.right.type == operandSVValueW) 
-	  || (op.right.type == operandSVValueFloat))
+	if ((op->left.type == operandFloat) 
+	  || (op->left.type == operandSVValueFloat)
+	  || (op->left.type == operandSVValueX)
+	  || (op->left.type == operandSVValueY)
+	  || (op->left.type == operandSVValueZ)
+	  || (op->left.type == operandSVValueW)
+	  || (op->right.type == operandFloat) 
+	  || (op->right.type == operandSVValueX) 
+	  || (op->right.type == operandSVValueY) 
+	  || (op->right.type == operandSVValueZ) 
+	  || (op->right.type == operandSVValueW) 
+	  || (op->right.type == operandSVValueFloat))
 	{
-	  EvFloat f1 (eval.Float (op.left));
-	  EvFloat f2 (eval.Float (op.right));
+	  EvFloat f1 (eval.Float (op->left));
+	  EvFloat f2 (eval.Float (op->right));
 	  result = (f1 <= f2);
 	}
 	else
 	{
-	  EvInt i1 (eval.Int (op.left));
-	  EvInt i2 (eval.Int (op.right));
+	  EvInt i1 (eval.Int (op->left));
+	  EvInt i2 (eval.Int (op->right));
 	  result = i1 <= i2;
 	}
 	break;
@@ -1348,47 +1201,11 @@ typename Evaluator::EvalResult csConditionEvaluator::EvaluateInternal (
   return result;
 }
 
-template<typename Evaluator>
-typename Evaluator::EvalResult csConditionEvaluator::Evaluate (
-  Evaluator& eval, csConditionID condition)
+void csConditionEvaluator::ResetEvaluationCache()
 {
-  LockType lock (mutex);
-  return EvaluateInternal (eval, condition);
-}
-
-void csConditionEvaluator::EnterEvaluation()
-{
-  LockType lock (mutex);
-  if (evalCache->evalDepth == 0)
-  {
-    evalCache->condChecked.SetSize (conditions.GetNumConditions ());
-    evalCache->condChecked.Clear();
-    evalCache->condResult.SetSize (conditions.GetNumConditions ());
-  }
-  evalCache->evalDepth++;
-}
-
-void csConditionEvaluator::LeaveEvaluation()
-{
-  LockType lock (mutex);
-  evalCache->evalDepth--;
-}
-
-void csConditionEvaluator::PushEvaluationState()
-{
-  LockType lock (mutex);
-  CS_ASSERT(evalStackDepth < maxEvalStackDepth);
-  evalStackDepth++;
-  evalCache = &(evalCacheStack[evalStackDepth]);
-}
-
-void csConditionEvaluator::PopEvaluationState()
-{
-  LockType lock (mutex);
-  CS_ASSERT(evalStackDepth > 0);
-  CS_ASSERT(evalCache->evalDepth == 0);
-  evalStackDepth--;
-  evalCache = &(evalCacheStack[evalStackDepth]);
+  condChecked.SetSize (GetNumConditions ());
+  condChecked.Clear();
+  condResult.SetSize (GetNumConditions ());
 }
 
 bool csConditionEvaluator::EvaluateConst (const CondOperation& op, bool& result)
@@ -1490,8 +1307,10 @@ bool csConditionEvaluator::EvaluateOperandBConst (const CondOperand& operand,
 	  result = false;
 	else
 	{
-	  CondOperation op = conditions.GetCondition (operand.operation);
-	  if (!EvaluateConst (op, result)) return false;
+	  const CondOperation* op = 
+	    conditions.GetKeyPointer (operand.operation);
+	  CS_ASSERT (op != 0);
+	  if (!EvaluateConst (*op, result)) return false;
 	}
       }
       break;
@@ -1543,33 +1362,31 @@ bool csConditionEvaluator::EvaluateOperandFConst (const CondOperand& operand,
 void csConditionEvaluator::GetUsedSVs2 (csConditionID condition, 
                                         MyBitArrayTemp& affectedSVs)
 {
-  CondOperation op = conditions.GetCondition (condition);
+  const CondOperation* op = conditions.GetKeyPointer (condition);
+  CS_ASSERT (op != 0);
 
-  if (op.left.type == operandOperation)
-    GetUsedSVs2 (op.left.operation, affectedSVs);
-  else if ((op.left.type >= operandSV) 
-    && (op.left.type <= operandSVValueBuffer))
+  if (op->left.type == operandOperation)
+    GetUsedSVs2 (op->left.operation, affectedSVs);
+  else if ((op->left.type >= operandSV) 
+    && (op->left.type <= operandSVValueBuffer))
   {
-    if (affectedSVs.GetSize() <= op.left.svLocation.svName)
-      affectedSVs.SetSize (op.left.svLocation.svName+1);
-    affectedSVs.SetBit (op.left.svLocation.svName);
+    if (affectedSVs.GetSize() <= op->left.svName) affectedSVs.SetSize (op->left.svName+1);
+    affectedSVs.SetBit (op->left.svName);
   }
 
-  if (op.right.type == operandOperation)
-    GetUsedSVs2 (op.right.operation, affectedSVs);
-  else if ((op.right.type >= operandSV) 
-    && (op.right.type <= operandSVValueBuffer))
+  if (op->right.type == operandOperation)
+    GetUsedSVs2 (op->right.operation, affectedSVs);
+  else if ((op->right.type >= operandSV) 
+    && (op->right.type <= operandSVValueBuffer))
   {
-    if (affectedSVs.GetSize() <= op.right.svLocation.svName)
-      affectedSVs.SetSize (op.right.svLocation.svName+1);
-    affectedSVs.SetBit (op.right.svLocation.svName);
+    if (affectedSVs.GetSize() <= op->right.svName) affectedSVs.SetSize (op->right.svName+1);
+    affectedSVs.SetBit (op->right.svName);
   }
 }
 
 void csConditionEvaluator::GetUsedSVs (csConditionID condition, 
                                        MyBitArrayTemp& affectedSVs)
 {
-  LockType lock (mutex);
   affectedSVs.Clear();
   if ((condition == csCondAlwaysFalse) || (condition == csCondAlwaysTrue))
     return;
@@ -1582,435 +1399,6 @@ void csConditionEvaluator::CompactMemory ()
   SliceAllocator::CompactAllocator();
   MyBitArrayAllocatorTemp::CompactAllocators();
 }
-
-csString csConditionEvaluator::GetConditionStringInternal (csConditionID id)
-{
-  if (id == csCondAlwaysFalse)
-    return "AlwaysFalse";
-  else if (id == csCondAlwaysTrue)
-    return "AlwaysTrue";
-  else
-    return OperationToString (conditions.GetCondition (id));
-}
-
-csString csConditionEvaluator::GetConditionString (csConditionID id)
-{
-  LockType lock (mutex);
-  return GetConditionStringInternal (id);
-}
-
-csString csConditionEvaluator::OperationToString (const CondOperation& operation)
-{
-  const char* opStr;
-  switch (operation.operation)
-  {
-    case opAnd:       opStr = "&&"; break;
-    case opOr:        opStr = "||"; break;
-    case opEqual:     opStr = "=="; break;
-    case opNEqual:    opStr = "!="; break;
-    case opLesser:    opStr = "<"; break;
-    case opLesserEq:  opStr = "<="; break;
-    default:
-      return (const char*)0;
-  }
-  
-  csString ret;
-  ret.Format ("%s %s %s",
-    OperandToString (operation.left).GetData(),
-    opStr,
-    OperandToString (operation.right).GetData());
-  return ret;
-}
-
-csString csConditionEvaluator::OperandToString (const CondOperand& operand)
-{
-  csString ret;
-  
-  switch (operand.type)
-  {
-    case operandOperation:
-      ret.Format ("(%s)", GetConditionStringInternal (operand.operation).GetData());
-      break;
-    case operandFloat:
-      ret.Format ("%g", operand.floatVal);
-      break;
-    case operandInt:
-      ret.Format ("%d", operand.intVal);
-      break;
-    case operandBoolean:
-      ret = operand.boolVal ? "true" : "false";
-      break;
-    case operandSV:
-    case operandSVValueInt:
-    case operandSVValueFloat:
-    case operandSVValueX:
-    case operandSVValueY:
-    case operandSVValueZ:
-    case operandSVValueW:
-    case operandSVValueTexture:
-    case operandSVValueBuffer:
-      {
-        ret.Format ("vars.\"%s\"", strings->Request (
-          operand.svLocation.svName));
-        if (operand.svLocation.indices != 0)
-        {
-          size_t n = *operand.svLocation.indices;
-          for (size_t i = 0; i < n; i++)
-            ret.AppendFmt ("[%zu]", operand.svLocation.indices[i+1]);
-        }
-	switch (operand.type)
-	{
-	  case operandSVValueInt:      ret.Append (".int"); break;
-	  case operandSVValueFloat:    ret.Append (".float"); break;
-	  case operandSVValueX:        ret.Append (".x"); break;
-	  case operandSVValueY:        ret.Append (".y"); break;
-	  case operandSVValueZ:        ret.Append (".z"); break;
-	  case operandSVValueW:        ret.Append (".w"); break;
-	  case operandSVValueTexture:  ret.Append (".texture"); break;
-	  case operandSVValueBuffer:   ret.Append (".buffer"); break;
-	  default: break;
-        }
-        break;
-      }
-    default: break;
-  }
-  
-  return ret;
-}
-
-//---------------------------------------------------------------------------
-
-ConditionsWriter::ConditionsWriter (csConditionEvaluator& evaluator)
- : evaluator (evaluator), currentDiskID (0)
-{
-  condToDiskID.Put (csCondAlwaysFalse, (uint32)csCondAlwaysFalse);
-  condToDiskID.Put (csCondAlwaysTrue, (uint32)csCondAlwaysTrue);
-  
-  savedConds = new csMemFile();
-  stringStore.StartUse (savedConds);
-}
-
-ConditionsWriter::~ConditionsWriter ()
-{
-  delete savedConds;
-}
-  
-struct ConditionHeader
-{
-  uint8 op;
-  uint8 leftType;
-  uint8 rightType;
-  uint8 flags;
-  
-  enum
-  { 
-    leftHasIndices = 1, 
-    rightHasIndices = 2
-  };
-  
-  ConditionHeader() : op (0), leftType (0), rightType (0), flags (0) {}
-};
-
-bool ConditionsWriter::WriteCondition (iFile* cacheFile,
-  CS::PluginCommon::ShaderCacheHelper::StringStoreWriter& strStore,
-  const CondOperation& cond)
-{
-  uint32 leftOperation = 0;
-  uint32 rightOperation = 0;
-  if (cond.left.type == operandOperation)
-    leftOperation = GetDiskID (cond.left.operation);
-  if (cond.right.type == operandOperation)
-    rightOperation = GetDiskID (cond.right.operation);
-
-  ConditionHeader head;
-  head.op = cond.operation;
-  head.leftType = cond.left.type;
-  if ((cond.left.type >= operandSV) && (cond.left.svLocation.indices != 0))
-    head.flags |= ConditionHeader::leftHasIndices;
-  head.rightType = cond.right.type;
-  if ((cond.right.type >= operandSV) && (cond.right.svLocation.indices != 0))
-    head.flags |= ConditionHeader::rightHasIndices;
-    
-  if (cacheFile->Write ((char*)&head, sizeof (head)) != sizeof (head))
-    return false;
-    
-  if (!WriteCondOperand (cacheFile, strStore, cond.left, leftOperation))
-    return false;
-  if (!WriteCondOperand (cacheFile, strStore, cond.right, rightOperation))
-    return false;
-  return true;
-}
-  
-bool ConditionsWriter::WriteCondOperand (iFile* cacheFile,
-  CS::PluginCommon::ShaderCacheHelper::StringStoreWriter& strStore,
-  const CondOperand& operand, uint32 operationID)
-{
-  switch (operand.type)
-  {
-    case operandOperation:
-      {
-        uint32 condLE = csLittleEndian::UInt32 (operationID);
-        return (cacheFile->Write ((char*)&condLE, sizeof (condLE))
-          == sizeof (condLE));
-      }
-      break;
-    case operandFloat:
-      {
-        uint32 valLE = csLittleEndian::UInt32 (
-          csIEEEfloat::FromNative (operand.floatVal));
-        return (cacheFile->Write ((char*)&valLE, sizeof (valLE))
-          == sizeof (valLE));
-      }
-      break;
-    case operandInt:
-      {
-        int32 valLE = csLittleEndian::Int32 (operand.intVal);
-        return (cacheFile->Write ((char*)&valLE, sizeof (valLE))
-          == sizeof (valLE));
-      }
-      break;
-    case operandBoolean:
-      {
-        int32 valLE = csLittleEndian::Int32 (int (operand.boolVal));
-        return (cacheFile->Write ((char*)&valLE, sizeof (valLE))
-          == sizeof (valLE));
-      }
-      break;
-    case operandSV:
-    case operandSVValueInt:
-    case operandSVValueFloat:
-    case operandSVValueX:
-    case operandSVValueY:
-    case operandSVValueZ:
-    case operandSVValueW:
-    case operandSVValueTexture:
-    case operandSVValueBuffer:
-      {
-        const char* nameStr = evaluator.GetStrings()->Request (operand.svLocation.svName);
-        uint32 nameIDLE = csLittleEndian::UInt32 (strStore.GetID (nameStr));
-        if (cacheFile->Write ((char*)&nameIDLE, sizeof (nameIDLE))
-            != sizeof (nameIDLE))
-          return false;
-        if (operand.svLocation.indices != 0)
-        {
-          size_t numInd = *operand.svLocation.indices;
-          uint32 numIndLE = csLittleEndian::UInt32 (uint32 (numInd));
-	  if (cacheFile->Write ((char*)&numIndLE, sizeof (numIndLE))
-	      != sizeof (numIndLE))
-	    return false;
-	  for (size_t i = 0; i < numInd; i++)
-	  {
-	   size_t ind = operand.svLocation.indices[i+1];
-	    uint32 indLE = csLittleEndian::UInt32 (uint32 (ind));
-	    if (cacheFile->Write ((char*)&indLE, sizeof (indLE))
-		!= sizeof (indLE))
-	      return false;
-	  }
-        }
-        return true;
-      }
-      break;
-    default:
-      CS_ASSERT(false);
-  }
-  return false;
-}
-
-uint32 ConditionsWriter::GetDiskID (csConditionID cond)
-{
-  const uint32* diskID = condToDiskID.GetElementPointer (cond);
-  if (diskID == 0)
-  {
-    WriteCondition (savedConds, stringStore,
-      evaluator.GetCondition (cond));
-    uint32 newID = currentDiskID++;
-    condToDiskID.Put (cond, newID);
-    return newID;
-  }
-  return *diskID;
-}
-
-uint32 ConditionsWriter::GetDiskID (csConditionID cond) const
-{
-  const uint32* diskID = condToDiskID.GetElementPointer (cond);
-  CS_ASSERT(diskID != 0);
-  return *diskID;
-}
-
-csPtr<iDataBuffer> ConditionsWriter::GetPersistentData ()
-{
-  stringStore.EndUse();
-  
-  uint32 numCondsLE = csLittleEndian::UInt32 (currentDiskID);
-  savedConds->Write ((char*)&numCondsLE, sizeof (currentDiskID));
-  
-  csPtr<iDataBuffer> buf (savedConds->GetAllData());
-  delete savedConds; savedConds = 0;
-  return buf;
-}
-
-
-ConditionsReader::ConditionsReader (csConditionEvaluator& evaluator,
-                                    iDataBuffer* src)
- : status (false), evaluator (evaluator)
-{
-  diskIDToCond.Put ((uint32)csCondAlwaysFalse, csCondAlwaysFalse);
-  diskIDToCond.Put ((uint32)csCondAlwaysTrue, csCondAlwaysTrue);
-
-  csMemFile savedConds (src, true);
-  
-  savedConds.SetPos (savedConds.GetSize() - sizeof (uint32));
-  uint32 numCondsLE;
-  if (savedConds.Read ((char*)&numCondsLE, sizeof (numCondsLE))
-    != sizeof (numCondsLE)) return;
-  numCondsLE = csLittleEndian::UInt32 (numCondsLE);
-  savedConds.SetPos (0);
-  
-  CS::PluginCommon::ShaderCacheHelper::StringStoreReader stringStore;
-  stringStore.StartUse (&savedConds);
-  
-  for (uint32 currentID = 0; currentID < numCondsLE; currentID++)
-  {
-    CondOperation newCond;
-    if (!ReadCondition (&savedConds, stringStore, newCond))
-      return;
-    diskIDToCond.Put (currentID,
-      evaluator.FindOptimizedCondition (newCond));
-  }
-  
-  stringStore.EndUse();
-
-  status = true;
-}
-
-ConditionsReader::~ConditionsReader ()
-{
-}
-  
-bool ConditionsReader::ReadCondition (iFile* cacheFile,
-  const CS::PluginCommon::ShaderCacheHelper::StringStoreReader& strStore,
-  CondOperation& cond)
-{
-  ConditionHeader head;
-  if (cacheFile->Read ((char*)&head, sizeof (head)) != sizeof (head))
-    return false;
-  cond.operation = (ConditionOp)head.op;
-  cond.left.type = (OperandType)head.leftType;
-  cond.right.type = (OperandType)head.rightType;
-    
-  if (!ReadCondOperand (cacheFile, strStore, cond.left,
-      (head.flags & ConditionHeader::leftHasIndices) != 0))
-    return false;
-  if (!ReadCondOperand (cacheFile, strStore, cond.right,
-      (head.flags & ConditionHeader::rightHasIndices) != 0))
-    return false;
-  return true;
-}
-  
-bool ConditionsReader::ReadCondOperand (iFile* cacheFile,
-  const CS::PluginCommon::ShaderCacheHelper::StringStoreReader& strStore,
-  CondOperand& operand, bool hasIndices)
-{
-  switch (operand.type)
-  {
-    case operandOperation:
-      {
-        uint32 condLE;
-        if (cacheFile->Read ((char*)&condLE, sizeof (condLE))
-            != sizeof (condLE))
-          return false;
-        operand.operation = GetConditionID (csLittleEndian::UInt32 (condLE));
-        return true;
-      }
-      break;
-    case operandFloat:
-      {
-        uint32 valLE;
-        if (cacheFile->Read ((char*)&valLE, sizeof (valLE))
-            != sizeof (valLE))
-          return false;
-        operand.floatVal = csIEEEfloat::ToNative (
-          csLittleEndian::UInt32 (valLE));
-        return true;
-      }
-      break;
-    case operandInt:
-      {
-        int32 valLE;
-        if (cacheFile->Read ((char*)&valLE, sizeof (valLE))
-            != sizeof (valLE))
-          return false;
-        operand.intVal = csLittleEndian::UInt32 (valLE);
-        return true;
-      }
-      break;
-    case operandBoolean:
-      {
-        int32 valLE;
-        if (cacheFile->Read ((char*)&valLE, sizeof (valLE))
-            != sizeof (valLE))
-          return false;
-        operand.boolVal = csLittleEndian::UInt32 (valLE) != 0;
-        return true;
-      }
-      break;
-    case operandSV:
-    case operandSVValueInt:
-    case operandSVValueFloat:
-    case operandSVValueX:
-    case operandSVValueY:
-    case operandSVValueZ:
-    case operandSVValueW:
-    case operandSVValueTexture:
-    case operandSVValueBuffer:
-      {
-        uint32 nameIDLE;
-        if (cacheFile->Read ((char*)&nameIDLE, sizeof (nameIDLE))
-            != sizeof (nameIDLE))
-          return false;
-        const char* nameStr = strStore.GetString (
-          csLittleEndian::UInt32 (nameIDLE));
-	operand.svLocation.svName = evaluator.GetStrings()->Request (nameStr);
-	operand.svLocation.bufferName = csRenderBuffer::GetBufferNameFromDescr (
-	  nameStr);
-        if (hasIndices)
-        {
-	  uint32 numIndLE;
-	  if (cacheFile->Read ((char*)&numIndLE, sizeof (numIndLE))
-	      != sizeof (numIndLE))
-	    return false;
-	  size_t numInd = csLittleEndian::UInt32 (numIndLE);
-	  operand.svLocation.indices = evaluator.AllocSVIndices (numInd);
-	  *operand.svLocation.indices = numInd;
-	  for (size_t i = 0; i < numInd; i++)
-	  {
-	    size_t& ind = operand.svLocation.indices[i+1];
-	    uint32 indLE;
-	    if (cacheFile->Read ((char*)&indLE, sizeof (indLE))
-		!= sizeof (indLE))
-	      return false;
-	    ind = csLittleEndian::UInt32 (indLE);
-	  }
-        }
-        return true;
-      }
-      break;
-    default:
-      /* This should _not_ occur ... but does in case of corrupted 
-         files - source of corruption unclear :/ */
-      return false;
-  }
-  return false;
-}
-  
-csConditionID ConditionsReader::GetConditionID (uint32 diskID) const
-{
-  const csConditionID* cond = diskIDToCond.GetElementPointer (diskID);
-  if (cond == 0) return (csConditionID)~0;
-  return *cond;
-}
-
-//---------------------------------------------------------------------------
 
 struct ValueSetWrapper
 {
@@ -2107,81 +1495,10 @@ struct ValueSetWrapper
   }
 };
 
-struct ValueSetBoolWrapper
-{
-  const ValueSetBool* startVals;
-
-  ValueSetBoolWrapper (const ValueSetBool& startVals) : startVals (&startVals) {}
-  ValueSetBoolWrapper (bool b);
-
-  // @@@ FIXME: probably cleaner to not (ab)use operators...
-  friend Logic3 operator== (ValueSetBoolWrapper& a, ValueSetBoolWrapper& b)
-  {
-    if ((a.startVals->IsSingleValue() && b.startVals->IsSingleValue())
-      && (a.startVals->GetSingleValue() == b.startVals->GetSingleValue()))
-    {
-      return Logic3::Truth;
-    }
-    else
-    {
-      if (a.startVals->Overlaps (*b.startVals))
-      {
-        return Logic3::Uncertain;
-      }
-      else
-      {
-        return Logic3::Lie;
-      }
-    }
-  }
-  friend Logic3 operator!= (ValueSetBoolWrapper& a, ValueSetBoolWrapper& b)
-  {
-    Logic3 r = !operator== (a, b);
-    return r;
-  }
-
-  operator Logic3 () const;
-};
-
-#include "csutil/custom_new_disable.h"
-
-class ValueSetBoolAlloc
-{
-  // Abuse the fact ValueSetBool doesn't need to be destructed
-  csArray<uint8*, csArrayElementHandler<uint8*>, TempHeapAlloc> blocks;
-  uint8* block;
-  size_t blockRemaining;
-  CS::Threading::Mutex mutex;
-public:
-  ValueSetBoolAlloc() : blockRemaining (0) {}
-  ~ValueSetBoolAlloc()
-  {
-    for (size_t i = 0; i < blocks.GetSize(); i++)
-      SliceAllocatorBool::Free (blocks[i]);
-  }
-  
-  ValueSetBool* Alloc()
-  {
-    CS::Threading::MutexScopedLock lock(mutex);
-    if (blockRemaining == 0)
-    {
-      blockRemaining = SliceAllocatorBool::sliceSize;
-      block = SliceAllocatorBool::Alloc (blockRemaining);
-      blocks.Push (block);
-    }
-    void* r = block;
-    block += sizeof (ValueSetBool);
-    blockRemaining -= sizeof (ValueSetBool);
-    return new (r) ValueSetBool;
-  }
-};
-
-#include "csutil/custom_new_enable.h"
-
 struct EvaluatorShadervarValuesSimple
 {
   typedef Logic3 EvalResult;
-  typedef ValueSetBoolWrapper BoolType;
+  typedef ValueSetWrapper BoolType;
   typedef ValueSetWrapper FloatType;
   typedef ValueSetWrapper IntType;
 
@@ -2192,10 +1509,11 @@ struct EvaluatorShadervarValuesSimple
 
   csConditionEvaluator& evaluator;
   const Variables& vars; 
-  ValueSetBool boolUncertain;
+  ValueSet boolMask;
 
   EvaluatorShadervarValuesSimple (csConditionEvaluator& evaluator, 
     const Variables& vars) : evaluator (evaluator), vars (vars), 
+    boolMask (ValueSet (0.0f) | ValueSet (1.0f)),
     createdValues (SliceAllocator::valueSetsPerSlice) {}
 
   BoolType Boolean (const CondOperand& operand);
@@ -2207,16 +1525,10 @@ struct EvaluatorShadervarValuesSimple
   EvalResult LogicOr (const CondOperand& a, const CondOperand& b);
 
   csBlockAllocator<ValueSet, SliceAllocator> createdValues;
-  ValueSetBoolAlloc createdBoolValues;
 protected:
   ValueSet& CreateValue ()
   {
     ValueSet* vs = createdValues.Alloc();
-    return *vs;
-  }
-  ValueSetBool& CreateValueBool ()
-  {
-    ValueSetBool* vs = createdBoolValues.Alloc();
     return *vs;
   }
   ValueSet& CreateValue (float f)
@@ -2225,27 +1537,13 @@ protected:
     *vs = f;
     return *vs;
   }
-  
-  const Variables::Values* ValuesForOperand (const CondOperand& operand)
-  {
-    return vars.GetValues (operand.svLocation.svName, 
-      operand.svLocation.indices ? *operand.svLocation.indices : 0,
-      operand.svLocation.indices ? operand.svLocation.indices+1 : 0);
-  }
 };
-
-Logic3 csConditionEvaluator::CheckConditionResultsInternal (
-  csConditionID condition, const Variables& vars)
-{
-  EvaluatorShadervarValuesSimple eval (*this, vars);
-  return EvaluateInternal (eval, condition);
-}
 
 Logic3 csConditionEvaluator::CheckConditionResults (
   csConditionID condition, const Variables& vars)
 {
-  LockType lock (mutex);
-  return CheckConditionResultsInternal (condition, vars);
+  EvaluatorShadervarValuesSimple eval (*this, vars);
+  return Evaluate (eval, condition);
 }
 
 EvaluatorShadervarValuesSimple::BoolType EvaluatorShadervarValuesSimple::Boolean (
@@ -2255,42 +1553,44 @@ EvaluatorShadervarValuesSimple::BoolType EvaluatorShadervarValuesSimple::Boolean
   {
     case operandOperation:
       {
-        ValueSetBool& vs = CreateValueBool();
-        Logic3 result (evaluator.EvaluateInternal (*this, operand.operation));
+        ValueSet& vs = CreateValue();
+        Logic3 result (evaluator.Evaluate (*this, operand.operation));
         switch (result.state)
         {
-          case Logic3::Truth: vs = true; break;
-          case Logic3::Lie:   vs = false; break;
-          default: /* vs defaults to 'uncertainity' */ break;
+        case Logic3::Truth: vs = 1.0f; break;
+        case Logic3::Lie:   vs = 0.0f; break;
+        default:
+          vs = boolMask;
         }
-        return ValueSetBoolWrapper (vs);
+        return ValueSetWrapper (vs);
       }
     case operandBoolean:
       {
-        ValueSetBool& vs = CreateValueBool();
-        vs = operand.boolVal;
-        return ValueSetBoolWrapper (vs);
+        ValueSet& vs = CreateValue();
+        vs = operand.boolVal ? 1.0f : 0.0f;
+        return ValueSetWrapper (vs);
       }
     case operandSV:
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
-        ValueSetBool& vs = CreateValueBool();
-        vs = startValues->GetVar();
-        return ValueSetBoolWrapper (vs);
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
+        ValueSet& vs = CreateValue();
+        vs = startValues->GetVar() & boolMask;
+        return ValueSetWrapper (vs);
       }
     case operandSVValueTexture:
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
-        ValueSetBool& vs = CreateValueBool();
-        vs = startValues->GetTex();
-        return ValueSetBoolWrapper (vs);
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
+        ValueSet& vs = CreateValue();
+        vs = startValues->GetTex() & boolMask;
+        return ValueSetWrapper (vs);
       }
     case operandSVValueBuffer:
+      //@@TODO: CHECK FOR DEFAULTBUFFERS
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
-        ValueSetBool& vs = CreateValueBool();
-        vs = startValues->GetBuf();
-        return ValueSetBoolWrapper (vs);
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
+        ValueSet& vs = CreateValue();
+        vs = startValues->GetBuf() & boolMask;
+        return ValueSetWrapper (vs);
       }
     default:
       {
@@ -2298,7 +1598,7 @@ EvaluatorShadervarValuesSimple::BoolType EvaluatorShadervarValuesSimple::Boolean
       }
   }
 
-  return ValueSetBoolWrapper (boolUncertain);
+  return ValueSetWrapper (boolMask);
 }
 
 EvaluatorShadervarValuesSimple::FloatType EvaluatorShadervarValuesSimple::Float (
@@ -2321,7 +1621,7 @@ EvaluatorShadervarValuesSimple::FloatType EvaluatorShadervarValuesSimple::Float 
     case operandSVValueFloat:
     case operandSVValueInt:
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
         return ValueSetWrapper (startValues->GetVec (0));
       }
     case operandSVValueX:
@@ -2329,7 +1629,7 @@ EvaluatorShadervarValuesSimple::FloatType EvaluatorShadervarValuesSimple::Float 
     case operandSVValueZ:
     case operandSVValueW:
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
 	int c = operand.type - operandSVValueX;
         return ValueSetWrapper (startValues->GetVec (c));
       }
@@ -2347,12 +1647,12 @@ EvaluatorShadervarValuesSimple::EvalResult EvaluatorShadervarValuesSimple::Logic
 {
   Logic3 rA;
   CS_ASSERT (a.type == operandOperation);
-  rA = evaluator.CheckConditionResultsInternal (a.operation,
+  rA = evaluator.CheckConditionResults (a.operation,
     vars);
 
   Logic3 rB;
   CS_ASSERT (b.type == operandOperation);
-  rB = evaluator.CheckConditionResultsInternal (b.operation,
+  rB = evaluator.CheckConditionResults (b.operation,
     vars);
   return rA && rB;
 }
@@ -2362,12 +1662,12 @@ EvaluatorShadervarValuesSimple::EvalResult EvaluatorShadervarValuesSimple::Logic
 {
   Logic3 rA;
   CS_ASSERT (a.type == operandOperation);
-  rA = evaluator.CheckConditionResultsInternal (a.operation,
+  rA = evaluator.CheckConditionResults (a.operation,
     vars);
 
   Logic3 rB;
   CS_ASSERT (b.type == operandOperation);
-  rB = evaluator.CheckConditionResultsInternal (b.operation,
+  rB = evaluator.CheckConditionResults (b.operation,
     vars);
   return rA || rB;
 }
@@ -2547,69 +1847,10 @@ struct JanusValueSet
   }
 };
 
-struct JanusValueSetBool
-{
-  const ValueSetBool* startVals;
-  ValueSetBool* trueVals;
-  ValueSetBool* falseVals;
-
-  JanusValueSetBool (const ValueSetBool& startVals, ValueSetBool& trueVals, 
-    ValueSetBool& falseVals) : startVals (&startVals), trueVals (&trueVals), 
-    falseVals (&falseVals) {}
-
-  // @@@ FIXME: probably cleaner to not (ab)use operators...
-  friend Logic3 operator== (JanusValueSetBool& a, JanusValueSetBool& b)
-  {
-    if ((a.startVals->IsSingleValue() && b.startVals->IsSingleValue())
-      && (a.startVals->GetSingleValue() == b.startVals->GetSingleValue()))
-    {
-      *a.trueVals = *b.trueVals = *a.startVals;
-      *a.falseVals = *b.falseVals = !*a.startVals;
-      return Logic3::Truth;
-    }
-    else
-    {
-      if (a.startVals->Overlaps (*b.startVals))
-      {
-        // Make the "true" values those that both share.
-        ValueSetBool overlap = *a.startVals & *b.startVals;
-        *a.trueVals = *b.trueVals = overlap;
-        // Take the overlap out of the "false" values.
-        *a.falseVals = *a.startVals & !overlap;
-        *b.falseVals = *b.startVals & !overlap;
-        return Logic3::Uncertain;
-      }
-      else
-      {
-        *a.trueVals = *a.falseVals = *a.startVals;
-        *b.trueVals = *b.falseVals = *b.startVals;
-        return Logic3::Lie;
-      }
-    }
-  }
-  friend Logic3 operator!= (JanusValueSetBool& a, JanusValueSetBool& b)
-  {
-    Logic3 r = !operator== (a, b);
-    ValueSetBool t1 = *a.trueVals;
-    ValueSetBool t2 = *b.trueVals;
-    ValueSetBool f1 = *a.falseVals;
-    ValueSetBool f2 = *b.falseVals;
-    /* To make != true, we need the ranges that makes == false
-     * and vice versa */
-    *a.trueVals = f1;
-    *b.trueVals = f2;
-    *a.falseVals = t1;
-    *b.falseVals = t2;
-    return r;
-  }
-
-  operator Logic3 () const;
-};
-
 struct EvaluatorShadervarValues
 {
   typedef Logic3 EvalResult;
-  typedef JanusValueSetBool BoolType;
+  typedef JanusValueSet BoolType;
   typedef JanusValueSet FloatType;
   typedef JanusValueSet IntType;
 
@@ -2622,11 +1863,12 @@ struct EvaluatorShadervarValues
   const Variables& vars; 
   Variables& trueVars; 
   Variables& falseVars;
-  ValueSetBool boolUncertain;
+  ValueSet boolMask;
 
   EvaluatorShadervarValues (csConditionEvaluator& evaluator, const Variables& vars,
     Variables& trueVars, Variables& falseVars) : evaluator (evaluator), 
     vars (vars), trueVars (trueVars), falseVars (falseVars),
+    boolMask (ValueSet (0.0f) | ValueSet (1.0f)),
     createdValues (SliceAllocator::valueSetsPerSlice) {}
 
   BoolType Boolean (const CondOperand& operand);
@@ -2638,16 +1880,10 @@ struct EvaluatorShadervarValues
   EvalResult LogicOr (const CondOperand& a, const CondOperand& b);
 
   csBlockAllocator<ValueSet/*, BlockAllocatorSlicePolicy*/> createdValues;
-  ValueSetBoolAlloc createdBoolValues;
 protected:
   ValueSet& CreateValue ()
   {
     ValueSet* vs = createdValues.Alloc();
-    return *vs;
-  }
-  ValueSetBool& CreateValueBool ()
-  {
-    ValueSetBool* vs = createdBoolValues.Alloc();
     return *vs;
   }
   ValueSet& CreateValue (float f)
@@ -2656,37 +1892,15 @@ protected:
     *vs = f;
     return *vs;
   }
-  
-  const Variables::Values* ValuesForOperand (const CondOperand& operand)
-  {
-    return vars.GetValues (operand.svLocation.svName, 
-      operand.svLocation.indices ? *operand.svLocation.indices : 0,
-      operand.svLocation.indices ? operand.svLocation.indices+1 : 0);
-  }
-  
-  Variables::Values* ValuesForOperand (Variables& vars, const CondOperand& operand)
-  {
-    return vars.GetValues (operand.svLocation.svName, 
-      operand.svLocation.indices ? *operand.svLocation.indices : 0,
-      operand.svLocation.indices ? operand.svLocation.indices+1 : 0);
-  }
 };
-
-Logic3 csConditionEvaluator::CheckConditionResultsInternal (
-  csConditionID condition, const Variables& vars, 
-  Variables& trueVars, Variables& falseVars)
-{
-  trueVars = falseVars = vars;
-  EvaluatorShadervarValues eval (*this, vars, trueVars, falseVars);
-  return EvaluateInternal (eval, condition);
-}
 
 Logic3 csConditionEvaluator::CheckConditionResults (
   csConditionID condition, const Variables& vars, 
   Variables& trueVars, Variables& falseVars)
 {
-  LockType lock (mutex);
-  return CheckConditionResultsInternal (condition, vars, trueVars, falseVars);
+  trueVars = falseVars = vars;
+  EvaluatorShadervarValues eval (*this, vars, trueVars, falseVars);
+  return Evaluate (eval, condition);
 }
 
 EvaluatorShadervarValues::BoolType EvaluatorShadervarValues::Boolean (
@@ -2695,61 +1909,64 @@ EvaluatorShadervarValues::BoolType EvaluatorShadervarValues::Boolean (
   switch (operand.type)
   {
     case operandOperation:
+    {
+      /* Don't use the local trueVars/falseVars since the condition
+      checking may change them to something which is not correct for
+      the whole condition. */
+      Variables trueVars;
+      Variables falseVars;
+      Logic3 result (evaluator.CheckConditionResults (operand.operation,
+        vars, trueVars, falseVars));
+
+      ValueSet& vs = CreateValue();
+      ValueSet& vsTrue = CreateValue();
+      ValueSet& vsFalse = CreateValue();
+      switch (result.state)
       {
-        /* Don't use the local trueVars/falseVars since the condition
-           checking may change them to something which is not correct for
-           the whole condition. */
-        Logic3 result (evaluator.CheckConditionResultsInternal (operand.operation,
-          vars));
-        
-        ValueSetBool& vs = CreateValueBool();
-        ValueSetBool& vsTrue = CreateValueBool();
-        ValueSetBool& vsFalse = CreateValueBool();
-        switch (result.state)
-        {
-          case Logic3::Truth: vs = true; break;
-          case Logic3::Lie:   vs = false; break;
-          default:
-            /* vs defaults to 'uncertainity' */
-            vsTrue = true;
-            vsFalse = false;
-        }
-        return JanusValueSetBool (vs, vsTrue, vsFalse);
+      case Logic3::Truth: vs = 1.0f; break;
+      case Logic3::Lie:   vs = 0.0f; break;
+      default:
+        vs = boolMask;
+        vsTrue = 1.0f;
+        vsFalse = 0.0f;
       }
+      return JanusValueSet (vs, vsTrue, vsFalse);
+    }
     case operandBoolean:
       {
-        ValueSetBool& vs = CreateValueBool();
-        vs = operand.boolVal;
-        ValueSetBool& vsTrue = CreateValueBool();
-        ValueSetBool& vsFalse = CreateValueBool();
-        return JanusValueSetBool (vs, vsTrue, vsFalse);
+        ValueSet& vs = CreateValue();
+        vs = operand.boolVal ? 1.0f : 0.0f;
+        ValueSet& vsTrue = CreateValue();
+        ValueSet& vsFalse = CreateValue();
+        return JanusValueSet (vs, vsTrue, vsFalse);
       }
     case operandSV:
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
-        ValueSetBool& vs = CreateValueBool();
-        vs = startValues->GetVar();
-        Variables::Values* valuesTrue = ValuesForOperand (trueVars, operand);
-        Variables::Values* valuesFalse = ValuesForOperand (falseVars, operand);
-        return JanusValueSetBool (vs, valuesTrue->GetVar(), valuesFalse->GetVar());
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
+        ValueSet& vs = CreateValue();
+        vs = startValues->GetVar() & boolMask;
+        Variables::Values* valuesTrue = trueVars.GetValues (operand.svName);
+        Variables::Values* valuesFalse = falseVars.GetValues (operand.svName);
+        return JanusValueSet (vs, valuesTrue->GetVar(), valuesFalse->GetVar());
       }
     case operandSVValueTexture:
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
-        ValueSetBool& vs = CreateValueBool();
-        vs = startValues->GetTex();
-        Variables::Values* valuesTrue = ValuesForOperand (trueVars, operand);
-        Variables::Values* valuesFalse = ValuesForOperand (falseVars, operand);
-        return JanusValueSetBool (vs, valuesTrue->GetTex(), valuesFalse->GetTex());
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
+        ValueSet& vs = CreateValue();
+        vs = startValues->GetTex() & boolMask;
+        Variables::Values* valuesTrue = trueVars.GetValues (operand.svName);
+        Variables::Values* valuesFalse = falseVars.GetValues (operand.svName);
+        return JanusValueSet (vs, valuesTrue->GetTex(), valuesFalse->GetTex());
       }
     case operandSVValueBuffer:
+      //@@TODO: CHECK FOR DEFAULTBUFFERS
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
-        ValueSetBool& vs = CreateValueBool();
-        vs = startValues->GetBuf();
-        Variables::Values* valuesTrue = ValuesForOperand (trueVars, operand);
-        Variables::Values* valuesFalse = ValuesForOperand (falseVars, operand);
-        return JanusValueSetBool (vs, valuesTrue->GetBuf(), valuesFalse->GetBuf());
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
+        ValueSet& vs = CreateValue();
+        vs = startValues->GetBuf() & boolMask;
+        Variables::Values* valuesTrue = trueVars.GetValues (operand.svName);
+        Variables::Values* valuesFalse = falseVars.GetValues (operand.svName);
+        return JanusValueSet (vs, valuesTrue->GetBuf(), valuesFalse->GetBuf());
       }
     default:
       {
@@ -2757,9 +1974,9 @@ EvaluatorShadervarValues::BoolType EvaluatorShadervarValues::Boolean (
       }
   }
 
-  ValueSetBool& vsTrue = CreateValueBool();
-  ValueSetBool& vsFalse = CreateValueBool();
-  return JanusValueSetBool (boolUncertain, vsTrue, vsFalse);
+  ValueSet& vsTrue = CreateValue();
+  ValueSet& vsFalse = CreateValue();
+  return JanusValueSet (boolMask, vsTrue, vsFalse);
 }
 
 EvaluatorShadervarValues::FloatType EvaluatorShadervarValues::Float (
@@ -2790,9 +2007,9 @@ EvaluatorShadervarValues::FloatType EvaluatorShadervarValues::Float (
     case operandSVValueFloat:
     case operandSVValueInt:
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
-        Variables::Values* valuesTrue = ValuesForOperand (trueVars, operand);
-        Variables::Values* valuesFalse = ValuesForOperand (falseVars, operand);
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
+        Variables::Values* valuesTrue = trueVars.GetValues (operand.svName);
+        Variables::Values* valuesFalse = falseVars.GetValues (operand.svName);
         return JanusValueSet (startValues->GetVec (0), valuesTrue->GetVec (0), valuesFalse->GetVec (0));
       }
     case operandSVValueX:
@@ -2800,9 +2017,9 @@ EvaluatorShadervarValues::FloatType EvaluatorShadervarValues::Float (
     case operandSVValueZ:
     case operandSVValueW:
       {
-        const Variables::Values* startValues = ValuesForOperand (operand);
-        Variables::Values* valuesTrue = ValuesForOperand (trueVars, operand);
-        Variables::Values* valuesFalse = ValuesForOperand (falseVars, operand);
+        const Variables::Values* startValues = vars.GetValues (operand.svName);
+        Variables::Values* valuesTrue = trueVars.GetValues (operand.svName);
+        Variables::Values* valuesFalse = falseVars.GetValues (operand.svName);
 	int c = operand.type - operandSVValueX;
         return JanusValueSet (startValues->GetVec (c), valuesTrue->GetVec (c), valuesFalse->GetVec (c));
       }
@@ -2824,7 +2041,7 @@ EvaluatorShadervarValues::EvalResult EvaluatorShadervarValues::LogicAnd (
   Variables trueVarsA; 
   Variables falseVarsA;
   CS_ASSERT (a.type == operandOperation);
-  rA = evaluator.CheckConditionResultsInternal (a.operation,
+  rA = evaluator.CheckConditionResults (a.operation,
     vars, trueVarsA, falseVarsA);
 
   Logic3 rB;
@@ -2833,7 +2050,7 @@ EvaluatorShadervarValues::EvalResult EvaluatorShadervarValues::LogicAnd (
   {
     /* A is definitely true: so the possible values for a true/false outcome
      * are those of evaluating B. */
-    rB = evaluator.CheckConditionResultsInternal (b.operation,
+    rB = evaluator.CheckConditionResults (b.operation,
       trueVarsA, trueVars, falseVars);
   }
   else if (rA.state == Logic3::Lie)
@@ -2849,13 +2066,13 @@ EvaluatorShadervarValues::EvalResult EvaluatorShadervarValues::LogicAnd (
     Logic3 rAT;
     Variables trueVarsAT;
     Variables falseVarsAT;
-    rAT = evaluator.CheckConditionResultsInternal (b.operation,
+    rAT = evaluator.CheckConditionResults (b.operation,
       trueVarsA, trueVarsAT, falseVarsAT);
 
     Logic3 rAF;
     Variables trueVarsAF;
     Variables falseVarsAF;
-    rAF = evaluator.CheckConditionResultsInternal (b.operation,
+    rAF = evaluator.CheckConditionResults (b.operation,
       falseVarsA, trueVarsAF, falseVarsAF);
 
     trueVars = trueVarsAT;
@@ -2878,7 +2095,7 @@ EvaluatorShadervarValues::EvalResult EvaluatorShadervarValues::LogicOr (
   Variables trueVarsA; 
   Variables falseVarsA;
   CS_ASSERT (a.type == operandOperation);
-  rA = evaluator.CheckConditionResultsInternal (a.operation,
+  rA = evaluator.CheckConditionResults (a.operation,
     vars, trueVarsA, falseVarsA);
 
   Logic3 rB;
@@ -2895,7 +2112,7 @@ EvaluatorShadervarValues::EvalResult EvaluatorShadervarValues::LogicOr (
   {
     /* A is definitely false: so the possible values for a true/false outcome
      * are those of evaluating B. */
-    rB = evaluator.CheckConditionResultsInternal (b.operation,
+    rB = evaluator.CheckConditionResults (b.operation,
       falseVarsA, trueVars, falseVars);
   }
   else
@@ -2903,13 +2120,13 @@ EvaluatorShadervarValues::EvalResult EvaluatorShadervarValues::LogicOr (
     Logic3 rAT;
     Variables trueVarsAT;
     Variables falseVarsAT;
-    rAT = evaluator.CheckConditionResultsInternal (b.operation,
+    rAT = evaluator.CheckConditionResults (b.operation,
       trueVarsA, trueVarsAT, falseVarsAT);
 
     Logic3 rAF;
     Variables trueVarsAF;
     Variables falseVarsAF;
-    rAF = evaluator.CheckConditionResultsInternal (b.operation,
+    rAF = evaluator.CheckConditionResults (b.operation,
       falseVarsA, trueVarsAF, falseVarsAF);
 
     trueVars = trueVarsAT | falseVarsAT | trueVarsAF;

@@ -31,7 +31,6 @@
 #include "csutil/weakref.h"
 #include "csutil/util.h"
 #include "csutil/threading/mutex.h"
-#include "csutil/threadmanager.h"
 
 struct iConsoleOutput;
 struct iFile;
@@ -68,8 +67,7 @@ protected:
  * and other output devices to show appropriate messages based on
  * what comes from the reporter plugin.
  */
-class csReporterListener :
-  public ThreadedCallable<csReporterListener>,
+class csReporterListener : 
   public scfImplementation3<csReporterListener, 
                             iStandardReporterListener,
                             iComponent,
@@ -101,7 +99,6 @@ private:
   csEventID Frame;
 
   void WriteLine (int severity, const char* msgID, const char* line);
-  iObjectRegistry* GetObjectRegistry() const { return object_reg; }
 public:
   csReporterListener (iBase *iParent);
   virtual ~csReporterListener ();
@@ -133,9 +130,8 @@ public:
   virtual void ShowMessageID (int severity, bool showid);
   virtual const char* GetDebugFile ();
 
-  THREADED_CALLABLE_DECL4(csReporterListener, Report, csThreadReturn,
-    iReporter*, reporter, int, severity, const char*, msgId, const char*,
-    description, HIGH, false, false);
+  bool Report (iReporter* reporter, int severity, const char* msgId,
+  	const char* description);
 
   // This is not an embedded interface in order to avoid
   // a circular reference between this registered event handler

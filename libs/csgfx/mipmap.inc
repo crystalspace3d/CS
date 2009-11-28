@@ -77,7 +77,7 @@ static void MIPMAP_NAME (unsigned int w, unsigned int h, const uint8 *src, csRGB
 #  endif
 #else
 #  ifdef MIPMAP_TRANSPARENT
-static void MIPMAP_NAME (unsigned int w, unsigned int h, const csRGBpixel *src, csRGBpixel *dst, csRGBpixel _transp)
+static void MIPMAP_NAME (unsigned int w, unsigned int h, const csRGBpixel *src, csRGBpixel *dst, csRGBpixel transp)
 #  else
 static void MIPMAP_NAME (unsigned int w, unsigned int h, const csRGBpixel *src, csRGBpixel *dst)
 #  endif
@@ -90,21 +90,10 @@ static void MIPMAP_NAME (unsigned int w, unsigned int h, const csRGBpixel *src, 
   // retrieve a source pixel as RGB
 #  define MIPMAP_RGB(p)		*((uint32 *)pal + *((uint8*)p))
   // check if source pixel is transparent
-#  define MIPMAP_ISKEY(p)	(*p == transp)
+#  define MIPMAP_ISKEY(p)	((unsigned int)(*((uint8*)p)) == (unsigned int)transp)
 # else
 #  define MIPMAP_RGB(p)		*(uint32 *)p
-#    ifdef MIPMAP_TRANSPARENT
-  union
-  {
-    uint8 rgba[4];
-    uint32 ui32;
-  } transp;
-  transp.rgba[0] = _transp.red;
-  transp.rgba[1] = _transp.green;
-  transp.rgba[2] = _transp.blue;
-  transp.rgba[3] = _transp.alpha;
-#    define MIPMAP_ISKEY(p)	(*(uint32 *)p == transp.ui32)
-#   endif
+#  define MIPMAP_ISKEY(p)	(*(uint32 *)p == *(uint32 *)( (intptr_t)&transp))
 # endif 
 #endif
 

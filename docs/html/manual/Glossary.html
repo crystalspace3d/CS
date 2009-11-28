@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: A. Glossary</title>
+<title>Crystal Space 1.4.0: A. Glossary</title>
 
-<meta name="description" content="Crystal Space 1.9.0: A. Glossary">
-<meta name="keywords" content="Crystal Space 1.9.0: A. Glossary">
+<meta name="description" content="Crystal Space 1.4.0: A. Glossary">
+<meta name="keywords" content="Crystal Space 1.4.0: A. Glossary">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -67,8 +67,8 @@ well as in discussions of 3D graphics.
 <dl compact="compact">
 <dt> <em>3D Renderer</em></dt>
 <dd><p>The 3D renderer plugin in Crystal Space is responsible for rendering
-3D objects (polygons) on the canvas. The two renderers we have now
-are the null and the OpenGL renderers.
+3D objects (polygons) on the canvas.  We have several renderers but the two
+most common are the software and OpenGL renderers.
 </p>
 </dd>
 <dt> <em>3D Sprite</em></dt>
@@ -82,10 +82,6 @@ through the Cal3d library.
 <dt> <em>Ambient (lighting)</em></dt>
 <dd><p>Ambient lighting is a constant amount of lighting that is added to all other
 lighting.
-</p>
-</dd>
-<dt> <em>AniMesh</em></dt>
-<dd><p>An animesh is a hierarchical animated mesh.
 </p>
 </dd>
 <dt> <em>Camera Space</em></dt>
@@ -104,7 +100,7 @@ will represent the screen.  The 3D renderer will use a canvas to render on.
 <dt> <em>Detail Texture</em></dt>
 <dd><p>A detail texture is a texture that is blended on top of another texture
 so that the texture gets more detail.  Crystal Space supports this by
-using the <samp>&lsquo;std_lighting_detail&rsquo;</samp> shader.
+allowing several detail layers on top of the base texture in a material.
 </p>
 </dd>
 <dt> <em>Event Queue</em></dt>
@@ -130,14 +126,14 @@ light-map.  Light-map space is closely related to texture space.
 <dt> <em>Lumel</em></dt>
 <dd><p>A lumel is a pixel on a lightmap.  A lumel corresponds with one light
 value (red, green, blue) and represents the lighting values of a block of
-texels on the original texture.
+texels on the original texture.  Usually this block is 16x16 big.
 </p>
 </dd>
 <dt> <em>Material</em></dt>
 <dd><p>A material represents how some object or polygon looks.  In the most common
 case a material is just a texture. But a material can contain additional
-information which is used by some shader to do various effects like specular,
-bump mapping, parallax mapping, <small class="dots">...</small>.
+information like detail textures (textures that are blended on top of
+the base texture).  In future materials will be able to do much more.
 </p>
 </dd>
 <dt> <em>Mesh Factory</em></dt>
@@ -171,7 +167,8 @@ typically centered around (0,0,0).
 </p>
 </dd>
 <dt> <em>Particle System</em></dt>
-<dd><p>A particle system is another kind of mesh object.
+<dd><p>A particle system is another kind of mesh object.  Crystal Space supports
+several particle systems (snow, rain, fire, explosion, emit, ...).
 </p>
 </dd>
 <dt> <em>Plugin</em></dt>
@@ -215,6 +212,17 @@ engine to render on a texture.  Procedural textures can be used on
 all objects in Crystal Space that can use textures.
 </p>
 </dd>
+<dt> <em>Region</em></dt>
+<dd><p>A region in Crystal Space is a collection of objects (textures, materials,
+mesh objects, mesh factories, sectors, sequences, triggers, shared variables,
+collections, <small class="dots">...</small>).  Regions are not a geometrical concept.  It is possible
+to define a region which contains all wall geometry and a region which
+contains all moving geometry.  Usually though, regions represent some area
+in the world.  You can use regions to dynamically load/unload parts of the
+world.  This is useful if you have really big worlds that don't fit in
+memory at once.
+</p>
+</dd>
 <dt> <em>Reporter</em></dt>
 <dd><p>The reporter is a plugin in Crystal Space that listens to messages.
 It supports the notion of errors, warnings, and notification messages.
@@ -249,7 +257,7 @@ Screen space is perspective corrected camera space.
 which will represent the geometry of the sector.  A common mesh object is
 the genmesh mesh object which is usually used to put walls around a sector
 (that way the sector represents a room).  Other mesh objects like 3d sprites
-or AniMeshes can be used for actors.
+can be used for actors.
 </p>
 </dd>
 <dt> <em>Texel</em></dt>

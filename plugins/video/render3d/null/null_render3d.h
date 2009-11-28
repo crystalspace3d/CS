@@ -22,7 +22,6 @@
 #include "ivideo/graph2d.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/rndbuf.h"
-#include "ivideo/shader/shader.h"
 #include "iutil/comp.h"
 #include "iutil/eventh.h"
 
@@ -30,7 +29,6 @@
 #include "csutil/flags.h"
 #include "csutil/weakref.h"
 #include "csutil/scf_implementation.h"
-#include "csgeom/matrix4.h"
 #include "csgeom/plane3.h"
 
 #include "null_txt.h"
@@ -39,9 +37,6 @@ struct iObjectRegistry;
 struct iGraphics2D;
 struct iShaderManager;
 struct iBugPlug;
-
-// To silence EnableZOffset/DisableZOffset
-#include "csutil/deprecated_warn_off.h"
 
 class csNullGraphics3D : public scfImplementation2<csNullGraphics3D, 
 						   iGraphics3D,
@@ -82,22 +77,10 @@ public:
   int GetWidth () const { return w; }
   int GetHeight () const { return h; }
   const csGraphics3DCaps *GetCaps () const { return &Caps; }
-  void SetPerspectiveCenter (int x, int y)
-  { cx = x; cy = y; explicitProjection = false; }
+  void SetPerspectiveCenter (int x, int y) { cx = x; cy = y; }
   void GetPerspectiveCenter (int& x, int& y) const { x = cx, y = cy; }
-  void SetPerspectiveAspect (float aspect)
-  { a = aspect; explicitProjection = false; }
-  float GetPerspectiveAspect () const{ return a; }
-  const CS::Math::Matrix4& GetProjectionMatrix()
-  {
-    if (!explicitProjection && needMatrixUpdate) ComputeProjectionMatrix();
-    return projectionMatrix;
-  }
-  void SetProjectionMatrix (const CS::Math::Matrix4& m)
-  {
-    projectionMatrix = m;
-    explicitProjection = true;
-  }
+  void SetPerspectiveAspect (float aspect) { a = aspect; }
+  float GetPerspectiveAspect () const { return a; }
   
   bool SetRenderTarget (iTextureHandle* handle,	bool persistent = false,
     int subtexture = 0,	csRenderTargetAttachment attachment = rtaColor0);
@@ -107,10 +90,6 @@ public:
   iTextureHandle* GetRenderTarget (csRenderTargetAttachment attachment = rtaColor0,
     int* subtexture = 0) const;
   void UnsetRenderTargets();
-  void CopyFromRenderTargets (size_t num, 
-    csRenderTargetAttachment* attachments,
-    iTextureHandle** textures,
-    int* subtextures = 0) {}
   
   bool BeginDraw (int DrawFlags);
   void FinishDraw ();
@@ -147,11 +126,9 @@ public:
   {
   }
   void SetTextureState (int* units, iTextureHandle** textures, int count);
-  void SetTextureComparisonModes (int*, CS::Graphics::TextureComparisonMode*,
-    int) {}
   void DrawMesh (const CS::Graphics::CoreRenderMesh* mymesh,
     const CS::Graphics::RenderMeshModes& modes,
-    const csShaderVariableStack& stack);
+    const iShaderVarStack* stacks);
   void SetWriteMask (bool red, bool green, bool blue, bool alpha);
   void GetWriteMask (bool& red, bool& green, bool& blue, bool& alpha) const;
   void SetZMode (csZBufMode mode) { zmode = mode; }
@@ -168,11 +145,10 @@ public:
   iHalo* CreateHalo (float /*iR*/, float /*iG*/, float /*iB*/,
     unsigned char* /*iAlpha*/, int /*iWidth*/, int /*iHeight*/) { return 0; }
 
+  void RemoveFromCache (iRendererLightmap* /*rlm*/) { }
   void SetWorldToCamera (const csReversibleTransform& w2c) { this->w2c = w2c; }
   const csReversibleTransform& GetWorldToCamera () { return w2c; }
   void DrawSimpleMesh (const csSimpleRenderMesh& /*mesh*/, uint /*flags*/ = 0) { }
-  void DrawSimpleMeshes (const csSimpleRenderMesh* /*meshes*/,
-    size_t /*numMeshes*/, uint /*flags*/ = 0) { }
 
   bool PerformExtension (char const* /*command*/, ...) { return false; }
   bool PerformExtensionV (char const* /*command*/, va_list /*args*/)
@@ -182,25 +158,23 @@ private:
   iObjectRegistry* object_reg;
   csRef<iGraphics2D> G2D;
   csRef<iShaderManager> shadermgr;
-  csRef<iShaderVarStringSet> strings;
+  csRef<iStringSet> strings;
   csWeakRef<iBugPlug> bugplug;
   csRef<csTextureManagerNull> txtmgr;
 
   csConfigAccess config;
 
-  CS::ShaderVarStringID string_vertices;
-  CS::ShaderVarStringID string_texture_coordinates;
-  CS::ShaderVarStringID string_normals;
-  CS::ShaderVarStringID string_colors;
-  CS::ShaderVarStringID string_indices;
+  csStringID string_vertices;
+  csStringID string_texture_coordinates;
+  csStringID string_normals;
+  csStringID string_colors;
+  csStringID string_indices;
 
   csGraphics3DCaps Caps;
   int w, h;
   int cx, cy;
   float a;
   csReversibleTransform w2c;
-  CS::Math::Matrix4 projectionMatrix;
-  bool explicitProjection, needMatrixUpdate;
 
   int current_drawflags;
 
@@ -211,16 +185,12 @@ private:
   csPlane3 near_plane;
   csZBufMode zmode;
 
+  csPixelFormat pfmt;
   bool red_mask, green_mask, blue_mask, alpha_mask;
   
   enum { numTargets = 2 };
   csRef<iTextureHandle> render_targets[numTargets];
   int rt_subtex[numTargets];
-  
-  void ComputeProjectionMatrix();
 };
-
-// To silence EnableZOffset/DisableZOffset
-#include "csutil/deprecated_warn_on.h"
 
 #endif // __CS_NULL_RENDER3D_H__

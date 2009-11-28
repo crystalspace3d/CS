@@ -37,11 +37,6 @@
 
 #include "walktest.h"
 #include "command.h"
-#include "splitview.h"
-#include "recorder.h"
-#include "missile.h"
-#include "lights.h"
-#include "animsky.h"
 
 #if defined(CS_PLATFORM_DOS) || defined(CS_PLATFORM_WIN32)
 #  include <io.h>
@@ -64,12 +59,12 @@ WalkTest::WalkTest () :
   extern bool CommandHandler (const char *cmd, const char *arg);
   csCommandProcessor::ExtraHandler = CommandHandler;
   auto_script = 0;
-  views = 0;
+  view = 0;
   wMissile_boom = 0;
   wMissile_whoosh = 0;
   cslogo = 0;
-  sky = new WalkTestAnimateSky (this);
-  fsfx = new WalkTestFullScreenFX (this);
+  anim_sky = 0;
+  anim_dirlight = 0;
 
   do_edges = false;
   do_show_coord = false;
@@ -85,10 +80,20 @@ WalkTest::WalkTest () :
   selected_light = 0;
   selected_polygon = 0;
   move_forward = false;
-
-  recorder = new WalkTestRecorder (this);
-
+  cfg_recording = -1;
+  recorded_cmd = 0;
+  recorded_arg = 0;
+  cfg_playrecording = -1;
   cfg_debug_check_frustum = 0;
+  do_fs_inter = false;
+  do_fs_shadevert = false;
+  do_fs_whiteout = false;
+  do_fs_blue = false;
+  do_fs_red = false;
+  do_fs_green = false;
+  do_fs_fadetxt = false;
+  do_fs_fadecol = false;
+  do_fs_fadeout = false;
 
   velocity.Set (0, 0, 0);
   desired_velocity.Set (0, 0, 0);
@@ -106,6 +111,8 @@ WalkTest::WalkTest () :
   debug_box1.Set (csVector3 (-1, -1, -1), csVector3 (1, 1, 1));
   debug_box2.Set (csVector3 (2, 2, 2), csVector3 (3, 3, 3));
   do_show_debug_boxes = false;
+  
+  split = -1;			// Not split
 
   canvas_exposed = true;
 
@@ -113,12 +120,6 @@ WalkTest::WalkTest () :
   num_maps = 0;
   cache_map = 0;
   doSave = false;
-  spritesLoaded = false;
-
-  bots = new BotManager (this);
-  do_bots = false;
-  missiles = new WalkTestMissileLauncher (this);
-  lights = new WalkTestLights (this);
 }
 
 WalkTest::~WalkTest ()
@@ -133,12 +134,6 @@ WalkTest::~WalkTest ()
     delete first_map;
     first_map = map;
   }
-  delete recorder;
-  delete views;
-  delete sky;
-  delete fsfx;
-  delete missiles;
-  delete lights;
 }
 
 void WalkTest::Report (int severity, const char* msg, ...)
@@ -191,6 +186,7 @@ void WalkTest::SetDefaults ()
     val = cmdline->GetName (idx);
   }
 
+  extern bool do_bots;
   if (cmdline->GetOption ("bots"))
     do_bots = true;
 
@@ -222,13 +218,6 @@ void WalkTest::SetDefaults ()
     Report (CS_REPORTER_SEVERITY_NOTIFY, "Logo disabled.");
   }
 
-  // Set whether to use multi-threading within the loader.
-  if(!cmdline->GetBoolOption("threaded", true) || CS::Platform::GetProcessorCount() == 1)
-  {
-    csRef<iThreadManager> tman = csQueryRegistry<iThreadManager> (object_reg);
-    tman->SetAlwaysRunNow(true);
-  }
-
   doSave = Config->GetBool ("Walktest.Settings.EnableEngineSaving", doSave);
   doSave = cmdline->GetBoolOption ("saveable", doSave);
   Report (CS_REPORTER_SEVERITY_NOTIFY, "World saving %s.", 
@@ -240,11 +229,10 @@ void WalkTest::Help ()
   csRef<iConfigManager> cfg (csQueryRegistry<iConfigManager> (object_reg));
   csPrintf ("Options for WalkTest:\n");
   csPrintf ("  -exec=<script>     execute given script at startup\n");
-  csPrintf ("  -threaded          use threaded loading (default yes)\n");
   csPrintf ("  -[no]colldet       collision detection system (default '%scolldet')\n", collider_actor.HasCD () ? "" : "no");
   csPrintf ("  -[no]logo          draw logo (default '%slogo')\n", do_logo ? "" : "no");
-  csPrintf ("  -[no]collections   load every map in a separate collection (default no)\n");
-  csPrintf ("  -[no]dupes         check for duplicate objects in multiple maps (default yes)\n");
+  csPrintf ("  -regions           load every map in a separate region (default off)\n");
+  csPrintf ("  -dupes             check for duplicate objects in multiple maps (default off)\n");
   csPrintf ("  -noprecache        after loading don't precache to speed up rendering\n");
   csPrintf ("  -bots              allow random generation of bots\n");
   csPrintf ("  -[no]saveable      enable/disable engine 'saveable' flag\n");
@@ -263,7 +251,15 @@ void WalkTest::SetupFrame ()
 
   if (!myConsole || !myConsole->GetVisible ())
   {
-    recorder->HandleRecordedCommand ();
+    // Emit recorded commands directly to the CommandHandler
+    if (cfg_playrecording > 0 &&
+	recording.GetSize () > 0)
+    {
+      csRecordedCamera* reccam = (csRecordedCamera*)recording[
+      	cfg_playrecording];
+      if (reccam->cmd)
+	CommandHandler(reccam->cmd, reccam->arg);
+    }
   }
 
   MoveSystems (elapsed_time, current_time);
@@ -292,7 +288,36 @@ void WalkTest::FinishFrame ()
 
 void WalkTest::MoveSystems (csTicks elapsed_time, csTicks current_time)
 {
-  sky->MoveSky (elapsed_time, current_time);
+  // First move the sky.
+  if (anim_sky)
+  {
+    iMovable* move = anim_sky->GetMovable ();
+    switch (anim_sky_rot)
+    {
+      case 0:
+	{
+          csXRotMatrix3 mat (anim_sky_speed * TWO_PI
+	  	* (float)elapsed_time/1000.);
+          move->Transform (mat);
+	  break;
+	}
+      case 1:
+	{
+          csYRotMatrix3 mat (anim_sky_speed * TWO_PI
+	  	* (float)elapsed_time/1000.);
+          move->Transform (mat);
+	  break;
+	}
+      case 2:
+	{
+          csZRotMatrix3 mat (anim_sky_speed * TWO_PI
+	  	* (float)elapsed_time/1000.);
+          move->Transform (mat);
+	  break;
+	}
+    }
+    move->UpdateMove ();
+  }
 
   // Update all busy entities.
   // We first push all entities in a vector so that NextFrame() can safely
@@ -312,6 +337,7 @@ void WalkTest::MoveSystems (csTicks elapsed_time, csTicks current_time)
   }
 
   // Record the first time this routine is called.
+  extern bool do_bots;
   if (do_bots)
   {
     static long first_time = -1;
@@ -323,8 +349,8 @@ void WalkTest::MoveSystems (csTicks elapsed_time, csTicks current_time)
     }
     if (current_time > next_bot_at)
     {
-      bots->CreateBot (views->GetCamera ()->GetSector (),
-               views->GetCamera ()->GetTransform ().GetOrigin (), 0, false);
+      add_bot (2, view->GetCamera ()->GetSector (),
+               view->GetCamera ()->GetTransform ().GetOrigin (), 0);
       next_bot_at = current_time+1000*10;
     }
   }
@@ -337,9 +363,9 @@ void WalkTest::MoveSystems (csTicks elapsed_time, csTicks current_time)
       iSndSysListener *sndListener = mySound->GetListener();
       if(sndListener)
       {
-        // take position/direction from views->GetCamera ()
-        csVector3 v = views->GetCamera ()->GetTransform ().GetOrigin ();
-        csMatrix3 m = views->GetCamera ()->GetTransform ().GetT2O();
+        // take position/direction from view->GetCamera ()
+        csVector3 v = view->GetCamera ()->GetTransform ().GetOrigin ();
+        csMatrix3 m = view->GetCamera ()->GetTransform ().GetT2O();
         csVector3 f = m.Col3();
         csVector3 t = m.Col2();
         sndListener->SetPosition(v);
@@ -349,7 +375,7 @@ void WalkTest::MoveSystems (csTicks elapsed_time, csTicks current_time)
     }
   }
 
-  bots->MoveBots (elapsed_time);
+  move_bots (elapsed_time);
 
   if (move_forward)
     Step (1);
@@ -369,15 +395,15 @@ void WalkTest::DrawFrameDebug ()
     extern void DrawZbuffer ();
     DrawZbuffer ();
   }
-  //if (do_show_palette)
-  //{
-    //extern void DrawPalette ();
-    //DrawPalette ();
-  //}
+  if (do_show_palette)
+  {
+    extern void DrawPalette ();
+    DrawPalette ();
+  }
   if (do_show_debug_boxes)
   {
     extern void DrawDebugBoxes (iCamera* cam, bool do3d);
-    DrawDebugBoxes (views->GetCamera (), false);
+    DrawDebugBoxes (view->GetCamera (), false);
   }
 }
 
@@ -390,7 +416,7 @@ void WalkTest::DrawFrameDebug3D ()
   if (do_show_debug_boxes)
   {
     extern void DrawDebugBoxes (iCamera* cam, bool do3d);
-    DrawDebugBoxes (views->GetCamera (), true);
+    DrawDebugBoxes (view->GetCamera (), true);
   }
 }
 
@@ -433,10 +459,10 @@ void WalkTest::DrawFrameConsole ()
     {
       csString buffer;
       buffer.Format ("%2.2f,%2.2f,%2.2f: %s",
-      views->GetCamera ()->GetTransform ().GetO2TTranslation ().x,
-      views->GetCamera ()->GetTransform ().GetO2TTranslation ().y,
-      views->GetCamera ()->GetTransform ().GetO2TTranslation ().z,
-      views->GetCamera ()->GetSector()->QueryObject ()->GetName ());
+      view->GetCamera ()->GetTransform ().GetO2TTranslation ().x,
+      view->GetCamera ()->GetTransform ().GetO2TTranslation ().y,
+      view->GetCamera ()->GetTransform ().GetO2TTranslation ().z,
+      view->GetCamera ()->GetSector()->QueryObject ()->GetName ());
 
       int buffWidth, buffHeight;
       Font->GetDimensions( buffer, buffWidth, buffHeight );
@@ -452,34 +478,123 @@ void WalkTest::DrawFrameConsole ()
   }
 }
 
+void WalkTest::DrawFullScreenFX2D (csTicks /*elapsed_time*/,
+	csTicks current_time)
+{
+  if (do_fs_inter)
+  {
+    csfxInterference (Gfx2D, fs_inter_amount, fs_inter_anim,
+    	fs_inter_length);
+    fs_inter_anim = fmod (fabs (float (current_time)/3000.0), 1.);
+  }
+}
+
+void WalkTest::DrawFullScreenFX3D (csTicks /*elapsed_time*/,
+	csTicks current_time)
+{
+  if (do_fs_fadeout)
+  {
+    csfxFadeOut (Gfx3D, fs_fadeout_fade);
+    float t3 = fabs (float (current_time)/3000.0);
+    fs_fadeout_fade = fmod (t3, 1.0f);
+    fs_fadeout_dir = fmod (t3, 2.0f) >= 1;
+    if (!fs_fadeout_dir) fs_fadeout_fade = 1-fs_fadeout_fade;
+  }
+  if (do_fs_fadecol)
+  {
+    csfxFadeToColor (Gfx3D, fs_fadecol_fade, fs_fadecol_color);
+    float t3 = fabs (float (current_time)/3000.0);
+    fs_fadecol_fade = fmod (t3, 1.0f);
+    fs_fadecol_dir = fmod (t3, 2.0f) >= 1;
+    if (!fs_fadecol_dir) fs_fadecol_fade = 1-fs_fadecol_fade;
+  }
+  if (do_fs_fadetxt)
+  {
+    csfxFadeTo (Gfx3D, fs_fadetxt_txt, fs_fadetxt_fade);
+    float t3 = fabs (float (current_time)/3000.0);
+    fs_fadetxt_fade = fmod (t3, 1.0f);
+    fs_fadetxt_dir = fmod (t3, 2.0f) >= 1;
+    if (!fs_fadetxt_dir) fs_fadetxt_fade = 1-fs_fadetxt_fade;
+  }
+  if (do_fs_red)
+  {
+    csfxRedScreen (Gfx3D, fs_red_fade);
+    float t3 = fabs (float (current_time)/3000.0);
+    fs_red_fade = fmod (t3, 1.0f);
+    fs_red_dir = fmod (t3, 2.0f) >= 1;
+    if (!fs_red_dir) fs_red_fade = 1-fs_red_fade;
+  }
+  if (do_fs_green)
+  {
+    csfxGreenScreen (Gfx3D, fs_green_fade);
+    float t3 = fabs (float (current_time)/3000.0);
+    fs_green_fade = fmod (t3, 1.0f);
+    fs_green_dir = fmod (t3, 2.0f) >= 1;
+    if (!fs_green_dir) fs_green_fade = 1-fs_green_fade;
+  }
+  if (do_fs_blue)
+  {
+    csfxBlueScreen (Gfx3D, fs_blue_fade);
+    float t3 = fabs (float (current_time)/3000.0);
+    fs_blue_fade = fmod (t3, 1.0f);
+    fs_blue_dir = fmod (t3, 2.0f) >= 1;
+    if (!fs_blue_dir) fs_blue_fade = 1-fs_blue_fade;
+  }
+  if (do_fs_whiteout)
+  {
+    csfxWhiteOut (Gfx3D, fs_whiteout_fade);
+    float t3 = fabs (float (current_time)/3000.0);
+    fs_whiteout_fade = fmod (t3, 1.0f);
+    fs_whiteout_dir = fmod (t3, 2.0f) >= 1;
+    if (!fs_whiteout_dir) fs_whiteout_fade = 1-fs_whiteout_fade;
+  }
+  if (do_fs_shadevert)
+  {
+    csfxShadeVert (Gfx3D, fs_shadevert_topcol, fs_shadevert_botcol,
+    	CS_FX_ADD);
+  }
+}
+
 void WalkTest::DrawFrame3D (int drawflags, csTicks /*current_time*/)
 {
   // Tell Gfx3D we're going to display 3D things
-  /*
   if (!Gfx3D->BeginDraw (Engine->GetBeginDrawFlags () | drawflags
   	| CSDRAW_3DGRAPHICS))
     return;
-    */
 
   // Apply lighting BEFORE the very first frame
-  lights->HandleDynLights ();
+  size_t i;
+  for (i = 0 ; i < dynamic_lights.GetSize () ; i++)
+  {
+    iLight* dyn = dynamic_lights[i];
+    extern bool HandleDynLight (iLight*, iEngine*);
+    csRef<WalkDataObject> dao (
+        CS::GetChildObject<WalkDataObject>(dyn->QueryObject()));
+    if (dao)
+      if (HandleDynLight (dyn, Engine))
+      {
+        dynamic_lights.DeleteIndex (i);
+	i--;
+      }
+  }
 
   //------------
-  // Here comes the main call to the engine. views->Draw() actually
+  // Here comes the main call to the engine. view->Draw() actually
   // takes the current camera and starts rendering.
   //------------
   if (!do_covtree_dump)
   {
-    views->Draw ();
+    if (split == -1)
+      view->Draw ();
+    else 
+    {	
+      views[0]->Draw();
+      views[1]->Draw();
+    }
   }
 
   // no need to clear screen anymore
   drawflags = 0;
-
-  // Tell Gfx3D we're going to display 3D things
-  if (!Gfx3D->BeginDraw (/*Engine->GetBeginDrawFlags () |*/ drawflags
-  	| CSDRAW_3DGRAPHICS))
-    return;
 
   // Display the 3D parts of the console
   if (myConsole)
@@ -534,8 +649,56 @@ void WalkTest::DrawFrame (csTicks elapsed_time, csTicks current_time)
 {
   if (!myConsole || !myConsole->GetVisible ())
   {
-    recorder->RecordCamera (views->GetCamera ());
-    recorder->HandleRecordedCamera (views->GetCamera ());
+    if (cfg_recording >= 0)
+    {
+      // @@@ Memory leak!
+      csRecordedCamera* reccam = new csRecordedCamera ();
+      iCamera* c = view->GetCamera ();
+      const csMatrix3& m = c->GetTransform ().GetO2T ();
+      const csVector3& v = c->GetTransform ().GetOrigin ();
+      reccam->mat = m;
+      reccam->vec = v;
+      reccam->mirror = c->IsMirrored ();
+      reccam->sector = c->GetSector ();
+      reccam->cmd = recorded_cmd;
+      reccam->arg = recorded_arg;
+      recorded_cmd = recorded_arg = 0;
+      recording.Push (reccam);
+    }
+    if (cfg_playrecording >= 0 && recording.GetSize () > 0)
+    {
+      csRecordedCamera* reccam = (csRecordedCamera*)recording[cfg_playrecording];
+      cfg_playrecording++;
+      record_frame_count++;
+      if ((size_t)cfg_playrecording >= recording.GetSize ())
+      {
+	csTicks t1 = record_start_time;
+	csTicks t2 = csGetTicks ();
+	int num = record_frame_count;
+	Sys->Report (CS_REPORTER_SEVERITY_NOTIFY,
+	  "End demo: %f secs to render %d frames: %f fps",
+	  (float) (t2 - t1) / 1000.,
+	  num, float (num) * 1000. / (float) (t2 - t1));
+	csPrintf (
+	  "End demo: %f secs to render %d frames: %f fps\n",
+	  (float) (t2 - t1) / 1000.,
+	  num, float (num) * 1000. / (float) (t2 - t1));
+	fflush (stdout);
+	if (cfg_playloop)
+	  cfg_playrecording = 0;
+	else
+	  cfg_playrecording = -1;
+
+        record_start_time = csGetTicks ();
+        record_frame_count = 0;
+      }
+      iCamera* c = view->GetCamera ();
+      if (reccam->sector)
+        c->SetSector (reccam->sector);
+      c->SetMirrored (reccam->mirror);
+      c->GetTransform ().SetO2T (reccam->mat);
+      c->GetTransform ().SetOrigin (reccam->vec);
+    }
   }
 
 
@@ -551,7 +714,7 @@ void WalkTest::DrawFrame (csTicks elapsed_time, csTicks current_time)
   {
     DrawFrame3D (drawflags, current_time);
     DrawFrameDebug3D ();
-    fsfx->Draw3D (current_time);
+    DrawFullScreenFX3D (elapsed_time, current_time);
   }
 
   // Start drawing 2D graphics
@@ -563,7 +726,7 @@ void WalkTest::DrawFrame (csTicks elapsed_time, csTicks current_time)
    || SmallConsole
    || myConsole->GetTransparency ())
   {
-    fsfx->Draw2D (current_time);
+    DrawFullScreenFX2D (elapsed_time, current_time);
   }
 
   DrawFrameDebug ();
@@ -587,18 +750,18 @@ void WalkTest::PrepareFrame (csTicks elapsed_time, csTicks /*current_time*/)
 
   int shift, ctrl;
   float speed = 1;
-  object_move_speed = 0.01f;
+  object_move_speed = .01;
 
   ctrl = kbd->GetKeyState (CSKEY_CTRL);
   shift = kbd->GetKeyState (CSKEY_SHIFT);
   if (ctrl)
   {
-    speed = 0.5f;
+    speed = .5;
   }
   if (shift)
   {
     speed = 2;
-    object_move_speed = 1.0f;
+    object_move_speed = 1.0;
   }
 
   float delta = float (elapsed_time) / 1000.0f;
@@ -614,7 +777,10 @@ void perf_test (int num)
   int i;
   for (i = 0 ; i < num ; i++)
   {
-    Sys->recorder->NewFrame ();
+    if (Sys->cfg_playrecording >= 0 && Sys->recording.GetSize () > 0)
+    {
+      Sys->record_frame_count++;
+    }
     Sys->DrawFrame (csGetTicks ()-t, csGetTicks ());
     Sys->FinishFrame ();
     t = csGetTicks ();
@@ -666,29 +832,34 @@ void WalkTest::EndEngine ()
   }
 }
 
-void WalkTest::InitCollDet (iEngine* engine, iCollection* collection)
+void WalkTest::InitCollDet (iEngine* engine, iRegion* region)
 {
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Computing OBBs ...");
   csColliderHelper::InitializeCollisionWrappers (collide_system,
-    	engine, collection);
+    	engine, region);
 }
 
-void WalkTest::LoadLibraryData (iCollection* collection)
+void WalkTest::LoadLibraryData (iRegion* region)
 {
-  csRef<iTextureWrapper> tex = LevelLoader->LoadTexture ("cslogo2", "/lib/std/cslogo2.png",
-    CS_TEXTURE_2D, 0, true, true, true, csRef<iCollection>(collection));
-  if(!tex.IsValid())
+  // Load the "standard" library
+  if (!LevelLoader->LoadLibraryFile ("/lib/std/library", region))
   {
-    Report (CS_REPORTER_SEVERITY_ERROR, "logo failed to load!\n");
-  }
-
-  if(!LevelLoader->LoadLibraryFile ("/lib/std/library", collection))
-  {
-    Report (CS_REPORTER_SEVERITY_ERROR, "std library failed to load!\n");
+    Cleanup ();
+    exit (0);
   }
 }
 
-bool WalkTest::Create2DSprites ()
+void WalkTest::Inititalize2DTextures ()
+{
+  // Find the Crystal Space logo and set the renderer Flag to for_2d, to allow
+  // the use in the 2D part.
+  iTextureWrapper *texh = Engine->GetTextureList ()->FindByName ("cslogo2");
+  if (texh)
+    texh->SetFlags (CS_TEXTURE_2D);
+}
+
+
+void WalkTest::Create2DSprites ()
 {
   iTextureWrapper *texh;
   iTextureHandle* phTex;
@@ -701,10 +872,8 @@ bool WalkTest::Create2DSprites ()
     if (phTex)
     {
       cslogo = new csSimplePixmap (phTex);
-      return true;
     }
   }
-  return false;
 }
 
 static bool WalkEventHandler (iEvent& ev)
@@ -733,7 +902,6 @@ bool WalkTest::SetMapDir (const char* map_dir)
     	map_dir);
     return false;
   }
-  myVFS->SetSyncDir(myVFS->GetCwd());
   return true;
 }
 
@@ -773,8 +941,6 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   }
 #endif
 
-  SetDefaults ();
-
   if (!csInitializer::RequestPlugins (object_reg,
   	CS_REQUEST_REPORTER,
   	CS_REQUEST_REPORTERLISTENER,
@@ -784,6 +950,8 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
     Report (CS_REPORTER_SEVERITY_ERROR, "Failed to initialize!");
     return false;
   }
+
+  SetDefaults ();
 
   if (!csInitializer::SetupEventHandler (object_reg, WalkEventHandler))
   {
@@ -936,12 +1104,6 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   // Open the startup console
   start_console ();
 
-  tm = csQueryRegistry<iThreadManager>(object_reg);
-  if(!tm)
-  {
-    return false;
-  }
-
   // Find the engine plugin and query the csEngine object from it...
   Engine = csQueryRegistry<iEngine> (object_reg);
   if (!Engine)
@@ -952,16 +1114,20 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   Engine->SetSaveableFlag (doSave);
 
   // Find the level loader plugin
-  LevelLoader = csQueryRegistry<iLoader>(object_reg);
-  TLevelLoader = csQueryRegistry<iThreadedLoader>(object_reg);
-
-  if (!LevelLoader || !TLevelLoader)
+  LevelLoader = csQueryRegistry<iLoader> (object_reg);
+  if (!LevelLoader)
   {
     Report (CS_REPORTER_SEVERITY_ERROR, "No level loader plugin!");
     return false;
   }
 
-  views = new WalkTestViews (this);
+  // csView is a view encapsulating both a camera and a clipper.
+  // You don't have to use csView as you can do the same by
+  // manually creating a camera and a clipper but it makes things a little
+  // easier.
+  views[0] = csPtr<iView> (new csView (Engine, Gfx3D));
+  views[1] = csPtr<iView> (new csView (Engine, Gfx3D));
+  view = views[0];
 
   // Get the collide system plugin.
   const char* p = cfg->GetStr ("Walktest.Settings.CollDetPlugin",
@@ -975,7 +1141,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   object_reg->Register (collide_system, "iCollideSystem");
 
   // Initialize the command processor with the engine and camera.
-  csCommandProcessor::Initialize (Engine, views->GetView ()->GetCamera (),
+  csCommandProcessor::Initialize (Engine, view->GetCamera (),
     Gfx3D, myConsole, object_reg);
 
   // Load from a map file.
@@ -995,12 +1161,17 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
     Report (CS_REPORTER_SEVERITY_NOTIFY, "Loading multiple maps '%s', ...",
       first_map->map_dir);
 
-  // Check if we have to load every separate map in a separate collection.
+  // Check if we have to load every separate map in a separate region.
   csRef<iCommandLineParser> cmdline = 
       csQueryRegistry<iCommandLineParser> (object_reg);
-  bool do_collections = cmdline->GetBoolOption ("collections");
+  bool do_regions = false;
+  if (cmdline->GetOption ("regions"))
+    do_regions = true;
+  bool do_dupes = false;
+  if (cmdline->GetOption ("dupes"))
+    do_dupes = true;
     
-  if ((!do_collections) && cache_map != 0)
+  if ((!do_regions) && cache_map != 0)
   {
     // Then we set the current directory right.
     if (!SetMapDir (cache_map->map_dir))
@@ -1027,41 +1198,39 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
     if (num_maps > 1)
       Report (CS_REPORTER_SEVERITY_NOTIFY, "  Loading map '%s'",
 	      map->map_dir);
-    iCollection* collection = 0;
-    if (do_collections)
+    iRegion* region = 0;
+    if (do_regions)
     {
-      collection = Engine->CreateCollection (map->map_dir);
+      region = Engine->CreateRegion (map->map_dir);
     }
-
-    csRef<iThreadReturn> ret = TLevelLoader->LoadMapFileWait (myVFS->GetCwd(), "world", false, collection,
-      0, 0, KEEP_ALL, cmdline->GetBoolOption("verbose", false));
-
-    if(!ret->WasSuccessful())
+    if (!LevelLoader->LoadMapFile ("world", false, region, !do_regions,
+	      do_dupes))
     {
       Report (CS_REPORTER_SEVERITY_ERROR, "Failing to load map!");
       return false;
     }
-
-    if (do_collections)
+    if (do_regions)
     {
       // Set the cache manager based on current VFS dir.
       Engine->SetVFSCacheManager ();
+      region->Prepare ();
     }
   }
 
-  iCollection* collection = 0;
-  if (do_collections)
-    collection = Engine->CreateCollection ("libdata");
-  LoadLibraryData (collection);
+  iRegion* region = 0;
+  if (do_regions)
+    region = Engine->CreateRegion ("libdata");
+  LoadLibraryData (region);
+  if (do_regions)
+  {
+    region->Prepare ();
+  }
+  Inititalize2DTextures ();
   ParseKeyCmds ();
-
-  csTicks stop_time = csGetTicks ();
-  csPrintf ("\nLevel load time: %g seconds.\n",
-    float (stop_time-start_time) / 1000.0); fflush (stdout);
 
   // Prepare the engine. This will calculate all lighting and
   // prepare the lightmaps for the 3D rasterizer.
-  if (!do_collections)
+  if (!do_regions)
   {
     csTextProgressMeter* meter = new csTextProgressMeter (myConsole);
     Engine->Prepare (meter);
@@ -1070,18 +1239,37 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
 
   if (!cmdline->GetOption ("noprecache"))
   {
-    csTicks start = csGetTicks ();
-    Report (CS_REPORTER_SEVERITY_NOTIFY, "Precaching all things...\n");
+    Report (CS_REPORTER_SEVERITY_NOTIFY, "Precaching all things...");
     Engine->PrecacheDraw ();
-    Report (CS_REPORTER_SEVERITY_NOTIFY, "\nPrecaching finished... took %g seconds.\n", (csGetTicks()-start)/1000.0f);
+    Report (CS_REPORTER_SEVERITY_NOTIFY, "Precaching finished...");
   }
 
-  printf("\nTotal load time: %g seconds.\n", (csGetTicks()-start_time)/1000.0f);
+  csTicks stop_time = csGetTicks ();
+  csPrintf ("Total level load time: %g seconds\n",
+      float (stop_time-start_time) / 1000.0); fflush (stdout);
 
   Create2DSprites ();
 
   // Look for the start sector in this map.
-  bool camok = views->SetupViewStart ();
+  bool camok = false;
+  if (!camok && Engine->GetCameraPositions ()->GetCount () > 0)
+  {
+    iCameraPosition *cp = Engine->GetCameraPositions ()->Get (0);
+    if (cp->Load(views[0]->GetCamera (), Engine) &&
+	cp->Load(views[1]->GetCamera (), Engine))
+      camok = true;
+  }
+  if (!camok)
+  {
+    iSector* room = Engine->GetSectors ()->FindByName ("room");
+    if (room)
+    {
+      views[0]->GetCamera ()->SetSector (room);
+      views[1]->GetCamera ()->SetSector (room);
+      camok = true;
+    }
+  }
+
   if (!camok)
   {
     Report (CS_REPORTER_SEVERITY_ERROR,
@@ -1150,7 +1338,10 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
   myG2D->ClearAll (myG2D->FindRGB(0,0,0));
   Gfx3D->FinishDraw ();
 #ifdef CS_DEBUG
+  view->SetRectangle (2, 2, w3d - 4, h3d - 4);
   myG2D->SetClipRect (2, 2, w3d - 2, h3d - 2);
+#else
+  view->SetRectangle (0, 0, w3d, h3d);
 #endif
 
 #if 0
@@ -1176,7 +1367,7 @@ bool WalkTest::Initialize (int argc, const char* const argv[],
 
   // Lastly set the camera to the collider so its transform is
   // updated to the camera's one.
-  collider_actor.SetCamera (views->GetCamera (), true);
+  collider_actor.SetCamera (view->GetCamera (), true);
 
   return true;
 }

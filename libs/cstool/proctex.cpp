@@ -31,7 +31,6 @@
 #include "iengine/material.h"
 #include "iengine/texture.h"
 #include "igraphic/image.h"
-#include "imap/loader.h"
 #include "itexture/itexfact.h"
 #include "iutil/comp.h"
 #include "iutil/event.h"
@@ -146,30 +145,26 @@ csProcTexture::~csProcTexture ()
 
 }
 
-THREADED_CALLABLE_IMPL1(csProcTexture, SetupProcEventHandler,
+iEventHandler* csProcTexture::SetupProcEventHandler (
 	iObjectRegistry* object_reg)
 {
   csRef<iEventHandler> proceh = csQueryRegistryTagInterface<iEventHandler>
   	(object_reg, "crystalspace.proctex.eventhandler");
-  if (!proceh)
+  if (proceh) return proceh;
+  proceh = csPtr<iEventHandler> (new csProcTexEventHandler (object_reg));
+  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+  if (q != 0)
   {
-    proceh = csPtr<iEventHandler> (new csProcTexEventHandler (object_reg));
-    csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
-    if (q != 0)
-    {
-      q->RegisterListener (proceh, csevFrame(object_reg));
-      object_reg->Register (proceh, "crystalspace.proctex.eventhandler");
-    }
+    q->RegisterListener (proceh, csevFrame(object_reg));
+    object_reg->Register (proceh, "crystalspace.proctex.eventhandler");
   }
-
-  ret->SetResult(csRef<iBase>(proceh));
-  return true;
+  return proceh;
 }
 
 struct csProcTexCallback : 
   public scfImplementation2<csProcTexCallback, iTextureCallback, iProcTexCallback>
 {
-  csWeakRef<csProcTexture> pt;
+  csRef<csProcTexture> pt;
   csProcTexCallback () : scfImplementationType (this) { }
   virtual ~csProcTexCallback () { }
   virtual void UseTexture (iTextureWrapper*);
@@ -187,24 +182,21 @@ iProcTexture* csProcTexCallback::GetProcTexture() const
 
 iTextureWrapper* csProcTexture::CreateTexture (iObjectRegistry* object_reg)
 {
-  csRef<iTextureWrapper> tex;
+  iTextureWrapper* tex;
 
   csRef<iEngine> engine (csQueryRegistry<iEngine> (object_reg));
-  csRef<iThreadedLoader> tldr = csQueryRegistry<iThreadedLoader> (object_reg);
-  csRef<iTextureManager> texman = csQueryRegistry<iTextureManager> (object_reg);
   if (proc_image)
   {
-    tex = engine->GetTextureList()->CreateTexture (proc_image);
-    tldr->AddTextureToList(tex);
+    tex = engine->GetTextureList()->NewTexture (proc_image);
     tex->SetFlags (CS_TEXTURE_3D | texFlags);
     proc_image = 0;
   }
   else
   {
-    csRef<iTextureHandle> texHandle = g3d->GetTextureManager()->CreateTexture (mat_w, mat_h,
-    csimg2D, "rgb8", CS_TEXTURE_3D | texFlags);
-    tex = engine->GetTextureList()->CreateTexture (texHandle);
-    tldr->AddTextureToList(tex);
+    csRef<iTextureHandle> texHandle = 
+      g3d->GetTextureManager()->CreateTexture (mat_w, mat_h, csimg2D, "rgb8",
+      CS_TEXTURE_3D | texFlags);
+    tex = engine->GetTextureList()->NewTexture (texHandle);
   }
 
   return tex;
@@ -213,9 +205,7 @@ iTextureWrapper* csProcTexture::CreateTexture (iObjectRegistry* object_reg)
 bool csProcTexture::Initialize (iObjectRegistry* object_reg)
 {
   csProcTexture::object_reg = object_reg;
-  csRef<iThreadReturn> itr = SetupProcEventHandler (object_reg);
-  itr->Wait(false);
-  proceh = scfQueryInterface<iEventHandler>(itr->GetResultRefPtr());
+  proceh = SetupProcEventHandler (object_reg);
 
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
   g2d = csQueryRegistry<iGraphics2D> (object_reg);

@@ -63,8 +63,8 @@ namespace lighter
     KDTree* tree = SetupRealTree (rootNode);
     
     //Clean up some memory
-    boxAllocator.DeleteAll ();
-    nodeAllocator.DeleteAll ();
+    boxAllocator.Empty ();
+    nodeAllocator.Empty ();
 
     progress.SetProgress (1);
     return tree;

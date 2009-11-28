@@ -19,9 +19,7 @@
 
 #include "cssysdef.h"
 
-#include "csgeom/math3d.h"
 #include "csgfx/renderbuffer.h"
-#include "csgfx/vertexlistwalker.h"
 #include "cstool/rbuflock.h"
 
 #include "submeshes.h"
@@ -154,89 +152,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
       delete b2fTree;
       b2fTree = 0;
     }
-    InvalidateBoundingBox ();
-  }
-  
-  template<typename T>
-  void SubMesh::IterateAllVertices (iRenderBuffer* positions, T& functor)
-  {
-    UpdateFromLegacyBuffer();
-    if (!index_buffer.IsValid()) return;
-    
-    csVertexListWalker<float, csVector3> vertices (positions);
-    
-    /* Set up a simple hash table to store which vertices have already
-       been seen & handled, to avoid, to some degree, unnecessary
-       bbox vertex adds. */
-    const size_t maxVertexHashSize = 4093;
-    const size_t indexOffs = index_buffer->GetRangeStart();
-    const size_t vertexHashSize = csMin (maxVertexHashSize,
-      index_buffer->GetRangeEnd() - indexOffs + 1);
-    CS_ALLOC_STACK_ARRAY(size_t, seenVertices, vertexHashSize);
-    for (size_t v = 0; v < vertexHashSize; v++) seenVertices[v] = (size_t)~0;
-    
-    CS::TriangleIndicesStream<size_t> triangles (index_buffer,
-      CS_MESHTYPE_TRIANGLES);
-    while (triangles.HasNext())
-    {
-      const TriangleT<size_t> tri (triangles.Next());
-      for (int v = 0; v < 3; v++)
-      {
-        size_t vertex = tri[v];
-        const size_t vertexHashIndex = (vertex-indexOffs) % vertexHashSize;
-        if (seenVertices[vertexHashIndex] == vertex) continue;
-
-        vertices.SetElement (vertex);
-        const csVector3& vert = *vertices;
-        functor (vert);
-
-        seenVertices[vertexHashIndex] = vertex;
-      }
-    }
-    
-  }
-  
-  struct IterateBB
-  {
-    csBox3 bbox;
-  
-    void operator() (const csVector3& pos)
-    { bbox.AddBoundingVertex (pos); }
-  };
-
-  const csBox3& SubMesh::GetObjectBoundingBox (iRenderBuffer* positions)
-  {
-    if (!bbox_valid)
-    {
-      IterateBB itbb;
-      IterateAllVertices (positions, itbb);
-      bbox = itbb.bbox;
-      bbox_valid = true;
-    }
-    return bbox;
-  }
-  
-  struct IterateRadius
-  {
-    csVector3 center;
-    float sqradius;
-  
-    IterateRadius (const csVector3& center) : center (center), sqradius (0) {}
-    void operator() (const csVector3& pos)
-    { sqradius = csMax (sqradius, csSquaredDist::PointPoint (center, pos)); }
-  };
-  
-  float SubMesh::ComputeMaxSqRadius (iRenderBuffer* positions,
-                                     const csVector3& center)
-  {
-    IterateRadius itr (center);
-    IterateAllVertices (positions, itr);
-    return itr.sqradius;
-  }
-  
-  void SubMesh::InvalidateBoundingBox ()
-  {
-    bbox_valid = false;
   }
 
   //-------------------------------------------------------------------------
@@ -261,13 +176,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
     iRenderBuffer* indices, iMaterialWrapper *material, const char* name, 
     uint mixmode)
   {
-    if ((subMeshes.GetSize() == 1) && (subMeshes[0] == defaultSubmesh))
-    {
-      if(defaultSubmesh->GetMaterial() == 0)
-        defaultSubmesh->SetMaterial(material);
-
+    if ((subMeshes.GetSize() == 1)
+	&& (subMeshes[0] == defaultSubmesh))
       subMeshes.Empty();
-    }
 
     csRef<SubMesh> subMesh;
     subMesh.AttachNew (new SubMesh ());
@@ -309,25 +220,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
 
     if (subMeshes.GetSize() == 0)
       subMeshes.Push (defaultSubmesh);
-  }
-
-  void SubMeshesContainer::SetMaterialWrapper(iMaterialWrapper* mat)
-  {
-      defaultSubmesh->SetMaterial(mat);
-      if((subMeshes.GetSize() == 1) && (subMeshes[0] != defaultSubmesh))
-      {
-          subMeshes[0]->SetMaterial(mat);
-      }
-  }
-
-  iMaterialWrapper* SubMeshesContainer::GetMaterialWrapper() const
-  {
-      if((subMeshes.GetSize() == 1) && (subMeshes[0] != defaultSubmesh))
-      {
-          return subMeshes[0]->GetMaterial();
-      }
-
-      return defaultSubmesh->GetMaterial();
   }
 
   //-------------------------------------------------------------------------
@@ -393,13 +285,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
 
   void SubMeshProxiesContainer::AddSubMesh (SubMeshProxy* subMesh)
   {
-    if ((subMeshes.GetSize() == 1) && (subMeshes[0] == defaultSubmesh))
-    {
-      if(defaultSubmesh->GetMaterial() == 0)
-        defaultSubmesh->SetMaterial(subMesh->GetMaterial());
-
+    if ((subMeshes.GetSize() == 1)
+	&& (subMeshes[0] == defaultSubmesh))
       subMeshes.Empty();
-    }
 
     subMeshes.InsertSorted (subMesh, SubmeshProxySubmeshProxyCompare);
   }
@@ -418,25 +306,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Genmesh)
       csArrayCmp<SubMeshProxy*, const char*> (name, &SubmeshProxyStringCompare));
     if (idx == csArrayItemNotFound) return 0;
     return subMeshes[idx];
-  }
-
-  void SubMeshProxiesContainer::SetMaterialWrapper(iMaterialWrapper* mat)
-  {
-      defaultSubmesh->SetMaterial(mat);
-      if((subMeshes.GetSize() == 1) && (subMeshes[0] != defaultSubmesh))
-      {
-          subMeshes[0]->SetMaterial(mat);
-      }
-  }
-
-  iMaterialWrapper* SubMeshProxiesContainer::GetMaterialWrapper() const
-  {
-      if((subMeshes.GetSize() == 1) && (subMeshes[0] != defaultSubmesh))
-      {
-          return subMeshes[0]->GetMaterial();
-      }
-
-      return defaultSubmesh->GetMaterial();
   }
 
   //-------------------------------------------------------------------------

@@ -20,7 +20,6 @@
 #include "csutil/sysfunc.h"
 
 
-#include "csplugincommon/win32/icontools.h"
 #include "csutil/win32/wintools.h"
 #include "csutil/win32/win32.h"
 
@@ -42,7 +41,7 @@
 #error OpenGL version 1.1 required! Stopping compilation.
 #endif
 
-
+CS_IMPLEMENT_PLUGIN
 
 /*
     In fs mode, the window is topmost, means above every other
@@ -166,8 +165,9 @@ csGraphics2DOpenGL::csGraphics2DOpenGL (iBase *iParent) :
   scfImplementationType (this, iParent),
   m_nGraphicsReady (true),
   m_hWnd (0),
-  modeSwitched (true),
-  customIcon (0)
+  m_bPalettized (false),
+  m_bPaletteChanged (false),
+  modeSwitched (true)
 {
 }
 
@@ -203,6 +203,12 @@ bool csGraphics2DOpenGL::Initialize (iObjectRegistry *object_reg)
   // Get the creation parameters
   m_hInstance = m_piWin32Assistant->GetInstance ();
   m_nCmdShow  = m_piWin32Assistant->GetCmdShow ();
+
+  if (Depth == 8)
+  {
+    pfmt.PalEntries = CS_WIN_PALETTE_SIZE;
+    pfmt.PixelBytes = 1;
+  }
 
   csRef<iCommandLineParser> cmdline (
   	csQueryRegistry<iCommandLineParser> (object_reg));
@@ -276,7 +282,7 @@ int csGraphics2DOpenGL::FindPixelFormatWGL (csGLPixelFormatPicker& picker)
 
   HINSTANCE ModuleHandle = GetModuleHandle(0);
 
-  WNDCLASSA wc;
+  WNDCLASS wc;
   wc.hCursor        = 0;
   wc.hIcon	    = 0;
   wc.lpszMenuName   = 0;
@@ -288,7 +294,7 @@ int csGraphics2DOpenGL::FindPixelFormatWGL (csGLPixelFormatPicker& picker)
   wc.cbClsExtra     = 0;
   wc.cbWndExtra     = 0;
 
-  if (!RegisterClassA (&wc)) return false;
+  if (!RegisterClass (&wc)) return false;
 
   DummyWndInfo dwi;
   dwi.pixelFormat = -1;
@@ -296,12 +302,12 @@ int csGraphics2DOpenGL::FindPixelFormatWGL (csGLPixelFormatPicker& picker)
   dwi.chosenFormat = &currentFormat;
   dwi.picker = &picker;
 
-  HWND wnd = CreateWindowA (dummyClassName, 0, 0, CW_USEDEFAULT, 
+  HWND wnd = CreateWindow (dummyClassName, 0, 0, CW_USEDEFAULT, 
     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0,
     ModuleHandle, (LPVOID)&dwi);
   DestroyWindow (wnd);
 
-  UnregisterClassA (dummyClassName, ModuleHandle);
+  UnregisterClass (dummyClassName, ModuleHandle);
 
   ext.Reset();
 
@@ -366,7 +372,7 @@ LRESULT CALLBACK csGraphics2DOpenGL::DummyWindow (HWND hWnd, UINT message,
 	  iAttributes[index++] = GL_TRUE;
 	  iAttributes[index++] = WGL_SAMPLE_BUFFERS_ARB;
 	  iAttributes[index++] = 
-	    (format[glpfvMultiSamples] != 0) ? 1 : 0;
+	    (format[glpfvMultiSamples] != 0) ? GL_TRUE : GL_FALSE;
 	  iAttributes[index++] = WGL_SAMPLES_ARB;
 	  iAttributes[index++] = format[glpfvMultiSamples];
 	  iAttributes[index++] = WGL_COLOR_BITS_ARB;
@@ -525,6 +531,21 @@ bool csGraphics2DOpenGL::Open ()
   hardwareAccelerated = !(pfd.dwFlags & PFD_GENERIC_FORMAT) ||
     (pfd.dwFlags & PFD_GENERIC_ACCELERATED);
 
+  pfmt.PixelBytes = (pfd.cColorBits == 32) ? 4 : (pfd.cColorBits + 7) >> 3;
+  pfmt.RedBits = pfd.cRedBits;
+  pfmt.RedShift = pfd.cRedShift;
+  pfmt.RedMask = ((1 << pfd.cRedBits) - 1) << pfd.cRedShift;
+  pfmt.GreenBits = pfd.cGreenBits;
+  pfmt.GreenShift = pfd.cGreenShift;
+  pfmt.GreenMask = ((1 << pfd.cGreenBits) - 1) << pfd.cGreenShift;
+  pfmt.BlueBits = pfd.cBlueBits;
+  pfmt.BlueShift = pfd.cBlueShift;
+  pfmt.BlueMask = ((1 << pfd.cBlueBits) - 1) << pfd.cBlueShift;
+  pfmt.AlphaBits = pfd.cAlphaBits;
+  pfmt.AlphaShift = pfd.cAlphaShift;
+  pfmt.AlphaMask = ((1 << pfd.cAlphaBits) - 1) << pfd.cAlphaShift;
+  pfmt.PalEntries = 0;
+
   hGLRC = wglCreateContext (hDC);
   wglMakeCurrent (hDC, hGLRC);
 
@@ -562,6 +583,12 @@ bool csGraphics2DOpenGL::Open ()
 
   if (!csGraphics2DGLCommon::Open ())
     return false;
+
+  if (Depth == 8)
+    m_bPalettized = true;
+  else
+    m_bPalettized = false;
+  m_bPaletteChanged = false;
 
   ext.InitWGL_EXT_swap_control (hDC);
 
@@ -636,6 +663,44 @@ void csGraphics2DOpenGL::Print (csRect const* /*area*/)
 {
   glFlush();
   SwapBuffers(hDC);
+}
+
+HRESULT csGraphics2DOpenGL::SetColorPalette ()
+{
+  HRESULT ret = S_OK;
+
+  if ((Depth==8) && m_bPaletteChanged)
+  {
+    m_bPaletteChanged = false;
+
+    if (!FullScreen)
+    {
+      HPALETTE oldPal;
+      HDC dc = GetDC(0);
+
+      SetSystemPaletteUse (dc, SYSPAL_NOSTATIC);
+      PostMessage (HWND_BROADCAST, WM_SYSCOLORCHANGE, 0, 0);
+
+      CreateIdentityPalette (Palette);
+      ClearSystemPalette ();
+
+      oldPal = SelectPalette (dc, hWndPalette, FALSE);
+
+      RealizePalette (dc);
+      SelectPalette (dc, oldPal, FALSE);
+      ReleaseDC (0, dc);
+    }
+
+    return ret;
+  }
+
+  return S_OK;
+}
+
+void csGraphics2DOpenGL::SetRGB (int i, int r, int g, int b)
+{
+  csGraphics2D::SetRGB (i, r, g, b);
+  m_bPaletteChanged = true;
 }
 
 bool csGraphics2DOpenGL::SetMouseCursor (csMouseCursorID iShape)
@@ -745,14 +810,6 @@ void csGraphics2DOpenGL::SetTitle (const char* title)
     else
       SetWindowTextA (m_hWnd, cswinCtoA (title));
   }
-}
-
-void csGraphics2DOpenGL::SetIcon (iImage *image)
-{
-  HICON icon = CS::Platform::Win32::IconTools::IconFromImage (image);
-  SendMessage (m_hWnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
-  if (customIcon != 0) DestroyIcon (customIcon);
-  customIcon = icon;
 }
 
 void csGraphics2DOpenGL::AlertV (int type, const char* title, const char* okMsg,

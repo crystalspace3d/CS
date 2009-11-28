@@ -68,6 +68,10 @@ bool Simple::Setup ()
   if (!cegui) 
     return ReportError("Failed to locate CEGUI plugin");
 
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
+
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
     return ReportError("Error loading 'stone4' texture!");
   iMaterialWrapper* tm = engine->GetMaterialList ()->FindByName ("stone");
@@ -85,6 +89,10 @@ bool Simple::Setup ()
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, "walls", "walls_factory", &box);
+
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
 
 
@@ -104,9 +112,6 @@ bool Simple::Setup ()
   ll->Add (light);
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
 
   view.AttachNew (new csView (engine, g3d));
   view->GetCamera ()->SetSector (room);
@@ -217,19 +222,21 @@ void Simple::CreateGui()
   // Set the logging level
   cegui->GetLoggerPtr ()->setLoggingLevel(CEGUI::Informative);
 
-  vfs->ChDir ("/cegui/");
+  vfs->ChDir ("/ceguitest/0.5/");
 
   // Load the ice skin (which uses Falagard skinning system)
-  cegui->GetSchemeManagerPtr ()->create("ice.scheme");
+  cegui->GetSchemeManagerPtr ()->loadScheme("ice.scheme");
 
   cegui->GetSystemPtr ()->setDefaultMouseCursor("ice", "MouseArrow");
 
-  CEGUI::Font& font = cegui->GetFontManagerPtr ()->createFreeTypeFont("Vera", 10, true, "/fonts/ttf/Vera.ttf");
+  CEGUI::Font* font = cegui->GetFontManagerPtr ()->createFont("FreeType",
+    "Vera", "/fonts/ttf/Vera.ttf");
+  font->setProperty("PointSize", "10");
+  font->load();
 
   CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
 
   // Load layout and set as root
-  vfs->ChDir ("/simpvs/");
   cegui->GetSystemPtr ()->setGUISheet(winMgr->loadWindowLayout("simpvs.layout"));
 
   CEGUI::Window* btn = 0;

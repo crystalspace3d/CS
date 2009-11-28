@@ -183,13 +183,6 @@ rule MsvcIncDirs1 { }
 rule MsvcCFlags { MsvcCFlags1 $(1) : $(2) : $(3) ; }
 rule MsvcCFlags1 { }
 
-## MsvcLibDirs target : libdirs [ : mode ]
-##   Invoke this rule to define an MSVC-specific additional library directories.
-##   'mode' should be "release" or "debug". If 'mode' is omitted, then 
-##   'directories' is used for release and debug.
-rule MsvcLibDirs { _MsvcLibDirs $(1) : $(2) : $(3) ; }
-rule _MsvcLibDirs { }
-
 ## MsvcLFlags target [ : lflags [ : mode ]]
 ##   Invoke this rule to set additional MSVC-specific linker flags for
 ##   'target'.  'mode' should be "release" or "debug". If 'mode' is omitted,
@@ -710,28 +703,6 @@ rule MsvcGenName1
   MSVC.NAME_OVERRIDE.$(<) = $(>) ;
 }
 
-## MsvcAddFileToRespFile respfile : files : respdir ;
-rule MsvcAddFileToProject
-{
-  local respfile = $(1) ;
-  local files = $(2) ;
-  local respdir = $(3) ;
-  
-  for f in $(files)
-  {
-    local file_base = $(f:G=:D=) ;
-    if [ IsElem $(file_base) : $($(respfile)_FILES) ]
-    {
-      ResponseFile $(respfile) : "file_obj_unique|$(f)" : notfile : $(respdir) ;
-    }
-    else
-    {
-      ResponseFile $(respfile) : "file|$(f)" : notfile : $(respdir) ;
-      $(respfile)_FILES += $(file_base) ;
-    }
-  }
-}
-
 ## MsvcProject target : type : target-with-ext : sources : options
 ##   Create a project file for 'target', which is the project's raw name.
 ##   'sources' is a list of files comprising the target.
@@ -804,7 +775,7 @@ rule MsvcProject
     $(MSVCGEN_VARIABLES)
     : notfile : $(respdir) ;
   MsvcRmTemps msvcgen : $(respfile) ;
-  
+
   # Only include source and headers files for now.  In the future, we also
   # want to include .cfg files and any other textual resources which which the
   # user might care to read/view in the MSVC IDE.
@@ -822,12 +793,9 @@ rule MsvcProject
       {
 	fileinproj = $(i:R=$(SEARCH_SOURCE)) ;
       }
-      MsvcAddFileToProject $(respfile) : $(fileinproj) : $(respdir) ;
+      ResponseFile $(respfile) : "file|$(fileinproj)" : notfile :
+	$(respdir) ;
     }
-  }
-  for i in $($(rawname)_EXTRASOURCES)
-  {
-    ResponseFile $(respfile) : "file|$(i)" : notfile : $(respdir) ;
   }
 
   # Add resource file.
@@ -839,7 +807,8 @@ rule MsvcProject
     SEARCH on $(resource) = $(outdircommon) ;
     NAME on $(resource) = $(rawname) ;
     $(rawname)_RCNAME = $(resource) ;
-    MsvcAddFileToProject $(respfile) : $(resource:R=$(outdircommon)) : $(respdir) ;
+    ResponseFile $(respfile) : "file|$(resource:R=$(outdircommon))" : notfile :
+      $(respdir) ;
   
     local versionrc = $(resource:S=.vrctmp) ;
     MakeLocate $(versionrc) : $(workdircommon) ;
@@ -859,8 +828,9 @@ rule MsvcProject
       
       Win32Resource $(rawname) : $(metarc) ;
       MsvcRmTemps $(resource) : $(metarc) ;
-      MsvcAddFileToProject $(respfile) :
-	$($(rawname)_METAFILE:R=$(SEARCH_SOURCE)) : $(respdir) ;
+      ResponseFile $(respfile) :
+	"file|$($(rawname)_METAFILE:R=$(SEARCH_SOURCE))" : notfile :
+	$(respdir) ;
     }
 
     if [ IsElem $(type) : appgui appcon ]
@@ -884,7 +854,8 @@ rule MsvcProject
           # VC8: Manifest appears in project along other files, a special build
           # tool cares about the embedding into a resource. (The resource goop
           # still has to be generated since it is shared with other VCs.)
-	  MsvcAddFileToProject $(respfile) : $(manifest:R=$(outdircommon)) : $(respdir) ;
+	  ResponseFile $(respfile) : "file|$(manifest:R=$(outdircommon))" : notfile :
+	    $(respdir) ;
         }
       
         Win32Resource $(rawname) : $(manifestrc) ;
@@ -1132,10 +1103,12 @@ rule LinkStaticPlugins
     GeneratePluginLibraryGlueLib $(libglue) : $(plugin_lib_name) : $(tag) ;
     
     Library $(plugin_lib_name) : : noinstall notest independent nohelp shared ;
-    MsvcAddFileToProject $($(plugin_lib_name)_PRJ_RESPFILE) : 
-      $(libglue:R=$(outdir)) : $($(target)_PRJ_RESPDIR) ;
-    MsvcAddFileToProject $($(plugin_lib_name)_PRJ_RESPFILE) : 
-      $(staticuse_out:R=$(outdir)) : $($(target)_PRJ_RESPDIR) ;
+    ResponseFile $($(plugin_lib_name)_PRJ_RESPFILE) : 
+      "file|$(libglue:R=$(outdir))" : notfile :
+      $($(target)_PRJ_RESPDIR) ;
+    ResponseFile $($(plugin_lib_name)_PRJ_RESPFILE) : 
+      "file|$(staticuse_out:R=$(outdir))" : notfile :
+      $($(target)_PRJ_RESPDIR) ;
     LibDepends $(plugin_lib_name) : $(target_link_with) ;
     LFlags $(plugin_lib_name) : $(target_lflags) ;
     Depends msvcgen : $(libglue) ;
@@ -1178,8 +1151,9 @@ rule LinkStaticPlugins
     LinkWith $(target) : $(target_link_with) ;
     
     # Add usefile to project
-    MsvcAddFileToProject $($(target)_PRJ_RESPFILE) : 
-      $(appglue:R=$(outdir)) : $($(target)_PRJ_RESPDIR) ;
+    ResponseFile $($(target)_PRJ_RESPFILE) : 
+      "file|$(appglue:R=$(outdir))" : notfile :
+      $($(target)_PRJ_RESPDIR) ;
     Depends $(target) : $(appglue) ;
     Depends msvcgen : $(appglue) ;
     LinkWith $(target) : $(plugin_lib_name) ;
@@ -1197,8 +1171,9 @@ rule LinkStaticPlugins
     LinkWith $(target) : $(target_link_with) ;
     
     # Add usefile to project
-    MsvcAddFileToProject $($(target)_PRJ_RESPFILE) : 
-      $(staticuse_out:R=$(outdir)) : $($(target)_PRJ_RESPDIR) ;
+    ResponseFile $($(target)_PRJ_RESPFILE) : 
+      "file|$(staticuse_out:R=$(outdir))" : notfile :
+      $($(target)_PRJ_RESPDIR) ;
     Depends $(target) : $(staticuse_out) ;
   }
 }
@@ -1226,18 +1201,6 @@ rule Plugin
   RegisterWellKnownCompileGroup plugins ;
 
   $(<)_TYPE = plugin ;
-  
-  local outdir = [ Property msvcgen : outdir$(MSVC_VERSION) ] ;
-  local outdircommon = [ Property msvcgen : outdircommon ] ;
-  if "$(outdircommon)" = ""
-  {
-    outdircommon = $(outdir) ;
-  }
-  local plugin_impl_file = plugin_impl.cpp ;
-  MakeLocate $(plugin_impl_file) : $(outdircommon) ;
-  WritePluginImplement $(plugin_impl_file) ;
-  Depends msvcgen : $(plugin_impl_file) ;
-  $(<)_EXTRASOURCES = $(plugin_impl_file:R=$(outdircommon))
   
   local metafile ;
   metafile = [ FAppendSuffix $(<) : $(SUFMETA) ] ;
@@ -1276,10 +1239,7 @@ rule Library
   }
   $(<)_TYPE = $(type) ;
   MsvcProject $(<) : $(type) : $(<:S=.lib) : $(>) ;
-  if ! [ IsElem independent : $(options) ]
-  {
-    CompileGroups $(<) : all libs ;
-  }
+  CompileGroups $(<) : all libs ;
 }
 
 rule DLL
@@ -1307,20 +1267,14 @@ rule StaticPluginLibrary
   {
     sources += $(STATICPLUGINS.SOURCES.$(t)) ;
     extlibs += $($(t).EXTERNALLIBS) ;
+    _MsvcDefine $(name) : $(STATICPLUGINS.$(t).MSVC_DEFINES) ;
   }
 
   $(name)_STATIC = "yes" ;
   # Set up library
   Library $(name) : $(sources) ;
   MsvcDefine $(name) : CS_STATIC_LINKED ;
-  # We need the CFLAGS of external dependencies, but not the LFLAGS.
-  local extlib ;
-  for extlib in [ RemoveDups $(extlibs) ]
-  {
-    _ExternalLibsHelperMsvc $(name) : $(extlib) : MsvcCFlags : CFLAGS ;
-    _ExternalLibsHelperMsvc $(name) : $(extlib) : _MsvcDefine  : DEFINES ;
-    _ExternalLibsHelperMsvc $(name) : $(extlib) : _MsvcIncDirs : INCDIRS ;
-  }
+  ExternalLibs $(name) : [ RemoveDups $(extlibs) ] ;
 
   # Write out needed CFLAGS, LFLAGS
   local outdir = [ Property msvcgen : outdircommon ] ;
@@ -1492,31 +1446,6 @@ rule LibDepends
   }
 }
 
-rule RelayLibs
-{
-  local extlib ;
-  
-  local outdir = [ Property msvcgen : outdir$(MSVC_VERSION) ] ;
-  local outdircommon = [ Property msvcgen : outdircommon ] ;
-  if "$(outdircommon)" = ""
-  {
-    outdircommon = $(outdir) ;
-  }
-  
-  for extlib in $(>)
-  {
-    local relayfile = $(extlib).fake_stub.c ;
-    MakeLocate $(relayfile) : $(outdircommon) ;
-    WHATEVER on $(relayfile) = $(3) ;
-    WriteRelayLibStub $(relayfile) ;
-    Depends msvcgen : $(relayfile) ;
-
-    MsvcExtraFile1 $(<) : $(relayfile:R=$(outdircommon)) ;
-  }
-
-  ExternalLibs $(<) : $(>) ;
-}
-
 rule MsvcClassifyMode
 {
   local c ;
@@ -1632,7 +1561,8 @@ rule MsvcExtraFile1
   local respfile = $($(rawname)_PRJ_RESPFILE) ;
   local respdir = $($(rawname)_PRJ_RESPDIR) ;
   
-  MsvcAddFileToProject $(respfile) : $(files) : $(respdir) ;
+  ResponseFile $(respfile) : "file|$(files)" : notfile :
+    $(respdir) ;
 }
 
 # _MsvcIncDirs target : incdirs [ : mode ]

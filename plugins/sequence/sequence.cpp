@@ -30,7 +30,7 @@
 #include "ivideo/graph3d.h"
 #include "ivideo/graph2d.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 csSequence::csSequence (iSequenceManager* seqmgr) :
   scfImplementationType(this), first (0), last (0)
@@ -93,11 +93,11 @@ void csSequence::AddOperation (csTicks time, iSequenceOperation* operation,
       if (time <= o->time)
       {
         op->next = o;
-        op->prev = o->prev;
-        if (o->prev) o->prev->next = op;
-        else first = op;
-        o->prev = op;
-        break;
+	op->prev = o->prev;
+	if (o->prev) o->prev->next = op;
+	else first = op;
+	o->prev = op;
+	break;
       }
       o = o->next;
     }
@@ -319,8 +319,8 @@ csPtr<iSequence> csSequenceManager::NewSequence ()
       for (i = 0 ; i < sequences.GetSize () ; i++)
       {
         csWeakRef<csSequence>* seq = sequences[i];
-        if ((*seq) != 0) copy.Push (seq);
-        else weakref_alloc.Free (seq);
+	if ((*seq) != 0) copy.Push (seq);
+	else weakref_alloc.Free (seq);
       }
       sequences = copy;
     }

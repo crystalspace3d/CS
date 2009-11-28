@@ -29,9 +29,11 @@
 #include "csplugincommon/directx/guids.h"
 
 #include <mmsystem.h>
+#include <ddraw.h>
+#include <d3d.h>
 #include <dsound.h>
 #ifndef DIRECTINPUT_VERSION
-#define DIRECTINPUT_VERSION 0x0800
+#define DIRECTINPUT_VERSION 0x0500
 #endif
 #include <dinput.h>
 

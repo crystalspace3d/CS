@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 4.16.1 Loading a Level</title>
+<title>Crystal Space 1.4.0: 4.16.1 Loading a Level</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 4.16.1 Loading a Level">
-<meta name="keywords" content="Crystal Space 1.9.0: 4.16.1 Loading a Level">
+<meta name="description" content="Crystal Space 1.4.0: 4.16.1 Loading a Level">
+<meta name="keywords" content="Crystal Space 1.4.0: 4.16.1 Loading a Level">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -44,7 +44,7 @@ ul.toc {list-style: none}
 <a name="0"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="Map-Loader.html#0" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="XML-Syntax-Services.html#0" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="XML-File-Format.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="Using-Crystal-Space.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="Map-Loader.html#0" title="Up section"> Up </a>]</td>
@@ -102,7 +102,8 @@ loaded in the engine before. If you don't want that then you need to
 set the second parameter of <code>LoadMapFile</code> to <code>false</code>.
 </p>
 <p>The line <code>engine-&gt;Prepare()</code> will make sure that everything that
-is loaded is correctly set up (i.e. materials and texture will be registered).
+is loaded is correctly set up (i.e. materials and texture will be registered,
+lightmaps will be loaded from the cache, ...).
 </p>
 <a name="3"></a>
 <h4 class="subsubheading"> Include Files </h4>

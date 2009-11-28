@@ -33,6 +33,8 @@
 
 #include "dsplex.h"
 
+CS_IMPLEMENT_PLUGIN
+
 CS_PLUGIN_NAMESPACE_BEGIN(DSPlex)
 {
 #define DSCLASSPREFIX "crystalspace.documentsystem."
@@ -244,7 +246,7 @@ int csPlexDocument::Changeable ()
 }
 
 csDocumentSystemMultiplexer::csDocumentSystemMultiplexer(iBase* parent) : 
-  scfImplementationType (this, parent), autolist (0)
+  scfImplementationType (this, parent), autolist (0, 1)
 {
 }
 

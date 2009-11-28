@@ -19,6 +19,7 @@
 #ifndef __SIMPLEPT_H__
 #define __SIMPLEPT_H__
 
+#include <stdarg.h>
 #include <crystalspace.h>
 
 class csEngineProcTex : public csProcTexture
@@ -58,8 +59,7 @@ class Simple
 {
 public:
   iObjectRegistry* object_reg;
-  csEventID Process;
-  csEventID FinalProcess;
+  csEventID Frame;
   csEventID KeyboardDown;
 
 private:
@@ -69,15 +69,12 @@ private:
   csRef<iKeyboardDriver> kbd;
   iSector* room;
   csRef<iView> view;
-  csRef<iRenderManager> rm;
   csRef<iVirtualClock> vc;
   csEngineProcTex* ProcTexture;
   csRef<iMeshWrapper> genmesh;
   csRef<iGeneralFactoryState> factstate;
   csRef<iFont> font;
-
-  csRef<iTextureWrapper> targetTexture;
-  csRef<iView> targetView;
+  csRef<FramePrinter> printer;
 
   void CreatePolygon (iGeneralFactoryState *th, int v1, int v2, int v3, int v4);
 
@@ -95,9 +92,9 @@ public:
 
   bool Initialize ();
   void Start ();
+  void Stop ();
   bool HandleEvent (iEvent&);
-  void SetupFrame ();
-  void FinishFrame ();
+  void DrawFrame ();
 };
 
 #endif // __SIMPLEPT_H__

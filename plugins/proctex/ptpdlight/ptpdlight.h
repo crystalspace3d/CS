@@ -21,6 +21,7 @@
 #define __CS_PTPDLIGHT_H__
 
 #include "iengine/light.h"
+#include "imesh/lighting.h"
 #include "ivideo/texture.h"
 
 #include "csgeom/csrect.h"
@@ -59,7 +60,7 @@ class ProctexPDLightLoader;
 class ProctexPDLight : 
   public scfImplementationExt1<ProctexPDLight, 
                                csProcTexture,
-                               iLightCallback>
+                               iLightingInfo>
 {
 public:
   struct Lumel
@@ -312,17 +313,17 @@ public:
 
   virtual void Animate (csTicks /*current_time*/);
 
-  /**\name iLightCallback implementation
+  /**\name iLightingInfo implementation
    * @{ */
-  virtual void OnColorChange (iLight* light, const csColor& newcolor);
-  virtual void OnPositionChange (iLight* light, const csVector3& newpos) { };
-  virtual void OnSectorChange (iLight* light, iSector* newsector) { };
-  virtual void OnRadiusChange (iLight* light, float newradius) { };
-  virtual void OnDestroy (iLight* light);
-  virtual void OnAttenuationChange (iLight* light, int newatt) { };
+  void DisconnectAllLights ();
+  void InitializeDefault (bool /*clear*/) {}
+  void LightChanged (iLight* light);
+  void LightDisconnect (iLight* light);
+  void PrepareLighting () {}
+  bool ReadFromCache (iCacheManager* /*cache_mgr*/) { return true; }
+  bool WriteToCache (iCacheManager* /*cache_mgr*/) { return true; }
   /** @} */
 
-  using csProcTexture::UseTexture;
   virtual void UseTexture (iTextureWrapper*)
   { 
     if (!PrepareAnim ()) return;

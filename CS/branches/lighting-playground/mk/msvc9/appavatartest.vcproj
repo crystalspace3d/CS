@@ -1491,12 +1491,24 @@
 			<File
 				RelativePath="..\..\apps\tests\avatartest\avatartest.cpp">
 			</File>
+			<File
+				RelativePath="..\..\apps\tests\avatartest\frankie.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\tests\avatartest\krystal.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
 				RelativePath="..\..\apps\tests\avatartest\avatartest.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tests\avatartest\frankie.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\tests\avatartest\krystal.h">
 			</File>
 		</Filter>
 		<Filter

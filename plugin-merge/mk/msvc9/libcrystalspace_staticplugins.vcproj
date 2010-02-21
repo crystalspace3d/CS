@@ -29,7 +29,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\release9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\"
@@ -52,7 +52,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -76,7 +76,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -101,7 +101,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\release9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\release9\build\libcrystalspace_staticplugins\"
@@ -124,7 +124,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -148,7 +148,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -173,7 +173,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\"
@@ -194,7 +194,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -218,7 +218,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -243,7 +243,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\"
@@ -264,7 +264,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -288,7 +288,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -313,7 +313,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\"
@@ -334,7 +334,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -358,7 +358,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -383,7 +383,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\"
@@ -404,7 +404,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -428,7 +428,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -453,7 +453,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\"
@@ -474,7 +474,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -498,7 +498,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -523,7 +523,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\"
@@ -544,7 +544,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -568,7 +568,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -593,7 +593,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\"
@@ -614,7 +614,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -638,7 +638,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -663,7 +663,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9\build\libcrystalspace_staticplugins\"
@@ -684,7 +684,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -708,7 +708,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -730,10 +730,10 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\"
@@ -756,7 +756,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -764,7 +764,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -779,8 +779,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -802,10 +802,10 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\release9-x64\build\libcrystalspace_staticplugins\"
@@ -828,7 +828,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -836,7 +836,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -851,8 +851,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -874,10 +874,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
@@ -898,7 +898,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -906,7 +906,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -921,8 +921,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -944,10 +944,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
@@ -968,7 +968,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -976,7 +976,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -991,8 +991,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1014,10 +1014,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
@@ -1038,7 +1038,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1046,7 +1046,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1061,8 +1061,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1084,10 +1084,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
@@ -1108,7 +1108,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1116,7 +1116,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1131,8 +1131,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1154,10 +1154,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
@@ -1178,7 +1178,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1186,7 +1186,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1201,8 +1201,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1224,10 +1224,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
@@ -1248,7 +1248,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1256,7 +1256,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1271,8 +1271,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1294,10 +1294,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
@@ -1318,7 +1318,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1326,7 +1326,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1341,8 +1341,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1364,10 +1364,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
 				ObjectFile="..\..\out\debug9-x64\build\libcrystalspace_staticplugins\"
@@ -1388,7 +1388,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1396,7 +1396,7 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1411,8 +1411,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1431,7 +1431,16 @@
 				RelativePath="..\..\mk\msvc\libanimeshldr_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libbasic_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libbindoc_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libbodymesh_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libbodymeshldr_staticreg.cpp">
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libbruteblock_staticreg.cpp">
@@ -1501,6 +1510,9 @@
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libdynavis_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libdyndebug_staticreg.cpp">
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libembedgl_staticreg.cpp">
@@ -1584,6 +1596,9 @@
 				RelativePath="..\..\mk\msvc\liblghtngldr_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\liblookat_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libmovierecorder_staticreg.cpp">
 			</File>
 			<File
@@ -1633,6 +1648,9 @@
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libptpdlight_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libragdoll_staticreg.cpp">
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\librendloop_loader_staticreg.cpp">
@@ -2127,10 +2145,19 @@
 				RelativePath="..\..\plugins\font\server\freefnt2\freefnt2.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguicsimagecodec.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguievthandler.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguigeometrybuffer.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguirenderer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguirendertarget.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguiresourceprovider.cpp">
@@ -2142,6 +2169,24 @@
 				RelativePath="..\..\plugins\gui\cegui\ceguitexture.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguitexturetarget.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguiwindowtarget.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\controllers\basic\basic.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\controllers\lookat\lookat.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\controllers\ragdoll\ragdoll.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\animesh.cpp">
 			</File>
 			<File
@@ -2149,6 +2194,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\skinning.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\persist\body\bodymeshldr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\persist\skeleton2\skeleton2ldr.cpp">
@@ -2338,6 +2386,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\bullet.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics\dyndebug\dyndebug.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\loader\physldr.cpp">
@@ -2658,6 +2709,21 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_eval_sv.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_eval_svsimple.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_eval_svvalues.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_io.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_var.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condition.cpp">
 			</File>
 			<File
@@ -2740,9 +2806,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore_crc.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_fixed\glshader_ffp.cpp">
@@ -3952,10 +4015,19 @@
 				RelativePath="..\..\plugins\font\server\freefnt2\freefnt2.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguicsimagecodec.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguievthandler.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguigeometrybuffer.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguirenderer.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguirendertarget.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguiresourceprovider.h">
@@ -3967,10 +4039,31 @@
 				RelativePath="..\..\plugins\gui\cegui\ceguitexture.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguitexturetarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\ceguiwindowtarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\controllers\basic\basic.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\controllers\lookat\lookat.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\controllers\ragdoll\ragdoll.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\animesh.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\object\morphtarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\persist\body\bodymeshldr.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\persist\skeleton2\skeleton2ldr.h">
@@ -4154,6 +4247,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\bullet.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics\dyndebug\dyndebug.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\loader\physldr.h">
@@ -4564,6 +4660,21 @@
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_eval_sv.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_eval_svsimple.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_eval_svvalues.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_slicealloc.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condeval_var.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\cpi\condition.h">
 			</File>
 			<File
@@ -4595,6 +4706,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\foreignnodes.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\iinternal.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shadercompiler\xmlshader\shadertech.h">

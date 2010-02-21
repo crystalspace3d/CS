@@ -30,7 +30,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\release8\build\plgcsopcode\"
 				ObjectFile="..\..\out\release8\build\plgcsopcode\"
@@ -50,7 +50,7 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\release8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -58,7 +58,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -107,7 +107,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\release8\build\plgcsopcode\"
 				ObjectFile="..\..\out\release8\build\plgcsopcode\"
@@ -127,7 +127,7 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\release8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -135,7 +135,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -158,7 +158,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -183,7 +183,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
@@ -201,7 +201,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -209,7 +209,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -232,7 +232,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -257,7 +257,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
@@ -275,7 +275,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -283,7 +283,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -306,7 +306,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -331,7 +331,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
@@ -349,7 +349,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -357,7 +357,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -380,7 +380,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -405,7 +405,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
@@ -423,7 +423,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -431,7 +431,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -454,7 +454,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -479,7 +479,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
@@ -497,7 +497,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -505,7 +505,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -528,7 +528,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -553,7 +553,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
@@ -571,7 +571,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -579,7 +579,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -602,7 +602,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -627,7 +627,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
@@ -645,7 +645,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -653,7 +653,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -676,7 +676,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -701,7 +701,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8\build\plgcsopcode\"
@@ -719,7 +719,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8\build\plgcsopcode\Win32\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -727,7 +727,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -750,7 +750,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -776,7 +776,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\release8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\release8-x64\build\plgcsopcode\"
@@ -796,15 +796,15 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\release8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -827,7 +827,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -853,7 +853,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\release8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\release8-x64\build\plgcsopcode\"
@@ -873,15 +873,15 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\release8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -904,7 +904,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -929,7 +929,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8-x64\build\plgcsopcode\"
@@ -947,15 +947,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -978,7 +978,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1003,7 +1003,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8-x64\build\plgcsopcode\"
@@ -1021,15 +1021,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1052,7 +1052,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1077,7 +1077,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8-x64\build\plgcsopcode\"
@@ -1095,15 +1095,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1126,7 +1126,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1151,7 +1151,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8-x64\build\plgcsopcode\"
@@ -1169,15 +1169,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1200,7 +1200,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1225,7 +1225,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8-x64\build\plgcsopcode\"
@@ -1243,15 +1243,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1274,7 +1274,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1299,7 +1299,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8-x64\build\plgcsopcode\"
@@ -1317,15 +1317,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1348,7 +1348,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1373,7 +1373,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8-x64\build\plgcsopcode\"
@@ -1391,15 +1391,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1422,7 +1422,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1447,7 +1447,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgcsopcode\plgcsopcode.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\plgcsopcode\"
 				ObjectFile="..\..\out\debug8-x64\build\plgcsopcode\"
@@ -1465,15 +1465,15 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\csopcode.dll"
+				OutputFile="..\..\OPC_BaseModel.h"
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgcsopcode\x64\csopcode.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgcsopcode\x64\plgcsopcode.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1496,7 +1496,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\collide\opcode"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1510,325 +1510,6 @@
 			Filter="">
 			<File
 				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\CSopcode.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\CSopcodecollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\csTerraFormerCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceAABB.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceContainer.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceHPoint.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceIndexedTriangle.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix3x3.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix4x4.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceOBB.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePlane.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePoint.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRandom.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRay.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRevisitedRadix.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceSegment.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceTriangle.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceUtils.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_AABBCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_AABBTree.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BaseModel.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BoxPruning.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Collider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Common.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_HybridModel.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_LSSCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_MeshInterface.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Model.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_OBBCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_OptimizedTree.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Picking.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_RayCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SphereCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SweepAndPrune.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TreeBuilders.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TreeCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_VolumeCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Opcode.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\terraincollider.cpp">
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="">
-			<File
-				RelativePath="..\..\plugins\collide\opcode\CSopcode.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\CSopcodecollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\csTerraFormerCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceAABB.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceAxes.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceBoundingSphere.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceContainer.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceFPU.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceHPoint.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceIndexedTriangle.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceLSS.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix3x3.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMatrix4x4.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceMemoryMacros.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceOBB.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePairs.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePlane.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePoint.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IcePreprocessor.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRandom.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRay.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceRevisitedRadix.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceSegment.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceTriangle.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceTrilist.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceTypes.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\IceUtils.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_AABBCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_AABBTree.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BaseModel.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BoxBoxOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_BoxPruning.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Collider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Common.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_HybridModel.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_IceHook.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_LSSAABBOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_LSSCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_LSSTriOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_MeshInterface.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Model.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_OBBCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_OptimizedTree.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Picking.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesAABBOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_PlanesTriOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_RayAABBOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_RayCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_RayTriOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_Settings.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SphereAABBOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SphereCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SphereTriOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_SweepAndPrune.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TreeBuilders.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TreeCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TriBoxOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_TriTriOverlap.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\OPC_VolumeCollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Opcode.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\segmentcell.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Stdafx.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\terraincollider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\collide\opcode\Ice\Stdafx.h">
 			</File>
 		</Filter>
 		<Filter

@@ -30,7 +30,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\release9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\release9\build\plgsndsysspeex\"
@@ -50,7 +50,7 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\release9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -58,7 +58,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -107,7 +107,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\release9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\release9\build\plgsndsysspeex\"
@@ -127,7 +127,7 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\release9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -135,7 +135,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -158,7 +158,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -183,7 +183,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9\build\plgsndsysspeex\"
@@ -201,7 +201,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -209,7 +209,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -232,7 +232,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -257,7 +257,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9\build\plgsndsysspeex\"
@@ -275,7 +275,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -283,7 +283,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -306,7 +306,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -331,7 +331,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9\build\plgsndsysspeex\"
@@ -349,7 +349,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -357,7 +357,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -380,7 +380,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -405,7 +405,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9\build\plgsndsysspeex\"
@@ -423,7 +423,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -431,7 +431,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -454,7 +454,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -479,7 +479,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9\build\plgsndsysspeex\"
@@ -497,7 +497,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -505,7 +505,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -528,7 +528,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -553,7 +553,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9\build\plgsndsysspeex\"
@@ -571,7 +571,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -579,7 +579,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -602,7 +602,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -627,7 +627,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9\build\plgsndsysspeex\"
@@ -645,7 +645,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -653,7 +653,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -676,7 +676,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -701,7 +701,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9\build\plgsndsysspeex\"
@@ -719,7 +719,7 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9\build\plgsndsysspeex\Win32\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
@@ -727,7 +727,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -750,7 +750,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -773,10 +773,10 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\release9-x64\build\plgsndsysspeex\"
@@ -796,22 +796,22 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\release9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -826,8 +826,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -850,10 +850,10 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\release9-x64\build\plgsndsysspeex\"
@@ -873,22 +873,22 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\release9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -903,8 +903,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -926,10 +926,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9-x64\build\plgsndsysspeex\"
@@ -947,22 +947,22 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -977,8 +977,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1000,10 +1000,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9-x64\build\plgsndsysspeex\"
@@ -1021,22 +1021,22 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1051,8 +1051,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1074,10 +1074,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9-x64\build\plgsndsysspeex\"
@@ -1095,22 +1095,22 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1125,8 +1125,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1148,10 +1148,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9-x64\build\plgsndsysspeex\"
@@ -1169,22 +1169,22 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1199,8 +1199,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1222,10 +1222,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9-x64\build\plgsndsysspeex\"
@@ -1243,22 +1243,22 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1273,8 +1273,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1296,10 +1296,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9-x64\build\plgsndsysspeex\"
@@ -1317,22 +1317,22 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1347,8 +1347,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1370,10 +1370,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9-x64\build\plgsndsysspeex\"
@@ -1391,22 +1391,22 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1421,8 +1421,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1444,10 +1444,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsndsysspeex\plgsndsysspeex.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsndsysspeex\"
 				ObjectFile="..\..\out\debug9-x64\build\plgsndsysspeex\"
@@ -1465,22 +1465,22 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\sndsysspeex.dll"
+				OutputFile="..\..\speexdata.cpp"
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsndsysspeex\x64\sndsysspeex.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgsndsysspeex\x64\plgsndsysspeex.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib speex.lib ogg.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1495,8 +1495,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_SPEEX_HEADER_FREE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\sndsys\element\speex"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1510,28 +1510,6 @@
 			Filter="">
 			<File
 				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\sndsys\element\speex\speexdata.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\sndsys\element\speex\speexloader.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\sndsys\element\speex\speexstream.cpp">
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="">
-			<File
-				RelativePath="..\..\plugins\sndsys\element\speex\speexdata.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\sndsys\element\speex\speexloader.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\sndsys\element\speex\speexstream.h">
 			</File>
 		</Filter>
 		<Filter

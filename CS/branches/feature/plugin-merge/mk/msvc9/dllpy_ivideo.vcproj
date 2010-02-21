@@ -30,7 +30,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\release9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\release9\build\dllpy_ivideo\"
@@ -57,7 +57,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -106,7 +106,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\release9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\release9\build\dllpy_ivideo\"
@@ -133,7 +133,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -156,7 +156,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -181,7 +181,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9\build\dllpy_ivideo\"
@@ -206,7 +206,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -229,7 +229,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -254,7 +254,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9\build\dllpy_ivideo\"
@@ -279,7 +279,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -302,7 +302,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -327,7 +327,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9\build\dllpy_ivideo\"
@@ -352,7 +352,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -375,7 +375,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -400,7 +400,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9\build\dllpy_ivideo\"
@@ -425,7 +425,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -448,7 +448,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -473,7 +473,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9\build\dllpy_ivideo\"
@@ -498,7 +498,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -521,7 +521,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -546,7 +546,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9\build\dllpy_ivideo\"
@@ -571,7 +571,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -594,7 +594,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -619,7 +619,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9\build\dllpy_ivideo\"
@@ -644,7 +644,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -667,7 +667,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -692,7 +692,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9\build\dllpy_ivideo\"
@@ -717,7 +717,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -740,7 +740,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -763,10 +763,10 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\release9-x64\build\dllpy_ivideo\"
@@ -791,16 +791,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -815,8 +815,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -839,10 +839,10 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\release9-x64\build\dllpy_ivideo\"
@@ -867,16 +867,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -891,8 +891,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -914,10 +914,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9-x64\build\dllpy_ivideo\"
@@ -940,16 +940,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -964,8 +964,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -987,10 +987,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9-x64\build\dllpy_ivideo\"
@@ -1013,16 +1013,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1037,8 +1037,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1060,10 +1060,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9-x64\build\dllpy_ivideo\"
@@ -1086,16 +1086,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1110,8 +1110,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1133,10 +1133,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9-x64\build\dllpy_ivideo\"
@@ -1159,16 +1159,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1183,8 +1183,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1206,10 +1206,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9-x64\build\dllpy_ivideo\"
@@ -1232,16 +1232,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1256,8 +1256,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1279,10 +1279,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9-x64\build\dllpy_ivideo\"
@@ -1305,16 +1305,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1329,8 +1329,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1352,10 +1352,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9-x64\build\dllpy_ivideo\"
@@ -1378,16 +1378,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1402,8 +1402,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1425,10 +1425,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\dllpy_ivideo\x64\py_ivideo.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\dllpy_ivideo\dllpy_ivideo.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\dllpy_ivideo\"
 				ObjectFile="..\..\out\debug9-x64\build\dllpy_ivideo\"
@@ -1451,16 +1451,16 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\dllpy_ivideo\x64\dllpy_ivideo.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="delayimp.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1475,8 +1475,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;SWIG_GLOBAL;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\cscript\pyivideo"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>

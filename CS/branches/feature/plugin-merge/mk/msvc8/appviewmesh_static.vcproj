@@ -31,7 +31,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\release8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\release8\build\appviewmesh_static\"
@@ -57,7 +57,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8.lib cal3d-vc8.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -107,7 +107,7 @@
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\release8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\release8\build\appviewmesh_static\"
@@ -133,7 +133,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8.lib cal3d-vc8.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -156,7 +156,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -182,7 +182,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8\build\appviewmesh_static\"
@@ -206,7 +206,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -229,7 +229,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -255,7 +255,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8\build\appviewmesh_static\"
@@ -279,7 +279,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -302,7 +302,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -328,7 +328,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8\build\appviewmesh_static\"
@@ -352,7 +352,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -375,7 +375,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -401,7 +401,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8\build\appviewmesh_static\"
@@ -425,7 +425,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -448,7 +448,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -474,7 +474,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8\build\appviewmesh_static\"
@@ -498,7 +498,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -521,7 +521,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -547,7 +547,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8\build\appviewmesh_static\"
@@ -571,7 +571,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -594,7 +594,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -620,7 +620,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;WIN32"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8\build\appviewmesh_static\"
@@ -644,7 +644,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -667,7 +667,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -693,7 +693,7 @@
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug8\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8\build\appviewmesh_static\"
@@ -717,7 +717,7 @@
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -740,7 +740,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -764,10 +764,10 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\release8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\release8-x64\build\appviewmesh_static\"
@@ -791,16 +791,16 @@
 				ProgramDatabaseFile="..\..\out\release8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8.lib cal3d-vc8.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -815,8 +815,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -840,10 +840,10 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				ProgramDataBaseFileName="..\..\out\release8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\release8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\release8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\release8-x64\build\appviewmesh_static\"
@@ -867,16 +867,16 @@
 				ProgramDatabaseFile="..\..\out\release8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8.lib cal3d-vc8.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -891,8 +891,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -915,10 +915,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8-x64\build\appviewmesh_static\"
@@ -940,16 +940,16 @@
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -964,8 +964,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -988,10 +988,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8-x64\build\appviewmesh_static\"
@@ -1013,16 +1013,16 @@
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1037,8 +1037,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1061,10 +1061,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8-x64\build\appviewmesh_static\"
@@ -1086,16 +1086,16 @@
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1110,8 +1110,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1134,10 +1134,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8-x64\build\appviewmesh_static\"
@@ -1159,16 +1159,16 @@
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1183,8 +1183,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1207,10 +1207,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8-x64\build\appviewmesh_static\"
@@ -1232,16 +1232,16 @@
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1256,8 +1256,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1280,10 +1280,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8-x64\build\appviewmesh_static\"
@@ -1305,16 +1305,16 @@
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1329,8 +1329,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1353,10 +1353,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;WIN32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8-x64\build\appviewmesh_static\"
@@ -1378,16 +1378,16 @@
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1402,8 +1402,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1426,10 +1426,10 @@
 				RuntimeLibrary="3"
 
 				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_BUILD_SHARED_LIBS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_BUILD_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/D CS_HAVE_CAL3D "
-				AdditionalIncludeDirectories=".;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				AdditionalOptions=" "
+				AdditionalIncludeDirectories="."
 				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appviewmesh_static\appviewmesh_static.pch"
 				AssemblerListingLocation="..\..\out\debug8-x64\build\appviewmesh_static\"
 				ObjectFile="..\..\out\debug8-x64\build\appviewmesh_static\"
@@ -1451,16 +1451,16 @@
 				ProgramDatabaseFile="..\..\out\debug8-x64\build\appviewmesh_static\x64\viewmesh_static.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc8_d.lib cal3d-vc8_d.lib libjpeg.lib libpng.lib opengl32.lib cg.lib cgGL.lib version.lib"
+				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\win32libs\lib;..\..\libs\csutil\win32\libs"
+				AdditionalLibraryDirectories=""
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1475,8 +1475,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..;..\..\include;..\..\win32libs\include;..\..\include\csutil\win32"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>

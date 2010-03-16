@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 1.9.0: 5.7.1 lighter2 User's Manual</title>
+<title>Crystal Space 1.9.0: 5.7.2 lighter2 User's Manual</title>
 
-<meta name="description" content="Crystal Space 1.9.0: 5.7.1 lighter2 User's Manual">
-<meta name="keywords" content="Crystal Space 1.9.0: 5.7.1 lighter2 User's Manual">
+<meta name="description" content="Crystal Space 1.9.0: 5.7.2 lighter2 User's Manual">
+<meta name="keywords" content="Crystal Space 1.9.0: 5.7.2 lighter2 User's Manual">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -43,8 +43,8 @@ ul.toc {list-style: none}
 <a name="lighter2-User_0027s-Manual"></a>
 <a name="0"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="Using-lighter2.html#0" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="lighter2-Developer_0027s-Manual.html#0" title="Next section in reading order"> &gt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="lighter2-Basic-Usage-Examples.html#0" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="lighter2-Configure-Options-Reference.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="Using-lighter2.html#0" title="Up section"> Up </a>]</td>
@@ -59,21 +59,23 @@ ul.toc {list-style: none}
 <td valign="middle" align="left">[<a href="cs_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <hr size="1">
-<h3 class="subsection"> 5.7.1 <code>lighter2</code> User's Manual </h3>
+<h3 class="subsection"> 5.7.2 <code>lighter2</code> User's Manual </h3>
 
 <a name="1"></a>
 <h2 class="heading"> Introduction </h2>
 
 <p><code>lighter2</code> is a tool to compute <em>static lighting</em> for a CrystalSpace
-world. 
+world.
 </p>
 <p><em>Static</em> means that the lighting effects on objects in the world
 are precomputed in a preprocessing step during and after modelling of the 
 world. The benefit is that it is very cheap to render; it makes no difference
 if a world uses one or one thousand lights, the runtime performance is the
-same. Shadows are supported as well. However, as the name &ldquo;static&rdquo; implies,
-the lighting can't be changed at runtime - that is, moving a light source
-won't have an effect on statically lit geometry.
+same. Also, more accurate lighting techniques that cannot run in realtime can
+be used  (such as raytracing and photon mapping) which acheve such effects as
+accurate shadows and global illumination. However, as the name &ldquo;static&rdquo;
+implies, the lighting can't be changed at runtime - that is, moving a light
+source won't have an effect on statically lit geometry.
 </p>
 
 <p>The opposite is <em>dynamic lighting</em> which is computed entirely at runtime.
@@ -268,8 +270,8 @@ surfaces are still considered coplanar.
 
 <hr size="1">
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="Using-lighter2.html#0" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="lighter2-Developer_0027s-Manual.html#0" title="Next section in reading order"> &gt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="lighter2-Basic-Usage-Examples.html#0" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="lighter2-Configure-Options-Reference.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="Using-lighter2.html#0" title="Up section"> Up </a>]</td>

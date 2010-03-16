@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created by texi2html 1.76 -->
+<!--
+Written by: Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people <dev@texi2html.cvshome.org>
+Send bugs and suggestions to <users@texi2html.cvshome.org>
+
+-->
+<head>
+<title>Crystal Space 1.9.0: 5.7.3 lighter2 Configure Options Reference</title>
+
+<meta name="description" content="Crystal Space 1.9.0: 5.7.3 lighter2 Configure Options Reference">
+<meta name="keywords" content="Crystal Space 1.9.0: 5.7.3 lighter2 Configure Options Reference">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.76">
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="lighter2-Configure-Options-Reference"></a>
+<a name="0"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="lighter2-User_0027s-Manual.html#0" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="lighter2-Developer_0027s-Manual.html#0" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="Using-lighter2.html#0" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="Internals.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="index.html#SEC_Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="cs_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="cs_Index.html#0" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="cs_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<hr size="1">
+<h3 class="subsection"> 5.7.3 <code>lighter2</code> Configure Options Reference </h3>
+
+<a name="1"></a>
+<h2 class="heading"> Introduction </h2>
+
+<p>This section lists and describes in detail all of the configuration options available
+for <code>lighter2</code>.  These options can be set from inside a Crystal Space <tt>&lsquo;world&rsquo;</tt>
+file or library for individual mesh factories or instances or globally in a config file
+or at the command line when <code>lighter2</code> is run.  Command line options override any
+configuration options inside config files while options set on individual meshes
+override any global options.
+</p>
+<a name="2"></a>
+<h2 class="heading"> General Syntax </h2>
+
+<p><code>lighter2</code> options are always set as &lt;key&gt;=&lt;value&gt; pairs (with a shortcut
+available for global boolean options).
+</p>
+<p>General command line syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">    lighter2 --<em>option</em>=<em>value</em> ...
+</pre></td></tr></table>
+<p>Boolean option command line syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">    lighter2 --[no]<em>BooleanOption</em> ...
+</pre></td></tr></table>
+<p>where omitting the `no' prefix sets the option to `true' and including it sets the option to `false'.
+Note that command line options are NOT case sensitive.
+</p>
+<p>World/Library file syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">    ...
+    &lt;key name=&quot;lighter2&quot; editoronly=&quot;yes&quot; <em>option</em>=<em>value</em> ... /&gt;
+    ...
+</pre></td></tr></table>
+<p>Such a <samp>&lsquo;key&rsquo;</samp> node must be placed inside a <samp>&lsquo;meshobj&rsquo;</samp> node for mesh
+object options respectively a <samp>&lsquo;meshfact&rsquo;</samp> node for mesh factory options.
+</p>
+<p>Here, <samp>&lsquo;name=&quot;lighter2&quot;&rsquo;</samp> is used by <code>lighter2</code> to identify keys 
+containing options.  <samp>&lsquo;editoronly=&quot;yes&quot;&rsquo;</samp> instructs the engine to discard
+the key-value-pair during normal execution in order to conserve memory (since
+the <code>lighter2</code>-specific settings are simply not needed).  The actual
+options are specified by a number of <samp>&lsquo;<em>option</em>=<em>value</em>&rsquo;</samp> pairs.
+</p>
+<a name="3"></a>
+<h2 class="heading"> <code>lighter2</code> Configuration options </h2>
+
+<a name="4"></a>
+<h2 class="heading"> Available Options </h2>
+
+<a name="5"></a>
+<h3 class="subheading"> General Options </h3>
+
+<dl compact="compact">
+<dt> <code>[no]simpletui</code></dt>
+<dd><p>  Use simplified text ui for output. Recommended/needed
+  for platforms without ANSI console handling such as msys.
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: false
+</p>
+</dd>
+<dt> <code>swapcachesize</code></dt>
+<dd><p>  Set the size of the in memory swappable data cache in number of megabytes
+  Values: size of cache in megabytes
+  Default: 200
+</p>
+</dd>
+<dt> <code>[no]directlight</code></dt>
+<dd><p>  Calculate direct lighting using specified engine.  Valid engines are:
+    <samp>&lsquo;none&rsquo;</samp> or <samp>&lsquo;false&rsquo;</samp> - Disable direct lighting (useful for debugging)
+    <samp>&lsquo;raytracer&rsquo;</samp> or <samp>&lsquo;true&rsquo;</samp> - DEFAULT, sharp shadows, no noise, faster
+    <samp>&lsquo;photonmapper&rsquo;</samp> - Softer shadows, noisy, slower (not recommended)
+</p>
+</dd>
+<dt> <code>[no]indirectlight</code></dt>
+<dd><p>  Calculate indirect lighting using specified engine.  Valid engines are:
+    <samp>&lsquo;none&rsquo;</samp> or <samp>&lsquo;false&rsquo;</samp> - DEFAULT, Disable indirect lighting (much faster)
+    <samp>&lsquo;photonmapper&rsquo;</samp> - Slower but more realistic (captures color blead)
+</p>
+</dd>
+<dt> <code>lmdensity</code></dt>
+<dd><p>  Set scaling between world space units and lightmap pixels.  Larger values will
+  produce higher resolution lightmaps which look better but take up more memory
+  and may cause aliasing artifacts.
+  Value: strictly positive real number
+  Default: 4.000000
+</p>
+</dd>
+<dt> <code>maxlightmapu</code></dt>
+<dd><p>  Set maximum lightmap size in u-mapping direction.
+  Value: strictly positive integer
+  Default: 1024
+</p>
+</dd>
+<dt> <code>maxlightmapv</code></dt>
+<dd><p>  Set maximum lightmap size in v-mapping direction.
+  Value: strictly positive integer
+  Default: 1024
+</p>
+</dd>
+<dt> <code>blackthreshold</code></dt>
+<dd><p>  Set the normalized threshold for lightmap pixels to be considered black.  This value
+  determines when a lightmap is completely blank (i.e. no static light is hitting it)
+  and can safely be thrown out.
+  Value: floating point value between 0.0 and 1.0 inclusive.
+  Default: 0.007843
+</p>
+</dd>
+<dt> <code>normalstolerance</code></dt>
+<dd><p>  Set the angle between two normals to be considered equal when placing lightmaps on
+  a surface.  Angles beyond this tollerance indicate a boundary where a new lightmap
+  should be started.
+  Value: angle in degrees
+  Default: 1
+</p>
+</dd>
+<dt> <code>[no]bumplms</code></dt>
+<dd><p>  Generate directional lightmaps needed for normalmapping static lit surfaces.
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: false
+</p>
+</dd>
+<dt> <code>[no]specmaps</code></dt>
+<dd><p>  Generate maps for specular lighting on static lit surfaces.
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: false
+</p>
+</dd>
+</dl>
+
+<a name="6"></a>
+<h3 class="subheading"> Terrain Options </h3>
+<dl compact="compact">
+<dt> <code>maxterrainlightmapu</code></dt>
+<dd><p>  Set maximum terrain lightmap size in u-mapping direction
+  Value: strictly positive integer
+  Default: same as <code>maxlightmapu</code>
+</p>
+</dd>
+<dt> <code>maxterrainlightmapv</code></dt>
+<dd><p>  Set maximum terrain lightmap size in v-mapping direction
+  Value: strictly positive integer
+  Default: same as <code>maxlightmapv</code>
+</p></dd>
+</dl>
+
+<a name="7"></a>
+<h3 class="subheading"> Advanced Options </h3>
+<dl compact="compact">
+<dt> <code>debugocclusionrays</code></dt>
+<dd><p>  Write a visualization of rays and their occlusions to meshes matching this expression.
+  Value: a <samp>&lsquo;regular expression&rsquo;</samp> to use for matching mesh names.
+  Default: empty
+</p>
+</dd>
+<dt> <code>[no]binary</code></dt>
+<dd><p>  Enable/Disable saving world buffers in binary format.  If this is enabled then all factories
+  and mesh data will be re-written in binary format regardless of the input format.
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: true
+</p>
+</dd>
+</dl>
+
+<a name="8"></a>
+<h3 class="subheading"> Raytracer Options </h3>
+<dl compact="compact">
+<dt> <code>[no]randomlight</code></dt>
+<dd><p>  Use random sampling for raytraced lights instead of sampling every light source.
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: false
+</p>
+</dd>
+<dt> <code>[no]globalambient</code></dt>
+<dd><p>  Add a constant ambient value to the direct lighting component (ignored if indirect light is enabled).
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: true
+</p>
+</dd>
+<dt> <code>[no]forcerealistic</code></dt>
+<dd><p>  Override light attenuation mode on all static lights to be <samp>&lsquo;realistic&rsquo;</samp> (important if combining with photonmapping).
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: false
+</p>
+</dd>
+</dl>
+
+
+<a name="9"></a>
+<h3 class="subheading"> Photon Mapping Options </h3>
+<dl compact="compact">
+<dt> <code>numphotons</code></dt>
+<dd><p>  Sets the number of photons to emit in each sector.  The photons will be divided
+  between the light sources in the sector according to the fraction of total light
+  contributed to the sector by that source.  Larger number will better sample the
+  illumination and reduce noise in the final image but take longer to emit, balance
+  and sample.
+  Value: positive integer (prefferably in the millions).
+  Default: 500
+</p>
+</dd>
+<dt> <code>maxdensitysamples</code></dt>
+<dd><p>  Sets the maximum number of photons to sample when estimating
+  density using the photon map.  Larger values will reduce noise
+  in the final image but increase lighting calculation time.
+  Value: positive integer (prefferably in the thousands).
+  Default: 50
+</p>
+</dd>
+<dt> <code>maxrecursiondepth</code></dt>
+<dd><p>  Sets the maximum number of times a photon can scatter during photon emission
+  Note: set to -1 to use a purely random cutoff (not recommended).
+  Value: positive integer (must be greater than 0 for indirect illumination).
+  Default: 10
+</p>
+</dd>
+<dt> <code>sampledistance</code></dt>
+<dd><p>  Sets the max distance to search for photons when estimating density at point p.
+  A sphere will expand around p with a radius of at most <samp>&lsquo;sampledistance&rsquo;</samp> to
+  estimate photon density at p.
+  Value: positive float point value.
+  Default: 1.000000
+</p>
+</dd>
+<dt> <code>[no]finalgather</code></dt>
+<dd><p>  Enable/disable the final gather calculation for photon map indirect illumination.
+  The final gather step will smooth noise in the photon map at the cost of DRAMATICALLY
+  increased calculation time.  If enabled, you should reduce <code>maxdensitysamples</code>.
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: false
+</p>
+</dd>
+<dt> <code>numfgrays</code></dt>
+<dd><p>  Sets the number of Final Gather rays to cast for each surface point.  Again, more rays
+  will help eliminate noise but will greatly increase computation time.
+  Value: positive integer (preferrably in the hundreds)
+  Default: 30
+</p>
+</dd>
+<dt> <code>[no]savephotonmap</code></dt>
+<dd><p>  Save the contents of the photon maps in a binary file for external use.  For the format
+  of this file see the photon map source code.  One file will be written for each sector
+  and written to the current directory (usually the directory containg <code>lighter2</code>).
+  Note that these files can be quite large for photon counts in the millions.
+  Values: <samp>&lsquo;yes&rsquo;</samp>, <samp>&lsquo;true&rsquo;</samp>, <samp>&lsquo;no&rsquo;</samp>, <samp>&lsquo;false&rsquo;</samp>
+  Default: False
+</p>
+</dd>
+</dl>
+<hr size="1">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="lighter2-User_0027s-Manual.html#0" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="lighter2-Developer_0027s-Manual.html#0" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="Using-lighter2.html#0" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="Internals.html#0" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="index.html#SEC_Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="cs_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="cs_Index.html#0" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="cs_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated using <a href="http://texi2html.cvshome.org/"><em>texi2html 1.76</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

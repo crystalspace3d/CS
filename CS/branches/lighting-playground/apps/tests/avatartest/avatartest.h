@@ -24,6 +24,11 @@
 #include <stdarg.h>
 #include <crystalspace.h>
 
+#define DYNDEBUG_NONE 1
+#define DYNDEBUG_MIXED 2
+#define DYNDEBUG_COLLIDER 3
+
+// Base class to be implemented for all different models
 class AvatarScene
 {
  public:
@@ -31,7 +36,11 @@ class AvatarScene
 
   // Camera related
   virtual csVector3 GetCameraStart () = 0;
+  virtual float GetCameraMinimumDistance () = 0;
   virtual csVector3 GetCameraTarget () = 0;
+
+  // Dynamic simuation related
+  virtual float GetSimulationSpeed () = 0;
 
   // From csBaseEventHandler
   virtual void Frame () = 0;
@@ -46,12 +55,17 @@ class AvatarScene
 
   // Display of comments 
   virtual void DisplayKeys () = 0;
+
+  // Animesh
+  csRef<iAnimatedMeshFactory> animeshFactory;
+  csRef<iAnimatedMesh> animesh;
 };
 
 class AvatarTest : public csApplicationFramework, public csBaseEventHandler
 {
   friend class FrankieScene;
   friend class KrystalScene;
+  friend class SintelScene;
 
 private:
   AvatarScene* avatarScene;
@@ -73,6 +87,10 @@ private:
   bool physicsEnabled;
   csRef<iDynamics> dynamics;
   csRef<iDynamicSystem> dynamicSystem;
+  csRef<iBulletDynamicSystem> bulletDynamicSystem;
+  csRef<iDynamicsDebuggerManager> debuggerManager;
+  csRef<iDynamicSystemDebugger> dynamicsDebugger;
+  int dynamicsDebugMode;
 
   // Animation node plugin managers
   csRef<iSkeletonLookAtManager2> lookAtManager;

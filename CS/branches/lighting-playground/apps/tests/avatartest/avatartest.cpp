@@ -22,14 +22,16 @@
 #include "avatartest.h"
 #include "frankie.h"
 #include "krystal.h"
+#include "sintel.h"
 
 #define MODEL_FRANKIE 1
 #define MODEL_KRYSTAL 2
+#define MODEL_SINTEL 3
 
 CS_IMPLEMENT_APPLICATION
 
 AvatarTest::AvatarTest ()
-  : avatarScene (0)
+  : avatarScene (0), dynamicsDebugMode (DYNDEBUG_NONE)
 {
   SetApplicationName ("CrystalSpace.AvatarTest");
 }
@@ -42,15 +44,16 @@ AvatarTest::~AvatarTest ()
 void AvatarTest::Frame ()
 {
   // First get elapsed time from the virtual clock.
-  csTicks elapsed_time = vc->GetElapsedTicks ();
+  csTicks elapsedTime = vc->GetElapsedTicks ();
 
   // Now rotate the camera according to keyboard state
-  const float speed = elapsed_time / 1000.0f;
+  const float speed = elapsedTime / 1000.0f;
 
   // Compute camera and animesh position
   iCamera* c = view->GetCamera ();
   csVector3 cameraPosition = c->GetTransform ().GetOrigin ();
-  csVector3 avatarPosition = avatarScene->GetCameraTarget ();
+  csVector3 cameraTarget = avatarScene->GetCameraTarget ();
+  float minimumDistance = avatarScene->GetCameraMinimumDistance ();
 
   // Move camera
   if (kbd->GetKeyState (CSKEY_SHIFT))
@@ -59,7 +62,7 @@ void AvatarTest::Frame ()
     // the camera to go forwards and backwards (forward only allowed if camera 
     // not too close). Left/Right arrows work also when shift is hold.
     if (kbd->GetKeyState (CSKEY_UP)
-	&& (cameraPosition - avatarPosition).Norm () > 0.5f)
+	&& (cameraPosition - cameraTarget).Norm () > minimumDistance)
       c->Move (CS_VEC_FORWARD * 4 * speed);
     if (kbd->GetKeyState (CSKEY_DOWN))
       c->Move (CS_VEC_BACKWARD * 4 * speed);
@@ -89,27 +92,27 @@ void AvatarTest::Frame ()
   }
 
   // Make the camera look at the animesh
-  c->GetTransform ().LookAt (avatarPosition - c->GetTransform ().GetOrigin (),
+  c->GetTransform ().LookAt (cameraTarget - c->GetTransform ().GetOrigin (),
 			     csVector3 (0.0f, 1.0f, 0.0f) );
 
   // Step the dynamic simulation (we slow down artificially the simulation in
   // order to achieve a 'slow motion' effect)
   if (physicsEnabled)
-    dynamics->Step (speed / 4.0f);
+    dynamics->Step (speed * avatarScene->GetSimulationSpeed ());
 
   // Update the avatar
   avatarScene->Frame ();
 
-  // Tell 3D driver we're going to display 3D things.
+  // Tell the 3D driver we're going to display 3D things.
   if (!g3d->BeginDraw (engine->GetBeginDrawFlags () | CSDRAW_3DGRAPHICS))
     return;
 
   // Tell the camera to render into the frame buffer.
   view->Draw ();
 
-  // Write FPS and other info
-  if(!g3d->BeginDraw (CSDRAW_2DGRAPHICS)) return;
-  avatarScene->DisplayKeys ();
+  // Display available keys and other info
+  if (g3d->BeginDraw (CSDRAW_2DGRAPHICS))
+    avatarScene->DisplayKeys ();
 }
 
 bool AvatarTest::OnKeyboard (iEvent &ev)
@@ -126,19 +129,25 @@ bool AvatarTest::OnKeyboard (iEvent &ev)
     }
 
     // Check for switching of model
-    else if (csKeyEventHelper::GetCookedCode (&ev) == 'm')
+    else if (csKeyEventHelper::GetCookedCode (&ev) == 'n')
     {
+      delete avatarScene;
+
       if (avatarModel == MODEL_FRANKIE)
       {
 	avatarModel = MODEL_KRYSTAL;
-	delete avatarScene;
 	avatarScene = new KrystalScene (this);
+      }
+
+      else if (avatarModel == MODEL_KRYSTAL)
+      {
+	avatarModel = MODEL_SINTEL;
+	avatarScene = new SintelScene (this);
       }
 
       else
       {
 	avatarModel = MODEL_FRANKIE;
-	delete avatarScene;
 	avatarScene = new FrankieScene (this);
       }
 
@@ -148,6 +157,40 @@ bool AvatarTest::OnKeyboard (iEvent &ev)
 	csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (GetObjectRegistry ()));
 	if (q) q->GetEventOutlet()->Broadcast (csevQuit (GetObjectRegistry ()));
 	return true;
+      }
+
+      // Re-initialize camera position
+      view->GetCamera ()->GetTransform ().SetOrigin (avatarScene->GetCameraStart ());
+
+      return true;
+    }
+
+    // Toggle the debug mode of the dynamic system
+    else if (csKeyEventHelper::GetCookedCode (&ev) == 'd'
+	     && physicsEnabled)
+    {
+      csRef<iMeshObject> animeshObject =
+	scfQueryInterface<iMeshObject> (avatarScene->animesh);
+
+      if (dynamicsDebugMode == DYNDEBUG_NONE)
+      {
+	dynamicsDebugMode = DYNDEBUG_MIXED;
+	dynamicsDebugger->SetDebugDisplayMode (true);
+	animeshObject->GetMeshWrapper ()->GetFlags ().Reset (CS_ENTITY_INVISIBLEMESH);
+      }
+
+      else if (dynamicsDebugMode == DYNDEBUG_MIXED)
+      {
+	dynamicsDebugMode = DYNDEBUG_COLLIDER;
+	dynamicsDebugger->SetDebugDisplayMode (true);
+	animeshObject->GetMeshWrapper ()->GetFlags ().Set (CS_ENTITY_INVISIBLEMESH);
+      }
+
+      else if (dynamicsDebugMode == DYNDEBUG_COLLIDER)
+      {
+	dynamicsDebugMode = DYNDEBUG_NONE;
+	dynamicsDebugger->SetDebugDisplayMode (false);
+	animeshObject->GetMeshWrapper ()->GetFlags ().Reset (CS_ENTITY_INVISIBLEMESH);
       }
 
       return true;
@@ -167,10 +210,10 @@ bool AvatarTest::OnInitialize (int /*argc*/, char* /*argv*/ [])
   // Check for commandline help.
   if (csCommandLineHelper::CheckHelp (GetObjectRegistry ()))
   {
-    csPrintf ("Usage: avatartest\n");
+    csPrintf ("Usage: avatartest <OPTIONS>\n");
     csPrintf ("Tests on animesh animation\n\n");
     csPrintf ("Options for avatartest:\n");
-    csPrintf ("  -model=<name>:     set the starting model (frankie, krystal)\n");
+    csPrintf ("  -scene=<name>:     set the starting scene (frankie, krystal, sintel)\n");
     csPrintf ("  -no_physics:       disable physical animations\n");
     csCommandLineHelper::Help (GetObjectRegistry ());
     return false;
@@ -201,7 +244,7 @@ bool AvatarTest::OnInitialize (int /*argc*/, char* /*argv*/ [])
     csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
   physicsEnabled = !clp->GetBoolOption ("no_physics", false);
 
-  if (physicsEnabled)
+  while (physicsEnabled)
   {
     // Load the Bullet plugin
     csRef<iPluginManager> plugmgr = 
@@ -213,15 +256,56 @@ bool AvatarTest::OnInitialize (int /*argc*/, char* /*argv*/ [])
       ReportWarning
 	("Can't load Bullet plugin, continuing with reduced functionalities");
       physicsEnabled = false;
+      break;
     }
+
+    // Load the dynamics debugger
+    debuggerManager = csLoadPlugin<iDynamicsDebuggerManager>
+      (plugmgr, "crystalspace.dynamics.debug");
+
+    if (!debuggerManager)
+    {
+      ReportWarning
+	("Can't load Dynamics Debugger plugin, continuing with reduced functionalities");
+      physicsEnabled = false;
+      break;
+    }
+
+    // Load the ragdoll plugin
+    ragdollManager = csLoadPlugin<iSkeletonRagdollManager2>
+      (plugmgr, "crystalspace.mesh.animesh.controllers.ragdoll");
+
+    if (!ragdollManager)
+    {
+      ReportWarning
+	("Can't load ragdoll plugin, continuing with reduced functionalities");
+      physicsEnabled = false;
+      break;
+    }
+
+    break;
   }
 
   // Read which model to display at first
-  csString modelName = clp->GetOption ("model");
-  if (modelName != "krystal")
+  csString sceneName = clp->GetOption ("scene");
+  if (sceneName.IsEmpty ())
     avatarModel = MODEL_FRANKIE;
+
   else
-    avatarModel = MODEL_KRYSTAL;
+  {
+    if (sceneName == "krystal")
+      avatarModel = MODEL_KRYSTAL;
+
+    else if (sceneName == "sintel")
+      avatarModel = MODEL_SINTEL;
+
+    else
+    {
+      printf ("Given model ('%s') is not one of {'frankie', 'krystal', 'sintel'}. Falling back to Frankie\n",
+	      sceneName.GetData ());
+      avatarModel = MODEL_FRANKIE;
+    }
+  }
 
   return true;
 }
@@ -269,6 +353,9 @@ bool AvatarTest::Application ()
     courierFont = fs->LoadFont (CSFONT_COURIER);
   else return ReportError ("Failed to locate font server!");
 
+  // Create the main sector
+  room = engine->CreateSector ("room");
+
   // Create the dynamic system
   if (physicsEnabled)
   {
@@ -282,22 +369,26 @@ bool AvatarTest::Application ()
 
     else
     {
-      // Load the ragdoll plugin
-      csRef<iPluginManager> plugmgr = 
-	csQueryRegistry<iPluginManager> (GetObjectRegistry ());
-      ragdollManager = csLoadPlugin<iSkeletonRagdollManager2>
-	(plugmgr, "crystalspace.mesh.animesh.controllers.ragdoll");
-      if (!ragdollManager)
-      {
-	ReportWarning
-	  ("Can't load ragdoll plugin, continuing with reduced functionalities");
-	physicsEnabled = false;
-      }
+      // Find the Bullet interface of the dynamic system
+      bulletDynamicSystem =
+	scfQueryInterface<iBulletDynamicSystem> (dynamicSystem);
+
+      // We have some objects of size smaller than 0.035 units, so we scale up the
+      // whole world for a better behavior of the dynamic simulation.
+      bulletDynamicSystem->SetInternalScale (10.0f);
+
+      // The ragdoll model of Krystal is rather complex, and the model of Frankie
+      // is unstable because of the overlap of its colliders. We therefore use high
+      // accuracy/low performance parameters for a better behavior of the dynamic
+      // simulation.
+      bulletDynamicSystem->SetStepParameters (0.008f, 150, 10);
+
+      // Create the dynamic's debugger
+      dynamicsDebugger = debuggerManager->CreateDebugger ();
+      dynamicsDebugger->SetDynamicSystem (dynamicSystem);
+      dynamicsDebugger->SetDebugSector (room);
     }
   }
-
-  // Create sector
-  room = engine->CreateSector ("room");
 
   // Initialize camera
   view = csPtr<iView> (new csView (engine, g3d));
@@ -311,8 +402,11 @@ bool AvatarTest::Application ()
   // Create avatar
   if (avatarModel == MODEL_KRYSTAL)
     avatarScene = new KrystalScene (this);
+  else if (avatarModel == MODEL_SINTEL)
+    avatarScene = new SintelScene (this);
   else
     avatarScene = new FrankieScene (this);
+
   if (!avatarScene->CreateAvatar ())
     return false;
 
@@ -338,6 +432,7 @@ void AvatarTest::CreateRoom ()
   csRef<iMeshWrapper> background =
     CS::Geometry::GeneralMeshBuilder::CreateFactoryAndMesh (engine, room,
 				   "background", "background_factory", &bgBox);
+  background->SetRenderPriority (engine->GetRenderPriority ("sky"));
 
   csRef<iMaterialWrapper> bgMaterial =
     CS::Material::MaterialBuilder::CreateColorMaterial

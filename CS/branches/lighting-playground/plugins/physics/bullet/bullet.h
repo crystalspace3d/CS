@@ -102,6 +102,8 @@ class csBulletDynamicsSystem : public scfImplementationExt2<
   csBulletDynamicsSystem, csObject, iDynamicSystem,
   iBulletDynamicSystem>
 {
+  friend class csBulletMotionState;
+  friend class csBulletKinematicMotionState;
   friend class csBulletRigidBody;
   friend class csBulletCollider;
   friend class csBulletJoint;
@@ -118,6 +120,10 @@ private:
   csRefArray<iJoint> joints;
   csRef<csBulletDefaultMoveCallback> moveCb;
   bool gimpactRegistered;
+  float internalScale;
+  float inverseInternalScale;
+  float worldTimeStep;
+  size_t worldMaxSteps;
 
   // For getting collision mesh data.
   csStringID baseId;
@@ -190,6 +196,9 @@ public:
   //-- iBulletDynamicSystem
   virtual void DebugDraw (iView* view);
   virtual csBulletHitBeamResult HitBeam (const csVector3 &start, const csVector3 &end);
+  virtual void SetInternalScale (float scale);
+  virtual void SetStepParameters (float timeStep, size_t maxSteps,
+				  size_t iterations);
 };
 
 class csBulletRigidBody : public scfImplementationExt2<csBulletRigidBody,
@@ -328,6 +337,7 @@ public:
   virtual csBulletState GetDynamicState () const;
   virtual void SetDynamicState (csBulletState state);
   virtual void SetKinematicCallback (iBulletKinematicCallback* callback);
+  virtual iBulletKinematicCallback* GetKinematicCallback ();
 };
 
 class csBulletCollider : public scfImplementation1<csBulletCollider,
@@ -407,6 +417,7 @@ public:
 #define BULLET_JOINT_HINGE 1
 #define BULLET_JOINT_POINT2POINT 2
 #define BULLET_JOINT_6DOF 3
+#define BULLET_JOINT_CONETWIST 4
 
 class csBulletJoint : public scfImplementation1<csBulletJoint, iJoint>
 {

@@ -484,7 +484,8 @@ bool Simple::OnMouseDown (iEvent& ev)
     csVector3 endBeam = camera->GetTransform ().This2Other (v3d);
 
     // Trace the physical beam
-    csRef<iBulletDynamicSystem> bulletSystem = scfQueryInterface<iBulletDynamicSystem> (dynSys);
+    csRef<iBulletDynamicSystem> bulletSystem =
+      scfQueryInterface<iBulletDynamicSystem> (dynSys);
     csBulletHitBeamResult result = bulletSystem->HitBeam (startBeam, endBeam);
 
     // Add a force at the point clicked
@@ -618,6 +619,10 @@ bool Simple::Application ()
   dynamicsDebugger = debuggerManager->CreateDebugger ();
   dynamicsDebugger->SetDynamicSystem (dynSys);
 
+  // Don't display static colliders as the z-fighting with the original mesh
+  // is very ugly
+  dynamicsDebugger->SetStaticBodyMaterial (0);
+
   if (phys_engine_id == ODE_ID)
   {
     csRef<iODEDynamicSystemState> osys= 
@@ -628,6 +633,10 @@ bool Simple::Application ()
   else
   {
     bullet_dynSys = scfQueryInterface<iBulletDynamicSystem> (dynSys);
+
+    // We have some objects of size smaller than 0.035 units, so we scale up the
+    // whole world for a better behavior of the dynamic simulation.
+    bullet_dynSys->SetInternalScale (10.0f);
   }
 
   // Creating the scene's room
@@ -667,6 +676,7 @@ bool Simple::Application ()
   csRef<iMeshWrapper> background =
     CS::Geometry::GeneralMeshBuilder::CreateFactoryAndMesh(engine, room,
 				   "background", "background_factory", &bgBox);
+  background->SetRenderPriority (engine->GetRenderPriority ("sky"));
 
   csRef<iMaterialWrapper> bgMaterial =
     CS::Material::MaterialBuilder::CreateColorMaterial
@@ -780,6 +790,9 @@ void Simple::UpdateCameraMode ()
 	rotY = eulerAngles.y;
 	rotZ = eulerAngles.z;
 
+	// Update the display of the dynamics debugger
+	dynamicsDebugger->UpdateDisplay ();
+
 	break;
       }
 
@@ -835,6 +848,9 @@ iRigidBody* Simple::CreateBox ()
   rb->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 5));
   rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 0, 0));
 
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
+
   return rb;
 }
 
@@ -889,6 +905,9 @@ bool Simple::CreateStarCollider ()
     rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 0, 0));
   }
 
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
+
   return true;
 }
 
@@ -922,6 +941,9 @@ iRigidBody* Simple::CreateMesh ()
   // Fling the body.
   rb->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 5));
   rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 0, 0));
+
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
 
   return rb;
 }
@@ -975,6 +997,9 @@ iRigidBody* Simple::CreateSphere ()
   // Fling the body.
   rb->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 6));
   rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 0, 0));
+
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
 
   return rb;
 }
@@ -1032,6 +1057,9 @@ iRigidBody* Simple::CreateCylinder ()
   rb->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 6));
   rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 0, 0));
 
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
+
   return rb;
 }
 
@@ -1076,6 +1104,9 @@ iRigidBody* Simple::CreateCapsule ()
   // Fling the body.
   rb->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 6));
   rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 0, 0));
+
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
 
   return rb;
 }
@@ -1122,6 +1153,9 @@ iRigidBody* Simple::CreateConvexMesh ()
   rb->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 6));
   rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 0, 0));
 
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
+
   return rb;
 }
 
@@ -1150,6 +1184,9 @@ iJoint* Simple::CreateJointed ()
   joint->SetRotConstraints (false, false, false, false);
 
   joint->RebuildJoint ();
+
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
 
   return joint;
 }
@@ -1218,6 +1255,9 @@ void Simple::CreateChain ()
   joint->Attach (rb4, rb5, false);
   ConstraintJoint (joint);
   joint->RebuildJoint ();
+
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
 }
 
 void Simple::LoadRagdoll ()
@@ -1324,6 +1364,9 @@ void Simple::CreateRagdoll ()
     rb->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 5));
     rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 5, 0));
   }
+
+  // Update the display of the dynamics debugger
+  dynamicsDebugger->UpdateDisplay ();
 }
 
 void Simple::CreateWalls (const csVector3& /*radius*/)
@@ -1379,14 +1422,14 @@ void Simple::CreateWalls (const csVector3& /*radius*/)
     dynSys->AttachColliderBox (size, t, 10.0f, 0.0f);
   }
   else
-    dynSys->AttachColliderPlane (csPlane3 (csVector3 (0.0f, 1.0f, 0.0f), -5.0f), 10.0f, 0.0f);
+    dynSys->AttachColliderPlane (csPlane3 (csVector3 (0.0f, 1.0f, 0.0f), -5.0f),
+				 10.0f, 0.0f);
 
   t.SetOrigin(csVector3(0.0f, 0.0f, 10.0f));
   dynSys->AttachColliderBox (size, t, 10.0f, 0.0f);
+
   t.SetOrigin(csVector3(0.0f, 0.0f, -10.0f));
   dynSys->AttachColliderBox (size, t, 10.0f, 0.0f);
-
-  
 }
 
 void Simple::WriteShadow (int x,int y,int fg,const char *str,...)

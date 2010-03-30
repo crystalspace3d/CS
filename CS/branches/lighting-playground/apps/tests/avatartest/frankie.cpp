@@ -35,6 +35,9 @@ FrankieScene::FrankieScene (AvatarTest* avatarTest)
 
 FrankieScene::~FrankieScene ()
 {
+  if (!animesh)
+    return;
+
   // Remove the 'lookat' listener
   lookAtNode->RemoveListener (&lookAtListener);
 
@@ -48,13 +51,23 @@ csVector3 FrankieScene::GetCameraStart ()
   return csVector3 (0.0f, 0.0f, -1.25f);
 }
 
+float FrankieScene::GetCameraMinimumDistance ()
+{
+  return 0.75f;
+}
+
 csVector3 FrankieScene::GetCameraTarget ()
 {
   csRef<iMeshObject> animeshObject = scfQueryInterface<iMeshObject> (animesh);
   csVector3 avatarPosition = animeshObject->GetMeshWrapper ()->QuerySceneNode ()
     ->GetMovable ()->GetTransform ().GetOrigin ();
-  avatarPosition.y = 0.5f;
+  avatarPosition.y = 0.45f;
   return avatarPosition;
+}
+
+float FrankieScene::GetSimulationSpeed ()
+{
+  return 0.25f;
 }
 
 void FrankieScene::Frame ()
@@ -108,7 +121,7 @@ bool FrankieScene::OnKeyboard (iEvent &ev)
       return true;
     }
 
-    // Toggle 'always rotate' option of the 'LookAt' controller
+    // Toggle the 'always rotate' option of the 'LookAt' controller
     else if (csKeyEventHelper::GetCookedCode (&ev) == 'a')
     {
       alwaysRotate = !alwaysRotate;
@@ -116,7 +129,7 @@ bool FrankieScene::OnKeyboard (iEvent &ev)
       return true;
     }
 
-    // Toggle rotation speed of the 'LookAt' controller
+    // Toggle the rotation speed of the 'LookAt' controller
     else if (csKeyEventHelper::GetCookedCode (&ev) == 's')
     {
       if (rotationSpeed == ROTATION_SLOW)
@@ -140,7 +153,7 @@ bool FrankieScene::OnKeyboard (iEvent &ev)
       return true;
     }
 
-    // Update walk speed of the 'speed' controller
+    // Update the walking speed of the 'speed' controller
     else if (csKeyEventHelper::GetCookedCode (&ev) == '+')
     {
       if (currentSpeed < 58)
@@ -231,9 +244,15 @@ bool FrankieScene::OnMouseDown (iEvent &ev)
     FSMNode->SwitchToState (ragdollFSMState);
     FSMNode->GetStateNode (ragdollFSMState)->Play ();
 
+    // Update the display of the dynamics debugger
+    if (avatarTest->dynamicsDebugMode == DYNDEBUG_COLLIDER
+	|| avatarTest->dynamicsDebugMode == DYNDEBUG_MIXED)
+      avatarTest->dynamicsDebugger->UpdateDisplay ();
+
     // Fling the body a bit
     const csOrthoTransform& tc = avatarTest->view->GetCamera ()->GetTransform ();
-    for (uint i = 0; i < ragdollNode->GetBoneCount (RAGDOLL_STATE_DYNAMIC); i++)
+    uint boneCount = ragdollNode->GetBoneCount (RAGDOLL_STATE_DYNAMIC);
+    for (uint i = 0; i < boneCount; i++)
     {
       BoneID boneID = ragdollNode->GetBone (RAGDOLL_STATE_DYNAMIC, i);
       iRigidBody* rb = ragdollNode->GetBoneRigidBody (boneID);
@@ -282,7 +301,7 @@ bool FrankieScene::CreateAvatar ()
   // Load bodymesh (animesh's physical properties)
   rc = avatarTest->loader->Load ("/lib/frankie/skelfrankie_body");
   if (!rc.success)
-    return avatarTest->ReportError ("Can't load frankie's body mesh file!");
+    return avatarTest->ReportError ("Can't load Frankie's body mesh file!");
 
   csRef<iBodyManager> bodyManager =
     csQueryRegistry<iBodyManager> (avatarTest->GetObjectRegistry ());
@@ -406,7 +425,7 @@ bool FrankieScene::CreateAvatar ()
   animesh = scfQueryInterface<iAnimatedMesh> (avatarMesh->GetMeshObject ());
 
   // When the animated mesh is created, the animation nodes are created too.
-  // We can therefore set them up
+  // We can therefore set them up now.
   iSkeletonAnimNode2* rootNode =
     animesh->GetSkeleton ()->GetAnimationPacket ()->GetAnimationRoot ();
 
@@ -454,17 +473,25 @@ void FrankieScene::LookAtListener::TargetLost ()
 
 void FrankieScene::ResetScene ()
 {
-  // Reset animesh position
+  // Reset the position of the animesh
   csRef<iMeshObject> animeshObject = scfQueryInterface<iMeshObject> (animesh);
   animeshObject->GetMeshWrapper ()->QuerySceneNode ()->GetMovable ()->SetTransform
     (csOrthoTransform (csMatrix3 (), csVector3 (0.0f)));
+  animeshObject->GetMeshWrapper ()->QuerySceneNode ()->GetMovable ()->UpdateMove ();
 
-  // Reset initial Finite State Machine state
+  // Reset initial state of the Finite State Machine
   FSMNode->SwitchToState (mainFSMState);
 
   // The FSM doesn't stop the child nodes
   if (avatarTest->physicsEnabled)
+  {
     ragdollNode->Stop ();
+
+    // Update the display of the dynamics debugger
+    if (avatarTest->dynamicsDebugMode == DYNDEBUG_COLLIDER
+	|| avatarTest->dynamicsDebugMode == DYNDEBUG_MIXED)
+      avatarTest->dynamicsDebugger->UpdateDisplay ();
+  }
 
   // Reset 'LookAt' controller
   alwaysRotate = false;
@@ -521,12 +548,15 @@ void FrankieScene::DisplayKeys ()
   {
     avatarTest->WriteShadow (x, y, fg, "left mouse: kill Frankie");
     y += lineSize;
+
+    avatarTest->WriteShadow (x, y, fg, "d: display active colliders");
+    y += lineSize;
   }
 
   avatarTest->WriteShadow (x, y, fg, "r: reset scene");
   y += lineSize;
 
-  avatarTest->WriteShadow (x, y, fg, "m: switch to Krystal");
+  avatarTest->WriteShadow (x, y, fg, "n: switch to next scene");
   y += lineSize;
 
   // Write FPS and other info

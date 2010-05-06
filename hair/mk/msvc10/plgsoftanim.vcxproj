@@ -83,7 +83,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{536DC384-2E19-DB19-B7DF-91EF48569EDB}</ProjectGuid>
+    <ProjectGuid>{2B89A1C6-1EC6-1711-8FF0-CB545B5E13A3}</ProjectGuid>
     <SccProjectName />
     <SccLocalPath />
   </PropertyGroup>
@@ -143,104 +143,104 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">..\..\out\release10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">..\..\out\release10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">..\..\out\release10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">..\..\out\release10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">..\..\out\debug10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">..\..\out\debug10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">..\..\out\debug10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">..\..\out\debug10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">..\..\out\debug10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">..\..\out\debug10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">..\..\out\debug10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">..\..\out\debug10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">..\..\out\debug10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">..\..\out\debug10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">..\..\out\debug10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">..\..\out\debug10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">..\..\out\debug10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">..\..\out\debug10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">..\..\out\debug10\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">..\..\out\debug10\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">..\..\out\release10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">..\..\out\release10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">..\..\out\release10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">..\..\out\release10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">..\..\out\debug10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">..\..\out\debug10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">..\..\out\debug10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">..\..\out\debug10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">..\..\out\debug10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">..\..\out\debug10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">..\..\out\debug10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">..\..\out\debug10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">..\..\out\debug10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">..\..\out\debug10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgbullet\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgsoftanim\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">bullet</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">softanim</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">true</IgnoreImportLibrary>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">
@@ -250,13 +250,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>..\..\out\release10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -268,12 +268,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\release10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10.lib;bulletcollision-vc10.lib;bulletdynamics-vc10.lib;bulletmath-vc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -288,7 +288,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -299,13 +299,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>..\..\out\release10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -317,12 +317,12 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\release10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10.lib;bulletcollision-vc10.lib;bulletdynamics-vc10.lib;bulletmath-vc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -337,7 +337,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -346,13 +346,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -362,12 +362,12 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -382,7 +382,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -391,13 +391,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -407,12 +407,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -427,7 +427,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -436,13 +436,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -452,12 +452,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -472,7 +472,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -481,13 +481,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -497,12 +497,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -517,7 +517,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -526,13 +526,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -542,12 +542,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -562,7 +562,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -571,13 +571,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -587,12 +587,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -607,7 +607,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -616,13 +616,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -632,12 +632,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -652,7 +652,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -661,13 +661,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -677,12 +677,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgbullet\Win32\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgsoftanim\Win32\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgbullet\Win32\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgsoftanim\Win32\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -697,7 +697,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -708,13 +708,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -726,12 +726,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\release10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10.lib;bulletcollision-vc10.lib;bulletdynamics-vc10.lib;bulletmath-vc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -746,7 +746,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -757,13 +757,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -775,12 +775,12 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\release10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10.lib;bulletcollision-vc10.lib;bulletdynamics-vc10.lib;bulletmath-vc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -795,7 +795,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -804,13 +804,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -820,12 +820,12 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -840,7 +840,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -849,13 +849,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -865,12 +865,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -885,7 +885,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -894,13 +894,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -910,12 +910,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -930,7 +930,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -939,13 +939,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -955,12 +955,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -975,7 +975,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -984,13 +984,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1000,12 +1000,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1020,7 +1020,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1029,13 +1029,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1045,12 +1045,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1065,7 +1065,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1074,13 +1074,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1090,12 +1090,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1110,7 +1110,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1119,13 +1119,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgbullet\plgbullet.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgbullet\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgbullet\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgsoftanim\plgsoftanim.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgsoftanim\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgsoftanim\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1135,12 +1135,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\bullet.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgbullet\x64\bullet.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\softanim.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgsoftanim\x64\softanim.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgbullet\x64\plgbullet.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgsoftanim\x64\plgsoftanim.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;bulletsoftbody-vc10_d.lib;bulletcollision-vc10_d.lib;bulletdynamics-vc10_d.lib;bulletmath-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1155,25 +1155,22 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
-    <ClCompile Include="..\..\plugins\physics\bullet\bullet.cpp" />
-    <ClCompile Include="..\..\plugins\physics\bullet\softbodies.cpp" />
+    <ClCompile Include="..\..\plugins\physics\softanim\softanim.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\plugins\physics\bullet\bullet.h" />
-    <ClInclude Include="..\..\plugins\physics\bullet\common.h" />
-    <ClInclude Include="..\..\plugins\physics\bullet\softbodies.h" />
+    <ClInclude Include="..\..\plugins\physics\softanim\softanim.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\mk\msvc\plgbullet.rc" />
+    <ResourceCompile Include="..\..\mk\msvc\plgsoftanim.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\plugins\physics\bullet\bullet.csplugin" />
+    <None Include="..\..\plugins\physics\softanim\softanim.csplugin" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libcrystalspace.vcxproj">

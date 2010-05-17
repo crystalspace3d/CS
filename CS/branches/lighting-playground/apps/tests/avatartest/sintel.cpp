@@ -36,7 +36,6 @@ SintelScene::SintelScene (AvatarTest* avatarTest)
   avatarTest->keyDescriptions.Push ("2: smiling");
   avatarTest->keyDescriptions.Push ("3: angry");
   avatarTest->keyDescriptions.Push ("4: sad");
-  avatarTest->keyDescriptions.Push ("r: reset scene");
   avatarTest->keyDescriptions.Push ("n: switch to next scene");
 }
 
@@ -74,6 +73,11 @@ csVector3 SintelScene::GetCameraTarget ()
 float SintelScene::GetSimulationSpeed ()
 {
   return 1.0f;
+}
+
+bool SintelScene::HasPhysicalObjects ()
+{
+  return false;
 }
 
 void SintelScene::Frame ()
@@ -309,11 +313,11 @@ bool SintelScene::CreateAvatar ()
 
   // Smile expression
   component.morphTarget = animeshFactory->FindMorphTarget ("MOUTH-smile.L");
-  component.weight = 0.7f;
+  component.weight = 0.73f;
   expression.morphComponents.Push (component);
 
   component.morphTarget = animeshFactory->FindMorphTarget ("MOUTH-smile.R");
-  component.weight = 0.7f;
+  component.weight = 0.73f;
   expression.morphComponents.Push (component);
 
   component.morphTarget = animeshFactory->FindMorphTarget ("MOUTH-e.L");

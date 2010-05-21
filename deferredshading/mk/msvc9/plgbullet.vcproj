@@ -56,10 +56,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -134,10 +133,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -209,10 +207,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -284,10 +281,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -359,10 +355,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -434,10 +429,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -509,10 +503,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -584,10 +577,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -659,10 +651,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -734,10 +725,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9\build\plgbullet\Win32\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -812,10 +802,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -890,10 +879,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -965,10 +953,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1040,10 +1027,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1115,10 +1101,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1190,10 +1175,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1265,10 +1249,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1340,10 +1323,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1415,10 +1397,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1490,10 +1471,9 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug9-x64\build\plgbullet\x64\plgbullet.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1535,9 +1515,6 @@
 				RelativePath="..\..\plugins\physics\bullet\bullet.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics\bullet\joints.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\physics\bullet\softbodies.cpp">
 			</File>
 		</Filter>
@@ -1549,9 +1526,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\common.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics\bullet\joints.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\softbodies.h">

@@ -262,11 +262,10 @@
       <ProgramDatabaseFile>..\..\out\release10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10.lib;cal3d-vc10.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -311,11 +310,10 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <ProgramDatabaseFile>..\..\out\release10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10.lib;cal3d-vc10.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -356,11 +354,10 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <ProgramDatabaseFile>..\..\out\debug10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -401,11 +398,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDatabaseFile>..\..\out\debug10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -446,11 +442,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDatabaseFile>..\..\out\debug10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -491,11 +486,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDatabaseFile>..\..\out\debug10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -536,11 +530,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDatabaseFile>..\..\out\debug10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -581,11 +574,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDatabaseFile>..\..\out\debug10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -626,11 +618,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDatabaseFile>..\..\out\debug10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -671,11 +662,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDatabaseFile>..\..\out\debug10\build\appviewmesh_static\Win32\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -720,11 +710,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDatabaseFile>..\..\out\release10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10.lib;cal3d-vc10.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -769,11 +758,10 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <ProgramDatabaseFile>..\..\out\release10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10.lib;cal3d-vc10.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -814,11 +802,10 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <ProgramDatabaseFile>..\..\out\debug10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -859,11 +846,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDatabaseFile>..\..\out\debug10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -904,11 +890,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDatabaseFile>..\..\out\debug10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -949,11 +934,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDatabaseFile>..\..\out\debug10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -994,11 +978,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDatabaseFile>..\..\out\debug10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1039,11 +1022,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDatabaseFile>..\..\out\debug10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1084,11 +1066,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDatabaseFile>..\..\out\debug10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1129,11 +1110,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDatabaseFile>..\..\out\debug10-x64\build\appviewmesh_static\x64\viewmesh_static.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;CEGUIBase-vc10_d.lib;cal3d-vc10_d.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;libjpeg.lib;libpng.lib;opengl32.lib;version.lib;cg.lib;cgGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>

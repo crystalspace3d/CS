@@ -253,11 +253,10 @@
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\release10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -303,11 +302,10 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\release10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -349,11 +347,10 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -395,11 +392,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -441,11 +437,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -487,11 +482,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -533,11 +527,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -579,11 +572,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -625,11 +617,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -671,11 +662,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\dllpy_pycscegui\Win32\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -721,11 +711,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\release10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -771,11 +760,10 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\release10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -817,11 +805,10 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -863,11 +850,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -909,11 +895,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -955,11 +940,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1001,11 +985,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1047,11 +1030,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1093,11 +1075,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1139,11 +1120,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10-x64\build\dllpy_pycscegui\x64\dllpy_pycscegui.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;CEGUIBase-vc10_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>

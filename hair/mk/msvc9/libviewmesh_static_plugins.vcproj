@@ -53,7 +53,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib libjpeg.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -130,7 +129,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib libjpeg.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -200,7 +198,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -275,7 +272,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -345,7 +341,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -420,7 +415,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -490,7 +484,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -565,7 +558,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -635,7 +627,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -710,7 +701,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -782,7 +772,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib libjpeg.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -859,7 +848,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib libjpeg.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -929,7 +917,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1004,7 +991,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1074,7 +1060,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1149,7 +1134,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1219,7 +1203,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1294,7 +1277,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1364,7 +1346,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1439,7 +1420,6 @@
 				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"

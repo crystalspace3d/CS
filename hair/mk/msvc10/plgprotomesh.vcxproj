@@ -277,7 +277,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -327,7 +326,6 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -373,7 +371,6 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -419,7 +416,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -465,7 +461,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -511,7 +506,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -557,7 +551,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -603,7 +596,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -649,7 +641,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -695,7 +686,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -745,7 +735,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -795,7 +784,6 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -841,7 +829,6 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -887,7 +874,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -933,7 +919,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -979,7 +964,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1025,7 +1009,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1071,7 +1054,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1117,7 +1099,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -1163,7 +1144,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>

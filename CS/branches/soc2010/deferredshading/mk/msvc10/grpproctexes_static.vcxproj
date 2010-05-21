@@ -230,7 +230,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\release10\libs\grpproctexes_static.lib</OutputFile>
@@ -273,7 +272,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\release10\libs\grpproctexes_static.lib</OutputFile>
@@ -312,7 +310,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\grpproctexes_static.lib</OutputFile>
@@ -351,7 +348,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\grpproctexes_static.lib</OutputFile>
@@ -390,7 +386,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\grpproctexes_static.lib</OutputFile>
@@ -429,7 +424,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\grpproctexes_static.lib</OutputFile>
@@ -468,7 +462,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\grpproctexes_static.lib</OutputFile>
@@ -507,7 +500,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\grpproctexes_static.lib</OutputFile>
@@ -546,7 +538,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\grpproctexes_static.lib</OutputFile>
@@ -585,7 +576,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\grpproctexes_static.lib</OutputFile>
@@ -628,7 +618,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\release10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -671,7 +660,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\release10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -710,7 +698,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -749,7 +736,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -788,7 +774,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -827,7 +812,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -866,7 +850,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -905,7 +888,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -944,7 +926,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\grpproctexes_static.lib</OutputFile>
@@ -983,7 +964,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
-      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\grpproctexes_static.lib</OutputFile>

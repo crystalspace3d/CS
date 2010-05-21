@@ -53,7 +53,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -126,7 +125,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -197,7 +195,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -268,7 +265,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -339,7 +335,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -410,7 +405,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -481,7 +475,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -552,7 +545,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -623,7 +615,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -694,7 +685,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -767,7 +757,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -840,7 +829,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -911,7 +899,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -982,7 +969,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1053,7 +1039,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1124,7 +1109,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1195,7 +1179,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1266,7 +1249,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1337,7 +1319,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1408,7 +1389,6 @@
 				AdditionalDependencies=""
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1755,9 +1735,6 @@
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libsndsyswin_staticreg.cpp">
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libsoftanim_staticreg.cpp">
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libspr2d_staticreg.cpp">
@@ -2384,9 +2361,6 @@
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\meshobjecttype.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\modifiabledatafeeder.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\simpledatafeeder.cpp">
 			</File>
 			<File
@@ -2417,9 +2391,6 @@
 				RelativePath="..\..\plugins\physics\bullet\bullet.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics\bullet\joints.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\physics\bullet\softbodies.cpp">
 			</File>
 			<File
@@ -2430,9 +2401,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\odedynam\odedynam.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics\softanim\softanim.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\proctex\ptanimimg\ptanimimg.cpp">
@@ -4263,9 +4231,6 @@
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\meshobjecttype.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\mesh\terrain\terrain2\modifiabledatafeeder.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\mesh\terrain\terrain2\simpledatafeeder.h">
 			</File>
 			<File
@@ -4296,9 +4261,6 @@
 				RelativePath="..\..\plugins\physics\bullet\common.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics\bullet\joints.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\physics\bullet\softbodies.h">
 			</File>
 			<File
@@ -4309,9 +4271,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\odedynam\odedynam.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics\softanim\softanim.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\proctex\ptanimimg\ptanimimg.h">

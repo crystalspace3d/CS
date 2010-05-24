@@ -131,6 +131,12 @@ private:
   float inverseInternalScale;
   float worldTimeStep;
   size_t worldMaxSteps;
+  float linearDampening;
+  float angularDampening;
+  bool autoDisableEnabled;
+  float linearDisableThreshold;
+  float angularDisableThreshold;
+  float timeDisableThreshold;
 
   // For getting collision mesh data.
   csStringID baseId;
@@ -256,6 +262,8 @@ class csBulletRigidBody : public scfImplementationExt2<csBulletRigidBody,
   csRef<iLight> light;
   csRef<iCamera> camera;
   bool insideWorld;
+  float linearDampening;
+  float angularDampening;
 
   csArray<btCollisionObject*> contactObjects;
   csArray<btCollisionObject*> lastContactObjects;
@@ -369,6 +377,10 @@ public:
   virtual void SetDynamicState (csBulletState state);
   virtual void SetKinematicCallback (iBulletKinematicCallback* callback);
   virtual iBulletKinematicCallback* GetKinematicCallback ();
+  virtual void SetLinearDampener (float d);
+  virtual float GetLinearDampener () const;
+  virtual void SetRollingDampener (float d);
+  virtual float GetRollingDampener () const;
 };
 
 class csBulletCollider : public scfImplementation1<csBulletCollider,

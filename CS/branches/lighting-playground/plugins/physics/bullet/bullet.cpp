@@ -193,7 +193,10 @@ csBulletDynamicsSystem::csBulletDynamicsSystem
   (iObjectRegistry* object_reg)
     : scfImplementationType (this), isSoftWorld (false), softWorldInfo (0),
       gimpactRegistered (false), internalScale (1.0f), inverseInternalScale (1.0f),
-      worldTimeStep (1.0f / 60.0f), worldMaxSteps (1), debugDraw (0)
+      worldTimeStep (1.0f / 60.0f), worldMaxSteps (1), linearDampening (0.0f),
+      angularDampening (0.0f), autoDisableEnabled (true),
+      linearDisableThreshold (0.8f), angularDisableThreshold (1.0f),
+      timeDisableThreshold (0.0), debugDraw (0)
 {
   // create base Bullet objects
   configuration = new btDefaultCollisionConfiguration ();
@@ -252,43 +255,42 @@ const csVector3 csBulletDynamicsSystem::GetGravity () const
   return BulletToCS (v, inverseInternalScale);
 }
 
-void csBulletDynamicsSystem::SetLinearDampener (float)
+void csBulletDynamicsSystem::SetLinearDampener (float dampening)
 {
-  // @@@ TODO
+  linearDampening = dampening;
 }
 
 float csBulletDynamicsSystem::GetLinearDampener () const
 {
-  // @@@ TODO
-  return 0;
+  return linearDampening;
 }
 
-void csBulletDynamicsSystem::SetRollingDampener (float)
+void csBulletDynamicsSystem::SetRollingDampener (float dampening)
 {
-  // @@@ TODO
+  angularDampening = dampening;
 }
 
 float csBulletDynamicsSystem::GetRollingDampener () const
 {
-  // @@@ TODO
-  return 0;
+  return angularDampening;
 }
 
-void csBulletDynamicsSystem::EnableAutoDisable (bool)
+void csBulletDynamicsSystem::EnableAutoDisable (bool enable)
 {
-  // @@@ TODO
+  autoDisableEnabled = enable;
 }
 
 bool csBulletDynamicsSystem::AutoDisableEnabled ()
 {
-  // @@@ TODO
-  return false;
+  return autoDisableEnabled;
 }
 
-void csBulletDynamicsSystem::SetAutoDisableParams (float /*linear*/,
-  float /*angular*/, int /*steps*/, float /*time*/)
+void csBulletDynamicsSystem::SetAutoDisableParams (float linear,
+  float angular, int steps, float time)
 {
-  // @@@ TODO
+  linearDisableThreshold = linear;
+  angularDisableThreshold = angular;
+  timeDisableThreshold = time;
 }
 
 void csBulletDynamicsSystem::CheckCollision(csBulletRigidBody& cs_obA,btCollisionObject *obB,btPersistentManifold &contactManifold)
@@ -402,7 +404,14 @@ void csBulletDynamicsSystem::RemoveBody (iRigidBody* body)
   csBulletRigidBody* csBody = dynamic_cast<csBulletRigidBody*> (body);
   CS_ASSERT (csBody);
   if (csBody->body)
+  {
+    // wake up all connected bodies
+    for (size_t i = 0; i < csBody->contactObjects.GetSize (); i++)
+      csBody->contactObjects[i]->activate ();
+
+    // remove the body from the world
     bulletWorld->removeRigidBody (csBody->body);
+  }
   csBody->insideWorld = false;
 
   dynamicBodies.Delete (body);
@@ -683,47 +692,72 @@ csBulletHitBeamResult csBulletDynamicsSystem::HitBeam
   // Check for soft bodies
   if (!result.body && isSoftWorld)
   {
+    // Find the closest body hit
     btSoftRigidDynamicsWorld* softWorld =
       static_cast<btSoftRigidDynamicsWorld*> (bulletWorld);
+
+    bool hitFound = false;
+    float closestFraction;
+    btSoftBody::sRayCast closestRay;
+    btSoftBody* closestBody;
 
     btSoftBodyArray& sbs = softWorld->getSoftBodyArray ();
     for (int ib = 0; ib < sbs.size (); ++ib)
     {
       btSoftBody* psb = sbs[ib];
       btSoftBody::sRayCast ray;
-      if (psb->rayTest (rayFrom, rayTo, ray) && ray.fraction < 1.00f)
+
+      if (psb->rayTest (rayFrom, rayTo, ray))
       {
-	result.softBody = (csBulletSoftBody*) psb->getUserPointer ();
-	btVector3 impact = rayFrom + (rayTo - rayFrom) * ray.fraction;
-	result.isect = BulletToCS (impact, inverseInternalScale);
-
-	// find the closest vertex
-	switch(ray.feature)
+	if (!hitFound)
 	{
-	case btSoftBody::eFeature::Face:
-	  {
-	    btSoftBody::Face& face = psb->m_faces[ray.index];
-	    btSoftBody::Node* node = face.m_n[0];
-	    float distance = (node->m_x - impact).length2();
-	    for (int i = 1; i < 3; i++)
-	    {
-	      float nodeDistance = (face.m_n[i]->m_x - impact).length2();
-	      if (nodeDistance < distance)
-	      {
-		node = face.m_n[i];
-		distance = nodeDistance;
-	      }
-	    }
-
-	    result.vertexIndex = size_t (node - &psb->m_nodes[0]);
-	  }
-	  break;
-
-	default:
-	  // TODO: may need other types?
-	  break;
+	  closestFraction = ray.fraction;
+	  closestRay = ray;
+	  closestBody = psb;
+	  hitFound = true;
 	}
 
+	else if (ray.fraction < closestFraction)
+	{
+	  closestFraction = ray.fraction;
+	  closestRay = ray;
+	  closestBody = psb;
+	}
+      }
+    }
+
+    // Set up the result data structure
+    if (hitFound)
+    {
+      result.softBody = (csBulletSoftBody*) closestBody->getUserPointer ();
+      btVector3 impact = rayFrom + (rayTo - rayFrom) * closestRay.fraction;
+      result.isect = BulletToCS (impact, inverseInternalScale);
+
+      // find the closest vertex
+      switch (closestRay.feature)
+      {
+      case btSoftBody::eFeature::Face:
+	{
+	  btSoftBody::Face& face = closestBody->m_faces[closestRay.index];
+	  btSoftBody::Node* node = face.m_n[0];
+	  float distance = (node->m_x - impact).length2 ();
+
+	  for (int i = 1; i < 3; i++)
+	  {
+	    float nodeDistance = (face.m_n[i]->m_x - impact).length2 ();
+	    if (nodeDistance < distance)
+	    {
+	      node = face.m_n[i];
+	      distance = nodeDistance;
+	    }
+	  }
+
+	  result.vertexIndex = size_t (node - &closestBody->m_nodes[0]);
+	}
+	break;
+
+      default:
+	// TODO: may need other types?
 	break;
       }
     }
@@ -1005,7 +1039,8 @@ void csBulletDynamicsSystem::RemovePivotJoint (iBulletPivotJoint* joint)
 csBulletRigidBody::csBulletRigidBody (csBulletDynamicsSystem* dynSys, bool isStatic)
   : scfImplementationType (this), dynSys (dynSys), body (0),
     dynamicState (isStatic? CS_BULLET_STATE_STATIC : CS_BULLET_STATE_DYNAMIC),
-    customMass (false), mass (1.0f), compoundChanged (false), insideWorld (false)
+    customMass (false), mass (1.0f), compoundChanged (false), insideWorld (false),
+    linearDampening (dynSys->linearDampening), angularDampening (dynSys->angularDampening)
 {
   btTransform identity;
   identity.setIdentity ();
@@ -1157,12 +1192,11 @@ void csBulletRigidBody::RebuildBody ()
 						  compoundShape, localInertia);
 
   // TODO: add ability to have different material properties for each collider?
+  // TODO: use collider's softness
   infos.m_friction = colliders[0]->friction;
   infos.m_restitution = colliders[0]->elasticity;
-  // TODO: is damping the same than softness?
-  // Use instead the linear/rolling dampener of the dynamic system?
-  infos.m_linearDamping = colliders[0]->softness;
-  infos.m_angularDamping = colliders[0]->softness;
+  infos.m_linearDamping = linearDampening;
+  infos.m_angularDamping = angularDampening;
 
   // create new rigid body
   body = new btRigidBody (infos);
@@ -1176,6 +1210,13 @@ void csBulletRigidBody::RebuildBody ()
     body->setLinearVelocity (linearVelocity);
     body->setAngularVelocity (angularVelocity);
   }
+
+  // set deactivation parameters
+  if (!dynSys->autoDisableEnabled)
+    body->setActivationState (DISABLE_DEACTIVATION);
+  body->setSleepingThresholds (dynSys->linearDisableThreshold,
+			       dynSys->angularDisableThreshold);
+  body->setDeactivationTime (dynSys->timeDisableThreshold);
 
   // TODO: update any connected joints
 }
@@ -1208,6 +1249,7 @@ bool csBulletRigidBody::MakeStatic (void)
     body->setCollisionFlags (body->getCollisionFlags()
 			     | btCollisionObject::CF_STATIC_OBJECT);
     body->setMassProps (0.0f, btVector3 (0.0f, 0.0f, 0.0f));
+    body->updateInertiaTensor ();
 
     // reverse kinematic state
     if (previousState == CS_BULLET_STATE_KINEMATIC)
@@ -1293,8 +1335,13 @@ bool csBulletRigidBody::MakeDynamic (void)
     // set body dynamic
     btVector3 localInertia (0.0f, 0.0f, 0.0f);
     compoundShape->calculateLocalInertia (mass, localInertia);
-    body->setMassProps(mass, localInertia);
-    body->setActivationState(ACTIVE_TAG);
+    body->setMassProps (mass, localInertia);
+
+    if (!dynSys->autoDisableEnabled)
+      body->setActivationState (DISABLE_DEACTIVATION);
+    else
+      body->forceActivationState (ACTIVE_TAG);
+
     body->setLinearVelocity (linearVelocity);
     body->setAngularVelocity (angularVelocity);
     body->updateInertiaTensor ();
@@ -1344,7 +1391,6 @@ void csBulletRigidBody::MakeKinematic ()
     btTransform principalAxis = motionState->inversePrincipalAxis.inverse ();
     btTransform trans;
     motionState->getWorldTransform (trans);
-    trans = trans * motionState->inversePrincipalAxis;
     delete motionState;
     motionState = new csBulletKinematicMotionState
       (this, trans, principalAxis);
@@ -1689,7 +1735,13 @@ void csBulletRigidBody::SetPosition (const csVector3& pos)
 
   // remove body from the world
   if (insideWorld)
+  {
     dynSys->bulletWorld->removeRigidBody (body);
+
+    // wake up all connected bodies
+    for (size_t i = 0; i < contactObjects.GetSize (); i++)
+      contactObjects[i]->activate ();
+  }
 
   // create new motion state
   // TODO: is it really necessary? 
@@ -1721,7 +1773,13 @@ void csBulletRigidBody::SetOrientation (const csMatrix3& rot)
 {
   // remove body from the world
   if (insideWorld)
+  {
     dynSys->bulletWorld->removeRigidBody (body);
+
+    // wake up all connected bodies
+    for (size_t i = 0; i < contactObjects.GetSize (); i++)
+      contactObjects[i]->activate ();
+  }
 
   // create new motion state
   btMatrix3x3 rotation (CSToBullet (rot));
@@ -1754,7 +1812,13 @@ void csBulletRigidBody::SetTransform (const csOrthoTransform& trans)
 {
   // remove body from the world
   if (insideWorld)
+  {
     dynSys->bulletWorld->removeRigidBody (body);
+
+    // wake up all connected bodies
+    for (size_t i = 0; i < contactObjects.GetSize (); i++)
+      contactObjects[i]->activate ();
+  }
 
   // create new motion state
   btTransform tr = CSToBullet (trans, dynSys->internalScale);
@@ -1854,7 +1918,7 @@ float csBulletRigidBody::GetMass ()
     return 0.0f;
 
   if (body)
-    return 1.0 / body->getInvMass ();    
+    return 1.0 / body->getInvMass ();
 
   return mass;
 }
@@ -2128,6 +2192,32 @@ void csBulletRigidBody::Update ()
     // remainder case for all other callbacks
     moveCb->Execute (trans);
   }
+}
+
+void csBulletRigidBody::SetLinearDampener (float d)
+{
+  linearDampening = d;
+
+  if (body)
+    body->setDamping (linearDampening, angularDampening);
+}
+
+float csBulletRigidBody::GetLinearDampener () const
+{
+  return linearDampening;
+}
+
+void csBulletRigidBody::SetRollingDampener (float d)
+{
+  angularDampening = d;
+
+  if (body)
+    body->setDamping (linearDampening, angularDampening);
+}
+
+float csBulletRigidBody::GetRollingDampener () const
+{
+  return angularDampening;
 }
 
 //--------------------- csBulletDefaultMoveCallback -------------------------

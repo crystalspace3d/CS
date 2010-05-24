@@ -73,6 +73,7 @@ private:
   bool dragging;
   csRef<iBulletPivotJoint> dragJoint;
   float dragDistance;
+  float linearDampening, angularDampening;
   int mouseX, mouseY;
 
   // Cut & Paste related
@@ -97,6 +98,7 @@ private:
   iRigidBody* SpawnCapsule ();
   iRigidBody* SpawnMesh ();
   iRigidBody* SpawnConvexMesh ();
+  iRigidBody* SpawnCompound ();
   iJoint* SpawnJointed ();
   void SpawnChain ();
   void LoadRagdoll ();

@@ -1411,6 +1411,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\factory.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\feederhelper.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\meshobjecttype.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\modifiabledatafeeder.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\simpledatafeeder.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\terraformerdatafeeder.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\terrain.cpp" />
@@ -1421,6 +1422,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.cpp" />
     <ClCompile Include="..\..\plugins\misc\pathloader\pathloader.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\bullet.cpp" />
+    <ClCompile Include="..\..\plugins\physics\bullet\joints.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\softbodies.cpp" />
     <ClCompile Include="..\..\plugins\physics\dyndebug\dyndebug.cpp" />
     <ClCompile Include="..\..\plugins\physics\loader\physldr.cpp" />
@@ -1938,6 +1940,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\factory.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\feederhelper.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\meshobjecttype.h" />
+    <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\modifiabledatafeeder.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\simpledatafeeder.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\terraformerdatafeeder.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\terrainsystem.h" />
@@ -1948,6 +1951,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\misc\pathloader\pathloader.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\bullet.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\common.h" />
+    <ClInclude Include="..\..\plugins\physics\bullet\joints.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\softbodies.h" />
     <ClInclude Include="..\..\plugins\physics\dyndebug\dyndebug.h" />
     <ClInclude Include="..\..\plugins\physics\loader\physldr.h" />

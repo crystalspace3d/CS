@@ -65,10 +65,11 @@ struct LightProperties
   float3 colorSpecular[MAX_LIGHTS];
   // Attenuation vector (XYZ are CLQ coefficients; W is light radius)
   float4 attenuationVec[MAX_LIGHTS];
-  // Cosine of inner falloff angle
-  float falloffInner[MAX_LIGHTS];
-  // Cosine of outerr falloff angle
-  float falloffOuter[MAX_LIGHTS];
+  /* Light type parameters
+      x,y - LightParametric directionFactor, spotFactor
+      z   - Cosine of inner falloff angle
+      w   - Cosine of outer falloff angle */
+  float4 lightTypeParams[MAX_LIGHTS];
 };
 LightProperties lightProps;
 
@@ -232,26 +233,36 @@ struct LightSpot : Light
   half3 GetIncidence() { return dir; }
   half GetAttenuation() { return spot; }
 };
+
+/* "Parametric" light - directional, spot or point light, depending on the parameters.
+ *   directionFactor, spotFactor	Light type
+ *                 0, 0			Point
+ *		   1, 0			Directional
+ *		   1, 1			Spot
+ * (Other values, or fractional values, give results without much sense.)
+ */
+struct LightParametric : Light
+{
+  half3 dir;
+  half spot;
+  
+  void Init (LightSpace space, half directionFactor, half spotFactor,
+    half spotFalloffInner, half spotFalloffOuter)
+  {
+    dir = lerp (space.GetSurfaceToLight(), -space.GetDirection(), directionFactor);
+    spot = lerp (1, Light_Spot (space.GetSurfaceToLight(), dir, spotFalloffInner, spotFalloffOuter), spotFactor);
+  }
+  half3 GetIncidence() { return dir; }
+  half GetAttenuation() { return spot; }
+};
 ]]>
 
 Light GetCurrentLight (LightSpace lightSpace, int lightNum)
 {
-<?if vars."light type".int == consts.CS_LIGHT_DIRECTIONAL ?>
-  LightDirectional ld;
-  ld.Init (lightSpace);
-  return ld;
-<?elsif vars."light type".int == consts.CS_LIGHT_SPOTLIGHT ?>
-  LightSpot ls;
-  ls.Init (lightSpace, 
-    lightProps.falloffInner[lightNum],
-    lightProps.falloffOuter[lightNum]);
-  return ls;
-<?else?>
-<?! Assume point light ?>
-  LightPoint lp;
-  lp.Init (lightSpace);
+  LightParametric lp;
+  float4 lightTypeParams = lightProps.lightTypeParams[lightNum];
+  lp.Init (lightSpace, lightTypeParams.x, lightTypeParams.y, lightTypeParams.z, lightTypeParams.w);
   return lp;
-<?endif?>
 }
 
 <![CDATA[

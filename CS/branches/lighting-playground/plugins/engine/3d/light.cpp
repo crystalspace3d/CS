@@ -436,6 +436,44 @@ void csLight::SetCutoffDistance (float radius)
   CalculateAttenuationVector();
 }
 
+void csLight::SetSpotLightFalloff (float inner, float outer)
+{
+  spotlightFalloffInner = inner;
+  spotlightFalloffOuter = outer;
+  lightnr++;
+  //GetPropertySV (csLightShaderVarCache::lightInnerFalloff)->SetValue (inner);
+  //GetPropertySV (csLightShaderVarCache::lightOuterFalloff)->SetValue (outer);
+  csVector4 lightTypeParams;
+  GetPropertySV (csLightShaderVarCache::lightTypeParams)->GetValue (lightTypeParams);
+  lightTypeParams.z = inner;
+  lightTypeParams.w = outer;
+  GetPropertySV (csLightShaderVarCache::lightTypeParams)->SetValue (lightTypeParams);
+}
+
+void csLight::SetType (csLightType type)
+{
+  this->type = type;
+  csVector4 lightTypeParams;
+  GetPropertySV (csLightShaderVarCache::lightTypeParams)->GetValue (lightTypeParams);
+  switch (type)
+  {
+  default:
+  case CS_LIGHT_POINTLIGHT:
+    lightTypeParams.x = 0;
+    lightTypeParams.y = 0;
+    break;
+  case CS_LIGHT_DIRECTIONAL:
+    lightTypeParams.x = 1;
+    lightTypeParams.y = 0;
+    break;
+  case CS_LIGHT_SPOTLIGHT:
+    lightTypeParams.x = 1;
+    lightTypeParams.y = 1;
+    break;
+  }
+  GetPropertySV (csLightShaderVarCache::lightTypeParams)->SetValue (lightTypeParams);
+}
+
 iCrossHalo *csLight::CreateCrossHalo (float intensity, float cross)
 {
   csCrossHalo *halo = new csCrossHalo (intensity, cross);

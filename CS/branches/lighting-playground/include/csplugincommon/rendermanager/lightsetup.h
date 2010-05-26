@@ -145,10 +145,10 @@ namespace RenderManager
     
     /// Test compatibility light settings equality
     bool operator== (const LightSettings& other) const
-    { return (type == other.type) && (lightFlags == other.lightFlags); }
+    { return (lightFlags == other.lightFlags); }
     /// Test compatibility light settings inequality
     bool operator!= (const LightSettings& other) const
-    { return (type != other.type) || (lightFlags != other.lightFlags); }
+    { return (lightFlags != other.lightFlags); }
   };
 
   /**
@@ -645,11 +645,6 @@ namespace RenderManager
 	      csShaderVariable* passNum = lightVarsHelper.CreateVarOnStack (
 		persist.svPassNum, localStacks[s]);
 	      passNum->SetValue ((int)(n + totalLayers));
-      
-	      csShaderVariable* lightTypeSV = lightVarsHelper.CreateVarOnStack (
-		persist.svNames.GetLightSVId (
-		  csLightShaderVarCache::lightType), localStacks[s]);
-	      lightTypeSV->SetValue ((int)(lightSettings.type));
 	    }
     
             CachedLightData* thisLightSVs;

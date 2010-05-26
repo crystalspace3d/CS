@@ -54,7 +54,8 @@ namespace
     "type",
     "attenuation mode",
     "shadow map projection",
-    "shadow map pixel size"
+    "shadow map pixel size",
+    "type params"
   };
 }
 

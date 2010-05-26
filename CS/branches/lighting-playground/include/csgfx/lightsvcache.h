@@ -71,6 +71,8 @@ public:
     lightShadowMapProjection,
     /// Shadow map pixel sizes + dimensions
     lightShadowMapPixelSize,
+    /// Light type parameters (see lightfuncs.cginc for explanation)
+    lightTypeParams,
 
     /// Number of properties
     _lightCount

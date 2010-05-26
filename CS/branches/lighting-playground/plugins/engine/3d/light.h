@@ -364,14 +364,7 @@ public:
   /**
   * Set spot light falloff angles. Set in cosine of the angle. 
   */
-  void SetSpotLightFalloff (float inner, float outer)
-  {
-    spotlightFalloffInner = inner;
-    spotlightFalloffOuter = outer;
-    lightnr++;
-    GetPropertySV (csLightShaderVarCache::lightInnerFalloff)->SetValue (inner);
-    GetPropertySV (csLightShaderVarCache::lightOuterFalloff)->SetValue (outer);
-  }
+  void SetSpotLightFalloff (float inner, float outer);
 
   /**
   * Get spot light falloff angles. Get in cosine of the angle.
@@ -398,10 +391,7 @@ public:
   csLightType GetType () const
   { return type; }
   /// Set the light type of this light.
-  void SetType (csLightType type)
-  {
-    this->type = type;
-  }
+  void SetType (csLightType type);
 
   virtual iShaderVariableContext* GetSVContext()
   {

@@ -1562,6 +1562,9 @@
 				RelativePath="..\..\mk\msvc\libfrustvis_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libfurmaterial_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libgenmesh_staticreg.cpp">
 			</File>
 			<File
@@ -2199,6 +2202,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguiwindowtarget.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\material\furmaterial\furmaterial.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.cpp">
@@ -4084,6 +4090,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\ceguiwindowtarget.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\material\furmaterial\furmaterial.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.h">

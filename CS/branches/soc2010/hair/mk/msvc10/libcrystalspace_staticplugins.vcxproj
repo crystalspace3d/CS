@@ -1137,6 +1137,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\libfontplex_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libfreefnt2_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libfrustvis_staticreg.cpp" />
+    <ClCompile Include="..\..\mk\msvc\libfurmaterial_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libgenmesh_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libgl3d_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libglshader_arb_staticreg.cpp" />
@@ -1350,6 +1351,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\gui\cegui\ceguitexture.cpp" />
     <ClCompile Include="..\..\plugins\gui\cegui\ceguitexturetarget.cpp" />
     <ClCompile Include="..\..\plugins\gui\cegui\ceguiwindowtarget.cpp" />
+    <ClCompile Include="..\..\plugins\material\furmaterial\furmaterial.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\body\bodymesh.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\controllers\basic\basic.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\controllers\lookat\lookat.cpp" />
@@ -1881,6 +1883,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\gui\cegui\ceguitexture.h" />
     <ClInclude Include="..\..\plugins\gui\cegui\ceguitexturetarget.h" />
     <ClInclude Include="..\..\plugins\gui\cegui\ceguiwindowtarget.h" />
+    <ClInclude Include="..\..\plugins\material\furmaterial\furmaterial.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\body\bodymesh.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\controllers\basic\basic.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\controllers\lookat\lookat.h" />

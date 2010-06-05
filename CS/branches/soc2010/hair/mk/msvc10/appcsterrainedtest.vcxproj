@@ -83,51 +83,61 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8A91DCCA-B0CC-DF41-D8C2-B20153BDF00B}</ProjectGuid>
+    <ProjectGuid>{DDBD97DD-5094-4301-66B9-46234BC9D4D8}</ProjectGuid>
     <SccProjectName />
     <SccLocalPath />
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)'=='Release (with static libs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release (with DLLs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug (with static libs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug (with DLLs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='MemoryTracker (with static libs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='MemoryTracker (with DLLs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='RefTracker (with static libs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='RefTracker (with DLLs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='ThreadChecker (with static libs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='ThreadChecker (with DLLs)'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -143,105 +153,85 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">..\..\out\release10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">..\..\out\release10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">..\..\out\release10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">..\..\out\release10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">..\..\out\debug10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">..\..\out\debug10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">..\..\out\debug10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">..\..\out\debug10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">..\..\out\debug10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">..\..\out\debug10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">..\..\out\debug10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">..\..\out\debug10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">..\..\out\debug10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">..\..\out\debug10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">..\..\out\debug10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">..\..\out\debug10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">..\..\out\debug10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">..\..\out\debug10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">..\..\out\debug10\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">..\..\out\debug10\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|Win32'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">..\..\out\release10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">..\..\out\release10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">..\..\out\release10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">..\..\out\release10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release (with DLLs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">..\..\out\debug10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">..\..\out\debug10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with static libs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">..\..\out\debug10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">..\..\out\debug10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (with DLLs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">..\..\out\debug10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">..\..\out\debug10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with static libs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">..\..\out\debug10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTracker (with DLLs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">..\..\out\debug10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">..\..\out\debug10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with static libs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">..\..\out\debug10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTracker (with DLLs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">..\..\out\debug10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">..\..\out\debug10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with static libs)|x64'">csterrainedtest</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">..\..\out\debug10-x64\build\plgfurmaterial\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">..\..\out\debug10-x64\build\appcsterrainedtest\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">true</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">furmaterial</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">true</IgnoreImportLibrary>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadChecker (with DLLs)|x64'">csterrainedtest</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release (with static libs)|Win32'">
     <ClCompile>
@@ -250,13 +240,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>..\..\out\release10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -268,12 +258,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -289,7 +278,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -300,13 +289,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>..\..\out\release10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -318,12 +307,11 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -339,7 +327,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -348,13 +336,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -364,12 +352,11 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -385,7 +372,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -394,13 +381,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -410,12 +397,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -431,7 +417,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -440,13 +426,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -456,12 +442,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -477,7 +462,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -486,13 +471,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -502,12 +487,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -523,7 +507,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -532,13 +516,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -548,12 +532,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -569,7 +552,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -578,13 +561,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -594,12 +577,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -615,7 +597,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -624,13 +606,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -640,12 +622,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -661,7 +642,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -670,13 +651,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -686,12 +667,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgfurmaterial\Win32\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgfurmaterial\Win32\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appcsterrainedtest\Win32\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -707,7 +687,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -718,13 +698,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>..\..\out\release10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -736,12 +716,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -757,7 +736,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -768,13 +747,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>..\..\out\release10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -786,12 +765,11 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -807,7 +785,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -816,13 +794,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -832,12 +810,11 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -853,7 +830,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -862,13 +839,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -878,12 +855,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -899,7 +875,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -908,13 +884,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -924,12 +900,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -945,7 +920,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -954,13 +929,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -970,12 +945,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -991,7 +965,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1000,13 +974,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1016,12 +990,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1037,7 +1010,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1046,13 +1019,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1062,12 +1035,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1083,7 +1055,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1092,13 +1064,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1108,12 +1080,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1129,7 +1100,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1138,13 +1109,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgfurmaterial\plgfurmaterial.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgfurmaterial\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgfurmaterial\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appcsterrainedtest\appcsterrainedtest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appcsterrainedtest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appcsterrainedtest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1154,12 +1125,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\furmaterial.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgfurmaterial\x64\furmaterial.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgfurmaterial\x64\plgfurmaterial.lib</ImportLibrary>
+      <OutputFile>..\..\csterrainedtest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appcsterrainedtest\x64\csterrainedtest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1175,22 +1145,21 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\material\furmaterial;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\csterrainedtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
-    <ClCompile Include="..\..\plugins\material\furmaterial\furmaterial.cpp" />
+    <ClCompile Include="..\..\apps\tests\csterrainedtest\csterrainedtest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\plugins\material\furmaterial\furmaterial.h" />
+    <ClInclude Include="..\..\apps\tests\csterrainedtest\csterrainedtest.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\mk\msvc\plgfurmaterial.rc" />
+    <ResourceCompile Include="..\..\mk\msvc\appcsterrainedtest.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\plugins\material\furmaterial\furmaterial.csplugin" />
+    <Manifest Include="..\..\mk\msvc\appcsterrainedtest.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libcrystalspace.vcxproj">

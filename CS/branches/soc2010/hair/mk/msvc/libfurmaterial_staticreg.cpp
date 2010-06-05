@@ -29,6 +29,14 @@ static char const metainfo_furmaterial[] =
 "          <class>crystalspace.graphics3d.</class>"
 "        </requires>"
 "      </class>"
+"      <class>"
+"        <name>crystalspace.physics.furphysics</name>"
+"        <implementation>FurPhysicsControl</implementation>"
+"        <description>Fur Material Type Plugin</description>"
+"        <requires>"
+"          <class>crystalspace.graphics3d.</class>"
+"        </requires>"
+"      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
@@ -37,6 +45,10 @@ static char const metainfo_furmaterial[] =
   #define FurMaterialType_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(FurMaterialType) 
   #endif
+  #ifndef FurPhysicsControl_FACTORY_REGISTER_DEFINED 
+  #define FurPhysicsControl_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(FurPhysicsControl) 
+  #endif
 
 class furmaterial
 {
@@ -44,6 +56,10 @@ SCF_REGISTER_STATIC_LIBRARY(furmaterial,metainfo_furmaterial)
   #ifndef FurMaterialType_FACTORY_REGISTERED 
   #define FurMaterialType_FACTORY_REGISTERED 
     FurMaterialType_StaticInit FurMaterialType_static_init__; 
+  #endif
+  #ifndef FurPhysicsControl_FACTORY_REGISTERED 
+  #define FurPhysicsControl_FACTORY_REGISTERED 
+    FurPhysicsControl_StaticInit FurPhysicsControl_static_init__; 
   #endif
 public:
  furmaterial();

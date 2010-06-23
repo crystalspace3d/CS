@@ -36,11 +36,12 @@ namespace Threading
     //      (Each plugin will have his copy making the lock useless)
     static char AtomicLock;
 
-    inline char Swpb(volatile char *target, char value)
+    inline static char Swpb(volatile char *target, char value)
     {
        register int ret;
        asm volatile("swpb %0 , %1, [%2]"
-                    : "=&r"(ret), "r"(value), "r"(target)
+                    : "=&r"(ret)
+                    : "r"(value), "r"(target)
                     : "cc", "memory");
        return ret;
     }

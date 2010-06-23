@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="plggl3d"
-	ProjectGUID="{8EFC75DE-0FF5-942B-850C-1450021FB4C0}"
+	Name="apptestcull"
+	ProjectGUID="{277AEFAA-4FEB-4DB8-9F71-992EECE31235}"
+	RootNamespace="apptestcull"
 	>
 	<Platforms>
 		<Platform
@@ -18,11 +19,12 @@
 	<Configurations>
 		<Configuration
 			Name="Release (with static libs)|Win32"
-			OutputDirectory="..\..\out\release8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\release8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\release8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -43,7 +45,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\release8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -57,10 +59,10 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				PrecompiledHeaderFile="..\..\out\release8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\release8\build\plggl3d\"
-				ObjectFile="..\..\out\release8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\release8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\release8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\release8\build\appsimple2\"
+				ObjectFile="..\..\out\release8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\release8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -74,27 +76,25 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release8\build\plggl3d\Win32\gl3d.pdb"
+				ProgramDatabaseFile="..\..\out\release8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release8\build\plggl3d\Win32\plggl3d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -125,11 +125,12 @@
 		</Configuration>
 		<Configuration
 			Name="Release (with static libs)|x64"
-			OutputDirectory="..\..\out\release8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\release8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\release8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -150,7 +151,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\release8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -164,10 +165,10 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				PrecompiledHeaderFile="..\..\out\release8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\release8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\release8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\release8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\release8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\release8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\release8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\release8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -181,27 +182,25 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release8-x64\build\plggl3d\x64\gl3d.pdb"
+				ProgramDatabaseFile="..\..\out\release8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release8-x64\build\plggl3d\x64\plggl3d.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -232,11 +231,12 @@
 		</Configuration>
 		<Configuration
 			Name="Release (with DLLs)|Win32"
-			OutputDirectory="..\..\out\release8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\release8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\release8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -257,7 +257,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\release8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -271,10 +271,10 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				PrecompiledHeaderFile="..\..\out\release8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\release8\build\plggl3d\"
-				ObjectFile="..\..\out\release8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\release8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\release8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\release8\build\appsimple2\"
+				ObjectFile="..\..\out\release8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\release8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -288,27 +288,25 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release8\build\plggl3d\Win32\gl3d.pdb"
+				ProgramDatabaseFile="..\..\out\release8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release8\build\plggl3d\Win32\plggl3d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -339,11 +337,12 @@
 		</Configuration>
 		<Configuration
 			Name="Release (with DLLs)|x64"
-			OutputDirectory="..\..\out\release8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\release8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\release8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -364,7 +363,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\release8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -378,10 +377,10 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				PrecompiledHeaderFile="..\..\out\release8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\release8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\release8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\release8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\release8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\release8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\release8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\release8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -395,27 +394,25 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release8-x64\build\plggl3d\x64\gl3d.pdb"
+				ProgramDatabaseFile="..\..\out\release8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release8-x64\build\plggl3d\x64\plggl3d.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -446,11 +443,12 @@
 		</Configuration>
 		<Configuration
 			Name="Debug (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -470,7 +468,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -483,10 +481,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plggl3d\"
-				ObjectFile="..\..\out\debug8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appsimple2\"
+				ObjectFile="..\..\out\debug8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -500,25 +498,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8\build\plggl3d\Win32\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -549,11 +545,12 @@
 		</Configuration>
 		<Configuration
 			Name="Debug (with static libs)|x64"
-			OutputDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -573,7 +570,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -586,10 +583,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\debug8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\debug8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -603,25 +600,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8-x64\build\plggl3d\x64\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -652,11 +647,12 @@
 		</Configuration>
 		<Configuration
 			Name="Debug (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8\build\apptestcull\"
+			IntermediateDirectory="..\..\out\debug8\build\apptestcull\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -676,7 +672,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -689,10 +685,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plggl3d\"
-				ObjectFile="..\..\out\debug8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\apptestcull\apptestcull.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\apptestcull\"
+				ObjectFile="..\..\out\debug8\build\apptestcull\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\apptestcull\Win32\testcull.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -706,25 +702,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\testcull.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8\build\plggl3d\Win32\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8\build\apptestcull\Win32\testcull.pdb"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -755,11 +749,12 @@
 		</Configuration>
 		<Configuration
 			Name="Debug (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -779,7 +774,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -792,10 +787,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\debug8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\debug8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -809,25 +804,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8-x64\build\plggl3d\x64\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -858,11 +851,12 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -882,7 +876,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -895,10 +889,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plggl3d\"
-				ObjectFile="..\..\out\debug8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appsimple2\"
+				ObjectFile="..\..\out\debug8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -912,25 +906,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8\build\plggl3d\Win32\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -961,11 +953,12 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker (with static libs)|x64"
-			OutputDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -985,7 +978,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -998,10 +991,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\debug8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\debug8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1015,25 +1008,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8-x64\build\plggl3d\x64\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1064,11 +1055,12 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1088,7 +1080,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1101,10 +1093,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plggl3d\"
-				ObjectFile="..\..\out\debug8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appsimple2\"
+				ObjectFile="..\..\out\debug8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1118,25 +1110,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8\build\plggl3d\Win32\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1167,11 +1157,12 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTracker (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1191,7 +1182,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1204,10 +1195,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\debug8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\debug8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1221,25 +1212,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8-x64\build\plggl3d\x64\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1270,11 +1259,12 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1294,7 +1284,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1307,10 +1297,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plggl3d\"
-				ObjectFile="..\..\out\debug8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appsimple2\"
+				ObjectFile="..\..\out\debug8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1324,25 +1314,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8\build\plggl3d\Win32\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1373,11 +1361,12 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker (with static libs)|x64"
-			OutputDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1397,7 +1386,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1410,10 +1399,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\debug8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\debug8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1427,25 +1416,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8-x64\build\plggl3d\x64\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1476,11 +1463,12 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1500,7 +1488,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1513,10 +1501,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plggl3d\"
-				ObjectFile="..\..\out\debug8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appsimple2\"
+				ObjectFile="..\..\out\debug8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1530,25 +1518,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8\build\plggl3d\Win32\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1579,11 +1565,12 @@
 		</Configuration>
 		<Configuration
 			Name="RefTracker (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1603,7 +1590,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1616,10 +1603,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\debug8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\debug8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1633,25 +1620,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8-x64\build\plggl3d\x64\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1682,11 +1667,12 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadChecker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1706,7 +1692,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1719,10 +1705,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plggl3d\"
-				ObjectFile="..\..\out\debug8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appsimple2\"
+				ObjectFile="..\..\out\debug8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1736,25 +1722,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8\build\plggl3d\Win32\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1785,11 +1769,12 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadChecker (with static libs)|x64"
-			OutputDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1809,7 +1794,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1822,10 +1807,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\debug8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\debug8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1839,25 +1824,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8-x64\build\plggl3d\x64\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1888,11 +1871,12 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadChecker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1912,7 +1896,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -1925,10 +1909,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plggl3d\"
-				ObjectFile="..\..\out\debug8\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\appsimple2\"
+				ObjectFile="..\..\out\debug8\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -1942,25 +1926,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8\build\plggl3d\Win32\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8\build\plggl3d\Win32\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8\build\appsimple2\Win32\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1991,11 +1973,12 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadChecker (with DLLs)|x64"
-			OutputDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			IntermediateDirectory="..\..\out\debug8-x64\build\plggl3d\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\appsimple2\"
+			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -2015,7 +1998,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plggl3d\plggl3d.tlb"
+				TypeLibraryName="..\..\out\debug8-x64\build\appsimple2\appsimple2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -2028,10 +2011,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plggl3d\plggl3d.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plggl3d\"
-				ObjectFile="..\..\out\debug8-x64\build\plggl3d\"
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\appsimple2\appsimple2.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\appsimple2\"
+				ObjectFile="..\..\out\debug8-x64\build\appsimple2\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -2045,25 +2028,23 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\opengl;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\apps\tutorial\simple2;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib opengl32.lib zlib.lib"
-				OutputFile="..\..\gl3d.dll"
+				AdditionalDependencies="zlib.lib"
+				OutputFile="..\..\simple2.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plggl3d\x64\gl3d.pdb"
-				ImportLibrary="..\..\out\debug8-x64\build\plggl3d\x64\plggl3d.lib"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\appsimple2\x64\simple2.pdb"
+				SubSystem="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -2100,47 +2081,7 @@
 			Name="Source Files"
 			>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_backend.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_ext_fb_o.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_framebuf.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_render3d.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_renderbuffer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_basictex.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_formats.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_imagetex.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\pbo.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\plugin_impl.cpp"
+				RelativePath="..\..\apps\tests\testcull\testcull.cpp"
 				>
 			</File>
 		</Filter>
@@ -2148,61 +2089,17 @@
 			Name="Header Files"
 			>
 			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_backend.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_ext_fb_o.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_framebuf.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_render3d.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_renderbuffer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_stringlists.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_basictex.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl_txtmgr_imagetex.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\pbo.h"
+				RelativePath="..\..\apps\tests\testcull\testcull.h"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			>
-			<File
-				RelativePath="..\..\mk\msvc\plggl3d.rc"
-				>
-			</File>
 		</Filter>
 		<Filter
-			Name="Other Files"
+			Name="Manifest Files"
 			>
-			<File
-				RelativePath="..\..\plugins\video\render3d\opengl\gl3d.csplugin"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

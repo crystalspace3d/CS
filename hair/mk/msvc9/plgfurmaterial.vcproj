@@ -1534,12 +1534,24 @@
 			<File
 				RelativePath="..\..\plugins\material\furmaterial\furmaterial.cpp">
 			</File>
+			<File
+				RelativePath="..\..\plugins\material\furmaterial\hairphysicscontrol.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\material\furmaterial\hairstrandgenerator.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
 				RelativePath="..\..\plugins\material\furmaterial\furmaterial.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\material\furmaterial\hairphysicscontrol.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\material\furmaterial\hairstrandgenerator.h">
 			</File>
 		</Filter>
 		<Filter

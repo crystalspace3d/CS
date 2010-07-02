@@ -31,8 +31,16 @@ static char const metainfo_furmaterial[] =
 "      </class>"
 "      <class>"
 "        <name>crystalspace.physics.furphysics</name>"
-"        <implementation>FurPhysicsControl</implementation>"
+"        <implementation>HairPhysicsControl</implementation>"
 "        <description>Fur Material Type Plugin</description>"
+"        <requires>"
+"          <class>crystalspace.graphics3d.</class>"
+"        </requires>"
+"      </class>"
+"      <class>"
+"        <name>crystalspace.material.furstrandmaterial</name>"
+"        <implementation>HairStrandGenerator</implementation>"
+"        <description>Fur Strand MaterialPlugin</description>"
 "        <requires>"
 "          <class>crystalspace.graphics3d.</class>"
 "        </requires>"
@@ -45,9 +53,13 @@ static char const metainfo_furmaterial[] =
   #define FurMaterialType_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(FurMaterialType) 
   #endif
-  #ifndef FurPhysicsControl_FACTORY_REGISTER_DEFINED 
-  #define FurPhysicsControl_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(FurPhysicsControl) 
+  #ifndef HairPhysicsControl_FACTORY_REGISTER_DEFINED 
+  #define HairPhysicsControl_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(HairPhysicsControl) 
+  #endif
+  #ifndef HairStrandGenerator_FACTORY_REGISTER_DEFINED 
+  #define HairStrandGenerator_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(HairStrandGenerator) 
   #endif
 
 class furmaterial
@@ -57,9 +69,13 @@ SCF_REGISTER_STATIC_LIBRARY(furmaterial,metainfo_furmaterial)
   #define FurMaterialType_FACTORY_REGISTERED 
     FurMaterialType_StaticInit FurMaterialType_static_init__; 
   #endif
-  #ifndef FurPhysicsControl_FACTORY_REGISTERED 
-  #define FurPhysicsControl_FACTORY_REGISTERED 
-    FurPhysicsControl_StaticInit FurPhysicsControl_static_init__; 
+  #ifndef HairPhysicsControl_FACTORY_REGISTERED 
+  #define HairPhysicsControl_FACTORY_REGISTERED 
+    HairPhysicsControl_StaticInit HairPhysicsControl_static_init__; 
+  #endif
+  #ifndef HairStrandGenerator_FACTORY_REGISTERED 
+  #define HairStrandGenerator_FACTORY_REGISTERED 
+    HairStrandGenerator_StaticInit HairStrandGenerator_static_init__; 
   #endif
 public:
  furmaterial();

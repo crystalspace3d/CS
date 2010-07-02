@@ -1352,6 +1352,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\gui\cegui\ceguitexturetarget.cpp" />
     <ClCompile Include="..\..\plugins\gui\cegui\ceguiwindowtarget.cpp" />
     <ClCompile Include="..\..\plugins\material\furmaterial\furmaterial.cpp" />
+    <ClCompile Include="..\..\plugins\material\furmaterial\hairphysicscontrol.cpp" />
+    <ClCompile Include="..\..\plugins\material\furmaterial\hairstrandgenerator.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\body\bodymesh.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\controllers\basic\basic.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\controllers\lookat\lookat.cpp" />
@@ -1884,6 +1886,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\gui\cegui\ceguitexturetarget.h" />
     <ClInclude Include="..\..\plugins\gui\cegui\ceguiwindowtarget.h" />
     <ClInclude Include="..\..\plugins\material\furmaterial\furmaterial.h" />
+    <ClInclude Include="..\..\plugins\material\furmaterial\hairphysicscontrol.h" />
+    <ClInclude Include="..\..\plugins\material\furmaterial\hairstrandgenerator.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\body\bodymesh.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\controllers\basic\basic.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\controllers\lookat\lookat.h" />

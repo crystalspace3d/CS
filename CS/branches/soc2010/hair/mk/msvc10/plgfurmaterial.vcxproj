@@ -1182,9 +1182,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
   <ItemGroup>
     <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
     <ClCompile Include="..\..\plugins\material\furmaterial\furmaterial.cpp" />
+    <ClCompile Include="..\..\plugins\material\furmaterial\hairphysicscontrol.cpp" />
+    <ClCompile Include="..\..\plugins\material\furmaterial\hairstrandgenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\plugins\material\furmaterial\furmaterial.h" />
+    <ClInclude Include="..\..\plugins\material\furmaterial\hairphysicscontrol.h" />
+    <ClInclude Include="..\..\plugins\material\furmaterial\hairstrandgenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\plgfurmaterial.rc" />

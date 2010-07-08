@@ -2429,7 +2429,16 @@
 				RelativePath="..\..\plugins\physics\bullet\bullet.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\physics\bullet\colliders.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics\bullet\common.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics\bullet\joints.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics\bullet\rigidbodies.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\softbodies.cpp">
@@ -2712,6 +2721,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\null\null_txt.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\opengl\buffershadowing.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_backend.cpp">
@@ -4314,10 +4326,16 @@
 				RelativePath="..\..\plugins\physics\bullet\bullet.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\physics\bullet\colliders.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics\bullet\common.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\joints.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics\bullet\rigidbodies.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\softbodies.h">
@@ -4681,6 +4699,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\null\null_txt.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\opengl\buffershadowing.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_backend.h">

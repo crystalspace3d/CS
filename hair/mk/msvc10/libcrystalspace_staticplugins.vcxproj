@@ -1426,7 +1426,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.cpp" />
     <ClCompile Include="..\..\plugins\misc\pathloader\pathloader.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\bullet.cpp" />
+    <ClCompile Include="..\..\plugins\physics\bullet\colliders.cpp" />
+    <ClCompile Include="..\..\plugins\physics\bullet\common.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\joints.cpp" />
+    <ClCompile Include="..\..\plugins\physics\bullet\rigidbodies.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\softbodies.cpp" />
     <ClCompile Include="..\..\plugins\physics\dyndebug\dyndebug.cpp" />
     <ClCompile Include="..\..\plugins\physics\loader\physldr.cpp" />
@@ -1521,6 +1524,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\video\render3d\null\null_pix.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\null\null_render3d.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\null\null_txt.cpp" />
+    <ClCompile Include="..\..\plugins\video\render3d\opengl\buffershadowing.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\opengl\gl_r2t_backend.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\opengl\gl_r2t_ext_fb_o.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\opengl\gl_r2t_framebuf.cpp" />
@@ -1957,8 +1961,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.h" />
     <ClInclude Include="..\..\plugins\misc\pathloader\pathloader.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\bullet.h" />
+    <ClInclude Include="..\..\plugins\physics\bullet\colliders.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\common.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\joints.h" />
+    <ClInclude Include="..\..\plugins\physics\bullet\rigidbodies.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\softbodies.h" />
     <ClInclude Include="..\..\plugins\physics\dyndebug\dyndebug.h" />
     <ClInclude Include="..\..\plugins\physics\loader\physldr.h" />
@@ -2080,6 +2086,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\video\loader\tga\tgaimage.h" />
     <ClInclude Include="..\..\plugins\video\render3d\null\null_render3d.h" />
     <ClInclude Include="..\..\plugins\video\render3d\null\null_txt.h" />
+    <ClInclude Include="..\..\plugins\video\render3d\opengl\buffershadowing.h" />
     <ClInclude Include="..\..\plugins\video\render3d\opengl\gl_r2t_backend.h" />
     <ClInclude Include="..\..\plugins\video\render3d\opengl\gl_r2t_ext_fb_o.h" />
     <ClInclude Include="..\..\plugins\video\render3d\opengl\gl_r2t_framebuf.h" />

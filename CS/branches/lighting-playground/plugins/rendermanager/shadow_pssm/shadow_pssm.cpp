@@ -173,11 +173,8 @@ public:
       lightPersistent, rmanager->lightManager,
       context.svArrays, layerConfig, shadowViewSetup);
 
-    ForEachMeshNode (context, lightSetup);
-
-    // Setup shaders and tickets
-    SetupStandardTicket (context, shaderManager,
-      lightSetup.GetPostLightingLayers());
+    // Shaders and tickets are set up by light setup as well
+    SetupLightAndTickets (context, lightSetup, shaderManager);
   
   
     RMShadowedPSSM::AutoFramebufferTexType fxFB (

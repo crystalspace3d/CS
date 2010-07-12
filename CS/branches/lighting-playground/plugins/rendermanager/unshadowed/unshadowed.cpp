@@ -129,13 +129,10 @@ public:
     RMUnshadowed::LightSetupType lightSetup (
       rmanager->lightPersistent, rmanager->lightManager,
       context.svArrays, layerConfig, shadowParam);
+    
+    // Shaders and tickets are set up by light setup as well
+    SetupLightAndTickets (context, lightSetup, shaderManager);
 
-    ForEachMeshNode (context, lightSetup);
-
-    // Setup shaders and tickets
-    SetupStandardTicket (context, shaderManager,
-      lightSetup.GetPostLightingLayers());
-  
     {
       ThisType ctxRefl (*this,
         rmanager->renderLayerReflect);

@@ -381,13 +381,14 @@ namespace RenderManager
    * Usage: together with iteration over each mesh node.
    * Must be done after shader and shader SV (usually SetupStandardShader())
    * and before ticket setup.
-   * Example:
+   *
+   * Example for typical use:
    * \code
    * RenderManager::LightSetupType::ShadowParamType shadowParam;
    * RenderManager::LightSetupType lightSetup (
    *   rmanager->lightPersistent, rmanager->lightManager,
    *   context.svArrays, layerConfig, shadowParam);
-   * ForEachMeshNode (context, lightSetup);
+   * SetupLightingAndTickets (context, lightSetup, shaderManager);
    * \endcode
    *
    * The template parameter \a RenderTree gives the render tree type.
@@ -1040,6 +1041,19 @@ namespace RenderManager
     ShadowParamType& shadowParam;
   };
 
+  /**
+   * Perform light setup and shader ticket setup.
+   */
+  template<typename ContextNode, typename LightSetup>
+  void SetupLightAndTickets (ContextNode& context, LightSetup& lightSetup, iShaderManager* shaderManager)
+  {
+    ForEachMeshNode (context, lightSetup);
+
+    // Setup shaders and tickets
+    SetupStandardTicket (context, shaderManager,
+      lightSetup.GetPostLightingLayers());
+  }
+  
 }
 }
 

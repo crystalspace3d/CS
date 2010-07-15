@@ -12,7 +12,7 @@
     </shader>
     <shader>
       <file>/shader/character/character2.xml</file>
-    </shader>
+    </shader>   
   </shaders>
 	
   <textures>
@@ -41,6 +41,7 @@
     
     <material name='kwartz-ice'>
           <texture>kwarz_ice.png</texture>
+          <shader type='depthwrite'>*null</shader>
           <shader type='diffuse'>character_bump2</shader>
           <shader type='ambient'>character2</shader>
           <shadervar type='texture' name='tex normal'>BUMPkwarz_normals.jpg</shadervar>

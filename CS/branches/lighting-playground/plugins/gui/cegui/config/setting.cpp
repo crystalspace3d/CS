@@ -18,6 +18,9 @@
 
 #include "setting.h"
 
+#include <iostream>
+#include <sstream>
+
 #include "CEGUIPropertyHelper.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(cegui)
@@ -65,6 +68,26 @@ CS_PLUGIN_NAMESPACE_BEGIN(cegui)
         settingType = Undefined;
     }
 
+    std::string Setting::GetValueType()
+    {
+      if (settingType == Bool)
+        return "bool";
+      else if (settingType == Int)
+        return "int";
+      else if (settingType == Float)
+        return "float";
+      else if (settingType == String)
+        return "string";
+      else
+        return "ERROR";
+    }
+
+    bool Setting::IsDefault()
+    {
+      csRef<iConfigManager> app_cfg = csQueryRegistry<iConfigManager> (obj_reg); 
+      return !app_cfg->KeyExists(name.c_str());
+    }
+
     //--[Generic]---------------------------
     void Setting::SetFromString(const CEGUI::String& value)
     {
@@ -92,6 +115,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(cegui)
         break;
       }
     }
+
+    template<typename T>
+    void Setting::SetFromOther(const T& value)
+    {
+      std::stringstream str;
+      str << value;
+      SetFromString(str.str().c_str());
+    }
+    
+    template void Setting::SetFromOther(const bool& value);
+    template void Setting::SetFromOther(const int& value);
+    template void Setting::SetFromOther(const float& value);
 
     //--[Bool]------------------------------
     template<>
@@ -151,6 +186,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(cegui)
 
     template<>
     void Setting::Set<CEGUI::String>(const CEGUI::String& value)
+    {
+      csRef<iConfigManager> app_cfg = csQueryRegistry<iConfigManager> (obj_reg); 
+      app_cfg->SetStr(name.c_str(), value.c_str());
+      app_cfg->Save();
+    }
+
+    //--[string]------------------------------
+    template<>
+    void Setting::Get<std::string>(std::string& value)
+    {
+      csRef<iConfigManager> app_cfg = csQueryRegistry<iConfigManager> (obj_reg); 
+      value = app_cfg->GetStr(name.c_str(), "");
+    }
+
+    template<>
+    void Setting::Set<std::string>(const std::string& value)
     {
       csRef<iConfigManager> app_cfg = csQueryRegistry<iConfigManager> (obj_reg); 
       app_cfg->SetStr(name.c_str(), value.c_str());

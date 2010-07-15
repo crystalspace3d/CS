@@ -27,6 +27,8 @@
 
 #include "ivaria/icegui.h"
 
+#include "csutil/cfgnotifier.h"
+
 struct iSector;
 
 class CSCEGUIConfTest : public csDemoApplication
@@ -41,6 +43,12 @@ private:
   float rotX, rotY;
   csRef<iVFS> vfs;
   csRef<iCEGUI> cegui;
+  csRef<iConfigListener> configEventNotifier;
+
+  csRef<iEventHandler> myBoolL;
+  csRef<iEventHandler> myIntL;
+  csRef<iEventHandler> myFloatL;
+  csRef<iEventHandler> myStringL;
 
   void Frame();
 
@@ -52,7 +60,7 @@ public:
   ~CSCEGUIConfTest();
 
   // Handle exit button clicked event
-  bool OnExitButtonClicked (const CEGUI::EventArgs& e);
+  bool OnListSelection (const CEGUI::EventArgs& e);
 
   bool OnInitialize(int argc, char* argv[]);
 

@@ -2463,6 +2463,9 @@
 				RelativePath="..\..\plugins\proctex\tlfunc\tlfunc.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\culler\chcpp.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\culler\rm_culler.cpp">
 			</File>
 			<File
@@ -4514,6 +4517,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\culler\chcpp.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\culler\rm_culler.h">

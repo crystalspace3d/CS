@@ -55,9 +55,10 @@
 				ProgramDatabaseFile="..\..\out\release9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -131,9 +132,10 @@
 				ProgramDatabaseFile="..\..\out\release9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -204,9 +206,10 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -277,9 +280,10 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -350,9 +354,10 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -423,9 +428,10 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -496,9 +502,10 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -569,9 +576,10 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -642,9 +650,10 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -715,9 +724,10 @@
 				ProgramDatabaseFile="..\..\out\debug9\build\appcsdemo\Win32\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -791,9 +801,10 @@
 				ProgramDatabaseFile="..\..\out\release9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -867,9 +878,10 @@
 				ProgramDatabaseFile="..\..\out\release9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -940,9 +952,10 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1013,9 +1026,10 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1086,9 +1100,10 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1159,9 +1174,10 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1232,9 +1248,10 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1305,9 +1322,10 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1378,9 +1396,10 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1451,9 +1470,10 @@
 				ProgramDatabaseFile="..\..\out\debug9-x64\build\appcsdemo\x64\csdemo.pdb"
 				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1492,13 +1512,16 @@
 				RelativePath="..\..\apps\demo\demo.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\demo\demoldr.cpp">
+				RelativePath="..\..\apps\demo\entity.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\demo\demoop.cpp">
+				RelativePath="..\..\apps\demo\monster.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\demo\demoseq.cpp">
+				RelativePath="..\..\apps\demo\player.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\demo\weapon.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -1508,13 +1531,16 @@
 				RelativePath="..\..\apps\demo\demo.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\demo\demoldr.h">
+				RelativePath="..\..\apps\demo\entity.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\demo\demoop.h">
+				RelativePath="..\..\apps\demo\monster.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\demo\demoseq.h">
+				RelativePath="..\..\apps\demo\player.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\demo\weapon.h">
 			</File>
 		</Filter>
 		<Filter

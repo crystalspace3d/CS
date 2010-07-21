@@ -56,9 +56,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8.lib bulletdynamics-vc8.lib bulletmath-vc8.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8.lib bulletcollision-vc8.lib bulletdynamics-vc8.lib bulletmath-vc8.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -133,9 +134,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8.lib bulletdynamics-vc8.lib bulletmath-vc8.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8.lib bulletcollision-vc8.lib bulletdynamics-vc8.lib bulletmath-vc8.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -207,9 +209,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -281,9 +284,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -355,9 +359,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -429,9 +434,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -503,9 +509,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -577,9 +584,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -651,9 +659,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -725,9 +734,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8\build\plgragdoll\Win32\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -802,9 +812,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8.lib bulletdynamics-vc8.lib bulletmath-vc8.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8.lib bulletcollision-vc8.lib bulletdynamics-vc8.lib bulletmath-vc8.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -879,9 +890,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\release8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8.lib bulletdynamics-vc8.lib bulletmath-vc8.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8.lib bulletcollision-vc8.lib bulletdynamics-vc8.lib bulletmath-vc8.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -953,9 +965,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1027,9 +1040,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1101,9 +1115,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1175,9 +1190,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1249,9 +1265,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1323,9 +1340,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1397,9 +1415,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
@@ -1471,9 +1490,10 @@
 				DelayLoadDLLs=""
 				ImportLibrary="..\..\out\debug8-x64\build\plgragdoll\x64\plgragdoll.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc8_d.lib bulletcollision-vc8_d.lib bulletdynamics-vc8_d.lib bulletmath-vc8_d.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"

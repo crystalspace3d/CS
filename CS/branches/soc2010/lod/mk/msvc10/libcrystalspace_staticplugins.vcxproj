@@ -251,6 +251,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\release10\libs\libcrystalspace_staticplugins.lib</OutputFile>
@@ -297,6 +298,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\release10\libs\libcrystalspace_staticplugins.lib</OutputFile>
@@ -339,6 +341,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -381,6 +384,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -423,6 +427,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -465,6 +470,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -507,6 +513,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -549,6 +556,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -591,6 +599,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -633,6 +642,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -679,6 +689,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\release10-x64\libs\libcrystalspace_staticplugins.lib</OutputFile>
@@ -725,6 +736,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\release10-x64\libs\libcrystalspace_staticplugins.lib</OutputFile>
@@ -767,6 +779,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -809,6 +822,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -851,6 +865,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -893,6 +908,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -935,6 +951,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -977,6 +994,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -1019,6 +1037,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -1061,6 +1080,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Lib>
       <OutputFile>..\..\out\debug10-x64\libs\libcrystalspace_staticplugins_d.lib</OutputFile>
@@ -1182,6 +1202,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\libsndsysspeex_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libsndsyswav_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libsndsyswin_staticreg.cpp" />
+    <ClCompile Include="..\..\mk\msvc\libsoftanim_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libspr2d_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libspr2dldr_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libspr3d_staticreg.cpp" />
@@ -1329,6 +1350,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\gui\cegui\ceguitexture.cpp" />
     <ClCompile Include="..\..\plugins\gui\cegui\ceguitexturetarget.cpp" />
     <ClCompile Include="..\..\plugins\gui\cegui\ceguiwindowtarget.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\setting.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\settingbase.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\settingcombobox.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\settingproperties.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\settingslider.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\body\bodymesh.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\controllers\basic\basic.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\controllers\lookat\lookat.cpp" />
@@ -1390,6 +1416,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\factory.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\feederhelper.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\meshobjecttype.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\modifiabledatafeeder.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\simpledatafeeder.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\terraformerdatafeeder.cpp" />
     <ClCompile Include="..\..\plugins\mesh\terrain\terrain2\terrain.cpp" />
@@ -1400,10 +1427,15 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.cpp" />
     <ClCompile Include="..\..\plugins\misc\pathloader\pathloader.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\bullet.cpp" />
+    <ClCompile Include="..\..\plugins\physics\bullet\colliders.cpp" />
+    <ClCompile Include="..\..\plugins\physics\bullet\common.cpp" />
+    <ClCompile Include="..\..\plugins\physics\bullet\joints.cpp" />
+    <ClCompile Include="..\..\plugins\physics\bullet\rigidbodies.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\softbodies.cpp" />
     <ClCompile Include="..\..\plugins\physics\dyndebug\dyndebug.cpp" />
     <ClCompile Include="..\..\plugins\physics\loader\physldr.cpp" />
     <ClCompile Include="..\..\plugins\physics\odedynam\odedynam.cpp" />
+    <ClCompile Include="..\..\plugins\physics\softanim\softanim.cpp" />
     <ClCompile Include="..\..\plugins\proctex\ptanimimg\ptanimimg.cpp" />
     <ClCompile Include="..\..\plugins\proctex\ptpdlight\ptpdlight.cpp" />
     <ClCompile Include="..\..\plugins\proctex\ptpdlight\ptpdlight_generic.cpp" />
@@ -1493,6 +1525,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\video\render3d\null\null_pix.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\null\null_render3d.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\null\null_txt.cpp" />
+    <ClCompile Include="..\..\plugins\video\render3d\opengl\buffershadowing.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\opengl\gl_r2t_backend.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\opengl\gl_r2t_ext_fb_o.cpp" />
     <ClCompile Include="..\..\plugins\video\render3d\opengl\gl_r2t_framebuf.cpp" />
@@ -1857,6 +1890,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\gui\cegui\ceguitexture.h" />
     <ClInclude Include="..\..\plugins\gui\cegui\ceguitexturetarget.h" />
     <ClInclude Include="..\..\plugins\gui\cegui\ceguiwindowtarget.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\setting.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\settingbase.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\settingcombobox.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\settingproperties.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\settingslider.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\windowfactory.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\body\bodymesh.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\controllers\basic\basic.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\controllers\lookat\lookat.h" />
@@ -1916,6 +1955,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\factory.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\feederhelper.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\meshobjecttype.h" />
+    <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\modifiabledatafeeder.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\simpledatafeeder.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\terraformerdatafeeder.h" />
     <ClInclude Include="..\..\plugins\mesh\terrain\terrain2\terrainsystem.h" />
@@ -1925,11 +1965,15 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.h" />
     <ClInclude Include="..\..\plugins\misc\pathloader\pathloader.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\bullet.h" />
+    <ClInclude Include="..\..\plugins\physics\bullet\colliders.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\common.h" />
+    <ClInclude Include="..\..\plugins\physics\bullet\joints.h" />
+    <ClInclude Include="..\..\plugins\physics\bullet\rigidbodies.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\softbodies.h" />
     <ClInclude Include="..\..\plugins\physics\dyndebug\dyndebug.h" />
     <ClInclude Include="..\..\plugins\physics\loader\physldr.h" />
     <ClInclude Include="..\..\plugins\physics\odedynam\odedynam.h" />
+    <ClInclude Include="..\..\plugins\physics\softanim\softanim.h" />
     <ClInclude Include="..\..\plugins\proctex\ptanimimg\ptanimimg.h" />
     <ClInclude Include="..\..\plugins\proctex\ptpdlight\ptpdlight.h" />
     <ClInclude Include="..\..\plugins\proctex\ptpdlight\ptpdlight_loader.h" />
@@ -1957,6 +2001,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\operations.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\render.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />
@@ -2046,6 +2091,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\video\loader\tga\tgaimage.h" />
     <ClInclude Include="..\..\plugins\video\render3d\null\null_render3d.h" />
     <ClInclude Include="..\..\plugins\video\render3d\null\null_txt.h" />
+    <ClInclude Include="..\..\plugins\video\render3d\opengl\buffershadowing.h" />
     <ClInclude Include="..\..\plugins\video\render3d\opengl\gl_r2t_backend.h" />
     <ClInclude Include="..\..\plugins\video\render3d\opengl\gl_r2t_ext_fb_o.h" />
     <ClInclude Include="..\..\plugins\video\render3d\opengl\gl_r2t_framebuf.h" />
@@ -2126,6 +2172,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\operations.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />
@@ -2152,6 +2199,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\operations.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\render.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />

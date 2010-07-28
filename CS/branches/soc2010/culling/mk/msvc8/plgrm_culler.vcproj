@@ -1,1626 +1,2265 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="plgrm_culler"
 	ProjectGUID="{29C7D8F4-EF54-056D-CF59-37CBE538D96B}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
-  		<Platform Name="Win32"/>
-    		<Platform Name="x64"/>
-  	</Platforms>
+		<Platform
+			Name="Win32"
+		/>
+		<Platform
+			Name="x64"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
-            		<Configuration
+		<Configuration
 			Name="Release (with static libs)|Win32"
 			OutputDirectory="..\..\out\release8\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\release8\build\plgrm_culler\"
 			ConfigurationType="2"
-			WholeProgramOptimization="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			WholeProgramOptimization="1"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\release8\build\plgrm_culler\"
-				ObjectFile="..\..\out\release8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\release8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\release8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="2"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				PrecompiledHeaderFile="..\..\out\release8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\release8\build\plgrm_culler\"
+				ObjectFile="..\..\out\release8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\release8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\release8\build\plgrm_culler\Win32\rm_culler.pdb"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="..\..\out\release8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\release8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-      		<Configuration
+		<Configuration
+			Name="Release (with static libs)|x64"
+			OutputDirectory="..\..\out\release8-x64\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\release8-x64\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\release8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="2"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				PrecompiledHeaderFile="..\..\out\release8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\release8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\release8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\release8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\release8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="..\..\out\release8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\release8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8-x64\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Release (with DLLs)|Win32"
 			OutputDirectory="..\..\out\release8\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\release8\build\plgrm_culler\"
 			ConfigurationType="2"
-			WholeProgramOptimization="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			WholeProgramOptimization="1"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\release8\build\plgrm_culler\"
-				ObjectFile="..\..\out\release8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\release8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\release8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="2"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				PrecompiledHeaderFile="..\..\out\release8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\release8\build\plgrm_culler\"
+				ObjectFile="..\..\out\release8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\release8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\release8\build\plgrm_culler\Win32\rm_culler.pdb"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="..\..\out\release8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\release8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-                		<Configuration
+		<Configuration
+			Name="Release (with DLLs)|x64"
+			OutputDirectory="..\..\out\release8-x64\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\release8-x64\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\release8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="2"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				PrecompiledHeaderFile="..\..\out\release8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\release8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\release8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\release8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\release8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="..\..\out\release8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\release8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8-x64\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Debug (with static libs)|Win32"
 			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
 				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
 				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
 				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
 				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
 				DebugInformationFormat="4"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="Debug (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"/>
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
+			/>
 		</Configuration>
-                		<Configuration
-			Name="MemoryTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="MemoryTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                		<Configuration
-			Name="RefTracker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="RefTracker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                		<Configuration
-			Name="ThreadChecker (with static libs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="ThreadChecker (with DLLs)|Win32"
-			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                        		<Configuration
-			Name="Release (with static libs)|x64"
-			OutputDirectory="..\..\out\release8-x64\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\release8-x64\build\plgrm_culler\"
-			ConfigurationType="2"
-			WholeProgramOptimization="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\release8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\release8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\release8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-      		<Configuration
-			Name="Release (with DLLs)|x64"
-			OutputDirectory="..\..\out\release8-x64\build\plgrm_culler\"
-			IntermediateDirectory="..\..\out\release8-x64\build\plgrm_culler\"
-			ConfigurationType="2"
-			WholeProgramOptimization="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				StringPooling="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\release8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\release8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\release8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
-			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8-x64\bin\&#x0D;&#x0A;"
-				/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
-				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-                		<Configuration
+		<Configuration
 			Name="Debug (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-      		<Configuration
+		<Configuration
+			Name="Debug (with DLLs)|Win32"
+			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Debug (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-                		<Configuration
+		<Configuration
+			Name="MemoryTracker (with static libs)|Win32"
+			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="MemoryTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-      		<Configuration
+		<Configuration
+			Name="MemoryTracker (with DLLs)|Win32"
+			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="MemoryTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-                		<Configuration
+		<Configuration
+			Name="RefTracker (with static libs)|Win32"
+			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="RefTracker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-      		<Configuration
+		<Configuration
+			Name="RefTracker (with DLLs)|Win32"
+			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="RefTracker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-                		<Configuration
+		<Configuration
+			Name="ThreadChecker (with static libs)|Win32"
+			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="ThreadChecker (with static libs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-      		<Configuration
+		<Configuration
+			Name="ThreadChecker (with DLLs)|Win32"
+			OutputDirectory="..\..\out\debug8\build\plgrm_culler\"
+			IntermediateDirectory="..\..\out\debug8\build\plgrm_culler\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName="..\..\out\debug8\build\plgrm_culler\plgrm_culler.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
+				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgrm_culler\Win32\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8\build\plgrm_culler\Win32\plgrm_culler.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
 			Name="ThreadChecker (with DLLs)|x64"
 			OutputDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			IntermediateDirectory="..\..\out\debug8-x64\build\plgrm_culler\"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				MinimalRebuild="TRUE"
-				RuntimeTypeInfo="TRUE"
-				RuntimeLibrary="3"
-
-				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
-				OptimizeForProcessor="1"
-				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
-				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
-				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
-				TreatWChar_tAsBuiltInType="false"
-				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
-				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rm_culler.dll"
-				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
-				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
-				TargetMachine="17"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.tlb"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
-				/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" "
+				Optimization="0"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				MinimalRebuild="true"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgrm_culler\plgrm_culler.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgrm_culler\"
+				ObjectFile="..\..\out\debug8-x64\build\plgrm_culler\"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				Culture="1033"
 				AdditionalIncludeDirectories=".;..\..\plugins\rendermanager\culler;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				Culture="1033"/>
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalOptions=" "
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\rm_culler.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgrm_culler\x64\rm_culler.pdb"
+				ImportLibrary="..\..\out\debug8-x64\build\plgrm_culler\x64\plgrm_culler.lib"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
+			/>
 		</Configuration>
-            	</Configurations>
+	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="">
+			>
 			<File
-				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
+				RelativePath="..\..\plugins\rendermanager\culler\chcpp.cpp"
+				>
 			</File>
 			<File
+<<<<<<< .mine
+				RelativePath="..\..\plugins\rendermanager\culler\frustvis.cpp"
+				>
+=======
 				RelativePath="..\..\plugins\rendermanager\culler\chcpp.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\culler\frustvis.cpp">
+>>>>>>> .r34609
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\rm_culler.cpp">
+				RelativePath="..\..\mk\msvc\plugin_impl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\culler\rm_culler.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="">
+			>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\debugcommon.h">
+				RelativePath="..\..\plugins\rendermanager\culler\chcpp.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\debugcommon.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h">
+				RelativePath="..\..\plugins\rendermanager\culler\frustvis.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\lightsetup.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\operations.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\portalsetup.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\lightsetup.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\operations.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\render.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\portalsetup.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\renderlayers.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\posteffects.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\rendertree.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\render.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\renderview.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\renderlayers.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\shadersetup.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\rendertree.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\shadow_common.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\renderview.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h">
+				RelativePath="..\..\plugins\rendermanager\culler\rm_culler.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\standardsorter.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\shadersetup.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\shadow_common.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\svsetup.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\standardsorter.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\svtraverse.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\texturecache.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\viscull.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\svsetup.h"
+				>
 			</File>
 			<File
+<<<<<<< .mine
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\svtraverse.h"
+				>
+=======
 				RelativePath="..\..\plugins\rendermanager\culler\chcpp.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\culler\frustvis.h">
+>>>>>>> .r34609
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\rm_culler.h">
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\texturecache.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\viscull.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="">
+			>
 			<File
-				RelativePath="..\..\mk\msvc\plgrm_culler.rc">
+				RelativePath="..\..\mk\msvc\plgrm_culler.rc"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Other Files"
-			Filter="">
+			>
 			<File
-				RelativePath="..\..\plugins\rendermanager\culler\rm_culler.csplugin">
+				RelativePath="..\..\plugins\rendermanager\culler\rm_culler.csplugin"
+				>
 			</File>
 		</Filter>
 	</Files>

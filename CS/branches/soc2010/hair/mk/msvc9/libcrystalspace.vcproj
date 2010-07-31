@@ -1682,9 +1682,6 @@
 				RelativePath="..\..\libs\csplugincommon\rendermanager\posteffects.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csplugincommon\rendermanager\posteffectssupport.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\renderlayers.cpp">
 			</File>
 			<File
@@ -1875,9 +1872,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\cfgmgr.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csutil\cfgnotifier.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\checksum.cpp">
@@ -2490,9 +2484,6 @@
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\posteffects.h">
 			</File>
 			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\posteffectssupport.h">
-			</File>
-			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\render.h">
 			</File>
 			<File
@@ -2755,9 +2746,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\cfgmgr.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csutil\cfgnotifier.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\checksum.h">

@@ -1137,7 +1137,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\libfontplex_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libfreefnt2_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libfrustvis_staticreg.cpp" />
-    <ClCompile Include="..\..\mk\msvc\libfurmaterial_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libgenmesh_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libgl3d_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libglshader_arb_staticreg.cpp" />
@@ -1351,9 +1350,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\gui\cegui\ceguitexture.cpp" />
     <ClCompile Include="..\..\plugins\gui\cegui\ceguitexturetarget.cpp" />
     <ClCompile Include="..\..\plugins\gui\cegui\ceguiwindowtarget.cpp" />
-    <ClCompile Include="..\..\plugins\material\furmaterial\furmaterial.cpp" />
-    <ClCompile Include="..\..\plugins\material\furmaterial\hairphysicscontrol.cpp" />
-    <ClCompile Include="..\..\plugins\material\furmaterial\hairstrandgenerator.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\setting.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\settingbase.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\settingcombobox.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\settingproperties.cpp" />
+    <ClCompile Include="..\..\plugins\gui\cegui\config\settingslider.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\body\bodymesh.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\controllers\basic\basic.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\controllers\lookat\lookat.cpp" />
@@ -1889,9 +1890,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\gui\cegui\ceguitexture.h" />
     <ClInclude Include="..\..\plugins\gui\cegui\ceguitexturetarget.h" />
     <ClInclude Include="..\..\plugins\gui\cegui\ceguiwindowtarget.h" />
-    <ClInclude Include="..\..\plugins\material\furmaterial\furmaterial.h" />
-    <ClInclude Include="..\..\plugins\material\furmaterial\hairphysicscontrol.h" />
-    <ClInclude Include="..\..\plugins\material\furmaterial\hairstrandgenerator.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\setting.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\settingbase.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\settingcombobox.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\settingproperties.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\config\settingslider.h" />
+    <ClInclude Include="..\..\plugins\gui\cegui\windowfactory.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\body\bodymesh.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\controllers\basic\basic.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\controllers\lookat\lookat.h" />
@@ -1997,6 +2001,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\operations.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\render.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />
@@ -2167,6 +2172,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\operations.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />
@@ -2193,6 +2199,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\operations.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\render.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />

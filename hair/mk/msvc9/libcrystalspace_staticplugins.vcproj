@@ -1562,6 +1562,9 @@
 				RelativePath="..\..\mk\msvc\libfrustvis_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libfurmaterial_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libgenmesh_staticreg.cpp">
 			</File>
 			<File
@@ -2201,19 +2204,13 @@
 				RelativePath="..\..\plugins\gui\cegui\ceguiwindowtarget.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\gui\cegui\config\setting.cpp">
+				RelativePath="..\..\plugins\material\furmaterial\furmaterial.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\gui\cegui\config\settingbase.cpp">
+				RelativePath="..\..\plugins\material\furmaterial\hairphysicscontrol.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\gui\cegui\config\settingcombobox.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\cegui\config\settingproperties.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\cegui\config\settingslider.cpp">
+				RelativePath="..\..\plugins\material\furmaterial\hairstrandgenerator.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.cpp">
@@ -4113,22 +4110,13 @@
 				RelativePath="..\..\plugins\gui\cegui\ceguiwindowtarget.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\gui\cegui\config\setting.h">
+				RelativePath="..\..\plugins\material\furmaterial\furmaterial.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\gui\cegui\config\settingbase.h">
+				RelativePath="..\..\plugins\material\furmaterial\hairphysicscontrol.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\gui\cegui\config\settingcombobox.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\cegui\config\settingproperties.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\cegui\config\settingslider.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\gui\cegui\windowfactory.h">
+				RelativePath="..\..\plugins\material\furmaterial\hairstrandgenerator.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.h">
@@ -4444,9 +4432,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\render.h">
@@ -4959,9 +4944,6 @@
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h">
 			</File>
 			<File
@@ -5038,9 +5020,6 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\render.h">

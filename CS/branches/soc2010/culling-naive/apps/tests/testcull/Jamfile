@@ -1,0 +1,5 @@
+SubDir TOP apps tests testcull ;
+
+Description testcull : "Occlusion culling test application" ;
+Application testcull : [ Wildcard *.cpp *.h ] : noinstall ;
+LinkWith testcull : crystalspace ;

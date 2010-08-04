@@ -1209,6 +1209,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\svtraverse.h" />
     <ClInclude Include="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\texturecache.h" />
     <ClInclude Include="..\..\plugins\rendermanager\culler\..\..\..\include\csplugincommon\rendermanager\viscull.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\culler\aabbtree.h" />
     <ClInclude Include="..\..\plugins\rendermanager\culler\chcpp.h" />
     <ClInclude Include="..\..\plugins\rendermanager\culler\frustvis.h" />
     <ClInclude Include="..\..\plugins\rendermanager\culler\rm_culler.h" />

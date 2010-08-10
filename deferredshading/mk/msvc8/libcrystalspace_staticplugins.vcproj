@@ -1811,6 +1811,9 @@
 				RelativePath="..\..\mk\msvc\libvfs_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libvisualdebug_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libvproc_std_staticreg.cpp">
 			</File>
 			<File
@@ -2204,6 +2207,21 @@
 				RelativePath="..\..\plugins\gui\cegui\ceguiwindowtarget.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\gui\cegui\config\setting.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\config\settingbase.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\config\settingcombobox.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\config\settingproperties.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\config\settingslider.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.cpp">
 			</File>
 			<File
@@ -2420,7 +2438,16 @@
 				RelativePath="..\..\plugins\physics\bullet\bullet.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\physics\bullet\colliders.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics\bullet\common.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics\bullet\joints.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics\bullet\rigidbodies.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\softbodies.cpp">
@@ -2615,6 +2642,9 @@
 				RelativePath="..\..\plugins\utilities\profiler\profiler.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\utilities\visualdebug\visualdebug.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\canvas\embedgl\embedgl2d.cpp">
 			</File>
 			<File
@@ -2706,6 +2736,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\null\null_txt.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\opengl\buffershadowing.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_backend.cpp">
@@ -4092,6 +4125,24 @@
 				RelativePath="..\..\plugins\gui\cegui\ceguiwindowtarget.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\gui\cegui\config\setting.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\config\settingbase.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\config\settingcombobox.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\config\settingproperties.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\config\settingslider.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\gui\cegui\windowfactory.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.h">
 			</File>
 			<File
@@ -4299,10 +4350,16 @@
 				RelativePath="..\..\plugins\physics\bullet\bullet.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\physics\bullet\colliders.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics\bullet\common.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\joints.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics\bullet\rigidbodies.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics\bullet\softbodies.h">
@@ -4405,6 +4462,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\render.h">
@@ -4578,6 +4638,9 @@
 				RelativePath="..\..\plugins\utilities\profiler\profiler.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\utilities\visualdebug\visualdebug.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\video\canvas\embedgl\embedgl2d.h">
 			</File>
 			<File
@@ -4672,6 +4735,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\null\null_txt.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\video\render3d\opengl\buffershadowing.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\opengl\gl_r2t_backend.h">
@@ -4989,6 +5055,9 @@
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
 			</File>
 			<File
+				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h">
+			</File>
+			<File
 				RelativePath="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h">
 			</File>
 			<File
@@ -5065,6 +5134,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffects.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\render.h">

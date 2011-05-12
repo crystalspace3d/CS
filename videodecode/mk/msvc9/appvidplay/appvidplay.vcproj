@@ -63,6 +63,9 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				Culture="1033"
+				AdditionalIncludeDirectories="..\.;..\..\..\apps\tests\tri3dtest;..\..\..\winlibs\x86\include;..\..\..\win32libs\include;..\..\..;..\..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -77,7 +80,7 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\out\debug9\build\appvidplay\Win32\vidplay.pdb"
 				SubSystem="1"
-				LargeAddressAware="1"
+				LargeAddressAware="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -131,10 +134,15 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="..\.;..\..\..\winlibs\x86\include;..\..\..\win32libs\include;..\..\..;..\..\..\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_BUILD_SHARED_LIBS;CS_RELEASE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile="..\..\out\release9\build\appvidplay\appvidplay.pch"
+				AssemblerListingLocation="..\..\..\out\release9\build\appvidplay\"
+				ObjectFile="..\..\..\out\release9\build\appvidplay\"
+				ProgramDataBaseFileName="..\..\..\out\release9\build\appvidplay\Win32\vidplay.pdb"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -143,15 +151,24 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				Culture="1033"
+				AdditionalIncludeDirectories="..\.;..\..\..\apps\tests\tri3dtest;..\..\..\winlibs\x86\include;..\..\..\win32libs\include;..\..\..;..\..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="zlib.lib libcrystalspace_d.lib"
+				OutputFile="..\..\..\vidplay.exe"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\..\winlibs\x86\lib;..\..\..\win32libs\lib"
+				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\out\release9\build\appvidplay\Win32\vidplay.pdb"
 				SubSystem="1"
+				LargeAddressAware="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -161,6 +178,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\..\mk\msvc\appvidplay.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -176,6 +194,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="md ..\..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\..\out\release9\bin \&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

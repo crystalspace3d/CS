@@ -2072,6 +2072,10 @@
 				RelativePath="..\..\apps\tutorial\simple1\simple1.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\apps\demos\vidplay\trololol.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

@@ -2080,10 +2080,6 @@
 				RelativePath="..\..\mk\msvc\appsimple1.rc"
 				>
 			</File>
-			<File
-				RelativePath="..\msvc\appvidplay.manifest"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

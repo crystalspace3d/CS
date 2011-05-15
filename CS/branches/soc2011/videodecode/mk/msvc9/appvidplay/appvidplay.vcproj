@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib.lib libcrystalspace_d.lib"
+				AdditionalDependencies="zlib.lib libcrystalspace_d.lib CEGUIBase-vc9_d.lib"
 				OutputFile="..\..\..\vidplay.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\winlibs\x86\lib;..\..\..\win32libs\lib"
@@ -207,6 +207,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\..\apps\demos\vidplay\main.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\apps\demos\vidplay\vidplay.cpp"
 				>
 			</File>
@@ -216,6 +220,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\ToDo.txt"
+				>
+			</File>
 			<File
 				RelativePath="..\..\..\apps\demos\vidplay\vidplay.h"
 				>

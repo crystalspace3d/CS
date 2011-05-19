@@ -22,7 +22,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\..\out\debug9\build\appvidplay\ "
+			OutputDirectory="..\..\..\out\debug9\build\appvidplay\  "
 			IntermediateDirectory="..\..\..\out\debug9\build\appvidplay\"
 			ConfigurationType="1"
 			CharacterSet="1"

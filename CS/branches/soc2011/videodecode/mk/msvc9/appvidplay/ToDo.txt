@@ -12,4 +12,4 @@
 -currently, the generic loader isn't linked with the actual cs loader, since I've yet to figure out how that works
 -the theora loader currently reads the headers and sort of decides if it's a theora vid or not
 -also, loading isn't implemented through the vfs yet
--still need to add the plugin for the player
+-still need to add the plugin for the player 

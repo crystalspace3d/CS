@@ -1918,7 +1918,7 @@
 			Name="Header Files"
 			>
 			<File
-				RelativePath=".\bulletbody.h"
+				RelativePath="..\..\plugins\physics2\bullet\bulletbody.h"
 				>
 			</File>
 			<File

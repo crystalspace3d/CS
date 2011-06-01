@@ -1902,15 +1902,31 @@
 			Name="Source Files"
 			>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\bulletcolliders.cpp"
+				RelativePath="..\..\plugins\physics2\bullet\bullet2.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\bulletcollision.cpp"
+				RelativePath="..\..\plugins\physics2\bullet\colliders2.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\common.cpp"
+				RelativePath="..\..\plugins\physics2\bullet\collisionobject2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\common2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\joint2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\rigidbody2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\softbody2.cpp"
 				>
 			</File>
 		</Filter>
@@ -1918,19 +1934,31 @@
 			Name="Header Files"
 			>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\bulletbody.h"
+				RelativePath="..\..\plugins\physics2\bullet\bullet2.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\bulletcolliders.h"
+				RelativePath="..\..\plugins\physics2\bullet\colliders2.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\bulletcollision.h"
+				RelativePath="..\..\plugins\physics2\bullet\collisionobject2.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\common.h"
+				RelativePath="..\..\plugins\physics2\bullet\common2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\joint2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\rigidbody2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\softbody2.h"
 				>
 			</File>
 		</Filter>

@@ -361,7 +361,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;&quot;E:\bullet-2.78\Extras\ConvexDecomposition&quot;"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"
@@ -394,7 +394,7 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib ConvexDecomposition.lib"
 				OutputFile="..\..\bullet.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -1919,6 +1919,10 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics2\bullet\joint2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\plugin_impl.cpp"
 				>
 			</File>
 			<File

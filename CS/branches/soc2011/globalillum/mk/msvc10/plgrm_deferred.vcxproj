@@ -420,7 +420,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ImportLibrary>..\..\out\debug10\build\plgrm_deferred\Win32\plgrm_deferred.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freeimage.lib;freeimageplus.lib;delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -1256,6 +1256,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\deferred\deferredshadersetup.h" />
     <ClInclude Include="..\..\plugins\rendermanager\deferred\deferredtreetraits.h" />
     <ClInclude Include="..\..\plugins\rendermanager\deferred\gbuffer.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\deferred\globalillum.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\plgrm_deferred.rc" />

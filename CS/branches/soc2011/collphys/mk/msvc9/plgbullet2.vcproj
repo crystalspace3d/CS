@@ -4,7 +4,7 @@
 	Version="9.00"
 	Name="plgbullet2"
 	ProjectGUID="{370C4D94-3642-484D-BDB8-5D2EDE1A6D8A}"
-	RootNamespace="plgbullet22"
+	RootNamespace="plgbullet2"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -395,7 +395,7 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib ConvexDecomposition.lib"
-				OutputFile="..\..\bullet.dll"
+				OutputFile="..\..\bullet2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"

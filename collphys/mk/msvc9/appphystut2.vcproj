@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="appphystut2"
 	ProjectGUID="{B71B4A91-BBA1-459D-A9CA-D92EB6B3FF24}"
+	RootNamespace="appphystut2"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>

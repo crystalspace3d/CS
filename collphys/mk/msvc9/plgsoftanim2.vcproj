@@ -2,9 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="plgbullet2"
-	ProjectGUID="{370C4D94-3642-484D-BDB8-5D2EDE1A6D8A}"
-	RootNamespace="plgbullet2"
+	Name="plgsoftanim2"
+	ProjectGUID="{BC0D3B46-5BA1-455A-B612-EB664176F1EE}"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -20,8 +19,8 @@
 	<Configurations>
 		<Configuration
 			Name="ReleaseWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\release9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\release9\build\plgbullet2\"
+			OutputDirectory="..\..\out\release9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\release9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -45,11 +44,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\release9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="2"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
@@ -59,10 +58,10 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgbullet2\"
-				ObjectFile="..\..\out\release9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\release9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\release9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\release9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\release9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -76,7 +75,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -85,19 +84,19 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\release9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\release9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -125,8 +124,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseWithDlls|Win32"
-			OutputDirectory="..\..\out\release9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\release9\build\plgbullet2\"
+			OutputDirectory="..\..\out\release9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\release9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -150,11 +149,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\release9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="2"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
@@ -164,10 +163,10 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgbullet2\"
-				ObjectFile="..\..\out\release9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\release9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\release9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\release9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\release9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -181,7 +180,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -190,19 +189,19 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\release9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\release9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -230,8 +229,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -254,11 +253,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
@@ -267,10 +266,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -284,7 +283,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -293,17 +292,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -331,8 +330,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -355,23 +354,23 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;&quot;E:\bullet-2.78\Extras\ConvexDecomposition&quot;"
+				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -385,7 +384,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -394,17 +393,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib ConvexDecomposition.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -432,8 +431,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -456,11 +455,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
@@ -469,10 +468,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -486,7 +485,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -495,17 +494,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -533,8 +532,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -557,11 +556,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
@@ -570,10 +569,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -587,7 +586,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -596,17 +595,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -634,8 +633,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -658,11 +657,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
@@ -671,10 +670,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -688,7 +687,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -697,17 +696,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -735,8 +734,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -759,11 +758,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
@@ -772,10 +771,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -789,7 +788,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -798,17 +797,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -836,8 +835,8 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -860,11 +859,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
@@ -873,10 +872,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -890,7 +889,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -899,17 +898,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -937,8 +936,8 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadCheckerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -961,11 +960,11 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
+				AdditionalOptions=" "
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
@@ -974,10 +973,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9\build\plgbullet2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -991,7 +990,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -1000,17 +999,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
-				OutputFile="..\..\bullet2.dll"
+				AdditionalDependencies="delayimp.lib zlib.lib"
+				OutputFile="..\..\softanim2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgbullet2\Win32\bullet.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgbullet2\Win32\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1038,8 +1037,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseWithStaticLibs|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\release9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\release9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -1052,14 +1051,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\release9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\release9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\release9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1078,13 +1077,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\release9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1100,7 +1099,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\release9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1115,7 +1114,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1127,8 +1126,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseWithDlls|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\release9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\release9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -1141,14 +1140,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\release9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\release9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\release9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1167,13 +1166,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\release9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1189,7 +1188,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\release9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1204,7 +1203,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1216,8 +1215,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1228,14 +1227,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1252,13 +1251,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1274,7 +1273,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1289,7 +1288,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1301,8 +1300,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1313,14 +1312,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1337,13 +1336,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1359,7 +1358,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1374,7 +1373,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1386,8 +1385,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1398,14 +1397,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1422,13 +1421,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1444,7 +1443,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1459,7 +1458,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1471,8 +1470,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1483,14 +1482,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1507,13 +1506,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1529,7 +1528,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1544,7 +1543,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1556,8 +1555,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1568,14 +1567,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1592,13 +1591,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1614,7 +1613,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1629,7 +1628,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1641,8 +1640,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1653,14 +1652,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1677,13 +1676,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1699,7 +1698,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1714,7 +1713,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1726,8 +1725,8 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1738,14 +1737,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1762,13 +1761,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1784,7 +1783,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1799,7 +1798,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1811,8 +1810,8 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadCheckerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgbullet2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgbullet2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1823,14 +1822,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgbullet2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgbullet2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1847,13 +1846,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\bullet2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgbullet2\x64\bullet.pdb"
+				OutputFile="..\..\softanim2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgbullet2\x64\plgbullet2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1869,7 +1868,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgbullet2\plgbullet2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1884,7 +1883,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics\bullet;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\physics\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1902,35 +1901,11 @@
 			Name="Source Files"
 			>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\bullet2.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\colliders2.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\collisionobject2.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\common2.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\joint2.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\msvc\plugin_impl.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\rigidbody2.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\softbody2.cpp"
+				RelativePath="..\..\plugins\physics2\softanim\softanim2.cpp"
 				>
 			</File>
 		</Filter>
@@ -1938,31 +1913,7 @@
 			Name="Header Files"
 			>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\bullet2.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\colliders2.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\collisionobject2.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\common2.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\joint2.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\rigidbody2.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\softbody2.h"
+				RelativePath="..\..\plugins\physics2\softanim\softanim2.h"
 				>
 			</File>
 		</Filter>
@@ -1970,7 +1921,7 @@
 			Name="Resource Files"
 			>
 			<File
-				RelativePath="..\..\mk\msvc\plgbullet2.rc"
+				RelativePath="..\..\mk\msvc\plgsoftanim2.rc"
 				>
 			</File>
 		</Filter>
@@ -1978,7 +1929,7 @@
 			Name="Other Files"
 			>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\bullet2.csplugin"
+				RelativePath="..\..\plugins\physics2\softanim\softanim2.csplugin"
 				>
 			</File>
 		</Filter>

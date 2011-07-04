@@ -1910,6 +1910,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\plugins\physics2\bullet\collisionactor.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics2\bullet\collisionobject2.cpp"
 				>
 			</File>
@@ -1943,6 +1947,10 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics2\bullet\colliders2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\physics2\bullet\collisionactor2.h"
 				>
 			</File>
 			<File

@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="plgsoftanim2"
-	ProjectGUID="{BC0D3B46-5BA1-455A-B612-EB664176F1EE}"
+	Name="plgopcode2"
+	ProjectGUID="{D00177F0-B814-4CF7-9F12-75978F6508B8}"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -19,8 +19,8 @@
 	<Configurations>
 		<Configuration
 			Name="ReleaseWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\release9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\release9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\release9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\release9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -44,7 +44,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\release9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -58,10 +58,10 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\release9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\release9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\release9\build\plgopcode2\"
+				ObjectFile="..\..\out\release9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\release9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -75,7 +75,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -85,18 +85,18 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\release9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\release9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -124,8 +124,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseWithDlls|Win32"
-			OutputDirectory="..\..\out\release9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\release9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\release9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\release9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -149,7 +149,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\release9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -163,10 +163,10 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\release9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\release9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\release9\build\plgopcode2\"
+				ObjectFile="..\..\out\release9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\release9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -180,7 +180,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -190,18 +190,18 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\release9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\release9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\out\release9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\release9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -229,8 +229,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -253,7 +253,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -266,10 +266,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -283,7 +283,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -293,16 +293,16 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim2.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -330,8 +330,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -354,7 +354,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -367,10 +367,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -384,7 +384,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -394,16 +394,16 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim2.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -431,8 +431,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -455,7 +455,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -468,10 +468,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -485,7 +485,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -495,16 +495,16 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim2.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -532,8 +532,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -556,7 +556,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -569,10 +569,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -586,7 +586,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -596,16 +596,16 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim2.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -633,8 +633,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -657,7 +657,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -670,10 +670,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -687,7 +687,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -697,16 +697,16 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim2.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -734,8 +734,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -758,7 +758,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -771,10 +771,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -788,7 +788,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -798,16 +798,16 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim2.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -835,8 +835,8 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -859,7 +859,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -872,10 +872,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -889,7 +889,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -899,16 +899,16 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim2.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -936,8 +936,8 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadCheckerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -960,7 +960,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -973,10 +973,10 @@
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9\build\plgsoftanim2\"
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9\build\plgopcode2\"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -990,7 +990,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -1000,16 +1000,16 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
-				OutputFile="..\..\softanim2.dll"
+				OutputFile="..\..\opcode2.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgsoftanim2\Win32\softanim2.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgopcode2\Win32\opcode2.pdb"
 				LargeAddressAware="2"
-				ImportLibrary="..\..\out\debug9\build\plgsoftanim2\Win32\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9\build\plgopcode2\Win32\plgopcode2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1037,8 +1037,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseWithStaticLibs|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\release9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\release9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -1051,14 +1051,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\release9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\release9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\release9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1077,11 +1077,11 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\release9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1099,7 +1099,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\release9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1114,7 +1114,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1126,8 +1126,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseWithDlls|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\release9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\release9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -1140,14 +1140,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\release9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\release9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\release9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1166,11 +1166,11 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\release9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1188,7 +1188,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\release9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1203,7 +1203,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1215,8 +1215,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1227,14 +1227,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1251,11 +1251,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1273,7 +1273,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1288,7 +1288,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1300,8 +1300,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1312,14 +1312,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1336,11 +1336,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1358,7 +1358,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1373,7 +1373,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1385,8 +1385,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1397,14 +1397,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1421,11 +1421,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1443,7 +1443,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1458,7 +1458,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1470,8 +1470,8 @@
 		</Configuration>
 		<Configuration
 			Name="MemoryTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1482,14 +1482,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1506,11 +1506,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1528,7 +1528,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1543,7 +1543,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1555,8 +1555,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1567,14 +1567,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1591,11 +1591,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1613,7 +1613,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1628,7 +1628,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1640,8 +1640,8 @@
 		</Configuration>
 		<Configuration
 			Name="RefTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1652,14 +1652,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1676,11 +1676,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1698,7 +1698,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1713,7 +1713,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1725,8 +1725,8 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1737,14 +1737,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1761,11 +1761,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1783,7 +1783,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1798,7 +1798,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1810,8 +1810,8 @@
 		</Configuration>
 		<Configuration
 			Name="ThreadCheckerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgsoftanim2\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgopcode2\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgopcode2\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -1822,14 +1822,14 @@
 				MinimalRebuild="TRUE"
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgsoftanim2\"
-				ObjectFile="..\..\out\debug9-x64\build\plgsoftanim2\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgopcode2\"
+				ObjectFile="..\..\out\debug9-x64\build\plgopcode2\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1846,11 +1846,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\softanim2.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgsoftanim2\x64\softanim2.pdb"
+				OutputFile="..\..\opcode2.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgopcode2\x64\opcode2.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgsoftanim2\x64\plgsoftanim2.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgopcode2\x64\plgopcode2.lib"
 				AdditionalOptions=" "
 				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1868,7 +1868,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgsoftanim2\plgsoftanim2.tlb"
+				TypeLibraryName="..\..\out\debug9-x64\build\plgopcode2\plgopcode2.tlb"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1883,7 +1883,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\physics2\softanim;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				AdditionalIncludeDirectories=".;..\..\plugins\collision2\opcode;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"
 			/>
 			<Tool
@@ -1901,11 +1901,159 @@
 			Name="Source Files"
 			>
 			<File
-				RelativePath="..\msvc\plugin_impl.cpp"
+				RelativePath="..\..\plugins\collision2\opcode\collisionobject2.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\softanim\softanim2.cpp"
+				RelativePath="..\..\plugins\collision2\opcode\csOpcode2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceAABB.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceContainer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceHPoint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceIndexedTriangle.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceMatrix3x3.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceMatrix4x4.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceOBB.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IcePlane.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IcePoint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceRandom.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceRay.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceRevisitedRadix.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceSegment.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceTriangle.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceUtils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_AABBcollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_AABBTree.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_BaseModel.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_BoxPruning.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_collider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_Common.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_HybridModel.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_LSSCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_MeshInterface.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_Model.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_OBBCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_OptimizedTree.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_Picking.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_PlanesCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_RayCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_SphereCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_SweepAndPrune.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_TreeBuilders.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_TreeCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_VolumeCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Opcode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\plugin_impl.cpp"
 				>
 			</File>
 		</Filter>
@@ -1913,7 +2061,251 @@
 			Name="Header Files"
 			>
 			<File
-				RelativePath="..\..\plugins\physics2\softanim\softanim2.h"
+				RelativePath="..\..\plugins\collision2\opcode\collisionobject2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\csOpcode2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceAABB.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceAxes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceBoundingSphere.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceContainer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceFPU.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceHPoint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceIndexedTriangle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceLSS.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceMatrix3x3.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceMatrix4x4.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceMemoryMacros.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceOBB.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IcePairs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IcePlane.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IcePoint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IcePreprocessor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceRandom.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceRay.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceRevisitedRadix.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceSegment.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceTriangle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceTrilist.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceTypes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\IceUtils.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_AABBCollider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_AABBTree.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_BaseModel.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_BoxBoxOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_BoxPruning.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_Collider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_Common.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_HybridModel.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_IceHook.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_LSSAABBOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_LSSCollider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_LSSTriOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_MeshInterface.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_Model.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_OBBCollider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_OptimizedTree.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_Picking.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_PlanesAABBOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_PlanesCollider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_PlanesTriOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_RayAABBOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_RayCollider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_RayTriOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_Settings.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_SphereAABBOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_SphereCollider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_SphereTriOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_SweepAndPrune.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_TreeBuilders.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_TreeCollider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_TriBoxOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_TriTriOverlap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\OPC_VolumeCollider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Opcode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Ice\Stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\Stdafx.h"
 				>
 			</File>
 		</Filter>
@@ -1921,7 +2313,7 @@
 			Name="Resource Files"
 			>
 			<File
-				RelativePath="..\..\mk\msvc\plgsoftanim2.rc"
+				RelativePath="..\..\mk\msvc\plgopcode2.rc"
 				>
 			</File>
 		</Filter>
@@ -1929,7 +2321,7 @@
 			Name="Other Files"
 			>
 			<File
-				RelativePath="..\..\plugins\physics2\softanim\softanim2.csplugin"
+				RelativePath="..\..\plugins\collision2\opcode\opcode2.csplugin"
 				>
 			</File>
 		</Filter>

@@ -2036,9 +2036,6 @@
 				RelativePath="..\..\libs\csutil\csinput.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\csmd5.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\csobject.cpp">
 			</File>
 			<File
@@ -2058,6 +2055,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\deprecated_macros.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\digest.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\dlmalloc.c">
@@ -2115,6 +2115,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\inputdef.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\md5.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\measuretime.cpp">
@@ -2205,6 +2208,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\schedule.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\sha256.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\simplejobqueue.cpp">
@@ -3129,6 +3135,9 @@
 				RelativePath="..\..\libs\..\include\csutil\deprecated_warn_on.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\digest.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\dirtyaccessarray.h">
 			</File>
 			<File
@@ -3199,6 +3208,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\list.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\md5.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\measuretime.h">
@@ -3370,6 +3382,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\setenv.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\sha256.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\simplejobqueue.h">

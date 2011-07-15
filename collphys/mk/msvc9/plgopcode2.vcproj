@@ -1901,6 +1901,10 @@
 			Name="Source Files"
 			>
 			<File
+				RelativePath="..\..\plugins\collision2\opcode\colliders2.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\plugins\collision2\opcode\collisionobject2.cpp"
 				>
 			</File>
@@ -2060,6 +2064,10 @@
 		<Filter
 			Name="Header Files"
 			>
+			<File
+				RelativePath="..\..\plugins\collision2\opcode\colliders2.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\plugins\collision2\opcode\collisionobject2.h"
 				>

@@ -3327,6 +3327,9 @@
 				RelativePath="..\..\libs\..\include\csutil\regexp.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\resource.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\resourcemapper.h">
 			</File>
 			<File

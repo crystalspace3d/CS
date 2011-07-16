@@ -1532,12 +1532,18 @@
 				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\engine\persist\image.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\engine\persist\persist.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
+			<File
+				RelativePath="..\..\plugins\engine\persist\image.h">
+			</File>
 			<File
 				RelativePath="..\..\plugins\engine\persist\persist.h">
 			</File>

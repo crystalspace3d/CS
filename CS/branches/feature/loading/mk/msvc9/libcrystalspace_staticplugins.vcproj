@@ -1553,6 +1553,9 @@
 				RelativePath="..\..\mk\msvc\libengine_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libenginepersist_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libengseq_staticreg.cpp">
 			</File>
 			<File
@@ -2223,6 +2226,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\texture.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\persist\persist.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\renderloop\loader\rlloader.cpp">
@@ -4246,6 +4252,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\texture.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\engine\persist\persist.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\renderloop\loader\rlloader.h">

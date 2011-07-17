@@ -1496,6 +1496,9 @@
 				RelativePath="..\..\mk\msvc\libcseditorcore_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libcseditordamn_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libcsfont_staticreg.cpp">
 			</File>
 			<File
@@ -2148,6 +2151,15 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\core\vfsfiledialog.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\damn\damnpanel.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\damn\damnresourcemanager.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\damn\memcache.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\camera.cpp">
@@ -4174,6 +4186,15 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\core\vfsfiledialog.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\damn\damnpanel.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\damn\damnresourcemanager.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\damn\memcache.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\camera.h">

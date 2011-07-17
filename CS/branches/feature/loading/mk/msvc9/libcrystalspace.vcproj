@@ -3462,6 +3462,12 @@
 				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\future.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\future_impl.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\mutex.h">
 			</File>
 			<File

@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="plgcseditordamn"
-	ProjectGUID="{7664EA76-FB0D-67CF-DBE5-5C0266DF5B10}"
+	Name="plgcsloader"
+	ProjectGUID="{18998112-05A5-A577-246A-A64FA1F6B992}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,8 +13,8 @@
 	<Configurations>
             		<Configuration
 			Name="ReleaseWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\release9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\release9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\release9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\release9\build\plgcsloader\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -26,14 +26,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\release9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\release9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\release9\build\plgcsloader\"
+				ObjectFile="..\..\out\release9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -50,13 +50,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\release9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\release9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\release9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib wxmsw28u_xrc-vc9.lib wxmsw28u_html-vc9.lib wxmsw28u_xml-vc9.lib wxmsw28u_adv-vc9.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -66,11 +66,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\release9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9\bin\&#x0D;&#x0A;"
@@ -81,8 +81,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -91,8 +91,8 @@
 		</Configuration>
       		<Configuration
 			Name="ReleaseWithDlls|Win32"
-			OutputDirectory="..\..\out\release9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\release9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\release9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\release9\build\plgcsloader\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -104,14 +104,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\release9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\release9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\release9\build\plgcsloader\"
+				ObjectFile="..\..\out\release9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -128,13 +128,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\release9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\release9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\release9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib wxmsw28u_xrc-vc9.lib wxmsw28u_html-vc9.lib wxmsw28u_xml-vc9.lib wxmsw28u_adv-vc9.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -144,11 +144,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\release9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9\bin\&#x0D;&#x0A;"
@@ -159,8 +159,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -169,8 +169,8 @@
 		</Configuration>
                 		<Configuration
 			Name="DebugWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -181,14 +181,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -203,13 +203,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -219,11 +219,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -234,8 +234,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -244,8 +244,8 @@
 		</Configuration>
       		<Configuration
 			Name="DebugWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -256,14 +256,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -278,13 +278,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -294,11 +294,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -309,8 +309,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -319,8 +319,8 @@
 		</Configuration>
                 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -331,14 +331,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -353,13 +353,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -369,11 +369,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -384,8 +384,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -394,8 +394,8 @@
 		</Configuration>
       		<Configuration
 			Name="MemoryTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -406,14 +406,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -428,13 +428,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -444,11 +444,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -459,8 +459,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -469,8 +469,8 @@
 		</Configuration>
                 		<Configuration
 			Name="RefTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -481,14 +481,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -503,13 +503,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -519,11 +519,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -534,8 +534,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -544,8 +544,8 @@
 		</Configuration>
       		<Configuration
 			Name="RefTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -556,14 +556,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -578,13 +578,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -594,11 +594,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -609,8 +609,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -619,8 +619,8 @@
 		</Configuration>
                 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -631,14 +631,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -653,13 +653,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -669,11 +669,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -684,8 +684,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -694,8 +694,8 @@
 		</Configuration>
       		<Configuration
 			Name="ThreadCheckerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -706,14 +706,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -728,13 +728,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgcseditordamn\Win32\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9\build\plgcsloader\Win32\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgcseditordamn\Win32\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9\build\plgcsloader\Win32\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -744,11 +744,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -759,8 +759,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -769,8 +769,8 @@
 		</Configuration>
                         		<Configuration
 			Name="ReleaseWithStaticLibs|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\release9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\release9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -782,14 +782,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\release9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\release9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\release9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -806,13 +806,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\release9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib wxmsw28u_xrc-vc9.lib wxmsw28u_html-vc9.lib wxmsw28u_xml-vc9.lib wxmsw28u_adv-vc9.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -822,11 +822,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\release9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9-x64\bin\&#x0D;&#x0A;"
@@ -837,8 +837,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -847,8 +847,8 @@
 		</Configuration>
       		<Configuration
 			Name="ReleaseWithDlls|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\release9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\release9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -860,14 +860,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\release9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\release9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\release9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -884,13 +884,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\release9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib wxmsw28u_xrc-vc9.lib wxmsw28u_html-vc9.lib wxmsw28u_xml-vc9.lib wxmsw28u_adv-vc9.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -900,11 +900,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\release9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9-x64\bin\&#x0D;&#x0A;"
@@ -915,8 +915,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -925,8 +925,8 @@
 		</Configuration>
                 		<Configuration
 			Name="DebugWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -937,14 +937,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -959,13 +959,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -975,11 +975,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -990,8 +990,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1000,8 +1000,8 @@
 		</Configuration>
       		<Configuration
 			Name="DebugWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1012,14 +1012,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1034,13 +1034,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1050,11 +1050,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1065,8 +1065,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1075,8 +1075,8 @@
 		</Configuration>
                 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1087,14 +1087,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1109,13 +1109,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1125,11 +1125,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1140,8 +1140,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1150,8 +1150,8 @@
 		</Configuration>
       		<Configuration
 			Name="MemoryTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1162,14 +1162,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1184,13 +1184,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1200,11 +1200,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1215,8 +1215,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1225,8 +1225,8 @@
 		</Configuration>
                 		<Configuration
 			Name="RefTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1237,14 +1237,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1259,13 +1259,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1275,11 +1275,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1290,8 +1290,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1300,8 +1300,8 @@
 		</Configuration>
       		<Configuration
 			Name="RefTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1312,14 +1312,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1334,13 +1334,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1350,11 +1350,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1365,8 +1365,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1375,8 +1375,8 @@
 		</Configuration>
                 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1387,14 +1387,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1409,13 +1409,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1425,11 +1425,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1440,8 +1440,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1450,8 +1450,8 @@
 		</Configuration>
       		<Configuration
 			Name="ThreadCheckerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgcseditordamn\"
+			OutputDirectory="..\..\out\debug9-x64\build\plgcsloader\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\plgcsloader\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1462,14 +1462,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcseditordamn\"
-				ObjectFile="..\..\out\debug9-x64\build\plgcseditordamn\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\plgcsloader\"
+				ObjectFile="..\..\out\debug9-x64\build\plgcsloader\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1484,13 +1484,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\cseditordamn.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcseditordamn\x64\cseditordamn.pdb"
+				OutputFile="..\..\csloader.dll"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgcsloader\x64\csloader.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgcseditordamn\x64\plgcseditordamn.lib"
+				ImportLibrary="..\..\out\debug9-x64\build\plgcsloader\x64\plgcsloader.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxmsw28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1500,11 +1500,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgcseditordamn\plgcseditordamn.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\plgcsloader\plgcsloader.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1515,8 +1515,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\editor\damn;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\plugins\loader;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1532,34 +1532,28 @@
 				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\damn\damnpanel.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\damn\damnresourcemanager.cpp">
+				RelativePath="..\..\plugins\loader\resourcemanager.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\editor\damn\damnpanel.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\damn\damnresourcemanager.h">
+				RelativePath="..\..\plugins\loader\resourcemanager.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgcseditordamn.rc">
+				RelativePath="..\..\mk\msvc\plgcsloader.rc">
 			</File>
 		</Filter>
 		<Filter
 			Name="Other Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\editor\damn\cseditordamn.csplugin">
+				RelativePath="..\..\plugins\loader\csloader.csplugin">
 			</File>
 		</Filter>
 	</Files>

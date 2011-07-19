@@ -3216,6 +3216,9 @@
 				RelativePath="..\..\libs\..\include\csutil\measuretime.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\memcache.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\memdebug.h">
 			</File>
 			<File

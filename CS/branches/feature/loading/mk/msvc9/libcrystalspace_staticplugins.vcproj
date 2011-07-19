@@ -1511,6 +1511,9 @@
 				RelativePath="..\..\mk\msvc\libcsjpgimg_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libcsloader_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libcsopcode_staticreg.cpp">
 			</File>
 			<File
@@ -2159,9 +2162,6 @@
 				RelativePath="..\..\plugins\editor\damn\damnresourcemanager.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\damn\memcache.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\engine\3d\camera.cpp">
 			</File>
 			<File
@@ -2331,6 +2331,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\config\settingslider.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\loader\resourcemanager.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\animnode\debug\debug.cpp">
@@ -4194,9 +4197,6 @@
 				RelativePath="..\..\plugins\editor\damn\damnresourcemanager.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\damn\memcache.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\engine\3d\camera.h">
 			</File>
 			<File
@@ -4390,6 +4390,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\windowfactory.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\loader\resourcemanager.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\animnode\debug\debug.h">

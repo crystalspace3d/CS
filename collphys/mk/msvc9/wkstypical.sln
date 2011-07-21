@@ -1738,6 +1738,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgopcode2", "plgopcode2.vc
 		{94434FE9-3277-7608-522B-0BEBB7690B41} = {94434FE9-3277-7608-522B-0BEBB7690B41}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "appsimpcd2", "appsimpcd2.vcproj", "{5A855B1B-64DC-452E-92BC-4D27066EA033}"
+	ProjectSection(ProjectDependencies) = postProject
+		{94434FE9-3277-7608-522B-0BEBB7690B41} = {94434FE9-3277-7608-522B-0BEBB7690B41}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -12214,6 +12219,42 @@ Global
 		{D00177F0-B814-4CF7-9F12-75978F6508B8}.ThreadCheckerWithStaticLibs|Win32.ActiveCfg = ThreadCheckerWithStaticLibs|Win32
 		{D00177F0-B814-4CF7-9F12-75978F6508B8}.ThreadCheckerWithStaticLibs|Win32.Build.0 = ThreadCheckerWithStaticLibs|Win32
 		{D00177F0-B814-4CF7-9F12-75978F6508B8}.ThreadCheckerWithStaticLibs|x64.ActiveCfg = ThreadCheckerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.Debug|Win32.ActiveCfg = DebugWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.Debug|Win32.Build.0 = DebugWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.Debug|x64.ActiveCfg = DebugWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.DebugWithDlls|Win32.ActiveCfg = DebugWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.DebugWithDlls|Win32.Build.0 = DebugWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.DebugWithDlls|x64.ActiveCfg = DebugWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.DebugWithStaticLibs|Win32.ActiveCfg = DebugWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.DebugWithStaticLibs|Win32.Build.0 = DebugWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.DebugWithStaticLibs|x64.ActiveCfg = DebugWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.MemoryTrackerWithDlls|Win32.ActiveCfg = MemoryTrackerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.MemoryTrackerWithDlls|Win32.Build.0 = MemoryTrackerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.MemoryTrackerWithDlls|x64.ActiveCfg = MemoryTrackerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.MemoryTrackerWithStaticLibs|Win32.ActiveCfg = MemoryTrackerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.MemoryTrackerWithStaticLibs|Win32.Build.0 = MemoryTrackerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.MemoryTrackerWithStaticLibs|x64.ActiveCfg = MemoryTrackerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.RefTrackerWithDlls|Win32.ActiveCfg = RefTrackerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.RefTrackerWithDlls|Win32.Build.0 = RefTrackerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.RefTrackerWithDlls|x64.ActiveCfg = RefTrackerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.RefTrackerWithStaticLibs|Win32.ActiveCfg = RefTrackerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.RefTrackerWithStaticLibs|Win32.Build.0 = RefTrackerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.RefTrackerWithStaticLibs|x64.ActiveCfg = RefTrackerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.Release|Win32.ActiveCfg = ReleaseWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.Release|Win32.Build.0 = ReleaseWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.Release|x64.ActiveCfg = ReleaseWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ReleaseWithDlls|Win32.ActiveCfg = ReleaseWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ReleaseWithDlls|Win32.Build.0 = ReleaseWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ReleaseWithDlls|x64.ActiveCfg = ReleaseWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ReleaseWithStaticLibs|Win32.ActiveCfg = ReleaseWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ReleaseWithStaticLibs|Win32.Build.0 = ReleaseWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ReleaseWithStaticLibs|x64.ActiveCfg = ReleaseWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithDlls|Win32.ActiveCfg = ThreadCheckerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithDlls|Win32.Build.0 = ThreadCheckerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithDlls|x64.ActiveCfg = ThreadCheckerWithDlls|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithStaticLibs|Win32.ActiveCfg = ThreadCheckerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithStaticLibs|Win32.Build.0 = ThreadCheckerWithStaticLibs|Win32
+		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithStaticLibs|x64.ActiveCfg = ThreadCheckerWithStaticLibs|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

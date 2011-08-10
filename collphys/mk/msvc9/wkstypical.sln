@@ -1743,6 +1743,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "appsimpcd2", "appsimpcd2.vc
 		{94434FE9-3277-7608-522B-0BEBB7690B41} = {94434FE9-3277-7608-522B-0BEBB7690B41}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plgphysldr2", "plgphysldr2.vcproj", "{DE1F92F5-30D0-46CF-A36C-D684185F5C03}"
+	ProjectSection(ProjectDependencies) = postProject
+		{94434FE9-3277-7608-522B-0BEBB7690B41} = {94434FE9-3277-7608-522B-0BEBB7690B41}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -12255,6 +12260,42 @@ Global
 		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithStaticLibs|Win32.ActiveCfg = ThreadCheckerWithStaticLibs|Win32
 		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithStaticLibs|Win32.Build.0 = ThreadCheckerWithStaticLibs|Win32
 		{5A855B1B-64DC-452E-92BC-4D27066EA033}.ThreadCheckerWithStaticLibs|x64.ActiveCfg = ThreadCheckerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.Debug|Win32.ActiveCfg = DebugWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.Debug|Win32.Build.0 = DebugWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.Debug|x64.ActiveCfg = DebugWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.DebugWithDlls|Win32.ActiveCfg = DebugWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.DebugWithDlls|Win32.Build.0 = DebugWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.DebugWithDlls|x64.ActiveCfg = DebugWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.DebugWithStaticLibs|Win32.ActiveCfg = DebugWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.DebugWithStaticLibs|Win32.Build.0 = DebugWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.DebugWithStaticLibs|x64.ActiveCfg = DebugWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.MemoryTrackerWithDlls|Win32.ActiveCfg = MemoryTrackerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.MemoryTrackerWithDlls|Win32.Build.0 = MemoryTrackerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.MemoryTrackerWithDlls|x64.ActiveCfg = MemoryTrackerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.MemoryTrackerWithStaticLibs|Win32.ActiveCfg = MemoryTrackerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.MemoryTrackerWithStaticLibs|Win32.Build.0 = MemoryTrackerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.MemoryTrackerWithStaticLibs|x64.ActiveCfg = MemoryTrackerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.RefTrackerWithDlls|Win32.ActiveCfg = RefTrackerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.RefTrackerWithDlls|Win32.Build.0 = RefTrackerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.RefTrackerWithDlls|x64.ActiveCfg = RefTrackerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.RefTrackerWithStaticLibs|Win32.ActiveCfg = RefTrackerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.RefTrackerWithStaticLibs|Win32.Build.0 = RefTrackerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.RefTrackerWithStaticLibs|x64.ActiveCfg = RefTrackerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.Release|Win32.ActiveCfg = ReleaseWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.Release|Win32.Build.0 = ReleaseWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.Release|x64.ActiveCfg = ReleaseWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ReleaseWithDlls|Win32.ActiveCfg = ReleaseWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ReleaseWithDlls|Win32.Build.0 = ReleaseWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ReleaseWithDlls|x64.ActiveCfg = ReleaseWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ReleaseWithStaticLibs|Win32.ActiveCfg = ReleaseWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ReleaseWithStaticLibs|Win32.Build.0 = ReleaseWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ReleaseWithStaticLibs|x64.ActiveCfg = ReleaseWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ThreadCheckerWithDlls|Win32.ActiveCfg = ThreadCheckerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ThreadCheckerWithDlls|Win32.Build.0 = ThreadCheckerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ThreadCheckerWithDlls|x64.ActiveCfg = ThreadCheckerWithDlls|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ThreadCheckerWithStaticLibs|Win32.ActiveCfg = ThreadCheckerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ThreadCheckerWithStaticLibs|Win32.Build.0 = ThreadCheckerWithStaticLibs|Win32
+		{DE1F92F5-30D0-46CF-A36C-D684185F5C03}.ThreadCheckerWithStaticLibs|x64.ActiveCfg = ThreadCheckerWithStaticLibs|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

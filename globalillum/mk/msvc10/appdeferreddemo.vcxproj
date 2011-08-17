@@ -1247,7 +1247,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\apps\demos\deferreddemo\deferreddemo.cpp" />
-    <ClCompile Include="..\..\apps\demos\deferreddemo\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\apps\demos\deferreddemo\deferreddemo.h" />

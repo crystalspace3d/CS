@@ -1162,6 +1162,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csgeom\csrectrg.cpp" />
     <ClCompile Include="..\..\libs\csgeom\frustum.cpp" />
     <ClCompile Include="..\..\libs\csgeom\kdtree.cpp" />
+    <ClCompile Include="..\..\libs\csgeom\kdtreex.cpp" />
     <ClCompile Include="..\..\libs\csgeom\math.cpp" />
     <ClCompile Include="..\..\libs\csgeom\math2d.cpp" />
     <ClCompile Include="..\..\libs\csgeom\math3d.cpp" />
@@ -1263,7 +1264,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\cstool\keyval.cpp" />
     <ClCompile Include="..\..\libs\cstool\mapnode.cpp" />
     <ClCompile Include="..\..\libs\cstool\materialbuilder.cpp" />
-    <ClCompile Include="..\..\libs\cstool\memory_pen.cpp" />
     <ClCompile Include="..\..\libs\cstool\meshfilter.cpp" />
     <ClCompile Include="..\..\libs\cstool\meshobjtmpl.cpp" />
     <ClCompile Include="..\..\libs\cstool\noise\latlon.cpp" />
@@ -1431,7 +1431,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csutil\win32\instpath.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\loadlib.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\memutil_impl.cpp" />
+    <ClCompile Include="..\..\libs\csutil\win32\mkdir.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\mmap.cpp" />
+    <ClCompile Include="..\..\libs\csutil\win32\platformfile.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\processorcount_impl.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\registrycfg.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\setenv.cpp" />
@@ -1458,6 +1460,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csgeom\fixed.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\frustum.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\kdtree.h" />
+    <ClInclude Include="..\..\libs\..\include\csgeom\kdtreex.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\math.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\math2d.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\math3d.h" />
@@ -1663,6 +1666,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\algorithms.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\alignedalloc.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\allocator.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\allocatorimpl.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\ansicommand.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\ansiparse.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\archive.h" />
@@ -1755,6 +1759,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\partialorder.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\physfile.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\platform.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\platformfile.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\plugldr.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\plugmgr.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\pooledscfclass.h" />
@@ -1790,6 +1795,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\scopeddelete.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\scopedlock.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\scopedmutexlock.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\scopedpointer.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\set.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\setenv.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\sha256.h" />

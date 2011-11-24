@@ -1496,6 +1496,9 @@
 				RelativePath="..\..\libs\csgeom\kdtree.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgeom\kdtreex.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgeom\math.cpp">
 			</File>
 			<File
@@ -1797,9 +1800,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\materialbuilder.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\cstool\memory_pen.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\meshfilter.cpp">
@@ -2303,7 +2303,13 @@
 				RelativePath="..\..\libs\csutil\win32\memutil_impl.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\win32\mkdir.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\win32\mmap.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\win32\platformfile.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\processorcount_impl.cpp">
@@ -2380,6 +2386,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\kdtree.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\kdtreex.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\math.h">
@@ -2997,6 +3006,9 @@
 				RelativePath="..\..\libs\..\include\csutil\allocator.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\allocatorimpl.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\ansicommand.h">
 			</File>
 			<File
@@ -3273,6 +3285,9 @@
 				RelativePath="..\..\libs\..\include\csutil\platform.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\platformfile.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\plugldr.h">
 			</File>
 			<File
@@ -3376,6 +3391,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\scopedmutexlock.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\scopedpointer.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\set.h">

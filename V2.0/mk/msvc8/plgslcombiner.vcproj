@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
-	Name="plgglshader_cg"
-	ProjectGUID="{69E8EF18-4FE9-25B1-BCB2-0B807F5670A8}"
+	Version="8.00"
+	Name="plgslcombiner"
+	ProjectGUID="{F693C62B-FE64-A184-3CE9-4554AF7B8624}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,8 +13,8 @@
 	<Configurations>
             		<Configuration
 			Name="ReleaseWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\release9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\release9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\release8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\release8\build\plgslcombiner\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -26,14 +26,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\release8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\release9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\release8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\release8\build\plgslcombiner\"
+				ObjectFile="..\..\out\release8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -50,13 +50,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\release9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\release8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\release8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -70,10 +70,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\release8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\release8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -81,8 +81,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -91,8 +91,8 @@
 		</Configuration>
       		<Configuration
 			Name="ReleaseWithDlls|Win32"
-			OutputDirectory="..\..\out\release9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\release9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\release8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\release8\build\plgslcombiner\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -104,14 +104,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\release8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\release9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\release8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\release8\build\plgslcombiner\"
+				ObjectFile="..\..\out\release8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -128,13 +128,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\release9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\release8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\release8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -148,10 +148,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\release8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\release8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -159,8 +159,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -169,8 +169,8 @@
 		</Configuration>
                 		<Configuration
 			Name="DebugWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -181,14 +181,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -203,13 +203,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -223,10 +223,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -234,8 +234,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -244,8 +244,8 @@
 		</Configuration>
       		<Configuration
 			Name="DebugWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -256,14 +256,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -278,13 +278,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -298,10 +298,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -309,8 +309,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -319,8 +319,8 @@
 		</Configuration>
                 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -331,14 +331,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -353,13 +353,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -373,10 +373,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -384,8 +384,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -394,8 +394,8 @@
 		</Configuration>
       		<Configuration
 			Name="MemoryTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -406,14 +406,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -428,13 +428,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -448,10 +448,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -459,8 +459,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -469,8 +469,8 @@
 		</Configuration>
                 		<Configuration
 			Name="RefTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -481,14 +481,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -503,13 +503,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -523,10 +523,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -534,8 +534,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -544,8 +544,8 @@
 		</Configuration>
       		<Configuration
 			Name="RefTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -556,14 +556,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -578,13 +578,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -598,10 +598,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -609,8 +609,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -619,8 +619,8 @@
 		</Configuration>
                 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -631,14 +631,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -653,13 +653,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -673,10 +673,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -684,8 +684,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -694,8 +694,8 @@
 		</Configuration>
       		<Configuration
 			Name="ThreadCheckerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -706,14 +706,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -728,13 +728,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgglshader_cg\Win32\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8\build\plgslcombiner\Win32\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgglshader_cg\Win32\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8\build\plgslcombiner\Win32\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -748,10 +748,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -759,8 +759,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -769,8 +769,8 @@
 		</Configuration>
                         		<Configuration
 			Name="ReleaseWithStaticLibs|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\release8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\release8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -782,14 +782,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\release8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\release9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\release8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\release8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\release8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -806,13 +806,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\release8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\release8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -826,10 +826,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\release8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\release8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -837,8 +837,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -847,8 +847,8 @@
 		</Configuration>
       		<Configuration
 			Name="ReleaseWithDlls|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\release8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\release8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
@@ -860,14 +860,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\release8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\release9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\release8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\release8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\release8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -884,13 +884,13 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\release8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\release8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -904,10 +904,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\release8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\release9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\release8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -915,8 +915,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -925,8 +925,8 @@
 		</Configuration>
                 		<Configuration
 			Name="DebugWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -937,14 +937,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -959,13 +959,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -979,10 +979,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -990,8 +990,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1000,8 +1000,8 @@
 		</Configuration>
       		<Configuration
 			Name="DebugWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1012,14 +1012,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1034,13 +1034,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1054,10 +1054,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -1065,8 +1065,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1075,8 +1075,8 @@
 		</Configuration>
                 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1087,14 +1087,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1109,13 +1109,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1129,10 +1129,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -1140,8 +1140,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1150,8 +1150,8 @@
 		</Configuration>
       		<Configuration
 			Name="MemoryTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1162,14 +1162,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1184,13 +1184,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1204,10 +1204,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -1215,8 +1215,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1225,8 +1225,8 @@
 		</Configuration>
                 		<Configuration
 			Name="RefTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1237,14 +1237,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1259,13 +1259,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1279,10 +1279,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -1290,8 +1290,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1300,8 +1300,8 @@
 		</Configuration>
       		<Configuration
 			Name="RefTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1312,14 +1312,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1334,13 +1334,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1354,10 +1354,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -1365,8 +1365,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1375,8 +1375,8 @@
 		</Configuration>
                 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1387,14 +1387,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1409,13 +1409,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1429,10 +1429,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -1440,8 +1440,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1450,8 +1450,8 @@
 		</Configuration>
       		<Configuration
 			Name="ThreadCheckerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgglshader_cg\"
+			OutputDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
+			IntermediateDirectory="..\..\out\debug8-x64\build\plgslcombiner\"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -1462,14 +1462,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				ProgramDataBaseFileName="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgglshader_cg\"
-				ObjectFile="..\..\out\debug9-x64\build\plgglshader_cg\"
+				PrecompiledHeaderFile="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.pch"
+				AssemblerListingLocation="..\..\out\debug8-x64\build\plgslcombiner\"
+				ObjectFile="..\..\out\debug8-x64\build\plgslcombiner\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1484,13 +1484,13 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\glshader_cg.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgglshader_cg\x64\glshader_cg.pdb"
+				OutputFile="..\..\slcombiner.dll"
+				ProgramDatabaseFile="..\..\out\debug8-x64\build\plgslcombiner\x64\slcombiner.pdb"
 				IgnoreImportLibrary="TRUE"
 				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgglshader_cg\x64\plgglshader_cg.lib"
+				ImportLibrary="..\..\out\debug8-x64\build\plgslcombiner\x64\plgslcombiner.lib"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib opengl32.lib cg.lib cgGL.lib"
+				AdditionalDependencies="delayimp.lib zlib.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1504,10 +1504,10 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgglshader_cg\plgglshader_cg.tlb"/>
+				TypeLibraryName="..\..\out\debug8-x64\build\plgslcombiner\plgslcombiner.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
+				CommandLine="md ..\..\out\debug8-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug8-x64\bin\&#x0D;&#x0A;"
 				/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -1515,8 +1515,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=8"
+				AdditionalIncludeDirectories=".;..\..\plugins\video\render3d\shader\shaderplugins\slcombiner;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -1532,79 +1532,37 @@
 				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cg.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\beautify_cg.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_clip.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_params.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon_parse.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgfp.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgvp.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\progcache.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_cg.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\cg_common.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\beautify_cg.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cg.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgcommon.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgfp.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cgvp.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\profile_limits.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\progcache.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\stringstore.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_cg.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgglshader_cg.rc">
+				RelativePath="..\..\mk\msvc\plgslcombiner.rc">
 			</File>
 		</Filter>
 		<Filter
 			Name="Other Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cg.csplugin">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_cg.tok">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\glshader_cg\glshader_cg.tok">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\slcombiner.csplugin">
 			</File>
 		</Filter>
 	</Files>

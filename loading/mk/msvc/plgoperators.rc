@@ -19,7 +19,7 @@ FILEFLAGS 0x0
       VALUE "ProductVersion", CS_VERSION
       VALUE "FileVersion", CS_VERSION
       VALUE "LegalCopyright", "Copyright (C)1998-2011 Jorrit Tyberghein and others"
-      VALUE "FileDescription", "CSEditor Core Plugin"
+      VALUE "FileDescription", "CSEditor operators"
 #ifdef CS_DEBUG
       VALUE "Comments", "Debug build"
 #else
@@ -39,27 +39,22 @@ FILEFLAGS 0x0
 17485 RCDATA 
 {
   "<?xml version=""1.0""?>",
-  "<!-- cseditorcore.csplugin -->",
+  "<!-- cseditordamn.csplugin -->",
   "<plugin>",
   "  <scf>",
   "    <classes>",
   "      <class>",
-  "        <name>crystalspace.editor.plugin.core.gui</name>",
-  "        <implementation>Editor</implementation>",
-  "        <description>CSEditor GUI</description>",
-  "      </class>",
-  "      <!--",
-  "      <class>",
-  "        <name>crystalspace.editor.plugin.core.csobjectmaplistener</name>",
-  "        <implementation>CSObjectMapListener</implementation>",
-  "        <description>CSEditor CS Object Map Listener</description>",
+  "        <name>cs.editor.operator.select</name>",
+  "        <implementation>SelectOperator</implementation>",
+  "        <label>Select</label>",
+  "        <description>Select something</description>",
   "      </class>",
   "      <class>",
-  "        <name>crystalspace.editor.plugin.core.csinterfacewrappers</name>",
-  "        <implementation>CSInterfaceWrappers</implementation>",
-  "        <description>CSEditor CS Interface Wrappers</description>",
+  "        <name>cs.editor.operator.move</name>",
+  "        <implementation>MoveOperator</implementation>",
+  "        <label>Move an object</label>",
+  "        <description>Move an object operator</description>",
   "      </class>",
-  "      -->",
   "    </classes>",
   "  </scf>",
   "</plugin>",

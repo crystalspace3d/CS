@@ -1499,6 +1499,18 @@
 				RelativePath="..\..\mk\msvc\libcseditordamn_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libcseditorheaders_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libcseditormenus_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libcseditorpanels_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libcseditorspaces_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libcsfont_staticreg.cpp">
 			</File>
 			<File
@@ -1509,9 +1521,6 @@
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libcsjpgimg_staticreg.cpp">
-			</File>
-			<File
-				RelativePath="..\..\mk\msvc\libcsloader_staticreg.cpp">
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libcsopcode_staticreg.cpp">
@@ -1566,6 +1575,9 @@
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libfancycon_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\libfileloader_staticreg.cpp">
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libfontplex_staticreg.cpp">
@@ -1662,6 +1674,9 @@
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libodedynam_staticreg.cpp">
+			</File>
+			<File
+				RelativePath="..\..\mk\msvc\liboperators_staticreg.cpp">
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\libpagingformer_staticreg.cpp">
@@ -2108,31 +2123,16 @@
 				RelativePath="..\..\plugins\editor\core\actionmanager.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\assetbrowserpanel.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\auipanelmanager.cpp">
+				RelativePath="..\..\plugins\editor\core\context.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\core\core.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\cs3dpanel.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\csinterfacewrappers.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\csobjectmaplistener.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\editor\core\editor.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\editorobject.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\interfacewrappermanager.cpp">
+				RelativePath="..\..\plugins\editor\core\layouts.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\core\mainframe.cpp">
@@ -2141,25 +2141,52 @@
 				RelativePath="..\..\plugins\editor\core\menubar.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\objectlist.cpp">
+				RelativePath="..\..\plugins\editor\core\operatormanager.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\scenebrowserpanel.cpp">
+				RelativePath="..\..\plugins\editor\core\settingsmanager.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\core\spacemanager.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\core\statusbar.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\stdactions.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\editor\core\vfsfiledialog.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\damn\damnpanel.cpp">
+				RelativePath="..\..\plugins\editor\core\window.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\damn\damnresourcemanager.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\damn\damnspace.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\headers\cs3dheader.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\menus\cs3dmenu.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\operators\moveoperator.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\operators\selectoperator.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\panels\camerapanel.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\panels\objectpanel.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\spaces\cs3dspace.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\spaces\propertiesspace.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\camera.cpp">
@@ -2331,6 +2358,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\config\settingslider.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\loader\fileloader.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\loader\resourcemanager.cpp">
@@ -4143,19 +4173,7 @@
 				RelativePath="..\..\plugins\editor\core\actionmanager.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\assetbrowserpanel.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\auipanelmanager.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\cs3dpanel.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\csinterfacewrappers.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\csobjectmaplistener.h">
+				RelativePath="..\..\plugins\editor\core\context.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\core\dataobject.h">
@@ -4164,10 +4182,7 @@
 				RelativePath="..\..\plugins\editor\core\editor.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\editorobject.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\editor\core\interfacewrappermanager.h">
+				RelativePath="..\..\plugins\editor\core\layouts.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\core\mainframe.h">
@@ -4176,25 +4191,52 @@
 				RelativePath="..\..\plugins\editor\core\menubar.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\objectlist.h">
+				RelativePath="..\..\plugins\editor\core\operatormanager.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\scenebrowserpanel.h">
+				RelativePath="..\..\plugins\editor\core\settingsmanager.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\core\spacemanager.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\core\statusbar.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\core\stdactions.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\editor\core\vfsfiledialog.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\editor\damn\damnpanel.h">
+				RelativePath="..\..\plugins\editor\core\window.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\editor\damn\damnresourcemanager.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\damn\damnspace.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\headers\cs3dheader.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\menus\cs3dmenu.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\operators\moveoperator.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\operators\selectoperator.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\panels\camerapanel.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\panels\objectpanel.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\spaces\cs3dspace.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\editor\spaces\propertiesspace.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\engine\3d\camera.h">
@@ -4390,6 +4432,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\gui\cegui\windowfactory.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\loader\fileloader.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\loader\resourcemanager.h">

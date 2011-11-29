@@ -26,21 +26,7 @@ static char const metainfo_cseditorcore[] =
 "        <implementation>Editor</implementation>"
 "        <description>CSEditor GUI</description>"
 "      </class>"
-"      <class>"
-"        <name>crystalspace.editor.plugin.core.cs3dpanel</name>"
-"        <implementation>CS3DPanel</implementation>"
-"        <description>CSEditor 3D Panel</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.editor.plugin.core.scenebrowserpanel</name>"
-"        <implementation>SceneBrowserPanel</implementation>"
-"        <description>CSEditor Scene Browser Panel</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.editor.plugin.core.assetbrowserpanel</name>"
-"        <implementation>AssetBrowserPanel</implementation>"
-"        <description>CSEditor Asset Browser Panel</description>"
-"      </class>"
+"      <!--"
 "      <class>"
 "        <name>crystalspace.editor.plugin.core.csobjectmaplistener</name>"
 "        <implementation>CSObjectMapListener</implementation>"
@@ -51,6 +37,7 @@ static char const metainfo_cseditorcore[] =
 "        <implementation>CSInterfaceWrappers</implementation>"
 "        <description>CSEditor CS Interface Wrappers</description>"
 "      </class>"
+"      -->"
 "    </classes>"
 "  </scf>"
 "</plugin>"
@@ -58,18 +45,6 @@ static char const metainfo_cseditorcore[] =
   #ifndef Editor_FACTORY_REGISTER_DEFINED 
   #define Editor_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(Editor) 
-  #endif
-  #ifndef CS3DPanel_FACTORY_REGISTER_DEFINED 
-  #define CS3DPanel_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(CS3DPanel) 
-  #endif
-  #ifndef SceneBrowserPanel_FACTORY_REGISTER_DEFINED 
-  #define SceneBrowserPanel_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(SceneBrowserPanel) 
-  #endif
-  #ifndef AssetBrowserPanel_FACTORY_REGISTER_DEFINED 
-  #define AssetBrowserPanel_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(AssetBrowserPanel) 
   #endif
   #ifndef CSObjectMapListener_FACTORY_REGISTER_DEFINED 
   #define CSObjectMapListener_FACTORY_REGISTER_DEFINED 
@@ -86,18 +61,6 @@ SCF_REGISTER_STATIC_LIBRARY(cseditorcore,metainfo_cseditorcore)
   #ifndef Editor_FACTORY_REGISTERED 
   #define Editor_FACTORY_REGISTERED 
     Editor_StaticInit Editor_static_init__; 
-  #endif
-  #ifndef CS3DPanel_FACTORY_REGISTERED 
-  #define CS3DPanel_FACTORY_REGISTERED 
-    CS3DPanel_StaticInit CS3DPanel_static_init__; 
-  #endif
-  #ifndef SceneBrowserPanel_FACTORY_REGISTERED 
-  #define SceneBrowserPanel_FACTORY_REGISTERED 
-    SceneBrowserPanel_StaticInit SceneBrowserPanel_static_init__; 
-  #endif
-  #ifndef AssetBrowserPanel_FACTORY_REGISTERED 
-  #define AssetBrowserPanel_FACTORY_REGISTERED 
-    AssetBrowserPanel_StaticInit AssetBrowserPanel_static_init__; 
   #endif
   #ifndef CSObjectMapListener_FACTORY_REGISTERED 
   #define CSObjectMapListener_FACTORY_REGISTERED 

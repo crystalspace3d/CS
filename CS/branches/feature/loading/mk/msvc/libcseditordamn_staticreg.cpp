@@ -22,9 +22,10 @@ static char const metainfo_cseditordamn[] =
 "  <scf>"
 "    <classes>"
 "      <class>"
-"        <name>crystalspace.editor.plugin.damn.damnpanel</name>"
-"        <implementation>DAMNPanel</implementation>"
-"        <description>DAMN Asset Browsing Panel</description>"
+"        <name>crystalspace.editor.plugin.damn.damnspace</name>"
+"        <implementation>DAMNSpace</implementation>"
+"        <description>DAMN View</description>"
+"        <allowMultiple>true</allowMultiple>"
 "      </class>"
 "      "
 "      <class>"
@@ -36,9 +37,9 @@ static char const metainfo_cseditordamn[] =
 "  </scf>"
 "</plugin>"
 ;
-  #ifndef DAMNPanel_FACTORY_REGISTER_DEFINED 
-  #define DAMNPanel_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(DAMNPanel) 
+  #ifndef DAMNSpace_FACTORY_REGISTER_DEFINED 
+  #define DAMNSpace_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(DAMNSpace) 
   #endif
   #ifndef DAMNResourceManager_FACTORY_REGISTER_DEFINED 
   #define DAMNResourceManager_FACTORY_REGISTER_DEFINED 
@@ -48,9 +49,9 @@ static char const metainfo_cseditordamn[] =
 class cseditordamn
 {
 SCF_REGISTER_STATIC_LIBRARY(cseditordamn,metainfo_cseditordamn)
-  #ifndef DAMNPanel_FACTORY_REGISTERED 
-  #define DAMNPanel_FACTORY_REGISTERED 
-    DAMNPanel_StaticInit DAMNPanel_static_init__; 
+  #ifndef DAMNSpace_FACTORY_REGISTERED 
+  #define DAMNSpace_FACTORY_REGISTERED 
+    DAMNSpace_StaticInit DAMNSpace_static_init__; 
   #endif
   #ifndef DAMNResourceManager_FACTORY_REGISTERED 
   #define DAMNResourceManager_FACTORY_REGISTERED 

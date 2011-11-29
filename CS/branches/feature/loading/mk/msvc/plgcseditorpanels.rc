@@ -19,7 +19,7 @@ FILEFLAGS 0x0
       VALUE "ProductVersion", CS_VERSION
       VALUE "FileVersion", CS_VERSION
       VALUE "LegalCopyright", "Copyright (C)1998-2011 Jorrit Tyberghein and others"
-      VALUE "FileDescription", "CSEditor Core Plugin"
+      VALUE "FileDescription", "cseditorpanels"
 #ifdef CS_DEBUG
       VALUE "Comments", "Debug build"
 #else
@@ -39,27 +39,24 @@ FILEFLAGS 0x0
 17485 RCDATA 
 {
   "<?xml version=""1.0""?>",
-  "<!-- cseditorcore.csplugin -->",
+  "<!-- cseditorspaces.csplugin -->",
   "<plugin>",
   "  <scf>",
   "    <classes>",
   "      <class>",
-  "        <name>crystalspace.editor.plugin.core.gui</name>",
-  "        <implementation>Editor</implementation>",
-  "        <description>CSEditor GUI</description>",
+  "        <name>crystalspace.editor.plugin.core.objectpanel</name>",
+  "        <implementation>ObjectPanel</implementation>",
+  "        <description>Object Panel</description>",
+  "        <space>crystalspace.editor.plugin.core.propertiesspace</space>",
   "      </class>",
-  "      <!--",
+  "      ",
   "      <class>",
-  "        <name>crystalspace.editor.plugin.core.csobjectmaplistener</name>",
-  "        <implementation>CSObjectMapListener</implementation>",
-  "        <description>CSEditor CS Object Map Listener</description>",
+  "        <name>crystalspace.editor.plugin.core.camerapanel</name>",
+  "        <implementation>CameraPanel</implementation>",
+  "        <description>Camera Panel</description>",
+  "        <space>crystalspace.editor.plugin.core.propertiesspace</space>",
   "      </class>",
-  "      <class>",
-  "        <name>crystalspace.editor.plugin.core.csinterfacewrappers</name>",
-  "        <implementation>CSInterfaceWrappers</implementation>",
-  "        <description>CSEditor CS Interface Wrappers</description>",
-  "      </class>",
-  "      -->",
+  "      ",
   "    </classes>",
   "  </scf>",
   "</plugin>",

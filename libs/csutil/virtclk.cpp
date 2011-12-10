@@ -22,10 +22,8 @@
 #include "iutil/virtclk.h"
 
 csVirtualClock::csVirtualClock () : 
-  scfImplementationType (this),
-  elapsedTime (0), currentVirtualTime (0), currentRealTime (0),
-  elapsedTimeM (0), currentVirtualTimeM (0), currentRealTimeM (0),
-  flags (flagFirstShot), elapsedSecondsValid (false)
+  scfImplementationType (this), elapsedTime (0), currentVirtualTime (0), 
+  currentRealTime(0), flags (flagFirstShot)
 { }
 
 csVirtualClock::~csVirtualClock () { }
@@ -33,43 +31,28 @@ csVirtualClock::~csVirtualClock () { }
 void csVirtualClock::Advance ()
 {
   if (flags & flagSuspended) return;
-
   csTicks last = currentRealTime;
-  csMicroTicks lastM = currentRealTimeM;
-
   currentRealTime = csGetTicks ();
-  currentRealTimeM = csGetMicroTicks ();
-
   if (flags & flagFirstShot)
   {
     flags &= ~flagFirstShot;
     elapsedTime = 0;
-    elapsedTimeM = 0;
   }
   else
   {
-    if (currentRealTimeM < lastM)
-      // csMicroTicks(-1) is the period for a unsigned value
-      elapsedTimeM = currentRealTimeM + (csMicroTicks(-1) - lastM) + 1;
-    else
-      elapsedTimeM = currentRealTimeM - lastM;
-    currentVirtualTimeM += elapsedTimeM;
-
     if (currentRealTime < last)
-      // csMicroTicks(-1) is the period for a unsigned value
+      // csTicks(-1) is the period for a unsigend value
       elapsedTime = currentRealTime + (csTicks(-1) - last) + 1;
     else
       elapsedTime = currentRealTime - last;
     currentVirtualTime += elapsedTime;
   }
-  elapsedSecondsValid = false;
 }
 
 void csVirtualClock::Suspend ()
 {
   flags |= flagSuspended;
   elapsedTime = 0;
-  elapsedTimeM = 0;
 }
 
 void csVirtualClock::Resume ()
@@ -80,14 +63,3 @@ void csVirtualClock::Resume ()
     flags |= flagFirstShot;
   }
 }
-
-float csVirtualClock::GetElapsedSeconds ()
-{
-  if (!elapsedSecondsValid)
-  {
-    elapsedSecondsValid = true;
-    elapsedSeconds = float (elapsedTimeM) / 1000000.0f;
-  }
-  return elapsedSeconds;
-}
-

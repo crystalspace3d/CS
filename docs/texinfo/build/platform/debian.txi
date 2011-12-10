@@ -27,7 +27,7 @@ If you have 3D effects enabled on your desktop environment. This may unfortunate
 
 Under Ubuntu Natty 11.04 and higher, this is done at login. Once you have selected the user you want to login, select the ``Ubuntu Classic (No effects)'' User Interface (@sc{ui}) option at the bottom of your screen.
 
-@node Debian Libraries, Debian Building, Debian 3D Display, Debian
+@node Debian Libraries, Debian Building, Debian, Debian
 @subsubsection Library Prerequisites
 
 @subsubheading Basic libraries
@@ -112,7 +112,7 @@ sudo make install
 
 @end itemize
 
-@node Debian Building, , Debian Libraries, Debian
+@node Debian Building, MSVC7, Debian Libraries, Debian
 @subsubsection Building
 
 @subsubheading Download the latest Crystal Space source 

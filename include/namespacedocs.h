@@ -66,19 +66,6 @@ namespace CS
   {}
 
   /**
-   * General tools for the edition of Crystal Space objects.
-   */
-  namespace Editor
-  {}
-
-  /**
-   * Objects and tools specific to the Crystal Space editor. Most of
-   * these tools need the wxWidgets dependency.
-   */
-  namespace EditorApp
-  {}
-
-  /**
    * Geometry and mesh tools related classes.
    */
   namespace Geometry

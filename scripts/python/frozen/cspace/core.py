@@ -680,9 +680,6 @@ class csStringIDSet(object):
     def DeleteAll(*args): return _core.csStringIDSet_DeleteAll(*args)
     def Empty(*args): return _core.csStringIDSet_Empty(*args)
     def Delete(*args): return _core.csStringIDSet_Delete(*args)
-    def Union(*args): return _core.csStringIDSet_Union(*args)
-    def TestIntersect(*args): return _core.csStringIDSet_TestIntersect(*args)
-    def Subtract(*args): return _core.csStringIDSet_Subtract(*args)
     def GetSize(*args): return _core.csStringIDSet_GetSize(*args)
     def IsEmpty(*args): return _core.csStringIDSet_IsEmpty(*args)
     def __len__(*args): return _core.csStringIDSet___len__(*args)
@@ -693,9 +690,6 @@ class csStringIDSet(object):
     __del__ = lambda self : None;
 csStringIDSet_swigregister = _core.csStringIDSet_swigregister
 csStringIDSet_swigregister(csStringIDSet)
-Union = _core.Union
-Intersect = _core.Intersect
-Subtract = _core.Subtract
 
 class csRefCount(object):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -1003,7 +997,6 @@ class iFile(iBase):
     def GetPos(*args): return _core.iFile_GetPos(*args)
     def SetPos(*args): return _core.iFile_SetPos(*args)
     def GetAllData(*args): return _core.iFile_GetAllData(*args)
-    def GetPartialView(*args): return _core.iFile_GetPartialView(*args)
     scfGetVersion = staticmethod(_core.iFile_scfGetVersion)
     __swig_destroy__ = _core.delete_iFile
     __del__ = lambda self : None;
@@ -1140,9 +1133,6 @@ class iVirtualClock(iBase):
     def Resume(*args): return _core.iVirtualClock_Resume(*args)
     def GetElapsedTicks(*args): return _core.iVirtualClock_GetElapsedTicks(*args)
     def GetCurrentTicks(*args): return _core.iVirtualClock_GetCurrentTicks(*args)
-    def GetElapsedMicroTicks(*args): return _core.iVirtualClock_GetElapsedMicroTicks(*args)
-    def GetElapsedSeconds(*args): return _core.iVirtualClock_GetElapsedSeconds(*args)
-    def GetCurrentMicroTicks(*args): return _core.iVirtualClock_GetCurrentMicroTicks(*args)
     scfGetVersion = staticmethod(_core.iVirtualClock_scfGetVersion)
     __swig_destroy__ = _core.delete_iVirtualClock
     __del__ = lambda self : None;

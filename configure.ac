@@ -13,7 +13,7 @@ AC_PREREQ([2.56])
 #	Keep this value synchronized with CS/include/csver.h.template,
 #	CS/docs/texinfo/version.txi, and CS/mk/autoconf/crystal.m4.
 #------------------------------------------------------------------------------
-m4_define([cs_version_number], [2.1])
+m4_define([cs_version_number], [2.0])
 
 
 
@@ -205,11 +205,10 @@ AS_IF([test $enable_static_baselibs = yes],
         [cs_cv_prog_link_static_libgcc], [CS_CREATE_TUPLE([-static-libgcc])],
         [C], [COMPILER.LFLAGS], [+])
     libstdcxx=`$CXX -print-file-name=libstdc++.a`
-    CS_CHECK_BUILD_FLAGS([for -static-libstdc++],
-        [cs_cv_prog_link_static_libstdcxx], [CS_CREATE_TUPLE([-static-libstdc++])],
-        [C++], [],
-        [cs_cv_prog_link_static_libstdcxx=$libstdcxx])
-    CS_EMIT_BUILD_PROPERTY([COMPILER.LFLAGS], [$cs_cv_prog_link_static_libstdcxx], [+])])
+    CS_EMIT_BUILD_FLAGS([for static libstdc++],
+        [cs_cv_prog_link_static_libstdcxx],
+        CS_CREATE_TUPLE([$libstdcxx]),
+        [C++], [COMPILER.LFLAGS], [+])])
 
 
 
@@ -809,13 +808,6 @@ AC_MSG_CHECKING([build mode])
 AS_VAR_SET_IF([cs_build_mode], [], [cs_build_mode=optimize])
 AC_MSG_RESULT([$cs_build_mode])
 CS_EMIT_BUILD_PROPERTY([MODE], [$cs_build_mode])
-
-
-
-#------------------------------------------------------------------------------
-# Check whether to enable LTO (link-time optimization).
-#------------------------------------------------------------------------------
-CS_CHECK_ENABLE_LTO
 
 
 
@@ -1722,31 +1714,6 @@ CS_NOTABLE([wxwidgets], [gui], [], [$cs_cv_libwx_opengl])
 AS_IF([test $cs_cv_libwx_opengl = yes],
     [CS_EMIT_BUILD_RESULT([cs_cv_libwx_opengl], [WX])])
 
-AS_IF([test $cs_cv_libwx = yes],
-    [CS_CHECK_BUILD([if wxWidgets is built with wxAUI support],
-	[cs_cv_libwx_aui],
-	[AC_LANG_PROGRAM(
-	    [[#include "wx/wxprec.h"
-	    #ifdef __BORLANDC__
-	    #pragma hdrstop
-	    #endif
-	    #ifndef WX_PRECOMP
-	    #include "wx/wx.h"
-	    #endif
-	    #include "wx/aui/aui.h"
-	    ]],
-	    [wxAuiManager mgr; wxWindow* w;
-	     mgr.SetManagedWindow(w);
-	     mgr.AddPane(w, wxAuiPaneInfo());])],
-	[CS_CREATE_TUPLE(
-	    [$cs_cv_libwx_cflags],
-	    [$cs_cv_libwx_lflags],
-	    [$cs_cv_libwx_libs])],
-	[C++])],
-    [cs_cv_libwx_aui=no])
-
-AS_IF([test $cs_cv_libwx_aui = yes],
-    [CS_EMIT_BUILD_RESULT([cs_cv_libwx_aui], [WX.AUI])])
 
 
 #----------------------------------------------------------------------------
@@ -1955,19 +1922,6 @@ CS_NOTABLE([assimp], [models], [], [$cs_cv_libassimp],
 	      #include <assimp/aiScene.h>]],
 	    [])],
 	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libassimp], [ASSIMP])])])
-
-
-
-#------------------------------------------------------------------------------
-# Check for libcurl (CURL)
-#------------------------------------------------------------------------------
-CS_NOTABLE([curl], [], [], [$cs_cv_libcurl],
-    [CS_CHECK_LIB_WITH([curl],
-	[AC_LANG_PROGRAM(
-	    [[#include <curl/curl.h>]],
-	    [])],
-	[], [], [CS_EMIT_BUILD_PROPERTY([CURL.AVAILABLE], [yes])
-		 CS_EMIT_BUILD_RESULT([cs_cv_libcurl], [CURL])])])
 
 
 

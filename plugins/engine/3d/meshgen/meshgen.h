@@ -49,13 +49,22 @@ class DensityFactorMap;
 struct csMGPosition;
 
 /**
- * A mesh object in a geometry.
+ * A single geometry (for a single lod level).
  */
-struct GeomMeshObject
+struct csMGGeom
 {
-  csRef<iMeshWrapper> mesh;
-  
+  csRef<iMeshFactoryWrapper> factory;
+  float maxdistance;
+  float sqmaxdistance;
+
+  csRef<csShaderVariable> windDataVar;
   csRef<csShaderVariable> instancesNumVar;
+  /**
+   * SV contains coefficents for linear fading function <tt>opacity = dist*m + n</tt>:
+   * (fadeInM,fadeInN,fadeOutM,fadeOutN)
+   */
+  csRef<csShaderVariable> fadeInfoVar;
+  csRef<iMeshWrapper> mesh;
 
   // All instances of this geometry
   csArray<csMGPosition*> allPositions;
@@ -82,26 +91,7 @@ struct GeomMeshObject
   csRef<csShaderVariable> transformVar;
   csRef<csShaderVariable> instanceExtraVar;
   
-  GeomMeshObject() : dataDirty (true) {}
-};
-
-/**
- * A single geometry (for a single lod level).
- */
-struct csMGGeom
-{
-  csRef<iMeshFactoryWrapper> factory;
-  float maxdistance;
-  float sqmaxdistance;
-
-  csRef<csShaderVariable> windDataVar;
-  /**
-   * SV contains coefficents for linear fading function <tt>opacity = dist*m + n</tt>:
-   * (fadeInM,fadeInN,fadeOutM,fadeOutN)
-   */
-  csRef<csShaderVariable> fadeInfoVar;
-  
-  GeomMeshObject meshobj;
+  csMGGeom() : dataDirty (true) {}
 };
 
 struct csMGDensityMaterialFactor
@@ -315,7 +305,7 @@ struct csMGPositionBlock
 
   csArray<csMGPosition*> positions;
 
-  /// An index back to the cell that holds this block (or csArrayItemNotFound).
+  /// An index back to the cell that holds this block (or ~0).
   size_t parent_cell;
 
   csMGPositionBlock () : next (0), prev (0),

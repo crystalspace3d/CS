@@ -70,8 +70,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(FurMesh)
     CS::StructuredTextureFormat readbackFmt 
       (CS::TextureFormatStrings::ConvertStructured ("abgr8"));
 
-    csRef<iDataBuffer> buf = handle->Readback(readbackFmt);
-    databuf = buf;
+    databuf = handle->Readback(readbackFmt);
 
     if (!databuf)
       return false;

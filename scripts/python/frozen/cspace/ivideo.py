@@ -422,8 +422,6 @@ class iGraphics3D(core.iBase):
     def DrawMeshBasic(*args): return _ivideo.iGraphics3D_DrawMeshBasic(*args)
     def SetEdgeDrawing(*args): return _ivideo.iGraphics3D_SetEdgeDrawing(*args)
     def GetEdgeDrawing(*args): return _ivideo.iGraphics3D_GetEdgeDrawing(*args)
-    def SetTessellation(*args): return _ivideo.iGraphics3D_SetTessellation(*args)
-    def GetTessellation(*args): return _ivideo.iGraphics3D_GetTessellation(*args)
     scfGetVersion = staticmethod(_ivideo.iGraphics3D_scfGetVersion)
     __swig_destroy__ = _ivideo.delete_iGraphics3D
     __del__ = lambda self : None;
@@ -469,7 +467,6 @@ class iNativeWindow(core.iBase):
     decoClientFrame = _ivideo.iNativeWindow_decoClientFrame
     def SetWindowDecoration(*args): return _ivideo.iNativeWindow_SetWindowDecoration(*args)
     def GetWindowDecoration(*args): return _ivideo.iNativeWindow_GetWindowDecoration(*args)
-    def FitSizeToWorkingArea(*args): return _ivideo.iNativeWindow_FitSizeToWorkingArea(*args)
     __swig_destroy__ = _ivideo.delete_iNativeWindow
     __del__ = lambda self : None;
 iNativeWindow_swigregister = _ivideo.iNativeWindow_swigregister

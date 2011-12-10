@@ -32,7 +32,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 
   class csXMLShaderCompiler;
   class csXMLShader;
-  class csXMLShaderWrapper;
 
   struct CachedPlugin;
   struct CachedPlugins;
@@ -42,7 +41,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
   {
   private:
     friend class csXMLShader;
-    friend class csXMLShaderWrapper;
     friend struct PassActionPrecache;
 
     struct ShaderPassPerTag : public CS::Memory::CustomAllocated
@@ -93,10 +91,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       };
       csArray<TextureMapping> textures;
 
-      // Program that describes (almost) the whole pipeline using shaders:
-      // vertex, fragment, etc.
-      csRef<iShaderProgram> program;
-      // Hook
+      // programs
+      csRef<iShaderProgram> vp;
+      csRef<iShaderProgram> fp;
       csRef<iShaderProgram> vproc;
 
     };
@@ -219,7 +216,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
     size_t variant);
   
   iShaderProgram::CacheLoadResult LoadProgramFromCache (iBase* previous,
-    iHierarchicalCache* cache, const CachedPlugin& cacheInfo,
+    size_t variant, iHierarchicalCache* cache, const CachedPlugin& cacheInfo,
     csRef<iShaderProgram>& prog, csString& tag, int passNumber);
   // Set reason for failure.
   void SetFailReason (const char* reason, ...) CS_GNUC_PRINTF (2, 3);

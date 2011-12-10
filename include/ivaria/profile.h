@@ -88,7 +88,7 @@ namespace Debug
 
     ~ProfilerZoneScope ()
     {
-      csMicroTicks stopTime = csGetMicroTicks ();
+      int64 stopTime = csGetMicroTicks ();
 
       zone->enterCount++;
       zone->totalTime += (stopTime - startTime);
@@ -96,7 +96,7 @@ namespace Debug
 
 
   private:
-    csMicroTicks startTime;
+    int64 startTime;
     ProfileZone* zone;
   };
 

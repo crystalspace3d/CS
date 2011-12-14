@@ -58,7 +58,7 @@
  */
 //CS_RCSREV_OFFSET 0
 #ifndef CS_VERSION_RCSREV
-#define CS_VERSION_RCSREV	563
+#define CS_VERSION_RCSREV	3609
 #endif
 
 /**\name Version number definitions (numeric)
@@ -96,7 +96,7 @@
 /// Build number
 #define CS_VERSION_BUILD	CS_VER_QUOTE(CS_VERSION_NUM_BUILD)
 /// Date of release
-#define CS_RELEASE_DATE  	CS_VER_QUOTE_(Mon 5-Jun-2008)
+#define CS_RELEASE_DATE  	CS_VER_QUOTE_(Sat 17-Dec-2011)
 /** @} */
 
 #define CS_VER_QUOTE_(X) #X

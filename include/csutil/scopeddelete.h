@@ -22,7 +22,7 @@
  * delete a pointer when exiting a scope
  */
 
-#include "csutil/scopedpointer.h"
+#include "csutil/noncopyable.h"
 
 namespace CS
 {
@@ -34,11 +34,27 @@ namespace Utility
    * \a T is the type pointed to.
    */
   template<class T>
-  class ScopedDelete : public ScopedPointer<T>
+  class ScopedDelete : private NonCopyable
   {
+    T* const ptr;
   public:
     /// Construct from given pointer
-    ScopedDelete (T* ptr) : ScopedPointer<T> (ptr) {}
+    ScopedDelete (T* ptr) : ptr (ptr) {}
+    /// Destruct. Deletes the given pointer!
+    ~ScopedDelete() { delete ptr; }
+  
+    /// Dereference underlying pointer.
+    T* operator -> () const
+    { return ptr; }
+    
+    /// Cast to a pointer.
+    operator T* () const
+    { return ptr; }
+    
+    /// Dereference underlying pointer.
+    T& operator* () const
+    { return *ptr; }
+  
   };
 
 } // namespace Utility

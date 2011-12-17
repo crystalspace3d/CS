@@ -37,6 +37,8 @@
 #include "csgfx/packrgb.h"
 #include "csutil/databuf.h"
 
+CS_IMPLEMENT_PLUGIN
+
 CS_PLUGIN_NAMESPACE_BEGIN(TGAImageIO)
 {
 
@@ -107,6 +109,10 @@ csPtr<iImage> csTGAImageIO::Load (iDataBuffer* buf, int iFormat)
     return 0;
   }
   return csPtr<iImage> (i);
+}
+
+void csTGAImageIO::SetDithering (bool)
+{
 }
 
 csPtr<iDataBuffer> csTGAImageIO::Save (iImage *Image, iImageIO::FileFormatDescription *,

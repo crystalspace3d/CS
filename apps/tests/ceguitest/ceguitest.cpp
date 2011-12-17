@@ -91,15 +91,15 @@ void CEGUITest::Frame()
   csOrthoTransform ot (rot, c->GetTransform().GetOrigin ());
   c->SetTransform (ot);
   // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
+  if (!g3d->BeginDraw(
+    engine->GetBeginDrawFlags() | CSDRAW_3DGRAPHICS))
     return;
 
   
   // Tell the camera to render into the frame buffer.
   view->Draw ();
-  
-  /* CEGUI rendering is done by the CEGUI plugin itself since
-     we called SetAutoRender (true). */
+
+  cegui->Render ();
 }
 
 bool CEGUITest::OnInitialize(int /*argc*/, char* /*argv*/ [])
@@ -158,33 +158,40 @@ bool CEGUITest::Application()
 
   // Initialize CEGUI wrapper
   cegui->Initialize ();
-  
-  /* Let CEGUI plugin install an event handler that takes care of rendering
-     every frame */
-  cegui->SetAutoRender (true);
-  
+
   // Set the logging level
   cegui->GetLoggerPtr ()->setLoggingLevel(CEGUI::Informative);
 
-  vfs->ChDir ("/cegui/");
+//#if (CEGUI_VERSION_MAJOR == 0) && (CEGUI_VERSION_MINOR >= 5)
+  // Use the 0.5 version of the skin
+  vfs->ChDir ("/ceguitest/0.5/");
+//#else
+  // Other versions here, if supported
+//#endif
 
   // Load the ice skin (which uses Falagard skinning system)
-  cegui->GetSchemeManagerPtr ()->create("ice.scheme");
+  cegui->GetSchemeManagerPtr ()->loadScheme("ice.scheme");
 
   cegui->GetSystemPtr ()->setDefaultMouseCursor("ice", "MouseArrow");
 
-  cegui->GetFontManagerPtr ()->createFreeTypeFont("DejaVuSans", 10, true, "/fonts/ttf/DejaVuSans.ttf");
+  CEGUI::Font* font = cegui->GetFontManagerPtr ()->createFont("FreeType",
+    "Vera", "/fonts/ttf/Vera.ttf");
+  font->setProperty("PointSize", "10");
+  font->load();
 
   CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
 
   // Load layout and set as root
-  vfs->ChDir ("/ceguitest/");
   cegui->GetSystemPtr ()->setGUISheet(winMgr->loadWindowLayout("ice.layout"));
 
   // Subscribe to the clicked event for the exit button
   CEGUI::Window* btn = winMgr->getWindow("Demo7/Window1/Quit");
   btn->subscribeEvent(CEGUI::PushButton::EventClicked,
     CEGUI::Event::Subscriber(&CEGUITest::OnExitButtonClicked, this));
+
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
 
   // These are used store the current orientation of the camera.
   rotY = rotX = 0;
@@ -224,15 +231,7 @@ bool CEGUITest::OnKeyboard(iEvent& ev)
         csQueryRegistry<iEventQueue> (GetObjectRegistry());
       if (q.IsValid()) q->GetEventOutlet()->Broadcast(csevQuit(GetObjectRegistry()));
     }
-    csPrintf("Keyboard event fell through or no input window, like an %s, was active.\n",
-	     CS::Quote::Single ("Editbox"));
   }
-  return false;
-}
-
-bool CEGUITest::OnMouseDown(iEvent& ev)
-{
-  csPrintf("Mouse event fell through or user clicked outside a window.\n");
   return false;
 }
 
@@ -242,8 +241,7 @@ void CEGUITest::CreateRoom ()
   // CS/data/standard.zip and mounted as /lib/std using the Virtual
   // File System (VFS) plugin.
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
-    ReportError("Error loading %s texture!",
-		CS::Quote::Single ("stone4"));
+    ReportError("Error loading 'stone4' texture!");
 
   iMaterialWrapper* tm =
     engine->GetMaterialList ()->FindByName ("stone");
@@ -261,6 +259,10 @@ void CEGUITest::CreateRoom ()
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, "walls", "walls_factory", &box);
+
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
 
   csRef<iLight> light;
@@ -279,9 +281,6 @@ void CEGUITest::CreateRoom ()
   ll->Add (light);
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
 }
 
 

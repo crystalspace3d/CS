@@ -64,29 +64,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
     GLuint GetBuffer() const { return buffer; }
   };
 
-  template<class TextureKeeper = csWeakRef<iTextureHandle> >
   struct R2TAttachmentGroup
   {
-    typedef csGLRender2TextureBackend::RTAttachment<TextureKeeper> RTA;
   protected:
-    template<class _TextureKeeper> friend struct R2TAttachmentGroup;
-  
     uint hash;
   #ifdef CS_DEBUG
     bool hashComputed;
   #endif
-    RTA attachments[rtaNumAttachments];
-    
-    static unsigned int HashCompute (char const* s, size_t n, uint startHash)
-    {
-      unsigned int h = startHash;
-      const char* end = s + n;
-      for(const char* c = s; c != end; ++c)
-	h = ((h << 5) + h) + *c;
-  
-      return h;
-    }
-  
+    csGLRender2TextureBackend::RTAttachment attachments[rtaNumAttachments];
   public:
     R2TAttachmentGroup()
     {
@@ -95,7 +80,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
     #endif
     }
 
-    RTA& GetAttachment (csRenderTargetAttachment a)
+    csGLRender2TextureBackend::RTAttachment& GetAttachment (
+      csRenderTargetAttachment a)
     {
       CS_ASSERT((a >= 0) && (a < rtaNumAttachments));
     #ifdef CS_DEBUG
@@ -103,7 +89,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
     #endif
       return attachments[a];
     }
-    const RTA& GetAttachment (csRenderTargetAttachment a) const
+    const csGLRender2TextureBackend::RTAttachment& GetAttachment (
+      csRenderTargetAttachment a) const
     {
       CS_ASSERT((a >= 0) && (a < rtaNumAttachments));
       return attachments[a];
@@ -115,21 +102,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 	attachments[a].Clear();
     }
 
-    void ComputeHash()
-    {
-      hash = 0;
-      for (int a = 0; a < rtaNumAttachments; a++)
-      {
-	// To exclude the weakref memcpy protection from the hash
-	csGLRender2TextureBackend::RTAttachment<iTextureHandle*> hashAttachment (
-	  attachments[a]);
-	hash = HashCompute ((char const*)(&hashAttachment), 
-	  sizeof (csGLRender2TextureBackend::RTAttachment<iTextureHandle*>), hash);
-      }
-    #ifdef CS_DEBUG
-      hashComputed = true;
-    #endif
-    }
+    void ComputeHash();
     uint GetHash() const
     {
     #ifdef CS_DEBUG
@@ -138,8 +111,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
       return hash;
     }
 
-    template<class OtherKeeper>
-    bool operator== (const R2TAttachmentGroup<OtherKeeper>& other) const
+    bool operator== (const R2TAttachmentGroup& other) const
     {
       if (GetHash() != other.GetHash()) return false;
       for (int a = 0; a < rtaNumAttachments; a++)
@@ -147,20 +119,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 	if (attachments[a] != other.attachments[a]) return false;
       }
       return true;
-    }
-
-    template<class OtherKeeper>
-    R2TAttachmentGroup& operator= (const R2TAttachmentGroup<OtherKeeper>& other)
-    {
-      hash = other.hash;
-    #ifdef CS_DEBUG
-      hashComputed = other.hashComputed;
-    #endif
-      for (int a = 0; a < rtaNumAttachments; a++)
-      {
-	attachments[a] = other.attachments[a];
-      }
-      return *this;
     }
 
     bool Empty() const
@@ -172,9 +130,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
       return true;
     }
   };
-  
-  typedef R2TAttachmentGroup<csRef<iTextureHandle> > RRTAG;
-  typedef R2TAttachmentGroup<> WRTAG;
 
   class FBOWrapper
   {
@@ -189,10 +144,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
     void FreeBuffers();
     void Complete2 (bool& needsDepth, bool& needsStencil);
     void SetRBAttachment (GLenum attachment, RenderBufferWrapper* rb);
-    void SetDrawBuffers() const;
   public:
-    uint32 initialAttachments;
-    R2TAttachmentGroup<> attachments;
+    R2TAttachmentGroup attachments;
 
     FBOWrapper (csGLExtensionManager* ext,
       int w, int h) : ext (ext), fbSize (w, h), framebuffer (0),
@@ -257,14 +210,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
         return false;
       }
     
-      static bool IsLargerEqual (const Dimensions& r1, 
-                                 const csRef<RenderBufferWrapper>& r2)
-      {
-        if ((r1.width >= r2->GetWidth()) 
-	  && (r1.height >= r2->GetHeight())) return true;
-        return false;
-      }
-    
       static bool IsEqual (const csRef<RenderBufferWrapper>& r1, 
                            const Dimensions& r2)
       {
@@ -277,7 +222,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 
     struct FrameBuffer
     {
-      typedef RRTAG KeyType;
+      typedef R2TAttachmentGroup KeyType;
 
       static bool IsLargerEqual (const FBOWrapper& b1, 
                                  const FBOWrapper& b2)
@@ -292,19 +237,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
       }
     
       static bool IsLargerEqual (const FBOWrapper& b1, 
-                                 const RRTAG& b2)
+                                 const R2TAttachmentGroup& b2)
       {
 	return b1.attachments.GetHash() >= b2.GetHash();
       }
-      
-      static bool IsLargerEqual (const RRTAG& b1, 
-                                 const FBOWrapper& b2)
-      {
-	return b1.GetHash() >= b2.attachments.GetHash();
-      }
     
       static bool IsEqual (const FBOWrapper& b1, 
-                           const RRTAG& b2)
+                           const R2TAttachmentGroup& b2)
       {
 	return b1.attachments == b2;
       }
@@ -346,50 +285,34 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 
   namespace CachePurge
   {
-    class FrameBuffer :
-      public CS::Utility::ResourceCache::PurgeConditionAfterTime<>
+    class RenderBuffer
     {
-      typedef CS::Utility::ResourceCache::PurgeConditionAfterTime<> Parent;
     public:
-      typedef Parent::AddParameter AddParameter;
-      struct StoredAuxiliaryInfo : public Parent::StoredAuxiliaryInfo
+      struct AddParameter
+      {
+        AddParameter () {}
+      };
+      struct StoredAuxiliaryInfo
       {
 	template<typename ResourceCacheType>
 	StoredAuxiliaryInfo (const ResourceCacheType& cache, 
-	  const AddParameter& param) 
-	  : Parent::StoredAuxiliaryInfo (cache, param) {}
+	  const AddParameter& param) {}
       };
-      
-      FrameBuffer (uint purgeAge = 6000) : Parent (purgeAge) {}
       
       template<typename ResourceCacheType>
       void MarkActive (const ResourceCacheType& cache,
 	  StoredAuxiliaryInfo& elementInfo)
-      {
-        Parent::MarkActive (cache, elementInfo);
-      }
+      { }
 
       template<typename ResourceCacheType>
       bool IsPurgeable (const ResourceCacheType& cache,
 	StoredAuxiliaryInfo& elementInfo,
 	const typename ResourceCacheType::CachedType& data)
       {
-	if (Parent::IsPurgeable (cache, elementInfo, data))
-	  return true;
-	
-	uint32 currentAttachments = 0;
-	for (int a = 0; a < rtaNumAttachments; a++)
-	{
-	  const WRTAG::RTA& attachment =
-	    data.attachments.GetAttachment (csRenderTargetAttachment(a));
-	  if (!attachment.IsValid()) continue;
-	  
-	  currentAttachments |= 1 << a;
-	}
-	return currentAttachments != data.initialAttachments;
+	return data->GetRefCount() == 1;
       }
     };
-  } // namespace CachePurge
+  } // namespace CacheReuse
 
 class csGLRender2TextureEXTfbo : public csGLRender2TextureBackend
 {
@@ -399,21 +322,21 @@ class csGLRender2TextureEXTfbo : public csGLRender2TextureBackend
   bool viewportSet;
   R2TViewportHelper viewportHelper;
 
+  // @@@ TODO: probably better to manage render buffers separately from complete FBOs
   typedef CS::Utility::GenericResourceCache<csRef<RenderBufferWrapper>,
     uint, CacheSorting::RenderBuffer, CacheReuse::RenderBuffer,
-    CS::Utility::ResourceCache::PurgeIfOnlyOneRef> RBCache;
+    CachePurge::RenderBuffer> RBCache;
   RBCache depthRBCache, stencilRBCache;
   CS::Utility::GenericResourceCache<FBOWrapper,
-    uint, CacheSorting::FrameBuffer, 
-    CS::Utility::ResourceCache::ReuseConditionAfterTime<>,
-    CachePurge::FrameBuffer> fboCache;
+    uint, CacheSorting::FrameBuffer> fboCache;
 
-  R2TAttachmentGroup<csRef<iTextureHandle> > currentAttachments;
+  uint frameNum;
+  R2TAttachmentGroup currentAttachments;
 
   csString fboMsg;
   const char* FBStatusStr (GLenum status);
 
-  void RegenerateTargetMipmaps (const WRTAG::RTA& target);
+  void RegenerateTargetMipmaps (const RTAttachment& target);
 
   void SelectCurrentFBO ();
 public:
@@ -429,21 +352,14 @@ public:
   iTextureHandle* GetRenderTarget (csRenderTargetAttachment attachment, int* subtexture) const;
   
   void BeginDraw (int drawflags);
-  CS::Math::Matrix4 FixupProjection (
-    const CS::Math::Matrix4& projectionMatrix);
-  void FinishDraw (bool readbackTargets);
+  void SetupProjection ();
+  void FinishDraw ();
   void SetClipRect (const csRect& clipRect);
   void SetupClipPortalDrawing ();
 
   virtual bool HasStencil() { return stencilStorage != 0; }
-  virtual bool HasMultisample()
-  {
-    /* Needs EXT_framebuffer_multisample */
-    return false;
-  }
 
-  void NextFrame (uint frameNum);
-  void CleanupFBOs();
+  void NextFrame();
 
   void GetDepthStencilRBs (const Dimensions& fbSize, 
     bool needsDepth, csRef<RenderBufferWrapper>& depthRB, 

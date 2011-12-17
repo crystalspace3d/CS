@@ -34,7 +34,7 @@ namespace lighter
   {
   public:
     SimpleUVFactoryLayouter (LightmapPtrDelArray& lightmaps) : 
-      prepared (false), globalLightmaps (lightmaps)
+      globalLightmaps (lightmaps)
     {}
 
     virtual csPtr<LightmapUVObjectLayouter> LayoutFactory (
@@ -49,7 +49,6 @@ namespace lighter
   protected:
     friend class SimpleUVObjectLayouter;
 
-    bool prepared;
     LightmapPtrDelArray& globalLightmaps;
 
     /**

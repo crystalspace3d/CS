@@ -17,7 +17,7 @@ if $(X11.AVAILABLE) = "yes"
     [ Wildcard *.cpp *.h ] 
     $(ALERT_FILES) ;
   LinkWith xwin : crystalspace ;
-  CompileGroups xwin : canvases openglcanvas ;
+  CompileGroups xwin : canvases softcanvas openglcanvas ;
   if $(XFREE86VM.AVAILABLE) = "yes"
   {
     CFlags xwin : [ FDefines XFREE86VM ] ;
@@ -29,7 +29,7 @@ if $(X11.AVAILABLE) = "yes"
   }
   if $(XAW.AVAILABLE) = "yes"
   {
-    RelayLibs xwin : XAW : Xaw7 Xaw ;
+    RelayLibs xwin : XAW : Xaw7 ;
     CFlags xwin : [ FDefines HAVE_XAW ] ;
   }
   if $(GTK.AVAILABLE) = "yes"
@@ -40,15 +40,5 @@ if $(X11.AVAILABLE) = "yes"
     {
       CFlags xwin : [ FDefines GTK_MESSAGE_HAS_SECONDARY ] ;
     }
-  }
-  if $(XCURSOR.AVAILABLE) = "yes"
-  {
-    CFlags xwin : [ FDefines HAVE_XCURSOR ] ;
-    ExternalLibs xwin : XCURSOR ;
-  }
-  if $(XRENDER.AVAILABLE) = "yes"
-  {
-    CFlags xwin : [ FDefines HAVE_XRENDER ] ;
-    ExternalLibs xwin : XRENDER ;
   }
 }

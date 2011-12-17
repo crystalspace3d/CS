@@ -34,7 +34,7 @@
  * Also affects the version number - unstable versions have the RCS revision
  *  as the 'build' version component.
  */
-#define CS_VERSION_UNSTABLE
+//#define CS_VERSION_UNSTABLE
 
 /**
  * Build version based off SVN revision.
@@ -49,25 +49,26 @@
  * However, in case csver.h.template is edited for a reason other than a
  * version bump, CS_RCSREV_OFFSET is provided to allow adjustment
  * of the relative SVN revision to avoid having it go backwards.
- * Set the offset to the value reported by `rcsrev print` (BEFORE committing).
+ * Increment the offset by the value reported by `rcsrev print` (BEFORE
+ * committing).
  *
  * CS_RCSREV_OFFSET should be set to 0 again when bumping the version.
  *
  * The relative SVN revision is computed by the script `rcsrev`.
  */
-//CS_RCSREV_OFFSET 513
+//CS_RCSREV_OFFSET 0
 #ifndef CS_VERSION_RCSREV
-#define CS_VERSION_RCSREV	1647
+#define CS_VERSION_RCSREV	3609
 #endif
 
 /**\name Version number definitions (numeric)
  * @{ */
 /// Major version
-#define CS_VERSION_NUM_MAJOR  	2
+#define CS_VERSION_NUM_MAJOR  	1
 /// Minor version (even are stable versions, odd are development versions)
-#define CS_VERSION_NUM_MINOR  	1
+#define CS_VERSION_NUM_MINOR  	4
 /// Maintenance release
-#define CS_VERSION_NUM_RELEASE	0
+#define CS_VERSION_NUM_RELEASE	1
 /**
  * Build number.
  * (Actually, a version number dependent on the SVN revision this version was
@@ -95,7 +96,7 @@
 /// Build number
 #define CS_VERSION_BUILD	CS_VER_QUOTE(CS_VERSION_NUM_BUILD)
 /// Date of release
-#define CS_RELEASE_DATE		CS_VER_QUOTE_(Mon 9-Jun-2008)
+#define CS_RELEASE_DATE  	CS_VER_QUOTE_(Sat 17-Dec-2011)
 /** @} */
 
 #define CS_VER_QUOTE_(X) #X
@@ -147,8 +148,6 @@
 
 /// A complete version string, including platform, processor and compiler
 #define CS_VERSION CS_VERSION_NUMBER \
-  " [" CS_PLATFORM_NAME "-" \
-  CS_PROCESSOR_NAME "(" CS_VER_QUOTE(CS_PROCESSOR_SIZE) ")-" \
-  CS_COMPILER_NAME "]"
+  " [" CS_PLATFORM_NAME "-" CS_PROCESSOR_NAME "-" CS_COMPILER_NAME "]"
 
 #endif // __CS_CSVER_H__

@@ -23,7 +23,6 @@
 #include "csgfx/vertexlistwalker.h"
 #include "csutil/util.h"
 #include "csutil/event.h"
-#include "csutil/stringquote.h"
 #include "iengine/engine.h"
 #include "iengine/sector.h"
 #include "imesh/object.h"
@@ -34,7 +33,7 @@
 #include "imap/services.h"
 #include "gmeshanimpdl.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(GMeshAnimPDL)
 {
@@ -51,8 +50,8 @@ void GenmeshAnimationPDL::PrepareBuffer (iEngine* engine,
   {
     const GenmeshAnimationPDLFactory::ColorBuffer::MappedLight& factoryLight = 
       factoryBuf.lights[i];
+    bool success = false;
     ColorBuffer::MappedLight newLight;
-    iLight* engLight = 0;
     newLight.colors = factoryLight.colors;
     if (!factoryLight.lightId->sectorName.IsEmpty()
       && !factoryLight.lightId->lightName.IsEmpty())
@@ -60,44 +59,50 @@ void GenmeshAnimationPDL::PrepareBuffer (iEngine* engine,
       iSector* sector = engine->FindSector (factoryLight.lightId->sectorName);
       if (sector)
       {
-        engLight = sector->GetLights()->FindByName (
+        iLight* engLight = sector->GetLights()->FindByName (
           factoryLight.lightId->lightName);
-        if (!engLight)
+        newLight.light = engLight;
+        if (!newLight.light)
         {
           factory->type->Report (CS_REPORTER_SEVERITY_WARNING, 
-            "Could not find light %s in sector %s", 
-            CS::Quote::Single (factoryLight.lightId->lightName.GetData()),
-            CS::Quote::Single (factoryLight.lightId->sectorName.GetData()));
+            "Could not find light '%s' in sector '%s'", 
+            factoryLight.lightId->lightName.GetData(),
+            factoryLight.lightId->sectorName.GetData());
         }
       }
       else
       {
         factory->type->Report (CS_REPORTER_SEVERITY_WARNING, 
-          "Could not find sector %s for light %s", 
-          CS::Quote::Single (factoryLight.lightId->sectorName.GetData()),
-          CS::Quote::Single (factoryLight.lightId->lightName.GetData()));
+          "Could not find sector '%s' for light '%s'", 
+          factoryLight.lightId->sectorName.GetData(),
+          factoryLight.lightId->lightName.GetData());
       }
     }
     else
     {
-      engLight = engine->FindLightID (
+      newLight.light = engine->FindLightID (
         (const char*)factoryLight.lightId->lightId);
-      if (!engLight)
+      if (!newLight.light)
       {
         csString hexId;
         for (int i = 0; i < 16; i++)
           hexId.AppendFmt ("%02x", factoryLight.lightId->lightId[i]);
         factory->type->Report (CS_REPORTER_SEVERITY_WARNING, 
-          "Could not find light with ID %s", CS::Quote::Single (hexId.GetData()));
+          "Could not find light with ID '%s'", hexId.GetData());
       }
     }
-    if (engLight)
+    if (newLight.light)
     {
-      engLight->SetLightCallback (this);
-      buffer.lights.Put (engLight, newLight);
+      success = true;
+      newLight.light->AddAffectedLightingInfo (
+        static_cast<iLightingInfo*> (this));
+    }
+    if (success)
+    {
+      buffer.lights.Push (newLight);
     }
   }
-  buffer.lightsDirty = true;
+  buffer.lights.ShrinkBestFit();
 }
 
 void GenmeshAnimationPDL::Prepare ()
@@ -158,25 +163,22 @@ void GenmeshAnimationPDL::UpdateBuffer (ColorBuffer& buffer, csTicks current,
       }
     }
 
-    ColorBuffer::LightsHash::GlobalIterator iter (buffer.lights.GetIterator());
-    while (iter.HasNext())
+    for (size_t l = 0; l < buffer.lights.GetSize(); l++)
     {
-      csPtrKey<iLight> l;
-      ColorBuffer::MappedLight& light = iter.Next (l);
+      const ColorBuffer::MappedLight& light = buffer.lights[l];
       
       csVertexListWalker<float, csColor> color (light.colors, 3);
-      csColor lightColor = l->GetColor();
+      csColor lightColor = light.light->GetColor();
 
       for (size_t n = 0; n < numUpdate; n++)
       {
         combinedColors[n] += *color * lightColor;
         ++color;
       }
-      light.lastUpdateColor = lightColor;
     }
 
-    buffer.lightsDirty = false;
-    buffer.lastMeshVersion = version_id;
+    colorsBuffer.lightsDirty = false;
+    colorsBuffer.lastMeshVersion = version_id;
   }
 }
 
@@ -194,8 +196,6 @@ GenmeshAnimationPDL::~GenmeshAnimationPDL ()
 void GenmeshAnimationPDL::Update(csTicks current, int num_verts, 
                                  uint32 version_id)
 {
-  if (!prepared) Prepare();
-
   if (buffers.GetSize() == 0) return;
 
   // @@@ FIXME: Bit of a waste here to always update custom buffers...
@@ -247,55 +247,24 @@ const csColor4* GenmeshAnimationPDL::UpdateColors (csTicks current,
   return colorsBuffer.combinedColors.GetArray();
 }
 
-void GenmeshAnimationPDL::OnColorChange (iLight* light, const csColor& newcolor)
+void GenmeshAnimationPDL::LightDisconnect (iLight* light)
 {
-  const float updateThresh = 1.0f/256.0f;
-  colorsBuffer.UpdateLight (light, newcolor, updateThresh);
-  for (size_t i = 0; i < buffers.GetSize(); i++) 
-  { 
-    buffers[i].UpdateLight (light, newcolor, updateThresh);
-  } 
-}
-
-void GenmeshAnimationPDL::OnDestroy (iLight* light)
-{
-  colorsBuffer.RemoveLight (light);
-  for (size_t b = 0; b < buffers.GetSize(); b++) 
-  { 
-    buffers[b].RemoveLight (light);
+  for (size_t b = 0; b < buffers.GetSize(); b++)
+  {
+    csSafeCopyArray<ColorBuffer::MappedLight>& lights = buffers[b].lights;
+    for (size_t i = 0; i < lights.GetSize(); i++)
+    {
+      if (lights[i].light == light)
+      {
+        lights.DeleteIndexFast (i);
+        buffers[b].lightsDirty = true;
+        return;
+      }
+    }
   }
 }
 
 //-------------------------------------------------------------------------
-
-void GenmeshAnimationPDL::ColorBuffer::UpdateLight (iLight* l, 
-                                                    const csColor& col, 
-                                                    float thresh)
-{
-  MappedLight* light = lights.GetElementPointer (l);
-  if (light == 0) return;
-  csColor diff = light->lastUpdateColor - col;
-  lightsDirty |= (fabsf (diff.red) >= thresh)
-    || (fabsf (diff.green) >= thresh)
-    || (fabsf (diff.blue) >= thresh);
-}
-
-void GenmeshAnimationPDL::ColorBuffer::RemoveLight (iLight* l)
-{
-  lights.DeleteAll (l);
-  lightsDirty = true;
-}
-
-//-------------------------------------------------------------------------
-
-const char* GenmeshAnimationPDLFactory::SetLastError (const char* msg, ...)
-{
-  va_list args;
-  va_start (args, msg);
-  lastError.FormatV (msg, args);
-  va_end (args);
-  return lastError;
-}
 
 void GenmeshAnimationPDLFactory::Report (iSyntaxService* synsrv, 
                                          int severity, iDocumentNode* node, 
@@ -387,7 +356,7 @@ const char* GenmeshAnimationPDLFactory::ParseBuffer (iSyntaxService* synsrv,
 	}
         break;
       default:
-        parseError.Format ("Unknown token %s", CS::Quote::Single (value));
+        parseError.Format ("Unknown token '%s'", value);
         return parseError;
     }
   }
@@ -411,18 +380,14 @@ const char* GenmeshAnimationPDLFactory::ParseLight (ColorBuffer::MappedLight& li
   bool hasLightName = lightName && *lightName;
   if ((hasSector || hasLightName) && (!hasSector || !hasLightName))
   {
-    return SetLastError ("Both %s and %s attributes need to be specified",
-			 CS::Quote::Single ("lightsector"),
-			 CS::Quote::Single ("lightname"));
+    return "Both 'lightsector' and 'lightname' attributes need to be specified";
   }
   const char* lightId = node->GetAttributeValue ("lightid");
   bool hasLightID = lightId && *lightId;
   if (!hasSector && !hasLightName && !hasLightID)
   {
-    return SetLastError ("%s and %s attributes or a %s attribute need to be specified",
-			 CS::Quote::Single ("lightsector"),
-			 CS::Quote::Single ("lightname"),
-			 CS::Quote::Single ("lightid"));
+    return "'lightsector' and 'lightname' attributes or a 'lightid' attribute "
+      "need to be specified";
   }
 
   light.colors = synsrv->ParseRenderBuffer (node);
@@ -441,7 +406,7 @@ const char* GenmeshAnimationPDLFactory::ParseLight (ColorBuffer::MappedLight& li
   {
     if (!HexToLightID (light.lightId->lightId, lightId))
     {
-      parseError.Format ("Invalid light ID %s", CS::Quote::Single (lightId));
+      parseError.Format ("Invalid light ID '%s'", lightId);
       return parseError;
     }
     return 0;
@@ -510,7 +475,7 @@ const char* GenmeshAnimationPDLFactory::Load (iDocumentNode* node)
 
         if (id != XMLTOKEN_BUFFER)
         {
-          parseError.Format ("Unknown token %s", CS::Quote::Single (value));
+          parseError.Format ("Unknown token '%s'", value);
           return parseError;
         }
 

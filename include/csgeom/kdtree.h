@@ -173,7 +173,7 @@ public:
   void DumpObject (csKDTreeChild* object, const char* msg);
   void DumpNode ();
   void DumpNode (const char* msg);
-  static void DebugExit ();
+  void DebugExit ();
 
 private:
   csKDTree* child1;             // If child1 is not 0 then child2 will
@@ -196,9 +196,6 @@ private:
 
   // Estimate of the total number of objects in this tree including children.
   int estimate_total_objects;
-
-  // Minimum amount of objects in this tree before we consider splitting.
-  int min_split_objects;
 
   // Disallow Distribute().
   // If this flag > 0 it means that we cannot find a good split
@@ -287,12 +284,6 @@ public:
   {
     csKDTree::descriptor = descriptor;
   }
-
-  /**
-   * Set the minimum amount of objects before we consider splitting this tree.
-   * By default this is set to 1.
-   */
-  void SetMinimumSplitAmount (int m) { min_split_objects = m; }
 
   /// Make the tree empty.
   void Clear ();

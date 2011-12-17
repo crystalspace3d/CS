@@ -29,13 +29,14 @@
 #include "csutil/weakref.h"
 #include "csutil/leakguard.h"
 #include "csutil/hash.h"
-#include "csutil/threading/rwmutex.h"
 #include "iutil/selfdestruct.h"
 #include "csgfx/shadervarcontext.h"
 #include "imesh/object.h"
+#include "imesh/lighting.h"
 #include "iengine/mesh.h"
 #include "iengine/imposter.h"
 #include "iengine/viscull.h"
+#include "iengine/shadcast.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/shader/shader.h"
 
@@ -45,19 +46,13 @@
 #include "scenenode.h"
 #include "light.h"
 
-struct iMeshFactLoaderIterator;
 struct iMeshWrapper;
 struct iMovable;
 struct iRenderView;
 struct iSharedVariable;
 class csEngine;
+class csLight;
 class csMeshFactoryWrapper;
-
-CS_PLUGIN_NAMESPACE_BEGIN(Engine)
-{
-  class csLight;
-}
-CS_PLUGIN_NAMESPACE_END(Engine)
 
 /**
  * A list of mesh factories.
@@ -66,11 +61,9 @@ class csMeshFactoryList : public scfImplementation1<csMeshFactoryList,
 	iMeshFactoryList>
 {
 private:
-  csRefArrayObject<iMeshFactoryWrapper, CS::Container::ArrayAllocDefault,
-    csArrayCapacityFixedGrow<64> > list;
+  csRefArrayObject<iMeshFactoryWrapper> list;
   csHash<iMeshFactoryWrapper*, csString>
   	factories_hash;
-  mutable CS::Threading::ReadWriteMutex meshFactLock;
 
   class NameChangeListener : public scfImplementation1<NameChangeListener,
   	iObjectNameChangeListener>
@@ -106,10 +99,9 @@ public:
   virtual void PrepareFactory (iMeshFactoryWrapper*) { }
   virtual void FreeFactory (iMeshFactoryWrapper*) { }
 
-  virtual int GetCount () const;
-  virtual iMeshFactoryWrapper *Get (int n) const;
+  virtual int GetCount () const { return (int)list.GetSize (); }
+  virtual iMeshFactoryWrapper *Get (int n) const { return list.Get (n); }
   virtual int Add (iMeshFactoryWrapper *obj);
-  void AddBatch (csRef<iMeshFactLoaderIterator> itr);
   virtual bool Remove (iMeshFactoryWrapper *obj);
   virtual bool Remove (int n);
   virtual void RemoveAll ();
@@ -140,9 +132,9 @@ class csMeshFactoryWrapper :
   public scfImplementationExt4<csMeshFactoryWrapper,
                                csObject, 
                                iMeshFactoryWrapper,
-                               iImposterFactory,
+			       iImposter,
                                scfFakeInterface<iShaderVariableContext>,
-			                         iSelfDestruct>,
+			       iSelfDestruct>,
   public CS::ShaderVariableContextImpl
 {
 private:
@@ -165,7 +157,7 @@ private:
   csRef<csStaticLODFactoryMesh> static_lod;
 
   /// Suggestion for new children created from factory.
-  CS::Graphics::RenderPriority render_priority;
+  long render_priority;
   /// Suggestion for new children created from factory.
   csZBufMode zbufMode;
 
@@ -173,37 +165,20 @@ private:
 
   csEngine* engine;
 
-  /// Hash of active imposters.
-  csHash<csRef<iImposterMesh>, csPtrKey<iMeshWrapper> > imposters;
-
-  /// Imposter Threshold Range.
-  float min_imposter_distance;
-
-  /// Imposter Redo Threshold angle change.
-  float imposter_rotation_tolerance;
-  float imposter_camera_rotation_tolerance;
-
-  // Array of shaders that are applied to the imposter material.
-  csArray<ImposterShader> imposter_shaders;
-
-  // Whether to render the 'real' mesh while waiting for the imposter to init.
-  bool imposter_renderReal;
-
-  // Factory to be instanced.
-  iMeshFactoryWrapper* instanceFactory;
-
-  // Array of transform vars for the imposter instances.
-  csRef<csShaderVariable> transformVars;
-
-  // Instance transform shadervar.
-  CS::ShaderVarStringID varTransform;
-
-  // Used to store extra rendermeshes that something might attach to this
-  // mesh (ie, for decals or lines)
-  csDirtyAccessArray<csRenderMesh*> extraRenderMeshes;
+  /// Class for keeping track of imposter information.
+  csImposterFactory* imposter_factory;
 
 protected:
   virtual void InternalRemove() { SelfDestruct(); }
+
+public:
+  /// Flag indicating whether this factory should try to imposter or not.
+  bool imposter_active;
+  /// Imposter Threshold Range.
+  csRef<iSharedVariable> min_imposter_distance;
+  /// Imposter Redo Threshold angle change.
+  csRef<iSharedVariable> imposter_rotation_tolerance;
+  csRef<iSharedVariable> imposter_camera_rotation_tolerance;
 
 public:
   /// Constructor.
@@ -284,160 +259,79 @@ public:
   void SetZBufMode (csZBufMode mode) { zbufMode = mode; }
   csZBufMode GetZBufMode () const { return zbufMode; }
   void SetZBufModeRecursive (csZBufMode mode);
-  void SetRenderPriority (CS::Graphics::RenderPriority rp);
-  CS::Graphics::RenderPriority GetRenderPriority () const
+  void SetRenderPriority (long rp);
+  long GetRenderPriority () const
   {
     return render_priority;
   }
-  void SetRenderPriorityRecursive (CS::Graphics::RenderPriority rp);
+  void SetRenderPriorityRecursive (long rp);
+
+  //---------- iImposter Functions -----------------//
 
   /**
-   * Sets the instance factory.
+   * Set true if this meshes created from this
+   * factory should use Impostering. Note that this only
+   * affects meshes created from this factory after this
+   * has been called.
    */
-  virtual void SetInstanceFactory(iMeshFactoryWrapper* meshfact)
-  {
-    instanceFactory = meshfact;
-    meshFact = instanceFactory->GetMeshObjectFactory();
-  }
+  virtual void SetImposterActive (bool flag);
 
   /**
-   * Returns the instance factory.
+   * Determine if impostering is enabled for this factory
+   * (not if Imposter is being drawn, but simply considered).
    */
-  virtual iMeshFactoryWrapper* GetInstanceFactory() const
-  {
-    return instanceFactory;
-  }
+  virtual bool GetImposterActive () const { return imposter_active; }
 
   /**
-   * Adds a (pseudo-)instance of the instance factory at the given position.
-   */
-  virtual void AddInstance(csVector3& position, csMatrix3& rotation);
-
-  /**
-   * Returns the instancing transforms array shadervar/
-   */
-  virtual csShaderVariable* GetInstances() const
-  {
-    return transformVars;
-  }
-
-  //---------- iImposterFactory Functions -----------------//
-
-  /**
-   * Given a mesh, activate its imposter.
-   */
-  virtual void AddImposter (iMeshWrapper* mesh, iRenderView* rview);
-
- /**
-  * Whether we are currently rendering the imposter
-  */
-  virtual bool RenderingImposter(iMeshWrapper* mesh);
-
-  /**
-   * Given a mesh, deactivate and remove its imposter.
-   */
-  virtual void RemoveImposter (iMeshWrapper* mesh);
-
-  /**
-   * Sets the minimum imposter distance.
-   * This is the distance from camera beyond which an imposter is used.
-   * The imposter gets a ptr here because the value is a shared variable 
+   * Minimum Imposter Distance is the distance from camera 
+   * beyond which imposter is used. Imposter gets a 
+   * ptr here because value is a shared variable 
    * which can be changed at runtime for many objects.
    *
    * All meshes created from this factory after this function
    * is called will get this variable. Meshes created before
    * calling this function will get the previous value.
    */
-  virtual void SetMinDistance (float dist)
+  virtual void SetMinDistance (iSharedVariable* dist)
   { min_imposter_distance = dist; }
 
-  /**
-   * Gets the minimum imposter distance.
-   */
-  virtual float GetMinDistance()
-  {
-    return min_imposter_distance;
-  }
-
   /** 
-   * Sets the rotation tolerance.
-   * This is the maximum allowable angle difference between when the
-   * imposter was created and the current position of the camera.
-   * Angles greater than this trigger a re-render of the imposter.
+   * Rotation Tolerance is the maximum allowable 
+   * angle difference between when the imposter was 
+   * created and the current position of the camera.
+   * Angle greater than this triggers a re-render of
+   * the imposter.
    *
    * All meshes created from this factory after this function
    * is called will get this variable. Meshes created before
    * calling this function will get the previous value.
    */
-  virtual void SetRotationTolerance (float angle)
+  virtual void SetRotationTolerance (iSharedVariable* angle)
   { imposter_rotation_tolerance = angle; }
 
-  /**
-   * Gets the rotation tolerance.
-   */
-  virtual float GetRotationTolerance()
-  { return imposter_rotation_tolerance; }
-
   /** 
-   * Sets the camera rotation tolerance.
-   * This is the tolerance angle between the z->1 vector and the object
-   * on screen. Exceeding this value triggers the updating of the imposter
-   * whenever the object slides too much away from the center of screen.
+   * Camera Rotation Tolerance is the tolerance angle
+   * between z->1 vector and object on screen. Exceeding this
+   * value triggers updating of the imposter whenever the
+   * object slides too much away from the center of screen.
    *
    * All meshes created from this factory after this function
    * is called will get this variable. Meshes created before
    * calling this function will get the previous value.
    */
-  virtual void SetCameraRotationTolerance (float angle)
+  virtual void SetCameraRotationTolerance (iSharedVariable* angle)
   { imposter_camera_rotation_tolerance = angle; }
 
-  /**
-   * Gets the camera rotation tolerance.
-   */
-  virtual float GetCameraRotationTolerance()
-  { return imposter_camera_rotation_tolerance; }
+  /// Determine if imposter or true rendering will be used.
+  virtual bool WouldUseImposter (csReversibleTransform& /*pov*/) const
+  { /* implement later */ return false; }
 
- /**
-  * Sets the shader to be used by the imposters.
-  */
-  virtual void SetShader(const char* type, const char* name)
-  {
-    imposter_shaders.Push (ImposterShader (type, name));
-  }
-
-  /**
-   * Sets whether to render the real mesh while waiting for the imposter to init.
-   */
-  virtual void SetRenderReal(bool renderReal)
-  {
-    imposter_renderReal = renderReal;
-  }
+  /// Get the imposter factory.
+  csImposterFactory* GetImposterFactory () { return imposter_factory; }
 
   //--------------------- iSelfDestruct implementation -------------------//
 
   virtual void SelfDestruct ();
-
-  //---------- Extra Render Meshes Functions -----------------//
-
-  /**
-   * Adds a render mesh to the list of extra render meshes.
-   * This list is used for special cases (like decals) where additional
-   * things need to be renderered for the mesh in an abstract way.
-   */
-  virtual size_t AddExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh);
-
-  /// Get a specific extra render mesh.
-  virtual CS::Graphics::RenderMesh* GetExtraRenderMesh (size_t idx) const;
-  
-  /// Get number of extra render meshes.
-  virtual size_t GetExtraRenderMeshCount () const
-  { return extraRenderMeshes.GetSize(); }
-
-  /**
-   * Deletes a specific extra rendermesh
-   */
-  virtual void RemoveExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh);
-  virtual void RemoveExtraRenderMesh(size_t idx);
 };
 
 #endif // __CS_MESHFACT_H__

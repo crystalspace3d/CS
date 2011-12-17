@@ -23,6 +23,8 @@
 #include "speexdata.h"
 #include "speexstream.h"
 
+CS_IMPLEMENT_PLUGIN
+
 SndSysSpeexSoundData::SndSysSpeexSoundData (iBase *pParent, iDataBuffer* pDataBuffer) :
   SndSysBasicData(pParent), m_DataStore(pDataBuffer)
 {

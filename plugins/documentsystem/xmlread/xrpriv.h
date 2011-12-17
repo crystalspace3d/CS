@@ -191,11 +191,11 @@ public:
 
   virtual csRef<iDocumentAttributeIterator> GetAttributes ();
   virtual csRef<iDocumentAttribute> GetAttribute (const char* name);
-  virtual int GetAttributeValueAsInt (const char* name, int defaultValue = 0);
-  virtual float GetAttributeValueAsFloat (const char* name, float defaultValue = 0.0f);
+  virtual int GetAttributeValueAsInt (const char* name);
+  virtual float GetAttributeValueAsFloat (const char* name);
   virtual bool  GetAttributeValueAsBool (const char* name,
-					 bool defaultValue = false);
-  virtual const char* GetAttributeValue (const char* name, const char* defaultValue = 0);
+					 bool defaultvalue = false);
+  virtual const char* GetAttributeValue (const char* name);
   virtual void RemoveAttribute (const csRef<iDocumentAttribute>&) { }
   virtual void RemoveAttributes () { }
   virtual void SetAttribute (const char*, const char*) { }
@@ -233,13 +233,13 @@ public:
   virtual const char* Parse (iDataBuffer* buf, bool collapse = false);
   virtual const char* Parse (iString* str,     bool collapse = false);
   virtual const char* Parse (const char* buf,  bool collapse = false);
-  virtual const char* Write (iFile*);
-  virtual const char* Write (iString*);
-  virtual const char* Write (iVFS*, const char*);
+  virtual const char* Write (iFile*) { return "Read-only!"; }
+  virtual const char* Write (iString*) { return "Read-only!"; }
+  virtual const char* Write (iVFS*, const char*) { return "Read-only!"; }
 
   csRef<iDocumentNode> CreateRoot (char* buf, size_t bufSize);
   const char* Parse (const char* buf, size_t bufSize, bool collapse);
-  const char* ParseInPlace (char* buf, size_t bufSize, bool collapse);
+  const char* ParseInPlace (char* buf, size_t bufSize, bool collapse = false);
 
   virtual int Changeable () { return CS_CHANGEABLE_NEVER; }
 };

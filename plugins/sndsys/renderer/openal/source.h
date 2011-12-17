@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2006 by SÃ¸ren BÃ¸g
+	Copyright (C) 2006 by Søren Bøg
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -108,7 +108,7 @@ private:
   size_t requestedLength;
 
   /// The number of OpenAL buffers to maintain.
-  static ALsizei s_NumberOfBuffers;
+  static size_t s_NumberOfBuffers;
 
   /// The OpenAL source
   ALuint m_Source;

@@ -437,7 +437,7 @@ size_t csStringBase::Find (const char* str, size_t pos) const
   return tmp - p;
 }
 
-csStringBase& csStringBase::ReplaceAll (const char* str, const char* replaceWith)
+void csStringBase::ReplaceAll (const char* str, const char* replaceWith)
 {
   csStringBase newStr;
   size_t p = 0;
@@ -455,7 +455,6 @@ csStringBase& csStringBase::ReplaceAll (const char* str, const char* replaceWith
   }
   newStr.Append (x + p, Size - p);
   Replace (newStr);
-  return *this;
 }
 
 namespace

@@ -20,9 +20,6 @@
 #define __BASEMAPGEN_H__
 
 #include "layers.h"
-#include "textureclass.h"
-
-class TextureInfo;
 
 class BaseMapGen
 {
@@ -38,15 +35,11 @@ private:
   csRegExpMatcher* meshRE;
 
   // The worldfile
-  csRef<iDocument> doc;
   csRef<iDocumentNode> rootnode;
-  csString worldFileName;
   
-  int mipSharpen;
-  TextureClassManager textureClasses;
 public:
   csHash<csString, csString> pluginMap;
-  csHash<csRef<TextureInfo>, csString> textureFiles;
+  csHash<csString, csString> textureFiles;
   csHash<csRef<MaterialLayer>, csString> materials;
   
   csHash<csRef<AlphaLayers>, csString> terrain1Layers;
@@ -58,7 +51,6 @@ public:
   void ScanMaterials ();
 
   bool LoadMap ();
-  bool SaveMap ();
   void ScanOldMaterialMaps();
   void ScanTerrain1Factories ();
   void ScanTerrain1Meshes ();
@@ -71,11 +63,7 @@ public:
     MaterialLayers alphaMaterials;
     csRef<AlphaLayers> materialMapLayers;
     
-    csRef<iDocumentNode> cellNode;
-    csRef<iDocumentNode> renderPropertiesNode;
-    csRef<iDocumentNode> defRenderPropertiesNode;
-    
-    bool Parse (iDocumentNode* node, bool isDefault = false);
+    bool Parse (iDocumentNode* node, bool isDefault);
     void ApplyMaterialMap (const MaterialLayers& matMap);
   };
   struct Terrain2Factory : public csRefCount
@@ -96,20 +84,11 @@ public:
                                const AlphaLayers& alphaLayers,
                                MaterialLayers& txt_layers);
   void SaveImage (iImage* image, const char* filename);
-  
-  void SetShaderVarNode (iDocumentNode* parentNode,
-			 const char* svName,
-			 const char* svType,
-			 const char* svValue);
-  void SetTextureFlag (iDocumentNode* texNode, const char* flagStr);
-  void SetTextureClassNode (iDocumentNode* texNode, const char* texClass);
 public:
   BaseMapGen (iObjectRegistry* object_reg);
   ~BaseMapGen ();
 
   csRef<iImage> LoadImage (const csString& filename, int format);
-  const TextureClass& GetTextureClass (const char* texClass);
-  int GetMipSharpen () const { return mipSharpen; }
   
   bool Initialize ();
   void Start ();
@@ -117,8 +96,6 @@ public:
   void Report(const char* msg, ...);
   void DrawProgress (int percent);
 };
-// The global pointer to basemapgen
-extern BaseMapGen *basemapgen;
 
 #endif // __BASEMAPGEN_H__
 

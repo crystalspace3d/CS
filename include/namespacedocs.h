@@ -35,12 +35,6 @@ namespace CS
   {}
 
   /**
-   * Checksums and message digests
-   */
-  namespace Checksum
-  {}
-
-  /**
    * Container classes
    */
   namespace Container
@@ -66,20 +60,7 @@ namespace CS
   {}
 
   /**
-   * General tools for the edition of Crystal Space objects.
-   */
-  namespace Editor
-  {}
-
-  /**
-   * Objects and tools specific to the Crystal Space editor. Most of
-   * these tools need the wxWidgets dependency.
-   */
-  namespace EditorApp
-  {}
-
-  /**
-   * Geometry and mesh tools related classes.
+   * Geometry and mesh related classes.
    */
   namespace Geometry
   {}
@@ -91,51 +72,15 @@ namespace CS
   {}
 
   /**
-   * Material and texture related classes.
-   */
-  namespace Material
-  {}
-
-  /**
    * Mathematical functions and definitions
    */
   namespace Math
-  {
-    /**
-     * Noise generation and utilities. Objects from this namespace
-     * use the libnoise library, see http://libnoise.sourceforge.net for
-     * more information.
-     */
-    namespace Noise
-    {
-      /**
-       * Geometric models for noise generation. Objects from this namespace
-       * use the libnoise library, see http://libnoise.sourceforge.net for
-       * more information.
-       */
-      namespace Model
-      {}
-
-      /**
-       * Noise modules for the combination of noise functions. Objects from this
-       * namespace use the libnoise library, see http://libnoise.sourceforge.net
-       * for more information.
-       */
-      namespace Module
-      {}
-    }
-  }
+  {}
 
   /**
    * Memory allocation
    */
   namespace Memory
-  {}
-
-  /**
-   * Meshes
-   */
-  namespace Mesh
   {}
 
   /**
@@ -148,12 +93,7 @@ namespace CS
    * Platform specific code and wrappers
    */
   namespace Platform
-  {
-    /**
-     * Win32-specific classes and functions
-     */
-    namespace Win32 {}
-  }
+  {}
 
   /**
    * Implementation of all plugins
@@ -183,46 +123,6 @@ namespace CS
      */
     namespace ShaderWeaver
     {}
-  }
-
-  /**
-   * Objects of a dynamic simulation
-   */
-  namespace Physics
-  {
-    /**
-     * Objects of a dynamic simulation with the Bullet plugin
-     */
-    namespace Bullet
-    {
-    }
-  }
-
-  /**
-   * Classes for render manager plugin implementation
-   */
-  namespace RenderManager
-  {
-    /**
-     * Classes for "automatic effects" (usually providing special textures or
-     * similar on an if-uses basis).
-     */
-    namespace AutoFX
-    {}
-    
-    /**
-     * Helpers for HDR effects
-     */
-    namespace HDR
-    {
-      /// Rendered scene luminance computation
-      namespace Luminance
-      {}
-      
-      /// Exposure computation
-      namespace Exposure
-      {}
-    }
   }
 
   /**

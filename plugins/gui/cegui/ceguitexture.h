@@ -19,74 +19,67 @@
 #ifndef _CS_CEGUITEXTURE_H_
 #define _CS_CEGUITEXTURE_H_
 
-
 /**\file 
 */
 /**
 * \addtogroup CEGUI
 * @{ */
 
+// hack: work around problems caused by #defining 'new'
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# undef new
+#endif
+#include <new>
+#include <CEGUI.h>
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# define new CS_EXTENSIVE_MEMDEBUG_NEW
+#endif
+
 #include "csutil/ref.h"
 #include "ivideo/texture.h"
-#include "ceguiimports.h"
+
 #include "ceguirenderer.h"
 
 struct iObjectRegistry;
 
-CS_PLUGIN_NAMESPACE_BEGIN(cegui)
+/// CS implementation of CEGUI::Texture.
+class csCEGUITexture : public CEGUI::Texture
 {
-  /// CS implementation of CEGUI::Texture.
-  class Texture : public CEGUI::Texture
-  {
-    friend class csCEGUIRenderer;
-  public:
-    /// Constructor.
-    Texture (CEGUI::Renderer*, iObjectRegistry*);
+  friend class csCEGUIRenderer;
+public:
+  /// Constructor.
+  csCEGUITexture (CEGUI::Renderer*, iObjectRegistry*);
 
-    /// Destructor.
-    virtual ~Texture ();
+  /// Destructor.
+  virtual ~csCEGUITexture ();
 
-    /// Get the size of the texture.
-    virtual const CEGUI::Size& getSize() const;
+  /// Get the width of the texture.
+  virtual CEGUI::ushort getWidth (void) const;
 
-    virtual const CEGUI::Size& getOriginalDataSize() const;
+  /// Get the height of the texture.
+  virtual CEGUI::ushort getHeight (void) const;
 
-    virtual const CEGUI::Vector2& getTexelScaling() const;
+  /// Load a texture from a file.
+  virtual void loadFromFile (const CEGUI::String &filename, 
+    const CEGUI::String &resourceGroup);
 
-    /// Load a texture from a file.
-    virtual void loadFromFile (const CEGUI::String &filename, 
-                               const CEGUI::String &resourceGroup);
+  /**
+   * Load a texture directly from memory. This is called from CEGUI,
+   * for example, when a font should be loaded.
+   */
+  virtual void loadFromMemory (const void *buffPtr,
+    CEGUI::uint buffWidth, CEGUI::uint buffHeight, CEGUI::Texture::PixelFormat pixFmt);
 
-    /**
-     * Load a texture directly from memory. This is called from CEGUI,
-     * for example, when a font should be loaded.
-     */
-    virtual void loadFromMemory (const void *buffPtr,
-                                 const CEGUI::Size& buffer_size, 
-                                 CEGUI::Texture::PixelFormat pixFmt);
+  /// Get a handle to the texture.
+  iTextureHandle* GetTexHandle();
 
-    virtual void saveToMemory(void* buffer);
+private:
+  /// Returns the renderer
+  CEGUI::Renderer* getRenderer (void) const;
+  CEGUI::Renderer* renderer;
+  csRef<iTextureHandle> hTxt;
+  iObjectRegistry* obj_reg;
 
-    /// Get a handle to the texture.
-    iTextureHandle* GetTexHandle() const;
-
-    /// Set a handle to the texture.
-    void SetTexHandle( iTextureHandle*);
-
-  private:
-    /// Returns the renderer
-    CEGUI::Renderer* getRenderer (void) const;
-    CEGUI::Renderer* renderer;
-    void updateCachedSizeValues();
-    void updateCachedScaleValues();
-    csRef<iTextureHandle> hTxt;
-    iObjectRegistry* obj_reg;
-
-    mutable CEGUI::Size size;
-    CEGUI::Size dataSize;
-    CEGUI::Vector2 texelScaling;
-  };
-
-} CS_PLUGIN_NAMESPACE_END(cegui)
+};
 
 #endif 

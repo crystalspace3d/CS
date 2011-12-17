@@ -47,7 +47,7 @@
 #include "fancycon.h"
 
 
-
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY(csFancyConsole)
 
@@ -170,7 +170,9 @@ void csFancyConsole::Draw3D (csRect *oArea)
 {
   if (!visible || !ImageLoader) return;
 
+  bool btext, bgour;
   int i;
+  long int zBuf;
   csSimpleRenderMesh mesh;
   if (!border_computed)
   {
@@ -188,6 +190,12 @@ void csFancyConsole::Draw3D (csRect *oArea)
     SetPosition (
       outersize.xmin, outersize.ymin, outersize.Width (), outersize.Height ());
   }
+
+  zBuf = G3D->GetRenderState (G3DRENDERSTATE_ZBUFFERMODE);
+  btext = (G3D->GetRenderState (G3DRENDERSTATE_TEXTUREMAPPINGENABLE) != 0);
+  bgour = (G3D->GetRenderState (G3DRENDERSTATE_GOURAUDENABLE) != 0);
+
+  G3D->SetRenderState (G3DRENDERSTATE_ZBUFFERMODE, CS_ZBUF_NONE);
 
   // first draw the background
   // do we draw gouraud/flat or with texture ?
@@ -213,7 +221,7 @@ void csFancyConsole::Draw3D (csRect *oArea)
 
   float u_stretch = 1.0, v_stretch = 1.0;
 
-  if (!deco.bgnd.do_stretch && deco.bgnd.txt)
+  if (!deco.bgnd.do_stretch)
   {
     int w, h;
     deco.bgnd.txt->GetRendererDimensions (w, h);
@@ -295,6 +303,10 @@ void csFancyConsole::Draw3D (csRect *oArea)
   // draw the left decoration
   DrawBorder (outersize.xmin, p2size.ymin-deco.p2ty, bordersize.xmin,
     p2size.Height()+deco.p2by+deco.p2ty, deco.border[7], 4);
+
+  G3D->SetRenderState (G3DRENDERSTATE_ZBUFFERMODE, zBuf);
+  G3D->SetRenderState (G3DRENDERSTATE_TEXTUREMAPPINGENABLE, btext);
+  G3D->SetRenderState (G3DRENDERSTATE_GOURAUDENABLE, bgour);
 
   if (oArea)
     *oArea = outersize;

@@ -125,37 +125,6 @@
 
 
 
-#ifdef SCF_IMPL_EXT
-/**
- * Base class to extend the SCF class \c Super with additional interfaces.
- * \c Super itself must be derived from one of the scfImplementation* classes.
- * \c Class is the declared class. 
- *
- * Typical usage:
- * \code
- * class MyPath : public scfImplementationExt1<MyPath, csPath, iMyPath>
- * {
- * public:
- *   // ... iMyPath methods ... 
- * };
- * \endcode
- */
-#else
-/**
- * Base class for an SCF class implementation with the given number of interfaces.
- * iBase is implicitly implemented and available.
- * \c Class is the declared class. 
- *
- * Typical usage:
- * \code
- * class MyPlugin : public scfImplementation1<MyPlugin, iComponent>
- * {
- * public:
- *   // ... iComponent methods ... 
- * };
- * \endcode
- */
-#endif
 template<class Class SCF_IMPL_TYPES>
 class SCF_IMPL_NAME :
   public SCF_IMPL_SUPER
@@ -215,56 +184,56 @@ protected:
   SCF_IMPL_NAME(Class_ *object)
     : SCF_IMPL_SUPER()
   { 
-    AddReftrackerAliases(); 
     csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases(); 
   }
 
   template<class T1>
   SCF_IMPL_NAME(Class *object, T1 t1)
     : SCF_IMPL_SUPER(t1)
   { 
-    AddReftrackerAliases(); 
     csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases(); 
   }
 
   template<class T1, class T2>
   SCF_IMPL_NAME(Class *object, T1 t1, T2 t2)
     : SCF_IMPL_SUPER(t1, t2)
   { 
-    AddReftrackerAliases(); 
     csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases(); 
   }
 
   template<class T1, class T2, class T3>
   SCF_IMPL_NAME(Class *object, T1 t1, T2 t2, T3 t3)
     : SCF_IMPL_SUPER(t1, t2, t3)
   { 
-    AddReftrackerAliases(); 
     csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases(); 
   }
 
   template<class T1, class T2, class T3, class T4>
   SCF_IMPL_NAME(Class *object, T1 t1, T2 t2, T3 t3, T4 t4)
     : SCF_IMPL_SUPER(t1, t2, t3, t4)
   {
-    AddReftrackerAliases(); 
     csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases(); 
   }
 
   template<class T1, class T2, class T3, class T4, class T5>
   SCF_IMPL_NAME(Class *object, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
     : SCF_IMPL_SUPER(t1, t2, t3, t4, t5)
   {
-    AddReftrackerAliases(); 
     csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases(); 
   }
 
   template<class T1, class T2, class T3, class T4, class T5, class T6>
   SCF_IMPL_NAME(Class *object, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6)
     : SCF_IMPL_SUPER(t1, t2, t3, t4, t5, t6)
   {
-    AddReftrackerAliases(); 
     csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases(); 
   }
 
   Class* GetSCFObject() { return static_cast<Class*> (this); }
@@ -329,9 +298,6 @@ private:
   {
 #ifndef SCF_IMPL_EXT
     AddReftrackerAlias<iBase>(this->GetSCFObject());
-#else
-    csRefTrackerAccess::AddAlias(this->GetSCFObject(),
-				 static_cast<Super*> (this->GetSCFObject()));
 #endif
 #if SCF_IMPL_N >= 1
     AddReftrackerAlias<I1>(this->GetSCFObject());
@@ -369,9 +335,6 @@ private:
   {
 #ifndef SCF_IMPL_EXT
     RemoveReftrackerAlias<iBase>(this->GetSCFObject());
-#else
-    csRefTrackerAccess::RemoveAlias(this->GetSCFObject(),
-				    static_cast<Super*> (this->GetSCFObject()));
 #endif
 #if SCF_IMPL_N >= 1
     RemoveReftrackerAlias<I1>(this->GetSCFObject());

@@ -53,7 +53,7 @@ const GLenum fontFilterMode = /*GL_LINEAR*/GL_NEAREST;
 //---------------------------------------------------------------------------
 
 csGLFontCache::csGLFontCache (csGraphics2DGLCommon* G2D) : 
-  cacheDataAlloc (512), verts2d (256), texcoords (256)
+  cacheDataAlloc (512), verts2d (256, 256), texcoords (256, 256)
 {
   csGLFontCache::G2D = G2D;
   statecache = G2D->statecache;
@@ -162,8 +162,8 @@ void csGLFontCache::Setup()
         Report (CS_REPORTER_SEVERITY_WARNING, 
           "Couldn't load fragment program for text drawing");
         Report (CS_REPORTER_SEVERITY_WARNING, "Program error at position %d", errorpos);
-        Report (CS_REPORTER_SEVERITY_WARNING, "Error string: %s", 
-          CS::Quote::Single ((const char*)programErrorString));
+        Report (CS_REPORTER_SEVERITY_WARNING, "Error string: '%s'", 
+          programErrorString);
         G2D->ext.glDeleteProgramsARB (1, &textProgram);
         afpText = false;
       }
@@ -173,8 +173,8 @@ void csGLFontCache::Setup()
       if (do_verbose && (programErrorString != 0) && (*programErrorString != 0))
       {
         Report (CS_REPORTER_SEVERITY_WARNING, 
-	  "Warning for text drawing fragment program: %s", 
-	  CS::Quote::Single ((const char*)programErrorString));
+	  "Warning for text drawing fragment program: '%s'", 
+	  programErrorString);
       }
     }
   }
@@ -532,6 +532,8 @@ void csGLFontCache::FlushArrays ()
     {
       glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
+    statecache->SetBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    statecache->Enable_GL_BLEND ();
 
     static const float envTransparent[4] = {1.0f, 1.0f, 1.0f, 0.0f};
     if (afpText)
@@ -898,13 +900,12 @@ void csGLFontCache::BeginText ()
 {
   if (textWriting) return;
 
-  statecache->SetCurrentTCUnit (0);
-  statecache->ActivateTCUnit (csGLStateCache::activateTexCoord);
-  
   vaEnabled = statecache->IsEnabled_GL_VERTEX_ARRAY ();
   tcaEnabled = statecache->IsEnabled_GL_TEXTURE_COORD_ARRAY ();
   caEnabled = statecache->IsEnabled_GL_COLOR_ARRAY ();
 
+  statecache->SetCurrentTU (0);
+  statecache->ActivateTU (csGLStateCache::activateTexCoord);
   statecache->Enable_GL_VERTEX_ARRAY();
   statecache->Enable_GL_TEXTURE_COORD_ARRAY();
   statecache->Disable_GL_COLOR_ARRAY();

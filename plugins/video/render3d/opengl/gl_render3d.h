@@ -47,12 +47,9 @@
 #include "csplugincommon/opengl/glextmanager.h"
 #include "csplugincommon/opengl/glstates.h"
 
-#include "buffershadowing.h"
 #include "gl_txtmgr.h"
 #include "gl_renderbuffer.h"
 #include "gl_r2t_backend.h"
-#include "profilinghelper.h"
-#include "querypool.h"
 
 struct csGLExtensionManager;
 
@@ -65,14 +62,6 @@ struct iShaderManager;
 struct iTextureManager;
 
 struct iEvent;
-
-namespace CS
-{
-namespace Graphics
-{
-  struct AlphaTestOptions;
-}
-}
 
 CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 {
@@ -138,6 +127,7 @@ public:
   }
 };
 
+#ifdef CS_DEBUG
 #define GLRENDER3D_OUTPUT_STRING_MARKER(fmtParam)			    \
   if (csGLGraphics3D::DoOutputMarkerString ())                              \
   { MakeAString mas fmtParam; csGLGraphics3D::OutputMarkerString (          \
@@ -146,11 +136,10 @@ public:
   if (csGLGraphics3D::DoOutputMarkerString ())                              \
     csGLGraphics3D::OutputMarkerString (CS_FUNCTION_NAME, 		    \
       CS_STRING_TO_WIDE(__FILE__), __LINE__, "")
-
-#define GLRENDER3D_CHECKED_COMMAND(g3d, Command)			\
-  glGetError();								\
-  Command;								\
-  (g3d)->CheckGLError (CS_STRING_TO_WIDE(__FILE__), __LINE__, #Command);
+#else
+#define GLRENDER3D_OUTPUT_STRING_MARKER(fmtParam)
+#define GLRENDER3D_OUTPUT_LOCATION_MARKER
+#endif
 
 class csGLGraphics3D;
 class csOpenGLHalo : public scfImplementation1<csOpenGLHalo, iHalo>
@@ -189,11 +178,6 @@ public:
     csVector2 *iVertices, size_t iVertCount);
 };
 
-// To silence EnableZOffset/DisableZOffset
-#include "csutil/deprecated_warn_off.h"
-
-class ProfileScope;
-
 class csGLGraphics3D : public scfImplementation3<csGLGraphics3D, 
 						 iGraphics3D,
 						 iComponent,
@@ -202,6 +186,8 @@ class csGLGraphics3D : public scfImplementation3<csGLGraphics3D,
 private:
   //friend declarations
   friend class csGLBasicTextureHandle;
+  friend class csGLSuperLightmap;
+  friend class csGLRendererLightmap;
   friend class csGLTextureHandle;
   friend class csGLTextureManager;
 
@@ -210,17 +196,11 @@ private:
   csRef<iShaderManager> shadermgr;
   csRef<csGLVBOBufferManager> vboManager;
   bool isOpen;
-  uint frameNum;
-  
-  friend class ProfileScope;
-  QueryPool queryPool;
-  bool glProfiling;
-  ProfilingHelper profileHelper;
-  void RecordProfileEvent (const char* descr);
 
   csEventID SystemOpen;
   csEventID SystemClose;
   csEventID CanvasResize;
+  csEventID Frame;
 
   csWeakRef<iBugPlug> bugplug;
 
@@ -239,9 +219,6 @@ private:
   float fov;
   int scrwidth, scrheight;
   int viewwidth, viewheight;
-  CS::Math::Matrix4 projectionMatrix;
-  bool explicitProjection, needMatrixUpdate;
-  
   bool needViewportUpdate;
   csPoly3D frustum;
   bool frustum_valid;
@@ -296,22 +273,18 @@ private:
 
   csGraphics3DCaps rendercaps;
   GLint maxNpotsTexSize;
-  bool multisampleEnabled;
 
-  csRef<iShaderVarStringSet> strings;
+  csRef<iStringSet> strings;
 
-  CS::ShaderVarStringID string_vertices;
-  CS::ShaderVarStringID string_texture_coordinates;
-  CS::ShaderVarStringID string_normals;
-  CS::ShaderVarStringID string_colors;
-  CS::ShaderVarStringID string_indices;
-  CS::ShaderVarStringID string_point_radius;
-  CS::ShaderVarStringID string_point_scale;
-  CS::ShaderVarStringID string_texture_diffuse;
-  CS::ShaderVarStringID string_world2camera;
-  CS::ShaderVarStringID string_world2camera_inv;
-  CS::ShaderVarStringID string_projection;
-  CS::ShaderVarStringID string_projection_inv;
+  csStringID string_vertices;
+  csStringID string_texture_coordinates;
+  csStringID string_normals;
+  csStringID string_colors;
+  csStringID string_indices;
+  csStringID string_point_radius;
+  csStringID string_point_scale;
+  csStringID string_texture_diffuse;
+  csStringID string_world2camera;
 
   csConfigAccess config;
 
@@ -360,11 +333,11 @@ private:
   // For debugging: inhibit all drawing of meshes till next frame.
   bool debug_inhibit_draw;
 
-  int rt_subtex;
   csGLRender2TextureBackend* r2tbackend;
 
   /// Should we use special buffertype (VBO) or just system memory
   bool use_hw_render_buffers;
+  csGLDRAWRANGEELEMENTS glDrawRangeElements;
   static GLvoid csAPIENTRY myDrawRangeElements (GLenum mode, GLuint start, 
     GLuint end, GLsizei count, GLenum type, const GLvoid* indices);
 
@@ -377,7 +350,7 @@ private:
   csRef<iRenderBuffer> scrapColors;
   csShaderVariableContext scrapContext;
   csRef<csRenderBufferHolder> scrapBufferHolder;
-  csRenderBufferName defaultBufferMapping[CS_VATTRIB_SPECIFIC_LAST+1]; 
+  csRenderBufferName scrapMapping [CS_VATTRIB_SPECIFIC_LAST+1]; 
 
   ////////////////////////////////////////////////////////////////////
   //                         Private helpers
@@ -392,11 +365,12 @@ private:
   // @@@ Jorrit: to avoid flickering I had to increase the
   // values below and multiply them with 3.
   //{ glPolygonOffset (-0.05f, -2.0f); 
-  {  }
+  { glPolygonOffset (0.15f, 6.0f); 
+  statecache->Enable_GL_POLYGON_OFFSET_FILL (); }
 
   // Disables offsetting of Z values
   void DisableZOffset ()
-  { }
+  { statecache->Disable_GL_POLYGON_OFFSET_FILL (); }
 
   // Debug function to visualize the stencil with the given mask.
   void DebugVisualizeStencil (uint32 mask);
@@ -439,17 +413,32 @@ private:
     gen_renderBuffers[attr] = buffer;
   }
 
+  void* RenderLock (iRenderBuffer* buffer, csGLRenderBufferLockType type, 
+    GLenum& compGLType, bool& normalized);
+  void RenderRelease (iRenderBuffer* buffer);
+
   struct ImageUnit : public CS::Memory::CustomAllocated
   {
-    csGLBasicTextureHandle* texture;
+    bool enabled;
+    GLuint target;
     
-    ImageUnit (): texture (0) {}
+    csRef<csGLBasicTextureHandle> needNPOTSfixup;
+    bool npotsStatus;
+    
+    ImageUnit (): enabled (false), target (0), npotsStatus (false) {}
   };
   GLint numImageUnits;
   ImageUnit* imageUnits;
   GLint numTCUnits;
-  void SetSeamlessCubemapFlag ();
+  /// Array of buffers used for NPOTS texture coord fixup
+  csArray<csRef<iRenderBuffer> > npotsFixupScrap;
 
+  /// Whether the alpha channel of the color buffer should be scaled.
+  bool needColorFixup;
+  /// Amount to scale alpha channel of color buffer
+  float alphaScale;
+  /// Scrap buffer used for color fixups
+  csRef<iRenderBuffer> colorScrap;
   //@{
   /**
    * Changes to buffer bindings are not immediate but queued and set from 
@@ -461,11 +450,11 @@ private:
     csRef<iRenderBuffer> buffer;
   };
   csArray<BufferChange> changeQueue;
-  uint activeVertexAttribs;
   void ApplyBufferChanges();
   //@}
 
-  csRef<BufferShadowingHelper> bufferShadowDataHelper;
+  csRef<iRenderBuffer> DoNPOTSFixup (iRenderBuffer* buffer, int unit);
+  csRef<iRenderBuffer> DoColorFixup (iRenderBuffer* buffer);
 
   // Minimal float depth(z) difference to store
   // different values in depth buffer. Of course, for standard depth
@@ -494,21 +483,16 @@ private:
    */
   bool drawPixmapAFP;
   GLuint drawPixmapProgram;
-  
-  void ComputeProjectionMatrix();
-
-  /// Whether to perform rendering using patch primitives for tessellation
-  bool use_patches;
 public:
   static csGLStateCache* statecache;
   static csGLExtensionManager* ext;
   csRef<csGLTextureManager> txtmgr;
   bool verbose;
-  
+
   csGLGraphics3D (iBase *parent);
   virtual ~csGLGraphics3D ();
 
-  iShaderVarStringSet* GetStrings () { return strings; }
+  iStringSet* GetStrings () { return strings; }
   inline static bool DoOutputMarkerString ()
   {
     return ext && ext->CS_GL_GREMEDY_string_marker;
@@ -518,25 +502,6 @@ public:
   static void OutputMarkerString (const char* function, const wchar_t* file,
     int line, MakeAString& message);
   void Report (int severity, const char* msg, ...);
-  void CheckGLError (const wchar_t* sourceFile, int sourceLine,
-		     const char* call);
-  
-  csGLRender2TextureBackend* GetR2TBackend()
-  { return r2tbackend; }
-  
-  inline bool GetMultisampleEnabled() const
-  { return multisampleEnabled; }
-  
-  inline GLint GetNumTCUnits() const
-  { return numTCUnits; }
-  
-  /* glDrawRangeElements, wrapping either the extension function, or
-     a backwards compatibility drawing function. */
-  csGLDRAWRANGEELEMENTS glDrawRangeElements;
-  
-  // Also used by instancing helper
-  void* RenderLock (iRenderBuffer* buffer, csGLRenderBufferLockType type);
-  void RenderRelease (iRenderBuffer* buffer);
 
   ////////////////////////////////////////////////////////////////////
   //                            iGraphics3D
@@ -544,11 +509,10 @@ public:
 
   /// Open 3d renderer.
   bool Open ();
-  void SetupShaderVariables();
 
   /// Close renderer and release all resources used
   void Close ();
-  
+
   /// Get a pointer to our 2d canvas driver. NOTE: It's not increfed,
   /// and therefore it shouldn't be decref-ed by caller.
   iGraphics2D* GetDriver2D () 
@@ -558,8 +522,7 @@ public:
   iTextureManager* GetTextureManager () 
   { return txtmgr; }
 
-  void SetMixMode (uint mode, csAlphaMode::AlphaType alphaType,
-    const CS::Graphics::AlphaTestOptions& alphaTest);
+  void SetMixMode (uint mode, csAlphaMode::AlphaType alphaType);
   void SetGlOrtho (bool inverted);
   float GetAspect () const { return aspect; }
 
@@ -576,8 +539,6 @@ public:
   void DeactivateTexture (int unit = 0);
   virtual void SetTextureState (int* units, iTextureHandle** textures,
   	int count);
-  void SetTextureComparisonModes (int*, CS::Graphics::TextureComparisonMode*,
-    int);
 
   /// Set dimensions of window
   void SetDimensions (int width, int height)
@@ -602,9 +563,6 @@ public:
     asp_center_y = y;
     frustum_valid = false;
     needProjectionUpdate = true;
-    explicitProjection = false;
-    
-    UpdateProjectionSVs ();
   }
   
   /// Get center of projection.
@@ -621,9 +579,6 @@ public:
     inv_aspect = 1.0f / aspect;
     frustum_valid = false;
     needProjectionUpdate = true;
-    explicitProjection = false;
-    
-    UpdateProjectionSVs ();
   }
 
   /// Get perspective aspect.
@@ -631,21 +586,6 @@ public:
   {
     return aspect;
   }
-  
-  const CS::Math::Matrix4& GetProjectionMatrix()
-  {
-    if (!explicitProjection && needMatrixUpdate) ComputeProjectionMatrix();
-    return projectionMatrix;
-  }
-  void SetProjectionMatrix (const CS::Math::Matrix4& m)
-  {
-    projectionMatrix = m;
-    explicitProjection = true;
-    needProjectionUpdate = true;
-    
-    UpdateProjectionSVs ();
-  }
-  void UpdateProjectionSVs ();
 
   /// Set the z buffer write/test mode
   virtual void SetZMode (csZBufMode mode)
@@ -670,11 +610,11 @@ public:
     csRenderTargetAttachment attachment = rtaColor0,
     int* subtexture = 0) const;
   void UnsetRenderTargets();
-
-  void CopyFromRenderTargets (size_t num, 
-    csRenderTargetAttachment* attachments,
-    iTextureHandle** textures,
-    int* subtextures = 0);
+  /*/// Get the current render target (0 for screen).
+  virtual iTextureHandle* GetRenderTarget () const
+  {
+    return render_target;
+  }*/
 
   /// Begin drawing in the renderer
   bool BeginDraw (int drawflags);
@@ -689,7 +629,7 @@ public:
   /// Drawroutine. Only way to draw stuff
   void DrawMesh (const CS::Graphics::CoreRenderMesh* mymesh,
     const CS::Graphics::RenderMeshModes& modes,
-    const csShaderVariableStack& stack);
+    const iShaderVarStack* stacks);
 
   /// Draw a 2D sprite
   virtual void DrawPixmap (iTextureHandle *hTex, int sx, int sy,
@@ -762,36 +702,20 @@ public:
 
   virtual bool SetRenderState (G3D_RENDERSTATEOPTION op, long val);
   virtual long GetRenderState (G3D_RENDERSTATEOPTION op) const;
-  virtual void SetEdgeDrawing (bool flag);
-  virtual bool GetEdgeDrawing ();
   virtual bool SetOption (const char*, const char*);
 
   virtual void DrawSimpleMesh (const csSimpleRenderMesh& mesh, 
     uint flags = 0);
-  virtual void DrawSimpleMeshes (const csSimpleRenderMesh* meshes,
-    size_t numMeshes, uint flags = 0);
 
   virtual iHalo* CreateHalo (float, float, float,
     unsigned char *, int, int);
   void RemoveHalo (csOpenGLHalo* halo);
   virtual float GetZBuffValue (int, int);
 
+  virtual void RemoveFromCache (iRendererLightmap*) { }  
+
   virtual bool PerformExtension (char const* command, ...);
   virtual bool PerformExtensionV (char const* command, va_list args);
-
-  virtual void OQInitQueries(unsigned int* queries, int num_queries);
-  virtual void OQDelQueries(unsigned int* queries, int num_queries);
-  virtual bool OQueryFinished(unsigned int occlusion_query);
-  virtual bool OQIsVisible(unsigned int occlusion_query, unsigned int sampleLimit);
-  virtual void OQBeginQuery (unsigned int occlusion_query);
-  virtual void OQEndQuery ();
-
-  virtual void DrawMeshBasic(const CS::Graphics::CoreRenderMesh* mymesh,
-							const CS::Graphics::RenderMeshModes& modes);
-
-  virtual void SetTessellation (bool flag) { use_patches = flag; }
-  virtual bool GetTessellation () { return use_patches; }
-
   //=========================================================================
 
 
@@ -800,23 +724,20 @@ public:
   ////////////////////////////////////////////////////////////////////
 
   bool Initialize (iObjectRegistry* reg);
-  csRef<iVFS> GetVFS();
 	
   ////////////////////////////////////////////////////////////////////
   //                         iEventHandler
   ////////////////////////////////////////////////////////////////////
   
-  bool HandleEvent (iEvent& Event, bool postShaderManager);
+  bool HandleEvent (iEvent& Event);
 
-  template<bool PostShaderManager>
-  struct EventHandler : public scfImplementation1<EventHandler<PostShaderManager>,
+  struct EventHandler : public scfImplementation1<EventHandler,
 						  iEventHandler>
   {
   private:
     csGLGraphics3D* parent;
   public:
-    EventHandler (csGLGraphics3D* parent) : 
-      scfImplementation1<EventHandler<PostShaderManager>, iEventHandler> (this)
+    EventHandler (csGLGraphics3D* parent) : scfImplementationType (this)
     {
       EventHandler::parent = parent;
     }
@@ -824,40 +745,11 @@ public:
     {
     }
     virtual bool HandleEvent (iEvent& ev) 
-    { return parent->HandleEvent (ev, PostShaderManager); }
-    
-    static const char * StaticHandlerName()
-    { return PostShaderManager ? "crystalspace.graphics3d.2" : "crystalspace.graphics3d"; }
-    static const csHandlerID StaticID(csRef<iEventHandlerRegistry> &reg)
-    {return reg->GetGenericID(StaticHandlerName()); }
-    virtual const char * GenericName() const
-    { return StaticHandlerName(); }
-    virtual csHandlerID GenericID(csRef<iEventHandlerRegistry> &reg) const
-    { return StaticID(reg); }
-    
-    virtual const csHandlerID * GenericPrec (
-      csRef<iEventHandlerRegistry> & r1, csRef<iEventNameRegistry> &,
-      csEventID) const
-    {
-      if (PostShaderManager)
-      {
-	static csHandlerID constraint[3] =
-	{
-	  EventHandler<false>::StaticID (r1),
-	  r1->GetGenericID("crystalspace.graphics3d.shadermgr"),
-	  CS_HANDLERLIST_END
-	};
-	return constraint;
-      }
-      return 0;
-    }
-    virtual const csHandlerID * GenericSucc (
-      csRef<iEventHandlerRegistry> &, csRef<iEventNameRegistry> &,
-      csEventID) const { return 0; }
-      
-    CS_EVENTHANDLER_DEFAULT_INSTANCE_CONSTRAINTS 
+    { return parent->HandleEvent (ev); }
+    CS_EVENTHANDLER_NAMES("crystalspace.graphics3d")
+    CS_EVENTHANDLER_NIL_CONSTRAINTS
   };
-  csRef<iEventHandler> eventHandler1, eventHandler2;
+  csRef<EventHandler> scfiEventHandler;
 
   ////////////////////////////////////////////////////////////////////
   //                          iDebugHelper
@@ -879,9 +771,6 @@ public:
   virtual void Dump (iGraphics3D* /*g3d*/)
   { }
 };
-
-// To silence EnableZOffset/DisableZOffset
-#include "csutil/deprecated_warn_on.h"
 
 }
 CS_PLUGIN_NAMESPACE_END(gl3d)

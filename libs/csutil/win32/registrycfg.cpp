@@ -334,9 +334,8 @@ const char* csWin32RegistryConfig::RegToStr (DWORD type, Block_O_Mem& data,
     return status.strings.Register (buf, 0);
     break;
   default:
-    break;
+    return Def;
   }
-  return Def;
 }
 
 bool csWin32RegistryConfig::RegToBool (DWORD type, Block_O_Mem& data,

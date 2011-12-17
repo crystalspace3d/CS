@@ -27,9 +27,7 @@
  * \addtogroup engine3d_views
  * @{ */
 
-#include "csgeom/matrix4.h"
 #include "csutil/scf.h"
-#include "csgeom/matrix4.h"
 
 #define CS_VEC_FORWARD   csVector3(0,0,1)
 #define CS_VEC_BACKWARD  csVector3(0,0,-1)
@@ -56,44 +54,18 @@ struct iSceneNode;
 
 /**
  * Implement this interface if you are interested in learning when
- * the camera changes sector or moves.
- *
- * This callback is used by:
- * - iCamera
- */
-struct iCameraListener : public virtual iBase
-{
-  SCF_INTERFACE (iCameraListener, 0, 0, 1);
-
-  /// Fired when the sector changes.
-  virtual void NewSector (iCamera* camera, iSector* sector) = 0;
-
-  /// Fired when the camera moves.
-  virtual void CameraMoved (iCamera* camera) = 0;
-};
-
-#include "csutil/deprecated_warn_off.h"
-
-/**
- * Implement this interface if you are interested in learning when
  * the camera changes sector.
  *
  * This callback is used by:
  * - iCamera
  */
-struct CS_DEPRECATED_TYPE_MSG("Use iCameraListener instead")
-iCameraSectorListener : public iCameraListener
+struct iCameraSectorListener : public virtual iBase
 {
-  SCF_INTERFACE (iCameraSectorListener, 1, 0, 0);
+  SCF_INTERFACE (iCameraSectorListener, 0, 0, 1);
 
   /// Fired when the sector changes.
   virtual void NewSector (iCamera* camera, iSector* sector) = 0;
-
-  // Make it compile.
-  void CameraMoved (iCamera* camera) {}
 };
-
-#include "csutil/deprecated_warn_on.h"
 
 /**
  * Camera class. This class represents camera objects which can be used to
@@ -129,12 +101,12 @@ iCameraSectorListener : public iCameraListener
  */
 struct iCamera : public virtual iBase
 {
-  SCF_INTERFACE(iCamera, 3,0,0);
+  SCF_INTERFACE(iCamera, 2,1,0);
   /**
    * Create a clone of this camera. Note that the array of listeners
    * is not cloned.
    */
-  virtual csPtr<iCamera> Clone () const = 0;
+  virtual iCamera *Clone () const = 0;
 
   /**
    * Get the scene node that this object represents.
@@ -143,60 +115,38 @@ struct iCamera : public virtual iBase
    */
   virtual iSceneNode* QuerySceneNode () = 0;
 
-  /**
-   * Return the FOV (field of view) in pixels
-   * \deprecated Deprecated in 1.3. Use iPerspectiveCamera instead
-   */  
-  CS_DEPRECATED_METHOD_MSG("Use iPerspectiveCamera instead")
+  /// Return the FOV (field of view) in pixels
   virtual int GetFOV () const = 0;
-  /**
-   * Return the inverse flield of view (1/FOV) in pixels
-   * \deprecated Deprecated in 1.3. Use iPerspectiveCamera instead
-   */
-  CS_DEPRECATED_METHOD_MSG("Use iPerspectiveCamera instead")
+  /// Return the inverse flield of view (1/FOV) in pixels
   virtual float GetInvFOV () const = 0;
-  /**
-   * Return the FOV (field of view) in degrees.
-   * \deprecated Deprecated in 1.3. Use iPerspectiveCamera instead
-   */
-  CS_DEPRECATED_METHOD_MSG("Use iPerspectiveCamera instead")
+  /// Return the FOV (field of view) in degrees.
   virtual float GetFOVAngle () const = 0;
 
   /**
    * Set the FOV in pixels. 'fov' is the desired FOV in pixels. 'width' is
    * the display width, also in pixels.
-   * \deprecated Deprecated in 1.3. Use iPerspectiveCamera instead
    */
-  CS_DEPRECATED_METHOD_MSG("Use iPerspectiveCamera instead")
   virtual void SetFOV (int fov, int width) = 0;
   /**
    * Set the FOV in degrees. 'fov' is the desired FOV in degrees. 'width' is
    * the display width in pixels.
-   * \deprecated Deprecated in 1.3. Use iPerspectiveCamera instead
    */
-  CS_DEPRECATED_METHOD_MSG("Use iPerspectiveCamera instead")
   virtual void SetFOVAngle (float fov, int width) = 0;
 
   /**
-   * Get the X shift amount. The parameter specified the desired X coordinate
+   * Set the X shift amount. The parameter specified the desired X coordinate
    * on screen of the projection center of the camera.
-   * \deprecated Deprecated in 1.3. Use iPerspectiveCamera instead
    */
-  CS_DEPRECATED_METHOD_MSG("Use iPerspectiveCamera instead")
   virtual float GetShiftX () const = 0;
   /**
-   * Get the Y shift amount. The parameter specified the desired Y coordinate
+   * Set the Y shift amount. The parameter specified the desired Y coordinate
    * on screen of the projection center of the camera.
-   * \deprecated Deprecated in 1.3. Use iPerspectiveCamera instead
    */
-  CS_DEPRECATED_METHOD_MSG("Use iPerspectiveCamera instead")
   virtual float GetShiftY () const = 0;
   /**
    * Set the shift amount. The parameter specified the desired projection
    * center of the camera on screen.
-   * \deprecated Deprecated in 1.3. Use iPerspectiveCamera instead
    */
-  CS_DEPRECATED_METHOD_MSG("Use iPerspectiveCamera instead")
   virtual void SetPerspectiveCenter (float x, float y) = 0;
 
   /**
@@ -220,12 +170,13 @@ struct iCamera : public virtual iBase
 
   /**
    * Moves the camera a relative amount in world coordinates.
-   * \warning The \a cd parameter is not used
+   * If 'cd' is true then collision detection with objects and things
+   * inside the sector is active. Otherwise you can walk through objects
+   * (but portals will still be correctly checked).
    */
   virtual void MoveWorld (const csVector3& v, bool cd = true) = 0;
   /**
    * Moves the camera a relative amount in camera coordinates.
-   * \warning The \a cd parameter is not used
    */
   virtual void Move (const csVector3& v, bool cd = true) = 0;
   /**
@@ -254,7 +205,6 @@ struct iCamera : public virtual iBase
    * Eliminate roundoff error by snapping the camera orientation to a
    * grid of density n
    */
-  CS_DEPRECATED_METHOD_MSG("Don't use it anymore")
   virtual void Correct (int n) = 0;
 
   /// Return true if space is mirrored.
@@ -305,128 +255,10 @@ struct iCamera : public virtual iBase
   /// Get the hit-only-portals flag.
   virtual bool GetOnlyPortals () = 0;
 
-#include "csutil/deprecated_warn_off.h"
-
   /// Add a listener to this camera.
-  CS_DEPRECATED_METHOD_MSG("Use iCameraListener instead")
   virtual void AddCameraSectorListener (iCameraSectorListener* listener) = 0;
   /// Remove a listener from this camera.
-  CS_DEPRECATED_METHOD_MSG("Use iCameraListener instead")
   virtual void RemoveCameraSectorListener (iCameraSectorListener* listener) = 0;
-
-#include "csutil/deprecated_warn_on.h"
-
-  /// Add a listener to this camera.
-  virtual void AddCameraListener (iCameraListener* listener) = 0;
-  /// Remove a listener from this camera.
-  virtual void RemoveCameraListener (iCameraListener* listener) = 0;
-  
-  /// Get the projection matrix for this camera
-  virtual const CS::Math::Matrix4& GetProjectionMatrix () = 0;
-  
-  /**
-   * Return the planes limiting the visible volume (as specified by the
-   * projection). The returned planes are in camera space.
-   */
-  virtual const csPlane3* GetVisibleVolume (uint32& mask) = 0;
-  
-  /// Set the size of the viewport this camera is associated with.
-  virtual void SetViewportSize (int width, int height) = 0;
-  
-  /// Get the inverse projection matrix for this camera
-  virtual const CS::Math::Matrix4& GetInvProjectionMatrix () = 0;
-};
-
-/**
- * An implementation of iCamera that renders a world with a classical 
- * perspective.
- * 
- * Main creators of instances implementing this interface:
- * - iEngine::CreatePerspectiveCamera()
- * 
- * Main ways to get pointers to this interface:
- * - iView::GetPerspectiveCamera()
- */
-struct iPerspectiveCamera : public virtual iBase
-{
-  SCF_INTERFACE(iPerspectiveCamera, 1, 0, 1);
-  
-  /// Get the iCamera interface for this camera.
-  virtual iCamera* GetCamera() = 0;
-  
-  /// Return the normalized FOV (field of view)
-  virtual float GetFOV () const = 0;
-  /// Return the inverse of normalized field of view (1/FOV)
-  virtual float GetInvFOV () const = 0;
-  /// Return the FOV (field of view) in degrees.
-  virtual float GetFOVAngle () const = 0;
-  /**
-   * Set the FOV. \a fov is the desired FOV in normalized screen coordinates.
-   * \a width is the display width, also normalized.
-   */
-  virtual void SetFOV (float fov, float width) = 0;
-  
-  /**
-   * Set the FOV in degrees. \a fov is the desired FOV in degrees. \a width is
-   * the display width in normalized screen coordinates.
-   */
-  virtual void SetFOVAngle (float fov, float width) = 0;
-
-  /**
-   * Get the X shift amount. The parameter specified the desired X coordinate
-   * on the normalized screen of the projection center of the camera.
-   */
-  virtual float GetShiftX () const = 0;
-  /**
-   * Get the Y shift amount. The parameter specified the desired Y coordinate
-   * on the normalized screen of the projection center of the camera.
-   */
-  virtual float GetShiftY () const = 0;
-  /**
-   * Set the shift amount. The parameter specified the desired projection
-   * center of the camera on the normalized screen.
-   */
-  virtual void SetPerspectiveCenter (float x, float y) = 0;
-  
-  /**
-   * Get the near clip distance of this camera.
-   * Higher clip distances increases the possibility that the camera may look
-   * "inside" some geometry, however, it also provides higher depth value
-   * precision - especially for large scenes this can prevent depth buffer
-   * issues (Z-fighting, wrong occlusion) at a distance.
-   * 
-   * If you have a collider (player etc.) coupled to camera movement a good
-   * initial value for the near clip distance is a value slightly above the
-   * collider radius.
-   */
-  virtual float GetNearClipDistance() const = 0;
-  /**
-   * Set near clip distance of this camera.
-   * 
-   * The default near clipping distance is controlled by the engine.
-   */
-  virtual void SetNearClipDistance (float dist) = 0;
-};
-
-/**
- * An implementation of iCamera that renders a world with a custom
- * projection matrix.
- * 
- * Main creators of instances implementing this interface:
- * - iEngine::CreateCustomMatrixCamera()
- * 
- * Main ways to get pointers to this interface:
- * - iView::GetCustomMatrixCamera()
- */
-struct iCustomMatrixCamera : public virtual iBase
-{
-  SCF_INTERFACE(iCustomMatrixCamera, 1, 0, 0);
-  
-  /// Get the iCamera interface for this camera.
-  virtual iCamera* GetCamera() = 0;
-  
-  /// Set the projection matrix.
-  virtual void SetProjectionMatrix (const CS::Math::Matrix4& mat) = 0;
 };
 
 /** @} */

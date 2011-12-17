@@ -43,7 +43,7 @@
 
 #include "movierecorder.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(Movierecorder)
 {
@@ -201,9 +201,8 @@ void csMovieRecorder::SetupPlugin()
   GetKeyCode(config->GetStr("MovieRecorder.Keys.Record", "alt-r"), keyRecord);
   GetKeyCode(config->GetStr("MovieRecorder.Keys.Pause", "alt-p"), keyPause);
 
-  captureFormat.SetMask (filenameFormat != "" ? filenameFormat.GetData () :
-			 config->GetStr ("MovieRecorder.Capture.FilenameFormat",
-					 "/tmp/crystal000.nuv"));
+  captureFormat.SetMask (config->GetStr ("MovieRecorder.Capture.FilenameFormat",
+    "/tmp/crystal000.nuv"));
 
   initialized = true;
 }
@@ -246,7 +245,7 @@ bool csMovieRecorder::HandleStartFrame (iEvent& /*event*/)
 {
   SetupPlugin();
   // don't use VC here - we need 'real' ticks.
-  frameStartTime = csGetMicroTicks();
+  frameStartTime = csGetTicks();
   return false;
 }
 
@@ -255,8 +254,8 @@ bool csMovieRecorder::HandleEndFrame (iEvent& /*event*/)
   if (IsRecording() && !IsPaused()) {
     csRef<iImage> img (csPtr<iImage> (G2D->ScreenShot ()));
 
-    csMicroTicks ticks = csGetMicroTicks();
-    csMicroTicks thisFrameTime = ticks - frameStartTime;
+    csTicks ticks = csGetTicks();
+    csTicks thisFrameTime = ticks - frameStartTime;
 
     if (!img) {
       Report (CS_REPORTER_SEVERITY_ERROR, "This video driver doesn't support screen capture.");
@@ -279,15 +278,13 @@ bool csMovieRecorder::HandleEndFrame (iEvent& /*event*/)
     minFrameTime = MIN (minFrameTime, thisFrameTime);
     maxFrameTime = MAX (maxFrameTime, thisFrameTime);
 
-    csMicroTicks encodeTimeM = ((csMicroTicks) encodeTime) * 1000;
-    totalFrameEncodeTime += encodeTimeM;
-    minFrameEncodeTime = MIN (minFrameEncodeTime, encodeTimeM);
-    maxFrameEncodeTime = MAX (maxFrameEncodeTime, encodeTimeM);
+    totalFrameEncodeTime += encodeTime;
+    minFrameEncodeTime = MIN (minFrameEncodeTime, encodeTime);
+    maxFrameEncodeTime = MAX (maxFrameEncodeTime, encodeTime);
 
-    csMicroTicks writeTimeM = ((csMicroTicks) writeTime) * 1000;
-    totalWriteToDiskTime += writeTimeM;
-    minWriteToDiskTime = MIN (minWriteToDiskTime, writeTimeM);
-    maxWriteToDiskTime = MAX (maxWriteToDiskTime, writeTimeM);
+    totalWriteToDiskTime += writeTime;
+    minWriteToDiskTime = MIN (minWriteToDiskTime, writeTime);
+    maxWriteToDiskTime = MAX (maxWriteToDiskTime, writeTime);
   }
 
   return false;
@@ -300,8 +297,6 @@ bool csMovieRecorder::IsRecording(void) const
 
 void csMovieRecorder::Start(void) 
 {
-  SetupPlugin();
-
   if (IsPaused()) {
     UnPause();
     return;
@@ -309,7 +304,7 @@ void csMovieRecorder::Start(void)
   if (IsRecording())
     Stop();
 
-  movieFileName = recordingFile != "" ? recordingFile : captureFormat.FindNextFilename (VFS);
+  movieFileName = captureFormat.FindNextFilename (VFS);
 
   // If the config specified 0x0, that means we use the current resolution unscaled
   int w = recordWidth  ? recordWidth  : G2D->GetWidth();
@@ -317,20 +312,20 @@ void csMovieRecorder::Start(void)
 
   numFrames = 0;
   totalFrameEncodeTime = totalFrameTime = totalWriteToDiskTime = 0;
-  minFrameEncodeTime = minFrameTime = minWriteToDiskTime = (csMicroTicks)-1;
+  minFrameEncodeTime = minFrameTime = minWriteToDiskTime = (csTicks)-1;
   maxFrameEncodeTime = maxFrameTime = maxWriteToDiskTime = 0;
 
   movieFile = VFS->Open (movieFileName, VFS_FILE_WRITE | VFS_FILE_UNCOMPRESSED);
   if (!movieFile)
   {
     Report (CS_REPORTER_SEVERITY_WARNING,
-    	"Couldn't open file %s for recording", CS::Quote::Single (movieFileName.GetData()));
+    	"Couldn't open file '%s' for recording", movieFileName.GetData());
     return;
   }
   fakeTicksPerFrame = (1000 / frameRate);
-  ffakeClockTicks = fakeClockTicks / 1000.0f;
+  ffakeClockTicks = fakeClockTicks;
 
-  frameStartTime = csGetMicroTicks();
+  frameStartTime = csGetTicks();
 
   writer = new NuppelWriter(w, h, &WriterCallback, this, frameRate,
 			    rtjQuality, useRTJpeg, useLZO, useRGB);
@@ -341,8 +336,7 @@ void csMovieRecorder::Start(void)
 
 void csMovieRecorder::Stop(void)
 {
-  if (IsRecording())
-  {
+  if (IsRecording()) {
     delete writer;
     writer = 0;
     movieFile = 0;
@@ -400,19 +394,9 @@ void csMovieRecorder::UnPause(void)
   if (!IsRecording())
     return;
   paused = false;
-  ffakeClockTicks = fakeClockTicks / 1000.0f;
+  ffakeClockTicks = fakeClockTicks;
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Video recorder unpaused - %s", 
     movieFileName.GetData());
-}
-
-void csMovieRecorder::SetRecordingFile (const char* filename)
-{
-  recordingFile = filename;
-}
-
-void csMovieRecorder::SetFilenameFormat (const char* format)
-{
-  filenameFormat = format;
 }
 
 void csMovieRecorder::WriterCallback(const void *data, long bytes, void *extra)
@@ -423,26 +407,25 @@ void csMovieRecorder::WriterCallback(const void *data, long bytes, void *extra)
 
 void csMovieRecorder::ClockAdvance ()
 {
-  csMicroTicks lastFakeClockTicks = fakeClockTicks;
+  csTicks lastFakeClockTicks = fakeClockTicks;
   realVirtualClock->Advance();
-  csMicroTicks realTicksPerFrame = realVirtualClock->GetElapsedMicroTicks();
+  csTicks realTicksPerFrame = realVirtualClock->GetElapsedTicks();
 
   /*
     To avoid 'jumps' in time when the clock is throttled/unthrottled
     we keep our own tick counter, which is either increased by the
     real elapsed time (normal mode) or the required frame time (recording).
    */
-  if (!IsRecording() || IsPaused())
-  {
+  if (!IsRecording() || IsPaused()) {
     fakeClockElapsed = realTicksPerFrame;
     fakeClockTicks += realTicksPerFrame;
   }
-  else
-  {
+  else {
     ffakeClockTicks += fakeTicksPerFrame;
-    fakeClockTicks = (csMicroTicks)(ffakeClockTicks * 1000.0f);
+    fakeClockTicks = (csTicks)ffakeClockTicks;
 
-    fakeClockElapsed = fakeClockTicks - lastFakeClockTicks;
+    fakeClockElapsed = fakeClockTicks - 
+      lastFakeClockTicks;
     // If we're rendering slower than real time, there's nothing we can do about it.
     // If we're rendering faster, put in a little delay here.
     if (throttle && ((fakeClockElapsed > realTicksPerFrame)))
@@ -466,27 +449,12 @@ void csMovieRecorder::ClockResume ()
 
 csTicks csMovieRecorder::ClockGetElapsedTicks () const
 {
-  return fakeClockElapsed / 1000;
+  return fakeClockElapsed;
 }
 
 csTicks csMovieRecorder::ClockGetCurrentTicks () const
 {
-  return fakeClockTicks / 1000;
-}
-
-csMicroTicks csMovieRecorder::ClockGetElapsedMicroTicks () const
-{
-  return fakeClockElapsed;
-}
-
-csMicroTicks csMovieRecorder::ClockGetCurrentMicroTicks () const
-{
   return fakeClockTicks;
-}
-
-float csMovieRecorder::ClockGetElapsedSeconds ()
-{
-  return float (fakeClockElapsed) / 1000000.0f;
 }
 
 /// From Bugplug, for decoding keys in the config file

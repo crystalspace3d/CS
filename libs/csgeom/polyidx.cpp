@@ -15,7 +15,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "cssysdef.h"
 #include "csgeom/polyidx.h"
 
@@ -57,7 +56,7 @@ void csPolyIndexed::MakeEmpty ()
 
 void csPolyIndexed::MakeRoom (int new_max)
 {
-  if (new_max <= max_vertices) return;
+  if (new_max <= max_vertices) return ;
 
   int *new_vertices_idx = new int[new_max];
   memcpy (new_vertices_idx, vertices_idx, num_vertices * sizeof (int));
@@ -73,3 +72,5 @@ int csPolyIndexed::AddVertex (int i)
   num_vertices++;
   return num_vertices - 1;
 }
+
+//---------------------------------------------------------------------------

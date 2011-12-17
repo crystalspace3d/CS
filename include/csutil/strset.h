@@ -25,11 +25,7 @@
 /**\file
  * String-to-ID hash table.
  */
-
-namespace CS
-{
-namespace Utility
-{
+ 
 /**
  * The string set is a collection of unique strings. Each string has an ID
  * number. The most important operation is to request a string, which means to
@@ -37,54 +33,30 @@ namespace Utility
  * present.  This is useful when you need to work with strings but want the
  * performance characteristics of simple numeric comparisons.  Rather than
  * performing string comparisons, you instead compare the numeric string ID's.
- *
- * If \a Locked is true operations on an instance of the set are locked are
- * for concurrent accesses.
- *
  * \sa csStringHash
  * \sa iStringSet
  */
-template<typename Tag, bool Locked = false>
-class StringSet
+class CS_CRYSTALSPACE_EXPORT csStringSet
 {
  private:
-  typedef CS::Threading::OptionalMutex<Locked> MutexType;
-  StringHash<Tag> registry;
-  csHash<const char*, CS::StringID<Tag> > reverse; // ID to string mapping.
-  /* Inherit from OptionalMutex<> to avoid spending extra memory if locking
-     is disabled */
-  struct LockAndId : public MutexType
-  {
-    unsigned int next_id;
+  csStringHash registry;
+  csHash<const char*, csStringID> reverse; // ID to string mapping.
+  csStringID next_id;
 
-    LockAndId() : next_id (0) {}
-  };
-  mutable LockAndId lockAndId;
-
-  void Copy(StringSet const& s)
-  {
-    if (&s != this)
-    {
-      CS::Threading::ScopedLock<MutexType> l1 (lockAndId);
-      CS::Threading::ScopedLock<MutexType> l2 (s.lockAndId);
-      registry = s.registry;
-      reverse  = s.reverse;
-      lockAndId.next_id  = s.lockAndId.next_id;
-    }
-  }
+  void Copy(csStringSet const&);
 
 public:
   typedef csStringHash::GlobalIterator GlobalIterator;
 
 public:
   /// Constructor.
-  StringSet (size_t size = 23) : registry(size), reverse(size) {}
+  csStringSet (size_t size = 23);
   /// Copy constructor.
-  StringSet (StringSet const& s) { Copy(s); }
+  csStringSet (csStringSet const& s) { Copy(s); }
   /// Destructor.
-  ~StringSet () {}
+  ~csStringSet ();
   /// Assignment operator.
-  StringSet& operator=(StringSet const& s) { Copy(s); return *this; }
+  csStringSet& operator=(csStringSet const& s) { Copy(s); return *this; }
 
   /**
    * Request the numeric ID for the given string.
@@ -92,94 +64,45 @@ public:
    * \remarks Creates a new ID if the string is not yet present in the set,
    *   else returns the previously assigned ID.
    */
-  CS::StringID<Tag> Request (const char* s)
-  {
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    CS::StringID<Tag> id = registry.Request(s);
-    if (id == CS::InvalidStringID<Tag> ())
-    {
-      const char* t = registry.Register(s, lockAndId.next_id);
-      id = lockAndId.next_id++;
-      reverse.Put (id, t);
-    }
-    return id;
-  }
+  csStringID Request (const char*);
 
   /**
    * Request the string corresponding to the given ID.
    * \return Null if the string * has not been requested (yet), else the string
    *   corresponding to the ID.
    */
-  char const* Request (CS::StringID<Tag> id) const
-  {
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    return reverse.Get(id, 0);
-  }
+  char const* Request (csStringID) const;
 
   /**
    * Check if the set contains a particular string.
    */
-  bool Contains(char const* s) const
-  {
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    return registry.Request(s) != CS::InvalidStringID<Tag> ();
-  }
+  bool Contains(char const*) const;
 
   /**
    * Check if the set contains a string with a particular ID.
    * \remarks This is rigidly equivalent to
    *   <tt>return Request(id) != NULL</tt>, but more idomatic.
    */
-  bool Contains(CS::StringID<Tag> id) const
-  { 
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    return Request(id) != 0; 
-  }
+  bool Contains(csStringID id) const
+  { return Request(id) != 0; }
 
   /**
    * Remove specified string.
    * \return True if a matching string was in thet set; else false.
    */
-  bool Delete(char const* s)
-  {
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    CS::StringID<Tag> const id = registry.Request(s);
-    bool const ok = (id != csInvalidStringID);
-    if (ok)
-    {
-      registry.Delete(s);
-      reverse.DeleteAll(id);
-    }
-    return ok;
-  }
+  bool Delete(char const* s);
 
   /**
    * Remove a string with the specified ID.
    * \return True if a matching string was in thet set; else false.
    */
-  bool Delete(CS::StringID<Tag> id)
-  {
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    char const* s = reverse.Get(id,0);
-    bool const ok = (s != 0);
-    if (ok)
-    {
-      registry.Delete(s);
-      reverse.DeleteAll(id);
-    }
-    return ok;
-  }
+  bool Delete(csStringID id);
 
   /**
    * Remove all stored strings. When new strings are registered again, new
    * ID values will be used; the old ID's will not be re-used.
    */
-  void Empty ()
-  {
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    registry.Empty();
-    reverse.Empty();
-  }
+  void Empty ();
 
   /**
    * Remove all stored strings.
@@ -191,10 +114,7 @@ public:
 
   /// Get the number of elements in the hash.
   size_t GetSize () const
-  { 
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    return registry.GetSize (); 
-  }
+  { return registry.GetSize (); }
 
   /**
    * Return true if the hash is empty.
@@ -202,23 +122,15 @@ public:
    *   idiomatic.
    */
   bool IsEmpty() const
-  { 
-    CS::Threading::ScopedLock<MutexType> lock (lockAndId);
-    return GetSize() == 0; 
-  }
+  { return GetSize() == 0; }
 
   /**
    * Return an iterator for the set which iterates over all strings.
    * \warning Modifying the set while you have open iterators will result
    *   undefined behaviour.
-   * \warning The iterator will <b>not</b> respect locking of the string set!
    */
   GlobalIterator GetIterator () const
   { return registry.GetIterator(); }
 };
-} // namespace Utility
-} // namespace CS
-
-typedef CS::Utility::StringSet<CS::StringSetTag::General> csStringSet;
 
 #endif // __CS_STRSET_H__

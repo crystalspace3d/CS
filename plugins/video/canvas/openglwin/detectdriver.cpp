@@ -19,7 +19,6 @@
 #include "cssysdef.h"
 #include "csutil/csstring.h"
 #include "csutil/util.h"
-#include "csutil/stringquote.h"
 #include "csutil/sysfunc.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -30,12 +29,44 @@
 
 #include "csutil/win32/wintools.h"
 
+#ifndef MONITOR_DEFAULTTONEAREST
+// "guess" whether multimon types/#defs are present already
+
+#if !defined(__MINGW32__) && !defined(__CYGWIN__)
+// MinGW & Cygwin(more exactly, the w32api headers) already have them defined
+
+struct MONITORINFOEXA
+{  
+  DWORD cbSize; 
+  RECT rcMonitor; 
+  RECT rcWork; 
+  DWORD dwFlags; 
+  CHAR szDevice[CCHDEVICENAME];
+};
+DECLARE_HANDLE(HMONITOR);
+#endif
+
+typedef MONITORINFOEXA* LPMONITORINFOEXA; 
+#define MONITOR_DEFAULTTONEAREST  2
+
+#endif
+
+#define CS_API_NAME		MultiMon
+#define CS_API_FUNCTIONS	"plugins/video/canvas/openglwin/MultiMonAPI.fun"
+#define CS_API_DLL		"user32.dll"
+#define CS_API_EXPORT
+
+#include "csutil/win32/APIdeclare.inc"
+#include "libs/csutil/win32/APIdefine.inc"  // @@@
+
 csDetectDriver::csDetectDriver()
 {
+  MultiMon::IncRef();
 }
 
 csDetectDriver::~csDetectDriver()
 {
+  MultiMon::DecRef();
 }
 
 void csDetectDriver::DetermineDriver (const char* monitorName)
@@ -51,8 +82,7 @@ void csDetectDriver::DetermineDriver (const char* monitorName)
     screenDriverName.Replace ((char*)dm.dmDeviceName);
   }
   if (verbose)
-    csPrintf ("csDetectDriver: driver name is %s\n",
-	      CS::Quote::Single (screenDriverName.GetData ()));
+    csPrintf ("csDetectDriver: driver name is '%s'\n", screenDriverName.GetData ());
 
   csString glDllName;
   if (!screenDriverName.IsEmpty())
@@ -100,8 +130,8 @@ void csDetectDriver::DetermineDriver (const char* monitorName)
   if (glDllName.IsEmpty() && !screenDriverName.IsEmpty())
   {
     if (verbose)
-      csPrintf ("csDetectDriver: maybe DLL %s exists\n", 
-      CS::Quote::Single (screenDriverName.GetData()));
+      csPrintf ("csDetectDriver: maybe DLL '%s' exists\n", 
+      screenDriverName.GetData());
     HMODULE dllHandle = LoadLibraryExA (screenDriverName, 0, 
       LOAD_LIBRARY_AS_DATAFILE);
     if (dllHandle != 0)
@@ -166,8 +196,7 @@ void csDetectDriver::DetermineDriver (const char* monitorName)
   {
     DriverDLL = glDllName;
     if (verbose)
-      csPrintf ("%s: found DLL %s\n", CS_FUNCTION_NAME,
-		CS::Quote::Single (DriverDLL.GetData()));
+      csPrintf ("%s: found DLL '%s'\n", CS_FUNCTION_NAME, DriverDLL.GetData());
   }
 }
 
@@ -204,8 +233,8 @@ void csDetectDriver::ScanForDriver ()
     {
       DriverDLL = glDllName;
       if (verbose)
-        csPrintf ("%s: found DLL %s\n", CS_FUNCTION_NAME, 
-          CS::Quote::Single (DriverDLL.GetData()));
+        csPrintf ("%s: found DLL '%s'\n", CS_FUNCTION_NAME, 
+          DriverDLL.GetData());
     }
   }
 }
@@ -235,7 +264,7 @@ void csDetectDriver::DetermineDriverVersion()
     {
       void* data;
       UINT dataLen;
-      if (VerQueryValueA (buffer, const_cast<char*> ("\\"), &data, &dataLen) && 
+      if (VerQueryValueA (buffer, "\\", &data, &dataLen) && 
 	(dataLen == sizeof (VS_FIXEDFILEINFO)))
       {
 	VS_FIXEDFILEINFO& ffi = *((VS_FIXEDFILEINFO*)data);
@@ -284,24 +313,26 @@ void csDetectDriver::DoDetection (HWND window, HDC dc)
       csString screenDevice;
 
       // Determine the monitor we're on
-      MONITORINFOEXA mi;
-
-      HMONITOR monitor = MonitorFromWindow (window,
-	MONITOR_DEFAULTTONEAREST);
-
-      if (monitor != 0)
+      if (MultiMon::MultiMonAvailable())
       {
-	memset (&mi, 0, sizeof (mi));
-	mi.cbSize = sizeof (mi);
-	if (GetMonitorInfoA (monitor, &mi))
-	{
-	  screenDevice.Replace (mi.szDevice);
-	}
+        MONITORINFOEXA mi;
+
+        HMONITOR monitor = MultiMon::MonitorFromWindow (window,
+	  MONITOR_DEFAULTTONEAREST);
+
+        if (monitor != 0)
+        {
+	  memset (&mi, 0, sizeof (mi));
+	  mi.cbSize = sizeof (mi);
+	  if (MultiMon::GetMonitorInfoA (monitor, &mi))
+	  {
+	    screenDevice.Replace (mi.szDevice);
+	  }
+        }
       }
 
       if (verbose)
-        csPrintf ("csDetectDriver: monitor name is %s\n",
-		  CS::Quote::Single (screenDevice.GetData ()));
+        csPrintf ("csDetectDriver: monitor name is '%s'\n", screenDevice.GetData ());
       
       // Try to determine the driver
       DetermineDriver (screenDevice.GetData ());

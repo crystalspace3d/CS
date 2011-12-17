@@ -23,18 +23,14 @@
 #include "csutil/objreg.h"
 #include "csutil/ref.h"
 #include "csutil/scf.h"
-#include "csutil/scfstr.h"
-#include "csutil/stringreader.h"
 #include "iutil/databuff.h"
 #include "iutil/document.h"
-#include "iutil/hiercache.h"
 #include "iutil/string.h"
 #include "ivaria/reporter.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/shader/shader.h"
 
 #include "glshader_cgfp.h"
-#include "profile_limits.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(GLShaderCg)
 {
@@ -65,15 +61,15 @@ void csShaderGLCGFP::Deactivate()
 
 void csShaderGLCGFP::SetupState (const CS::Graphics::RenderMesh* mesh,
                                  CS::Graphics::RenderMeshModes& modes,
-                                 const csShaderVariableStack& stack)
+                                 const iShaderVarStack* stacks)
 {
   if (pswrap)
   {
-    pswrap->SetupState (mesh, modes, stack);
+    pswrap->SetupState (mesh, modes, stacks);
     return;
   } 
 
-  csShaderGLCGCommon::SetupState (mesh, modes, stack);
+  csShaderGLCGCommon::SetupState (mesh, modes, stacks);
 }
 
 void csShaderGLCGFP::ResetState()
@@ -86,141 +82,91 @@ void csShaderGLCGFP::ResetState()
   csShaderGLCGCommon::ResetState();
 }
 
-bool csShaderGLCGFP::Compile (iHierarchicalCache* cache, csRef<iString>* tag)
+bool csShaderGLCGFP::Compile ()
 {
   if (!shaderPlug->enableFP) return false;
 
-  // See if we want to wrap through the PS plugin
-  if (shaderPlug->ProfileNeedsRouting (shaderPlug->currentLimits.fp.profile)
-      && shaderPlug->psplg)
-  {
-    bool ret = TryCompile (loadApplyVmap,
-      shaderPlug->currentLimits);
-  
-    csString tagStr (csString("CG") + shaderPlug->currentLimits.ToString());
-    WriteToCache (cache, shaderPlug->currentLimits.fp, 
-      shaderPlug->currentLimits, tagStr);
-    cacheKeepNodes.DeleteAll ();
-    tag->AttachNew (new scfString (tagStr));
-    
-    if (!ret) return false;
-
-    return LoadProgramWithPS1 ();
-  }
-  else
-  {
-    bool ret = TryCompile (loadLoadToGL | loadApplyVmap,
-      shaderPlug->currentLimits);
-  
-    csString tagStr (csString("CG") + shaderPlug->currentLimits.ToString());
-    WriteToCache (cache, shaderPlug->currentLimits.fp, 
-      shaderPlug->currentLimits, tagStr);
-    cacheKeepNodes.DeleteAll ();
-    tag->AttachNew (new scfString (tagStr));
-    return ret;
-  }
-}
-
-bool csShaderGLCGFP::Precache (const ProfileLimitsPair& limits,
-                               const char* tag,
-                               iHierarchicalCache* cache)
-{
-  PrecacheClear();
-
-  ProgramObject programObj;
-  bool needBuild = true;
-  csString sourcePreproc;
-  {
-    csRef<iDataBuffer> programBuffer = GetProgramData();
-    if (!programBuffer.IsValid())
-      return false;
-    csString programStr;
-    programStr.Append ((char*)programBuffer->GetData(), programBuffer->GetSize());
-    
-    // Get preprocessed result of pristine source
-    sourcePreproc = GetAugmentedProgram (programStr);
-    if (!sourcePreproc.IsEmpty ())
-    {
-      // Check preprocessed source against cache
-      //if (TryLoadFromCompileCache (sourcePreproc, limits.fp, cache))
-      if (shaderPlug->progCache.SearchObject (sourcePreproc, limits.fp, programObj))
-        needBuild = false;
-    }
-  }
-  
-  bool ret;
-  if (needBuild)
-  {
-    ret = TryCompile (loadApplyVmap, limits);
-    WriteToCache (cache, limits.fp, limits, csString("CG") + tag);
-  }
-  else
-  {
-    ret = true;
-    unusedParams = programObj.GetUnusedParams();
-    WriteToCache (cache, limits.fp, limits, csString("CG") + tag,
-      programObj);
-  }
-
-  return ret;
-}
-
-iShaderProgram::CacheLoadResult csShaderGLCGFP::LoadFromCache (
-  iHierarchicalCache* cache, iBase* previous, iDocumentNode* programNode,
-  csRef<iString>* failReason, csRef<iString>* tag)
-{
-  if (!shaderPlug->enableFP)
-  {
-    if (failReason)
-      failReason->AttachNew (new scfString ("Cg FP not available or disabled"));
-    /* Claim a load success, but invalid shader, to prevent loading from
-	scratch (which will fail anyway) */
-    return loadSuccessShaderInvalid;
-  }
-  return csShaderGLCGCommon::LoadFromCache (cache, previous, programNode,
-    failReason, tag, &cacheLimits);
-}
-
-bool csShaderGLCGFP::TryCompile (uint loadFlags,
-                                 const ProfileLimitsPair& limits)
-{
   csRef<iDataBuffer> programBuffer = GetProgramData();
   if (!programBuffer.IsValid())
     return false;
   csString programStr;
   programStr.Append ((char*)programBuffer->GetData(), programBuffer->GetSize());
 
-  csStringArray testForUnused;
-  csStringReader lines (programStr);
-  while (lines.HasMoreLines())
+  size_t i;
+
+  // See if we want to wrap through the PS plugin
+  // (psplg will be 0 if wrapping isn't wanted)
+  if (shaderPlug->psplg)
   {
-    csString line;
-    lines.GetLine (line);
-    if (line.StartsWith ("//@@UNUSED? "))
+    ArgumentArray args;
+    shaderPlug->GetProfileCompilerArgs ("fragment", shaderPlug->psProfile, 
+      args);
+    for (i = 0; i < compilerArgs.GetSize(); i++) 
+      args.Push (compilerArgs[i]);
+    args.Push (0);
+    program = cgCreateProgram (shaderPlug->context, CG_SOURCE,
+      programStr, shaderPlug->psProfile, 
+      !entrypoint.IsEmpty() ? entrypoint : "main", args.GetArray());
+
+    if (!program)
+      return false;
+
+    pswrap = shaderPlug->psplg->CreateProgram ("fp");
+
+    if (!pswrap)
+      return false;
+
+    csArray<csShaderVarMapping> mappings;
+    
+    for (i = 0; i < variablemap.GetSize (); i++)
     {
-      line.DeleteAt (0, 12);
-      testForUnused.Push (line);
+      // Get the Cg parameter
+      CGparameter parameter = cgGetNamedParameter (
+	program, variablemap[i].destination);
+      // Check if it's found, and just skip it if not.
+      if (!parameter)
+        continue;
+      if (!cgIsParameterReferenced (parameter))
+	continue;
+      // Make sure it's a C-register
+      CGresource resource = cgGetParameterResource (parameter);
+      if (resource == CG_C)
+      {
+        // Get the register number, and create a mapping
+        csString regnum;
+        regnum.Format ("c%lu", cgGetParameterResourceIndex (parameter));
+        mappings.Push (csShaderVarMapping (variablemap[i].name, regnum));
+      }
+    }
+
+    if (pswrap->Load (0, cgGetProgramString (program, CG_COMPILED_PROGRAM), 
+      mappings))
+    {
+      bool ret = pswrap->Compile ();
+      if (shaderPlug->debugDump)
+        DoDebugDump();
+      return ret;
+    }
+    else
+    {
+      return false;
     }
   }
-
-  if (testForUnused.GetSize() > 0)
+  else
   {
-    testForUnused.Push ("PARAM__clip_out_packed_distances1_UNUSED");
-    testForUnused.Push ("PARAM__clip_out_packed_distances2_UNUSED");
+    if (!DefaultLoadProgram (0, programStr, CG_GL_FRAGMENT, 
+      shaderPlug->maxProfileFragment, false, false))
+      return false;
+    /* Compile twice to be able to filter out unused vertex2fragment stuff on 
+     * pass 2.
+     * @@@ FIXME: two passes are not always needed.
+     */
+    CollectUnusedParameters ();
+    return DefaultLoadProgram (this, programStr, CG_GL_FRAGMENT, 
+      shaderPlug->maxProfileFragment);
   }
-  unusedParams.DeleteAll();
-  if (!DefaultLoadProgram (0, programStr, progFP, 
-      limits, (loadFlags & (~loadApplyVmap)) | loadFlagUnusedV2FForInit))
-    return false;
-  /* Compile twice to be able to filter out unused vertex2fragment stuff on 
-    * pass 2.
-    * @@@ FIXME: two passes are not always needed.
-    */
-  CollectUnusedParameters (unusedParams, testForUnused);
-  bool ret = DefaultLoadProgram (this, programStr, progFP, 
-    limits, loadFlags | loadFlagUnusedV2FForInit);
-    
-  return ret;
+
+  return true;
 }
 
 int csShaderGLCGFP::ResolveTU (const char* binding)
@@ -231,10 +177,8 @@ int csShaderGLCGFP::ResolveTU (const char* binding)
     CGparameter parameter = cgGetNamedParameter (program, binding);
     if (parameter)
     {
-      CGresource baseRes = cgGetParameterBaseResource (parameter);
-      if (((baseRes == CG_TEXUNIT0) || (baseRes == CG_TEX0))
-          && (cgIsParameterUsed (parameter, program)
-            || cgIsParameterReferenced (parameter)))
+      if ((cgGetParameterBaseResource (parameter) == CG_TEXUNIT0) ||
+	(cgGetParameterBaseResource (parameter) == CG_TEX0))
       {
 	newTU = cgGetParameterResourceIndex (parameter);
       }

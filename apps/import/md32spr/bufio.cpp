@@ -40,7 +40,6 @@ DataBuffer::DataBuffer(char *d, size_t sz)
 
 DataBuffer::~DataBuffer()
 {
-    delete [] data;
 }
 
 bool DataBuffer::GetData (char *d, size_t len) 

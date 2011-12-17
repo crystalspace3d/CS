@@ -27,15 +27,7 @@
  * @{ */
 #include "csutil/scf.h"
 #include "iutil/databuff.h"
-#include <time.h>
 
-namespace CS
-{
-  namespace Memory
-  {
-    struct iAllocator;
-  } // namespace Memory
-} // namespace CS
 struct iConfigFile;
 
 class csStringArray;
@@ -58,57 +50,16 @@ struct csFileTime
   int mon;
   /// Year, 1768, 1900, 2001, ...
   int year;
-
-  ///empty constructor.
-  csFileTime() {}
-
-  /// Construct a csFileTime item from a <tt>struct tm</tt>
-  csFileTime(const struct tm& time)
-  {
-      *this = time;
-  }
-
-  /// Assign a <tt>struct tm</tt>.
-  void operator=(const struct tm& time)
-  {
-    sec  = time.tm_sec;
-    min  = time.tm_sec;
-    hour = time.tm_hour;
-    day  = time.tm_mday;
-    mon  = time.tm_mon;
-    year = time.tm_year + 1900;
-  }
-
-  /// Create a <tt>struct tm</tt> from object.
-  operator struct tm() const
-  {
-    struct tm time;
-    time.tm_sec = sec;
-    time.tm_min = min;
-    time.tm_hour = hour;
-    time.tm_mday = day;
-    time.tm_mon = mon;
-    time.tm_year = year - 1900;
-    return time;
-  }
 };
 
-namespace CS
-{
-  namespace Deprecated
-  {
-    CS_DEPRECATED_METHOD_MSG("Use assign operator of csFileTime.")
-    static inline void ASSIGN_FILETIME (csFileTime &ft, const struct tm &time)
-    {
-      ft = time;
-    }
-  }
-}
-/** 
- * \deprecated Deprecated in 1.9. Use assign operator of csFileTime.
- */
+/// This macro can be used to assign a "struct tm" to a csFileTime
 #define ASSIGN_FILETIME(ft,tm)	\
-  CS::Deprecated::ASSIGN_FILETIME(ft, tm);
+  (ft).sec = (tm).tm_sec;	\
+  (ft).min = (tm).tm_min;	\
+  (ft).hour = (tm).tm_hour;	\
+  (ft).day = (tm).tm_mday;	\
+  (ft).mon = (tm).tm_mon;	\
+  (ft).year = (tm).tm_year + 1900;
 
 /// Composite path divider
 #define VFS_PATH_DIVIDER        ','
@@ -158,7 +109,7 @@ namespace CS
  */
 struct iFile : public virtual iBase
 {
-  SCF_INTERFACE(iFile, 2, 2, 0);
+  SCF_INTERFACE(iFile, 2, 0, 0);
 
   /// Query file name (in VFS)
   virtual const char *GetName () = 0;
@@ -219,26 +170,6 @@ struct iFile : public virtual iBase
    *  modify the contained data!
    */
   virtual csPtr<iDataBuffer> GetAllData (bool nullterm = false) = 0;
-
-  /**
-   * Request whole content of the file as a single data buffer.
-   * Uses the allocator \a allocator if memory allocations are necessary.
-   * \return The complete data contained in the file; or an invalidated pointer
-   *  if this object does not support this function (e.g. write-only VFS
-   *  files).  Check for an invalidated result via csRef<>::IsValid().  Do not
-   *  modify the contained data!
-   */
-  virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator* allocator) = 0;
-
-  /**
-   * Request whole or part of the content of the file as a file object.
-   * \param offset Offset of data to return.
-   * \param size Size of data to return. If \c ~0 all the data starting at
-   *  \a offset up to the end of the file is returned.
-   * \return A file object operating on a part of the original file.
-   * \remarks Note that the returned file will not support writing.
-   */
-  virtual csPtr<iFile> GetPartialView (size_t offset, size_t size = (size_t)~0) = 0;
 };
 
 
@@ -273,13 +204,13 @@ struct iFile : public virtual iBase
  */
 struct iVFS : public virtual iBase
 {
-  SCF_INTERFACE(iVFS, 3, 1, 0);
+  SCF_INTERFACE(iVFS, 2, 0, 0);
 
   /// Set current working directory
   virtual bool ChDir (const char *Path) = 0;
 
   /// Get current working directory
-  virtual const char *GetCwd () = 0;
+  virtual const char *GetCwd () const = 0;
 
   /**
    * Push current directory and optionally change to a different directory.
@@ -308,16 +239,16 @@ struct iVFS : public virtual iBase
    * \return A new iDataBuffer object.
    */
   virtual csPtr<iDataBuffer> ExpandPath (
-    const char *Path, bool IsDir = false) = 0;
+    const char *Path, bool IsDir = false) const = 0;
 
   /// Check whether a file exists
-  virtual bool Exists (const char *Path) = 0;
+  virtual bool Exists (const char *Path) const = 0;
 
   /**
    * Find absolute paths of all files in a virtual directory and return an
    * array with their names.
    */
-  virtual csPtr<iStringArray> FindFiles (const char *Path) = 0;
+  virtual csPtr<iStringArray> FindFiles (const char *Path) const = 0;
 
   /**
    * Open a file on the VFS filesystem.
@@ -465,7 +396,7 @@ struct iVFS : public virtual iBase
    * Query file date/time.
    * \return True if the query succeeded, else false.
    */
-  virtual bool GetFileTime (const char *FileName, csFileTime &oTime) = 0;
+  virtual bool GetFileTime (const char *FileName, csFileTime &oTime) const = 0;
   /**
    * Set file date/time.
    * \return True if the operation succeeded, else false.

@@ -31,7 +31,6 @@
 #include "csutil/physfile.h"
 #include "csutil/scfstr.h"
 #include "csutil/scfstringarray.h"
-#include "csutil/stringquote.h"
 #include "csutil/syspath.h"
 #include "csutil/xmltiny.h"
 #include "iutil/document.h"
@@ -182,8 +181,8 @@ csRef<iStringArray> csScanPluginDirs (csPathsList* dirs,
     if (dirMessages != 0)
     {
       csString tmp;
-      tmp.Format ("The following error(s) occured while scanning %s:",
-	CS::Quote::Single ((*dirs)[i].path.GetData()));
+      tmp.Format ("The following error(s) occured while scanning '%s':",
+	(*dirs)[i].path.GetData());
 
       AppendStrVecString (messages, tmp);
 

@@ -41,7 +41,7 @@
   csInitializer.RequestPlugins = staticmethod(_csInitializer_RequestPlugins)
 
   def _csInitializer_CreateEnvironment (*args):
-    oreg = csInitializer._CreateEnvironment(*args)
+    oreg = _core.csInitializer__CreateEnvironment(*args)
     SyncSCFPointers()
     return oreg
   csInitializer.CreateEnvironment = staticmethod(_csInitializer_CreateEnvironment)
@@ -64,6 +64,9 @@
        corecvar.iSCF_SCF.GetInterfaceID(intf.__name__),intf.scfGetVersion())
   def CS_REQUEST_VFS ():
     return CS_REQUEST_PLUGIN("crystalspace.kernel.vfs", iVFS)
+  def CS_REQUEST_IMAGELOADER ():
+    return CS_REQUEST_PLUGIN("crystalspace.graphic.image.io.multiplexer",
+      iImageIO)
   def CS_REQUEST_LEVELSAVER ():
     return CS_REQUEST_PLUGIN("crystalspace.level.saver", iSaver)
   def CS_REQUEST_REPORTER ():
@@ -134,15 +137,6 @@ class CSMutableArrayHelper:
 
   # We do not implement __delitem__ because we cannot delete items.
 %}
-
-// iutil/event.h
-// the property doesnt work well by itself otherwise.
-%extend iEvent
-{
-  %pythoncode %{
-  Name = property(GetName)
-  %}
-}
 
 // csutil/hash.h
 %extend csHash

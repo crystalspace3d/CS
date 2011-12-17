@@ -27,13 +27,13 @@
 
 #include "cstool/collider.h"
 #include "iengine/collection.h"
-#include "cstool/collider.h"
 #include "iengine/camera.h"
 #include "iengine/engine.h"
 #include "iengine/mesh.h"
 #include "iengine/movable.h"
 #include "iengine/portal.h"
 #include "iengine/portalcontainer.h"
+#include "iengine/region.h"
 #include "iengine/sector.h"
 #include "iengine/viscull.h"
 #include "iengine/scenenode.h"
@@ -312,15 +312,15 @@ void csColliderHelper::InitializeCollisionWrappers (iCollideSystem* colsys,
 }
 
 void csColliderHelper::InitializeCollisionWrappers (iCollideSystem* colsys,
-    iSector* sector, iCollection* collection)
+  	iEngine* engine, iRegion* region)
 {
   // Initialize all mesh objects for collision detection.
   int i;
-  iMeshList* meshes = sector->GetMeshes ();
+  iMeshList* meshes = engine->GetMeshes ();
   for (i = 0 ; i < meshes->GetCount () ; i++)
   {
     iMeshWrapper* sp = meshes->Get (i);
-    if (collection && !collection->IsParentOf(sp->QueryObject ())) continue;
+    if (region && !region->IsInRegion (sp->QueryObject ())) continue;
     InitializeCollisionWrapper (colsys, sp);
   }
 }
@@ -547,16 +547,16 @@ float csColliderHelper::TraceBeam (iCollideSystem* cdsys, iSector* sector,
           obj_isect, 0, &polygon_idx))
       {
         if (!movable->IsFullTransformIdentity ())
-    	  obj_isect = trans.This2Other (obj_isect);
-	float squared_dist = csSquaredDist::PointPoint (obj_isect, start);
-  	if (squared_dist < best_squared_dist)
-  	{
-    	  have_hit = true;
-    	  best_squared_dist = squared_dist;
-    	  closest_isect = obj_isect;
-    	  last_portal_index = polygon_idx;
-    	  best_mesh = mesh;
-  	}
+    obj_isect = trans.This2Other (obj_isect);
+  float squared_dist = csSquaredDist::PointPoint (obj_isect, start);
+  if (squared_dist < best_squared_dist)
+  {
+    have_hit = true;
+    best_squared_dist = squared_dist;
+    closest_isect = obj_isect;
+    last_portal_index = polygon_idx;
+    best_mesh = mesh;
+  }
       }
     }
   }

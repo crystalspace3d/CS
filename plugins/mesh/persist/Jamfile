@@ -1,3 +1,0 @@
-SubDir TOP plugins mesh persist ;
-
-SubInclude TOP plugins mesh persist assimpldr ;

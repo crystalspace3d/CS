@@ -89,7 +89,7 @@ namespace CS
       float val;
       struct lconv *locale_data;
       const char *decimal_point;
-      size_t decimal_point_len;
+      int decimal_point_len;
       const char *p, *decimal_point_pos;
       const char *end = NULL; /* Silence gcc */
       int strtod_errno;
@@ -231,18 +231,5 @@ namespace CS
       return val;
     }
 
-    csString ftostr (float f)
-    {
-      /*
-       * - Thinking behind the format is pretty simple:
-       *   float has 23bits of mantissa -> ~8 digits of precision.
-       *   Width is not limited, so 'e' notation should be taken for smaller
-       *   numbers.
-       *   (If you know a better format or have a better justification,
-       *   by all means improve this ;)
-       * - Format() cares about the right decimal point.
-       */
-      return csString().Format ("%.8g", f);
-    }
   } // namespace Utility
 } // namespace CS

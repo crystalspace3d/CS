@@ -21,9 +21,7 @@
 #define __CS_ENGINE_H__
 
 #include "csgeom/math3d.h"
-#include "csplugincommon/rendermanager/renderview.h"
 #include "csutil/array.h"
-#include "csutil/cfgacc.h"
 #include "csutil/csobject.h"
 #include "csutil/hash.h"
 #include "csutil/set.h"
@@ -33,7 +31,6 @@
 #include "csutil/scf.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/stringarray.h"
-#include "csutil/threading/rwmutex.h"
 #include "csutil/weakref.h"
 #include "csutil/weakrefarr.h"
 #include "csutil/eventnames.h"
@@ -41,7 +38,6 @@
 #include "iengine/campos.h"
 #include "iengine/engine.h"
 #include "iengine/renderloop.h"
-#include "iengine/rendermanager.h"
 #include "igraphic/imageio.h"
 #include "iutil/cache.h"
 #include "iutil/comp.h"
@@ -61,23 +57,20 @@
 #include "plugins/engine/3d/halo.h"
 #include "plugins/engine/3d/meshobj.h"
 #include "plugins/engine/3d/meshfact.h"
+#include "plugins/engine/3d/region.h"
 #include "plugins/engine/3d/renderloop.h"
-#include "plugins/engine/3d/sector.h"
+#include "plugins/engine/3d/rview.h"
 #include "plugins/engine/3d/sharevar.h"
 
-#include "reflectomotron3000.h"
-
-CS_PLUGIN_NAMESPACE_BEGIN(Engine)
-{
-  class csLight;
-  class csMeshWrapper;
-}
-CS_PLUGIN_NAMESPACE_END(Engine)
-
+class csCamera;
 class csEngine;
+class csLight;
 class csLightPatchPool;
 class csMaterialList;
+class csMeshWrapper;
 class csPolygon3D;
+class csRegion;
+class csRenderView;
 class csSector;
 class csSectorList;
 class csTextureList;
@@ -88,6 +81,7 @@ struct iLight;
 struct iMaterialWrapper;
 struct iObjectRegistry;
 struct iProgressMeter;
+struct iRegion;
 
 /**
  * Iterator to iterate over all static lights in the engine.
@@ -100,6 +94,7 @@ class csLightIt : public scfImplementation1<csLightIt,
 {
 public:
   /// Construct an iterator and initialize to start.
+  csLightIt (csEngine*, iRegion* region);
   csLightIt (csEngine*, iCollection* collection = 0);
 
   virtual ~csLightIt ();
@@ -118,6 +113,8 @@ public:
 private:
   // The engine for this iterator.
   csEngine* engine;
+  // The region we are iterating in (optional).
+  iRegion* region;
   // The collection we are iterating in (optional).
   iCollection* collection;
   // Current sector index.
@@ -161,12 +158,9 @@ public:
   virtual ~csCameraPositionList ();
   //-- iCameraPositionList
   virtual iCameraPosition* NewCameraPosition (const char* name);
-  virtual csPtr<iCameraPosition> CreateCameraPosition (const char* name);
-
   virtual int GetCount () const;
   virtual iCameraPosition *Get (int n) const;
   virtual int Add (iCameraPosition *obj);
-  void AddBatch (csRef<iCamposLoaderIterator> itr);
   virtual bool Remove (iCameraPosition *obj);
   virtual bool Remove (int n);
   virtual void RemoveAll ();
@@ -174,13 +168,12 @@ public:
   virtual iCameraPosition *FindByName (const char *Name) const;
 private:
   csRefArrayObject<iCameraPosition> positions;
-  mutable CS::Threading::ReadWriteMutex camLock;
 };
 
 /**
  * A list of meshes for the engine.
  */
-class csEngineMeshList : public CS_PLUGIN_NAMESPACE_NAME(Engine)::csMeshList
+class csEngineMeshList : public csMeshList
 {
 public:
   csEngineMeshList () : csMeshList (256, 256) { }
@@ -188,57 +181,25 @@ public:
   virtual void FreeMesh (iMeshWrapper*);
 };
 
-/**
- * An averaging variable. Stores the last 'bufsize' values in a circular
- * buffer. Computes the average with method Average.
- */
-template<typename T, int bufsize>
-class AverageVar
-{
-  T buf[bufsize];
-  int start, length;
-public:
-  AverageVar(): start(0), length(0) {}
-  void Add(T val)
-  {
-    buf[(start+length)%bufsize] = val;
-    length++;
-    if (length > bufsize)
-    {
-      length--;
-      start = (start+1)%bufsize;
-    }
-  }
-  T Average(int n) const
-  {
-    CS_ASSERT(n >= 1 && n <= bufsize);
-    T accum = 0;
-    int m = (n < length) ? n : length;
-    for (int i = 1; i <= m; i++)
-    {
-      accum += buf[(start+length-i)%bufsize];
-    }
-    return accum / m;
-  }
-};
-
 
 #include "csutil/deprecated_warn_off.h"
 
-
-using namespace CS_PLUGIN_NAMESPACE_NAME(Engine);
+struct csImposterUpdateQueue
+{
+  csRef<iRenderView> rview;
+  csWeakRefArray<csImposterProcTex> queue;
+};
 
 /**
  * The 3D engine.
  * This class manages all components which comprise a 3D world including
  * sectors, polygons, curves, mesh objects, etc.
  */
-class csEngine : public ThreadedCallable<csEngine>,
-  public scfImplementationExt5<csEngine, csObject,
+class csEngine : public scfImplementationExt5<csEngine, csObject,
   iEngine, iComponent, iPluginConfig, iDebugHelper, iEventHandler>
 {
   // friends
-  friend class CS_PLUGIN_NAMESPACE_NAME(Engine)::csLight;
+  friend class csLight;
   friend class csLightIt;
   friend class csRenderLoop;
   friend class csSectorList;
@@ -256,7 +217,7 @@ public:
 
   /**
    * Delete the engine and all entities it contains.  All objects added to this
-   * engine by the user (like meshes, sectors, ...) will be deleted as well.
+   * engine by the user (like Things, Sectors, ...) will be deleted as well.
    * If you don't want this then you should unlink them manually before
    * destroying the engine.
    */
@@ -272,70 +233,83 @@ public:
   /// Get the iObject for the engine.
   virtual iObject *QueryObject();
 
-  inline iObjectRegistry* GetObjectRegistry() const
-  {
-    return objectRegistry;
-  }
-
   //-- Preparation and relighting methods
   virtual bool Prepare (iProgressMeter* meter = 0);
   virtual void PrepareTextures ();
   virtual void PrepareMeshes ();
+
+  virtual void ForceRelight (iRegion* region = 0,
+  	iProgressMeter* meter = 0);
+  virtual void ForceRelight (iLight* light, iRegion* region = 0);
+  virtual void ShineLights (iBase* base = 0, 
+    iProgressMeter* meter = 0);
+
+  virtual void SetLightingCacheMode (int mode)
+  { lightmapCacheMode = mode; }
+  virtual int GetLightingCacheMode ()
+  { return lightmapCacheMode; }
 
   virtual void SetCacheManager (iCacheManager* cache_mgr);
   virtual void SetVFSCacheManager (const char* vfspath = 0);
 
   virtual iCacheManager* GetCacheManager ();
 
+  virtual void SetMaxLightmapSize (int w, int h)
+  { maxLightmapWidth = w; maxLightmapHeight = h; }
+
+  virtual void GetMaxLightmapSize (int& w, int& h)
+  { w = maxLightmapWidth; h = maxLightmapHeight; }
+
+  virtual void GetDefaultMaxLightmapSize (int& w, int& h)
+  { w = defaultMaxLightmapWidth; h = defaultMaxLightmapHeight; }
+
+  virtual int GetMaxLightmapAspectRatio () const
+  { return maxAspectRatio; }
+
+
   //-- Render priority functions
 
-  virtual void RegisterRenderPriority (const char* name, uint priority,
-  	csRenderPrioritySorting rendsort = CS_RENDPRI_SORT_NONE,
-        CS::RenderPriorityGrouping grouping = CS::rpgByLayer);
-  virtual void RegisterDefaultRenderPriorities ();
-  virtual CS::Graphics::RenderPriority GetRenderPriority (const char* name) const;
+  virtual void RegisterRenderPriority (const char* name, long priority,
+  	csRenderPrioritySorting rendsort = CS_RENDPRI_SORT_NONE);
+  virtual long GetRenderPriority (const char* name) const;
   virtual csRenderPrioritySorting GetRenderPrioritySorting (
   	const char* name) const;
   virtual csRenderPrioritySorting GetRenderPrioritySorting (
-  	CS::Graphics::RenderPriority priority) const;
-  virtual CS::RenderPriorityGrouping GetRenderPriorityGrouping (
-  	const char* name) const;
-  virtual CS::RenderPriorityGrouping GetRenderPriorityGrouping (
-  	CS::Graphics::RenderPriority priority) const;
+  	long priority) const;
 
-  virtual CS::Graphics::RenderPriority GetSkyRenderPriority ()
+  virtual long GetSkyRenderPriority ()
   {
     UpdateStandardRenderPriorities ();
     return renderPrioritySky;
   }
   
-  virtual CS::Graphics::RenderPriority GetPortalRenderPriority ()
+  virtual long GetPortalRenderPriority ()
   {
     UpdateStandardRenderPriorities ();
     return renderPriorityPortal;
   }
 
-  virtual CS::Graphics::RenderPriority GetWallRenderPriority ()
+  virtual long GetWallRenderPriority ()
   {
     UpdateStandardRenderPriorities ();
     return renderPriorityWall;
   }
 
-  virtual CS::Graphics::RenderPriority GetObjectRenderPriority ()
+  virtual long GetObjectRenderPriority ()
   {
     UpdateStandardRenderPriorities ();
     return renderPriorityObject;
   }
 
-  virtual CS::Graphics::RenderPriority GetAlphaRenderPriority ()
+  virtual long GetAlphaRenderPriority ()
   {
     UpdateStandardRenderPriorities ();
     return renderPriorityAlpha;
   }
 
   virtual void ClearRenderPriorities ();
-  virtual size_t GetRenderPriorityCount () const;
-  virtual const char* GetRenderPriorityName (CS::Graphics::RenderPriority priority) const;
+  virtual int GetRenderPriorityCount () const;
+  virtual const char* GetRenderPriorityName (long priority) const;
 
   //-- Material handling
 
@@ -344,6 +318,10 @@ public:
   	iTextureWrapper* texture);
   virtual iMaterialList* GetMaterialList () const;
   virtual iMaterialWrapper* FindMaterial (const char* name,
+  	iBase* base = 0);
+  virtual iMaterialWrapper* FindMaterialRegion (const char* name,
+  	iRegion* region);
+  virtual iMaterialWrapper* FindMaterialCollection (const char* name,
   	iCollection* collection = 0);
 
   //-- Texture handling
@@ -355,6 +333,10 @@ public:
   virtual int GetTextureFormat () const;
   virtual iTextureList* GetTextureList () const;
   virtual iTextureWrapper* FindTexture (const char* name,
+  	iBase* base = 0);
+  virtual iTextureWrapper* FindTextureRegion (const char* name,
+  	iRegion* region);
+  virtual iTextureWrapper* FindTextureCollection (const char* name,
   	iCollection* collection = 0);
   
   //-- Light handling
@@ -366,7 +348,26 @@ public:
     const;
   virtual iLight* FindLightID (const char* light_id) const;
 
-  virtual csPtr<iLightIterator> GetLightIterator (iCollection* collection = 0)
+  virtual csPtr<iLightIterator> GetLightIterator (iBase* base = 0)
+  {
+    csRef<iRegion> region (scfQueryInterfaceSafe<iRegion>(base));
+    if(region)
+    {
+      return GetLightIteratorRegion(region);
+    }
+    else
+    {
+      csRef<iCollection> collection (scfQueryInterfaceSafe<iCollection>(base));
+      return GetLightIteratorCollection(collection);
+    }
+  }
+
+  virtual csPtr<iLightIterator> GetLightIteratorRegion (iRegion* region)
+  {
+    return csPtr<iLightIterator> (new csLightIt (this, region));
+  }
+
+  virtual csPtr<iLightIterator> GetLightIteratorCollection (iCollection* collection = 0)
   {
     return csPtr<iLightIterator> (new csLightIt (this, collection));
   }
@@ -384,10 +385,14 @@ public:
   
   //-- Sector handling
 
-  virtual iSector *CreateSector (const char *name, bool addToList);
+  virtual iSector *CreateSector (const char *name);
   virtual iSectorList* GetSectors ()
   { return &sectors; }
   virtual iSector* FindSector (const char* name,
+  	iBase* base);
+  virtual iSector* FindSectorRegion (const char* name,
+  	iRegion* region);
+  virtual iSector* FindSectorCollection (const char* name,
   	iCollection* collection);
   virtual csPtr<iSectorIterator> GetNearbySectors (iSector* sector,
   	const csVector3& pos, float radius);
@@ -402,24 +407,30 @@ public:
   //-- Mesh handling
 
   virtual csPtr<iMeshWrapper> CreateMeshWrapper (iMeshFactoryWrapper* factory,
-  	const char* name, iSector* sector = 0, const csVector3& pos = csVector3 (0, 0, 0),
-    bool addToList = true);
+  	const char* name, iSector* sector = 0,
+	const csVector3& pos = csVector3 (0, 0, 0));
 
   virtual csPtr<iMeshWrapper> CreateMeshWrapper (iMeshObject* meshobj,
-  	const char* name, iSector* sector = 0, const csVector3& pos = csVector3 (0, 0, 0),
-    bool addToList = true);
+  	const char* name, iSector* sector = 0,
+	const csVector3& pos = csVector3 (0, 0, 0));
 
-  virtual csPtr<iMeshWrapper> CreateMeshWrapper (const char* classid,	const char* name,
-    iSector* sector = 0, const csVector3& pos = csVector3 (0, 0, 0), bool addToList = true);
+  virtual csPtr<iMeshWrapper> CreateMeshWrapper (const char* classid,
+  	const char* name, iSector* sector = 0,
+	const csVector3& pos = csVector3 (0, 0, 0));
 
-  virtual csPtr<iMeshWrapper> CreateMeshWrapper (const char* name, bool addToList = true);
+  virtual csPtr<iMeshWrapper> CreateMeshWrapper (const char* name);
+
+  virtual csPtr<iMeshWrapper> CreateSectorWallsMesh (iSector* sector,
+      const char* name);
+
+  virtual csPtr<iMeshWrapper> CreateThingMesh (iSector* sector,
+  	const char* name);
 
   virtual csPtr<iMeshWrapper> LoadMeshWrapper (
   	const char* name, const char* loaderClassId,
 	iDataBuffer* input, iSector* sector, const csVector3& pos);
 
-  THREADED_CALLABLE_DECL1(csEngine, AddMeshAndChildren, csThreadReturn, iMeshWrapper*, mesh,
-    MED, false, false);
+  virtual void AddMeshAndChildren (iMeshWrapper* mesh);
 
   virtual csPtr<iMeshWrapperIterator> GetNearbyMeshes (iSector* sector,
     const csVector3& pos, float radius, bool crossPortals = true );
@@ -432,6 +443,12 @@ public:
   { return &meshes; }
 
   virtual iMeshWrapper* FindMeshObject (const char* name,
+  	iBase* base = 0);
+
+  virtual iMeshWrapper* FindMeshObjectRegion (const char* name,
+  	iRegion* region);
+
+  virtual iMeshWrapper* FindMeshObjectCollection (const char* name,
   	iCollection* collection = 0);
 
   virtual void WantToDie (iMeshWrapper* mesh);
@@ -439,22 +456,34 @@ public:
   //-- Mesh factory handling
 
   virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (const char* classId,
-  	const char* name, bool addToList);
+  	const char* name);
 
-  virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (iMeshObjectFactory * factory,
-    const char* name, bool addToList);
+  virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (
+  	iMeshObjectFactory * factory, const char* name);
 
-  virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (const char* name,
-    bool addToList);
+  virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (const char* name);
 
   virtual csPtr<iMeshFactoryWrapper> LoadMeshFactory (
-  	const char* name, const char* loaderClassId, iDataBuffer* input, bool addToList);
+  	const char* name, const char* loaderClassId,
+	iDataBuffer* input);
 
   virtual iMeshFactoryWrapper* FindMeshFactory (const char* name,
+  	iBase* base = 0);
+
+  virtual iMeshFactoryWrapper* FindMeshFactoryRegion (const char* name,
+  	iRegion* region);
+
+  virtual iMeshFactoryWrapper* FindMeshFactoryCollection (const char* name,
   	iCollection* collection = 0);
 
   virtual iMeshFactoryList* GetMeshFactories ()
   { return &meshFactories; }
+
+  //-- Region handling
+  
+  virtual iRegion* CreateRegion (const char* name);
+  
+  virtual iRegionList* GetRegions ();
 
   // -- Collection handling
 
@@ -473,19 +502,18 @@ public:
   //-- Camera handling
 
   virtual csPtr<iCamera> CreateCamera ();
-  virtual csPtr<iPerspectiveCamera> CreatePerspectiveCamera ();
-  virtual csPtr<iCustomMatrixCamera> CreateCustomMatrixCamera (iCamera* copyFrom = 0);
 
   virtual iCameraPosition* FindCameraPosition (const char* name,
+    iBase* base = 0);
+
+  virtual iCameraPosition* FindCameraPositionRegion (const char* name,
+  	iRegion* region);
+
+  virtual iCameraPosition* FindCameraPositionCollection (const char* name,
   	iCollection* collection = 0);
 
   virtual iCameraPositionList* GetCameraPositions ()
   { return &cameraPositions; }
-  
-  virtual float GetDefaultNearClipDistance () const
-  { return defaultNearClip; }
-  virtual void SetDefaultNearClipDistance (float dist)
-  { defaultNearClip = csMax (dist, float (SMALL_Z)); }
 
   //-- Portal handling
   
@@ -509,29 +537,33 @@ public:
   //-- Drawing related
 
   virtual void SetClearZBuf (bool yesno)
-  {}
+  { clearZBuf = yesno; }
   virtual bool GetClearZBuf () const
-  { return false; }
+  { return clearZBuf;}
   virtual bool GetDefaultClearZBuf () const 
-  { return false; }
+  { return defaultClearZBuf; }
 
   virtual void SetClearScreen (bool yesno)
-  { }
+  { clearScreen = yesno; }
   virtual bool GetClearScreen () const
-  { return true; }
+  { return clearScreen; }
   virtual bool GetDefaultClearScreen () const
-  { return true; }
+  { return defaultClearScreen; }
 
   virtual int GetBeginDrawFlags () const
   {
-    return 0;
+    int flag = 0;
+    if (clearScreen) flag |= CSDRAW_CLEARSCREEN;
+    if (clearZBuf) flag |= CSDRAW_CLEARZBUFFER;
+    return flag;
   }
 
   virtual iRenderView* GetTopLevelClipper () const
   { return (iRenderView*)topLevelClipper; }
 
-  virtual void PrecacheMesh (iMeshWrapper* s);
-  virtual void PrecacheDraw (iCollection* collection = 0);
+  virtual void PrecacheDraw (iBase* base = 0);
+  virtual void PrecacheDrawCollection (iCollection* collection = 0);
+  virtual void PrecacheDrawRegion (iRegion* region);
   virtual void Draw (iCamera* c, iClipper2D* clipper, iMeshWrapper* mesh = 0);
 
   virtual void SetContext (iTextureHandle* ctxt);
@@ -543,20 +575,6 @@ public:
 
   virtual uint GetCurrentFrameNumber () const
   { return currentFrameNumber; }
-  virtual void UpdateNewFrame ()
-  { 
-    currentFrameNumber++; 
-    envTexHolder.NextFrame ();
-    ControlMeshes ();
-  }
-
-  //-- Adaptive LODs
-
-  virtual void EnableAdaptiveLODs(bool enable, float target_fps)
-  { bAdaptiveLODsEnabled = enable; adaptiveLODsTargetFPS = target_fps; }
-  virtual void UpdateAdaptiveLODs();
-  virtual float GetAdaptiveLODsMultiplier() const
-  { return (bAdaptiveLODsEnabled ? adaptiveLODsMultiplier : 1.0f); }
 
   //-- Saving/loading
 
@@ -567,7 +585,7 @@ public:
   { return worldSaveable; }
   
   virtual csPtr<iLoaderContext> CreateLoaderContext (
-  	iCollection* collection = 0, bool searchCollectionOnly = true);
+  	iBase* base = 0, bool curRegOnly = true);
   
   virtual void SetDefaultKeepImage (bool enable) 
   { defaultKeepImage = enable; }
@@ -591,6 +609,8 @@ public:
   virtual csPtr<iMeshWrapperIterator> GetVisibleMeshes (iSector* sector,
     const csFrustum& frustum);
 
+  virtual csPtr<iFrustumView> CreateFrustumView ();
+
   virtual csPtr<iObjectWatcher> CreateObjectWatcher ();
 
   virtual iSharedVariableList* GetVariableList () const;
@@ -599,7 +619,7 @@ public:
   virtual void DelayedRemoveObject (csTicks delay, iBase *object);
   virtual void RemoveDelayedRemoves (bool remove = false);
 
-  THREADED_CALLABLE_DECL(csEngine, DeleteAll, csThreadReturn, HIGH, true, false);
+  virtual void DeleteAll ();
   void DeleteAllForce ();
 
   virtual void ResetWorldSpecificSettings(); 
@@ -687,21 +707,16 @@ public:
     return renderLoopManager;
   }
 
-  iMaterialWrapper* GetDefaultPortalMaterial () const
-  { return defaultPortalMaterial; }
+  /**
+   * Add an imposter to the update queue.
+   */
+  void AddImposterToUpdateQueue (csImposterProcTex* imptex,
+      iRenderView* rview);
 
   /**
-   * Sync engine lists with loader lists.
+   * Handle imposters.
    */
-  THREADED_CALLABLE_DECL1(csEngine, SyncEngineLists, csThreadReturn, csRef<iThreadedLoader>,
-    loader, LOW, false, true);
-
-  void SyncEngineListsNow(csRef<iThreadedLoader> loader)
-  {
-    csRef<iThreadReturn> itr;
-    itr.AttachNew(new csThreadReturn(tman));
-    SyncEngineListsTC(itr, false, loader);
-  }
+  void HandleImposters ();
 
 private:
   // -- PRIVATE METHODS
@@ -723,8 +738,7 @@ private:
   /**
    * Setup for starting a Draw or DrawFunc.
    */
-  void StartDraw (iCamera* c, iClipper2D* view,
-    CS::RenderManager::RenderView& rview);
+  void StartDraw (iCamera* c, iClipper2D* view, csRenderView& rview);
 
   /**
    * Controll animation and delete meshes that want to die.
@@ -773,13 +787,12 @@ private:
   /**
    * Add a halo attached to given light to the engine.
    */
-  void AddHalo (iCamera* camera,
-    CS_PLUGIN_NAMESPACE_NAME(Engine)::csLight* Light);
+  void AddHalo (iCamera* camera, csLight* Light);
 
   /**
    * Remove halo attached to given light from the engine.
    */
-  void RemoveHalo (CS_PLUGIN_NAMESPACE_NAME(Engine)::csLight* Light);
+  void RemoveHalo (csLight* Light);
 
   //Sector event helpers
   void FireNewSector (iSector* sector);
@@ -797,15 +810,14 @@ private:
    * this forces the search to be global. In this case 'global' will be set
    * to true.
    */
-  const char* SplitCollectionName(const char* name, iCollection*& collection, bool& global);
+  char* SplitRegionName(const char* name, iRegion*& region, bool& global);
+  char* SplitCollectionName(const char* name, iCollection*& collection, bool& global);
 
   // Precache a single mesh
   void PrecacheMesh (iMeshWrapper* s, iRenderView* rview);
 
-  iRenderManager* GetRenderManager () { return renderManager; }
-  void SetRenderManager (iRenderManager*);
-  void ReloadRenderManager (csConfigAccess& cfg);
-  void ReloadRenderManager ();
+  iMeshObjectType* GetThingType ();
+
 public:
   // -- PUBLIC MEMBERS. THESE ARE FOR CONVENIANCE WITHIN ENGINE PLUGIN
 
@@ -814,10 +826,8 @@ public:
 
   /// Remember iObjectRegistry.
   iObjectRegistry* objectRegistry;
-  /// The global string set
+  /// The global material/shader string set
   csRef<iStringSet> globalStringSet;
-  /// The shader variable name string set
-  csRef<iShaderVarStringSet> svNameStringSet;
   /// The 3D driver
   csRef<iGraphics3D> G3D;
   /// Pointer to the shader manager
@@ -827,19 +837,12 @@ public:
   csRef<iVirtualClock> virtualClock;
 
   /// Store engine shadervar names
-  CS::ShaderVarStringID id_creation_time;
-  CS::ShaderVarStringID id_lod_fade;
-  CS::ShaderVarStringID svTexEnvironmentName;
-
-  csRef<iRenderManager> renderManager;
-  EnvTex::Holder envTexHolder;
-  bool enableEnvTex;
-
+  csStringID id_creation_time;
+  csStringID id_lod_fade;
   /// For triangle meshes.
   csStringID colldet_id;
   csStringID viscull_id;
   csStringID base_id;
-
   /**
    * This is the Virtual File System object where all the files
    * used by the engine live. Textures, models, data, everything -
@@ -870,17 +873,12 @@ public:
   // \todo move back to private and make accessible
   csRef<iShader> defaultShader;
 
-  /// Shader variable names for light SVs
-  csLightShaderVarCache lightSvNames;
-  
-  /// Get the shader attenuation texture SV
-  csShaderVariable* GetLightAttenuationTextureSV();
 private:
 
   // -- PRIVATE MEMBERS
 
   /// Pool from which to allocate render views.
-  CS::RenderManager::RenderView::Pool rviewPool;
+  csRenderView::Pool rviewPool;
 
   // -- Object lists
   /**
@@ -917,6 +915,8 @@ private:
   csSharedVariableList* sharedVariables;
   /// List of halos (csHaloInformation).
   csPDelArray<csLightHalo> halos;
+  /// The list of all regions currently loaded.
+  csRegionList regions;
   /// The hash of all collections currently existing.
   csHash<csRef<iCollection>, csString> collections;
 
@@ -944,17 +944,10 @@ private:
   /// An array of objects to remove at a specific time.
   csArray<csDelayedRemoveObject> delayedRemoves;
 
-  /// Properties for the render priorities.
-  struct RenderPriorityProperties
-  {
-    csString name;
-    csRenderPrioritySorting sorting;
-    CS::RenderPriorityGrouping grouping;
-
-    RenderPriorityProperties() : sorting (CS_RENDPRI_SORT_NONE),
-      grouping (CS::rpgByLayer) {}
-  };
-  csArray<RenderPriorityProperties> renderPriorityProps;
+  /// The list of all named render priorities.
+  csStringArray renderPriorities;
+  /// Sorting flags for the render priorities.
+  csArray<csRenderPrioritySorting> renderPrioritySortflag;
 
   // - Pointers to other plugins
 
@@ -966,7 +959,6 @@ private:
 
   /// Default render loop
   csRef<iRenderLoop> defaultRenderLoop;
-  bool defaultRenderLoopTried;
   csString override_renderloop;
   /// Render loop manager
   csRenderLoopManager* renderLoopManager;
@@ -986,7 +978,7 @@ private:
   /**
    * The top-level clipper we are currently using for drawing.
    */
-  CS::RenderManager::RenderView* topLevelClipper;
+  csRenderView* topLevelClipper;
     
   /// Flag set when window requires resizing.
   bool resize;
@@ -1014,11 +1006,11 @@ private:
    * - "object": usually rendered using ZUSE
    * - "alpha": usually rendered using ZTEST
    */
-  CS::Graphics::RenderPriority renderPrioritySky;
-  CS::Graphics::RenderPriority renderPriorityPortal;
-  CS::Graphics::RenderPriority renderPriorityWall;
-  CS::Graphics::RenderPriority renderPriorityObject;
-  CS::Graphics::RenderPriority renderPriorityAlpha;
+  long renderPrioritySky;
+  long renderPriorityPortal;
+  long renderPriorityWall;
+  long renderPriorityObject;
+  long renderPriorityAlpha;
 
   /**
    * If this nextframe_pending is not 0 then a call of NextFrame
@@ -1033,45 +1025,49 @@ private:
   /// Store the current framenumber. Is incremented every Draw ()
   uint currentFrameNumber;
 
+    /// Option variable: force lightmap recalculation?
+  int lightmapCacheMode;
+  /// Maximum lightmap dimensions
+  int maxLightmapWidth;
+  int maxLightmapHeight;
+
+  /// Clear the Z-buffer every frame.
+  bool clearZBuf;
+
+  /// default buffer clear flag.
+  bool defaultClearZBuf;
+
+  /// Clear the screen every frame.
+  bool clearScreen;
+
+  /// default buffer clear flag.
+  bool defaultClearScreen;
+
+  /// default maximum lightmap width/height
+  int defaultMaxLightmapWidth, defaultMaxLightmapHeight;
+
   /// default ambient color
   int defaultAmbientRed, defaultAmbientGreen, defaultAmbientBlue;
   
   /// Verbose flag.
   static bool doVerbose;
 
+  /// Thing mesh object type for convenience.
+  csRef<iMeshObjectType> thingMeshType;
+  
   /// Current render context (proc texture) or 0 if global.
-  iTextureHandle* currentRenderContext;
-  
-  /// Default portal material
-  csRef<iMaterialWrapper> defaultPortalMaterial;
-  
-  csRef<csShaderVariable> lightAttenuationTexture;
+  iTextureHandle* currentRenderContext; 
+
+  /**
+   * List of imposters that need to be rendered to texture.
+   * There is a different list for every distinct camera instance.
+   */
+  csHash<csImposterUpdateQueue,long> imposterUpdateQueue;
 
   CS_DECLARE_SYSTEM_EVENT_SHORTCUTS;
   csEventID CanvasResize;
   csEventID CanvasClose;
   csRef<iEventHandler> weakEventHandler;
-
-  /// Pointer to the thread manager.
-  csWeakRef<iThreadManager> tman;
-
-  /// To precache or not to precache....
-  bool precache;
-
-  /// Average the elapsed time of the last 30 frames.
-  AverageVar<float, 30> virtualClockBuffer;
-
-  /// Whether to use adaptive LODs
-  bool bAdaptiveLODsEnabled;
-
-  /// User-specified target FPS for adaptive LODs
-  float adaptiveLODsTargetFPS;
-
-  /// If using adaptive LODs, this stores the computed adaptive LOD multiplier
-  float adaptiveLODsMultiplier;
-
-  /// Default camera near clipping distance
-  float defaultNearClip;
 };
 
 #include "csutil/deprecated_warn_on.h"

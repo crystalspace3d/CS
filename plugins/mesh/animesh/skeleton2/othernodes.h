@@ -21,7 +21,7 @@
 
 #include "csutil/scf_implementation.h"
 #include "imesh/skeleton2.h"
-#include "imesh/animnode/skeleton2anim.h"
+#include "imesh/skeleton2anim.h"
 #include "csutil/leakguard.h"
 #include "csutil/refarr.h"
 #include "csutil/csstring.h"
@@ -32,8 +32,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 {
   class PriorityNodeFactory :
     public scfImplementation2<PriorityNodeFactory,
-                              CS::Animation::iSkeletonPriorityNodeFactory,
-                              scfFakeInterface<CS::Animation::iSkeletonAnimNodeFactory> >,
+                              iSkeletonPriorityNodeFactory2,
+                              scfFakeInterface<iSkeletonAnimNodeFactory2> >,
     public BaseFactoryChildren
   {
   public:
@@ -41,18 +41,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   
     PriorityNodeFactory (const char* name);
 
-    //-- CS::Animation::iSkeletonPriorityNodeFactory
-    virtual void AddNode (CS::Animation::iSkeletonAnimNodeFactory* node, unsigned int priority);
+    //-- iSkeletonPriorityNodeFactory2
+    virtual void AddNode (iSkeletonAnimNodeFactory2* node, unsigned int priority);
     virtual void SetNodePriority (uint node, unsigned int priority);  
-    virtual CS::Animation::iSkeletonAnimNodeFactory* GetNode (uint node);
+    virtual iSkeletonAnimNodeFactory2* GetNode (uint node);
     virtual uint GetNodeCount () const;
     virtual void ClearNodes ();
 
-    //-- CS::Animation::iSkeletonAnimationNodeFactory
-    virtual csPtr<CS::Animation::iSkeletonAnimNode> CreateInstance (
-      CS::Animation::iSkeletonAnimPacket* packet, CS::Animation::iSkeleton* skeleton);
+    //-- iSkeletonAnimationNodeFactory2
+    virtual csPtr<iSkeletonAnimNode2> CreateInstance (
+      iSkeletonAnimPacket2* packet, iSkeleton2* skeleton);
     virtual const char* GetNodeName () const;
-    virtual CS::Animation::iSkeletonAnimNodeFactory* FindNode (const char* name);
+    virtual iSkeletonAnimNodeFactory2* FindNode (const char* name);
 
   private:
     csString name;
@@ -63,8 +63,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
   class PriorityNode :
     public scfImplementation2<PriorityNode,
-                              CS::Animation::iSkeletonPriorityNode,
-                              scfFakeInterface<CS::Animation::iSkeletonAnimNode> >,
+                              iSkeletonPriorityNode2,
+                              scfFakeInterface<iSkeletonAnimNode2> >,
     public BaseNodeChildren
   {
   public:
@@ -72,10 +72,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   
     PriorityNode (PriorityNodeFactory* factory);
 
-    //-- CS::Animation::iSkeletonPriorityNode
+    //-- iSkeletonPriorityNode2
     virtual void SetNodePriority (uint node, unsigned int priority);  
 
-    //-- CS::Animation::iSkeletonAnimationNode
+    //-- iSkeletonAnimationNode2
     virtual void Play ();
     virtual void Stop ();
     virtual void SetPlaybackPosition (float time);
@@ -83,13 +83,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     virtual float GetDuration () const;
     virtual void SetPlaybackSpeed (float speed);
     virtual float GetPlaybackSpeed () const;
-    virtual void BlendState (CS::Animation::AnimatedMeshState* state, float baseWeight = 1.0f);
+    virtual void BlendState (csSkeletalState2* state, float baseWeight = 1.0f);
     virtual void TickAnimation (float dt);
     virtual bool IsActive () const;
-    virtual CS::Animation::iSkeletonAnimNodeFactory* GetFactory () const;
-    virtual CS::Animation::iSkeletonAnimNode* FindNode (const char* name);
-    virtual void AddAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback);
-    virtual void RemoveAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback);
+    virtual iSkeletonAnimNodeFactory2* GetFactory () const;
+    virtual iSkeletonAnimNode2* FindNode (const char* name);
+    virtual void AddAnimationCallback (iSkeletonAnimCallback2* callback);
+    virtual void RemoveAnimationCallback (iSkeletonAnimCallback2* callback);
 
   private:
     void UpdateIndexList ();
@@ -104,8 +104,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   //----------------------------------------
   class RandomNodeFactory :
     public scfImplementation2<RandomNodeFactory,
-                              CS::Animation::iSkeletonRandomNodeFactory,
-                              scfFakeInterface<CS::Animation::iSkeletonAnimNodeFactory> >,
+                              iSkeletonRandomNodeFactory2,
+                              scfFakeInterface<iSkeletonAnimNodeFactory2> >,
     public BaseFactoryChildren
   {
   public:
@@ -113,19 +113,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   
     RandomNodeFactory (const char* name);
 
-    //-- CS::Animation::iSkeletonPriorityNodeFactory
-    virtual void AddNode (CS::Animation::iSkeletonAnimNodeFactory* node, float probability);
+    //-- iSkeletonPriorityNodeFactory2
+    virtual void AddNode (iSkeletonAnimNodeFactory2* node, float probability);
     virtual void SetNodeProbability (uint node, float probability);  
     virtual void SetAutomaticSwitch (bool automatic);
-    virtual CS::Animation::iSkeletonAnimNodeFactory* GetNode (uint node);
+    virtual iSkeletonAnimNodeFactory2* GetNode (uint node);
     virtual uint GetNodeCount () const;
     virtual void ClearNodes ();
 
-    //-- CS::Animation::iSkeletonAnimationNodeFactory
-    virtual csPtr<CS::Animation::iSkeletonAnimNode> CreateInstance (
-      CS::Animation::iSkeletonAnimPacket* packet, CS::Animation::iSkeleton* skeleton);
+    //-- iSkeletonAnimationNodeFactory2
+    virtual csPtr<iSkeletonAnimNode2> CreateInstance (
+      iSkeletonAnimPacket2* packet, iSkeleton2* skeleton);
     virtual const char* GetNodeName () const;
-    virtual CS::Animation::iSkeletonAnimNodeFactory* FindNode (const char* name);
+    virtual iSkeletonAnimNodeFactory2* FindNode (const char* name);
 
   private:
     void BuildAccumList ();
@@ -141,8 +141,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
   class RandomNode :
     public scfImplementation2<RandomNode,
-                              CS::Animation::iSkeletonRandomNode,
-                              scfFakeInterface<CS::Animation::iSkeletonAnimNode> >,
+                              iSkeletonRandomNode2,
+                              scfFakeInterface<iSkeletonAnimNode2> >,
     public BaseNodeChildren
   {
   public:
@@ -150,11 +150,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   
     RandomNode (RandomNodeFactory* factory);
 
-    //-- CS::Animation::iSkeletonPriorityNode
+    //-- iSkeletonPriorityNode2
     virtual void Switch ();
-    virtual CS::Animation::iSkeletonAnimNode* GetCurrentNode () const;
+    virtual iSkeletonAnimNode2* GetCurrentNode () const;
 
-    //-- CS::Animation::iSkeletonAnimationNode
+    //-- iSkeletonAnimationNode2
     virtual void Play ();
     virtual void Stop ();
     virtual void SetPlaybackPosition (float time);
@@ -162,18 +162,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     virtual float GetDuration () const;
     virtual void SetPlaybackSpeed (float speed);
     virtual float GetPlaybackSpeed () const;
-    virtual void BlendState (CS::Animation::AnimatedMeshState* state, float baseWeight = 1.0f);
+    virtual void BlendState (csSkeletalState2* state, float baseWeight = 1.0f);
     virtual void TickAnimation (float dt);
     virtual bool IsActive () const;
-    virtual CS::Animation::iSkeletonAnimNodeFactory* GetFactory () const;
-    virtual CS::Animation::iSkeletonAnimNode* FindNode (const char* name);
-    virtual void AddAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback);
-    virtual void RemoveAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback);
+    virtual iSkeletonAnimNodeFactory2* GetFactory () const;
+    virtual iSkeletonAnimNode2* FindNode (const char* name);
+    virtual void AddAnimationCallback (iSkeletonAnimCallback2* callback);
+    virtual void RemoveAnimationCallback (iSkeletonAnimCallback2* callback);
 
     //-- BaseNodeChildren
-    virtual void AnimationFinished (CS::Animation::iSkeletonAnimNode* node);
-    virtual void PlayStateChanged (CS::Animation::iSkeletonAnimNode* node, bool isPlaying);
-    virtual void DurationChanged (CS::Animation::iSkeletonAnimNode* node);
+    virtual void AnimationFinished (iSkeletonAnimNode2* node);
+    virtual void PlayStateChanged (iSkeletonAnimNode2* node, bool isPlaying);
+    virtual void DurationChanged (iSkeletonAnimNode2* node);
 
   private:
     size_t currentNode;
@@ -182,8 +182,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     float playbackSpeed;
 
     csRef<RandomNodeFactory> factory;
-
-    friend class RandomNodeFactory;
   };
 
 }

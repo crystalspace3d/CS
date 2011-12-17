@@ -31,7 +31,6 @@
 #include "iengine/sector.h"
 #include "iengine/mesh.h"
 #include "iengine/camera.h"
-#include "iengine/rendermanager.h"
 
 csMeshOnTexture::csMeshOnTexture (iObjectRegistry* object_reg)
 {
@@ -39,7 +38,6 @@ csMeshOnTexture::csMeshOnTexture (iObjectRegistry* object_reg)
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
   view.AttachNew (new csView (engine, g3d));
   view->SetAutoResize (false);
-  view->GetMeshFilter().SetFilterMode(CS::Utility::MESH_FILTER_INCLUDE);
   cur_w = cur_h = -1;
 }
 
@@ -50,12 +48,12 @@ csMeshOnTexture::~csMeshOnTexture ()
 void csMeshOnTexture::ScaleCamera (iMeshWrapper* mesh, int txtw, int txth)
 {
   UpdateView (txtw, txth);
-  const csBox3 mesh_box = mesh->GetWorldBoundingBox ();
-  const csVector3 mesh_center = mesh_box.GetCenter ();
-  const iPerspectiveCamera* camera = view->GetPerspectiveCamera ();
-  const float aspect = camera->GetFOV ();
-  const float shift_x = camera->GetShiftX ();
-  const float shift_y = camera->GetShiftY ();
+  csBox3 mesh_box = mesh->GetWorldBoundingBox ();
+  csVector3 mesh_center = mesh_box.GetCenter ();
+  iCamera* camera = view->GetCamera ();
+  float aspect = float (camera->GetFOV ());
+  float shift_x = camera->GetShiftX ();
+  float shift_y = camera->GetShiftY ();
   int i;
   float maxz = -100000000.0f;
   for (i = 0 ; i < 8 ; i++)
@@ -77,11 +75,11 @@ void csMeshOnTexture::ScaleCamera (iMeshWrapper* mesh, int txtw, int txth)
   for (i = 0 ; i < 8 ; i++)
   {
     csVector3 corner = mesh_box.GetCorner (i) - cam_pos;
-    csVector2 p = view->GetCamera()->Perspective (corner);
+    csVector2 p = camera->Perspective (corner);
   }
 
-  view->GetCamera()->GetTransform ().Identity ();
-  view->GetCamera()->GetTransform ().SetOrigin (cam_pos);
+  camera->GetTransform ().Identity ();
+  camera->GetTransform ().SetOrigin (cam_pos);
 }
 
 void csMeshOnTexture::ScaleCamera (iMeshWrapper* mesh, float distance)
@@ -101,12 +99,10 @@ void csMeshOnTexture::UpdateView (int w, int h)
 {
   if (cur_w != w || cur_h != h)
   {
-    view->SetAutoResize(false);
-    view->SetWidth(w);
-    view->SetHeight(h);
-    view->SetRectangle (0, 0, w, h, false);
-    view->GetCamera ()->SetViewportSize (w, h);
-    view->GetPerspectiveCamera ()->SetFOV (1, 1);
+    view->SetRectangle (0, 0, w, h);
+    view->UpdateClipper ();
+    view->GetCamera ()->SetPerspectiveCenter (w/2, h/2);
+    view->GetCamera ()->SetFOV (h, w);
     cur_w = w;
     cur_h = h;
   }
@@ -115,27 +111,24 @@ void csMeshOnTexture::UpdateView (int w, int h)
 bool csMeshOnTexture::Render (iMeshWrapper* mesh, iTextureHandle* handle,
     bool persistent, int color)
 {
+  g3d->SetRenderTarget (handle, persistent);
+  iTextureHandle *oldContext = engine->GetContext ();
+  engine->SetContext (handle);
   int w, h;
   handle->GetRendererDimensions (w, h);
   UpdateView (w, h);
 
-  view->GetMeshFilter().Clear();
-  view->GetMeshFilter().AddFilterMesh(mesh, true);
-  view->GetCamera()->SetSector(mesh->GetMovable()->GetSectors()->Get(0));
+  // Draw the engine view.
+  g3d->BeginDraw (CSDRAW_3DGRAPHICS | CSDRAW_CLEARZBUFFER |
+    ((persistent || color != -1) ? 0 : CSDRAW_CLEARSCREEN));
+  if ((!persistent) && color != -1)
+    g3d->GetDriver2D()->Clear (color);
+  view->Draw (mesh);
 
-  csRef<iRenderManagerTargets> rmTargets = scfQueryInterface<iRenderManagerTargets>(engine->GetRenderManager());
-  rmTargets->RegisterRenderTarget(handle, 
-                                  view, 
-                                  0, 
-                                  iRenderManagerTargets::updateOnce 
-                                  | ((persistent || color != -1) ? 0 : iRenderManagerTargets::clearScreen));
+  g3d->FinishDraw ();
 
-  ///@TODO Color doesn't work at the moment.
-  /// The next line should probably move to SimpleTreeRenderer::RenderContextStack() somewhere.
-  //if ((!persistent) && color != -1) g3d->GetDriver2D()->Clear (color);
-
-  rmTargets->MarkAsUsed(handle);
-
+  // switch back to the old context
+  engine->SetContext (oldContext);
   return true;
 }
 

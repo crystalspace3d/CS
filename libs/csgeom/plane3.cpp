@@ -46,13 +46,17 @@ void csPlane3::Set (
 
 csVector3 csPlane3::FindPoint () const
 {
-  switch (norm.DominantAxis())
+  if (norm.x >= norm.y && norm.x >= norm.z)
   {
-    case CS_AXIS_X: return csVector3 (-DD / norm.x, 0, 0);
-    case CS_AXIS_Y: return csVector3 (0, -DD / norm.y, 0);
-    default:
-      CS_ASSERT(false);
-    case CS_AXIS_Z: return csVector3 (0, 0, -DD / norm.z);
+    return csVector3 (-DD / norm.x, 0, 0);
+  }
+  else if (norm.y >= norm.x && norm.y >= norm.z)
+  {
+    return csVector3 (0, -DD / norm.y, 0);
+  }
+  else
+  {
+    return csVector3 (0, 0, -DD / norm.z);
   }
 }
 
@@ -140,14 +144,10 @@ bool csPlane3::ClipPolygon (
   csgeom_csPlane3_Vis *vis = GetStatic_csgeom_csPlane3_Vis ();
 
   if (!reversed) Invert ();
-
-  // Check if the static output array is large enought to hold
-  // the cliped polygon. If only one point is outside
-  // the total size will increase by one.
-  if ((size_t)num_verts >= verts->GetSize ())
+  if ((size_t)num_verts > verts->GetSize ())
   {
-    verts->SetSize (num_verts+1);
-    vis->SetSize (num_verts+1);
+    verts->SetSize (num_verts);
+    vis->SetSize (num_verts);
   }
 
   for (i = 0; i < num_vertices; i++)

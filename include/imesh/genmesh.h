@@ -45,52 +45,12 @@ class csVector2;
 class csVector3;
 class csEllipsoid;
 
-/**
- * A submesh of a genmesh factory.
- */
-struct iGeneralFactorySubMesh : public virtual iBase
-{
-  SCF_INTERFACE (iGeneralFactorySubMesh, 1, 0, 3);
-
-  /// Clear progressive LOD sliding windows
-  virtual void ClearSlidingWindows() = 0;
-
-  /// Get the number of LOD sliding windows for progressive LODs
-  virtual int GetSlidingWindowSize() const = 0;
-
-  /// Add a sliding window for progressive LODs
-  virtual void AddSlidingWindow(int start_index, int end_index) = 0;
-
-  /// Return the start index and end index of the sliding window indicated by index.
-  virtual void GetSlidingWindow(unsigned int index, int& out_start_index, int& out_end_index) const = 0;
-};
-
-/**
- * An instance of a submesh of a genmesh factory.
- */
-struct iGeneralFactorySubMeshObject : public virtual iBase
-{
-  SCF_INTERFACE (iGeneralFactorySubMeshObject, 1, 0, 3);
-
-  /// Force the progressive LOD level. Set to -1 to use auto LODs.
-  virtual void ForceProgLODLevel(int level) = 0;
-
-  /// Get the current forced progressive LOD level. If it's -1, auto LODs are in effect.
-  virtual int GetForcedProgLODLevel() = 0;
-};
-
-/**
- * A submesh of a genmesh.
- */
 struct iGeneralMeshSubMesh : public virtual iBase
 {
   SCF_INTERFACE (iGeneralMeshSubMesh, 1, 0, 3);
   
   /// Get the index render buffer
   virtual iRenderBuffer* GetIndices () = 0;
-
-  /// Set the index renderbuffer
-  virtual void SetIndices(iRenderBuffer* newIndices) = 0;
 
   /// Get the material
   virtual iMaterialWrapper* GetMaterial () const = 0;
@@ -138,17 +98,9 @@ struct iGeneralMeshCommonState : public virtual iBase
 {
   SCF_INTERFACE (iGeneralMeshCommonState, 1, 2, 2);
   
-  /**
-   * Set lighting.
-   * \deprecated Deprecated in 1.9 by change to shader-based lighting.
-   */
-  CS_DEPRECATED_METHOD_MSG("Deprecated by change to shader-based lighting.")
+  /// Set lighting.
   virtual void SetLighting (bool l) = 0;
-  /**
-   * Is lighting enabled.
-   * \deprecated Deprecated in 1.9 by change to shader-based lighting.
-   */
-  CS_DEPRECATED_METHOD_MSG("Deprecated by change to shader-based lighting.")
+  /// Is lighting enabled.
   virtual bool IsLighting () const = 0;
   /**
    * Set manual colors. If this is set then lighting will be ignored
@@ -161,15 +113,9 @@ struct iGeneralMeshCommonState : public virtual iBase
   /**
    * Set shadowing. By default genmesh objects will cast shadows
    * (during the static lighting phase). You can disable this here.
-   * \deprecated Deprecated in 1.9 by change to shader-based lighting.
    */
-  CS_DEPRECATED_METHOD_MSG("Deprecated by change to shader-based lighting.")
   virtual void SetShadowCasting (bool m) = 0;
-  /**
-   * Is shadow casting enabled?
-   * \deprecated Deprecated in 1.9 by change to shader-based lighting.
-   */
-  CS_DEPRECATED_METHOD_MSG("Deprecated by change to shader-based lighting.")
+  /// Is shadow casting enabled?
   virtual bool IsShadowCasting () const = 0;
   /**
    * Set shadow receiving on. By default this is disabled in which
@@ -178,15 +124,9 @@ struct iGeneralMeshCommonState : public virtual iBase
    * the lighting system resembles more the lighting system with
    * things which static and pseudo-dynamic lighting. In this
    * case there will be shadows on the genmesh instance.
-   * \deprecated Deprecated in 1.9 by change to shader-based lighting.
    */
-  CS_DEPRECATED_METHOD_MSG("Deprecated by change to shader-based lighting.")
   virtual void SetShadowReceiving (bool m) = 0;
-  /**
-   * Is shadow receiving enabled?
-   * \deprecated Deprecated in 1.9 by change to shader-based lighting.
-   */
-  CS_DEPRECATED_METHOD_MSG("Deprecated by change to shader-based lighting.")
+  /// Is shadow receiving enabled?
   virtual bool IsShadowReceiving () const = 0;
 
   /**\name Custom render buffers
@@ -254,7 +194,7 @@ struct iGeneralMeshCommonState : public virtual iBase
  */
 struct iGeneralMeshState : public virtual iGeneralMeshCommonState
 {
-  SCF_INTERFACE (iGeneralMeshState, 2, 0, 1);
+  SCF_INTERFACE (iGeneralMeshState, 2, 0, 0);
   
   /**
    * Set the animation control to use for this mesh object.
@@ -280,12 +220,6 @@ struct iGeneralMeshState : public virtual iGeneralMeshCommonState
    */
   virtual iGeneralMeshSubMesh* FindSubMesh (const char* name) const = 0;
   /** @} */
-  
-  /** 
-   * Set the progressive LOD level on all submeshes.
-   * If a submesh's max prog LOD level is less than level, set it to its maximum.
-   */
-  virtual void ForceProgLODLevel(int level) = 0;
 };
 
 /**
@@ -312,7 +246,7 @@ struct iGeneralMeshState : public virtual iGeneralMeshCommonState
  */
 struct iGeneralFactoryState : public virtual iGeneralMeshCommonState
 {
-  SCF_INTERFACE (iGeneralFactoryState, 2, 0, 2);
+  SCF_INTERFACE (iGeneralFactoryState, 2, 0, 0);
   
   /// Set the color to use. Will be added to the lighting values.
   virtual void SetColor (const csColor& col) = 0;
@@ -402,7 +336,7 @@ struct iGeneralFactoryState : public virtual iGeneralMeshCommonState
 
   /**
    * Automatically calculate normals based on the current mesh.
-   * \param compress if true (default) then calculate the normals
+   * /param compress if true (default) then calculate the normals
    * based on compressed vertices.
    */
   virtual void CalculateNormals (bool compress = true) = 0;
@@ -414,14 +348,14 @@ struct iGeneralFactoryState : public virtual iGeneralMeshCommonState
   virtual void Compress () = 0;
 
   /**
-   * Generate procedurally a box. This will set the number of vertices
+   * Automatically generate a box. This will set the number of vertices
    * to eight and generate vertices, texels, normals, and triangles. The
    * vertex colors are set to black.
    */
   virtual void GenerateBox (const csBox3& box) = 0;
 
   /**
-   * Generate procedurally a capsule of given length and radius.
+   * Automatically generate a capsule of given length and radius.
    * \param l Capsule length.
    * \param r Capsule radius.
    * \param sides Number of sides.
@@ -429,7 +363,7 @@ struct iGeneralFactoryState : public virtual iGeneralMeshCommonState
   virtual void GenerateCapsule (float l, float r, uint sides) = 0;
 
   /**
-   * Generate procedurally a sphere. This will set the apropriate number 
+   * Automatically generate a sphere. This will set the apropriate number 
    * of vertices and generate vertices, texels, normals, and triangles.
    * The vertex colors are set to black.
    * \param ellips Properties of the ellipsoid to generate.
@@ -527,45 +461,15 @@ struct iGeneralFactoryState : public virtual iGeneralMeshCommonState
    * factories, as all vertex normals will be written out explicitly.
    */
   virtual void DisableAutoNormals () = 0;
-
-  /**
-   * Generate procedurally a cylinder of given length and radius.
-   * \param l Cylinder length.
-   * \param r Cylinder radius.
-   * \param sides Number of sides.
-   */
-  virtual void GenerateCylinder (float l, float r, uint sides) = 0;
-
-  /**\name Progressive LODs
-   * @{ */
-
-  /**
-   * Get the maximum between all submeshes' progressive LOD levels.
-   */
-  virtual int GetNumProgLODLevels() const = 0;
-
-  /**
-   * Get distances where progressive LOD will be in effect.
-   * See SetProgLODDistances for parameter details.
-   */
-  virtual void GetProgLODDistances(float& out_min, float& out_max) const = 0;
-
-  /**
-   * Set distances where progressive LOD will be in effect.
-   * \param min Minimum distance - starting from this distance, the model will begin to become less detailed.
-   * \param max Maximum distance - at this distance, the model will be at its minimum LOD.
-   */
-  virtual void SetProgLODDistances(float min, float max) = 0;
-  /** @} */
 };
 
 /**
- * Implementing this class allows to control the animation of the vertex,
- * texel, normal, color and bounding box data of the genmesh.
- *
- * Note that, when animating the vertex data, it is prefered that the bounding box
- * of the object doesn't change too dramatically because this animation is
- * called AFTER the visibility culling.
+ * Implementing this class allows the creation of classes that control
+ * animation of vertex, texel, normal, and color data right before it is
+ * being used. This can be used for various special effects. Note then when
+ * animating vertex that it is prefered that the bounding box of the
+ * object doesn't change too dramatically because this animation is
+ * called AFTER visibility culling!
  * 
  * Main creators of instances implementing this interface:
  * - iGenMeshAnimationControlFactory::CreateAnimationControl()
@@ -575,129 +479,95 @@ struct iGeneralFactoryState : public virtual iGeneralMeshCommonState
  *   
  * Main users of this interface:
  * - Genmesh plugin (crystalspace.mesh.object.genmesh)
+ *   
+ * \sa iGenMeshAnimationControl1_4
  */
 struct iGenMeshAnimationControl : public virtual iBase
 {
-  SCF_INTERFACE(iGenMeshAnimationControl, 2, 0, 1);
+  SCF_INTERFACE(iGenMeshAnimationControl, 2, 0, 0);
 
-  /// Returns true if this control animates the vertices of the genmesh.
+  /// Returns true if this control animates vertices.
   virtual bool AnimatesVertices () const = 0;
-  /// Returns true if this control animates the texels of the genmesh.
+  /// Returns true if this control animates texels.
   virtual bool AnimatesTexels () const = 0;
-  /// Returns true if this control animates the normals of the genmesh.
+  /// Returns true if this control animates normals.
   virtual bool AnimatesNormals () const = 0;
-  /// Returns true if this control animates the colors of the genmesh.
+  /// Returns true if this control animates colors.
   virtual bool AnimatesColors () const = 0;
 
   /**
-   * General update method. It is called before all other update methods.
-   * \param current The current time given by the virtual clock
-   * \param num_verts The count of vertices of the genmesh
-   * \param version_id The version number of the shape of the genmesh, as returned by
-   * iObjectModel::GetShapeNumber(). The animation control can use this to optimize the
-   * animation calculation by caching the animated version of the array and returning
-   * that one.
+   * General update method.
+   * \remarks You can get vertex count and mesh ID by implementing the
+   *   iGenMeshAnimationControl1_4 interface. If that interface is
+   *   implemented, this method is not called.
    */
-  virtual void Update (csTicks current, int num_verts, 
-    uint32 version_id) = 0;
+  virtual void Update (csTicks current) = 0;
 
   /**
-   * Given the factory vertex data, return the animated vertex data.
+   * Given the factory vertex data, return the animated data.
    * If this control doesn't animate vertices then it will return the
-   * source array unchanged, otherwise it has to allocate the data array.
-   * \param current The current time given by the virtual clock
-   * \param verts The vertices of the factory of the genmesh
-   * \param num_verts The count of vertices of the genmesh
-   * \param version_id The version number of the shape of the genmesh, as returned by
-   * iObjectModel::GetShapeNumber(). The animation control can use this to optimize the
-   * animation calculation by caching the animated version of the array and returning
+   * source array unchanged.
+   * The 'version_id' is a number that changes whenever the input array
+   * changes. The animation control can use this to optimize the animation
+   * calculation by caching the animated version of the array and returning
    * that one.
    */
   virtual const csVector3* UpdateVertices (csTicks current,
   	const csVector3* verts, int num_verts, uint32 version_id) = 0;
 
   /**
-   * Given the factory texel data, return the animated texel data.
+   * Given the factory texel data, return the animated data.
    * If this control doesn't animate texels then it will return the
-   * source array unchanged, otherwise it has to allocate the data array.
-   * \param current The current time given by the virtual clock
-   * \param texels The texels of the factory of the genmesh
-   * \param num_texels The count of texels of the genmesh
-   * \param version_id The version number of the shape of the genmesh, as returned by
-   * iObjectModel::GetShapeNumber(). The animation control can use this to optimize the
-   * animation calculation by caching the animated version of the array and returning
+   * source array unchanged.
+   * The 'version_id' is a number that changes whenever the input array
+   * changes. The animation control can use this to optimize the animation
+   * calculation by caching the animated version of the array and returning
    * that one.
    */
   virtual const csVector2* UpdateTexels (csTicks current,
   	const csVector2* texels, int num_texels, uint32 version_id) = 0;
 
   /**
-   * Given the factory normal data, return the animated normal data.
+   * Given the factory normal data, return the animated data.
    * If this control doesn't animate normals then it will return the
-   * source array unchanged, otherwise it has to allocate the data array.
-   * \param current The current time given by the virtual clock
-   * \param normals The normals of the factory of the genmesh
-   * \param num_verts The count of normals of the genmesh
-   * \param version_id The version number of the shape of the genmesh, as returned by
-   * iObjectModel::GetShapeNumber(). The animation control can use this to optimize the
-   * animation calculation by caching the animated version of the array and returning
+   * source array unchanged.
+   * The 'version_id' is a number that changes whenever the input array
+   * changes. The animation control can use this to optimize the animation
+   * calculation by caching the animated version of the array and returning
    * that one.
    */
   virtual const csVector3* UpdateNormals (csTicks current,
   	const csVector3* normals, int num_normals, uint32 version_id) = 0;
 
   /**
-   * Given the factory color data, return the animated color data.
+   * Given the factory color data, return the animated data.
    * If this control doesn't animate colors then it will return the
-   * source array unchanged, otherwise it has to allocate the data array.
+   * source array unchanged.
+   * The 'version_id' is a number that changes whenever the input array
+   * changes. The animation control can use this to optimize the animation
+   * calculation by caching the animated version of the array and returning
+   * that one.
    * \remarks \a colors may be 0. In this case all color values should be
    *   assumed to be (0, 0, 0, 1).
-   * \param current The current time given by the virtual clock
-   * \param colors The original colors of the genmesh
-   * \param num_verts The count of colors of the genmesh
-   * \param version_id The version number of the shape of the genmesh, as returned by
-   * iObjectModel::GetShapeNumber(). The animation control can use this to optimize the
-   * animation calculation by caching the animated version of the array and returning
-   * that one.
    */
   virtual const csColor4* UpdateColors (csTicks current,
   	const csColor4* colors, int num_colors, uint32 version_id) = 0;
+};
 
-  /// Returns true if this control animates the bounding box and the radius of the genmesh.
-  virtual bool AnimatesBBoxRadius () const = 0;
-
-  /**
-   * Given the bounding box of the factory, return the bounding box of the whole genmesh.
-   * \param current The current time given by the virtual clock
-   * \param version_id The version number of the shape of the genmesh, as returned by
-   * iObjectModel::GetShapeNumber(). The animation control can use this to optimize the
-   * animation calculation by caching the animated version of the array and returning
-   * that one.
-   * \param bbox The bounding box of the factory of the genmesh
-   */
-  virtual const csBox3& UpdateBoundingBox (csTicks current, uint32 version_id, const csBox3& bbox) = 0;
+/**
+ * Enhanced Update() for genmesh animation plugins.
+ * This interface must be implemented in addition to iGenMeshAnimationControl.
+ */
+struct iGenMeshAnimationControl1_4 : public virtual iBase
+{
+  SCF_INTERFACE(iGenMeshAnimationControl1_4, 0, 1, 0);
 
   /**
-   * Given the radius of the factory, return the radius of the whole genmesh.
-   * \param current The current time given by the virtual clock
-   * \param version_id The version number of the shape of the genmesh, as returned by
-   * iObjectModel::GetShapeNumber(). The animation control can use this to optimize the
-   * animation calculation by caching the animated version of the array and returning
-   * that one.
-   * \param radius The radius of the factory of the genmesh
+   * General update method.
+   * \remarks Takes precedence over iGenMeshAnimationControl::Update().
    */
-  virtual const float UpdateRadius (csTicks current, uint32 version_id, const float radius) = 0;
-
-  /**
-   * Return the animated bounding boxes of the given submesh.
-   * If this control doesn't animate the bounding boxes and radius, then it will simply do nothing and return nullptr.
-   * \param current The current time given by the virtual clock
-   * \param version_id The version number of the shape of the genmesh, as returned by
-   * iObjectModel::GetShapeNumber(). The animation control can use this to optimize the
-   * animation calculation by caching the animated version of the array and returning
-   * that one.
-   */
-  virtual const csBox3* UpdateBoundingBoxes (csTicks current, uint32 version_id) = 0;
+  virtual void Update (csTicks current, int num_verts, 
+    uint32 version_id) = 0;
 };
 
 /**

@@ -62,9 +62,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(BinDoc)
 #endif
 
 /// The Binary Document magic ID
-#define BD_HEADER_MAGIC	      			BE (0xfa57da7a)
-// Magic for files in "old" format (differs in float storage)
-#define BD_HEADER_MAGIC_OLDFLOAT		LE (0x7ada70fa)
+#define BD_HEADER_MAGIC	      LE (0x7ada70fa)
 
 /*
    bd* structures: data as it appears on disk.
@@ -179,7 +177,7 @@ struct bdNode
    * Value of this node
    *  str: offset of string into string table or 'immediate' string
    *  int: value
-   *  float: IEEE float
+   *  float: value converted using csFloatToLong
    */
   uint32 value;
   /// Flags of this node
@@ -205,8 +203,7 @@ struct bdNodeChildTab
 };
 
 /// Binary document node attribute
-// POD struct to avoid warnings.
-struct bdNodeAttributePOD
+struct bdNodeAttribute
 {
   /// Value, same as in node value
   uint32 value;
@@ -214,18 +211,10 @@ struct bdNodeAttributePOD
   uint32 nameID;
   /// Attribute flags
   uint32 flags;
-};
-
-/// Binary document node attribute (extra C++ methods)
-struct bdNodeAttribute : public bdNodeAttributePOD
-{
+  
   bdNodeAttribute() {}
-  bdNodeAttribute (uint32 value, uint32 nameID, uint32 flags)
-  {
-    this->value = value;
-    this->nameID = nameID;
-    this->flags = flags;
-  }
+  bdNodeAttribute (uint32 value, uint32 nameID, uint32 flags) :
+    value (value), nameID (nameID), flags (flags) {}
 };
 
 /// Binary document node attribute table
@@ -363,7 +352,7 @@ private:
   friend struct csBinaryDocument;
 
   /// Owning node.
-  csRef<csBinaryDocNode> parentNode;
+  csBinaryDocNode* parentNode;
   /**
    * Where we are in the children list.
    */
@@ -512,11 +501,11 @@ public:
   virtual float GetContentsValueAsFloat ();
   virtual csRef<iDocumentAttributeIterator> GetAttributes ();
   virtual csRef<iDocumentAttribute> GetAttribute (const char* name);
-  virtual const char* GetAttributeValue (const char* name, const char* defaultValue = 0);
-  virtual int GetAttributeValueAsInt (const char* name, int defaultValue = 0);
-  virtual float GetAttributeValueAsFloat (const char* name, float defaultValue = 0.0f);
+  virtual const char* GetAttributeValue (const char* name);
+  virtual int GetAttributeValueAsInt (const char* name);
+  virtual float GetAttributeValueAsFloat (const char* name);
   virtual bool GetAttributeValueAsBool (const char* name,
-					bool defaultValue = false);
+					bool defaultvalue = false);
   virtual void RemoveAttribute (const csRef<iDocumentAttribute>& attr);
   virtual void RemoveAttributes ();
   virtual void SetAttribute (const char* name, const char* value);
@@ -535,14 +524,13 @@ private:
   friend struct csBinaryDocAttributeIterator;
 
   csRef<iDataBuffer> data;
-  bool oldStyleFloats;
   uint8* dataStart;
   csBdNode* root;	
   csBinaryDocNode::Pool nodePool;
   csBinaryDocAttribute::Pool attrPool;
-
-  CS::Memory::BlockAllocatorSafe<csBdAttr> attrAlloc;
-  CS::Memory::BlockAllocatorSafe<csBdNode> nodeAlloc;
+  
+  csBlockAllocator<csBdAttr>* attrAlloc;
+  csBlockAllocator<csBdNode>* nodeAlloc;
 
   csStringHash* outStrHash;
   iFile* outStrStorage;
@@ -571,21 +559,6 @@ public:
   uint32 GetOutStringID (const char* str);
   /// Get a string for an ID in the input string table
   const char* GetInIDString (uint32 ID) const;
-  
-  inline float ConvertToFloat (uint32 l)
-  {
-    if (oldStyleFloats)
-    {
-      // Copied from csendian.h to avoid deprecation warnings
-      int exp = (l >> 24) & 0x7f;
-      if (exp & 0x40) exp = exp | ~0x7f;
-      float mant = float (l & 0x00ffffff) / 0x1000000;
-      if (l & 0x80000000) mant = -mant;
-      return (float) ldexp (mant, exp);
-    }
-    else
-      return csIEEEfloat::ToNative (l);
-  }
 
   virtual void Clear ();
   virtual csRef<iDocumentNode> CreateRoot ();

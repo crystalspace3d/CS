@@ -79,10 +79,8 @@ public:
   virtual bool Initialize (iObjectRegistry *object_reg);
 
   /// Parse data  and return a new object for it.
-  virtual csPtr<iBase> Parse (iDataBuffer* buf, iStreamSource*,
-    iLoaderContext* ldr_context, iBase* context, iStringArray*);
-
-  virtual bool IsThreadSafe() { return true; }
+  virtual csPtr<iBase> Parse (iDataBuffer* buf,
+    iStreamSource*, iLoaderContext* ldr_context, iBase* context);
 
   virtual iMeshFactoryWrapper* Load (const char* factname, const char* filename);
   virtual iMeshFactoryWrapper* Load (const char* factname, iDataBuffer* buffer);

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2011 by Jorrit Tyberghein and Jelle Hellemans
+    Copyright (C) 2005 by Jorrit Tyberghein
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,24 +21,38 @@
 
 #include <crystalspace.h>
 
-#include <string>
+#define DEMO_MESH_Z	      14.0f
+#define DEMO_MESH_MINX	      -6.0f
+#define DEMO_MESH_MAXX	      6.0f
+#define DEMO_MESH_MINY	      -5.0f
+#define DEMO_MESH_MAXY	      5.0f
 
-#include "csutil/custom_new_disable.h"
-#include <CEGUI.h>
-#include "csutil/custom_new_enable.h"
-
-#include "ivaria/icegui.h"
+#define MAIN_LIGHT_ON	      csColor (.3f, .3f, .3f)
+#define MAIN_LIGHT_OFF	      csColor (.05f, .05f, .05f)
+#define POINTER_LIGHT_ON      csColor (.5f, 1, .4f)
+#define POINTER_LIGHT_OFF     csColor (0, 0, 0)
 
 struct DemoData
 {
   const char* name;
   const char* exec;
   const char* args;
-  std::string description;
+  csRef<iString> description;
   const char* image;
-  CEGUI::Window* window;
+  csRef<iMeshWrapper> mesh;
+  float spinning_speed;
 
-  DemoData () : window (0) { }
+  DemoData () : spinning_speed (0.0f) { }
+};
+
+struct StarInfo
+{
+  csRef<iMeshWrapper> star;
+  csRef<iMeshObject> stars_mesh;
+  float r;	// Value between 0 and 1 indicating animation state.
+  bool inqueue;	// True if in queue.
+
+  StarInfo () : r (0), inqueue (false) { }
 };
 
 /**
@@ -75,32 +89,40 @@ private:
   /// A pointer to the view which contains the camera.
   csRef<iView> view;
 
-  /// A pointer to the CEGUI plugin.
-  csRef<iCEGUI> cegui;
+  /// A dynamic light (our pointer).
+  csRef<iLight> pointer_light;
+  /// The main light.
+  csRef<iLight> main_light;
+
+  /// Our font.
+  csRef<iFont> font;
+  int font_fg, font_bg;
 
   /// A pointer to the configuration manager.
   csRef<iConfigManager> confman;
-
-  csRef<iNativeWindow> natwin;
 
   /// A pointer to the sector the camera will be in.
   iSector* room;
 
   // For the demos.
   csArray<DemoData> demos;
+  csRef<iMeshFactoryWrapper> box_fact;
+  size_t last_selected;
+  size_t description_selected;
+
+  // For the stars.
+  csArray<StarInfo> stars;
+  csRef<iMeshFactoryWrapper> star_fact;
+  size_t cur_star, star_count;
+  csTicks star_timeout;
+  csTicks star_ticks;
+  csArray<int> star_queue;
+  float star_fade1, star_fade2, star_maxage;
 
   csRef<FramePrinter> printer;
 
   virtual bool OnKeyboard (iEvent&);
-
-  float position, lastPosition;
-  enum {
-    ROTATE_NORMAL = 0,
-    ROTATE_SELECTING,
-    ROTATE_SEARCHING,
-    OVER_EXIT
-  } rotationStatus;
-  float rotationSpeed;
+  virtual bool OnMouseDown (iEvent &event);
 
   /**
    * Setup everything that needs to be rendered on screen. This routine
@@ -112,16 +134,20 @@ private:
   /// Here we will create our little, simple world.
   void CreateRoom ();
 
+  /// Load textures.
+  bool LoadTextures ();
+
   /// Load configuration from file.
   void LoadConfig ();
 
-  bool OnClick (const CEGUI::EventArgs& e);
+  /// Create a demo mesh.
+  csPtr<iMeshWrapper> CreateDemoMesh (const char* name, const csVector3& pos);
 
-  bool OnLogoClicked (const CEGUI::EventArgs& e);
-  bool OnEnterLogo (const CEGUI::EventArgs& e);
-  bool OnLeaveLogo (const CEGUI::EventArgs& e);
-
-  bool OnMouseMove (iEvent& ev);
+  bool InDescriptionMode () const { return description_selected != (size_t)-1; }
+  /// Go to description mode.
+  void EnterDescriptionMode ();
+  /// Leave description mode.
+  void LeaveDescriptionMode ();
 
 public:
 
@@ -152,21 +178,8 @@ public:
    */
   bool Application ();
 
-   // Declare the name of this event handler.
-  CS_EVENTHANDLER_NAMES("application.startme")
-      
-  /* Declare that we want to receive events *before* the CEGUI plugin. */
-  virtual const csHandlerID * GenericSucc (csRef<iEventHandlerRegistry> &r1, 
-    csRef<iEventNameRegistry> &r2, csEventID event) const 
-  {
-    static csHandlerID precConstraint[2];
-    
-    precConstraint[0] = r1->GetGenericID("crystalspace.cegui");
-    precConstraint[1] = CS_HANDLERLIST_END;
-    return precConstraint;
-  }
-
-  CS_EVENTHANDLER_DEFAULT_INSTANCE_CONSTRAINTS
+  CS_EVENTHANDLER_NAMES ("crystalspace.startme")
+  CS_EVENTHANDLER_NIL_CONSTRAINTS
 };
 
 #endif // __STARTME_H__

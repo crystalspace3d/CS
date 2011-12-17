@@ -21,7 +21,6 @@
 
 #include "csutil/databuf.h"
 #include "csutil/scanstr.h"
-#include "csutil/stringquote.h"
 #include "csutil/util.h"
 #include "csutil/xmltiny.h"
 #include "csgfx/shaderexp.h"
@@ -33,23 +32,8 @@
 
 #include "csplugincommon/shader/shaderprogram.h"
 
-void csShaderProgram::ProgramParam::SetValue (float val)
-{
-  var.AttachNew (new csShaderVariable (CS::InvalidShaderVarStringID));
-  var->SetValue (val);
-  valid = true;
-}
-
-void csShaderProgram::ProgramParam::SetValue (const csVector4& val)
-{
-  var.AttachNew (new csShaderVariable (CS::InvalidShaderVarStringID));
-  var->SetValue (val);
-  valid = true;
-}
-
-//---------------------------------------------------------------------------
-
 CS_LEAKGUARD_IMPLEMENT (csShaderProgram);
+
 
 csShaderProgram::csShaderProgram (iObjectRegistry* objectReg)
   : scfImplementationType (this)
@@ -58,8 +42,8 @@ csShaderProgram::csShaderProgram (iObjectRegistry* objectReg)
 
   csShaderProgram::objectReg = objectReg;
   synsrv = csQueryRegistry<iSyntaxService> (objectReg);
-  stringsSvName = csQueryRegistryTagInterface<iShaderVarStringSet> 
-    (objectReg, "crystalspace.shader.variablenameset");
+  strings = csQueryRegistryTagInterface<iStringSet> 
+    (objectReg, "crystalspace.shared.stringset");
   
   csRef<iVerbosityManager> verbosemgr (
     csQueryRegistry<iVerbosityManager> (objectReg));
@@ -82,14 +66,13 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
     synsrv->Report ("crystalspace.graphics3d.shader.common",
       CS_REPORTER_SEVERITY_WARNING,
       node,
-      "No %s attribute",
-      CS::Quote::Single ("type"));
+      "No 'type' attribute");
     return false;
   }
 
   // Var for static data
   csRef<csShaderVariable> var;
-  var.AttachNew (new csShaderVariable (CS::InvalidShaderVarStringID));
+  var.AttachNew (new csShaderVariable (csInvalidStringID));
 
   ProgramParamType paramType = ParamInvalid;
   if (strcmp (type, "shadervar") == 0)
@@ -103,19 +86,9 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
 	"Node has no contents");
       return false;
     }
-    
-    CS::Graphics::ShaderVarNameParser nameParse (value);
-    param.name = stringsSvName->Request (nameParse.GetShaderVarName());
-    for (size_t n = 0; n < nameParse.GetIndexNum(); n++)
-    {
-      param.indices.Push (nameParse.GetIndexValue (n));
-    }
+    param.name = stringsSvName->Request (value);
     param.valid = true;
     return true;
-  }
-  else if (strcmp (type, "int") == 0)
-  {
-    paramType = ParamInt;
   }
   else if (strcmp (type, "float") == 0)
   {
@@ -177,7 +150,7 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
     synsrv->Report ("crystalspace.graphics3d.shader.common",
       CS_REPORTER_SEVERITY_WARNING,
       node,
-      "Unknown type %s", CS::Quote::Single (type));
+      "Unknown type '%s'", type);
     return false;
   }
 
@@ -186,22 +159,14 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
     synsrv->Report ("crystalspace.graphics3d.shader.common",
       CS_REPORTER_SEVERITY_WARNING,
       node,
-      "Type %s not supported by this parameter", CS::Quote::Single (type));
+      "Type '%s' not supported by this parameter", type);
     return false;
   }
 
-  const uint directValueTypes = ParamInt | ParamFloat | ParamVector2
-    | ParamVector3 | ParamVector4 | ParamMatrix | ParamTransform;
-  switch (paramType & directValueTypes)
+  switch ((paramType & 0x3F))
   {
     case ParamInvalid:
       return false;
-      break;
-    case ParamInt:
-      {
-	int x = node->GetContentsValueAsInt ();
-	var->SetValue (x);
-      }
       break;
     case ParamFloat:
       {
@@ -226,7 +191,7 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
 	  synsrv->Report ("crystalspace.graphics3d.shader.common",
 	    CS_REPORTER_SEVERITY_WARNING,
 	    node,
-	    "Couldn't parse vector2 %s", CS::Quote::Single (value));
+	    "Couldn't parse vector2 '%s'", value);
 	  return false;
 	}
 	var->SetValue (csVector2 (x,y));
@@ -249,7 +214,7 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
 	  synsrv->Report ("crystalspace.graphics3d.shader.common",
 	    CS_REPORTER_SEVERITY_WARNING,
 	    node,
-	    "Couldn't parse vector3 %s", CS::Quote::Single (value));
+	    "Couldn't parse vector3 '%s'", value);
 	  return false;
 	}
 	var->SetValue (csVector3 (x,y,z));
@@ -272,7 +237,7 @@ bool csShaderProgram::ProgramParamParser::ParseProgramParam (
 	  synsrv->Report ("crystalspace.graphics3d.shader.common",
 	    CS_REPORTER_SEVERITY_WARNING,
 	    node,
-	    "Couldn't parse vector4 %s", CS::Quote::Single (value));
+	    "Couldn't parse vector4 '%s'", value);
 	  return false;
 	}
 	var->SetValue (csVector4 (x,y,z,w));
@@ -321,78 +286,66 @@ bool csShaderProgram::ParseCommon (iDocumentNode* child)
   csStringID id = commonTokens.Request (value);
   switch (id)
   {
-  case XMLTOKEN_VARIABLEMAP:
-    {
-      //@@ REWRITE
-      const char* destname = child->GetAttributeValue ("destination");
-      if (!destname)
+    case XMLTOKEN_VARIABLEMAP:
       {
-        synsrv->Report ("crystalspace.graphics3d.shader.common",
-          CS_REPORTER_SEVERITY_WARNING, child,
-          "<variablemap> has no %s attribute",
-          CS::Quote::Single ("destination"));
-        return false;
-      }
+        //@@ REWRITE
+	const char* destname = child->GetAttributeValue ("destination");
+	if (!destname)
+	{
+	  synsrv->Report ("crystalspace.graphics3d.shader.common",
+	    CS_REPORTER_SEVERITY_WARNING, child,
+	    "<variablemap> has no 'destination' attribute");
+	  return false;
+	}
 
-      const char* varname = child->GetAttributeValue ("variable");
-      if (!varname)
-      {
-        // "New style" variable mapping
-        VariableMapEntry vme (CS::InvalidShaderVarStringID, destname);
-        if (!ParseProgramParam (child, vme.mappingParam,
-          ParamInt | ParamFloat | ParamVector2 | ParamVector3 | ParamVector4))
-          return false;
-        variablemap.Push (vme);
+	const char* varname = child->GetAttributeValue ("variable");
+	if (!varname)
+	{
+	  // "New style" variable mapping
+	  VariableMapEntry vme (csInvalidStringID, destname);
+	  if (!ParseProgramParam (child, vme.mappingParam,
+	    ParamFloat | ParamVector2 | ParamVector3 | ParamVector4))
+	    return false;
+	  variablemap.Push (vme);
+	}
+	else
+	{
+	  // "Classic" variable mapping
+	  variablemap.Push (VariableMapEntry (strings->Request (varname),
+	    destname));
+	}
       }
-      else
+      break;
+    case XMLTOKEN_PROGRAM:
       {
-        // "Classic" variable mapping
-        CS::Graphics::ShaderVarNameParser nameParse (varname);
-        VariableMapEntry vme (
-          stringsSvName->Request (nameParse.GetShaderVarName()),
-          destname);
-        for (size_t n = 0; n < nameParse.GetIndexNum(); n++)
-        {
-          vme.mappingParam.indices.Push (nameParse.GetIndexValue (n));
-        }
-        variablemap.Push (vme);
-      }
-    }
-    break;
-  case XMLTOKEN_PROGRAM:
-    {
-      const char* filename = child->GetAttributeValue ("file");
-      if (filename != 0)
-      {
-        programFileName = filename;
+	const char* filename = child->GetAttributeValue ("file");
+	if (filename != 0)
+	{
+	  programFileName = filename;
 
-        csRef<iVFS> vfs = csQueryRegistry<iVFS> (objectReg);
-        csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
-        if (!file.IsValid())
-        {
-          synsrv->Report ("crystalspace.graphics3d.shader.common",
-            CS_REPORTER_SEVERITY_WARNING, child,
-            "Could not open %s", CS::Quote::Single (filename));
-          return false;
-        }
+	  csRef<iVFS> vfs = csQueryRegistry<iVFS> (objectReg);
+	  csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
+	  if (!file.IsValid())
+	  {
+	    synsrv->Report ("crystalspace.graphics3d.shader.common",
+	      CS_REPORTER_SEVERITY_WARNING, child,
+	      "Could not open '%s'", filename);
+	    return false;
+	  }
 
-        programFile = file;
-        programNode.Invalidate ();
+	  programFile = file;
+	}
+	else
+	  programNode = child;
       }
-      else
-      {
-        programNode = child;
-        programFile.Invalidate ();
-      }
-    }
-    break;
+      break;
 
-  case XMLTOKEN_DESCRIPTION:
-    description = child->GetContentsValue();
-    break;
-  default:
-    synsrv->ReportBadToken (child);
-    return false;
+    case XMLTOKEN_DESCRIPTION:
+      description = child->GetContentsValue();
+      break;
+    default:
+      synsrv->ReportBadToken (child);
+      return false;
   }
   return true;
 }
@@ -461,37 +414,10 @@ void csShaderProgram::DumpVariableMappings (csString& output)
   {
     const VariableMapEntry& vme = variablemap[v];
 
-    output << stringsSvName->Request (vme.name);
+    output << strings->Request (vme.name);
     output << '(' << vme.name << ") -> ";
     output << vme.destination << ' ';
     output << vme.userVal << ' ';
     output << '\n'; 
   }
-}
-
-void csShaderProgram::GetUsedShaderVarsFromVariableMappings (
-  csBitArray& bits) const
-{
-  for (size_t i = 0; i < variablemap.GetSize(); i++)
-  {
-    TryAddUsedShaderVarName (variablemap[i].name, bits);
-  }
-}
-
-void csShaderProgram::GetUsedShaderVars (csBitArray& bits) const
-{
-  GetUsedShaderVarsFromVariableMappings (bits);
-}
-
-iShaderProgram::CacheLoadResult csShaderProgram::LoadFromCache (
-  iHierarchicalCache* cache, iBase* previous, iDocumentNode* programNode,
-  csRef<iString>* failReason, csRef<iString>* tag)
-{
-  csRef<iShaderDestinationResolver> resolver =
-    scfQueryInterfaceSafe<iShaderDestinationResolver> (previous);
-  
-  if (Load (resolver, programNode) && Compile (0, tag))
-    return loadSuccessShaderValid;
-  else
-    return loadSuccessShaderInvalid;
 }

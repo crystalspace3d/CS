@@ -127,14 +127,6 @@ namespace CS
     */
     virtual bool SetPosition (size_t newposition);
 
-   /**
-    * Check if the stream is pending position replacement.
-    * Usually in this case it might be a good idea to flush buffers and
-    * rebuffer.
-    * \return TRUE if the position is being changed
-    */
-    virtual bool PendingSeek ();
-
     /**
     * Pauses the stream at the current position.  
     * Data will not be provided through the GetData() call beyond the point of
@@ -160,10 +152,6 @@ namespace CS
     * - CS_SNDSYS_STREAM_PAUSED - The stream is paused.
     * - CS_SNDSYS_STREAM_UNPAUSED - The stream is not paused.  AdvancePosition
     *   is moving the stream position.
-    * - CS_SNDSYS_STREAM_COMPLETED - The stream's data has been processed but
-    *   not rendered yet. In order to keep the state consistent, the Sound
-    *   System's main processing thread should call Pause() once the data has
-    *   been entirely rendered.
     */
     virtual int GetPauseState();
 
@@ -179,33 +167,6 @@ namespace CS
     * CS_SNDSYS_STREAM_DONTLOOP and CS_SNDSYS_STREAM_LOOP.
     */
     virtual int GetLoopState();
-    
-   /**
-    * Gets where the audio should rewind to loop.
-    * 
-    * \return The position where to restart playing when looping in frames.
-    */
-    virtual size_t GetLoopStart();
-
-   /**
-    * Gets when the audio should rewind to loop.
-    * 
-    * \return The position where to rewind to loop start when looping in frames.
-    */
-    virtual size_t GetLoopEnd();
-    
-   /**
-    * Sets the loop start and end bounduaries. The start position defines the position in frames
-    * where the loop will restart when the stream reaches the end of the stream, in case
-    * endPosition is 0 or the frame defined in endPosition.
-    * 
-    * \note The endPosition is exclusive while the start position is inclusive, so for example to get
-    *       a loop from frame 0 to frame 0 you should do startPosition 0 and endPosition 1
-    * \param startPosition The position in frames where to restart playing when looping.
-    * \param endPosition The position in frames where to rewind to loop start when looping.
-    * \return false if the parameters are out of bound or the audio format plugin doesn't support this.
-    */
-    virtual bool SetLoopBoundaries(size_t startPosition, size_t endPosition);
 
     /**
     * Set the playback rate adjustment factor in percent.  100 = 100% (normal
@@ -351,18 +312,11 @@ namespace CS
     SoundCyclicBuffer *m_pCyclicBuffer;
 
     /// Is this stream paused?
-    int16 m_PauseState;
+    bool m_bPaused;
 
     /// Is this stream set to loop (start over) when it reaches the end
     //   of the data?
     bool m_bLooping;
-    
-    ///The frame where the loop will start when it happens
-    size_t m_startLoopFrame;
-    
-    ///The frame where the audio will loop, even if there are still frames
-    size_t m_endLoopFrame;
-    
 
     /// Have we finished reading data from the underlying data element?
     //

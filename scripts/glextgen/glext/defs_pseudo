@@ -1,9 +1,0 @@
-/**\name %Name% constants
- * @{ */
-%Tokens%
-/** @} */
-
-/**\name %Name% functions
- * @{ */
-%FunctionTypes%
-/** @} */

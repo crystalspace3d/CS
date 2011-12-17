@@ -29,8 +29,8 @@
  
 #include "csutil/scf_interface.h"
 
-struct csSectorVisibleRenderMeshes;
 struct iDocumentNode;
+struct iFrustumView;
 struct iMeshWrapper;
 struct iMovable;
 struct iObjectModel;
@@ -69,7 +69,7 @@ struct iVisibilityObjectIterator : public virtual iBase
  */
 struct iVisibilityCullerListener : public virtual iBase
 {
-  SCF_INTERFACE(iVisibilityCullerListener, 3, 0, 0);
+  SCF_INTERFACE(iVisibilityCullerListener, 2,0,0);
   /**
    * This function is called whenever the visibilty culler discovers a new
    * visible mesh.  The frustum_mask is a mask that is compatible with
@@ -79,18 +79,6 @@ struct iVisibilityCullerListener : public virtual iBase
    */
   virtual void ObjectVisible (iVisibilityObject *visobject, 
     iMeshWrapper *mesh, uint32 frustum_mask) = 0;
-
-  /**
-   * Returns a list of the visible rendermeshes of a meshwrapper.
-   */
-  virtual int GetVisibleMeshes (iMeshWrapper* mw, uint32 frustum_mask,
-    csSectorVisibleRenderMeshes*& meshList) = 0;
-
-  /**
-   * Marks the passed rendermeshes of a meshwrapper as visible.
-   */
-  virtual void MarkVisible (iMeshWrapper *mw, int numMeshes,
-    csSectorVisibleRenderMeshes*& meshList) = 0;
 };
 
 /**
@@ -112,7 +100,7 @@ struct iVisibilityCullerListener : public virtual iBase
  */
 struct iVisibilityCuller : public virtual iBase
 {
-  SCF_INTERFACE (iVisibilityCuller, 5, 0, 0);
+  SCF_INTERFACE (iVisibilityCuller, 2, 0, 0);
 
   /**
    * Setup all data for this visibility culler. This needs
@@ -137,15 +125,13 @@ struct iVisibilityCuller : public virtual iBase
    * all objects are visible.
    */
   virtual bool VisTest (iRenderView* irview, 
-    iVisibilityCullerListener* viscallback,
-    int renderWidth = 0, int renderHeight = 0) = 0;
+    iVisibilityCullerListener* viscallback) = 0;
   /**
    * Precache visibility culling. This can be useful in case you want
    * to ensure that render speed doesn't get any hickups as soon as a portal
    * to this sector becomes visible. iEngine->PrecacheDraw() will call this
-   * function..
+   * function.
    */
-  CS_DEPRECATED_METHOD_MSG("Use (Begin/End)PrecacheCulling methods!")
   virtual void PrecacheCulling () = 0;
 
   /**
@@ -215,25 +201,22 @@ struct iVisibilityCuller : public virtual iBase
     bool accurate = true) = 0;
 
   /**
+   * Start casting shadows from a given point in space. What this will
+   * do is traverse all objects registered to the visibility culler.
+   * If some object implements iShadowCaster then this function will
+   * use the shadows casted by that object and put them in the frustum
+   * view. This function will then also call the object function which
+   * is assigned to iFrustumView. That object function will (for example)
+   * call iShadowReceiver->CastShadows() to cast the collected shadows
+   * on the shadow receiver.
+   */
+  virtual void CastShadows (iFrustumView* fview) = 0;
+
+  /**
    * Parse a document node with additional parameters for this culler.
    * Returns error message on error or 0 otherwise.
    */
   virtual const char* ParseCullerParameters (iDocumentNode* node) = 0;
-
-  /**
-   * Perform any rendering required by this culler.
-   */
-  virtual void RenderViscull (iRenderView* rview, iShaderVariableContext* shadervars) = 0;
-
-  /**
-   * Begins precache culling.
-   */
-  virtual void BeginPrecacheCulling () = 0;
-
-  /**
-   * Ends precache culling.
-   */
-  virtual void EndPrecacheCulling () = 0;
 };
 
 /** \name GetCullerFlags() flags
@@ -268,7 +251,7 @@ struct iVisibilityCuller : public virtual iBase
  */
 struct iVisibilityObject : public virtual iBase
 {
-  SCF_INTERFACE(iVisibilityObject, 3, 0, 0);
+  SCF_INTERFACE(iVisibilityObject, 2, 0, 0);
 
   /// Get the reference to the movable from this object.
   virtual iMovable* GetMovable () const = 0;
@@ -287,11 +270,6 @@ struct iVisibilityObject : public virtual iBase
    * - #CS_CULLER_HINT_BADOCCLUDER
    */
   virtual csFlags& GetCullerFlags () = 0;
-
-  /**
-   * Get the world space bbox for this object.
-   */
-  virtual const csBox3& GetBBox () const = 0;
 };
 
 /** @} */

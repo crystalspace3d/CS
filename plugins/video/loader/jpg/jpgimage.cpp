@@ -30,7 +30,7 @@
 #include "csutil/databuf.h"
 #include "ivaria/reporter.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(JPGImageIO)
 {
@@ -180,6 +180,11 @@ csPtr<iImage> csJPGImageIO::Load (iDataBuffer* buf, int iFormat)
     return 0;
   }
   return csPtr<iImage> (i);
+}
+
+void csJPGImageIO::SetDithering (bool enable)
+{
+  ImageJpgFile::dither = enable;
 }
 
 csPtr<iDataBuffer> csJPGImageIO::Save(iImage *Image,
@@ -391,6 +396,8 @@ static void jpeg_memory_src (j_decompress_ptr cinfo, char *inbfr, int len)
 }
 
 /* ==== Constructor ==== */
+
+bool ImageJpgFile::dither = true;
 
 ImageJpgFile::JpegLoader::~JpegLoader()
 {

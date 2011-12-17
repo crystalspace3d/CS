@@ -37,8 +37,6 @@
 #include "terrainsystem.h"
 #include "cell.h"
 
-#include "factory.h"
-
 CS_PLUGIN_NAMESPACE_BEGIN(Terrain2)
 {
 
@@ -61,22 +59,6 @@ csTerrainSystem::~csTerrainSystem ()
     renderer->DisconnectTerrain (this);
 }
 
-
-void csTerrainSystem::RemoveCell (iTerrainCell* cell)
-{
-  ComputeBBox();
-
-  cells.Delete(static_cast<csTerrainCell*>(cell));
-}
-
-iTerrainCell* csTerrainSystem::AddCell (iTerrainFactoryCell* cellf)
-{
-  csRef<csTerrainCell> c = (static_cast<csTerrainFactoryCell*>(cellf))->CreateCell (this);
-  this->AddCell (c);
-  return c;
-}
-
-
 void csTerrainSystem::AddCell (csTerrainCell* cell)
 {
   cells.Push (cell);
@@ -89,8 +71,6 @@ void csTerrainSystem::AddCell (csTerrainCell* cell)
   }
 
   boundingbox += cell->GetBBox ();
-
-  ShapeChanged ();
 }
 
 void csTerrainSystem::FireLoadCallbacks (csTerrainCell* cell)
@@ -125,12 +105,6 @@ void csTerrainSystem::FireHeightUpdateCallbacks (csTerrainCell* cell,
     heightDataCallbacks[i]->OnHeightUpdate (cell, rectangle);
   }
 }
-
-void csTerrainSystem::CellSizeUpdate (csTerrainCell* cell)
-{
-  ComputeBBox ();
-}
-
 
 iTerrainCell* csTerrainSystem::GetCell (const char* name, bool loadData)
 {
@@ -213,8 +187,7 @@ void csTerrainSystem::SetMaterialPalette (const csRefArray<iMaterialWrapper>& mp
 }
 
 bool csTerrainSystem::CollideSegment (const csVector3& start, const csVector3&
-                               end, bool oneHit, iTerrainVector3Array* points,
-                               iMaterialArray* materials)
+                               end, bool oneHit, iTerrainVector3Array* points)
 {
   if (!collider) 
     return false;
@@ -238,49 +211,11 @@ bool csTerrainSystem::CollideSegment (const csVector3& start, const csVector3&
 
       if (cells[i]->CollideSegment (seg.End (), seg.Start (), oneHit, points)
           && oneHit)
-      {
-        if (materials)
-          materials->Push(cells[i]->GetBaseMaterial());
         return true;
-      }
     }
   }
 
   return size != points->GetSize ();
-}
-
-bool csTerrainSystem::CollideSegment (const csVector3& start, const csVector3& end,
-				      csVector3& hitPoint,
-				      iMaterialWrapper** hitMaterial)
-{
-  if (!collider) 
-    return false;
-
-  for (size_t i = 0; i < cells.GetSize (); ++i)
-  {
-    csSegment3 seg(start, end);
-    csBox3 box = cells[i]->GetBBox ();
-
-    csVector3 isect;
-
-    if (csIntersect3::BoxSegment (box, seg, isect) >= 0)
-    {
-      seg.SetStart (seg.End ());
-      seg.SetEnd (isect);
-      
-      if (csIntersect3::BoxSegment (box, seg, isect) >= 0)
-        seg.SetStart (isect);
-
-      if (cells[i]->CollideSegment (seg.End (), seg.Start (), hitPoint))
-      {
-        if (hitMaterial)
-          *hitMaterial = cells[i]->GetBaseMaterial();
-        return true;
-      }
-    }
-  }
-
-  return false;
 }
 
 csTerrainColliderCollideSegmentResult csTerrainSystem::CollideSegment (
@@ -602,16 +537,17 @@ csRenderMesh** csTerrainSystem::GetRenderMeshes (int& num, iRenderView* rview,
   return allMeshes;
 }
 
+
 bool csTerrainSystem::HitBeamOutline (const csVector3& start,
-        const csVector3& end, csVector3& isect, float* pr,
-        iMaterialWrapper** material)
+        const csVector3& end, csVector3& isect, float* pr)
 {
   //@@TODO: See if this needs some touch-up
-  csVector3 collPt;
-  
-  if (csTerrainSystem::CollideSegment (start, end, collPt, material))
+  csRef<iTerrainVector3Array> collArray;
+  collArray.AttachNew (new scfArray<iTerrainVector3Array> );
+
+  if (CollideSegment (start, end, true, collArray))
   {
-    isect = collPt;
+    isect = collArray->Get (0);
 
     if (pr)
     {
@@ -630,7 +566,7 @@ bool csTerrainSystem::HitBeamOutline (const csVector3& start,
         gr_max = fabsf (end.y - start.y);
       }
 
-      *pr = fabsf (collPt[gr] - start[gr]) / gr_max;
+      *pr = fabsf (collArray->Get (0)[gr] - start[gr]) / gr_max;
     }
 
     return true;
@@ -639,41 +575,24 @@ bool csTerrainSystem::HitBeamOutline (const csVector3& start,
   return false;
 }
 
-bool csTerrainSystem::HitBeamOutline (const csVector3& start,
-        const csVector3& end, csVector3& isect, float* pr)
-{
-  return HitBeamOutline(start, end, isect, pr, 0);
-}
-
 bool csTerrainSystem::HitBeamObject (const csVector3& start,
         const csVector3& end,
         csVector3& isect, float* pr, int* polygon_idx,
-        iMaterialWrapper** material)
+        iMaterialWrapper** material )
 {
   if (polygon_idx) *polygon_idx = -1;
-  if (material) *material = 0;
+  if (material) *material = NULL;
 
-  bool rc = csTerrainSystem::HitBeamOutline (start, end, isect, pr, material);
-  return rc;
+  return HitBeamOutline (start, end, isect, pr);
+}
+
+void csTerrainSystem::InvalidateMaterialHandles ()
+{
 }
 
 csColliderType csTerrainSystem::GetColliderType ()
 {
   return CS_TERRAIN_COLLIDER;
-}
-
-void csTerrainSystem::ComputeBBox ()
-{
-  boundingbox.Empty ();
-  boundingbox.StartBoundingBox ();
-  bbStarted = true;
-
-  for (size_t i = 0; i < cells.GetSize (); ++i)
-  {
-    boundingbox += cells[i]->GetBBox ();
-  }
-
-  ShapeChanged ();
 }
 
 }

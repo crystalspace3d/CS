@@ -54,9 +54,9 @@ namespace CS
   class CS_CRYSTALSPACE_EXPORT MeasureTime
   {
   protected:
-    csMicroTicks offsetTime;
+    int64 offsetTime;
     csString text;
-    void PrintTime (const char* prefix, csMicroTicks time, const char* suffix);
+    void PrintTime (const char* prefix, int64 time, const char* suffix);
   public:
     /**
      * Construct with a formatted description string.
@@ -73,7 +73,7 @@ namespace CS
     
     ~MeasureTime ()
     {
-      csMicroTicks endTime = csGetMicroTicks ();
+      csTicks endTime = csGetMicroTicks ();
       PrintTime ((text + ": ").GetData(), endTime - offsetTime, 
 	" \xC2\xB5s\n");
     }
@@ -81,7 +81,7 @@ namespace CS
     /// Print an intermediate measurement.
     void PrintIntermediate (const char* descr, ...)
     {
-      csMicroTicks currentTime = csGetMicroTicks ();
+      int64 currentTime = csGetMicroTicks ();
 
       csPrintf ("(%s)", text.GetData());
       va_list args;
@@ -90,7 +90,7 @@ namespace CS
       va_end (args);
       PrintTime (": ", currentTime - offsetTime, " \xC2\xB5s\n");
       
-      csMicroTicks currentTime2 = csGetMicroTicks ();
+      int64 currentTime2 = csGetMicroTicks ();
       // Correct difference from printing
       offsetTime += currentTime2 - currentTime;
     }

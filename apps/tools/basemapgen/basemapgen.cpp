@@ -19,8 +19,6 @@
 #include "crystalspace.h"
 #include "basemapgen.h"
 
-#include "textureinfo.h"
-
 CS_IMPLEMENT_APPLICATION
 
 // The global pointer to basemapgen
@@ -59,13 +57,6 @@ bool BaseMapGen::Initialize ()
     return false;
   }
 
-  csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
-  if (!vfs)
-  {
-    Report("No iVFS plugin!");
-    return false;
-  }
-  
   cmdline = csQueryRegistry<iCommandLineParser> (object_reg);
   if (!cmdline)
   {
@@ -79,18 +70,6 @@ bool BaseMapGen::Initialize ()
     Report("Error opening system!");
     return false;
   }
-
-  csRef<iConfigManager> cfgmgr = csQueryRegistry<iConfigManager> (object_reg);
-  if (!cfgmgr)
-  {
-    Report("No iConfigManager plugin!");
-    return false;
-  }
-  // Used for reading texture classes.
-  cfgmgr->AddDomain ("/config/r3dopengl.cfg", vfs,
-		     iConfigManager::ConfigPriorityPlugin);
-  mipSharpen = cfgmgr->GetInt ("Video.OpenGL.SharpenMipmaps", 0);
-  textureClasses.Parse (cfgmgr);
   
   const char* optTerrain = cmdline->GetOption ("terrainname", 0);
   if (optTerrain != 0)
@@ -117,12 +96,9 @@ void BaseMapGen::OnCommandLineHelp()
   csPrintf (" Example: basemapgen /this/data/terrain world\n");
   csPrintf ("\n");
   csPrintf ("<path>                    The path to the worldfile           (default /this)\n");
-  csPrintf ("<world>                   Name of the world file              (default %s)\n",
-	    CS::Quote::Single ("world"));
-  csPrintf ("-terrainname=<regexp>     Regexp for the terrain mesh objects (default %s)\n",
-	    CS::Quote::Single (".*"));
-  csPrintf ("-terraformername=<regexp> Regexp for the terraformer          (default %s)\n",
-	    CS::Quote::Single (".*"));
+  csPrintf ("<world>                   Name of the world file              (default 'world')\n");
+  csPrintf ("-terrainname=<regexp>     Regexp for the terrain mesh objects (default '.*')\n");
+  csPrintf ("-terraformername=<regexp> Regexp for the terraformer          (default '.*')\n");
   csPrintf ("-resolution=<pixels>      The resolution for the basemap      (default basemap resolution)\n");
 }
 
@@ -159,7 +135,7 @@ static csPtr<iImage> GenerateErrorTexture (int width, int height)
 
 csRef<iImage> BaseMapGen::LoadImage (const csString& filename, int format)
 {
-  csPrintf ("Trying to load %s... \t", CS::Quote::Single (filename.GetData()));
+  csPrintf ("Trying to load '%s'... \t", filename.GetData());
   fflush (stdout);
   csRef<iImage> image;
   csRef<iImageIO> imageio = csQueryRegistry<iImageIO> (object_reg);
@@ -168,7 +144,7 @@ csRef<iImage> BaseMapGen::LoadImage (const csString& filename, int format)
   csRef<iDataBuffer> buf = VFS->ReadFile (filename.GetData(), false);
   if (!buf)
   {
-    Report ("Failed to load image file %s!", CS::Quote::Single (filename.GetData()));
+    Report ("Failed to load image file '%s'!", filename.GetData());
     return GenerateErrorTexture (32, 32);
   }
   image = imageio->Load (buf, format);
@@ -176,12 +152,7 @@ csRef<iImage> BaseMapGen::LoadImage (const csString& filename, int format)
 
   return image;
 }
-
-const TextureClass& BaseMapGen::GetTextureClass (const char* texClass)
-{
-  return textureClasses.GetTextureClass (texClass);
-}
-
+  
 void BaseMapGen::ScanPluginNodes ()
 {
   csRef<iDocumentNode> plugins = rootnode->GetNode ("plugins");
@@ -218,15 +189,8 @@ void BaseMapGen::ScanTextures ()
       csRef<iDocumentNode> current = it->Next();
       csString name = current->GetAttributeValue("name");
       csRef<iDocumentNode> file = current->GetNode("file");
-      if (!file) continue;
-      csString texFile, texClass;
-      texFile = file->GetContentsValue();
-      csRef<iDocumentNode> texClassNode = current->GetNode ("class");
-      if (texClassNode)
-	texClass = texClassNode->GetContentsValue();
-      csRef<TextureInfo> texInfo;
-      texInfo.AttachNew (new TextureInfo (current, texFile, texClass));
-      textureFiles.Put (name, texInfo);
+      csString filename = file->GetContentsValue();
+      textureFiles.Put (name, filename);
     }
   }
 }
@@ -246,9 +210,13 @@ void BaseMapGen::ScanMaterials ()
     csRef<iDocumentNode> tex = mat->GetNode ("texture");
     if (!tex) continue;
     const char* texname = tex->GetContentsValue();
-    TextureInfo* texInfo = textureFiles.Get (texname, (TextureInfo*)nullptr);
-    if (!texInfo) continue;
-    if (texInfo->GetFileName().IsEmpty ()) continue;
+    const char* texture_file = textureFiles.Get (texname, (const char*)0);
+    if (!texture_file)
+    {
+      csPrintf ("Texture file not found or no texture file given for texture '%s' used by material '%s'.\n",
+	texname, matname.GetData());
+      continue;
+    }
     
     // Set the texture scale.
     csRef<iDocumentNodeIterator> it = mat->GetNodes("shadervar");
@@ -273,7 +241,8 @@ void BaseMapGen::ScanMaterials ()
     csRef<MaterialLayer> material;
     material.AttachNew (new MaterialLayer);
     material->name = matname;
-    material->texture = texInfo;
+    material->texture_name = texname;
+    material->texture_file = texture_file;
     material->texture_scale = texscale;
     materials.Put (matname, material);
   }
@@ -294,24 +263,22 @@ bool BaseMapGen::LoadMap ()
   if (path.IsEmpty()) path = "/this";
   if (world.IsEmpty()) world = "world";
 
-  const char* worldFN;
-  if (!CS::Utility::SmartChDir (vfs, path, world, &worldFN))
+  csStringArray paths;
+  paths.Push ("/lev/");
+  if (!vfs->ChDirAuto(path.GetData(), &paths, 0, "world"))
   {
-    Report("Failed to locate a %s file in %s!",
-	   CS::Quote::Single (world.GetData()),
-	   CS::Quote::Single (path));
+    Report("Error setting directory '%s'!", path.GetData ());
     return false;
   }
-  csRef<iFile> buf (vfs->Open (worldFN, VFS_FILE_READ));
+
+  csRef<iFile> buf = vfs->Open(world.GetData(), VFS_FILE_READ);
   if (!buf)
   {
-    Report("Failed to open file %s in %s for reading!",
-	   CS::Quote::Single (worldFN),
-	   CS::Quote::Single (path));
+    Report("Failed to open file '%s'!", world.GetData());
     return false;
   }
-  worldFileName = worldFN;
 
+  csRef<iDocument> doc;
   csRef<iDocumentSystem> docsys;
 
   if (!docsys) docsys = csPtr<iDocumentSystem> (new csTinyDocumentSystem ());
@@ -319,16 +286,17 @@ bool BaseMapGen::LoadMap ()
   const char* error = doc->Parse (buf, true);
   if (error != 0)
   {
-    Report("Failed to parse file %s: %s", CS::Quote::Single (world.GetData()),
+    Report("Failed to parse file '%s': %s", world.GetData(),
       error);
     return false;
   }
-  
-  doc = CS::DocSystem::MakeChangeable (doc, docsys);
 
-  rootnode = doc->GetRoot()->GetNode("world");
-  if (!rootnode)
-    return false;
+  if (doc)
+  {
+    rootnode = doc->GetRoot()->GetNode("world");
+    if (!rootnode)
+      return false;
+  }
   
   ScanPluginNodes ();
   
@@ -337,35 +305,27 @@ bool BaseMapGen::LoadMap ()
   
   return true;
 }
-
-bool BaseMapGen::SaveMap ()
-{
-  scfString docstr;
-  docstr.SetGrowsBy (0);
-  const char* err = doc->Write (&docstr);
-  if (err != 0)
-  {
-    Report("Failed to write document: %s", err);
-    return false;
-  }
-
-  csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
-  if (!vfs->WriteFile (worldFileName, docstr.GetData(), docstr.Length()))
-  {
-    Report("Failed to write file %s!",
-	   CS::Quote::Single (worldFileName));
-    return false;
-  }
   
-  return true;
+/* Get mipmap for an image, using precomputed mipmaps as far as
+   possible. */
+static csRef<iImage> GetImageMip (iImage* img, uint mip)
+{
+  if (mip == 0) return img;
+  csRef<iImage> imgToMip (img);
+  uint hasMips = img->HasMipmaps();
+  if (mip <= hasMips) return img->GetMipmap (mip);
+  imgToMip = img->GetMipmap (hasMips);
+  mip -= hasMips;
+  if (mip == 0) return imgToMip;
+  return csImageManipulate::Mipmap (imgToMip, mip);
 }
 
 static csColor GetPixelWrap (iImage* img, int img_w, int img_h, 
                              int x, int y)
 {
   // Wrap around the texture coordinates.
-  x = (x < 0) ? (x + img_w) : (x % img_w);
-  y = (y < 0) ? (y + img_h) : (y % img_h);
+  x = x % img_w;
+  y = y % img_h;
 
   // Get the pixel.
   csRGBpixel* px = (csRGBpixel*)img->GetImageData() + x + (y * img_h);
@@ -383,7 +343,7 @@ public:
   {
     float layer_needed_x = float (basemap_w) / textureScale.x;
     float layer_needed_y = float (basemap_h) / textureScale.y;
-    iImage* layerImage = layer->texture->GetMip (0);
+    iImage* layerImage = layer->GetImage();
     int mip_x = csFindNearestPowerOf2 (
       int (ceil (layerImage->GetWidth() / layer_needed_x)));
     int mip_y = csFindNearestPowerOf2 (
@@ -391,7 +351,7 @@ public:
     int mip = csMax (
       csClamp (csLog2 (mip_x), csLog2 (layerImage->GetWidth()), 0),
       csClamp (csLog2 (mip_y), csLog2 (layerImage->GetHeight()), 0));
-    img = layer->texture->GetMip (mip);
+    img = GetImageMip (layerImage, mip);
     img_w = img->GetWidth();
     img_h = img->GetHeight();
   }
@@ -405,11 +365,8 @@ public:
     // Calculate the material coordinates.
     float matcoord_x_f = (coord_x * img_w);
     float matcoord_y_f = (coord_y * img_h);
-    // offset to match GL filtering
-    matcoord_x_f -= 0.5f;
-    matcoord_y_f -= 0.5f;
-    int matcoord_x = int (floorf (matcoord_x_f));
-    int matcoord_y = int (floorf (matcoord_y_f));
+    int matcoord_x = int (matcoord_x_f);
+    int matcoord_y = int (matcoord_y_f);
   
     // Bilinearly filter from material.
     csColor p00 (GetPixelWrap (img, img_w, img_h,
@@ -452,17 +409,9 @@ csPtr<iImage> BaseMapGen::CreateBasemap (int basemap_w, int basemap_h,
     csRGBpixel* bm_dst = (csRGBpixel*)(basemapImage->GetImageData());
 
     float coord_x, coord_y;
-    float alpha_coord_x, alpha_coord_y;
 
-    // Used to compute basemap TCs from basemap pixel coords
-    float inv_basemap_w = 1.0f / (basemap_w-1);
-    float inv_basemap_h = 1.0f / (basemap_h-1);
-    /* Used to compute alphamap TCs from basemap pixel coords
-       (alphamap res may differ from basemap res) */
-    const int alphamap_w = alphaLayers.GetWidth();
-    const int alphamap_h = alphaLayers.GetHeight();
-    float inv_alphamap_w = inv_basemap_w * (float (alphamap_w-1) / alphamap_w);
-    float inv_alphamap_h = inv_basemap_h * (float (alphamap_h-1) / alphamap_h);
+    float inv_basemap_w = 1.0f / basemap_w;
+    float inv_basemap_h = 1.0f / basemap_h;
 
     for (int y = 0 ; y < basemap_h ; y++)
     {
@@ -475,15 +424,13 @@ csPtr<iImage> BaseMapGen::CreateBasemap (int basemap_w, int basemap_h,
         // Calculate the destination coordinates.
         coord_x    = x * inv_basemap_w;
         coord_y    = y * inv_basemap_h;
-        alpha_coord_x = x * inv_alphamap_w;
-        alpha_coord_y = y * inv_alphamap_h;
 
         csColor col (0, 0, 0);
         for (size_t l = 0; l < samplers.GetSize(); l++)
         {
           if (l >= alphaLayers.GetSize()) break;
         
-          float a = alphaLayers.GetAlpha (l, alpha_coord_x, alpha_coord_y);
+          float a = alphaLayers.GetAlpha (l, coord_x, coord_y);
           // Blend material colors.
           col += samplers[l].GetPixel (coord_x, coord_y) * a;
         }
@@ -519,7 +466,7 @@ void BaseMapGen::SaveImage (iImage* image, const char* texname)
   {
     if (!VFS->WriteFile (texname, (const char*)db->GetData (), db->GetSize ()))
     {
-      Report("Failed to write file %s!", CS::Quote::Single (texname));
+      Report("Failed to write file '%s'!", texname);
       return;
     }
   }
@@ -528,57 +475,6 @@ void BaseMapGen::SaveImage (iImage* image, const char* texname)
     Report("Failed to save png image for basemap!");
     return;
   }
-}
-  
-
-void BaseMapGen::SetShaderVarNode (iDocumentNode* parentNode,
-				   const char* svName,
-				   const char* svType,
-				   const char* svValue)
-{
-  csRef<iDocumentNode> svNode;
-  {
-    csRef<iDocumentNodeIterator> svNodes (parentNode->GetNodes ("shadervar"));
-    while (svNodes->HasNext())
-    {
-      csRef<iDocumentNode> testNode (svNodes->Next ());
-      const char* name = testNode->GetAttributeValue ("name");
-      if (name && (strcmp (name, svName) == 0))
-      {
-	svNode = testNode;
-	break;
-      }
-    }
-  }
-  if (!svNode)
-  {
-    svNode = parentNode->CreateNodeBefore (CS_NODE_ELEMENT);
-    svNode->SetValue ("shadervar");
-    svNode->SetAttribute ("name", svName);
-  }
-  svNode->SetAttribute ("type", svType);
-  CS::DocSystem::SetContentsValue (svNode, svValue);
-}
-
-void BaseMapGen::SetTextureFlag (iDocumentNode* texNode, const char* flagStr)
-{
-  csRef<iDocumentNode> flagNode (texNode->GetNode (flagStr));
-  if (!flagNode)
-  {
-    flagNode = texNode->CreateNodeBefore (CS_NODE_ELEMENT);
-    flagNode->SetValue (flagStr);
-  }
-}
-
-void BaseMapGen::SetTextureClassNode (iDocumentNode* texNode, const char* texClass)
-{
-  csRef<iDocumentNode> classNode (texNode->GetNode ("class"));
-  if (!classNode)
-  {
-    classNode = texNode->CreateNodeBefore (CS_NODE_ELEMENT);
-    classNode->SetValue ("class");
-  }
-  CS::DocSystem::SetContentsValue (classNode, texClass);
 }
 
 void BaseMapGen::DrawProgress (int percent)
@@ -616,12 +512,6 @@ void BaseMapGen::Start ()
   
   ScanTerrain2Factories();
   ScanTerrain2Meshes();
-  
-  if (!SaveMap ())
-  {
-    Report("Error writing world file!");
-    return;
-  }
 }
 
 /*---------------------------------------------------------------------*

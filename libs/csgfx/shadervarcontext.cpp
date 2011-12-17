@@ -30,17 +30,15 @@ ShaderVariableContextImpl::~ShaderVariableContextImpl ()
 
 namespace
 {
-class SvVarArrayCmp : public csArrayCmp<csShaderVariable*, 
-  CS::ShaderVarStringID>
+class SvVarArrayCmp : public csArrayCmp<csShaderVariable*, csStringID>
 {
-  static int SvKeyCompare (csShaderVariable* const& r,
-		                         CS::ShaderVarStringID const& k)
+  static int SvKeyCompare (csShaderVariable* const& r, csStringID const& k)
   { 
     return r->GetName() - k;
   }
 public:
-  SvVarArrayCmp (CS::ShaderVarStringID key) : 
-    csArrayCmp<csShaderVariable*, CS::ShaderVarStringID> (key, SvKeyCompare)
+  SvVarArrayCmp (csStringID key) : 
+    csArrayCmp<csShaderVariable*, csStringID> (key, SvKeyCompare)
   {
   }
 };
@@ -61,7 +59,7 @@ void ShaderVariableContextImpl::AddVariable (csShaderVariable *variable)
 }
 
 csShaderVariable* ShaderVariableContextImpl::GetVariable (
-  ShaderVarStringID name) const 
+  csStringID name) const 
 {
   size_t index = variables.FindSortedKey (SvVarArrayCmp (name));
   if (index != csArrayItemNotFound)
@@ -70,16 +68,14 @@ csShaderVariable* ShaderVariableContextImpl::GetVariable (
 }
 
 void ShaderVariableContextImpl::PushVariables (
-  csShaderVariableStack& stack) const
+  iShaderVarStack* stacks) const
 {
-  for (size_t i = 0; i < variables.GetSize (); ++i)
+  for (size_t i=0; i<variables.GetSize (); ++i)
   {
-    ShaderVarStringID name = variables[i]->GetName ();
-    if (name >= stack.GetSize ())
-      /* Not really an error: can happen if new shader vars are created
-       * after the stack was set up */
-      return;
-    stack[name] = variables[i];
+    csStringID name = variables[i]->GetName ();
+    if (stacks->GetSize () <= (size_t)name)
+      stacks->SetSize (name+1, 0);
+    stacks->Put (name, variables[i]);
   }
 }
 
@@ -98,12 +94,12 @@ bool ShaderVariableContextImpl::RemoveVariable (csShaderVariable* variable)
   return variables.Delete (variable);
 }
 
-bool ShaderVariableContextImpl::RemoveVariable (ShaderVarStringID name)
+bool ShaderVariableContextImpl::RemoveVariable (csStringID name)
 {
   size_t index = variables.FindSortedKey (SvVarArrayCmp (name));
   if (index != csArrayItemNotFound)
   {
-      return variables.DeleteIndex (index);
+      return variables.DeleteIndex(index);
   }
   return false;
 }
@@ -116,13 +112,13 @@ bool ShaderVariableContextImpl::RemoveVariable (ShaderVarStringID name)
 CS_LEAKGUARD_IMPLEMENT (csShaderVariableContext);
 
 csShaderVariableContext::csShaderVariableContext () :
-  scfImplementationType (this, 0)
+  scfImplementationType(this, 0)
 {}
 
 csShaderVariableContext::csShaderVariableContext (
   const csShaderVariableContext& other) :
-  iBase (), iShaderVariableContext(),
-  scfImplementationType(this), CS::ShaderVariableContextImpl ()
+  iBase(), iShaderVariableContext(),
+  scfImplementationType(this), CS::ShaderVariableContextImpl()
 {
   variables = other.variables;
 }

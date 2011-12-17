@@ -66,18 +66,8 @@ protected:
     Value (csPython *p, PyObject *s, bool incref = true)
     : scfImplementationType (this), parent(p), self(s)
     {
-      if (incref && self)
-      {
-	Py_INCREF (self); 
-      }
-    }
-    virtual ~Value ()
-    { 
-      if (self)
-      {
-	Py_DECREF (self); 
-      }
-    }
+      if (incref && self) Py_INCREF (self); }
+    virtual ~Value () { if (self) Py_DECREF (self); }
 
     iScript* GetScript() { return parent; }
 
@@ -103,19 +93,8 @@ protected:
   public:
     Object (csPython *p, PyObject *s, bool incref = true)
     : scfImplementationType (this), parent(p), self(s)
-    { 
-      if (incref && self) 
-      {
-	Py_INCREF (self); 
-      }
-    }
-    virtual ~Object () 
-    { 
-      if (self) 
-      {
-	Py_DECREF (self); 
-      }
-    }
+    { if (incref && self) Py_INCREF (self); }
+    virtual ~Object () { if (self) Py_DECREF (self); }
 
     iScript* GetScript() { return parent; }
 
@@ -153,7 +132,6 @@ protected:
   bool AddRealPythonPath(csString &path, const char *subpath=0);
   // Load configuration options
   void LoadConfig();
-  void LoadComponents();
 public:
   csPython(iBase *iParent);
   virtual ~csPython();
@@ -217,7 +195,6 @@ public:
   CS_EVENTHANDLER_NAMES("crystalspace.cspython")
   CS_EVENTHANDLER_NIL_CONSTRAINTS
 
-  csRef<iEventHandler> weakeh_open;
 };
 
 }

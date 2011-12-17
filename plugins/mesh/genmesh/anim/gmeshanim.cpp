@@ -20,12 +20,13 @@
 #include "csgeom/math3d.h"
 #include "csutil/util.h"
 #include "csutil/event.h"
-#include "csutil/stringquote.h"
 #include "iutil/document.h"
 #include "iutil/eventq.h"
 #include "iutil/objreg.h"
 #include "iutil/evdefs.h"
 #include "gmeshanim.h"
+
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY (csGenmeshAnimationControlType)
 
@@ -699,8 +700,8 @@ const char* csGenmeshAnimationControlFactory::ParseGroup (iDocumentNode* node,
         break;
       default:
         error_buf.Format (
-		"Don't recognize token %s in anim control group!",
-		CS::Quote::Single (value));
+		"Don't recognize token '%s' in anim control group!",
+		value);
 	delete group;
         return error_buf;
     }
@@ -857,8 +858,8 @@ const char* csGenmeshAnimationControlFactory::ParseScript (iDocumentNode* node)
         break;
       default:
         error_buf.Format (
-		"Don't recognize token %s in anim control script!",
-		CS::Quote::Single (value));
+		"Don't recognize token '%s' in anim control script!",
+		value);
         return error_buf;
     }
   }
@@ -902,8 +903,8 @@ const char* csGenmeshAnimationControlFactory::Load (iDocumentNode* node)
 	break;
       default:
         error_buf.Format (
-		"Don't recognize token %s in anim control!",
-		CS::Quote::Single (value));
+		"Don't recognize token '%s' in anim control!",
+		value);
         return error_buf;
     }
   }

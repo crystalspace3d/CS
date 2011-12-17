@@ -23,6 +23,7 @@
 
 CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 {
-  IMPLEMENT_STATIC_CLASSVAR_DIRECT(TempHeap,TheHeap);
+  CS_IMPLEMENT_STATIC_CLASSVAR(TempHeap, theHeap,
+    TheHeap, csRef<TempHeap::HeapRefCounted>, ());
 }
 CS_PLUGIN_NAMESPACE_END(XMLShader)

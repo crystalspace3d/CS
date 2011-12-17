@@ -60,6 +60,8 @@
 
 #include <ctype.h>
 
+CS_IMPLEMENT_PLUGIN
+
 struct csVertexTexel
 {
   int vt;
@@ -467,8 +469,9 @@ bool csSprite3DMD2FactoryLoader::Load (iSprite3DFactoryState* state,
  * Loads a csSprite3DMD2FactoryLoader
  */
 csPtr<iBase> csSprite3DMD2FactoryLoader::Parse (iDataBuffer* data,
-				       iStreamSource*, iLoaderContext*,
-				       iBase* context, iStringArray*)
+				       iStreamSource*,
+				       iLoaderContext*,
+				       iBase* context)
 {
   csRef<iPluginManager> plugin_mgr (
     csQueryRegistry<iPluginManager> (object_reg));
@@ -517,14 +520,14 @@ iMeshFactoryWrapper* csSprite3DMD2FactoryLoader::Load (const char* factname,
   csRef<iMeshFactoryWrapper> ff = engine->CreateMeshFactory (
   	"crystalspace.mesh.object.sprite.3d", factname);
   csRef<iLoaderContext> ldr_context = engine->CreateLoaderContext ();
-  csRef<iBase> b = Parse (buffer, 0, ldr_context, ff->GetMeshObjectFactory (), 0);
+  csRef<iBase> b = Parse (buffer, 0, ldr_context, ff->GetMeshObjectFactory ());
   if (!b)
   {
     ReportError (object_reg,
 		"crystalspace.sprite3dmd2factoryloader.load",
 		filename
-		    ? "Error loading MD2 file %s!"
-		    : "Error loading MD2 file!", CS::Quote::Single (filename));
+		    ? "Error loading MD2 file '%s'!"
+		    : "Error loading MD2 file!", filename);
     return 0;
   }
   return ff;
@@ -545,7 +548,7 @@ iMeshFactoryWrapper* csSprite3DMD2FactoryLoader::Load (const char* factname,
   {
     ReportError (object_reg,
 		"crystalspace.sprite3dmd2factoryloader.load",
-		"Can't load file %s!", CS::Quote::Single (filename));
+		"Can't load file '%s'!", filename);
     return 0;
   }
   return Load (factname, filename, dbuf);

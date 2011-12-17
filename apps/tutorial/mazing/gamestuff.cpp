@@ -114,14 +114,14 @@ bool Maze::CreateRoom (iMaterialWrapper* wall_material,
   if (!walls)
     return app->ReportError ("Couldn't create the walls for the room!");
 
-  //csRef<iGeneralMeshState> object_state = scfQueryInterface<
-    //iGeneralMeshState> (walls->GetMeshObject ());
-  //object_state->SetShadowReceiving (true);
+  csRef<iGeneralMeshState> object_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  object_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (wall_material);
   csRef<iGeneralFactoryState> factory_state = scfQueryInterface<
     iGeneralFactoryState> (walls_factory->GetMeshObjectFactory ());
 
-  DensityTextureMapper mapper (0.3f);
+  DensityTextureMapper mapper (.3);
 
   float sx = float (x) * ROOM_DIMENSION;
   float sy = float (y) * ROOM_DIMENSION;
@@ -190,36 +190,31 @@ bool Maze::CreateRoom (iMaterialWrapper* wall_material,
   return true;
 }
 
-iLight* Maze::CreateLight (const csColor& color,
-  	int x, int y, int z, float radius)
+bool Maze::CreateLight (const csColor& color,
+  	int x, int y, int z)
 {
   float sx = float (x) * ROOM_DIMENSION;
   float sy = float (y) * ROOM_DIMENSION;
   float sz = float (z) * ROOM_DIMENSION;
   csRef<iLight> light = app->GetEngine ()
-  	->CreateLight (0, csVector3 (sx, sy, sz), radius, color);
-  if (!light) return 0;
+  	->CreateLight (0, csVector3 (sx, sy, sz), ROOM_DIMENSION * 1.5, color);
+  if (!light) return false;
   GetSector (x, y, z)->GetLights ()->Add (light);
-  return light;
-}
-
-bool Maze::CreateMaterials ()
-{
-  using namespace CS::Material;
-  iMaterialWrapper* mat = MaterialBuilder::CreateParallaxMaterial (
-      app->GetObjectRegistry (), "wall_texture",
-      "/lib/std/castle/castle-brick3_d.jpg",
-      "/lib/std/castle/castle-brick1_n.jpg",
-      "/lib/std/castle/castle-brick1_h.jpg",
-      csVector4 (0.3f,0.3f,0.3f,0.3f));
-
-  return mat != 0;
+  return true;
 }
 
 bool Maze::CreateGeometry ()
 {
-  iMaterialWrapper* mat = app->GetEngine ()->GetMaterialList ()
+  // We don't need a lighting cache. Disable it.
+  app->GetEngine ()->SetLightingCacheMode (0);
+
+  // Load the texture we are going to use for all walls.
+  if (!app->GetLoader ()->LoadTexture ("wall_texture", "/lib/std/stone4.gif"))
+    return app->ReportError ("Error loading 'stone4' texture!");
+
+  iMaterialWrapper* wall_material = app->GetEngine ()->GetMaterialList ()
   	->FindByName ("wall_texture");
+
   int x, y, z;
   for (x = 0 ; x < MAZE_DIMENSION ; x++)
     for (y = 0 ; y < MAZE_DIMENSION ; y++)
@@ -227,45 +222,45 @@ bool Maze::CreateGeometry ()
         if (!CreateSector (x, y, z))
 	  return false;
 
-  if (!CreateRoom (mat, 0, 0, 0, "....#.")) return false;
-  if (!CreateRoom (mat, 0, 0, 1, "....##")) return false;
-  if (!CreateRoom (mat, 0, 0, 2, "#..#.#")) return false;
-  if (!CreateRoom (mat, 1, 0, 0, "...##.")) return false;
-  if (!CreateRoom (mat, 1, 0, 1, "....##")) return false;
-  if (!CreateRoom (mat, 1, 0, 2, "..#..#")) return false;
-  if (!CreateRoom (mat, 2, 0, 0, "#.#.#.")) return false;
-  if (!CreateRoom (mat, 2, 0, 1, "....##")) return false;
-  if (!CreateRoom (mat, 2, 0, 2, ".....#")) return false;
+  if (!CreateRoom (wall_material, 0, 0, 0, "....#.")) return false;
+  if (!CreateRoom (wall_material, 0, 0, 1, "....##")) return false;
+  if (!CreateRoom (wall_material, 0, 0, 2, "#..#.#")) return false;
+  if (!CreateRoom (wall_material, 1, 0, 0, "...##.")) return false;
+  if (!CreateRoom (wall_material, 1, 0, 1, "....##")) return false;
+  if (!CreateRoom (wall_material, 1, 0, 2, "..#..#")) return false;
+  if (!CreateRoom (wall_material, 2, 0, 0, "#.#.#.")) return false;
+  if (!CreateRoom (wall_material, 2, 0, 1, "....##")) return false;
+  if (!CreateRoom (wall_material, 2, 0, 2, ".....#")) return false;
 
-  if (!CreateRoom (mat, 0, 1, 0, "#..#..")) return false;
-  if (!CreateRoom (mat, 0, 1, 1, "...##.")) return false;
-  if (!CreateRoom (mat, 0, 1, 2, ".#.#.#")) return false;
-  if (!CreateRoom (mat, 1, 1, 0, "..#.#.")) return false;
-  if (!CreateRoom (mat, 1, 1, 1, "#.#..#")) return false;
-  if (!CreateRoom (mat, 1, 1, 2, "..##..")) return false;
-  if (!CreateRoom (mat, 2, 1, 0, ".#..#.")) return false;
-  if (!CreateRoom (mat, 2, 1, 1, "....##")) return false;
-  if (!CreateRoom (mat, 2, 1, 2, "#.#..#")) return false;
+  if (!CreateRoom (wall_material, 0, 1, 0, "#..#..")) return false;
+  if (!CreateRoom (wall_material, 0, 1, 1, "...##.")) return false;
+  if (!CreateRoom (wall_material, 0, 1, 2, ".#.#.#")) return false;
+  if (!CreateRoom (wall_material, 1, 1, 0, "..#.#.")) return false;
+  if (!CreateRoom (wall_material, 1, 1, 1, "#.#..#")) return false;
+  if (!CreateRoom (wall_material, 1, 1, 2, "..##..")) return false;
+  if (!CreateRoom (wall_material, 2, 1, 0, ".#..#.")) return false;
+  if (!CreateRoom (wall_material, 2, 1, 1, "....##")) return false;
+  if (!CreateRoom (wall_material, 2, 1, 2, "#.#..#")) return false;
 
-  if (!CreateRoom (mat, 0, 2, 0, ".#.#..")) return false;
-  if (!CreateRoom (mat, 0, 2, 1, "...#..")) return false;
-  if (!CreateRoom (mat, 0, 2, 2, "...#..")) return false;
-  if (!CreateRoom (mat, 1, 2, 0, "..##..")) return false;
-  if (!CreateRoom (mat, 1, 2, 1, ".###..")) return false;
-  if (!CreateRoom (mat, 1, 2, 2, "..##..")) return false;
-  if (!CreateRoom (mat, 2, 2, 0, "..#...")) return false;
-  if (!CreateRoom (mat, 2, 2, 1, "..#...")) return false;
-  if (!CreateRoom (mat, 2, 2, 2, ".##...")) return false;
+  if (!CreateRoom (wall_material, 0, 2, 0, ".#.#..")) return false;
+  if (!CreateRoom (wall_material, 0, 2, 1, "...#..")) return false;
+  if (!CreateRoom (wall_material, 0, 2, 2, "...#..")) return false;
+  if (!CreateRoom (wall_material, 1, 2, 0, "..##..")) return false;
+  if (!CreateRoom (wall_material, 1, 2, 1, ".###..")) return false;
+  if (!CreateRoom (wall_material, 1, 2, 2, "..##..")) return false;
+  if (!CreateRoom (wall_material, 2, 2, 0, "..#...")) return false;
+  if (!CreateRoom (wall_material, 2, 2, 1, "..#...")) return false;
+  if (!CreateRoom (wall_material, 2, 2, 2, ".##...")) return false;
 
-  if (!CreateLight (csColor (0.6f, 0.0f, 0.0f), 0, 0, 0)) return false;
-  if (!CreateLight (csColor (0.0f, 0.0f, 0.6f), 0, 0, 2)) return false;
-  if (!CreateLight (csColor (0.0f, 0.6f, 0.0f), 1, 0, 1)) return false;
-  if (!CreateLight (csColor (0.6f, 0.6f, 0.0f), 1, 1, 1)) return false;
-  if (!CreateLight (csColor (0.0f, 0.6f, 0.6f), 0, 1, 1)) return false;
-  if (!CreateLight (csColor (0.6f, 0.6f, 0.6f), 2, 1, 2)) return false;
-  if (!CreateLight (csColor (0.6f, 0.0f, 0.0f), 1, 2, 1)) return false;
-  if (!CreateLight (csColor (0.0f, 0.0f, 0.6f), 0, 2, 0)) return false;
-  if (!CreateLight (csColor (0.0f, 0.6f, 0.0f), 2, 2, 0)) return false;
+  if (!CreateLight (csColor (1, 0, 0), 0, 0, 0)) return false;
+  if (!CreateLight (csColor (0, 0, 1), 0, 0, 2)) return false;
+  if (!CreateLight (csColor (0, 1, 0), 1, 0, 1)) return false;
+  if (!CreateLight (csColor (1, 1, 0), 1, 1, 1)) return false;
+  if (!CreateLight (csColor (0, 1, 1), 0, 1, 1)) return false;
+  if (!CreateLight (csColor (1, 1, 1), 2, 1, 2)) return false;
+  if (!CreateLight (csColor (1, 0, 0), 1, 2, 1)) return false;
+  if (!CreateLight (csColor (0, 0, 1), 0, 2, 0)) return false;
+  if (!CreateLight (csColor (0, 1, 0), 2, 2, 0)) return false;
 
   return true;
 }
@@ -420,13 +415,6 @@ Adversary::Adversary (AppMazing* app,
   Adversary::mesh = mesh;
   current_location = rc;
   moving = false;
-  light = 0;
-}
-
-Adversary::~Adversary ()
-{
-  if (light)
-    app->GetEngine ()->RemoveObject (light);
 }
 
 void Adversary::ThinkAndMove (float elapsed_seconds)
@@ -471,11 +459,6 @@ void Adversary::ThinkAndMove (float elapsed_seconds)
     bool mirror;
     iSector* new_sector = old_sector->FollowSegment (
     	movable->GetTransform (), new_pos, mirror, true);
-    movable->SetSector (new_sector);
-    movable->GetTransform ().SetOrigin (new_pos);
-    movable->UpdateMove ();
-
-    movable = light->GetMovable ();
     movable->SetSector (new_sector);
     movable->GetTransform ().SetOrigin (new_pos);
     movable->UpdateMove ();
@@ -574,8 +557,7 @@ bool Game::CreateFactories ()
   fstate->GenerateSphere (ellips, 10);
 
   if (!loader->LoadTexture ("adversary_texture", "/lib/stdtex/misty.jpg"))
-    return app->ReportError ("Error loading %s texture!",
-			     CS::Quote::Single ("misty"));
+    return app->ReportError ("Error loading 'misty' texture!");
   iMaterialWrapper* adversary_material = engine->GetMaterialList ()
   	->FindByName ("adversary_texture");
   adversary_factory->GetMeshObjectFactory ()
@@ -593,6 +575,7 @@ bool Game::CreateFactories ()
   	csVector3 (-LASER_WIDTH, -LASER_WIDTH, 0),
   	csVector3 (LASER_WIDTH, LASER_WIDTH, LASER_LENGTH));
   fstate->GenerateBox (laser_box);
+  fstate->SetLighting (false);
   fstate->SetColor (csColor (1.0, 1.0, 1.0));
   // We don't want to hit the player against the laserbeam when it is
   // visible so we disable the collision detection mesh here.
@@ -601,8 +584,7 @@ bool Game::CreateFactories ()
   	->SetTriangleData (colldet_id, 0);
 
   if (!loader->LoadTexture ("laserbeam_texture", "/lib/stdtex/blobby.jpg"))
-    return app->ReportError ("Error loading %s texture!",
-			     CS::Quote::Single ("blobby"));
+    return app->ReportError ("Error loading 'blobby' texture!");
   iMaterialWrapper* laserbeam_material = engine->GetMaterialList ()
   	->FindByName ("laserbeam_texture");
   laserbeam_factory->GetMeshObjectFactory ()
@@ -630,8 +612,7 @@ bool Game::CreateFactories ()
   	iParticleSystemFactory> (explosion_factory->GetMeshObjectFactory ());
 
   if (!loader->LoadTexture ("explosion_texture", "/lib/std/spark.png"))
-    return app->ReportError ("Error loading %s texture!",
-			     CS::Quote::Single ("spark"));
+    return app->ReportError ("Error loading 'spark' texture!");
   iMaterialWrapper* explosion_material = engine->GetMaterialList ()
   	->FindByName ("explosion_texture");
   
@@ -676,9 +657,7 @@ bool Game::CreateAdversary (int x, int y, int z)
   adversaries.Push (adv);
   adversary->QueryObject ()->ObjAdd ((iObject*)adv);
   adv->DecRef ();
-
-  adv->SetLight (maze.CreateLight (csColor (1,1,1), x, y, z, ROOM_DIMENSION));
-
+  
   return true;
 }
 
@@ -691,8 +670,6 @@ bool Game::InitCollisionDetection ()
 
 bool Game::SetupGame ()
 {
-  if (!maze.CreateMaterials ())
-    return app->ReportError("Error creating the materials!");
   if (!maze.CreateGeometry ())
     return app->ReportError("Error creating the geometry!");
 
@@ -701,17 +678,6 @@ bool Game::SetupGame ()
 
   iEngine* engine = app->GetEngine ();
   engine->Prepare ();
-
-#if 0
-  using namespace CS::Lighting;
-  size_t i;
-  iSectorList* sl = engine->GetSectors ();
-  for (i = 0 ; i < (size_t)sl->GetCount () ; i++)
-  {
-    iSector* s = sl->Get (i);
-    SimpleStaticLighter::ShineLights (s, engine, 8);
-  }
-#endif
 
   if (!InitCollisionDetection ())
     return false;

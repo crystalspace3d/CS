@@ -25,9 +25,7 @@
 
 %include "cstool/pen.h"
 
-%template(scfProcTexture) scfImplementationExt3<csProcTexture, csObject, iTextureWrapper, iProcTexture, iSelfDestruct>;
-// Needed to resolve THREADED_CALLABLE_DECL macros
-%include "csutil/threadmanager.h"
+%template(scfProcTexture) scfImplementationExt2<csProcTexture, csObject, iTextureWrapper, iProcTexture>;
 %include "cstool/proctex.h"
 %include "cstool/proctxtanim.h"
 

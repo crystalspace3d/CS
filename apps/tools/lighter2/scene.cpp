@@ -25,23 +25,10 @@
 #include "object_genmesh.h"
 #include "object_terrain2.h"
 
-#include "photonmap.h"
-#include "irradiancecache.h"
-
-#include <functional>
-
 using namespace CS;
 
 namespace lighter
 {
-  Sector::~Sector()
-  {
-    delete kdTree;
-    if (photonMap != NULL)
-    {
-      delete photonMap;
-    }
-  }
 
   void Sector::Initialize (Statistics::Progress& progress)
   {
@@ -103,167 +90,6 @@ namespace lighter
     ObjectHash::GlobalIterator objIt = allObjects.GetIterator ();
     KDTreeBuilder builder;
     kdTree = builder.BuildTree (objIt, progress);
-  }
-
-  void Sector::InitPhotonMap()
-  { 
-    if(photonMap == NULL)
-    {
-      photonMap = new PhotonMap(
-        2 * globalConfig.GetIndirectProperties ().numPhotons);
-    }
-  }
-
-  void Sector::InitCausticPhotonMap()
-  { 
-    if(causticPhotonMap == NULL)
-    {
-      causticPhotonMap = new PhotonMap(
-        2 * globalConfig.GetIndirectProperties().numCausticPhotons);
-    }
-  }
-
-  void Sector::AddPhoton(const csColor power, const csVector3 pos,
-    const csVector3 dir )
-  {
-    if(photonMap == NULL)
-    {
-      photonMap = new PhotonMap(
-        2 * globalConfig.GetIndirectProperties ().numPhotons);
-    }
-
-    const float fPower[3] = { power.red, power.green, power.blue };
-    const float fPos[3] = { pos.x, pos.y, pos.z };
-    const float fDir[3] = { dir.x, dir.y, dir.z };
-
-    photonMap->Store(fPower, fPos, fDir);
-  }
-
-  void Sector::AddCausticPhoton(const csColor power, const csVector3 pos,
-    const csVector3 dir )
-  {
-    if(causticPhotonMap == NULL)
-    {
-      causticPhotonMap = new PhotonMap(
-        2 * globalConfig.GetIndirectProperties ().numCausticPhotons);
-    }
-
-    const float fPower[3] = { power.red, power.green, power.blue };
-    const float fPos[3] = { pos.x, pos.y, pos.z };
-    const float fDir[3] = { dir.x, dir.y, dir.z };
-
-    causticPhotonMap->Store(fPower, fPos, fDir);
-  }
-
-  void Sector::ScalePhotons(const float scale)
-  {
-    if(photonMap != NULL) photonMap->ScalePhotonPower(scale);
-  }
-
-  void Sector::ScaleCausticPhotons(const float scale)
-  {
-    if(causticPhotonMap != NULL) causticPhotonMap->ScalePhotonPower(scale);
-  }
-
-  size_t Sector::GetPhotonCount()
-  {
-	size_t photonCount = 0;
-    if(photonMap != NULL) photonCount += photonMap->GetPhotonCount();
-	if(causticPhotonMap != NULL) photonCount += causticPhotonMap->GetPhotonCount();
-    return photonCount;
-  }
-
-  void Sector::BalancePhotons(Statistics::ProgressState& prog)
-  {
-    if(photonMap != NULL)
-    {
-      // First, initialize the irradiance cache
-      if(irradianceCache != NULL) delete irradianceCache;
-      irradianceCache = new IrradianceCache(
-        photonMap->GetBBoxMin(), photonMap->GetBBoxMax(), 1000);
-
-      // Balance the photons
-      photonMap->Balance(prog);
-    }
-    if(causticPhotonMap != NULL)
-    {
-      causticPhotonMap->Balance(prog);
-    }    
-  }
-
-  bool Sector::SampleIRCache(const csVector3 point, const csVector3 normal,
-                    csColor &irrad)
-  {
-    if(irradianceCache == NULL) return false;
-
-    // Check cache to see if we can reuse old results
-    float* result = new float[3];
-    float fPos[3] = { point.x, point.y, point.z };
-    float fNorm[3] = { normal.x, normal.y, normal.z };
-    
-    if(irradianceCache->EstimateIrradiance(fPos, fNorm, result))
-    {
-      irrad.Set(result[0], result[1], result[2]);
-      delete [] result;
-      return true;
-    }
-
-    return false;
-  }
-
-  csColor Sector::SamplePhoton(const csVector3 point, const csVector3 normal,
-                    const float searchRad)
-  {
-    if(photonMap == NULL) return csColor(0, 0, 0);
-
-    // Local copy of the global options
-    const static size_t densitySamples =
-      globalConfig.GetIndirectProperties ().maxDensitySamples;
-
-    // Sample the photon map
-    float result[3] = {0, 0, 0};
-    float fPos[3] = { point.x, point.y, point.z };
-    float fNorm[3] = { normal.x, normal.y, normal.z };
-    photonMap->IrradianceEstimate(result, fPos, fNorm, searchRad, densitySamples);
-    
-    if (causticPhotonMap != NULL)
-    {
-      float causticIrradiance[3] = {0,0,0};
-      causticPhotonMap->IrradianceEstimate(causticIrradiance,fPos,fNorm,searchRad,densitySamples);
-      result [0] += causticIrradiance[0];
-      result [1] += causticIrradiance[1];
-      result [2] += causticIrradiance[2];
-    }
-    
-    // Return result as a csColor
-    return csColor(result[0], result[1], result[2]);
-  }
-
-  void Sector::AddToIRCache(const csVector3 point, const csVector3 normal,
-                      const csColor irrad, const float mean)
-  {
-    float fPow[3] = { irrad.red, irrad.green, irrad.blue };
-    float fPos[3] = { point.x, point.y, point.z };
-    float fNorm[3] = { normal.x, normal.y, normal.z };
-
-    // Add sample to the irradiance cache for reuse
-    if(irradianceCache == NULL)
-    {
-      irradianceCache = new IrradianceCache(
-        photonMap->GetBBoxMin(), photonMap->GetBBoxMax(), 1000);
-    }
-
-    irradianceCache->Store(fPos, fNorm, fPow, mean);
-  }
-
-  void Sector::SavePhotonMap(const char* filename)
-  {
-    if(photonMap != NULL) photonMap->SaveToFile(filename);
-  }
-
-  void Sector::SaveCausticPhotonMap(const char* filename)
-  {
-    if(causticPhotonMap != NULL) causticPhotonMap->SaveToFile(filename);
   }
 
   //-------------------------------------------------------------------------
@@ -337,44 +163,19 @@ namespace lighter
 
     for (unsigned int i = 0; i < sceneFiles.GetSize (); i++)
     {
-      // Change path
+      //Change path
       csStringArray paths;
       paths.Push ("/lev/");
       if (!globalLighter->vfs->ChDirAuto (sceneFiles[i].directory, &paths, 0, "world"))
-        return globalLighter->Report ("Error setting directory %s!", 
-          CS::Quote::Single (sceneFiles[i].directory.GetData()));
+        return globalLighter->Report ("Error setting directory '%s'!", 
+          sceneFiles[i].directory.GetData());
 
       sceneFiles[i].fileName = "world";
       // Load it
       csRef<iFile> buf = globalLighter->vfs->Open (
         sceneFiles[i].fileName, VFS_FILE_READ);
-      if (!buf)
-      {
-        // Check if the file was part of the path.
-        csString directory = sceneFiles[i].directory;
-        csString filename = sceneFiles[i].directory;
-        size_t start = filename.FindLast('\\')+1;
-        directory = directory.Slice(0, start);
-        filename = filename.Slice(start);
-
-        if (!globalLighter->vfs->ChDirAuto (directory, &paths, 0, filename))
-        {
-          return globalLighter->Report ("Error setting directory %s!", 
-            CS::Quote::Single (sceneFiles[i].directory.GetData()));
-        }
-
-        buf = globalLighter->vfs->Open (filename, VFS_FILE_READ);
-        if(buf)
-        {
-          sceneFiles[i].directory = directory;
-          sceneFiles[i].fileName = filename;
-        }
-        else
-        {
-          return globalLighter->Report ("Error opening file %s!",
-            CS::Quote::Single (sceneFiles[i].fileName.GetData()));
-        }
-      }
+      if (!buf) return globalLighter->Report ("Error opening file '%s'!",
+        sceneFiles[i].fileName.GetData());
       
       csRef<iDocument> doc = globalLighter->docSystem->CreateDocument ();
       const char* error = doc->Parse (buf, true);
@@ -446,8 +247,7 @@ namespace lighter
       rc = globalLighter->loader->Load (sceneFiles[i].GetDocument()->GetRoot(), 0, false,
         sceneFiles[i].sceneConfig.GetLighterProperties().checkDupes);
       if (!rc.success)
-        return globalLighter->Report ("Error loading file %s!",
-				      CS::Quote::Single ("world"));
+        return globalLighter->Report ("Error loading file 'world'!");
 
       // Parses meshes from engine
       Statistics::Progress* progEngine = filesProgress.CreateProgress (div);
@@ -532,8 +332,8 @@ namespace lighter
       //Change path
       if (!globalLighter->vfs->ChDir (sceneFiles[i].directory))
       {
-        globalLighter->Report ("Error setting directory %s!", 
-          CS::Quote::Single (sceneFiles[i].directory.GetData()));
+        globalLighter->Report ("Error setting directory '%s'!", 
+          sceneFiles[i].directory.GetData());
         return false;
       }
 
@@ -545,15 +345,15 @@ namespace lighter
       if (!buf) 
       {
         globalLighter->Report (
-          "Error opening file %s for writing!", CS::Quote::Single (tempfile.GetData()));
+          "Error opening file '%s' for writing!", tempfile.GetData());
         return false;
       }
 
       const char *err = sceneFiles[i].GetDocument()->Write (buf);
       if (err)
       {
-        globalLighter->Report ("Error writing file %s: %s", 
-          CS::Quote::Single (tempfile.GetData()), err);
+        globalLighter->Report ("Error writing file '%s': %s", 
+          tempfile.GetData(), err);
         return false;
       }
 
@@ -598,8 +398,8 @@ namespace lighter
       //Change path
       if (!globalLighter->vfs->ChDir (sceneFiles[i].directory))
       {
-        globalLighter->Report ("Error setting directory %s!", 
-          CS::Quote::Single (sceneFiles[i].directory.GetData()));
+        globalLighter->Report ("Error setting directory '%s'!", 
+          sceneFiles[i].directory.GetData());
         return false;
       }
 
@@ -610,8 +410,7 @@ namespace lighter
       csRef<iDataBuffer> buf = globalLighter->vfs->ReadFile (tempfile, false);
       if (!buf) 
       {
-        globalLighter->Report ("Error reading file %s!",
-			       CS::Quote::Single (tempfile.GetData()));
+        globalLighter->Report ("Error reading file '%s'!", tempfile.GetData());
         return false;
       }
 
@@ -621,8 +420,8 @@ namespace lighter
       if (!globalLighter->vfs->WriteFile (sceneFiles[i].fileName, buf->GetData(), 
         buf->GetSize()))
       {
-        globalLighter->Report ("Error writing to %s!",
-          CS::Quote::Single (sceneFiles[i].fileName.GetData()));
+        globalLighter->Report ("Error writing to '%s'!",
+          sceneFiles[i].fileName.GetData());
         return false;
       }
 
@@ -630,8 +429,8 @@ namespace lighter
       buf.Invalidate();
       if (!globalLighter->vfs->DeleteFile (tempfile))
       {
-        globalLighter->Report ("Error deleting file %s!", 
-          CS::Quote::Single (tempfile.GetData()));
+        globalLighter->Report ("Error deleting file '%s'!", 
+          tempfile.GetData());
         return false;
       }
 
@@ -655,28 +454,6 @@ namespace lighter
     progress.SetProgress (1);
     return true;
   }
-    
-  bool Scene::GenerateSpecularDirectionMaps (Statistics::Progress& progress)
-  {
-    if (globalConfig.GetLighterProperties().specularDirectionMaps)
-    {
-      progress.SetProgress (0);
-      float fileProgress = 1.0f / sceneFiles.GetSize ();
-      for (size_t i = 0; i < sceneFiles.GetSize (); i++)
-      {
-        Statistics::Progress* progFile = progress.CreateProgress (fileProgress);
-        progFile->SetProgress (0);
-        GenerateSpecularDirectionMaps (&(sceneFiles[i]), *progFile);
-        progFile->SetProgress (1);
-        delete progFile;
-  
-	progress.SetProgress (i * fileProgress);
-      }
-  
-      progress.SetProgress (1);
-    }
-    return true;
-  }
 
   static const char lightmapLibraryName[] = "lightmaps.cslib";
 
@@ -698,8 +475,8 @@ namespace lighter
       //Change path
       if (!globalLighter->vfs->ChDir (sceneFiles[i].directory))
       {
-        globalLighter->Report ("Error setting directory %s!", 
-          CS::Quote::Single (sceneFiles[i].directory.GetData()));
+        globalLighter->Report ("Error setting directory '%s'!", 
+          sceneFiles[i].directory.GetData());
         return false;
       }
 
@@ -712,8 +489,8 @@ namespace lighter
         const char* err = doc->Parse (buf);
         if (err != 0)
         {
-          globalLighter->Report ("Error parsing file %s: %s", 
-            CS::Quote::Single (lightmapLibraryName), err);
+          globalLighter->Report ("Error parsing file '%s': %s", 
+            lightmapLibraryName, err);
           return false;
         }
         doc = EnsureChangeable (doc);
@@ -736,16 +513,15 @@ namespace lighter
       buf = globalLighter->vfs->Open (lightmapLibraryName, VFS_FILE_WRITE);
       if (!buf) 
       {
-        globalLighter->Report ("Error opening file %s for writing!", 
-          CS::Quote::Single (lightmapLibraryName));
+        globalLighter->Report ("Error opening file '%s' for writing!", 
+          lightmapLibraryName);
         return false;
       }
 
       const char *err = doc->Write (buf);
       if (err)
       {
-        globalLighter->Report ("Error writing file %s: %s",
-			       CS::Quote::Single (lightmapLibraryName), err);
+        globalLighter->Report ("Error writing file '%s': %s", lightmapLibraryName, err);
         return false;
       }
 
@@ -776,8 +552,8 @@ namespace lighter
       //Change path
       if (!globalLighter->vfs->ChDir (sceneFiles[i].directory))
       {
-        globalLighter->Report ("Error setting directory %s!", 
-          CS::Quote::Single (sceneFiles[i].directory.GetData()));
+        globalLighter->Report ("Error setting directory '%s'!", 
+          sceneFiles[i].directory.GetData());
         return false;
       }
 
@@ -818,7 +594,7 @@ namespace lighter
 
   void Scene::CleanLightingData (Statistics::Progress& progress)
   {
-    static const int cleanupSteps = 7;
+    static const int cleanupSteps = 5;
     float progressStep = 1.0f/cleanupSteps;
   
     progress.SetProgress (0);
@@ -838,10 +614,6 @@ namespace lighter
     radMaterials.DeleteAll ();
     progress.SetProgress (4*progressStep);
     originalSectorHash.DeleteAll ();
-    progress.SetProgress (5*progressStep);
-    directionMaps[0].DeleteAll ();
-    progress.SetProgress (6*progressStep);
-    directionMaps[1].DeleteAll ();
     
     progress.SetProgress (1);
   }
@@ -849,8 +621,6 @@ namespace lighter
   Lightmap* Scene::GetLightmap (uint lightmapID, size_t subLightmapNum, 
                                 Light* light)
   {
-    CS::Threading::ScopedLock<CS::Threading::Mutex> lock (lightmapMutex);
-    
     size_t realLmNum = lightmapID;
     if (globalConfig.GetLighterProperties().directionalLMs)
       realLmNum += (lightmaps.GetSize()/4) * subLightmapNum;
@@ -893,19 +663,6 @@ namespace lighter
 
     return allLms;
   }
-  
-  iTextureWrapper* Scene::GetSpecDirectionMapTexture (uint ID, int subNum)
-  {
-    DirectionMapTextures& tex = directionMapTextures.GetExtend (ID);
-    if (tex.t[subNum] == 0)
-    {
-      tex.t[subNum] = globalLighter->engine->CreateBlackTexture (
-        Lightmap::GetTextureNameFromFilename (
-          GetDirectionMapFilename (ID, subNum)),
-        1, 1, 0, CS_TEXTURE_3D);
-    }
-    return tex.t[subNum];
-  }
 
   bool Scene::ParseEngine (LoadedFile* fileInfo, Statistics::Progress& progress)
   {
@@ -917,8 +674,6 @@ namespace lighter
     iSectorList *sectorList = globalLighter->engine->GetSectors ();
     csRef<iDocumentNode> worldNode = 
       fileInfo->GetDocument()->GetRoot()->GetNode ("world");
-
-    globalStats.scene.numSectors = sectorList->GetCount ();
 
     if (worldNode.IsValid ())
     {
@@ -957,16 +712,6 @@ namespace lighter
           if (!obj) continue;
           fileInfo->fileObjects.Push (obj);
         }
-      }
-    }
-    else
-    {
-      // Not a world file, so just parse meshfacts.
-      iMeshFactoryList* mflist = globalLighter->engine->GetMeshFactories();
-      for(int m=0; m<mflist->GetCount(); ++m)
-      {
-        csRef<ObjectFactory> factory;
-        ParseMeshFactory(fileInfo, mflist->Get(m), factory);
       }
     }
 
@@ -1031,7 +776,6 @@ namespace lighter
 
     // Parse all meshes (should have selector later!)
     iMeshList *meshList = sector->GetMeshes ();
-    globalStats.scene.numObjects += meshList->GetCount ();
 
     u = updateFreq = progress.GetUpdateFrequency (meshList->GetCount ());
     progressStep = updateFreq * (1.0f / meshList->GetCount ());
@@ -1044,9 +788,8 @@ namespace lighter
       if (ParseMesh (fileInfo, radSector, mesh, obj) == mpFailure)
       {
         if (!isPortal)
-          globalLighter->Report ("Error parsing mesh %s in sector %s!", 
-            CS::Quote::Single (mesh->QueryObject()->GetName()),
-	    CS::Quote::Single (radSector->sectorName.GetData ()));
+          globalLighter->Report ("Error parsing mesh '%s' in sector '%s'!", 
+            mesh->QueryObject()->GetName(), radSector->sectorName.GetData ());
       }
       // Mesh is parsed, release resources
       if (!isPortal) meshList->Remove (i);
@@ -1061,8 +804,6 @@ namespace lighter
     csSet<csString> lightNames;
     // Parse all lights (should have selector later!)
     iLightList *lightList = sector->GetLights ();
-    globalStats.scene.numLights = lightList->GetCount ();
-
     for (int i = lightList->GetCount (); i-- > 0;)
     {
       iLight *light = lightList->Get (i);
@@ -1076,8 +817,8 @@ namespace lighter
       if (lightNames.Contains (lightName))
       {
         globalLighter->Report (
-          "A light named %s already exists in sector %s",
-          CS::Quote::Single (lightName), CS::Quote::Single (sectorName));
+          "A light named '%s' already exists in sector '%s'",
+          lightName, sectorName);
         lightList->Remove (i);
         continue;
       }
@@ -1085,81 +826,20 @@ namespace lighter
 
       bool isPD = light->GetDynamicType() == CS_LIGHT_DYNAMICTYPE_PSEUDO;
 
-      // Force to realistic attenuation if requested
-      if(globalConfig.GetLighterProperties ().forceRealistic)
-      {
-        light->SetAttenuationMode( CS_ATTN_REALISTIC );
-      }
-
-      // Scale light power to help avoid dark scenes when forcing realistic att
-      if(globalConfig.GetLighterProperties ().lightPowerScale != 1.0)
-      {
-        light->SetColor( light->GetColor()*
-          globalConfig.GetLighterProperties ().lightPowerScale);
-      }
-
-      // IneQuation was here
-      csRef<Light> intLight;
-
-      switch (light->GetType ()) {
-        // directional light
-        case CS_LIGHT_DIRECTIONAL:
-          {
-            csRef<DirectionalLight> dirLight;
-            dirLight.AttachNew (new DirectionalLight (radSector));
-
-            dirLight->SetRadius (light->GetDirectionalCutoffRadius ());
-            dirLight->SetLength (light->GetCutoffDistance ());
-
-            // light's Z axis
-            dirLight->SetDirection (light->GetMovable ()->GetFullTransform ().GetO2T ().Row3 ());
-
-            intLight = dirLight;
-          }
-          break;
-
-        // spotlight
-        case CS_LIGHT_SPOTLIGHT:
-          {
-            csRef<SpotLight> spotLight;
-            spotLight.AttachNew (new SpotLight (radSector));
-
-            spotLight->SetRadius (light->GetCutoffDistance ());
-
-            float in, out;
-            light->GetSpotLightFalloff (in, out);
-            spotLight->SetFalloff (in, out);
-
-            // light's Z axis
-            spotLight->SetDirection (light->GetMovable ()->GetFullTransform ().GetO2T ().Row3 ());
-
-            intLight = spotLight;
-          }
-          break;
-
-        // by default assume point light
-        case CS_LIGHT_POINTLIGHT:
-        default:
-          {
-            csRef<PointLight> pointLight;
-            pointLight.AttachNew (new PointLight (radSector));
-
-            pointLight->SetRadius (light->GetCutoffDistance ());
-
-            intLight = pointLight;
-          }
-          break;
-      }
+      // Atm, only point light
+      csRef<PointLight> intLight;
+      intLight.AttachNew (new PointLight (radSector));
 
       intLight->SetPosition (light->GetMovable ()->GetFullPosition ());
       intLight->SetColor (isPD ? csColor (1.0f) : light->GetColor ());
 
       intLight->SetAttenuation (light->GetAttenuationMode (),
         light->GetAttenuationConstants ());
-
       intLight->SetPDLight (isPD);
       intLight->SetLightID (light->GetLightID());
       intLight->SetName (lightName);
+
+      intLight->SetRadius (light->GetCutoffDistance ());
 
       if (isPD)
         radSector->allPDLights.Push (intLight);
@@ -1312,8 +992,8 @@ namespace lighter
     if (sector->allObjects.Contains (meshName))
     {
       globalLighter->Report (
-        "A mesh named %s already exists in sector %s",
-        CS::Quote::Single (meshName), CS::Quote::Single (sector->sectorName.GetData()));
+        "A mesh named '%s' already exists in sector '%s'",
+        meshName, sector->sectorName.GetData());
       return mpSuccess;
     }
 
@@ -1330,12 +1010,6 @@ namespace lighter
 
     obj->ParseMesh (mesh);
     obj->StripLightmaps (fileInfo->texturesToClean);
-
-    // Save material name in Object
-    iMeshObject * meshObject = mesh->GetMeshObject();
-    iMaterialWrapper * material = meshObject->GetMaterialWrapper();
-    if (material)
-      obj->materialName = material->QueryObject()->GetName();
 
     // Save it
     sector->allObjects.Put (obj->meshName, obj);
@@ -1389,9 +1063,8 @@ namespace lighter
   {
     RadMaterial radMat;
     
-    // Material properties from key-value-pairs
-    // Right now the only key value pair used is for caustics
-
+    // No material properties from key-value-pairs yet
+#if 0
     csRef<iObjectIterator> objiter = 
       material->QueryObject ()->GetIterator();
     while (objiter->HasNext())
@@ -1401,29 +1074,14 @@ namespace lighter
         scfQueryInterface<iKeyValuePair> (obj);
       if (kvp.IsValid() && (strcmp (kvp->GetKey(), "lighter2") == 0))
       {
-        if(strcmp (kvp->GetValue(),"produce caustic")==0)
-        {
-          radMat.produceCaustic=true;
-        }
       }
     }
-
+#endif
     
     csRef<iShaderVariableContext> matSVC = 
       scfQueryInterface<iShaderVariableContext> (material->GetMaterial());
     csRef<csShaderVariable> svTex =
-      matSVC->GetVariable (globalLighter->svStrings->Request ("tex diffuse"));
-    
-    //Try to extract refractive index of the material if given used for caustics in photon mapping
-    csRef<csShaderVariable> svRefrIndex =
-      matSVC->GetVariable (globalLighter->svStrings->Request ("refractive index"));
-    //If it is present store it in the radMat structure so that it can be used later
-    if(svRefrIndex.IsValid())
-    {
-      float refrIndex = 0.0f;
-      svRefrIndex->GetValue(refrIndex);
-      radMat.SetRefractiveIndex(refrIndex);
-    }
+      matSVC->GetVariable (globalLighter->strings->Request ("tex diffuse"));
     if (svTex.IsValid())
     {
       iTextureWrapper* texwrap = 0;
@@ -1431,16 +1089,15 @@ namespace lighter
       if (texwrap != 0)
       {
         iImage* teximg = texwrap->GetImageFile ();
-        radMat.SetTextureImage(teximg);
         if (teximg != 0)
         {
           if (teximg->GetFormat() & CS_IMGFMT_ALPHA)
-			radMat.ComputeFilterImage (teximg);
+            radMat.ComputeFilterImage (teximg);
         }
       }
     }
-    const char * objName = material->QueryObject()->GetName();
-    radMaterials.Put (objName, radMat);
+    
+    radMaterials.Put (material->QueryObject()->GetName(), radMat);
     return true;
   }
 
@@ -1505,22 +1162,7 @@ namespace lighter
       lightmaps[i]->SetFilename (textureFilename);
 
       texturesToSave.Push (lightmaps[i]->GetTextureName());
-    
-      if (globalConfig.GetLighterProperties().specularDirectionMaps)
-      {
-	textureFilename.Format ("lightmaps/%s_%zu_sd%%d",
-	  fileInfo->levelName.GetData(), i);
-	directionMapBaseNames.Push (textureFilename);
-	for (int x = 0; x < specDirectionMapCount; x++)
-	  texturesToSave.Push (GetDirectionMapFilename ((uint)i, x));
-      }
     }
-  }
-  
-  csString Scene::GetDirectionMapFilename (uint ID, int subNum) const
-  {
-    return csString().Format (directionMapBaseNames[ID], subNum)
-      .Append (".dds");
   }
 
   void Scene::CleanOldLightmaps (LoadedFile* fileInfo)
@@ -1669,7 +1311,7 @@ namespace lighter
     if (!hasLightmapsLibrary)
     {
       lightmapsProgress.SetProgress (0);
-      const char* const createNodeBeforeNames[] = { "textures", "materials", "library", "meshfact", "sector" };
+      const char* const createNodeBeforeNames[] = { "materials", "meshfact", "sector" };
 
       csRef<iDocumentNode> createBefore;
       for (size_t n = 0; n < sizeof(createNodeBeforeNames)/sizeof(const char*); 
@@ -1699,7 +1341,7 @@ namespace lighter
     csRef<iFile> buf = globalLighter->vfs->Open (libFile, VFS_FILE_READ);
     if (!buf) 
     {
-      globalLighter->Report ("Error opening file %s!", CS::Quote::Single (libFile));
+      globalLighter->Report ("Error opening file '%s'!", libFile);
       progress.SetProgress (1);
       return false;
     }
@@ -1718,7 +1360,7 @@ namespace lighter
     csRef<iDocumentNode> libRoot = docRoot->GetNode ("library");
     if (!libRoot)
     {
-      globalLighter->Report ("%s is not a library", CS::Quote::Single (libFile));
+      globalLighter->Report ("'%s' is not a library", libFile);
       progress.SetProgress (1);
       return false;
     }
@@ -1759,8 +1401,7 @@ namespace lighter
       buf = globalLighter->vfs->Open (libFile, VFS_FILE_WRITE);
       if (!buf) 
       {
-	globalLighter->Report ("Error opening file %s for writing!",
-			       CS::Quote::Single (libFile));
+	globalLighter->Report ("Error opening file '%s' for writing!", libFile);
 	return false;
       }
       error = doc->Write (buf);
@@ -1810,8 +1451,8 @@ namespace lighter
     if (savedObjects.Contains (name))
     {
       globalLighter->Report (
-        "A factory named %s already exists",
-        CS::Quote::Single (name.GetData()));
+        "A factory named '%s' already exists",
+        name.GetData());
       return svFailure;
     }
 
@@ -1903,54 +1544,19 @@ namespace lighter
       objNode->RemoveNodes (DocSystem::FilterDocumentNodeIterator (
         objNode->GetNodes ("shadervar"),
         DocSystem::NodeAttributeRegexpTest ("name", "tex lightmap.*")));
-      objNode->RemoveNodes (DocSystem::FilterDocumentNodeIterator (
-        objNode->GetNodes ("shadervar"),
-        DocSystem::NodeAttributeRegexpTest ("name", "tex spec directions.*")));
         
-      // ...and add current ones
+      // ...and add current one
       iShaderVariableContext* meshSVs = meshwrap->GetSVContext ();
-      CS::ShaderVarName lightmapName[4] =
-      { 
-        CS::ShaderVarName (globalLighter->svStrings, "tex lightmap"),
-        CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 1"),
-        CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 2"),
-        CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 3")
-      };
-
-      int numLMs = globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
-      for (int l = 0; l < numLMs; l++)
+      CS::ShaderVarName lightmapName (globalLighter->strings, "tex lightmap");
+      csRef<csShaderVariable> lightmapSV = meshSVs->GetVariable (lightmapName);
+      if (lightmapSV.IsValid())
       {
-        csRef<csShaderVariable> lightmapSV = meshSVs->GetVariable (lightmapName[l]);
-        if (lightmapSV.IsValid())
-        {
-          csRef<iDocumentNode> shadervarNode = objNode->CreateNodeBefore (
-            CS_NODE_ELEMENT, 0);
-          shadervarNode->SetValue ("shadervar");
-          csRef<iSyntaxService> synsrv = 
-            csQueryRegistry<iSyntaxService> (globalLighter->objectRegistry);
-          synsrv->WriteShaderVar (shadervarNode, *lightmapSV);
-        }
-      }
-
-      if (globalConfig.GetLighterProperties().specularDirectionMaps)
-      {
-        csRef<csShaderVariable> svInfluence;
-        for (int i = 0; i < Scene::specDirectionMapCount; i++)
-        {
-          CS::ShaderVarName specDirName = CS::ShaderVarName (globalLighter->svStrings,
-            csString().Format ("tex spec directions %d", i+1));
-
-          csRef<csShaderVariable> lightmapSV = meshSVs->GetVariable (specDirName);
-          if (lightmapSV.IsValid())
-          {
-            csRef<iDocumentNode> shadervarNode = objNode->CreateNodeBefore (
-              CS_NODE_ELEMENT, 0);
-            shadervarNode->SetValue ("shadervar");
-            csRef<iSyntaxService> synsrv = 
-              csQueryRegistry<iSyntaxService> (globalLighter->objectRegistry);
-            synsrv->WriteShaderVar (shadervarNode, *lightmapSV);
-          }
-        }
+        csRef<iDocumentNode> shadervarNode = objNode->CreateNodeBefore (
+          CS_NODE_ELEMENT, 0);
+	shadervarNode->SetValue ("shadervar");
+	csRef<iSyntaxService> synsrv = 
+	  csQueryRegistry<iSyntaxService> (globalLighter->objectRegistry);
+	synsrv->WriteShaderVar (shadervarNode, *lightmapSV);
       }
     }
 
@@ -1967,279 +1573,6 @@ namespace lighter
 
     fileInfo->SetChanged (true);
     return svSuccess;
-  }
-  
-  struct InfluencePair
-  {
-    Light* light;
-    const LightInfluences* infl;
-    float totalIntensity;
-    int subMap;
-    
-    InfluencePair (Light* light, const LightInfluences* infl)
-     : light (light), infl (infl), subMap (-1)
-    {
-      ScopedSwapLock<LightInfluences> l (*infl);
-      totalIntensity = infl->GetTotalIntensity();
-    }
-    
-    struct SortByIntensity :
-      public std::binary_function<InfluencePair, InfluencePair, bool>
-    {
-      bool operator() (const InfluencePair& a, const InfluencePair& b) const
-      {
-        return a.totalIntensity > b.totalIntensity;
-      }
-    };
-  };
-  
-  void Scene::GenerateSpecularDirectionMaps (LoadedFile* fileInfo,
-                                             Statistics::Progress& progress)
-  {
-    Statistics::Progress objProgress (0, 90, &progress);
-    Statistics::Progress normProgress (0, 1, &progress);
-    
-    progress.SetProgress (0);
-    
-    // Create 'final' direction maps
-    size_t realNumLMs = lightmaps.GetSize ();
-    if (globalConfig.GetLighterProperties().directionalLMs)
-      realNumLMs /= 4;
-    for (size_t m = 0; m < realNumLMs; m++)
-    {
-      directionMaps[0].Push (new DirectionMap (*(lightmaps[m])));
-      directionMaps[1].Push (new DirectionMap (*(lightmaps[m])));
-    }
-    
-    objProgress.SetProgress (0);
-    float progressStep = 1.0f/fileInfo->fileObjects.GetSize();
-    for (size_t o = 0; o < fileInfo->fileObjects.GetSize(); o++)
-    {
-      Statistics::Progress* primsProgress =
-        objProgress.CreateProgress (progressStep);
-    
-      Object* obj = fileInfo->fileObjects[o];
-    
-      size_t u, updateFreq;
-      float primProgressStep;
-  
-      u = updateFreq = primsProgress->GetUpdateFrequency (
-        obj->GetPrimitiveGroupNum());
-      primProgressStep =
-        updateFreq * (1.0f / obj->GetPrimitiveGroupNum());
-    
-      for (size_t pg = 0; pg < obj->GetPrimitiveGroupNum(); pg++)
-      {
-        // get all influences for primgroup
-        csArray<Light*> influencingLights (obj->GetLightsAffectingGroup ((uint)pg));
-        csArray<InfluencePair> allInfluences;
-        allInfluences.SetCapacity (influencingLights.GetSize());
-        for (size_t l = 0; l < influencingLights.GetSize(); l++)
-        {
-          LightInfluences* infl = &(obj->GetLightInfluences ((uint)pg,
-            influencingLights[l]));
-          allInfluences.Push (InfluencePair (influencingLights[l], infl));
-        }
-        if (allInfluences.GetSize() == 0) continue;
-        
-        InfluencePair::SortByIntensity sortPred;
-        allInfluences.Sort (sortPred);
-        
-        uint w = allInfluences[0].infl->GetWidth();
-        const size_t numDirections = w * allInfluences[0].infl->GetHeight();
-        csVector3* hunk = (csVector3*)cs_malloc (4 * numDirections * sizeof (csVector3));
-        csVector3* finalDirectionMap[2];
-        csVector3* tempDirectionMap[2];
-        for (int i = 0; i < 2; i++)
-        {
-          finalDirectionMap[i] = hunk + i*numDirections;
-          tempDirectionMap[i] = hunk + (i+2)*numDirections;
-	}
-	memset (hunk, 0, 4*numDirections * sizeof (csVector3));
-        
-        for (size_t i = 0; i < allInfluences.GetSize(); i++)
-        {
-          InfluencePair& ip = allInfluences[i];
-          CS_ASSERT(w == ip.infl->GetWidth());
-          
-          float impact1 = 0, impact2 = 0;
-          // choose sub-direction map with lowest 'impact'
-          for (uint y = 0; y < ip.infl->GetHeight(); y++)
-          {
-	    for (uint x = 0; x < w; x++)
-	    {
-	      if (ip.infl->GetIntensityForLocalCoord (x, y) <
-	          globalConfig.GetLMProperties().blackThreshold)
-	        continue;
-	      const csVector3& d = ip.infl->GetDirectionForLocalCoord (x, y);
-	      
-	      uint coord = x+w*y;
-	      /* 'Impact' actually measures how much intensity we have to 
-	         share a direction map point with */
-	      csVector3 oldVec0 = tempDirectionMap[0][coord];
-	      csVector3 newVec0 = oldVec0 + d;
-	      if (oldVec0.IsZero()) oldVec0 = newVec0;
-	      oldVec0.Normalize();
-	      newVec0.Normalize();
-	      csVector3 oldVec1 = tempDirectionMap[1][coord];
-	      csVector3 newVec1 = oldVec1 + d;
-	      if (oldVec1.IsZero()) oldVec1 = newVec1;
-	      oldVec1.Normalize();
-	      newVec1.Normalize();
-	      impact1 += 1.0f - csClamp (newVec0 * oldVec0, 1.0f, 0.0f);
-	      impact2 += 1.0f - csClamp (newVec1 * oldVec1, 1.0f, 0.0f);
-	      tempDirectionMap[0][coord] = newVec0;
-	      tempDirectionMap[1][coord] = newVec1;
-	    }
-          }
-          // record choice of sub-direction map
-          if (impact1 <= impact2)
-          {
-            ip.subMap = 0;
-            memcpy (finalDirectionMap[0], tempDirectionMap[0],
-              numDirections * sizeof (csVector3));
-            memcpy (tempDirectionMap[1], finalDirectionMap[1],
-              numDirections * sizeof (csVector3));
-          }
-          else
-          {
-            ip.subMap = 1;
-            memcpy (tempDirectionMap[0], finalDirectionMap[0],
-              numDirections * sizeof (csVector3));
-            memcpy (finalDirectionMap[1], tempDirectionMap[1],
-              numDirections * sizeof (csVector3));
-          }
-        }
-        
-        for (size_t i = 0; i < allInfluences.GetSize(); i++)
-        {
-          // add onto final direction maps
-          InfluencePair& ip = allInfluences[i];
-          
-          DirectionMap& dirMap = *(directionMaps[ip.subMap].Get (
-            obj->GetPrimitiveGroupLightmap ((uint)pg)));
-          dirMap.AddFromLightInfluences (*(ip.infl));
-        }
-        
-        cs_free (hunk);
-        
-	if (--u == 0)
-	{
-	  primsProgress->IncProgress (primProgressStep);
-	  u = updateFreq;
-	}
-      }
-      
-      primsProgress->SetProgress (1);
-      delete primsProgress;
-      objProgress.SetProgress (progressStep * o);
-    }
-    
-    normProgress.SetProgress (0);
-    progressStep = 0.5f/directionMaps[0].GetSize();
-    // Postprocess (normalize) 'final' direction maps
-    for (size_t d = 0; d < directionMaps[0].GetSize(); d++)
-    {
-      directionMaps[0].Get(d)->Normalize();
-      normProgress.SetProgress ((2*d)*progressStep);
-      directionMaps[1].Get(d)->Normalize();
-      normProgress.SetProgress ((2*d+1)*progressStep);
-    }
-  
-    progress.SetProgress (1);
-  }
-  
-  void Scene::SaveSpecularDirectionMaps (LoadedFile* fileInfo,
-                                         csStringArray& filenames,
-                                         csStringArray& textureNames)
-  {
-    for (size_t d = 0; d < directionMaps[0].GetSize(); d++)
-    {
-      CS_ASSERT(specDirectionMapCount == 3); // This method needs adjustments if
-					     // specDirectionMapCount changes
-					     
-      uint width = directionMaps[0].Get (d)->GetWidth();
-      uint height = directionMaps[0].Get (d)->GetHeight();
-					     
-      void* data[specDirectionMapCount];
-      const size_t pixelArraySize = width*height;
-  
-      csRGBpixel *pixelData[specDirectionMapCount];
-      for (int i = 0; i < specDirectionMapCount; i++)
-      {
-	data[i] = cs_malloc (pixelArraySize * sizeof (csRGBpixel));
-	pixelData[i] = (csRGBpixel*)data[i];
-      }
-      
-      ScopedSwapLock<DirectionMap> l1 (*(directionMaps[0].Get (d)));
-      ScopedSwapLock<DirectionMap> l2 (*(directionMaps[1].Get (d)));
-      const csVector3* map0 = directionMaps[0].Get (d)->GetDirections();
-      const csVector3* map1 = directionMaps[1].Get (d)->GetDirections();
-      for (uint y = 0; y < height; y++)
-      {
-	for (uint x = 0; x < width; x++)
-	{
-	  uint i = y*width+x;
-		  
-	  csRGBpixel inflRGB1, inflRGB2;
-	  csVector3 d1 = map0[i];
-	  csVector3 d2 = map1[i];
-	  if (!d1.IsZero())
-	  {
-	    inflRGB1.red = csClamp ((int) ((d1.x+1) * 127.5f), 255, 0);
-	    inflRGB1.green = csClamp ((int) ((d1.y+1) * 127.5f), 255, 0);
-	    inflRGB1.blue = csClamp ((int) ((d1.z+1) * 127.5f), 255, 0);
-	  }
-	  else
-	  {
-	    inflRGB1.red = 128;
-	    inflRGB1.green = 128;
-	    inflRGB1.blue = 0;
-	  }
-	  
-	  if (!d2.IsZero())
-	  {
-	    inflRGB2.red = csClamp ((int)((d2.x+1) * 127.5f), 255, 0);
-	    inflRGB2.green = csClamp ((int) ((d2.y+1) * 127.5f), 255, 0);
-	    inflRGB2.blue = csClamp ((int) ((d2.z+1) * 127.5f), 255, 0);
-	  }
-	  else
-	  {
-	    inflRGB2.red = 128;
-	    inflRGB2.green = 128;
-	    inflRGB2.blue = 0;
-	  }
-	  
-	  (pixelData[0])[i].Set (0, inflRGB1.red, 0, inflRGB1.green);
-	  (pixelData[1])[i].Set (0, inflRGB2.red, 0, inflRGB2.green);
-	  (pixelData[2])[i].Set (0, inflRGB1.blue, 0, inflRGB2.blue);
-	}
-      }
-      
-      // make new images
-      for (int i = 0; i < specDirectionMapCount; i++)
-      {
-	csRef<iImage> img;
-	img.AttachNew (new csImageMemory (width, height, pixelData[i], false,
-	  CS_IMGFMT_TRUECOLOR | CS_IMGFMT_ALPHA));
-    
-	/* @@@ Ideal would be a format such as ATI2N/LATC, but as long as that
-	  is not supported ... */
-	csRef<iDataBuffer> imgData = globalLighter->imageIO->Save (img,
-	  "image/dds", "format=dxt5");
-	csString fname (GetDirectionMapFilename ((uint)d, i));
-	csRef<iFile> file = globalLighter->vfs->Open (fname, VFS_FILE_WRITE);
-	if (file)
-	{
-	  file->Write (imgData->GetData (), imgData->GetSize ());
-	  file->Flush ();
-	}
-	cs_free (data[i]);
-	
-	filenames.Push (fname);
-	textureNames.Push (Lightmap::GetTextureNameFromFilename (fname));
-      }
-    }
   }
 
   const char* Scene::GetSolidColorFile (LoadedFile* fileInfo, 
@@ -2276,8 +1609,6 @@ namespace lighter
     Lightmap* lm;
     bool isSolid;
     csColor solidColor;
-    
-    SaveTexture() : lm (0), isSolid (false) {}
   };
 
   void Scene::SaveLightmapsToDom (iDocumentNode* r, LoadedFile* fileInfo,
@@ -2373,18 +1704,6 @@ namespace lighter
       {
         filesProgress.IncProgress (progressStep);
         u = updateFreq;
-      }
-    }
-    if (globalConfig.GetLighterProperties().specularDirectionMaps)
-    {
-      csStringArray filenames, textureNames;
-      SaveSpecularDirectionMaps (fileInfo, filenames, textureNames);
-      for (size_t j = 0; j < filenames.GetSize(); j++)
-      {
-	SaveTexture specsavetex;
-	specsavetex.filename = filenames[j];
-	specsavetex.texname = textureNames[j];
-	texturesToSave.Push (specsavetex);
       }
     }
     filesProgress.SetProgress (1);
@@ -2551,8 +1870,8 @@ namespace lighter
     const char* err = doc->Parse (sourceData);
     if (err != 0)
     {
-      globalLighter->Report ("Error re-parsing %s: %s", 
-        CS::Quote::Single (fileInfo.levelName.GetData()), err);
+      globalLighter->Report ("Error re-parsing '%s': %s", 
+        fileInfo.levelName.GetData(), err);
       return csPtr<iDataBuffer> (csRef<iDataBuffer> (sourceData));
     }
 
@@ -2623,30 +1942,30 @@ namespace lighter
     err = newDoc->Write (&mf);
     if (err != 0)
     {
-      globalLighter->Report ("Error re-writing %s: %s", 
-        CS::Quote::Single (fileInfo.levelName.GetData()), err);
+      globalLighter->Report ("Error re-writing '%s': %s", 
+        fileInfo.levelName.GetData(), err);
       return csPtr<iDataBuffer> (csRef<iDataBuffer> (sourceData));
     }
     return mf.GetAllData ();
   }
     
-  iCollection* Scene::GetCollection (iObject* obj)
+  iRegion* Scene::GetRegion (iObject* obj)
   {
-    csRef<iCollectionArray> collections = globalLighter->engine->GetCollections ();
-    for (size_t i = 0; i < collections->GetSize(); i++)
+    iRegionList* regions = globalLighter->engine->GetRegions ();
+    for (int i = 0; i < regions->GetCount(); i++)
     {
-      iCollection* collection = collections->Get (i);
-      if (collection->IsParentOf (obj)) return collection;
+      iRegion* reg = regions->Get (i);
+      if (reg->IsInRegion (obj)) return reg;
     }
     return 0;
   }
   
   bool Scene::IsObjectFromBaseDir (iObject* obj, const char* baseDir)
   {
-    iCollection* collection = GetCollection (obj);
-    if (collection == 0) return true;
+    iRegion* reg = GetRegion (obj);
+    if (reg == 0) return true;
     
-    csRef<iSaverFile> saverFile (CS::GetChildObject<iSaverFile> (collection->QueryObject()));
+    csRef<iSaverFile> saverFile (CS::GetChildObject<iSaverFile> (reg->QueryObject()));
     if (saverFile.IsValid()) return true;
     
     return strncmp (saverFile->GetFile(), baseDir, strlen (baseDir)) == 0;
@@ -2706,8 +2025,7 @@ namespace lighter
   
   void Scene::LightingPostProcessor::ApplyAmbient (Lightmap* lightmap)
   {
-    if (globalConfig.GetLighterProperties ().indirectLightEngine == LIGHT_ENGINE_NONE &&
-        globalConfig.GetLighterProperties ().globalAmbient)
+    //if (!<indirect lighting enabled>)
     {
       csColor amb;
       globalLighter->engine->GetAmbientLight (amb);
@@ -2717,8 +2035,7 @@ namespace lighter
 
   void Scene::LightingPostProcessor::ApplyAmbient (csColor* colors, size_t numColors)
   {
-    if (globalConfig.GetLighterProperties ().indirectLightEngine == LIGHT_ENGINE_NONE &&
-        globalConfig.GetLighterProperties ().globalAmbient)
+    //if (!<indirect lighting enabled>)
     {
       csColor amb;
       globalLighter->engine->GetAmbientLight (amb);

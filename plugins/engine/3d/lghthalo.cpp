@@ -25,12 +25,11 @@
 #include "ivideo/graph3d.h"
 #include "ivideo/material.h"
 #include "ivideo/texture.h"
-#include "plugins/engine/3d/camera.h"
 #include "plugins/engine/3d/engine.h"
 #include "plugins/engine/3d/halo.h"
 #include "plugins/engine/3d/halogen.h"
 
-using namespace CS_PLUGIN_NAMESPACE_NAME(Engine);
+
 
 // The speed at which halo brightens/vanishes in milliseconds per frame
 #define HALO_FRAME_TIME 20
@@ -165,24 +164,9 @@ bool csLightHalo::IsVisible (iCamera* camera, csEngine* Engine, csVector3 &v)
 {
   if (v.z > SMALL_Z)
   {
-    float fov, sx, sy;
-    csRef<iPerspectiveCamera> pcam =
-      scfQueryInterface<iPerspectiveCamera> (camera);
-    if (pcam)
-    {
-      fov = pcam->GetFOV ();
-      sx = pcam->GetShiftX ();
-      sy = pcam->GetShiftY ();
-    }
-    else
-    {
-      fov = 1.0f;
-      sx = 0.0f;
-      sy = 0.0f;
-    }
-    float iz = fov / v.z;
-    v.x = v.x * iz + sx;
-    v.y = Engine->frameHeight - 1 - (v.y * iz + sy);
+    float iz = camera->GetFOV () / v.z;
+    v.x = v.x * iz + camera->GetShiftX ();
+    v.y = Engine->frameHeight - 1 - (v.y * iz + camera->GetShiftY ());
 
     if (Engine->GetTopLevelClipper ()->GetClipper ()->IsInside (
     	csVector2 (v.x, v.y)))
@@ -322,25 +306,13 @@ bool csLightFlareHalo::Process (csTicks elapsed_time, iCamera* camera,
     return false; // halo is invisible now, kill it
   Light->GetHalo ()->SetIntensity (hintensity);
 
-  float sx, sy;
-  csRef<iPerspectiveCamera> pcam =
-    scfQueryInterface<iPerspectiveCamera> (camera);
-  if (pcam)
-  {
-    sx = pcam->GetShiftX ();
-    sy = pcam->GetShiftY ();
-  }
-  else
-  {
-    sx = 0.0f;
-    sy = 0.0f;
-  }
-
   /// the perspective center of the view is the axis of the flare
-  csVector2 center (sx, sy);
+  csVector2 center (
+              camera->GetShiftX (),
+              camera->GetShiftY ());
 
   /// start point of the flare is the (projected) light position
-  csVector2 start (v.x, sy * 2.0f - v.y);
+  csVector2 start (v.x, camera->GetShiftY () * 2.0f - v.y);
 
   /// deltaposition, 1.0 positional change.
   csVector2 deltapos = center - start;

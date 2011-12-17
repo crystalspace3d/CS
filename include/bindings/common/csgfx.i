@@ -1,5 +1,3 @@
-%template(iShaderVarStringSetBase) iStringSetBase<CS::StringSetTag::ShaderVar>;
-
 %include "igraphic/image.h"
 %immutable csImageIOFileFormatDescription::mime;
 %immutable csImageIOFileFormatDescription::subtype;

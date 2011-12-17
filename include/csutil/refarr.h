@@ -88,31 +88,26 @@ public:
  *   counting and cause unexpected problems. Use Put() to manipulate elements
  *   of the array.
  */
-template <class T, 
-          class Allocator = CS::Container::ArrayAllocDefault,
-          class CapacityHandler = CS::Container::ArrayCapacityDefault>
-class csRefArray : 
-  public csArray<T*, csRefArrayElementHandler<T*>, Allocator, CapacityHandler>
+template <class T, class Allocator = CS::Memory::AllocatorMalloc>
+class csRefArray : public csArray<T*, csRefArrayElementHandler<T*>, Allocator>
 {
 public:
   /**
    * Initialize object to hold initially 'ilimit' elements, and increase
    * storage by 'ithreshold' each time the upper bound is exceeded.
    */
-  csRefArray (int ilimit = 0,
-    const CapacityHandler& ch = CapacityHandler())
-    : csArray<T*, csRefArrayElementHandler<T*>, Allocator, CapacityHandler> (
-        ilimit, ch)
+  csRefArray (int ilimit = 0, int ithreshold = 0)
+    : csArray<T*, csRefArrayElementHandler<T*>, Allocator> (ilimit, ithreshold)
   {
   }
 
   /// Pop an element from tail end of array.
-  csRef<T> Pop ()
+  csPtr<T> Pop ()
   {
     CS_ASSERT (this->GetSize () > 0);
     csRef<T> ret = this->Get (this->GetSize () - 1); // see *1*
     SetSize (this->GetSize () - 1);
-    return ret;
+    return csPtr<T> (ret);
   }
 };
 

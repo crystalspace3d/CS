@@ -18,7 +18,9 @@
 
 #include "common.h"
 
+#include "csutil/custom_new_disable.h"
 #include <algorithm>
+#include "csutil/custom_new_enable.h"
 
 #include "lighter.h"
 #include "lightmap.h"
@@ -173,7 +175,7 @@ namespace lighter
       }
     }
   }
-  
+
   void ObjectFactory_Genmesh::SaveFactory (iDocumentNode *node)
   {
     csRef<iGeneralFactoryState> genFact = 
@@ -195,6 +197,8 @@ namespace lighter
       return;
     }
     
+    // TODO: Apply 'vertexData.splits' to user buffers
+
     const size_t vertCount = vertexData.positions.GetSize ();
     genFact->SetVertexCount ((int)vertCount);
 
@@ -252,52 +256,6 @@ namespace lighter
       genFact->AddRenderBuffer ("bitangent", bitangentBuf);
     }
 
-    // Apply 'vertexData.splits' to user buffers
-    csArray<std::pair<csString, csRef<iRenderBuffer> > > mappedCustomBuffers;
-    for (int b = 0; b < genFact->GetRenderBufferCount(); b++)
-    {
-      csString rbName (genFact->GetRenderBufferName (b)->GetData());
-      // Check for well-known render buffers which are handled below
-      if ((rbName == "position")
-	  || (rbName == "normal")
-	  || (rbName == "texture coordinate 0")
-	  || (hasTangents &&
-	    ((rbName == "tangent")
-	    || (rbName == "bitangent"))))
-      {
-	continue;
-      }
-      
-      csRef<iRenderBuffer> oldBuf (genFact->GetRenderBuffer (b));
-      const size_t oldVertNum = oldBuf->GetElementCount();
-      csRef<iRenderBuffer> newBuf (csRenderBuffer::CreateRenderBuffer (
-        vertCount,
-	oldBuf->GetBufferType (), oldBuf->GetComponentType(), oldBuf->GetComponentCount()));
-      size_t oldStride (oldBuf->GetElementDistance());
-      size_t newStride (newBuf->GetElementDistance());
-      size_t elementSize = newBuf->GetComponentCount() *
-	csRenderBufferComponentSizes[newBuf->GetComponentType() & ~CS_BUFCOMP_NORMALIZED];
-      csRenderBufferLock<uint8> oldData (oldBuf);
-      csRenderBufferLock<uint8> newData (newBuf);
-      for (size_t v = 0; v < vertCount; v++)
-      {
-	size_t srcVert;
-	if (v < oldVertNum)
-	  srcVert = v;
-	else
-	  srcVert = vertexData.splits[v-oldVertNum];
-	memcpy (newData + v*newStride, oldData + srcVert * oldStride,
-		elementSize);
-      }
-      mappedCustomBuffers.Push (std::make_pair (rbName, newBuf));
-    }
-    for (size_t b = 0; b < mappedCustomBuffers.GetSize(); b++)
-    {
-      genFact->RemoveRenderBuffer (mappedCustomBuffers[b].first);
-      genFact->AddRenderBuffer (mappedCustomBuffers[b].first,
-				mappedCustomBuffers[b].second);
-    }
-    
     genFact->ClearSubMeshes();
     SubmeshFindHelper findHelper (this);
 
@@ -540,10 +498,6 @@ namespace lighter
 
   void Object_Genmesh::SaveMesh (iDocumentNode *node)
   {
-    if (objFlags.Check (OBJECT_FLAG_NOLIGHT))
-      // Assume object is unchanged
-      return;
-    
     csRef<iGeneralMeshState> genMesh = 
       scfQueryInterface<iGeneralMeshState> (
       meshWrapper->GetMeshObject());
@@ -567,17 +521,11 @@ namespace lighter
    // Still may need to fix up submesh materials...
     CS::ShaderVarName lightmapName[4] =
     { 
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 1"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 2"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 3")
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 1"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 2"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 3")
     };
-    CS::ShaderVarName specDirName[Scene::specDirectionMapCount];
-    for (int i = 0; i < Scene::specDirectionMapCount; i++)
-    {
-      specDirName[i] = CS::ShaderVarName (globalLighter->svStrings,
-        csString().Format ("tex spec directions %d", i+1));
-    }
     int numLMs = globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
 
     bool noSubmeshes = allPrimitives.GetSize () == 1; // @@@ insufficient test
@@ -606,26 +554,14 @@ namespace lighter
           scfQueryInterface<iShaderVariableContext> (
             subMesh ? (iBase*)subMesh : (iBase*)meshWrapper);
 
-	uint lmID = uint (lightmapIDs[i]);
         for (int l = 0; l < numLMs; l++)
         {
+          uint lmID = uint (lightmapIDs[i]);
           Lightmap* lm = sector->scene->GetLightmap(lmID, l);
           csRef<csShaderVariable> svLightmap;
           svLightmap.AttachNew (new csShaderVariable (lightmapName[l]));
           svLightmap->SetValue (lm->GetTexture());
           svc->AddVariable (svLightmap);
-        }
-        
-        if (globalConfig.GetLighterProperties().specularDirectionMaps)
-        {
-          csRef<csShaderVariable> svInfluence;
-          for (int i = 0; i < Scene::specDirectionMapCount; i++)
-          {
-            svInfluence.AttachNew (new csShaderVariable (specDirName[i]));
-            svInfluence->SetValue (sector->scene->GetSpecDirectionMapTexture (
-              lmID, i));
-            svc->AddVariable (svInfluence);
-          }
         }
       }
     }
@@ -715,16 +651,16 @@ namespace lighter
         VFS_FILE_READ);
       if (!paramsData.IsValid())
       {
-        globalLighter->Report ("Error reading %s", 
-          CS::Quote::Single (paramsFile.GetData()));
+        globalLighter->Report ("Error reading '%s'", 
+          paramsFile.GetData());
         return;
       }
       csRef<iDocument> paramsDoc = globalLighter->docSystem->CreateDocument();
       const char* err = paramsDoc->Parse (paramsData);
       if (err != 0)
       {
-        globalLighter->Report ("Error reading %s: %s", 
-          CS::Quote::Single (paramsFile.GetData()), err);
+        globalLighter->Report ("Error reading '%s': %s", 
+          paramsFile.GetData(), err);
         return;
       }
 
@@ -808,8 +744,8 @@ namespace lighter
       err = paramsDoc->Write (globalLighter->vfs, paramsFile);
       if (err != 0)
       {
-        globalLighter->Report ("Error writing %s: %s", 
-          CS::Quote::Single (paramsFile.GetData()), err);
+        globalLighter->Report ("Error writing '%s': %s", 
+          paramsFile.GetData(), err);
       }
     }
   }
@@ -837,10 +773,15 @@ namespace lighter
         if (!subMesh) continue;
         csRef<iShaderVariableContext> svc = 
           scfQueryInterface<iShaderVariableContext> (subMesh);
-	for (const char* const* lmtn = lightmapTextures; *lmtn; lmtn++)
+        for (int i = 0; i < 4; i++)
         {
+          csString svName;
+          if (i == 0)
+            svName = "tex lightmap";
+          else
+            svName.Format ("tex lightmap dir %d", i);
           csShaderVariable* sv = svc->GetVariable (
-            globalLighter->svStrings->Request (*lmtn));
+            globalLighter->strings->Request (svName));
           if (sv != 0)
           {
             iTextureWrapper* tex;

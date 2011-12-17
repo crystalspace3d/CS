@@ -25,67 +25,74 @@
 * \addtogroup CEGUI
 * @{ */
 
-#include "ceguiimports.h"
+// hack: work around problems caused by #defining 'new'
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# undef new
+#endif
+#include <new>
+#include <CEGUI.h>
+#include <CEGUIScriptModule.h>
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# define new CS_EXTENSIVE_MEMDEBUG_NEW
+#endif
+
 #include "csutil/ref.h"
 #include "iutil/vfs.h"
 #include "ivaria/script.h"
 
 struct iObjectRegistry;
 
-CS_PLUGIN_NAMESPACE_BEGIN(cegui)
+/**
+ * An implementation of CEGUI::ScriptModule using the CS iScript facilities.
+ */
+class csCEGUIScriptModule : public CEGUI::ScriptModule
 {
+public:
+  /// Constructor.
+  csCEGUIScriptModule (iScript* script, iObjectRegistry* reg);
+
+  /// Destructor.
+  virtual ~csCEGUIScriptModule () {}
+
+  virtual void createBindings () {}
+  virtual void destroyBindings () {}
+
+  /// Execute a script file.
+  virtual void executeScriptFile (const CEGUI::String &filename,
+    const CEGUI::String &resourceGroup="");
+
   /**
-   * An implementation of CEGUI::ScriptModule using the CS iScript facilities.
+   * Execute a scripted global function.
+   * The function should not take any parameters and should return an integer.
    */
-  class CEGUIScriptModule : public CEGUI::ScriptModule
-  {
-  public:
-    /// Constructor.
-    CEGUIScriptModule (iScript* script, iObjectRegistry* reg);
+  virtual int executeScriptGlobal (const CEGUI::String &function_name);
 
-    /// Destructor.
-    virtual ~CEGUIScriptModule () {}
+  /**
+   * Execute a scripted global 'event handler' function. The function should
+   * take some kind of EventArgs like parameter that the concrete
+   * implementation of this function can create from the passed EventArgs based
+   * object. The function should not return anything.
+   */
+  virtual bool executeScriptedEventHandler (const CEGUI::String &handler_name,
+    const CEGUI::EventArgs &e);
 
-    virtual void createBindings () {}
-    virtual void destroyBindings () {}
+  /// Execute script code contained in the given CEGUI::String object.
+  virtual void executeString (const CEGUI::String &str);
 
-    /// Execute a script file.
-    virtual void executeScriptFile (const CEGUI::String &filename,
-      const CEGUI::String &resourceGroup="");
+  /// Subscribes the named Event to a scripted function.
+  virtual CEGUI::Event::Connection subscribeEvent(CEGUI::EventSet* target,
+    const CEGUI::String& name, const CEGUI::String& subscriber_name);
 
-    /**
-     * Execute a scripted global function.
-     * The function should not take any parameters and should return an integer.
-     */
-    virtual int executeScriptGlobal (const CEGUI::String &function_name);
-
-    /**
-     * Execute a scripted global 'event handler' function. The function should
-     * take some kind of EventArgs like parameter that the concrete
-     * implementation of this function can create from the passed EventArgs based
-     * object. The function should not return anything.
-     */
-    virtual bool executeScriptedEventHandler (const CEGUI::String &handler_name,
-      const CEGUI::EventArgs &e);
-
-    /// Execute script code contained in the given CEGUI::String object.
-    virtual void executeString (const CEGUI::String &str);
-
-    /// Subscribes the named Event to a scripted function.
-    virtual CEGUI::Event::Connection subscribeEvent(CEGUI::EventSet* target,
-      const CEGUI::String& name, const CEGUI::String& subscriber_name);
-
-    /// Subscribes the specified group of the named Event to a scripted function.
-    virtual CEGUI::Event::Connection subscribeEvent(CEGUI::EventSet* target,
-      const CEGUI::String& name, CEGUI::Event::Group group,
-      const CEGUI::String& subscriber_name);
+  /// Subscribes the specified group of the named Event to a scripted function.
+  virtual CEGUI::Event::Connection subscribeEvent(CEGUI::EventSet* target,
+    const CEGUI::String& name, CEGUI::Event::Group group,
+    const CEGUI::String& subscriber_name);
 
 
-  protected:
-    iObjectRegistry* obj_reg;
-    csRef<iScript> scripting;
-    csRef<iVFS> vfs;
-  };
-} CS_PLUGIN_NAMESPACE_END(cegui)
+protected:
+  iObjectRegistry* obj_reg;
+  csRef<iScript> scripting;
+  csRef<iVFS> vfs;
+};
 
 #endif // _CS_CEGUISCRIPTMODULE_H_

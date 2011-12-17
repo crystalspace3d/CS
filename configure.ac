@@ -1,6 +1,6 @@
 # configure.ac                                                 -*- Autoconf -*-
 #==============================================================================
-# Copyright (C)2003-2011 by Eric Sunshine <sunshine@sunshineco.com>
+# Copyright (C)2003-2009 by Eric Sunshine <sunshine@sunshineco.com>
 #
 # Autoconf input script for Crystal Space.  Process this file with
 # CS/bin/autogen.sh to produce a configure script.
@@ -13,7 +13,7 @@ AC_PREREQ([2.56])
 #	Keep this value synchronized with CS/include/csver.h.template,
 #	CS/docs/texinfo/version.txi, and CS/mk/autoconf/crystal.m4.
 #------------------------------------------------------------------------------
-m4_define([cs_version_number], [2.1])
+m4_define([cs_version_number], [1.4.1])
 
 
 
@@ -23,7 +23,7 @@ m4_define([cs_version_number], [2.1])
 AC_INIT([crystalspace], [cs_version_number],
         [crystal-main@lists.sourceforge.net])
 CS_PACKAGEINFO([Crystal Space],
-    [Copyright (C)1998-2011 Jorrit Tyberghein and others],
+    [Copyright (C)1998-2008 Jorrit Tyberghein and others],
     [http://www.crystalspace3d.org/])
 AC_CONFIG_SRCDIR([libs/Jamfile])
 AC_CONFIG_AUX_DIR([mk/autoconf])
@@ -73,7 +73,7 @@ CS_EMIT_BUILD_PROPERTY([CMD.HHC], [$HHC])
 
 CS_CHECK_PROGS([SWIG], [swig])
 AS_IF([test -n "$SWIG"],
-    [CS_CHECK_PROG_VERSION([swig], [$SWIG -version 2>&1], [1.3.22],
+    [CS_CHECK_PROG_VERSION([swig], [$SWIG -version 2>&1], [1.3.21],
 	[9.9|.9],
         [CS_EMIT_BUILD_PROPERTY([CMD.SWIG], [$SWIG])
         CS_EMIT_BUILD_PROPERTY([CMD.SWIG.VERSION], [$cs_prog_swig_version])])])
@@ -140,8 +140,7 @@ CS_CHECK_PROGS([MAKE], [gnumake gmake make])
 # users.  It saves users the bother of having to install these packages
 # manually one at a time.
 #------------------------------------------------------------------------------
-CS_NOTABLE([cs-winlibs], [], [windows], [$cs_cv_cslibs],
-    [CS_CHECK_CSWIN32LIBS])
+CS_CHECK_CSWIN32LIBS
 
 
 #------------------------------------------------------------------------------
@@ -184,9 +183,6 @@ AS_IF([test $cs_cv_sys_pthread_mutex_recursive != no],
 	[$cs_cv_sys_pthread_mutex_recursive])])
 CS_CHECK_PTHREAD_ATFORK([cs_cv_sys_pthread_atfork])
 CS_EMIT_BUILD_PROPERTY([PTHREAD.ATFORK.AVAILABLE], [$cs_cv_sys_pthread_atfork])
-CS_CHECK_PTHREAD_SETNAME_NP([cs_cv_sys_pthread_setname_np])
-AS_IF([test cs_cv_sys_pthread_setname_np = yes],
-    [CS_HEADER_PROPERTY([CS_HAVE_PTHREAD_SETNAME_NP])])
 
 
 
@@ -195,7 +191,7 @@ AS_IF([test cs_cv_sys_pthread_setname_np = yes],
 #------------------------------------------------------------------------------
 AC_MSG_CHECKING([whether to link base g++ libraries statically])
 AC_ARG_ENABLE([static-baselibs], [AC_HELP_STRING([--enable-static-baselibs],
-    [Link statically against libgcc and libstdc++. Use with caution; enabling 
+    [Link statically againts libgcc and libstdc++. Use with caution; enabling 
     this option may cause issues when dynamically linking against other C++
     modules. (default NO)])],
     [], [enable_static_baselibs=no])
@@ -205,11 +201,10 @@ AS_IF([test $enable_static_baselibs = yes],
         [cs_cv_prog_link_static_libgcc], [CS_CREATE_TUPLE([-static-libgcc])],
         [C], [COMPILER.LFLAGS], [+])
     libstdcxx=`$CXX -print-file-name=libstdc++.a`
-    CS_CHECK_BUILD_FLAGS([for -static-libstdc++],
-        [cs_cv_prog_link_static_libstdcxx], [CS_CREATE_TUPLE([-static-libstdc++])],
-        [C++], [],
-        [cs_cv_prog_link_static_libstdcxx=$libstdcxx])
-    CS_EMIT_BUILD_PROPERTY([COMPILER.LFLAGS], [$cs_cv_prog_link_static_libstdcxx], [+])])
+    CS_EMIT_BUILD_FLAGS([for static libstdc++],
+        [cs_cv_prog_link_static_libstdcxx],
+        CS_CREATE_TUPLE([$libstdcxx]),
+        [C++], [COMPILER.LFLAGS], [+])])
 
 
 
@@ -225,8 +220,6 @@ AC_DEFUN([CS_CHECK_RTLD],
 	[], [], [$cs_cv_libdl_libs])])
 
 CS_CHECK_RTLD
-
-
 
 #------------------------------------------------------------------------------
 # Determine host platform.  Recognized platforms: Unix, Windows, Mac OS X.
@@ -253,7 +246,6 @@ case $cs_host_family in
     esac
 CS_HEADER_PROPERTY([CS_PLATFORM_NAME],
     [AS_ESCAPE(["])$cs_host_os_normalized[]AS_ESCAPE(["])])
-
 
 
 #------------------------------------------------------------------------------
@@ -339,16 +331,14 @@ AS_IF([test -n "$PERL" && test "$with_perl" != no],
 	AS_IF([test $cs_cv_perl = yes],
 	    [CS_EMIT_BUILD_RESULT([cs_cv_perl], [PERL5])
 	    CS_EMIT_BUILD_PROPERTY([PERL5.MODULE_EXT],[.$cs_cv_perl_ext])])])])
-
-CS_NOTABLE([perl], [bindings], [], [$cs_cv_perl])	
+	
 
 
 #------------------------------------------------------------------------------
 # Check if Python SDK is installed and which compiler and linker flags are
 # required to embed Python.
 #------------------------------------------------------------------------------
-CS_NOTABLE([python], [bindings], [], [$cs_cv_python],
-    [CS_CHECK_PYTHON([emit], [], [Python scripting interface])])
+CS_CHECK_PYTHON([emit], [], [Python scripting interface])
 
 
 
@@ -357,8 +347,7 @@ CS_NOTABLE([python], [bindings], [], [$cs_cv_python],
 # needed.  Also check if Ant build tool, which is commonly used to build Java
 # projects, is available.
 #------------------------------------------------------------------------------
-CS_NOTABLE([java], [bindings], [], [$cs_cv_java],
-    [CS_CHECK_JAVA([emit])])
+CS_CHECK_JAVA([emit])
 
 
 
@@ -511,20 +500,6 @@ AC_DEFUN([CS_CHECK_VTABLE_THUNKS],
     esac])
 
 CS_CHECK_VTABLE_THUNKS
-
-
-
-#------------------------------------------------------------------------------
-# Check for option to enable OpenMP support.
-#------------------------------------------------------------------------------
-CS_CHECK_BUILD_FLAGS([for flag to enable OpenMP],
-    [cs_cv_prog_cxx_openmp],
-    [CS_CREATE_TUPLE([-fopenmp])], [C++],
-    [CS_EMIT_BUILD_PROPERTY([COMPILER.C++FLAGS.OPENMP],
-	[$cs_cv_prog_cxx_openmp], [+])
-    # At least on gcc the flag needed for linking is -fopenmp as well.
-    CS_EMIT_BUILD_PROPERTY([COMPILER.LFLAGS.OPENMP],
-	[$cs_cv_prog_cxx_openmp], [+])])
 
 
 
@@ -813,13 +788,6 @@ CS_EMIT_BUILD_PROPERTY([MODE], [$cs_build_mode])
 
 
 #------------------------------------------------------------------------------
-# Check whether to enable LTO (link-time optimization).
-#------------------------------------------------------------------------------
-CS_CHECK_ENABLE_LTO
-
-
-
-#------------------------------------------------------------------------------
 # Check for compiler debug flags.
 #------------------------------------------------------------------------------
 CS_CHECK_BINUTILS_2_17
@@ -978,7 +946,7 @@ AS_IF([test $cs_cv_libx11 = yes],
     AC_PATH_XTRA
     X_LFLAGS="$X_PRE_LIBS $X_LIBS -lXext -lX11 $X_EXTRA_LIBS"])
 
-CS_NOTABLE([x11], [rendering], [unix], [test "yes" != "$no_x"])
+
 AS_IF([test "$no_x" != yes],
     [# We must be especially careful to instruct CS_EMIT_BUILD_PROPERTY() to
     # emit the following properties even if their values are empty.  This is
@@ -1019,31 +987,7 @@ AS_IF([test "$no_x" != yes],
 	[$X_CFLAGS], 
 	[$X_LFLAGS], 
 	[$X_PRE_LIBS $X_LIBS -lXt -lX11 $X_EXTRA_LIBS],
-	[Xaw])
-
-    CS_CHECK_LIB_WITH([xrender],
-	[AC_LANG_PROGRAM(
-	    [[#include <X11/extensions/Xrender.h>]],
-	    [XRenderFindVisualFormat (0,0)])],
-	[], [],
-	[CS_EMIT_BUILD_RESULT([cs_cv_libxrender], [XRENDER])],
-	[],
-	[$X_CFLAGS], 
-	[$X_LFLAGS], 
-	[$X_PRE_LIBS $X_LIBS -lX11 -lXext $X_EXTRA_LIBS],
-	[Xrender])
-
-    CS_CHECK_LIB_WITH([xcursor],
-	[AC_LANG_PROGRAM(
-	    [[#include <X11/Xcursor/Xcursor.h>]],
-	    [XcursorShapeLoadCursor (0,0)])],
-	[], [],
-	[CS_EMIT_BUILD_RESULT([cs_cv_libxcursor], [XCURSOR])],
-	[],
-	[$X_CFLAGS], 
-	[$X_LFLAGS], 
-	[$X_PRE_LIBS $X_LIBS -lX11 -lXext $X_EXTRA_LIBS],
-	[Xcursor])])
+	[Xaw])])
 
 
 
@@ -1059,8 +1003,7 @@ AS_IF([test "$no_x" != yes],
 # GLU is not required or used by CrystalSpace itself, but certain 3rd party
 # libraries may depend on it (notably Cg).
 #------------------------------------------------------------------------------
-CS_NOTABLE([opengl], [rendering], [], [$cs_cv_libgl],
-    [CS_CHECK_OPENGL])
+CS_CHECK_OPENGL
 AC_DEFUN([CS_CHECK_OPENGL_TYPE],
     [CS_CHECK_BUILD([for $1], [cs_cv_libgl_$1],
 	[AC_LANG_PROGRAM(
@@ -1079,10 +1022,6 @@ AS_IF([test $cs_cv_libgl = yes],
         [CS_HEADER_PROPERTY([CS_HAVE_GLINTPTR_T])])
     CS_CHECK_OPENGL_TYPE([GLsizeiptr],
         [CS_HEADER_PROPERTY([CS_HAVE_GLSIZEIPTR_T])])
-    CS_CHECK_OPENGL_TYPE([GLint64],
-        [CS_HEADER_PROPERTY([CS_HAVE_GLINT64_T])])
-    CS_CHECK_OPENGL_TYPE([GLuint64],
-        [CS_HEADER_PROPERTY([CS_HAVE_GLUINT64_T])])
     ])
 CS_CHECK_GLU
 CS_CHECK_GLX
@@ -1104,29 +1043,30 @@ AC_DEFUN([CS_CHECK_DIRECTX],
 	    [[#if !HAVE_TYPE_INT32
 	    typedef long int32;
 	    #endif
-	    #define DIRECTINPUT_VERSION 0x0800
+	    #define DIRECTINPUT_VERSION 0x0500
 	    #include <windows.h>
+	    #include <ddraw.h>
 	    #include <dsound.h>
 	    #include <dinput.h>]],
-	    [DirectSoundCreate$1(0,0,0); 
-	     IID* iid;
-	     DirectInput8Create(0,0,*iid,0,0)])],
-	[CS_CREATE_TUPLE([],[],[-ldsound -ldinput8]) \
+	    [DirectDrawCreate(0,0,0); 
+	     DirectSoundCreate$1(0,0,0); 
+	     DirectInputCreate(0,0,0,0)])],
+	[CS_CREATE_TUPLE([],[],[-lddraw -ldsound -ldinput]) \
 	CS_CREATE_TUPLE([-I/usr/include/directx],[],
-	    [-ldsound -ldinput8])], 
+	    [-lddraw -ldsound -ldinput])], 
 	[C++], [CS_EMIT_BUILD_RESULT([cs_cv_libdirectx$1], [DIRECTX$1])])])
 
-m4_define([cs_dx_min_ver], [8])
-CS_NOTABLE([directx], [rendering], [windows], [$cs_cv_libdirectx]cs_dx_min_ver,
+AS_IF([test $cs_host_family = windows],
     [AC_CHECK_TYPE([int32], [AC_DEFINE([HAVE_TYPE_INT32])], [])
-    CS_CHECK_DIRECTX(cs_dx_min_ver)])
+    CS_CHECK_DIRECTX([])
+    CS_CHECK_DIRECTX([8])])
 
 
 
 #------------------------------------------------------------------------------
 # Check for the Windows Multimedia library, used by the 'sndwaveout' plugin.
 #------------------------------------------------------------------------------
-CS_NOTABLE([waveout], [audio], [windows], [$cs_cv_libwaveout],
+AS_IF([test $cs_host_family = windows],
     [CS_CHECK_BUILD([for waveout], [cs_cv_libwaveout],
 	[AC_LANG_PROGRAM(
 	    [[#include <windows.h>
@@ -1141,11 +1081,11 @@ CS_NOTABLE([waveout], [audio], [windows], [$cs_cv_libwaveout],
 # Check for zlib.  In addition to the standard installed locations, we also
 # search CS/libs/zlib*.
 #------------------------------------------------------------------------------
-CS_NOTABLE([zlib], [], [], [$cs_cv_libz],
-    [CS_CHECK_LIB_WITH([z],
-	[AC_LANG_PROGRAM([[#include <zlib.h>]], [zlibVersion()])],
-	[$srcdir/libs/zlib*], [], [CS_EMIT_BUILD_RESULT([cs_cv_libz], [ZLIB])],
-	[], [], [], [], [zlib])])
+CS_CHECK_LIB_WITH([z],
+    [AC_LANG_PROGRAM([[#include <zlib.h>]], [zlibVersion()])],
+    [$srcdir/libs/zlib*], [], [CS_EMIT_BUILD_RESULT([cs_cv_libz], [ZLIB])],
+    [AC_MSG_NOTICE([*** zlib not found; VFS will be unusable])], 
+    [], [], [], [zlib])
 
 
 
@@ -1157,17 +1097,16 @@ CS_NOTABLE([zlib], [], [], [$cs_cv_libz],
 AC_DEFUN([CS_CHECK_LIBPNG_PREPARE],
     [AC_REQUIRE([CS_CHECK_COMMON_LIBS])])
 
-CS_NOTABLE([png], [image], [], [$cs_cv_libpng],
-    [AS_IF([test "$cs_cv_libz" = yes],
-	[CS_CHECK_LIBPNG_PREPARE
-	CS_CHECK_LIB_WITH([png],
-	    [AC_LANG_PROGRAM([[#include <png.h>]],
-		[png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0)])],
-	    [$srcdir/libs/libpng*], [],
-	    [CS_EMIT_BUILD_RESULT([cs_cv_libpng], [PNG])], [],
-	    [$cs_cv_libz_cflags $cs_cv_libm_cflags],
-	    [$cs_cv_libz_lflags $cs_cv_libm_lflags],
-	    [$cs_cv_libz_libs $cs_cv_libm_libs], [libpng])])])
+AS_IF([test "$cs_cv_libz" = yes],
+    [CS_CHECK_LIBPNG_PREPARE
+    CS_CHECK_LIB_WITH([png],
+	[AC_LANG_PROGRAM([[#include <png.h>]],
+	    [png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0)])],
+	[$srcdir/libs/libpng*], [],
+	[CS_EMIT_BUILD_RESULT([cs_cv_libpng], [PNG])], [],
+	[$cs_cv_libz_cflags $cs_cv_libm_cflags],
+	[$cs_cv_libz_lflags $cs_cv_libm_lflags],
+	[$cs_cv_libz_libs $cs_cv_libm_libs], [libpng])])
 
 
 
@@ -1175,16 +1114,14 @@ CS_NOTABLE([png], [image], [], [$cs_cv_libpng],
 # Check for libjpeg.  In addition to the standard installed locations, we also
 # search CS/libs/*jpeg*.
 #------------------------------------------------------------------------------
-CS_NOTABLE([jpeg], [image], [], [$cs_cv_libjpeg],
-    [CS_CHECK_LIB_WITH([jpeg],
-	[AC_LANG_PROGRAM(
-	    [[#include <stddef.h>
-	    #include <stdio.h>
-	    #include <jpeglib.h>]],
-	    [jpeg_create_compress(0)])],
-	[$srcdir/libs/*jpeg*], [],
-        [CS_EMIT_BUILD_RESULT([cs_cv_libjpeg], [JPEG])],
-	[], [], [], [], [libjpeg])])
+CS_CHECK_LIB_WITH([jpeg],
+    [AC_LANG_PROGRAM(
+	[[#include <stddef.h>
+	#include <stdio.h>
+	#include <jpeglib.h>]],
+	[jpeg_create_compress(0)])],
+    [$srcdir/libs/*jpeg*], [], [CS_EMIT_BUILD_RESULT([cs_cv_libjpeg], [JPEG])],
+    [], [], [], [], [libjpeg])
 
 
 
@@ -1194,54 +1131,49 @@ CS_NOTABLE([jpeg], [image], [], [$cs_cv_libjpeg],
 # dependency on lcms (http://www.littlecms.com/), so we must check for this
 # library, and utilize it explicitly if present.
 #------------------------------------------------------------------------------
-CS_NOTABLE([lcms], [image], [], [$cs_cv_liblcms],
-    [CS_CHECK_LIB_WITH([lcms],
-	[AC_LANG_PROGRAM([[#include <lcms.h>]],
-	    [LPLUT p = cmsAllocLUT(); cmsFreeLUT(p);])],
-	    [/usr/include/lcms| /usr/local/include/lcms|])])
+CS_CHECK_LIB_WITH([lcms],
+    [AC_LANG_PROGRAM([[#include <lcms.h>]],
+	[LPLUT p = cmsAllocLUT(); cmsFreeLUT(p);])],
+	[/usr/include/lcms| /usr/local/include/lcms|])
 
-CS_NOTABLE([mng], [image], [], [$cs_cv_libmng],
-    [CS_CHECK_LIB_WITH([mng],
-	[AC_LANG_PROGRAM([[#include <libmng.h>]], [mng_version_release()])],
-	[$srcdir/libs/libmng*], [],
-	[CS_EMIT_BUILD_RESULT([cs_cv_libmng], [MNG])], [],
-	[$cs_cv_liblcms_cflags $cs_cv_libjpeg_cflags $cs_cv_libz_cflags],
-	[$cs_cv_liblcms_lflags $cs_cv_libjpeg_lflags $cs_cv_libz_lflags],
-	[$cs_cv_liblcms_libs $cs_cv_libjpeg_libs $cs_cv_libz_libs],
-	[libmng])])
+CS_CHECK_LIB_WITH([mng],
+    [AC_LANG_PROGRAM([[#include <libmng.h>]], [mng_version_release()])],
+    [$srcdir/libs/libmng*], [],
+    [CS_EMIT_BUILD_RESULT([cs_cv_libmng], [MNG])], [],
+    [$cs_cv_liblcms_cflags $cs_cv_libjpeg_cflags $cs_cv_libz_cflags],
+    [$cs_cv_liblcms_lflags $cs_cv_libjpeg_lflags $cs_cv_libz_lflags],
+    [$cs_cv_liblcms_libs $cs_cv_libjpeg_libs $cs_cv_libz_libs],
+    [libmng])
 
 
 
 #------------------------------------------------------------------------------
 # Check for vgvm. (And it's dependencies, cairo and cairomm.)
 #------------------------------------------------------------------------------
-CS_NOTABLE([cairo], [image], [], [$cs_cv_libcairo],
-    [CS_CHECK_LIB_WITH([cairo],
-	[AC_LANG_PROGRAM(
-	    [[#include <cairo.h>]],
-	    [cairo_create (0)])],
-	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcairo], [CAIRO])])])
+CS_CHECK_LIB_WITH([cairo],
+    [AC_LANG_PROGRAM(
+	[[#include <cairo.h>]],
+	[cairo_create (0)])],
+    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcairo], [CAIRO])])
 
-CS_NOTABLE([cairomm], [image], [], [$cs_cv_libcairomm],
-    [CS_CHECK_LIB_WITH([cairomm],
-	[AC_LANG_PROGRAM(
-	    [[#include <cairomm/cairomm.h>]],
-	    [Cairo::Context c ((cairo_t*)0)])],
-	[], [C++], [CS_EMIT_BUILD_RESULT([cs_cv_libcairomm], [CAIROMM])], [],
-	[$cs_cv_libcairo_cflags],
-	[$cs_cv_libcairo_lflags],
-	[$cs_cv_libcairo_libs],
-	[cairomm-1, cairomm-1.0])])
+CS_CHECK_LIB_WITH([cairomm],
+    [AC_LANG_PROGRAM(
+	[[#include <cairomm/cairomm.h>]],
+	[Cairo::Context c ((cairo_t*)0)])],
+    [], [C++], [CS_EMIT_BUILD_RESULT([cs_cv_libcairomm], [CAIROMM])], [],
+    [$cs_cv_libcairo_cflags],
+    [$cs_cv_libcairo_lflags],
+    [$cs_cv_libcairo_libs],
+    [cairomm-1, cairomm-1.0])
 
-CS_NOTABLE([vgvm], [image], [], [$cs_cv_libvgvm],
-    [CS_CHECK_LIB_WITH([vgvm],
-	[AC_LANG_PROGRAM(
-	    [[#include <vgvm/vgvm.h>]],
-	    [new vgvm::Program (0,0)])],
-	[], [C++], [CS_EMIT_BUILD_RESULT([cs_cv_libvgvm], [VGVM])], [],
-	[$cs_cv_libcairomm_cflags],
-	[$cs_cv_libcairomm_lflags],
-	[$cs_cv_libcairomm_libs])])
+CS_CHECK_LIB_WITH([vgvm],
+    [AC_LANG_PROGRAM(
+	[[#include <vgvm/vgvm.h>]],
+	[new vgvm::Program (0,0)])],
+    [], [C++], [CS_EMIT_BUILD_RESULT([cs_cv_libvgvm], [VGVM])], [],
+    [$cs_cv_libcairomm_cflags],
+    [$cs_cv_libcairomm_lflags],
+    [$cs_cv_libcairomm_libs])
 
 
 
@@ -1249,24 +1181,22 @@ CS_NOTABLE([vgvm], [image], [], [$cs_cv_libvgvm],
 # Check for Ogg/Vorbis.  In addition to the standard installed locations, we
 # also search CS/libs/libogg*, CS/libs/libvorbis.*, CS/libs/libvorbisfile*.
 #------------------------------------------------------------------------------
-CS_NOTABLE([ogg], [audio], [], [$cs_cv_libogg],
-    [CS_CHECK_LIB_WITH([ogg],
-	[AC_LANG_PROGRAM(
-	    [[#include <ogg/ogg.h>]],
-	    [ogg_sync_state state; ogg_sync_init(&state);])],
-	[$srcdir/libs/libogg*], [],
-	[CS_EMIT_BUILD_RESULT([cs_cv_libogg], [OGG])])])
+CS_CHECK_LIB_WITH([ogg],
+    [AC_LANG_PROGRAM(
+	[[#include <ogg/ogg.h>]],
+	[ogg_sync_state state; ogg_sync_init(&state);])],
+    [$srcdir/libs/libogg*], [],
+    [CS_EMIT_BUILD_RESULT([cs_cv_libogg], [OGG])])
 
-CS_NOTABLE([vorbis], [audio], [], [$cs_cv_libvorbis],
-    [AS_IF([test "$cs_cv_libogg" = yes],
-	[CS_CHECK_LIB_WITH([vorbis],
-	    [AC_LANG_PROGRAM([[#include <vorbis/codec.h>]],
-	      [vorbis_info info; vorbis_info_init(&info);])],
-	    [$srcdir/libs/libvorbis.*], [],
-	    [CS_EMIT_BUILD_RESULT([cs_cv_libvorbis], [VORBIS])], [],
-	    [$cs_cv_libogg_cflags],
-	    [$cs_cv_libogg_lflags],
-	    [$cs_cv_libogg_libs])])])
+AS_IF([test "$cs_cv_libogg" = yes],
+    [CS_CHECK_LIB_WITH([vorbis],
+	[AC_LANG_PROGRAM([[#include <vorbis/codec.h>]],
+	  [vorbis_info info; vorbis_info_init(&info);])],
+	[$srcdir/libs/libvorbis.*], [],
+	[CS_EMIT_BUILD_RESULT([cs_cv_libvorbis], [VORBIS])], [],
+	[$cs_cv_libogg_cflags],
+	[$cs_cv_libogg_lflags],
+	[$cs_cv_libogg_libs])])
 
 AS_IF([test "$cs_cv_libvorbis" = yes],
     [CS_CHECK_LIB_WITH([vorbisfile],
@@ -1286,16 +1216,15 @@ AS_IF([test "$cs_cv_libvorbis" = yes],
 # Check for Speex.  In addition to the standard installed locations, we
 # also search CS/libs/libspeex*
 #------------------------------------------------------------------------------
-CS_NOTABLE([speex], [audio], [], [$cs_cv_libspeex],
-    [AS_IF([test "$cs_cv_libogg" = yes],
-	[CS_CHECK_LIB_WITH([speex],
-	    [AC_LANG_PROGRAM([[#include <speex/speex.h>]],
-		[SpeexBits bits; speex_bits_init(&bits);])],
-	    [$srcdir/libs/libspeex.*], [],
-	    [CS_EMIT_BUILD_RESULT([cs_cv_libspeex], [SPEEX])], [],
-	    [$cs_cv_libogg_cflags],
-	    [$cs_cv_libogg_lflags],
-	    [$cs_cv_libogg_libs])])])
+AS_IF([test "$cs_cv_libogg" = yes],
+    [CS_CHECK_LIB_WITH([speex],
+	[AC_LANG_PROGRAM([[#include <speex/speex.h>]],
+            [SpeexBits bits; speex_bits_init(&bits);])],
+	[$srcdir/libs/libspeex.*], [],
+	[CS_EMIT_BUILD_RESULT([cs_cv_libspeex], [SPEEX])], [],
+	[$cs_cv_libogg_cflags],
+	[$cs_cv_libogg_lflags],
+	[$cs_cv_libogg_libs])])
 
 AS_IF([test "$cs_cv_libspeex" = yes],
     [CS_CHECK_BUILD([for speex_header_free()], [cs_cv_speex_header_free],
@@ -1323,26 +1252,23 @@ CS_CHECK_LIB_WITH([3ds],
     [$srcdir/libs/lib3ds*], [], [], [], [], [], [$cs_cv_libm_libs],
     [lib3ds, lib3ds-120])
 
-CS_NOTABLE([3ds], [models], [], [$cs_cv_lib3ds_recent],
-    [AS_IF([test $cs_cv_lib3ds = yes],
-	[CS_CHECK_BUILD([if lib3ds is sufficiently recent],
-            [cs_cv_lib3ds_recent],
-	    [AC_LANG_PROGRAM([[#include <lib3ds/io.h>]],[lib3ds_io_free(0);])],
-	    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_lib3ds], [3DS])], [], [],
-	    [$cs_cv_lib3ds_cflags],[$cs_cv_lib3ds_lflags],[$cs_cv_lib3ds_libs])
-	    AS_IF([test $cs_cv_lib3ds_recent = yes],
-		[CS_CHECK_BUILD([for generic lib3ds data I/O callbacks],
-		[cs_cv_lib3ds_1_3],
-		[AC_LANG_PROGRAM([[#include <lib3ds/io.h>
-		    size_t DataReadFunc(void*, void*, size_t) {}]],
-		    [lib3ds_io_new (0, 0, 0, 0, DataReadFunc, 0)])],
-		[], [C++],
-		[CS_EMIT_BUILD_PROPERTY(
-                    [LIB3DS.GENERIC_DATA_IO_CALLBACKS],[yes])],
-		[], [],
-		[$cs_cv_lib3ds_cflags],
-		[$cs_cv_lib3ds_lflags],
-		[$cs_cv_lib3ds_libs])])])])
+AS_IF([test $cs_cv_lib3ds = yes],
+    [CS_CHECK_BUILD([if lib3ds is sufficiently recent], [cs_cv_lib3ds_recent],
+	[AC_LANG_PROGRAM([[#include <lib3ds/io.h>]], [lib3ds_io_free(0);])],
+	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_lib3ds], [3DS])], [], [],
+	[$cs_cv_lib3ds_cflags], [$cs_cv_lib3ds_lflags], [$cs_cv_lib3ds_libs])
+	AS_IF([test $cs_cv_lib3ds_recent = yes],
+	    [CS_CHECK_BUILD([for generic lib3ds data I/O callbacks],
+	    [cs_cv_lib3ds_1_3],
+	    [AC_LANG_PROGRAM([[#include <lib3ds/io.h>
+	        size_t DataReadFunc (void *self, void *buffer, size_t n) {}]],
+	        [lib3ds_io_new (0, 0, 0, 0, DataReadFunc, 0)])],
+	    [], [C++],
+	    [CS_EMIT_BUILD_PROPERTY([LIB3DS.GENERIC_DATA_IO_CALLBACKS],[yes])],
+	    [], [],
+	    [$cs_cv_lib3ds_cflags],
+	    [$cs_cv_lib3ds_lflags],
+	    [$cs_cv_lib3ds_libs])])])
 
 
 
@@ -1364,19 +1290,15 @@ AS_IF([test $cs_cv_libode = yes],
 	[$cs_cv_libode_cflags], [$cs_cv_libode_lflags], [$cs_cv_libode_libs])],
 	[cs_cv_libode_opcode=no])
 
-CS_NOTABLE([ode], [physics], [], [$cs_cv_libode_recent],
-    [AS_IF([test $cs_cv_libode_opcode = yes],
-	[CS_CHECK_BUILD([if libode is sufficiently recent],
-            [cs_cv_libode_recent],
-	    [AC_LANG_PROGRAM(
-		[[#include <ode/ode.h>]],
-		[dGeomTriMeshGetTriangleCount(0);])],
-	    [], [C++],
-	    [CS_EMIT_BUILD_RESULT([cs_cv_libode], [ODE])], [], [],
-	    [$cs_cv_libode_cflags],
-            [$cs_cv_libode_lflags],
-            [$cs_cv_libode_libs])],
-	    [cs_cv_libode_recent=no])])
+AS_IF([test $cs_cv_libode_opcode = yes],
+    [CS_CHECK_BUILD([if libode is sufficiently recent], [cs_cv_libode_recent],
+	[AC_LANG_PROGRAM(
+	    [[#include <ode/ode.h>]],
+	    [dGeomTriMeshGetTriangleCount(0);])],
+	[], [C++],
+	[CS_EMIT_BUILD_RESULT([cs_cv_libode], [ODE])], [], [],
+	[$cs_cv_libode_cflags], [$cs_cv_libode_lflags], [$cs_cv_libode_libs])],
+	[cs_cv_libode_recent=no])
 
 
 
@@ -1393,7 +1315,7 @@ CS_NOTABLE([ode], [physics], [], [$cs_cv_libode_recent],
 
 AC_ARG_WITH([bullet], [AC_HELP_STRING([--with-bullet=dir],
     [specify additional location to search Bullet if not detected automatically; 
-    directories searched include dir/include/bullet, dir/lib, and dir])])
+    directories searched include dir/include, dir/lib, and dir])])
 
 # Modified versions of _CS_CHECK_LIB_CREATE_FLAG and _CS_CHECK_LIB_CREATE_FLAG
 # to allow checking for multiple libs at once
@@ -1407,7 +1329,7 @@ AC_DEFUN([_CS_CHECK_BULLET_CREATE_FLAGS],
 		    [$cs_check_incdir], [$cs_check_libdir], [$2])
 		;;
 	    *)  _CS_CHECK_BULLET_CREATE_FLAG([$1],
-		    [$cs_lib_item/include/bullet], [$cs_lib_item/lib], [$2])
+		    [$cs_lib_item/include], [$cs_lib_item/lib], [$2])
 		_CS_CHECK_BULLET_CREATE_FLAG(
 		    [$1], [$cs_lib_item], [$cs_lib_item], [$2])
 		;;
@@ -1446,9 +1368,9 @@ AS_IF([test "$with_bullet" != no],
         [cs_check_lib_paths=$with_bullet],
         [cs_check_lib_paths="| cs_lib_paths_default "])
     _CS_CHECK_BULLET_CREATE_FLAGS([cs_check_lib_flags],
-            [-lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath], [$cs_check_lib_paths])
+            [-lBulletDynamics -lBulletCollision -lLinearMath], [$cs_check_lib_paths])
     _CS_CHECK_BULLET_CREATE_FLAGS([cs_check_lib_flags],
-            [-lbulletsoftbody -lbulletdynamics -lbulletcollision -lbulletmath], [$cs_check_lib_paths])
+            [-lbulletdynamics -lbulletcollision -lbulletmath], [$cs_check_lib_paths])
             
     CS_CHECK_BUILD([for Bullet], [cs_cv_libbullet],
     	[AC_LANG_PROGRAM(
@@ -1470,31 +1392,17 @@ AS_IF([test "$with_bullet" != no],
 
 cs_cv_with_bullet="$with_bullet"
 
-CS_NOTABLE([bullet], [physics], [], [$cs_cv_bullet_recent],
-    [AS_IF([test $cs_cv_libbullet = yes],
-	[CS_CHECK_BUILD([if bullet is sufficiently recent],
-            [cs_cv_bullet_recent],
-	    [AC_LANG_PROGRAM(
-		[[#include "btBulletDynamicsCommon.h"]],
-		[btManifoldPoint *p = new btManifoldPoint();
-		 p->m_appliedImpulse;])],
-	    [], [C++],
-	    [CS_EMIT_BUILD_RESULT([cs_cv_bullet_recent], [BULLET])], [], [],
-	    [$cs_cv_libbullet_cflags],
-	    [$cs_cv_libbullet_lflags],
-	    [$cs_cv_libbullet_libs])])])
-
 AS_IF([test $cs_cv_libbullet = yes],
-    [CS_CHECK_BUILD([for bullet serializer], [cs_cv_bullet_serializer],
+    [CS_CHECK_BUILD([if bullet is sufficiently recent (>=2.68)], [cs_cv_bullet_recent],
 	[AC_LANG_PROGRAM(
 	    [[#include "btBulletDynamicsCommon.h"]],
-	    [btDefaultSerializer* serializer = new btDefaultSerializer (1024);])],
+	    [btManifoldPoint *p = new btManifoldPoint();
+             p->m_appliedImpulse;])],
 	[], [C++],
-	[CS_HEADER_PROPERTY([CS_HAVE_BULLET_SERIALIZER])], [], [],
+	[CS_EMIT_BUILD_RESULT([cs_cv_bullet_recent], [BULLET])], [], [],
 	[$cs_cv_libbullet_cflags],
 	[$cs_cv_libbullet_lflags],
 	[$cs_cv_libbullet_libs])])
-
 
 
 #------------------------------------------------------------------------------
@@ -1518,29 +1426,19 @@ AC_DEFUN([CS_CHECK_LIBOPENAL],
 	[AC_LANG_PROGRAM(
 	    [CS_AL_INCLUDE([CS_OPENAL_PATH],[AL],[alc.h])],
 	    [alcCreateContext (0,0);])],
-	[CS_CREATE_TUPLE([],[],[-lopenal]) \
+	[CS_CREATE_TUPLE([-DCS_OPENAL_PATH=OpenAL],[],[-framework OpenAL]) \
+	CS_CREATE_TUPLE([],[],[-lopenal]) \
 	CS_CREATE_TUPLE([],[],[-lopenal32]) \
 	CS_CREATE_TUPLE([],[],[-lOpenAL32]) \
 	CS_CREATE_TUPLE([],[],[-lopenal -ldsound]) \
-	CS_CREATE_TUPLE([],[],[-lopenal32 -ldsound]) \
-    CS_CREATE_TUPLE([-DCS_OPENAL_PATH=OpenAL],[],[-framework OpenAL])], [],
+	CS_CREATE_TUPLE([],[],[-lopenal32 -ldsound])], [],
 	[CS_EMIT_BUILD_RESULT([cs_cv_libopenal], [OPENAL])], [], [],
 	[$cs_cv_sys_pthread_cflags],
 	[$cs_cv_sys_pthread_lflags],
 	[$cs_cv_sys_pthread_libs $cs_cv_libdl_libs $cs_cv_libm_libs])])
 
-CS_NOTABLE([openal], [audio], [], [$cs_cv_libopenal],
-    [CS_CHECK_LIBOPENAL])
-AS_IF([test $cs_cv_libopenal = yes],
-    [CS_CHECK_BUILD([for alext.h],
-	[cs_cv_openal_alext_h],
-	[AC_LANG_PROGRAM(
-	    [CS_AL_INCLUDE([CS_OPENAL_PATH],[AL],[al.h])
-	    CS_AL_INCLUDE([CS_OPENAL_PATH],[AL],[alc.h])
-	    CS_AL_INCLUDE([CS_OPENAL_PATH],[AL],[alext.h])], 
-	    [])],
-	[], [], [CS_HEADER_PROPERTY([CS_HAVE_ALEXT_H])], [], [],
-	[$cs_cv_libopenal_cflags])])
+CS_CHECK_LIBOPENAL
+
 
 
 #------------------------------------------------------------------------------
@@ -1558,21 +1456,19 @@ CS_CHECK_LIB_WITH([freetype2],
 	[FT_Library p; FT_Init_FreeType(&p); FT_Done_FreeType(p);])],
 	[], [], [], [], [], [], [], [freetype])
 
-CS_NOTABLE([freetype2], [], [], [$cs_cv_freetype2_recent],
-    [AS_IF([test $cs_cv_libfreetype2 = yes],
-	[CS_CHECK_BUILD([if freetype2 is sufficiently recent],
-	    [cs_cv_freetype2_recent],
-	    [AC_LANG_PROGRAM(
-		[[#include <ft2build.h>
-		#include FT_FREETYPE_H
-		#include FT_GLYPH_H
-		#include FT_MODULE_H]],
-                [return FT_LOAD_TARGET_MONO | FT_RENDER_MODE_NORMAL |
-                    FT_ENCODING_UNICODE])],
-	    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libfreetype2], [FT2])], [], [],
-	    [$cs_cv_libfreetype2_cflags],
-	    [$cs_cv_libfreetype2_lflags],
-	    [$cs_cv_libfreetype2_libs])])])
+AS_IF([test $cs_cv_libfreetype2 = yes],
+    [CS_CHECK_BUILD([if freetype2 is sufficiently recent],
+	[cs_cv_freetype2_recent],
+	[AC_LANG_PROGRAM(
+	    [[#include <ft2build.h>
+	    #include FT_FREETYPE_H
+	    #include FT_GLYPH_H
+	    #include FT_MODULE_H]], [return
+	    FT_LOAD_TARGET_MONO|FT_RENDER_MODE_NORMAL|FT_ENCODING_UNICODE])],
+	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libfreetype2], [FT2])], [], [],
+	[$cs_cv_libfreetype2_cflags],
+	[$cs_cv_libfreetype2_lflags],
+	[$cs_cv_libfreetype2_libs])])
 
 
 
@@ -1612,18 +1508,36 @@ CS_CHECK_LIB_WITH([cal3d],
     [AC_LANG_PROGRAM([[#include <cal3d/cal3d.h>]],
 	[CalModel* m = 0; m->getMixer();])], [], [C++])
 
-CS_NOTABLE([cal3d], [models], [], [$cs_cv_cal3d_recent],
-    [AS_IF([test $cs_cv_libcal3d = yes],
-	[CS_CHECK_BUILD([if cal3d is sufficiently recent],
-            [cs_cv_cal3d_recent],
-	    [AC_LANG_PROGRAM(
-		[[#include <cal3d/cal3d.h>]],
-		[int x = LOADER_FLIP_WINDING;])],
-	    [], [C++],
-	    [CS_EMIT_BUILD_RESULT([cs_cv_libcal3d], [CAL3D])], [], [],
-	    [$cs_cv_libcal3d_cflags],
-	    [$cs_cv_libcal3d_lflags],
-	    [$cs_cv_libcal3d_libs])])])
+AS_IF([test $cs_cv_libcal3d = yes],
+    [CS_CHECK_BUILD([if cal3d is sufficiently recent], [cs_cv_cal3d_recent],
+	[AC_LANG_PROGRAM(
+	    [[#include <cal3d/cal3d.h>]],
+	    [int x = LOADER_FLIP_WINDING;])],
+	[], [C++],
+	[CS_EMIT_BUILD_RESULT([cs_cv_libcal3d], [CAL3D])], [], [],
+	[$cs_cv_libcal3d_cflags],
+	[$cs_cv_libcal3d_lflags],
+	[$cs_cv_libcal3d_libs])])
+
+
+
+#------------------------------------------------------------------------------
+# Check for SDL.
+#------------------------------------------------------------------------------
+CS_CHECK_LIB_WITH([sdl],
+    [AC_LANG_PROGRAM(
+	[[#include <SDL.h>
+	#undef main]],
+	[SDL_Init(0); SDL_Quit();])])
+
+AS_IF([test $cs_cv_libsdl = yes],
+    [CS_CHECK_BUILD([if SDL is sufficiently recent], [cs_cv_sdl_recent],
+	[AC_LANG_PROGRAM(
+	    [[#include <SDL.h>
+	    #undef main]],
+	    [SDL_EnableKeyRepeat(0,0)])],
+	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libsdl], [SDL])], [], [],
+	[$cs_cv_libsdl_cflags], [$cs_cv_libsdl_lflags], [$cs_cv_libsdl_libs])])
 
 
 
@@ -1718,88 +1632,44 @@ AS_IF([test $cs_cv_libwx = yes],
 	[C++])],
     [cs_cv_libwx_opengl=no])
     
-CS_NOTABLE([wxwidgets], [gui], [], [$cs_cv_libwx_opengl])
 AS_IF([test $cs_cv_libwx_opengl = yes],
     [CS_EMIT_BUILD_RESULT([cs_cv_libwx_opengl], [WX])])
 
-AS_IF([test $cs_cv_libwx = yes],
-    [CS_CHECK_BUILD([if wxWidgets is built with wxAUI support],
-	[cs_cv_libwx_aui],
-	[AC_LANG_PROGRAM(
-	    [[#include "wx/wxprec.h"
-	    #ifdef __BORLANDC__
-	    #pragma hdrstop
-	    #endif
-	    #ifndef WX_PRECOMP
-	    #include "wx/wx.h"
-	    #endif
-	    #include "wx/aui/aui.h"
-	    ]],
-	    [wxAuiManager mgr; wxWindow* w;
-	     mgr.SetManagedWindow(w);
-	     mgr.AddPane(w, wxAuiPaneInfo());])],
-	[CS_CREATE_TUPLE(
-	    [$cs_cv_libwx_cflags],
-	    [$cs_cv_libwx_lflags],
-	    [$cs_cv_libwx_libs])],
-	[C++])],
-    [cs_cv_libwx_aui=no])
-
-AS_IF([test $cs_cv_libwx_aui = yes],
-    [CS_EMIT_BUILD_RESULT([cs_cv_libwx_aui], [WX.AUI])])
 
 
 #----------------------------------------------------------------------------
 # Check for CEGUI.
-# The check fails on some distros with missing references to libdl
-# (eg on OpenSUSE), so pass -ldl along as well
 #----------------------------------------------------------------------------
-# CS_CEGUI_INCLUDE(CPP-MACRO,FALLBACK,HEADER)
-AC_DEFUN([CS_CEGUI_INCLUDE],
-    [[#ifndef CS_HEADER_GLOBAL
-    #define CS_HEADER_GLOBAL(X,Y) CS_HEADER_GLOBAL_COMPOSE(X,Y)
-    #define CS_HEADER_GLOBAL_COMPOSE(X,Y) <X/Y>
-    #endif
-    #ifdef $1
-    #include <CoreFoundation/CFBundle.h>
-    #include CS_HEADER_GLOBAL($1,$2)
-    #else
-    #include <$2>
-    #endif]])
-
 CS_CHECK_LIB_WITH([CEGUI],
-    [AC_LANG_PROGRAM([CS_CEGUI_INCLUDE([CS_CEGUI_PATH],[CEGUI.h])],
+    [AC_LANG_PROGRAM([[#include <CEGUI.h>]],
     [CEGUI::WindowManager::getSingleton();])], [], [C++],
-    [], [], [], [], [$cs_cv_libdl_libs], [CEGUIBase])
+    [], [], [], [], [], [CEGUIBase])
 
-CS_NOTABLE([cegui], [gui], [], [$cs_cv_CEGUI_recent],
-    [AS_IF([test $cs_cv_libCEGUI = yes],
-	[CS_CHECK_BUILD([if CEGUI is sufficiently recent],
-            [cs_cv_CEGUI_recent],
-	    [AC_LANG_PROGRAM(
-		[[#include <falagard/CEGUIFalWidgetLookManager.h>]],
-		[CEGUI::WidgetLookManager::getSingleton();
-		#if (CEGUI_VERSION_MAJOR == 0) && (CEGUI_VERSION_MINOR < 7)
-		who took the ram from the ramalamadingdong?
-		#endif
-		])],
-	    [], [C++],
-	    [CS_EMIT_BUILD_RESULT([cs_cv_libCEGUI], [CEGUI])], [], [],
-	    [$cs_cv_libCEGUI_cflags],
-	    [$cs_cv_libCEGUI_lflags],
-	    [$cs_cv_libCEGUI_libs])])])
+AS_IF([test $cs_cv_libCEGUI = yes],
+    [CS_CHECK_BUILD([if CEGUI is sufficiently recent], [cs_cv_CEGUI_recent],
+	[AC_LANG_PROGRAM(
+	    [[#include <falagard/CEGUIFalWidgetLookManager.h>]],
+	    [CEGUI::WidgetLookManager::getSingleton();
+	    #if (CEGUI_VERSION_MAJOR == 0) && (CEGUI_VERSION_MINOR < 5) \
+            || (CEGUI_VERSION_MINOR > 6)
+	    who took the ram from the ramalamadingdong?
+	    #endif
+	    ])],
+	[], [C++],
+	[CS_EMIT_BUILD_RESULT([cs_cv_libCEGUI], [CEGUI])], [], [],
+	[$cs_cv_libCEGUI_cflags],
+	[$cs_cv_libCEGUI_lflags],
+	[$cs_cv_libCEGUI_libs])])
 
 
 
 #----------------------------------------------------------------------------
 # Check for GTK.
 #----------------------------------------------------------------------------
-CS_NOTABLE([gtk], [], [unix], [$cs_cv_libGTK],
-    [CS_CHECK_LIB_WITH([GTK],
-	[AC_LANG_PROGRAM([[#include <gtk/gtk.h>]],
-	[gtk_message_dialog_new (0, 0, 0, 0, 0);])], [], [],
-	[CS_EMIT_BUILD_RESULT([cs_cv_libGTK], [GTK])], [], [], [], [],
-            [gtk+-2.0])])
+CS_CHECK_LIB_WITH([GTK],
+    [AC_LANG_PROGRAM([[#include <gtk/gtk.h>]],
+    [gtk_message_dialog_new (0, 0, 0, 0, 0);])], [], [],
+    [CS_EMIT_BUILD_RESULT([cs_cv_libGTK], [GTK])], [], [], [], [], [gtk+-2.0])
 
 AS_IF([test $cs_cv_libGTK = yes],
     [CS_CHECK_BUILD([if gtk_message_dialog_format_secondary_text is available],
@@ -1818,7 +1688,7 @@ AS_IF([test $cs_cv_libGTK = yes],
 #------------------------------------------------------------------------------
 # Check if GNU/Linux joystick API is present.
 #------------------------------------------------------------------------------
-CS_NOTABLE([linux-joystick], [], [unix], [$cs_cv_sys_linux_joystick],
+AS_IF([test $cs_host_family != windows],
     [CS_CHECK_BUILD([for GNU/Linux joystick API], [cs_cv_sys_linux_joystick],
 	[AC_LANG_PROGRAM(
 	    [[#include <fcntl.h>
@@ -1827,7 +1697,7 @@ CS_NOTABLE([linux-joystick], [], [unix], [$cs_cv_sys_linux_joystick],
 	    [unsigned char axes;
 	    unsigned char buttons;
 	    int version;
-	    char name[[128]];
+	    char name[[[128]]];
 	    int fd;
 	    struct js_event js;
 	    (void)js;
@@ -1849,17 +1719,14 @@ CS_NOTABLE([linux-joystick], [], [unix], [$cs_cv_sys_linux_joystick],
 # won't be available, causing problems. Normally any app calls some libm
 # function. However, the default test program doesn't, so the link test fails.
 # And the same applies to pthread, too.
-# The workaround is to append -Wl,--no-as-needed at the end of LDFLAGS.
-# Note that just stripping the --as-needed doesn't work as the flag may also
-# be set by a script that is set as CXX in which case the --as-needed cannot
-# be found by us and therefore not stripped.
+# The workaround is to explicitly strip -Wl,--as-needed from LDFLAGS.
 #------------------------------------------------------------------------------
 AC_DEFUN([CS_CHECK_LIBCG],
     [AC_REQUIRE([CS_CHECK_COMMON_LIBS])
     AC_REQUIRE([CS_CHECK_PTHREAD])
     AC_REQUIRE([CS_PROG_LINK])
     LDFLAGS_BACKUP="$LDFLAGS"
-    LDFLAGS="$LDFLAGS $cs_cv_prog_link_no_as_needed"
+    LDFLAGS=`echo "$LDFLAGS" | sed s/-Wl,--as-needed//`
     CS_CHECK_LIB_WITH([Cg],
     	[AC_LANG_PROGRAM(
     	    [[#include <Cg/cg.h>]],
@@ -1873,8 +1740,7 @@ AC_DEFUN([CS_CHECK_LIBCG],
     AS_IF([test $cs_cv_libCg = yes],
 	[CS_CHECK_BUILD([if Cg is sufficiently recent], [cs_cv_libCg_recent],
 	    [AC_LANG_PROGRAM(
-	    	[[#include <Cg/cg.h>]], [cgSetErrorHandler(0,0);
-	    	CGprofile profile = CG_PROFILE_GPU_VP])],
+	    	[[#include <Cg/cg.h>]], [cgSetErrorHandler(0,0);])],
 	    [], [C++], [], [], [],
 	    [$cs_cv_libCg_cflags],
 	    [$cs_cv_libCg_lflags],
@@ -1896,15 +1762,14 @@ AC_DEFUN([CS_CHECK_LIBCG],
 	    
     LDFLAGS="$LDFLAGS_BACKUP"])
 
-CS_NOTABLE([cg], [rendering], [], [$cs_cv_libCgGL],
-    [CS_CHECK_LIBCG])
+CS_CHECK_LIBCG
 
 
 
 #------------------------------------------------------------------------------
 # Check for OpenSoundSystem (OSS).
 #------------------------------------------------------------------------------
-CS_NOTABLE([oss], [audio], [unix], [$cs_cv_header_soundcard_h],
+AS_IF([test $cs_host_family != windows],
     [AC_CHECK_HEADER([soundcard.h],
 	[CS_HEADER_PROPERTY([CS_HAVE_SOUNDCARD_H])
 	cs_cv_header_soundcard_h=yes],
@@ -1914,8 +1779,9 @@ CS_NOTABLE([oss], [audio], [unix], [$cs_cv_header_soundcard_h],
 	    [AC_CHECK_HEADER([machine/soundcard.h],
 		  [CS_HEADER_PROPERTY([CS_HAVE_MACHINE_SOUNDCARD_H])
 		  cs_cv_header_soundcard_h=yes],
-		  [cs_cv_header_soundcard_h=no])])])
-    AS_IF([test $cs_cv_header_soundcard_h = yes],
+		  [cs_cv_header_soundcard_h=no])])])]
+    
+    [AS_IF([test $cs_cv_header_soundcard_h = yes],
 	[CS_EMIT_BUILD_PROPERTY([OSS.AVAILABLE], [yes])])])
 
 
@@ -1923,7 +1789,7 @@ CS_NOTABLE([oss], [audio], [unix], [$cs_cv_header_soundcard_h],
 #------------------------------------------------------------------------------
 # Check for JACK daemon jackasyn library (JACKASYN).
 #------------------------------------------------------------------------------
-CS_NOTABLE([jackasyn], [audio], [unix], [$cs_cv_libjackasyn],
+AS_IF([test $cs_host_family != windows],
     [CS_CHECK_LIB_WITH([jackasyn],
 	[AC_LANG_PROGRAM(
 	    [[#include <stdio.h>
@@ -1936,7 +1802,7 @@ CS_NOTABLE([jackasyn], [audio], [unix], [$cs_cv_libjackasyn],
 #------------------------------------------------------------------------------
 # Check for Advanced GNU/Linux Sound Architecture (ALSA).
 #------------------------------------------------------------------------------
-CS_NOTABLE([alsa], [audio], [unix], [$cs_cv_libasound],
+AS_IF([test $cs_host_family != windows],
     [CS_CHECK_LIB_WITH([asound],
 	[AC_LANG_PROGRAM(
 	    [[#include <alsa/asoundlib.h>]],
@@ -1946,28 +1812,23 @@ CS_NOTABLE([alsa], [audio], [unix], [$cs_cv_libasound],
 
 
 #------------------------------------------------------------------------------
-# Check for Open Asset Import Library (Assimp)
+# Check for Colour Ascii Art library (libcaca).
 #------------------------------------------------------------------------------
-CS_NOTABLE([assimp], [models], [], [$cs_cv_libassimp],
-    [CS_CHECK_LIB_WITH([assimp],
-	[AC_LANG_PROGRAM(
-	    [[#include <assimp/assimp.h>
-	      #include <assimp/aiScene.h>]],
-	    [])],
-	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libassimp], [ASSIMP])])])
+# NOTE: Would solely pkg-config be used for caca detection the separate cucul 
+#  test could be dropped since it would be contained in caca.
+CS_CHECK_LIB_WITH([cucul],
+    [AC_LANG_PROGRAM([[#include <cucul.h>]], [cucul_create_canvas(0,0)])],
+    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcucul], [CUCUL])], [], [], [], [],
+    [libcucul])
+    
+CS_CHECK_LIB_WITH([caca],
+    [AC_LANG_PROGRAM([[#include <caca.h>]], [caca_create_display(0)])],
+    [], [], [CS_EMIT_BUILD_RESULT([cs_cv_libcaca], [CACA])], [], 
+    [$cs_cv_libcucul_cflags], 
+    [$cs_cv_libcucul_lflags], 
+    [$cs_cv_libcucul_libs],
+    [libcaca])
 
-
-
-#------------------------------------------------------------------------------
-# Check for libcurl (CURL)
-#------------------------------------------------------------------------------
-CS_NOTABLE([curl], [], [], [$cs_cv_libcurl],
-    [CS_CHECK_LIB_WITH([curl],
-	[AC_LANG_PROGRAM(
-	    [[#include <curl/curl.h>]],
-	    [])],
-	[], [], [CS_EMIT_BUILD_PROPERTY([CURL.AVAILABLE], [yes])
-		 CS_EMIT_BUILD_RESULT([cs_cv_libcurl], [CURL])])])
 
 
 
@@ -2092,28 +1953,7 @@ CS_CHECK_BUILD([for sysconf(_SC_NPROCESSORS_ONLN)], [cs_cv_sysconf_processors],
 	[sysconf(_SC_NPROCESSORS_ONLN);])],
     [],[],
     [CS_HEADER_PROPERTY([CS_HAVE_SYSCONF_PROCESSORS])])
-
-
    
-#------------------------------------------------------------------------------
-# Check for nullptr.
-# Since some g++ versions support nullptr when enabling an experimental C++0x
-# mode, but not in -ansi mode, check whether nullptr is also available in
-# when -ansi is provided.
-#------------------------------------------------------------------------------
-CS_CHECK_BUILD([for nullptr], [cs_cv__nullptr],
-    [AC_LANG_PROGRAM(
-	[[]],
-	[void* p = nullptr;])],
-    [], [C++],
-    [CS_HEADER_PROPERTY([CS_HAS_NULLPTR])])
-CS_CHECK_BUILD([for nullptr in pedantic mode], [cs_cv__nullptr_ansi],
-    [AC_LANG_PROGRAM(
-	[[]],
-	[void* p = nullptr;])],
-    [], [C++],
-    [CS_HEADER_PROPERTY([CS_HAS_NULLPTR_STRICT_ANSI])], [], [],
-    [$cs_cv_prog_cxx_enable_pedantic])
 
 
 #------------------------------------------------------------------------------
@@ -2162,24 +2002,17 @@ CS_SYS_PLUGIN_MAIN
 
 
 #------------------------------------------------------------------------------
-# Check for sizeof(void*) to determine whether the platform is 32 or 64 bit.
+# Check for sizeof(long) to determine whether the platform is 32 or 64 bit.
 # Also needed by the PRIx99 macros provided by CS.
 #------------------------------------------------------------------------------
-AC_DEFUN([CS_CHECK_VOIDP_BITS],
-    [AC_CHECK_SIZEOF([void*])
-    AS_IF([test $ac_cv_sizeof_voidp = 8],
-	[cs_voidp_bits=64], [cs_voidp_bits=32])])
+AC_DEFUN([CS_CHECK_LONG_BITS],
+    [AC_CHECK_SIZEOF([long])
+    AS_IF([test $ac_cv_sizeof_long = 8],
+	[cs_long_bits=64], [cs_long_bits=32])])
 
-CS_CHECK_VOIDP_BITS
-CS_HEADER_PROPERTY([CS_PROCESSOR_SIZE], [$cs_voidp_bits])
-CS_EMIT_BUILD_PROPERTY([TARGET.PROCESSORSIZE], [$cs_voidp_bits])
-
-
-
-#------------------------------------------------------------------------------
-# Check for sizeof(long).
-#------------------------------------------------------------------------------
-AC_CHECK_SIZEOF([long])
+CS_CHECK_LONG_BITS
+CS_HEADER_PROPERTY([CS_PROCESSOR_SIZE], [$cs_long_bits])
+CS_EMIT_BUILD_PROPERTY([TARGET.PROCESSORSIZE], [$cs_long_bits])
 CS_HEADER_PROPERTY([CS_LONG_SIZE], [$ac_cv_sizeof_long])
 
 
@@ -2321,7 +2154,7 @@ CS_CHECK_BUILD([for MAXPATHLEN], [cs_cv_c_macro_maxpathlen],
 	#if HAVE_SYS_PARAM_H
 	#include <sys/param.h>
 	#endif]],
-	[char s[[MAXPATHLEN]]; (void)s;])],
+	[char s[[[MAXPATHLEN]]]; (void)s;])],
     [], [], [CS_HEADER_PROPERTY([CS_MAXPATHLEN], [MAXPATHLEN])], [], [],
     [$cs_cv_prog_cxx_enable_pedantic])
 
@@ -2445,13 +2278,6 @@ CS_SYMBOL_QUALIFIER([how to declare deprecation],
     [__attribute__((deprecated))], [], [C++],
     [CS_HEADER_PROPERTY([CS_ATTRIBUTE_DEPRECATED],
 	[$cs_cv_prog_cxx_declare_deprecated])])
-CS_SYMBOL_QUALIFIER([how to declare deprecation with message],
-    [cs_cv_prog_cxx_declare_deprecated_message],
-    [__attribute__((deprecated(MSG)))],
-    [[#define MSG "foo"
-    void* f()]], [C++],
-    [CS_HEADER_PROPERTY([CS_ATTRIBUTE_DEPRECATED_MSG(MSG)],
-	[$cs_cv_prog_cxx_declare_deprecated_message])])
 
 
 
@@ -2551,6 +2377,17 @@ AC_DEFUN([CS_CHECK_STD_SPECIAL_FLOAT],
 	[], [C++], [CS_HEADER_PROPERTY(AS_TR_CPP([CS_HAVE_STD__$1]))],
 	[], [], [$cs_cv_prog_cxx_enable_pedantic])])
 
+CS_CHECK_SPECIAL_FLOAT([isfinite])
+CS_CHECK_SPECIAL_FLOAT([finitef])
+CS_CHECK_SPECIAL_FLOAT([finite])
+CS_CHECK_SPECIAL_FLOAT([_finite])
+CS_CHECK_STD_SPECIAL_FLOAT([isfinite])
+
+CS_CHECK_SPECIAL_FLOAT([isnan])
+CS_CHECK_SPECIAL_FLOAT([isnanf])
+CS_CHECK_SPECIAL_FLOAT([_isnan])
+CS_CHECK_STD_SPECIAL_FLOAT([isnan])
+
 CS_CHECK_SPECIAL_FLOAT([isnormal])
 CS_CHECK_SPECIAL_FLOAT([normalf])
 CS_CHECK_STD_SPECIAL_FLOAT([isnormal])
@@ -2569,22 +2406,6 @@ CS_CHECK_BUILD([for strtof], [cs_cv_strtof],
 	[strtof (0, 0)])],
     [], [],
     [CS_HEADER_PROPERTY([CS_HAVE_STRTOF])])
-
-
-
-#------------------------------------------------------------------------------
-# Check for bit operation builtins.
-#------------------------------------------------------------------------------
-AC_DEFUN([CS_CHECK_BUILTIN],
-    [CS_CHECK_BUILD([for $1], [cs_cv_func_$1],
-	[AC_LANG_PROGRAM(
-	    [],
-	    [$1(0)])],
-	[], [C++], [CS_HEADER_PROPERTY(AS_TR_CPP([CS_HAVE_$1]))],
-	[], [], [$cs_cv_prog_cxx_enable_pedantic])])
-CS_CHECK_BUILTIN(__builtin_clz)
-CS_CHECK_BUILTIN(__builtin_ctz)
-CS_CHECK_BUILTIN(__builtin_popcount)
 
 
 
@@ -2732,27 +2553,6 @@ AS_IF([test $enable_leak_guard = yes],
 
 
 #------------------------------------------------------------------------------
-# Check for valgrind headers
-#------------------------------------------------------------------------------
-AC_MSG_CHECKING([whether to build with Valgrind support])
-AS_IF([test $cs_build_mode = debug],
-    [enable_valgrind_default=yes], [enable_valgrind_default=no])
-AC_ARG_ENABLE([valgrind], [AC_HELP_STRING([--enable-valgrind],
-    [enable building with special support for Valgrind, proving additional
-    information on memory blocks and states (default YES in 'debug' build mode, 
-    NO otherwise)])],
-    [], [enable_valgrind=$enable_valgrind_default])
-AC_MSG_RESULT([$enable_valgrind])
-AS_IF([test $enable_valgrind = no],
-    [CS_EMIT_BUILD_PROPERTY([COMPILER.CFLAGS], [-DNVALGRIND], [+])
-    CS_EMIT_BUILD_PROPERTY([COMPILER.C++FLAGS], [-DNVALGRIND], [+])])
-AC_CHECK_HEADERS([valgrind/valgrind.h],
-    [CS_HEADER_PROPERTY([CS_HAVE_VALGRIND_VALGRIND_H])])
-AC_CHECK_HEADERS([valgrind/memcheck.h],
-    [CS_HEADER_PROPERTY([CS_HAVE_VALGRIND_MEMCHECK_H])])
-
-
-#------------------------------------------------------------------------------
 # Determine whether link libraries should be static or shared.
 #------------------------------------------------------------------------------
 AC_MSG_CHECKING([whether to build shared libraries])
@@ -2767,8 +2567,7 @@ AC_ARG_ENABLE([shared], [AC_HELP_STRING([--enable-shared],
 AC_MSG_RESULT([$enable_shared])
 CS_EMIT_BUILD_PROPERTY([BUILD_SHARED_LIBS], [$enable_shared])
 AS_IF([test $enable_shared = yes], 
-  [CS_HEADER_PROPERTY([CS_USE_SHARED_LIBS])],
-  [CS_HEADER_PROPERTY([CS_USE_STATIC_LIBS])])
+  [CS_HEADER_PROPERTY([CS_BUILD_SHARED_LIBS])])
 
 
 
@@ -2922,21 +2721,6 @@ AS_IF([test $enable_make_emulation = yes],
 #------------------------------------------------------------------------------
 AC_OUTPUT
 
-
-#------------------------------------------------------------------------------
-# Result Summary.
-#------------------------------------------------------------------------------
-cs_summary=`CS_SUMMARIZE([$cs_host_family], [Found], [Missing])`
-AC_MSG_NOTICE([
-******************************************************************************
-***                 Crystal Space -- Configuration Summary                 ***
-******************************************************************************
-Build mode: ${cs_build_mode}
-Version: ${PACKAGE_VERSION} (SVN: ${cs_cv_source_is_svn})
-
-Optional Dependencies
----------------------
-$cs_summary])
 
 
 #------------------------------------------------------------------------------

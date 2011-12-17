@@ -49,9 +49,6 @@ public:
   /// Destroy the spline.
   virtual ~csSpline ();
 
-  /// Change the setup of the spline.
-  virtual void Setup (int d, int p);
-
   /// Get the number of dimensions.
   int GetDimensionCount () const { return dimensions; }
 
@@ -171,8 +168,6 @@ public:
 
   /// Destroy the spline.
   virtual ~csCubicSpline ();
-
-  virtual void Setup (int d, int p);
 
   /**
    * Calculate internal values for this spline given some time value.

@@ -18,7 +18,6 @@
 #include "cssysdef.h"
 #include "csutil/sysfunc.h"
 #include "csutil/scfstr.h"
-#include "csutil/stringquote.h"
 #include "iutil/string.h"
 #include "csqint.h"
 #include "csqsqrt.h"
@@ -111,7 +110,7 @@ const csOBB& csDynavisObjectModel::GetOBB ()
     {
       size_t num_vertices = trianglemesh->GetVertexCount ();
       csVector3* verts = trianglemesh->GetVertices ();
-      obb.FindOBB (verts, (int)num_vertices);
+      obb.FindOBB (verts, num_vertices);
       has_obb = true;
     }
   }
@@ -245,9 +244,8 @@ bool csObjectModelManager::CheckObjectModel (csDynavisObjectModel* model,
 	    model->use_outline_filler = false;
 	    if (show_notclosed > 0)
 	    {
-	      csPrintf ("WARNING! Object %s is not closed!\n",
-		  CS::Quote::Single (mw != 0 ?
-		    mw->QueryObject ()->GetName () : "<no mesh>"));
+	      csPrintf ("WARNING! Object '%s' is not closed!\n", mw != 0 ?
+	  	  mw->QueryObject ()->GetName () : "<no mesh>");
 	      fflush (stdout);
 	      show_notclosed--;
 	    }

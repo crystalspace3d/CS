@@ -37,8 +37,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   {
   }
 
-  //-- CS::Animation::iSkeletonPriorityNodeFactory
-  void PriorityNodeFactory::AddNode (CS::Animation::iSkeletonAnimNodeFactory* node, 
+  //-- iSkeletonPriorityNodeFactory2
+  void PriorityNodeFactory::AddNode (iSkeletonAnimNodeFactory2* node, 
                                      unsigned int priority)
   {
     subFactories.Push (node);
@@ -51,7 +51,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     priorityList[node] = 0;
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* PriorityNodeFactory::GetNode (uint node)
+  iSkeletonAnimNodeFactory2* PriorityNodeFactory::GetNode (uint node)
   {
     CS_ASSERT(node < subFactories.GetSize ());
     return subFactories[node];
@@ -68,16 +68,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     priorityList.DeleteAll ();
   }
 
-  //-- CS::Animation::iSkeletonAnimationNodeFactory
-  csPtr<CS::Animation::iSkeletonAnimNode> PriorityNodeFactory::CreateInstance (
-    CS::Animation::iSkeletonAnimPacket* packet, CS::Animation::iSkeleton* skeleton)
+  //-- iSkeletonAnimationNodeFactory2
+  csPtr<iSkeletonAnimNode2> PriorityNodeFactory::CreateInstance (
+    iSkeletonAnimPacket2* packet, iSkeleton2* skeleton)
   {
     csRef<PriorityNode> newp;
-    newp.AttachNew (new PriorityNode (this));
+    newp = new PriorityNode (this);
 
     BaseFactoryChildren::SetupInstance (newp, packet, skeleton);
 
-    return csPtr<CS::Animation::iSkeletonAnimNode> (newp);
+    return csPtr<iSkeletonAnimNode2> (newp);
   }
 
   const char* PriorityNodeFactory::GetNodeName () const
@@ -85,14 +85,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return name;
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* PriorityNodeFactory::FindNode (const char* name)
+  iSkeletonAnimNodeFactory2* PriorityNodeFactory::FindNode (const char* name)
   {
     if (this->name == name)
       return this;
 
     for (size_t i = 0; i < subFactories.GetSize (); ++i)
     {
-      CS::Animation::iSkeletonAnimNodeFactory* r = subFactories[i]->FindNode (name);
+      iSkeletonAnimNodeFactory2* r = subFactories[i]->FindNode (name);
       if (r)
         return r;
     }
@@ -190,13 +190,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return playbackSpeed;
   }
 
-  void PriorityNode::BlendState (CS::Animation::AnimatedMeshState* state, float baseWeight)
+  void PriorityNode::BlendState (csSkeletalState2* state, float baseWeight)
   {
-    csRef<CS::Animation::AnimatedMeshState> locState;
-    locState.AttachNew (new CS::Animation::AnimatedMeshState); //@@TODO: cache these
+    csRef<csSkeletalState2> locState;
+    locState.AttachNew (new csSkeletalState2); //@@TODO: cache these
 
-    csRef<CS::Animation::AnimatedMeshState> totalState;
-    totalState.AttachNew (new CS::Animation::AnimatedMeshState);
+    csRef<csSkeletalState2> totalState;
+    totalState.AttachNew (new csSkeletalState2);
     totalState->Setup (state->GetBoneCount ());
 
     for (size_t i = 0; i < indexList.GetSize (); ++i)
@@ -208,7 +208,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
       subNodes[indexList[i]]->BlendState (locState, 1.0f);
 
-      for (CS::Animation::BoneID b = 0; b < locState->GetBoneCount (); ++b)
+      for (BoneID b = 0; b < locState->GetBoneCount (); ++b)
       {
         if (locState->IsBoneUsed (b))
         {
@@ -220,7 +220,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
       }
     }
 
-    for (CS::Animation::BoneID b = 0; b < totalState->GetBoneCount (); ++b)
+    for (BoneID b = 0; b < totalState->GetBoneCount (); ++b)
     {
       if (totalState->IsBoneUsed (b))
       {
@@ -255,19 +255,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return false;
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* PriorityNode::GetFactory () const
+  iSkeletonAnimNodeFactory2* PriorityNode::GetFactory () const
   {
     return factory;
   }
 
-  CS::Animation::iSkeletonAnimNode* PriorityNode::FindNode (const char* name)
+  iSkeletonAnimNode2* PriorityNode::FindNode (const char* name)
   {
     if (factory->name == name)
       return this;
 
     for (size_t i = 0; i < subNodes.GetSize (); ++i)
     {
-      CS::Animation::iSkeletonAnimNode* r = subNodes[i]->FindNode (name);
+      iSkeletonAnimNode2* r = subNodes[i]->FindNode (name);
       if (r)
         return r;
     }
@@ -275,12 +275,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return 0;
   }
 
-  void PriorityNode::AddAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback)
+  void PriorityNode::AddAnimationCallback (iSkeletonAnimCallback2* callback)
   {
     BaseNodeChildren::AddAnimationCallback (callback);
   }
 
-  void PriorityNode::RemoveAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback)
+  void PriorityNode::RemoveAnimationCallback (iSkeletonAnimCallback2* callback)
   {
     BaseNodeChildren::RemoveAnimationCallback (callback);
   }
@@ -324,7 +324,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   : scfImplementationType (this), name (name), autoSwitch (true)
   {}
 
-  void RandomNodeFactory::AddNode (CS::Animation::iSkeletonAnimNodeFactory* node, float probability)
+  void RandomNodeFactory::AddNode (iSkeletonAnimNodeFactory2* node, float probability)
   {
     subFactories.Push (node); 
     probabilityList.Push (probability);
@@ -345,7 +345,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     autoSwitch = automatic;
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* RandomNodeFactory::GetNode (uint node)
+  iSkeletonAnimNodeFactory2* RandomNodeFactory::GetNode (uint node)
   {
     CS_ASSERT(node < subFactories.GetSize ());
 
@@ -354,7 +354,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
   uint RandomNodeFactory::GetNodeCount () const
   {
-    return (uint)subFactories.GetSize ();
+    return subFactories.GetSize ();
   }
 
   void RandomNodeFactory::ClearNodes ()
@@ -364,19 +364,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     accumProbabilityList.DeleteAll ();
   }
 
-  csPtr<CS::Animation::iSkeletonAnimNode> RandomNodeFactory::CreateInstance (
-    CS::Animation::iSkeletonAnimPacket* packet, CS::Animation::iSkeleton* skeleton)
+  csPtr<iSkeletonAnimNode2> RandomNodeFactory::CreateInstance (
+    iSkeletonAnimPacket2* packet, iSkeleton2* skeleton)
   {
     csRef<RandomNode> newp;
-    newp.AttachNew (new RandomNode (this));
+    newp = new RandomNode (this);
 
     BaseFactoryChildren::SetupInstance (newp, packet, skeleton);
 
-    // Need CB for possible automatic switch
-    newp->InstallInnerCb (true);
-    newp->Switch ();
-
-    return csPtr<CS::Animation::iSkeletonAnimNode> (newp);
+    return csPtr<iSkeletonAnimNode2> (newp);
   }
 
   const char* RandomNodeFactory::GetNodeName () const
@@ -384,14 +380,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return name;
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* RandomNodeFactory::FindNode (const char* name)
+  iSkeletonAnimNodeFactory2* RandomNodeFactory::FindNode (const char* name)
   {
     if (this->name == name)
       return this;
 
     for (size_t i = 0; i < subFactories.GetSize (); ++i)
     {
-      CS::Animation::iSkeletonAnimNodeFactory* r = subFactories[i]->FindNode (name);
+      iSkeletonAnimNodeFactory2* r = subFactories[i]->FindNode (name);
       if (r)
         return r;
     }
@@ -429,6 +425,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     : scfImplementationType (this), BaseNodeChildren (this), currentNode (0), 
     active (false), playbackSpeed (1.0f), factory (factory)
   {
+    // Need CB for possible automatic switch
+    InstallInnerCb (true);
+    Switch ();
   }
 
   void RandomNode::Switch ()
@@ -449,8 +448,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     }
 
 
-    const bool nodeSwitched = (newNode != currentNode
-			       || factory->probabilityList.GetSize () == 1);
+    const bool nodeSwitched = newNode != currentNode;
     if (nodeSwitched && active)
     {
       subNodes[currentNode]->Stop ();
@@ -465,11 +463,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     }
   }
 
-  CS::Animation::iSkeletonAnimNode* RandomNode::GetCurrentNode () const
+  iSkeletonAnimNode2* RandomNode::GetCurrentNode () const
   {
-    if (!subNodes.GetSize ())
-      return 0;
-
     return subNodes[currentNode];
   }
 
@@ -479,8 +474,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
       return;
 
     active = true;
-    if (subNodes.GetSize ())
-      subNodes[currentNode]->Play ();
+    subNodes[currentNode]->Play ();
     FireStateChangeCb (true);
   }
 
@@ -490,32 +484,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
       return;
 
     active = false;
-    if (subNodes.GetSize ())
-      subNodes[currentNode]->Stop ();
+    subNodes[currentNode]->Stop ();
     FireStateChangeCb (false);
   }
 
   void RandomNode::SetPlaybackPosition (float time)
   {
-    if (!subNodes.GetSize ())
-      return;
-
     subNodes[currentNode]->SetPlaybackPosition (time);
   }
 
   float RandomNode::GetPlaybackPosition () const
   {
-    if (!subNodes.GetSize ())
-      return 0.0f;
-
     return subNodes[currentNode]->GetPlaybackPosition ();
   }
 
   float RandomNode::GetDuration () const
   {
-    if (!subNodes.GetSize ())
-      return 0.0f;
-
     return subNodes[currentNode]->GetDuration ();
   }
 
@@ -529,9 +513,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return playbackSpeed;
   }
 
-  void RandomNode::BlendState (CS::Animation::AnimatedMeshState* state, float baseWeight)
+  void RandomNode::BlendState (csSkeletalState2* state, float baseWeight)
   {
-    if (!active || !subNodes.GetSize ())
+    if (!active)
       return;
 
     subNodes[currentNode]->BlendState (state, baseWeight);    
@@ -539,7 +523,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
   void RandomNode::TickAnimation (float dt)
   {
-    if (!active || !subNodes.GetSize ())
+    if (!active)
       return;
 
     subNodes[currentNode]->TickAnimation (dt * playbackSpeed);
@@ -547,23 +531,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
   bool RandomNode::IsActive () const
   {
-    return active
-      && (!subNodes.GetSize () || subNodes[currentNode]->IsActive ());
+    return active && subNodes[currentNode]->IsActive ();
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* RandomNode::GetFactory () const
+  iSkeletonAnimNodeFactory2* RandomNode::GetFactory () const
   {
     return factory;
   }
 
-  CS::Animation::iSkeletonAnimNode* RandomNode::FindNode (const char* name)
+  iSkeletonAnimNode2* RandomNode::FindNode (const char* name)
   {
     if (factory->name == name)
       return this;
 
     for (size_t i = 0; i < subNodes.GetSize (); ++i)
     {
-      CS::Animation::iSkeletonAnimNode* r = subNodes[i]->FindNode (name);
+      iSkeletonAnimNode2* r = subNodes[i]->FindNode (name);
       if (r)
         return r;
     }
@@ -571,17 +554,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return 0;
   }
 
-  void RandomNode::AddAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback)
+  void RandomNode::AddAnimationCallback (iSkeletonAnimCallback2* callback)
   {
     BaseNodeChildren::AddAnimationCallback (callback);
   }
 
-  void RandomNode::RemoveAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback)
+  void RandomNode::RemoveAnimationCallback (iSkeletonAnimCallback2* callback)
   {
     BaseNodeChildren::RemoveAnimationCallback (callback);
   }
 
-  void RandomNode::AnimationFinished (CS::Animation::iSkeletonAnimNode* node)
+  void RandomNode::AnimationFinished (iSkeletonAnimNode2* node)
   {
     if (node == subNodes[currentNode] && factory->autoSwitch)
     {
@@ -589,16 +572,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     }
   }
 
-  void RandomNode::PlayStateChanged (CS::Animation::iSkeletonAnimNode* node, bool isPlaying)
+  void RandomNode::PlayStateChanged (iSkeletonAnimNode2* node, bool isPlaying)
   {
-    if (node == subNodes[currentNode] && !isPlaying && !factory->autoSwitch)
+    if (node == subNodes[currentNode] && !isPlaying)
     {
       active = false;
       FireStateChangeCb (false);
     }
   }
 
-  void RandomNode::DurationChanged (CS::Animation::iSkeletonAnimNode* node)
+  void RandomNode::DurationChanged (iSkeletonAnimNode2* node)
   {
     FireDurationChangeCb ();
   }

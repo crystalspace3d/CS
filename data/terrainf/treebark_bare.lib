@@ -8,26 +8,14 @@
             <file>bark.png</file>
         </texture>
     </textures>
-    <shaders>
-        <shader>
-            <file>/shader/early_z/z_only_instanced.xml</file>
-        </shader>
-        <shader>
-            <file>/shader/lighting/lighting_default_instance.xml</file>
-        </shader>
-    </shaders>
     <materials>
         <material name="materialbark">
             <texture>bark.png</texture>
-            <shader type="oc_depthwrite">z_only_instanced</shader>
-            <shader type="base">lighting_default_instance</shader>
-            <shader type="diffuse">lighting_default_instance</shader>
         </material>
     </materials>
     <meshfact name="treebark_bare">
         <plugin>genmeshFactory</plugin>
         <zuse />
-	<priority>transp</priority>
         <params>
             <material>materialbark</material>
             <numvt>2960</numvt>
@@ -4474,8 +4462,5 @@
             <t v1="2959" v2="2957" v3="2956" />
             <autonormals />
         </params>
-           <!--
-            <imposter range="1.0" tolerance="45.0" camera_tolerance="45.0" shader="lighting_imposter" />
-           -->
     </meshfact>
 </library>

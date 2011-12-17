@@ -211,54 +211,6 @@ protected:
       GetStore()[mLength - 1] &= ~((~(csBitArrayStorageType)0) << extra_bits);
   }
 
-  /**
-   * Set the number of stored bits.
-   * \remarks Does not clear newly added bits.
-   */
-  void SetSizeInternal (size_t newSize)
-  {
-    size_t newLength;
-    if (newSize == 0)
-      newLength = 0;
-    else
-      newLength = 1 + GetIndex (newSize - 1);
-
-    if (newLength != mLength)
-    {
-      // Avoid allocation if length is 1 (common case)
-      csBitArrayStorageType* newStore;
-      if (newLength <= cellCount)
-        newStore = storage.inlineStore;
-      else
-	newStore = (csBitArrayStorageType*)storage.Alloc (
-          newLength * sizeof (csBitArrayStorageType));
-
-      if (newLength > 0)
-      {
-	if (mLength > 0)
-	{
-	  csBitArrayStorageType* oldStore = GetStore();
-	  if (newStore != oldStore)
-	  {
-	    memcpy (newStore, oldStore, 
-	      (MIN (mLength, newLength)) * sizeof (csBitArrayStorageType));
-	    if (newLength > mLength)
-	      memset(newStore + mLength, 0,
-		     (newLength - mLength) * sizeof (csBitArrayStorageType));
-            if (!UseInlineStore ())
-              storage.Free (oldStore);
-	  }
-	}
-	else
-	  memset (newStore, 0, newLength * sizeof (csBitArrayStorageType));
-      }
-      mLength = newLength;
-      if (!UseInlineStore()) storage.heapStore = newStore;
-    }
-
-    mNumBits = newSize;
-  }
-
 public:
   /**
    * \internal Bit proxy (for csBitArray::operator[])
@@ -314,7 +266,7 @@ public:
   }
 
   /**
-   * Construct with an initial size of \a size bits. These bits will be initialized as false.
+   * Construct with a size of \a size bits.
    */
   explicit csBitArrayTweakable (size_t size) : mLength(0), mNumBits(0)
   {
@@ -369,7 +321,46 @@ public:
    */
   void SetSize (size_t newSize)
   {
-    SetSizeInternal (newSize);
+    size_t newLength;
+    if (newSize == 0)
+      newLength = 0;
+    else
+      newLength = 1 + GetIndex (newSize - 1);
+
+    if (newLength != mLength)
+    {
+      // Avoid allocation if length is 1 (common case)
+      csBitArrayStorageType* newStore;
+      if (newLength <= cellCount)
+        newStore = storage.inlineStore;
+      else
+	newStore = (csBitArrayStorageType*)storage.Alloc (
+          newLength * sizeof (csBitArrayStorageType));
+
+      if (newLength > 0)
+      {
+	if (mLength > 0)
+	{
+	  csBitArrayStorageType* oldStore = GetStore();
+	  if (newStore != oldStore)
+	  {
+	    memcpy (newStore, oldStore, 
+	      (MIN (mLength, newLength)) * sizeof (csBitArrayStorageType));
+	    if (newLength > mLength)
+	      memset(newStore + mLength, 0,
+		     (newLength - mLength) * sizeof (csBitArrayStorageType));
+            if (!UseInlineStore ())
+              storage.Free (oldStore);
+	  }
+	}
+	else
+	  memset (newStore, 0, newLength * sizeof (csBitArrayStorageType));
+      }
+      mLength = newLength;
+      if (!UseInlineStore()) storage.heapStore = newStore;
+    }
+
+    mNumBits = newSize;
     Trim();
   }
 
@@ -382,7 +373,7 @@ public:
   {
     if (this != &that)
     {
-      SetSizeInternal (that.mNumBits);
+      SetSize (that.mNumBits);
       memcpy (GetStore(), that.GetStore(), 
         mLength * sizeof (csBitArrayStorageType));
     }
@@ -492,14 +483,6 @@ public:
     memset (GetStore(), 0, mLength * sizeof(csBitArrayStorageType));
   }
 
-  /// Set all bits to true.
-  void SetAll()
-  {
-    csBitArrayStorageType* store = GetStore();
-    for (size_t i = 0; i < mNumBits; i++)
-      store[GetIndex(i)] = ((csBitArrayStorageType)1) << GetOffset(i);
-  }
-
   /// Set the bit at position pos to true.
   void SetBit (size_t pos)
   {
@@ -538,19 +521,6 @@ public:
       & (((csBitArrayStorageType)1) << GetOffset(pos))) != 0;
   }
 
-  /**
-   * Returns true if the bit at position \a pos is true.
-   * The difference to IsBitSet() is that this methods accepts positions
-   * outside the bit array (returns \c false) instead of throwing an
-   * assertion in that case.
-   */
-  bool IsBitSetTolerant (size_t pos) const
-  {
-    if (pos >= mNumBits) return false;
-    return (GetStore()[GetIndex(pos)] 
-      & (((csBitArrayStorageType)1) << GetOffset(pos))) != 0;
-  }
-  
   /// Checks whether at least one of \a count bits is set starting at \a pos.
   bool AreSomeBitsSet (size_t pos, size_t count) const
   {
@@ -665,8 +635,7 @@ public:
     } v;
 
     const csBitArrayStorageType* p = GetStore();
-    size_t ofs = 0;
-    unsigned long result;
+    size_t ofs = 0, result;
     for (size_t i = 0; i < mLength; i++)
     {
       v.s = p[i];
@@ -875,125 +844,6 @@ public:
     return SetBitIterator (*this);
   }
   //@}
-  
-  /**\name Serialization
-   * @{ */
-  /**
-   * Get byte stream with the contents of the bit array.
-   * \param numBytes Number of bytes in the returned buffer.
-   * \return A byte stream with the contents of the bit array.
-   *  May be 0. Must be freed with cs_free().
-   */
-  uint8* Serialize (size_t& numBytes) const
-  {
-    if (mNumBits == 0)
-    {
-      numBytes = 0;
-      return 0;
-    }
-  
-    struct SerializeHelper
-    {
-      uint8* buf;
-      size_t bufSize, bufUsed;
-      
-      SerializeHelper () : buf (0), bufSize (0), bufUsed (0) {}
-      void PushByte (uint8 b)
-      {
-        if (bufUsed >= bufSize)
-        {
-          bufSize += 4;
-          buf = (uint8*)cs_realloc (buf, bufSize);
-        }
-        buf[bufUsed++] = b;
-      }
-      void TruncZeroes ()
-      {
-        while ((bufUsed > 0) && (buf[bufUsed-1] == 0))
-          bufUsed--;
-      }
-    } serHelper;
-    
-    // Write out bits number
-    {
-      size_t remainder = mNumBits;
-      
-      while (remainder >= 128)
-      {
-        uint8 b = (remainder & 0x7f) | 0x80;
-        serHelper.PushByte (b);
-        remainder >>= 7;
-      }
-      serHelper.PushByte (uint8 (remainder));
-    }
-  
-    const size_t ui8Count = sizeof (csBitArrayStorageType) / sizeof (uint8);
-    uint8 ui8[ui8Count];
-    csBitArrayStorageType const* p = GetStore();
-    for (size_t i = 0; i < mLength; i++)
-    {
-      memcpy (ui8, &p[i], sizeof (ui8));
-#ifdef CS_LITTLE_ENDIAN
-      for (size_t j = 0; j < ui8Count; j++)
-#else
-      for (size_t j = ui8Count; j-- > 0; )
-#endif
-      {
-	serHelper.PushByte (ui8[j]);
-      }
-    }
-    
-    serHelper.TruncZeroes();
-    numBytes = serHelper.bufUsed;
-    return serHelper.buf;
-  }
-  /**
-   * Create a new instance of a bit array with the contents as given
-   * in the byte stream.
-   */
-  static ThisType Unserialize (uint8* bytes, size_t numBytes)
-  {
-    if ((bytes == 0) || (numBytes == 0))
-      return ThisType(); // empty bit array
-  
-    size_t bufPos = 0;
-  
-    // Read the bits number
-    size_t numBits = 0;
-    int shift = 0;
-    while (bufPos < numBytes)
-    {
-      uint8 b = bytes[bufPos++];
-      numBits |= (b & 0x7f) << shift;
-      if ((b & 0x80) == 0) break;
-      shift += 7;
-    }
-    
-    ThisType newArray (numBits);
-    
-    // Read the actual bits
-    csBitArrayStorageType* p = newArray.GetStore();
-    size_t storeIndex = 0;
-    while (bufPos < numBytes)
-    {
-      const size_t ui8Count = sizeof (csBitArrayStorageType) / sizeof (uint8);
-      uint8 ui8[ui8Count];
-      memset (ui8, 0, sizeof (ui8));
-#ifdef CS_LITTLE_ENDIAN
-      for (size_t j = 0; j < ui8Count; j++)
-#else
-      for (size_t j = ui8Count; j-- > 0; )
-#endif
-      {
-        ui8[j] = bytes[bufPos++];
-        if (bufPos >= numBytes) break;
-      }
-      memcpy (p + (storeIndex++), ui8, sizeof (ui8));
-    }
-    
-    return newArray;
-  }
-  /** @} */
 };
 
 /**
@@ -1005,7 +855,7 @@ class csBitArray : public csBitArrayTweakable<>
 public:
   /// Default constructor.
   csBitArray () { }
-  ///Construct with an initial size of \a size bits. These bits will be initialized as false.
+  /// Construct with a size of \a size bits.
   explicit csBitArray (size_t size) : csBitArrayTweakable<> (size) { }
   /// Construct as duplicate of \a that (copy constructor).
   csBitArray (const csBitArray& that) : csBitArrayTweakable<> (that) { }

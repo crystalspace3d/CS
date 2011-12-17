@@ -32,24 +32,11 @@ namespace CS
                                 const char* defaultFilename, 
                                 const char** actualFilename)
     {
-      csRef<iFile> file;
-
-      const char* fileNameToOpen;
-      if (SmartChDir (vfs, path, defaultFilename, &fileNameToOpen))
-      {
-	file = vfs->Open (fileNameToOpen, VFS_FILE_READ);
-      }
-
-      if (actualFilename) *actualFilename = fileNameToOpen;
-      return csPtr<iFile> (file);
-    }
-    
-    bool SmartChDir (iVFS* vfs, const char* path, const char* defaultFilename, 
-		     const char** actualFilename)
-    {
       csString filename (path);
       csStringArray paths;
       paths.Push ("/lev/");
+
+      csRef<iFile> file;
 
       /* Check if the given path can be auto-mounted. 
        * (Done first so ZIPs get handled properly.) 
@@ -59,8 +46,12 @@ namespace CS
       if (defaultFilename 
         && vfs->ChDirAuto (path, &paths, 0, defaultFilename))
       {
-	if (actualFilename) *actualFilename = defaultFilename;
-	return true;
+        file = vfs->Open (defaultFilename, VFS_FILE_READ);
+        if (file.IsValid()) 
+        {
+          if (actualFilename) *actualFilename = defaultFilename;
+          return csPtr<iFile> (file);
+        }
       }
 
       /* Now check if there's a path separator. If so split into directory
@@ -82,8 +73,9 @@ namespace CS
         dirSet = vfs->ChDirAuto (".", &paths, 0, fileNameToOpen);
       }
 
+      if (dirSet) file = vfs->Open (fileNameToOpen, VFS_FILE_READ);
       if (actualFilename) *actualFilename = fileNameToOpen;
-      return dirSet;
+      return csPtr<iFile> (file);
     }
   } // namespace Utility
 } // namespace CS

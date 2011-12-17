@@ -56,8 +56,7 @@ enum csRenderBufferType
 };
 
 /// Type of components
-/* Note: csgfx/renderbuffer.h stores this in _very_ few bits, take care when
-   changing this! */
+// NOTE: this is stored on disk by cssynldr! *Modify with care!*
 enum csRenderBufferComponentType
 {
   /// Signed byte
@@ -72,17 +71,13 @@ enum csRenderBufferComponentType
   CS_BUFCOMP_INT,
   /// Unsigned integer
   CS_BUFCOMP_UNSIGNED_INT,
-  /// Float (aka "single precision floating point number")
+  /// Float
   CS_BUFCOMP_FLOAT,
-  /// Double (aka "double precision floating point number")
+  /// Double
   CS_BUFCOMP_DOUBLE,
-  /// Half float (aka "half precision floating point number")
-  CS_BUFCOMP_HALF,
-  
-  CS_BUFCOMP_BASE_TYPECOUNT,
   
   /// Normalization flag
-  CS_BUFCOMP_NORMALIZED = 0x10,
+  CS_BUFCOMP_NORMALIZED = 8,
   
   /// Signed byte, normalized to [-1;1]
   CS_BUFCOMP_BYTE_NORM = CS_BUFCOMP_BYTE | CS_BUFCOMP_NORMALIZED,
@@ -99,7 +94,9 @@ enum csRenderBufferComponentType
   CS_BUFCOMP_INT_NORM = CS_BUFCOMP_INT | CS_BUFCOMP_NORMALIZED,
   /// Unsigned integer, normalized to [0;1]
   CS_BUFCOMP_UNSIGNED_INT_NORM = 
-      CS_BUFCOMP_UNSIGNED_INT | CS_BUFCOMP_NORMALIZED
+      CS_BUFCOMP_UNSIGNED_INT | CS_BUFCOMP_NORMALIZED,
+
+  CS_BUFCOMP_TYPECOUNT
 };
 
 /**
@@ -135,14 +132,17 @@ namespace CS
 /**
  * Sizes of individual buffer components in bytes.
  */
-static const size_t csRenderBufferComponentSizes[CS_BUFCOMP_BASE_TYPECOUNT] = 
+static const size_t csRenderBufferComponentSizes[CS_BUFCOMP_TYPECOUNT] = 
 {
   sizeof (char), sizeof (unsigned char), 
   sizeof (short), sizeof (unsigned short),
   sizeof (int), sizeof (unsigned int),
   sizeof (float),
   sizeof (double),
-  sizeof (uint16)
+
+  sizeof (char), sizeof (unsigned char), 
+  sizeof (short), sizeof (unsigned short),
+  sizeof (int), sizeof (unsigned int)
 };
 
 struct iRenderBuffer;

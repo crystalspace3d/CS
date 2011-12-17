@@ -51,7 +51,7 @@ extern "C"
 #include "jng.h"
 #include <zlib.h>
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(JNGImageIO)
 {
@@ -128,6 +128,10 @@ csPtr<iImage> csJNGImageIO::Load (iDataBuffer* buf, int iFormat)
     return 0;
   }
   return csPtr<iImage> (i);
+}
+
+void csJNGImageIO::SetDithering (bool)
+{
 }
 
 // a couple of callbacks used by both reading & writing

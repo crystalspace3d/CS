@@ -61,7 +61,7 @@ void PathTut::SetupFrame ()
   Animate (elapsed_time);
 
   // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
+  if (!g3d->BeginDraw (engine->GetBeginDrawFlags () | CSDRAW_3DGRAPHICS))
     return;
 
   // Tell the camera to render into the frame buffer.
@@ -190,12 +190,15 @@ bool PathTut::Initialize (int argc, const char* const argv[])
     return false;
   }
 
+  // First disable the lighting cache. Our app is PathTut enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
+
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
     	"crystalspace.application.PathTut",
-    	"Error loading %s texture!",
-	CS::Quote::Single ("stone4"));
+    	"Error loading 'stone4' texture!");
     return false;
   }
   iMaterialWrapper* tm = engine->GetMaterialList ()->FindByName ("stone");
@@ -213,6 +216,10 @@ bool PathTut::Initialize (int argc, const char* const argv[])
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, "walls", "walls_factory", &box);
+
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
 
   csRef<iLight> light;
@@ -231,9 +238,6 @@ bool PathTut::Initialize (int argc, const char* const argv[])
   ll->Add (light);
 
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
 
   view = csPtr<iView> (new csView (engine, g3d));
   view->GetCamera ()->SetSector (room);

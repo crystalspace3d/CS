@@ -25,14 +25,9 @@
  * Generic Array Template
  */
 
-#include "csutil/custom_new_disable.h"
-#include <algorithm>
-#include "csutil/custom_new_enable.h"
-
 #include "csutil/allocator.h"
 #include "csutil/comparator.h"
 #include "csutil/customallocated.h"
-#include "csutil/util.h"
 
 #include "csutil/custom_new_disable.h"
 
@@ -47,7 +42,7 @@
 
 /**
  * A functor template which encapsulates a key and a comparison function for
- * use with key-related csArray searching methods, such as FindKey() and
+ * use with key-related csArray<> searching methods, such as FindKey() and
  * FindSortedKey().  Being a template instaniated upon two (possibly distinct)
  * types, this allows the searching methods to perform type-safe searches even
  * when the search key type differs from the contained element type.  The
@@ -60,7 +55,7 @@ class csArrayCmp
 public:
   /**
    * Type of the comparison function which compares a key against an element
-   * contained in a csArray.  T is the type of the contained element.  K is
+   * contained in a csArray<>.  T is the type of the contained element.  K is
    * the type of the search key.
    */
   typedef int(*CF)(T const&, K const&);
@@ -133,7 +128,7 @@ public:
       Construct (address + i);
   }
   
-  /// Reallocate a region allocated by \p Allocator.
+  /// Reallocates a region allocated by \p Allocator.
   template<typename Allocator>
   static T* ResizeRegion (Allocator& alloc, T* mem, size_t relevantcount, 
     size_t oldcount, size_t newcount)
@@ -155,15 +150,6 @@ public:
   static void MoveElements (T* mem, size_t dest, size_t src, size_t count)
   {
     memmove (mem + dest, mem + src, count * sizeof(T));
-  }
-
-  /**
-   * Move elements inside a region.
-   * \warning Only use if you _know_ source and destination regions don't overlap!
-   */
-  static void MoveElementsNoOverlap (T* mem, size_t dest, size_t src, size_t count)
-  {
-    memcpy (mem + dest, mem + src, count * sizeof(T));
   }
 };
 
@@ -201,7 +187,7 @@ public:
   }
   
   /**
-   * Reallocate a region allocated by \p Allocator. Ensure that all elements
+   * Reallocates a region allocated by \p Allocator. Ensure that all elements
    * are properly moved, ie they are copy-constructed at the new position 
    * in memory, the old instance is then destroyed.
    */
@@ -258,12 +244,6 @@ public:
 	Destroy (mem + src + i);
       }
     }
-  }
-  
-  /// \copydoc MoveElements
-  static void MoveElementsNoOverlap (T* mem, size_t dest, size_t src, size_t count)
-  {
-    MoveElements (mem, dest, src, count);
   }
 };
 
@@ -328,7 +308,7 @@ public:
   {}
 
   /**
-   * Return "true" if the given capacity is too large for the given count,
+   * Returns "true" if the given capacity is too large for the given count,
    * that is, if GetCapacity() would return a value for \a count smaller than 
    * \a capacity.
    */
@@ -352,53 +332,16 @@ public:
 // Alias for csArrayCapacityLinear<csArrayThresholdVariable> to keep
 // SWIG generated Java classes (and thus filenames) short enough for Windows.
 // Note that a typedef wont work because SWIG would expand it.
-struct csArrayCapacityVariableGrow :
+struct csArrayCapacityDefault :
   public csArrayCapacityLinear<csArrayThresholdVariable>
 {
-  csArrayCapacityVariableGrow () :
+  csArrayCapacityDefault () :
     csArrayCapacityLinear<csArrayThresholdVariable> () {}
-  csArrayCapacityVariableGrow (const csArrayThresholdVariable& threshold) :
+  csArrayCapacityDefault (const csArrayThresholdVariable& threshold) :
     csArrayCapacityLinear<csArrayThresholdVariable> (threshold) {}
-  csArrayCapacityVariableGrow (const size_t x) :
+  csArrayCapacityDefault (const size_t x) :
     csArrayCapacityLinear<csArrayThresholdVariable> (x) {}
 } ;
-// @@@ Deprecate? Name is non-descriptive/misleading
-typedef csArrayCapacityVariableGrow csArrayCapacityDefault;
-
-/**
- * Shortcut for an array capacity handler with a compile-time fixed rate of 
- * growth
- */
-template<int N>
-struct csArrayCapacityFixedGrow :
-  public csArrayCapacityLinear<csArrayThresholdFixed<N> >
-{
-  csArrayCapacityFixedGrow () :
-    csArrayCapacityLinear<csArrayThresholdFixed<N> > () {}
-};
-
-namespace CS
-{
-  namespace Container
-  {
-    typedef CS::Memory::AllocatorMalloc ArrayAllocDefault;
-    typedef csArrayCapacityFixedGrow<16> ArrayCapacityDefault;
-    
-    template<int MaxGrow = 1 << 20>
-    struct ArrayCapacityExponential
-    {
-      bool IsCapacityExcessive (size_t capacity, size_t count) const
-      {
-        return size_t (csFindNearestPowerOf2 ((int)count)) < (capacity/2);
-      }
-      size_t GetCapacity (size_t count) const
-      {
-        size_t newCap = (size_t)csFindNearestPowerOf2 ((int)count);
-        return newCap < MaxGrow ? newCap : MaxGrow;
-      }
-    };
-  } // namespace Container
-} // namespace CS
 
 /**
  * This value is returned whenever an array item could not be located or does
@@ -411,13 +354,13 @@ const size_t csArrayItemNotFound = (size_t)-1;
  * copy-constructor and are destroyed when they are removed from the array or
  * the array is destroyed.
  * \note If you want to store reference-counted object pointers, such as iFoo*,
- * then you should consider csRefArray, which is more idiomatic than
+ * then you should consider csRefArray<>, which is more idiomatic than
  * csArray<csRef<iFoo> >.
  */
 template <class T,
 	class ElementHandler = csArrayElementHandler<T>,
-        class MemoryAllocator = CS::Container::ArrayAllocDefault,
-        class CapacityHandler = CS::Container::ArrayCapacityDefault>
+        class MemoryAllocator = CS::Memory::AllocatorMalloc,
+        class CapacityHandler = csArrayCapacityDefault>
 class csArray : public CS::Memory::CustomAllocated
 {
 public:
@@ -463,17 +406,7 @@ protected:
    * Set the internal pointer to the data.
    * \warning This is \em obviously dangerous.
    */
-  void SetDataVeryUnsafe (T* data) { root.p = data; }
-  /**
-   * Set the internal array size.
-   * \warning This is \em obviously dangerous.
-   */
-  void SetSizeVeryUnsafe (size_t n) { count = n; }
-  /**
-   * Set the internal array capacity.
-   * \warning This is \em obviously dangerous.
-   */
-  void SetCapacityVeryUnsafe (size_t n) { capacity.c = n; }
+  void SetData (T* data) { root.p = data; }
 private:
   /// Copy from one array to this one, properly constructing the copied items.
   void CopyFrom (const csArray& source)
@@ -739,10 +672,7 @@ public:
     return Get(n);
   }
 
-  /**
-   * Insert or reset a copy of the element \c what at the position with index \c n.
-   * If the size of the array is smaller than \c n then it will be resized.
-   */
+  /// Insert a copy of element at the indicated position.
   void Put (size_t n, T const& what)
   {
     if (n >= count)
@@ -802,29 +732,6 @@ public:
   {
     size_t const n = Find (what);
     return (n == csArrayItemNotFound) ? Push (what) : n;
-  }
-  
-  /**
-   * Push the elements of an array onto the tail end of the array.
-   * 
-   * \param origin The array to push at the end of this array.
-   */
-  void Merge(const csArray& origin)
-  {
-    for(size_t i = 0; i < origin.GetSize(); i++)
-      Push(origin.Get(i));
-  }
-  
-  /**
-   * Push the elements of an array onto the tail end of the array if its elements aren't already present.
-   * If an element is found duplicate it's skipped.
-   * 
-   * \param origin The array to push at the end of this array.
-   */
-  void MergeSmart(const csArray& origin)
-  {
-    for(size_t i = 0; i < origin.GetSize(); i++)
-      PushSmart(origin.Get(i));
   }
 
   /// Pop an element from tail end of array.
@@ -947,7 +854,7 @@ public:
   }
 
   /**
-   * Find an element in this array.
+   * Find an element in array.
    * \return csArrayItemNotFound if not found, else the item index.
    * \warning Performs a slow linear search. For faster searching, sort the
    *   array and then use FindSortedKey().
@@ -987,26 +894,7 @@ public:
   }
 
   /**
-   * Sort array using a binary predicate
-   */
-  template<typename Pred>
-  void Sort (Pred& pred)
-  {
-    std::sort (root.p, root.p + GetSize (), pred);
-  }
-
-  /**
-   * Sort array using a binary predicate and a stable sorting algorithm
-   */
-  template<typename Pred>
-  void SortStable (Pred& pred)
-  {
-    std::stable_sort (root.p, root.p + GetSize (), pred);
-  }
-
-  /**
-   * Clear the entire array, releasing all allocated memory.
-   * \sa Empty()
+   * Clear entire array, releasing all allocated memory.
    */
   void DeleteAll ()
   {
@@ -1022,7 +910,7 @@ public:
   }
 
   /**
-   * Truncate the array to the specified number of elements. The new number of
+   * Truncate array to specified number of elements. The new number of
    * elements cannot exceed the current number of elements.
    * \remarks Does not reclaim memory used by the array itself, though the
    *   removed objects are destroyed. To reclaim the array's memory invoke
@@ -1044,7 +932,7 @@ public:
   }
 
   /**
-   * Remove all elements. Similar to DeleteAll(), but does not release memory
+   * Remove all elements.  Similar to DeleteAll(), but does not release memory
    * used by the array itself, thus making it more efficient for cases when the
    * number of contained elements will fluctuate.
    */
@@ -1054,8 +942,7 @@ public:
   }
 
   /**
-   * Return whether the array is empty or not.
-   * \return True if the array is empty, false otherwise.
+   * Return true if the array is empty.
    * \remarks Rigidly equivalent to <tt>return GetSize() == 0</tt>, but more
    *   idiomatic.
    */
@@ -1110,7 +997,7 @@ public:
 
   /**
    * Delete an element from the array.
-   * \return True if the indicated item index was valid, false otherwise.
+   * return True if the indicated item index was valid, else false.
    * \remarks Deletion speed is proportional to the size of the array and the
    *   location of the element being deleted. If the order of the elements in
    *   the array is not important, then you can instead use DeleteIndexFast()
@@ -1135,7 +1022,7 @@ public:
   /**
    * Delete an element from the array in constant-time, regardless of the
    * array's size.
-   * \return True if the indicated item index was valid, false otherwise.
+   * return True if the indicated item index was valid, else false.
    * \remarks This is a special version of DeleteIndex() which does not
    *   preserve the order of the remaining elements. This characteristic allows
    *   deletions to be performed in constant-time, regardless of the size of
@@ -1149,7 +1036,7 @@ public:
       size_t const nmove = ncount - n;
       ElementHandler::Destroy (root.p + n);
       if (nmove > 0)
-        ElementHandler::MoveElementsNoOverlap (root.p, n, ncount, 1);
+        ElementHandler::MoveElements (root.p, n, ncount, 1);
       SetSizeUnsafe (ncount);
       return true;
     }
@@ -1185,7 +1072,6 @@ public:
 
   /**
    * Delete the given element from the array.
-   * \return True if the item has been found and deleted, false otherwise.
    * \remarks Performs a linear search of the array to locate \c item, thus it
    *   may be slow for large arrays.
    */
@@ -1197,7 +1083,7 @@ public:
     return false;
   }
 
-  /** Iterator for the csArray class */
+  /** Iterator for the Array<> class */
   class Iterator
   {
   public:
@@ -1209,15 +1095,15 @@ public:
     Iterator& operator=(Iterator const& r)
     { currentelem = r.currentelem; array = r.array; return *this; }
 
-    /** Return true if the next Next() call will return an element */
+    /** Returns true if the next Next() call will return an element */
     bool HasNext() const
     { return currentelem < array.GetSize (); }
 
-    /** Return the next element in the array and increment the iterator. */
+    /** Returns the next element in the array. */
     T& Next()
     { return array.Get(currentelem++); }
 
-    /** Reset the iterator to the first element */
+    /** Reset the array to the first element */
     void Reset()
     { currentelem = 0; }
 
@@ -1231,7 +1117,7 @@ public:
     csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>& array;
   };
 
-  /** Iterator for the csArray class */
+  /** Iterator for the Array<> class */
   class ConstIterator
   {
   public:
@@ -1243,11 +1129,11 @@ public:
     ConstIterator& operator=(ConstIterator const& r)
     { currentelem = r.currentelem; array = r.array; return *this; }
 
-    /** Return true if the next Next() call will return an element */
+    /** Returns true if the next Next() call will return an element */
     bool HasNext() const
     { return currentelem < array.GetSize (); }
 
-    /** Return the next element in the array. */
+    /** Returns the next element in the array. */
     const T& Next()
     { return array.Get(currentelem++); }
 
@@ -1265,97 +1151,20 @@ public:
     const csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>& array;
   };
 
-  /** Reverse iterator for the csArray class */
-  class ReverseIterator
-  {
-  public:
-    /** Copy constructor. */
-    ReverseIterator(ReverseIterator const& r) :
-      currentelem(r.currentelem), array(r.array) {}
-
-    /** Assignment operator. */
-    ReverseIterator& operator=(ReverseIterator const& r)
-    { currentelem = r.currentelem; array = r.array; return *this; }
-
-    /** Return true if the next Next() call will return an element */
-    bool HasNext() const
-    { return currentelem > 0 && currentelem <= array.GetSize (); }
-
-    /** Return the next element in the array. */
-    T& Next()
-    { return array.Get(--currentelem); }
-
-    /** Reset the array to the first element */
-    void Reset()
-    { currentelem = array.GetSize (); }
-
-  protected:
-    ReverseIterator(csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>& newarray)
-	: currentelem(newarray.GetSize ()), array(newarray) {}
-    friend class csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>;
-
-  private:
-    size_t currentelem;
-    csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>& array;
-  };
-
-  /** Reverse iterator for the csArray class */
-  class ReverseConstIterator
-  {
-  public:
-    /** Copy constructor. */
-    ReverseConstIterator(ReverseConstIterator const& r) :
-      currentelem(r.currentelem), array(r.array) {}
-
-    /** Assignment operator. */
-    ReverseConstIterator& operator=(ReverseConstIterator const& r)
-    { currentelem = r.currentelem; array = r.array; return *this; }
-
-    /** Return true if the next Next() call will return an element */
-    bool HasNext() const
-    { return currentelem > 0 && currentelem <= array.GetSize (); }
-
-    /** Return the next element in the array. */
-    const T& Next()
-    { return array.Get(--currentelem); }
-
-    /** Reset the array to the first element */
-    void Reset()
-    { currentelem = array.GetSize (); }
-
-  protected:
-    ReverseConstIterator(const csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>& newarray)
-      : currentelem(newarray.GetSize ()), array(newarray) {}
-    friend class csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>;
-
-  private:
-    size_t currentelem;
-    const csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>& array;
-  };
-
-  /** Return an Iterator which traverses the array. */
+  /** Returns an Iterator which traverses the array. */
   Iterator GetIterator()
   { return Iterator(*this); }
 
-  /** Return an Iterator which traverses the array. */
+  /** Returns an Iterator which traverses the array. */
   ConstIterator GetIterator() const
   { return ConstIterator(*this); }
-
-  /** Return an ReverseIterator which traverses the array in reverse direction. */
-  ReverseIterator GetReverseIterator()
-  { return ReverseIterator(*this); }
-
-  /** Return an Iterator which traverses the array. */
-  ReverseConstIterator GetReverseIterator() const
-  { return ReverseConstIterator(*this); }
   
   /// Check if this array has the exact same contents as \a other.
   bool operator== (const csArray& other) const
   {
     if (other.GetSize() != GetSize()) return false;
     for (size_t i = 0; i < GetSize(); i++)
-      if (!(Get (i) == other[i])) 
-        return false;
+      if (Get (i) != other[i]) return false;
     return true;
   }
 
@@ -1369,27 +1178,22 @@ public:
 };
 
 /**
- * Convenience class to make a version of csArray that does a
+ * Convenience class to make a version of csArray<> that does a
  * safe-copy in case of reallocation of the array. Useful for weak
  * references.
  */
-template <class T, 
-          class Allocator = CS::Memory::AllocatorMalloc,
-          class CapacityHandler = CS::Container::ArrayCapacityDefault>
+template <class T>
 class csSafeCopyArray
 	: public csArray<T,
-		csArraySafeCopyElementHandler<T>,
-		Allocator, CapacityHandler>
+		csArraySafeCopyElementHandler<T> >
 {
 public:
   /**
    * Initialize object to hold initially \c limit elements, and increase
    * storage by \c threshold each time the upper bound is exceeded.
    */
-  csSafeCopyArray (size_t limit = 0,
-    const CapacityHandler& ch = CapacityHandler())
-  	: csArray<T, csArraySafeCopyElementHandler<T>, Allocator, 
-  	          CapacityHandler> (limit, ch)
+  csSafeCopyArray (size_t limit = 0, size_t threshold = 0)
+  	: csArray<T, csArraySafeCopyElementHandler<T> > (limit, threshold)
   {
   }
 };

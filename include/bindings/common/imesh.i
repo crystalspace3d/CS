@@ -16,6 +16,8 @@ TYPEMAP_ARGOUT_PTR(csQuaternion)
 TYPEMAP_ARGOUT_PTR(csVector3)
 APPLY_TYPEMAP_ARGOUT_PTR(csQuaternion,csQuaternion& rot)
 APPLY_TYPEMAP_ARGOUT_PTR(csVector3,csVector3& offset)
+%include "imesh/skeleton2.h"
+%include "imesh/skeleton2anim.h"
 %clear csVector3& offset;
 %clear csQuaternion& rot;
 
@@ -30,6 +32,8 @@ ARRAY_CHANGE_ALL_TEMPLATE(csSprite2DVertex)
 // to use an alternate way for that function
 %feature("compactdefaultargs") HitBeamObject;
 %include "imesh/object.h"
+%ignore iThingFactoryState::AddPolygon (int num, ...);
+%include "imesh/thing.h"
 %template (csCharArrayArray) csArray<csArray<char> >;
 %include "imesh/terrain.h"
 %include "imesh/terrain2.h"

@@ -202,7 +202,7 @@ public:
   { return ABS(v.x)<f && ABS(v.y)<f && ABS(v.z)<f && ABS(v.w)<f; }
 
   /// Returns n-th component of the vector.
-#if defined( __STRICT_ANSI__) || defined(SWIG)
+#ifdef __STRICT_ANSI__
   inline float operator[] (size_t n) const 
   { return (n&2)?((n&1)?w:z):((n&1)?y:x); }
 #else
@@ -210,7 +210,7 @@ public:
 #endif
 
   /// Returns n-th component of the vector.
-#if defined( __STRICT_ANSI__) || defined(SWIG)
+#ifdef __STRICT_ANSI__
   inline float & operator[] (size_t n) 
   { return (n&2)?((n&1)?w:z):((n&1)?y:x); }
 #else
@@ -278,11 +278,7 @@ public:
 
   /// Returns the norm of this vector.
   inline T Norm () const 
-  { return csQsqrt(SquaredNorm()); }
-
-  /// Returns the inverse norm (1/Norm()) of this vector.
-  inline float InverseNorm () const
-  { return csQisqrt(SquaredNorm()); }
+  { return sqrt (x * x + y * y + z * z + w * w); }
 
   /// Return the squared norm (magnitude) of this vector.
   inline T SquaredNorm () const
@@ -294,7 +290,7 @@ public:
    * zero error.  This is as it should be... fix the calling code.
    */
   inline csVector4T Unit () const 
-  { return (*this)*(this->InverseNorm()); }
+  { return (*this)/(this->Norm()); }
 
   /// Returns the norm (magnitude) of a vector.
   inline static T Norm (const csVector4T& v) 
@@ -307,7 +303,7 @@ public:
   /// Scale this vector to length = 1.0;
   inline void Normalize ()
   {
-    T sqlen = SquaredNorm();
+    T sqlen = x * x + y * y + z * z + w * w;
     if (sqlen < SMALL_EPSILON) return ;
   
     T invlen = csQisqrt (sqlen);

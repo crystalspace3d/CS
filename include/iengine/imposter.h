@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2009 by Keith Fulton and Mike Gist
+    Copyright (C) 2002 by Keith Fulton
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,103 +30,47 @@
 #include "csutil/scf.h"
 
 struct iSharedVariable;
+class csReversibleTransform;
 
 /**
- * iImposterFactory defines the interface a mesh factory must
- * implement for its meshes to be used as imposters by
- * the engine.
+ * iImposter defines the interface a mesh (or other) class must
+ * implement to be used as imposter mesh by the engine.
  */
-struct iImposterFactory : public virtual iBase
+struct iImposter : public virtual iBase
 {
-  SCF_INTERFACE(iImposterFactory, 1, 4, 0);
+  SCF_INTERFACE(iImposter, 4, 0, 0);
 
- /**
-  * Given a mesh, activate its imposter.
-  */
-  virtual void AddImposter(iMeshWrapper* mesh, iRenderView* rview) = 0;
-
- /**
-  * Given a mesh, deactivate and remove its imposter.
-  */
-  virtual void RemoveImposter(iMeshWrapper* mesh) = 0;
-
- /**
-  * Whether we are currently rendering the imposter
-  */
-  virtual bool RenderingImposter(iMeshWrapper* mesh) = 0;
+  /// Self explanatory
+  virtual void SetImposterActive (bool flag)=0;
+  virtual bool GetImposterActive () const =0;
 
   /**
-   * Sets the minimum imposter distance.
-   * This is the distance from camera beyond which an imposter is used.
+   * Minimum Imposter Distance is the distance from camera 
+   * beyond which imposter is used. Imposter gets a 
+   * ptr here because value is a shared variable 
+   * which can be changed at runtime for many objects.
    */
-  virtual void SetMinDistance(float dist) = 0;
+  virtual void SetMinDistance (iSharedVariable* dist) = 0;
 
   /**
-   * Gets the minimum imposter distance.
+   * Rotation Tolerance is the maximum allowable 
+   * angle difference between when the imposter was 
+   * created and the current position of the camera.
+   * Angle greater than this triggers a re-render of
+   * the imposter.
    */
-  virtual float GetMinDistance() = 0;
+  virtual void SetRotationTolerance (iSharedVariable* angle) = 0;
 
   /**
-   * Sets the rotation tolerance.
-   * This is the maximum allowable angle difference between when the
-   * imposter was created and the current position of the camera.
-   * Angles greater than this trigger a re-render of the imposter.
+   * Camera Rotation Tolerance is the tolerance angle
+   * between z->1 vector and object on screen. Exceeding this
+   * value triggers updating of the imposter whenever the
+   * object slides too much away from the center of screen.
    */
-  virtual void SetRotationTolerance(float angle) = 0;
+  virtual void SetCameraRotationTolerance (iSharedVariable* angle) = 0;
 
-  /**
-   * Gets the rotation tolerance.
-   */
-  virtual float GetRotationTolerance() = 0;
-
-  /**
-   * Sets the camera rotation tolerance.
-   * This is the tolerance angle between the z->1 vector and the object
-   * on screen. Exceeding this value triggers the updating of the imposter
-   * whenever the object slides too much away from the center of screen.
-   */
-  virtual void SetCameraRotationTolerance(float angle) = 0;
-
-  /**
-   * Gets the camera rotation tolerance.
-   */
-  virtual float GetCameraRotationTolerance() = 0;
-
-  /**
-   * Sets the shader to be used by the imposters.
-   */
-  virtual void SetShader(const char* type, const char* shader) = 0;
-
-  /**
-  * Sets whether to render the real mesh while waiting for the imposter to init.
-  */
-  virtual void SetRenderReal(bool renderReal) = 0;
-};
-
-struct iImposterMesh : public virtual iBase
-{
-  SCF_INTERFACE(iImposterMesh, 1, 1, 0);
-
-  /**
-   * Destroy this imposter.
-   */
-  virtual void Destroy() = 0;
-
-  /**
-   * Query whether the r2t has been performed for this imposter.
-   */
-  virtual bool Rendered() const = 0;
-};
-
-struct ImposterShader
-{
-  csString type;
-  csString name;
-
-  ImposterShader (const char* type, const char* name)
-    : type (type), name (name)
-  {
-  }
+  /// Determine if imposter or true rendering will be used
+  virtual bool WouldUseImposter (csReversibleTransform& pov) const = 0;
 };
 
 /** @} */

@@ -30,7 +30,7 @@
 #include "iutil/objreg.h"
 #include "iutil/comp.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(csFont)
 {
@@ -305,8 +305,7 @@ error:
       {
         csReport (object_reg, GetErrorSeverity(),
 	  "crystalspace.font.csfont",
-      	  "Unrecognized property %s in font file %s.",
-	  CS::Quote::Single (kw), file);
+      	  "Unrecognized property '%s' in font file %s.", kw, file);
       }
 
     }
@@ -357,10 +356,8 @@ error:
       {
 	csReport (object_reg, GetErrorSeverity(),
 	  "crystalspace.font.csfont",
-	  "Malformed font %s: neither %s nor %s property",
-	  fontdef.Name,
-	  CS::Quote::Single ("Glyphs"),
-	  CS::Quote::Single ("HasCharRanges"));
+	  "Malformed font %s: neither 'Glyphs' nor 'HasCharRanges' property",
+	  fontdef.Name);
 	return 0;
       }
       ranges.SetSize (2);
@@ -543,7 +540,7 @@ csDefaultFont::csDefaultFont (csDefaultFontServer *parent, const char *name,
 			      csGlyphMetrics* gMetrics,
 			      iDataBuffer* bitmap, csBitmapMetrics* bMetrics,
 			      iDataBuffer* alpha, csBitmapMetrics* aMetrics) 
-			      : scfImplementationType (this), DeleteCallbacks (4)
+			      : scfImplementationType (this), DeleteCallbacks (4, 4)
 {
   Parent = parent;
   Parent->NotifyCreate (this);

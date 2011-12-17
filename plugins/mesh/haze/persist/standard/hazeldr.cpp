@@ -40,11 +40,10 @@
 #include "iutil/objreg.h"
 #include "iutil/eventh.h"
 #include "iutil/comp.h"
-#include "iutil/stringarray.h"
 #include "imap/ldrctxt.h"
 #include "ivaria/reporter.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 enum
 {
@@ -150,7 +149,8 @@ static iHazeHull* ParseHull (csStringHash& xmltokens, iReporter*,
 }
 
 csPtr<iBase> csHazeFactoryLoader::Parse (iDocumentNode* node,
-	iStreamSource*, iLoaderContext* ldr_context, iBase* /* context */)
+	iStreamSource*, iLoaderContext* ldr_context,
+	iBase* /* context */)
 {
   csVector3 a;
 
@@ -180,7 +180,7 @@ csPtr<iBase> csHazeFactoryLoader::Parse (iDocumentNode* node,
 	  {
 	    synldr->ReportError (
 		"crystalspace.hazeloader.parse.badmaterial",
-		child, "Could not find material %s!", CS::Quote::Single (matname));
+		child, "Could not find material '%s'!", matname);
             return 0;
 	  }
 	  fact->SetMaterialWrapper (mat);
@@ -385,23 +385,21 @@ csPtr<iBase> csHazeLoader::Parse (iDocumentNode* node,
 	{
 	  const char* factname = child->GetContentsValue ();
 	  iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
-
-    if(!fact)
-    {
-      synldr->ReportError (
-        "crystalspace.hazeloader.parse.badfactory",
-        child, "Could not find factory %s!", CS::Quote::Single (factname));
-      return 0;
-    }
-
+	  if (!fact)
+	  {
+	    synldr->ReportError (
+		"crystalspace.hazeloader.parse.badfactory",
+		child, "Could not find factory '%s'!", factname);
+	    return 0;
+	  }
 	  mesh = fact->GetMeshObjectFactory ()->NewInstance ();
           hazestate = scfQueryInterface<iHazeState> (mesh);
 	  if (!hazestate)
 	  {
       	    synldr->ReportError (
 		"crystalspace.hazeloader.parse.badfactory",
-		child, "Factory %s doesn't appear to be a haze factory!",
-		CS::Quote::Single (factname));
+		child, "Factory '%s' doesn't appear to be a haze factory!",
+		factname);
 	    return 0;
 	  }
 	  hazefactorystate = scfQueryInterface<iHazeFactoryState> (
@@ -416,8 +414,7 @@ csPtr<iBase> csHazeLoader::Parse (iDocumentNode* node,
 	  {
 	    synldr->ReportError (
 		"crystalspace.hazeloader.parse.badmaterial",
-		child, "Could not find material %s!",
-		CS::Quote::Single (matname));
+		child, "Could not find material '%s'!", matname);
 	    return 0;
 	  }
 	  CHECK_MESH (mesh);

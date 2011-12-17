@@ -28,9 +28,7 @@
 
 #include "csutil/ref.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/set.h"
 #include "igeom/clip2d.h"
-#include "iengine/mesh.h"
 #include "ivaria/view.h"
 
 class csBox2;
@@ -67,14 +65,6 @@ private:
   /// State of the automatic resizing
   bool AutoResize;
 
-  CS::Utility::MeshFilter meshFilter;
-
-  // View width.
-  int viewWidth;
-
-  // View height.
-  int viewHeight;
-
 public:
   /// Constructor.
   csView (iEngine *iEngine, iGraphics3D* ig3d);
@@ -91,19 +81,13 @@ public:
   /// Set current camera.
   virtual void SetCamera (iCamera* c);
 
-  virtual iPerspectiveCamera* GetPerspectiveCamera ();
-  virtual void SetPerspectiveCamera (iPerspectiveCamera* c);
-
-  virtual iCustomMatrixCamera* GetCustomMatrixCamera ();
-  virtual void SetCustomMatrixCamera (iCustomMatrixCamera* c);
-
   /// Get Context
   virtual iGraphics3D* GetContext ();
   /// Set Context
   virtual void SetContext (iGraphics3D *ig3d);
 
   /// Set clipping rectangle.
-  virtual void SetRectangle (int x, int y, int w, int h, bool restrictToScreen = true);
+  virtual void SetRectangle (int x, int y, int w, int h);
   /// Clear clipper in order to start building a polygon-based clipper.
   virtual void ClearView ();
   /// Add a vertex to clipping polygon (non-rectangular clipping).
@@ -120,52 +104,6 @@ public:
   virtual iClipper2D* GetClipper ();
   /// Draw 3D world as seen from the camera.
   virtual void Draw (iMeshWrapper* mesh = 0);
-
-
-  virtual CS::Utility::MeshFilter& GetMeshFilter ()
-  {
-    return meshFilter;
-  }
-
-  // Get the view width.
-  virtual int GetWidth () const
-  {
-    return viewWidth;
-  }
-
-  // Get the view height.
-  virtual int GetHeight () const
-  {
-    return viewHeight;
-  }
-
-  // Set the view width.
-  virtual void SetWidth (int w)
-  {
-    viewWidth = w;
-  }
-
-  // Set the view height.
-  virtual void SetHeight (int h)
-  {
-    viewHeight = h;
-  }
-
-  virtual csVector2 NormalizedToScreen (const csVector2& pos)
-  {
-    return csVector2 (
-	(pos.x + 1.0f) * float (viewWidth) / 2.0f,
-	(pos.y + 1.0f) * float (viewHeight) / 2.0f
-	);
-  }
-
-  virtual csVector2 ScreenToNormalized (const csVector2& pos)
-  {
-    return csVector2 (
-	pos.x * 2.0f / float (viewWidth) - 1.0f,
-	pos.y * 2.0f / float (viewHeight) - 1.0f
-	);
-  }
 };
 
 #endif // __CS_CSVIEW_H__

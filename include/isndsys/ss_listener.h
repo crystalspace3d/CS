@@ -36,6 +36,7 @@
  */
 struct iSndSysListener : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE (iSndSysListener, 0, 0, 2);
 
   /// Set direction of listener (front and top 3d vectors)
@@ -72,6 +73,7 @@ struct iSndSysListener : public virtual iBase
  */
 struct iSndSysListenerDoppler : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE (iSndSysListenerDoppler, 0, 0, 2);
 
   /// Set velocity (speed) of the listener

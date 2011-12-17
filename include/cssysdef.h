@@ -33,50 +33,6 @@
   code itself.
 */
 
-/* Check whether shared or static libs should be used.
-   Relevant defines are CS_USE_SHARED_LIBS, CS_USE_STATIC_LIBS and 
-   CS_BUILD_SHARED_LIBS. While building CS they indicate whether CS is built
-   with shared or static libs; while building external applications they
-   indicate whether the used CS was built with shared or static libs.
-   
-   The reason for this multitude of defines is historical: first, there was
-   CS_BUILD_SHARED_LIBS (default being absent). However, the name is not very
-   clear when seen in the context of external projects (as CS isn't built there,
-   and it doesn't control the building of the external project). Hence,
-   the somewhat clearer CS_USE_SHARED_LIBS was added. CS_USE_STATIC_LIBS was
-   added to provide an orthogonal definition to make clear static libs are
-   used.
-   Lastly, the defaults have changed: if none of the macros are defined the
-   default is CS_USE_SHARED_LIBS. The reason is that, nowadays, shared libs
-   are the default on most platforms anyway. (Especially on MSVC people tend
-   to overlook to set the CS_BUILD_SHARED_LIBS define for an external project 
-   and experience build errors.)
- */
- 
-/* CS_USE_ defines have first control over shared lib building, override
-   legacy CS_BUILD_SHARED_LIBS accordingly */
-#if defined(CS_USE_SHARED_LIBS)
-#  if !defined(CS_BUILD_SHARED_LIBS)
-#    define CS_BUILD_SHARED_LIBS
-#  endif
-#elif defined(CS_USE_STATIC_LIBS)
-#  if defined(CS_BUILD_SHARED_LIBS)
-#    undef CS_BUILD_SHARED_LIBS
-#  endif
-#endif
-/* If no CS_USE_ macro is defined and no CS_BUILD_SHARED_LIBS either, default
-   to CS_USE_SHARED_LIBS */
-#if !defined(CS_USE_SHARED_LIBS) && !defined(CS_USE_STATIC_LIBS)
-#  if !defined(CS_BUILD_SHARED_LIBS)
-#    define CS_BUILD_SHARED_LIBS
-#  endif
-#  define CS_USE_SHARED_LIBS
-#endif
-// Sanity check
-#if defined(CS_USE_SHARED_LIBS) && defined(CS_USE_STATIC_LIBS)
-#  error Both CS_USE_SHARED_LIBS and CS_USE_STATIC_LIBS defined, please pick one!
-#endif
-
 /*
  * Pull in platform-specific overrides of the requested functionality.
  */
@@ -96,7 +52,7 @@
 #  define CS_IMPORT_SYM_DLL extern
 #endif
 #ifndef CS_EXPORT_SYM
-#  if defined(CS_USE_SHARED_LIBS)
+#  if defined(CS_BUILD_SHARED_LIBS)
 #    define CS_EXPORT_SYM CS_VISIBILITY_DEFAULT
 #  else
 #    define CS_EXPORT_SYM
@@ -165,11 +121,6 @@ int vswprintf ();
 #  define CS_DEPRECATED_METHOD    CS_ATTRIBUTE_DEPRECATED
 #  define CS_DEPRECATED_TYPE      CS_ATTRIBUTE_DEPRECATED
 #  define CS_DEPRECATED_VAR(decl) decl CS_ATTRIBUTE_DEPRECATED
-#  ifdef CS_ATTRIBUTE_DEPRECATED_MSG
-#    define CS_DEPRECATED_METHOD_MSG(msg)	CS_ATTRIBUTE_DEPRECATED_MSG(msg)
-#    define CS_DEPRECATED_TYPE_MSG(msg)		CS_ATTRIBUTE_DEPRECATED_MSG(msg)
-#    define CS_DEPRECATED_VAR_MSG(msg, decl)	decl CS_ATTRIBUTE_DEPRECATED_MSG(msg)
-#  endif
 #endif
 
 /**\def CS_DEPRECATED_METHOD
@@ -412,14 +363,10 @@ int vswprintf ();
 typedef void (*csStaticVarCleanupFN) (void (*p)());
 extern csStaticVarCleanupFN csStaticVarCleanup;
 
-#include "csutil/threading/atomicops.h"
-#include "csutil/threading/mutex.h"
-
-#define CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION_A(Name, FuncAttr)    \
-static CS::Threading::Mutex Name_ ## staticVarLock;                    \
-FuncAttr void Name (void (*p)())                                       \
+#ifndef CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION
+#  define CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION(Name)              \
+void Name (void (*p)())                                                \
 {                                                                      \
-  CS::Threading::MutexScopedLock lock (Name_ ## staticVarLock);        \
   static void (**a)() = 0;                                             \
   static int lastEntry = 0;                                            \
   static int maxEntries = 0;                                           \
@@ -446,9 +393,6 @@ FuncAttr void Name (void (*p)())                                       \
     maxEntries = 0;                                                    \
   }                                                                    \
 }
-#ifndef CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION
-#  define CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION(Name)              \
-      CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION_A(Name, )
 #endif
 
 #ifndef CS_DEFINE_STATIC_VARIABLE_REGISTRATION
@@ -465,6 +409,21 @@ FuncAttr void Name (void (*p)())                                       \
 #  define CS_DECLARE_DEFAULT_STATIC_VARIABLE_REGISTRATION		\
     CS_CRYSTALSPACE_EXPORT 						\
     CS_DECLARE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_csutil);
+#endif
+
+/* scfStaticallyLinked - Flag indicating whether external linkage was used when 
+ * building the application. Determines whether SCF scans for plugins at 
+ * startup.
+ */
+/**\def CS_DEFINE_STATICALLY_LINKED_FLAG
+ * Define the scfStaticallyLinked variable.
+ */
+#if defined(CS_BUILD_SHARED_LIBS)
+#  define CS_DEFINE_STATICALLY_LINKED_FLAG
+#elif defined(CS_STATIC_LINKED)
+#  define CS_DEFINE_STATICALLY_LINKED_FLAG  bool scfStaticallyLinked = true;
+#else
+#  define CS_DEFINE_STATICALLY_LINKED_FLAG  bool scfStaticallyLinked = false;
 #endif
 
 #if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
@@ -510,11 +469,13 @@ FuncAttr void Name (void (*p)())                                       \
 #  if defined(CS_BUILD_SHARED_LIBS)
 #    define CS_IMPLEMENT_FOREIGN_DLL					    \
        CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION(csStaticVarCleanup_local); \
+       CS_DEFINE_STATICALLY_LINKED_FLAG					    \
        CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_local);   \
        CS_DEFINE_MEMTRACKER_MODULE
 #  else
 #    define CS_IMPLEMENT_FOREIGN_DLL					    \
        CS_DECLARE_DEFAULT_STATIC_VARIABLE_REGISTRATION			    \
+       CS_DEFINE_STATICALLY_LINKED_FLAG					    \
        CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_csutil);  \
        CS_DEFINE_MEMTRACKER_MODULE
 #  endif
@@ -540,6 +501,7 @@ FuncAttr void Name (void (*p)())                                       \
 #  ifndef CS_IMPLEMENT_PLUGIN
 #  define CS_IMPLEMENT_PLUGIN        					\
           CS_IMPLEMENT_PLATFORM_PLUGIN 					\
+	  CS_DEFINE_STATICALLY_LINKED_FLAG				\
 	  CS_DECLARE_DEFAULT_STATIC_VARIABLE_REGISTRATION		\
 	  CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_csutil);   \
           CS_DEFINE_MEMTRACKER_MODULE
@@ -549,6 +511,7 @@ FuncAttr void Name (void (*p)())                                       \
 
 #  ifndef CS_IMPLEMENT_PLUGIN
 #  define CS_IMPLEMENT_PLUGIN						\
+   CS_DEFINE_STATICALLY_LINKED_FLAG					\
    CS_IMPLEMENT_STATIC_VARIABLE_REGISTRATION(csStaticVarCleanup_local)	\
    CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_local);	\
    CS_IMPLEMENT_PLATFORM_PLUGIN                                         \
@@ -568,6 +531,7 @@ FuncAttr void Name (void (*p)())                                       \
 #ifndef CS_IMPLEMENT_APPLICATION
 #  define CS_IMPLEMENT_APPLICATION       				\
   CS_DECLARE_DEFAULT_STATIC_VARIABLE_REGISTRATION			\
+  CS_DEFINE_STATICALLY_LINKED_FLAG					\
   CS_DEFINE_STATIC_VARIABLE_REGISTRATION (csStaticVarCleanup_csutil);	\
   CS_IMPLEMENT_PLATFORM_APPLICATION                                     \
   CS_DEFINE_MEMTRACKER_MODULE
@@ -589,36 +553,6 @@ FuncAttr void Name (void (*p)())                                       \
         csStaticVarCleanup (0);
 #endif
 
-/* Body of getter function, mostly the same across different CS_STATIC_VAR_*
-  variants.
-  'Ptr' is a variable of type 'Type*' that receives the value of 'Val' (where
-  the actual object is stored). See CS_IMPLEMENT_STATIC_VAR for explanation
-  of initParam and kill_how.
-  
-  'Val' is read atomically. If it's 0, a new object is created. If another
-  thread concurrently requests the value, it's ensured that the value is
-  consistent (both the returned and stored value).
-*/
-#define CS_STATIC_VAR_GETTER_COMMON(Type, Ptr, initParam, Val, kill_how)\
-  while (true)								\
-  {									\
-    Ptr = reinterpret_cast<Type*> (					\
-      CS::Threading::AtomicOperations::Read (				\
-	reinterpret_cast<void**> (&Val)));				\
-    if (Ptr != 0) break;						\
-    Ptr = new Type initParam;                              		\
-    if (CS::Threading::AtomicOperations::CompareAndSet (		\
-	reinterpret_cast<void**> (&Val), Ptr, 0) != 0)			\
-    {									\
-      delete Ptr;							\
-    }									\
-    else								\
-    {									\
-      csStaticVarCleanup (kill_how);        				\
-      break;								\
-    }                                                                   \
-  }
-
 /**\def CS_IMPLEMENT_STATIC_VAR(getterFunc,Type,initParam,kill_how)
  * Implement a file-scoped static variable that is created on demand. Defines a
  * 'getter' function to access the variable and a 'destruction' function. The
@@ -633,8 +567,8 @@ FuncAttr void Name (void (*p)())                                       \
 
 #ifndef CS_IMPLEMENT_STATIC_VAR_EXT
 #define CS_IMPLEMENT_STATIC_VAR_EXT(getterFunc,Type,initParam,kill_how) \
-namespace {                                                             \
-static Type* getterFunc ## _v = 0;                                      \
+namespace {                                                            \
+static Type *getterFunc ## _v=0;                                        \
 static Type* getterFunc ();                                             \
 static void getterFunc ## _kill ();					\
 static void getterFunc ## _kill_array ();				\
@@ -652,10 +586,12 @@ void getterFunc ## _kill_array ()                                	\
 }                                                                       \
 Type* getterFunc ()                                                     \
 {                                                                       \
-  Type* p;								\
-  CS_STATIC_VAR_GETTER_COMMON(Type, p, initParam, getterFunc ## _v,	\
-    getterFunc ## kill_how);						\
-  return p;								\
+  if (!getterFunc ## _v)                                                \
+  {                                                                     \
+    getterFunc ## _v = new Type initParam;                              \
+    csStaticVarCleanup (getterFunc ## kill_how);        		\
+  }                                                                     \
+  return getterFunc ## _v;                                              \
 }                                                                       \
 }
 #endif
@@ -706,7 +642,7 @@ static void getterFunc ## _kill_array ();
 #ifndef CS_IMPLEMENT_STATIC_CLASSVAR_EXT
 #define CS_IMPLEMENT_STATIC_CLASSVAR_EXT(Class,var,getterFunc,Type,initParam,\
   kill_how)                                                    	\
-Type* Class::var = 0;                                          	\
+Type *Class::var = 0;                                          	\
 void Class::getterFunc ## _kill ()               	        \
 {                                                              	\
   delete getterFunc ();                                 	\
@@ -719,10 +655,12 @@ void Class::getterFunc ## _kill_array ()         	        \
 }                                                              	\
 Type* Class::getterFunc ()                                     	\
 {                                                              	\
-  Type* p;							\
-  CS_STATIC_VAR_GETTER_COMMON(Type, p, initParam, var,		\
-    getterFunc ## kill_how);					\
-  return p;							\
+  if (!var)                                                    	\
+  {                                                            	\
+    var = new Type initParam;                                  	\
+    csStaticVarCleanup (getterFunc ## kill_how); 	        \
+  }                                                            	\
+  return var;                                                  	\
 }
 #endif
 
@@ -754,10 +692,12 @@ void Class::getterFunc ## _kill ()                             \
 }                                                              \
 Type &Class::getterFunc ()                                     \
 {                                                              \
-  Type* p;							\
-  CS_STATIC_VAR_GETTER_COMMON(Type, p, initParam, var,		\
-    getterFunc ## kill_how);					\
-  return *p;							\
+  if (!var)                                                    \
+  {                                                            \
+    var = new Type initParam;                                  \
+    csStaticVarCleanup (getterFunc ## kill_how);               \
+  }                                                            \
+  return *var;                                                 \
 }
 #endif
 
@@ -866,38 +806,6 @@ extern CS_CRYSTALSPACE_EXPORT void* cs_realloc (void* p, size_t n);
 extern CS_CRYSTALSPACE_EXPORT void* cs_calloc (size_t n, size_t s);
 //@}
 
-namespace CS
-{
-  template <class T>
-  class StackArrayHelper
-  {
-  private:
-    void* memory;
-    bool deleteme;
-
-  public:
-    StackArrayHelper (void* memory, bool deleteme)
-      : memory (memory), deleteme (deleteme) { }
-    ~StackArrayHelper () { if (deleteme) cs_free (memory); }
-  };
-}
-
-/**\def CS_ALLOC_STACK_ARRAY_FALLBACK(type, var, size, thresshold)
- * Dynamic stack memory allocation. This version fallbacks to normal allocation
- * in case the number of items on the stack would be too high.
- * \param type Type of the array elements.
- * \param var Name of the array to be allocated.
- * \param size Number of elements to be allocated.
- * \param Thresshold is the maximum number of items before switching to
- * normal allocation.
- */
-#define CS_ALLOC_STACK_ARRAY_FALLBACK(Type, Name, Size, Thresshold) \
-  Type* Name = ((Size) > (Thresshold)) ? \
-        (Type*)cs_malloc((Size)*sizeof(Type)) : \
-        (Type*)alloca((Size)*sizeof(Type)); \
-  CS::StackArrayHelper<Type> Name##Del (Name, ((Size) > (Thresshold)));
-
-
 #ifdef CS_USE_CUSTOM_ISDIR
 static inline bool isdir (const char *path, struct dirent *de)
 {
@@ -968,8 +876,18 @@ namespace CS
     {
     #  if defined (CS_PLATFORM_WIN32)
       ::DebugBreak();
+    #  elif defined (CS_PROCESSOR_X86)
+    #    if defined (CS_COMPILER_GCC)
+      asm ("int $3");
+    #    else
+      _asm int 3;
+    #    endif
+    #  elif defined (CS_PROCESSOR_POWERPC)
+    // Source: http://cocoawithlove.com/2008/03/break-into-debugger.html
+      asm("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n"
+           : : : "memory","r0","r3","r4" );
     #  else
-      raise (SIGTRAP);
+      static int x = 0; x /= x;
     #  endif
     }
     
@@ -1059,21 +977,7 @@ namespace CS
 
 // gcc can perform usefull checking for printf/scanf format strings, just add
 // this define at the end of the function declaration
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4)
-/* Newer GCCs know different 'archetypes' of format string styles.
- * CS format strings are on the level of the GNU C library, so use that
- * archetype. */
-#  define CS_GNUC_PRINTF(format_idx, arg_idx) \
-     __attribute__((format (gnu_printf, format_idx, arg_idx)))
-#  define CS_GNUC_SCANF(format_idx, arg_idx) \
-     __attribute__((format (gnu_scanf, format_idx, arg_idx)))
-// Unfortunately, gcc doesn't support format argument checking for wide strings
-#  define CS_GNUC_WPRINTF(format_idx, arg_idx) \
-     /*__attribute__((format (__wprintf__, format_idx, arg_idx)))*/
-#  define CS_GNUC_WSCANF(format_idx, arg_idx) \
-     /*__attribute__((format (__wscanf__, format_idx, arg_idx)))*/
-#elif __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
-// Use default archetype for older versions.
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
 #  define CS_GNUC_PRINTF(format_idx, arg_idx) \
      __attribute__((format (__printf__, format_idx, arg_idx)))
 #  define CS_GNUC_SCANF(format_idx, arg_idx) \
@@ -1109,8 +1013,6 @@ namespace CS
 #if defined(CS_COMPILER_MSVC)
   #define CS_ALIGNED_MEMBER(Member, Align)				\
     __declspec(align(Align)) Member
-  #define CS_ALIGNED_STRUCT(Kind, Align)	                        \
-    __declspec(align(Align)) Kind
 #elif defined(CS_COMPILER_GCC)
   /**
    * Macro to align a class member (or local variable) to a specific byte
@@ -1125,23 +1027,9 @@ namespace CS
    * \endcode
    */
   #define CS_ALIGNED_MEMBER(Member, Align)				\
-    Member __attribute__((aligned(Align)))
-  /**
-   * Macro to declare a struct aligned to a specific byte boundary.
-   *
-   * Example:
-   * \code
-   * CS_STRUCT_ALIGN(struct, 16) MyStruct
-   * {
-   *   int x;
-   * };
-   * \endcode
-   */
-  #define CS_ALIGNED_STRUCT(Kind, Align)	                        \
-    Kind __attribute__((aligned(Align)))
+    Member __attribute((aligned(Align)))
 #else
   #define CS_ALIGNED_MEMBER(Member, Align)	Member
-  #define CS_ALIGNED_STRUCT(Kind, Align)	        Kind
 #endif
 
 // Macro used to define static implicit pointer conversion function.
@@ -1247,40 +1135,5 @@ namespace CS
 #define CS_PLUGIN_NAMESPACE_NAME(name)                                      \
   CS_NAMESPACE_PACKAGE_NAME::Plugin::name
 /** @} */
-
-/**\def CS_DEPRECATION_WARNINGS_DISABLE(x)
- * Disable deprecation warnings in following statements. Always try to actually
- * fix the root cause of a deprecation warning before employing this.
- * Should be followed by CS_DEPRECATION_WARNINGS_ENABLE after the statements
- * that caused the warnings.
- * Suitable for use in macros.
- */
-/**\def CS_DEPRECATION_WARNINGS_ENABLE(x)
- * Enable deprecation warnings in following statements. Suitable for use in
- * macros.
- */
-#if defined(CS_COMPILER_GCC) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 1))
-# define CS_DEPRECATION_WARNINGS_DISABLE	\
-  _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-# define CS_DEPRECATION_WARNINGS_ENABLE	\
-  _Pragma("GCC diagnostic warning \"-Wdeprecated-declarations\"")
-#else
-# define CS_DEPRECATION_WARNINGS_DISABLE
-# define CS_DEPRECATION_WARNINGS_ENABLE
-#endif
-
-namespace CS
-{
-  namespace deprecated
-  {
-    CS_DEPRECATED_METHOD_MSG("Use CS::Platform::CreateDirectory() instead")
-    CS_CRYSTALSPACE_EXPORT int CS_MKDIR (const char* path);
-  } // namespace deprecated
-} // namespace CS
-
-#define CS_MKDIR(path)    CS::deprecated::CS_MKDIR(path)
-
-// Include nullptr fallback (for convenience).
-#include "csutil/nullptr.h"
 
 #endif // __CS_CSSYSDEF_H__

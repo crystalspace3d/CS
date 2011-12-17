@@ -23,7 +23,6 @@
 
 #include "gl_render3d.h"
 #include "gl_renderbuffer.h"
-#include "profilescope.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 {
@@ -70,23 +69,13 @@ const size_t csGLVBOBufferManager::VBO_SLOT_PER_BUFFER[] =
 
 static const GLenum VBO_BUFFER_GL_TYPE[] = {
   GL_ARRAY_BUFFER_ARB, 
-  GL_ELEMENT_ARRAY_BUFFER,
-  GL_ARRAY_BUFFER_ARB, 
   GL_ELEMENT_ARRAY_BUFFER};
-static const GLenum VBO_BUFFER_GL_USAGE[] = {
-  GL_DYNAMIC_DRAW_ARB, 
-  GL_DYNAMIC_DRAW_ARB,
-  GL_STATIC_DRAW_ARB,
-  GL_STATIC_DRAW_ARB};
 
-csGLVBOBufferManager::csGLVBOBufferManager (csGLGraphics3D* G3D,
-					    csGLExtensionManager *ext, 
+csGLVBOBufferManager::csGLVBOBufferManager (csGLExtensionManager *ext, 
                                             csGLStateCache *state,
-                                            size_t maxAllocation,
-					    bool forceSeparateVBOs)                                            
-  : scfImplementationType (this), G3D (G3D), extensionManager (ext),
-    stateCache (state), currentVBOAllocation (0),
-    maxVBOAllocation (maxAllocation), forceSeparateVBOs (forceSeparateVBOs)
+                                            size_t maxAllocation)                                            
+  : scfImplementationType (this), extensionManager (ext), stateCache (state),
+  currentVBOAllocation (0), maxVBOAllocation (maxAllocation)
 {
   memset (&vboBufferList, 0, sizeof(vboBufferList));
 }
@@ -94,7 +83,7 @@ csGLVBOBufferManager::csGLVBOBufferManager (csGLGraphics3D* G3D,
 csGLVBOBufferManager::~csGLVBOBufferManager ()
 {
   // Deallocate stuff@@@
-  for (size_t type = 0; type < VBO_BUFFER_TYPE_COUNT; ++type)
+  for (size_t type = 0; type < 1; ++type)
   {
     for (size_t i = 0; i < VBO_NUM_SLOT_SIZES; ++i)
     {
@@ -191,10 +180,8 @@ csGLVBOBufferManager::VBOSlot* csGLVBOBufferManager::GetVBOSlot (
 
   slot = renderBufferMappings.Get (buffer, 0);
   const bool isIndexBuffer = buffer->IsIndexBuffer ();
-  size_t slotType =
-    isIndexBuffer ? VBO_BUFFER_IS_INDEX : VBO_BUFFER_IS_VERTEX;
-  if (buffer->GetBufferType() == CS_BUF_STATIC)
-    slotType |= VBO_BUFFER_IS_STATIC;
+  const size_t slotType = isIndexBuffer ?
+    VBO_BUFFER_INDEX : VBO_BUFFER_VERTEX;
 
   if (!slot)
   {
@@ -242,8 +229,6 @@ csGLVBOBufferManager::VBOSlot* csGLVBOBufferManager::GetVBOSlot (
 
     if (slot->bufferVersion != buffer->GetVersion ())
     {
-      ProfileScope _profile (G3D, "Buffer update");
-      
       GLuint vboID;
       size_t offset;
 
@@ -270,7 +255,7 @@ csGLVBOBufferManager::VBOSlot* csGLVBOBufferManager::GetFreeVBOSlot (
   size_t slotSizePO2, size_t slotType)
 {
   // We don't cache and reuse big buffers, so theres never any free slots
-  if (!IsSizePO2Slotted  (slotSizePO2))
+  if (slotSizePO2 > VBO_MAX_SLOT_SIZE_PO2)
     return 0;
 
   // Scan VBO buffers of given type for one with free slots
@@ -288,7 +273,7 @@ csGLVBOBufferManager::VBOSlot* csGLVBOBufferManager::GetFreeVBOSlot (
     // Scan 32 bits at a time
     for (size_t bunchIdx = 0; bunchIdx < numSlotBitmap; bunchIdx++, bitmap++)
     {
-      unsigned long localIndex;
+      size_t localIndex;
       bool foundSlot = CS::Utility::BitOps::ScanBitForward (*bitmap, localIndex);
       if (foundSlot)
       {
@@ -307,7 +292,7 @@ csGLVBOBufferManager::VBOSlot* csGLVBOBufferManager::TryFreeVBOSlot (
   size_t slotSizePO2, size_t slotType)
 {
   // We don't cache and reuse big buffers, so theres never any free slots
-  if (!IsSizePO2Slotted (slotSizePO2))
+  if (slotSizePO2 > VBO_MAX_SLOT_SIZE_PO2)
     return 0;
 
   const size_t slotSizeIdx = slotSizePO2 - VBO_MIN_SLOT_SIZE_PO2;
@@ -358,7 +343,7 @@ void csGLVBOBufferManager::ReleaseVBOSlot (VBOSlot* slot, bool deallocate /* = t
 
   // Deallocate it
   const size_t buffSizePO2 = GetSlotSizePO2 (buffer->slotSize);
-  if (!IsSizePO2Slotted (buffSizePO2))
+  if (buffSizePO2 > VBO_MAX_SLOT_SIZE_PO2)
   {
     // Big buffer
     vboBigBuffers[buffer->bufferType].DeleteIndexFast ((size_t)buffer->nextBuffer);
@@ -414,12 +399,12 @@ csGLVBOBufferManager::VBOBuffer* csGLVBOBufferManager::GetNewVBOBuffer (
   bool bigBuffer = false;
 
   const size_t slotSizeIdx = slotSizePO2 - VBO_MIN_SLOT_SIZE_PO2;
-  if (IsSizePO2Slotted (slotSizePO2))
+  if (slotSizePO2 <= VBO_MAX_SLOT_SIZE_PO2)
   {    
     numSlots = VBO_SLOT_PER_BUFFER[slotSizeIdx];
     numSlotBitmap = (numSlots + 31) / 32;
     bigBuffer = false;
-    slotSize = (ptrdiff_t(1) << slotSizePO2);
+    slotSize = (1 << slotSizePO2);
   }
   else
   {
@@ -479,12 +464,11 @@ csGLVBOBufferManager::VBOBuffer* csGLVBOBufferManager::GetNewVBOBuffer (
   extensionManager->glGenBuffersARB (1, &(buffer->vboID));
   CS_ASSERT(buffer->vboID);
   stateCache->SetBufferARB (VBO_BUFFER_GL_TYPE[slotType], buffer->vboID);
-  stateCache->ApplyBufferBinding ((slotType & VBO_BUFFER_IS_INDEX)
+  stateCache->ApplyBufferBinding (slotType == VBO_BUFFER_INDEX
     ? csGLStateCacheContext::boIndexArray
     : csGLStateCacheContext::boElementArray);
   extensionManager->glBufferDataARB (VBO_BUFFER_GL_TYPE[slotType], 
-    (GLsizei)(buffer->slotSize*buffer->numberOfSlots), 0,
-    VBO_BUFFER_GL_USAGE[slotType]);
+    (GLsizei)(buffer->slotSize*buffer->numberOfSlots), 0, GL_DYNAMIC_DRAW_ARB);
   stateCache->SetBufferARB (VBO_BUFFER_GL_TYPE[slotType], 0);
 
   currentVBOAllocation += buffer->slotSize*buffer->numberOfSlots;
@@ -494,7 +478,7 @@ csGLVBOBufferManager::VBOBuffer* csGLVBOBufferManager::GetNewVBOBuffer (
 
 void csGLVBOBufferManager::FreeVBOBuffer (VBOBuffer* buffer)
 {
-  for (size_t i = 0; i < VBO_BUFFER_TYPE_COUNT; ++i)
+  for (size_t i = 0; i < 1; ++i)
   {
     if (stateCache->GetBufferARB (VBO_BUFFER_GL_TYPE[i]) == buffer->vboID)
       stateCache->SetBufferARB (VBO_BUFFER_GL_TYPE[i], 0);
@@ -534,14 +518,10 @@ void csGLVBOBufferManager::DumpStats ()
 {
   csPrintf ("VBO memory statistics:\n");
   csPrintf ("VB Buffers\n");
-  DumpStatsBufferType (VBO_BUFFER_IS_VERTEX);
-  csPrintf ("Static VB Buffers\n");
-  DumpStatsBufferType (VBO_BUFFER_IS_VERTEX | VBO_BUFFER_IS_STATIC);
+  DumpStatsBufferType (VBO_BUFFER_VERTEX);
 
   csPrintf ("IB Buffers\n");
-  DumpStatsBufferType (VBO_BUFFER_IS_INDEX);
-  csPrintf ("Static IB Buffers\n");
-  DumpStatsBufferType (VBO_BUFFER_IS_INDEX | VBO_BUFFER_IS_STATIC);
+  DumpStatsBufferType (VBO_BUFFER_INDEX);
 
   csPrintf ("VBO allocation: %s / %s (%3u %%)\n", 
     ByteFormat (currentVBOAllocation).GetDataSafe (),

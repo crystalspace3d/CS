@@ -41,7 +41,7 @@
 #include "particles.h"
 #include "vertexsetup.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 {
@@ -62,7 +62,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
   bool ParticlesMeshObjectType::Initialize (iObjectRegistry* object_reg)
   {
-    this->object_reg = object_reg;
     return true;
   }
 
@@ -176,7 +175,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   //-- Object
   ParticlesMeshObject::ParticlesMeshObject (ParticlesMeshFactory* factory)
     : scfImplementationType (this), 
-    factory (factory), vertexSetup (0), delayedAdvance(0),
+    factory (factory), vertexSetup (0),
     meshWrapper (0), mixMode (CS_FX_COPY), lastUpdateTime (0),
     lastFrameNumber (0), totalParticleTime (0.0f),
     radius (1.0f), minRadius (1.0f), rawBuffer (0), particleAllocatedSize (0),
@@ -528,7 +527,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     mesh->worldspace_origin = obj2world.GetOrigin (); //@@TODO: use real center
     mesh->geometryInstance = (void*)this;
     mesh->object2world = obj2world;
-    mesh->bbox = GetObjectBoundingBox();
 
     SetupIndexBuffer (mesh->buffers, obj2cam);
     SetupVertexBuffer (mesh->buffers, obj2cam);
@@ -580,7 +578,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     if (externalControl)
       return;
 
-    // Retire the old particles
+    // Retire old particles
     size_t currentParticleIdx = 0;
     while (currentParticleIdx < particleBuffer.particleCount)
     {
@@ -589,7 +587,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       currentParticle.timeToLive -= dt;
       if (currentParticle.timeToLive < 0)
       {
-        // retire particle: move the data of the last particle to the current one
+        //retire particle
         particleBuffer.particleAuxData[currentParticleIdx] = 
           particleBuffer.particleAuxData[--particleBuffer.particleCount];
 
@@ -601,20 +599,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       currentParticleIdx++;
     }
 
-    // Apply all emitters
+    // Apply emitters
     size_t totalEmitted = 0;
     csReversibleTransform t = meshWrapper->GetMovable ()->GetFullTransform ();
     csReversibleTransform* tptr = transformMode == CS_PARTICLE_LOCAL_EMITTER ? 
       &t : 0;
     for (size_t idx = 0; idx < emitters.GetSize (); ++idx)
     {
-      // Ask for the amount of new particles to create
       iParticleEmitter* emitter = emitters[idx];
       size_t numParticles = emitter->ParticlesToEmit (this, dt, totalParticleTime);
       if (numParticles == 0)
         continue;
 
-      // Allocate the new particles
       ReserveNewParticles (numParticles);
       totalEmitted += numParticles;
 
@@ -623,13 +619,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       tmpBuf.particleData = particleBuffer.particleData + particleBuffer.particleCount;
       tmpBuf.particleAuxData = particleBuffer.particleAuxData + particleBuffer.particleCount;
       
-      // Do the actual emitting (ie initialization of the particle)
       emitter->EmitParticles (this, tmpBuf, dt, totalParticleTime, tptr);
 
       particleBuffer.particleCount += numParticles;
     }
 
-    // Apply all effectors
+    // Apply effectors
     for (size_t idx = 0; idx < effectors.GetSize (); ++idx)
     {
       iParticleEffector* effector = effectors[idx];
@@ -637,7 +632,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       effector->EffectParticles (this, particleBuffer, dt, totalParticleTime);
     }
     
-    // Integrate the positions and rotations of the particles
+    // Integrate positions
     if (integrationMode == CS_PARTICLE_INTEGRATE_LINEAR)
     {
       for (currentParticleIdx = 0; 
@@ -785,14 +780,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   
   void ParticlesMeshObject::Advance (csTicks time)
   {
-    // Check that we have a meshwrapper.
-    if(!meshWrapper)
-    {
-      // Delay the advance until we do.
-      delayedAdvance += time;
-      return;
-    }
-
     // Advance particle system in slices of that duration
     const csTicks advanceSlice = 50;
   

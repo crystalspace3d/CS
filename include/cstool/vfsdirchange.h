@@ -50,36 +50,19 @@ public:
    * directory to change to. E.g. both "<tt>/foo/bar/baz</tt>" and 
    * "<tt>/foo/bar/</tt>" will cause a directory change to "<tt>/foo/bar</tt>".
    */
-  bool ChangeTo (const char* filename)
+  void ChangeTo (const char* filename)
   {
-    if (!vfs) return false;
-
-    csString dir(filename);
-    dir.Truncate(dir.FindLast('/'));
-    vfs->PushDir ();
-    popCount++;
-
-    return vfs->ChDir (dir);
+    if (!vfs) return;
+    const char* slash = strrchr (filename, '/');
+    if (slash != 0)
+    {
+      csString dir;
+      dir.Replace (filename, slash - filename);
+      vfs->PushDir ();
+      vfs->ChDir (dir);
+      popCount++;
+    }
   }
-
-  /**
-   * As above, except that the full path is treated as the directory to
-   * change to.
-   */
-  bool ChangeToFull (const char* filename)
-  {
-    if (!vfs) return false;
-
-    // We must make a copy of the filename because it can be a direct
-    // pointer to vfs->GetCwd() and vfs->PushDir() corrupts that pointer.
-    csString copy (filename);
-
-    vfs->PushDir ();
-    popCount++;
-
-    return vfs->ChDir (copy);
-  }
-
   /**
    * Just pushes the current directory, but doesn't change it in anyway - 
    * useful when you want to call ChDir() or ChDirAuto() manually for some

@@ -19,13 +19,11 @@
 #include "cssysdef.h"
 #ifdef CS_WIN32_USE_CUSTOM_OPENDIR
 
-#include "csutil/csuctransform.h"
-
 struct DIR
 {
   HANDLE findHandle;
   dirent currentEntry;
-  WIN32_FIND_DATAW findData;
+  WIN32_FIND_DATA findData;
 
   DIR()
   {
@@ -43,18 +41,17 @@ DIR *opendir (const char *name)
     return 0;
 
   const size_t namelen = strlen (name);
-  CS_ALLOC_STACK_ARRAY (wchar_t, fullname, namelen + 3);
-  csUnicodeTransform::UTF8toWC (fullname, namelen + 3,
-                                (utf8_char*)name, namelen);
-  wchar_t* nameend = &fullname[namelen - 1];
+  CS_ALLOC_STACK_ARRAY (char, fullname, namelen + 3);
+  strcpy (fullname, name);
+  char* nameend = &fullname[namelen - 1];
   if (*nameend != CS_PATH_SEPARATOR)
   {
     nameend++;
     *nameend = CS_PATH_SEPARATOR;
   }
-  wcscpy (nameend + 1, L"*");
+  strcpy (nameend + 1, "*");
 
-  if ((dh->findHandle = FindFirstFileW (fullname, &dh->findData)) == 
+  if ((dh->findHandle = FindFirstFileA (fullname, &dh->findData)) == 
     INVALID_HANDLE_VALUE)
   {
     delete dh;
@@ -68,14 +65,14 @@ dirent *readdir (DIR *dirp)
 {
   if (dirp->findHandle != INVALID_HANDLE_VALUE)
   {
-    size_t nameLen = wcslen (dirp->findData.cFileName);
+    size_t nameLen = strlen (dirp->findData.cFileName);
     nameLen = MIN (nameLen, sizeof (dirp->currentEntry.d_name) - 1);
-    csUnicodeTransform::WCtoUTF8 ((utf8_char*)dirp->currentEntry.d_name,
-                                  sizeof (dirp->currentEntry.d_name),
-                                  dirp->findData.cFileName, nameLen);
+    memcpy (dirp->currentEntry.d_name, dirp->findData.cFileName, 
+      nameLen);
+    dirp->currentEntry.d_name[nameLen] = 0;
     dirp->currentEntry.d_size = dirp->findData.nFileSizeLow;
     dirp->currentEntry.dwFileAttributes = dirp->findData.dwFileAttributes;
-    if (!FindNextFileW (dirp->findHandle, &dirp->findData))
+    if (!FindNextFileA (dirp->findHandle, &dirp->findData))
     {
       FindClose (dirp->findHandle);
       dirp->findHandle = INVALID_HANDLE_VALUE;

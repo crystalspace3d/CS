@@ -23,7 +23,6 @@
 #include "imap/services.h"
 #include "iutil/comp.h"
 #include "iutil/dbghelp.h"
-#include "ivideo/shader/shader.h"
 #include "csutil/csstring.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/strhash.h"
@@ -53,7 +52,7 @@ protected:
   csStringHash xmltokens;
 #define CS_TOKEN_ITEM_FILE "plugins/csparser/services/syntxldr.tok"
 #include "cstool/tokenlist.h"
-  csRef<iShaderVarStringSet> strings;
+  csRef<iStringSet> strings;
 
   void ReportV (const char* msgid, int severity, 
 	iDocumentNode* errornode, const char* msg, va_list arg);
@@ -78,7 +77,6 @@ public:
   	bool& result, bool def_result, bool required);
   virtual bool WriteBool (iDocumentNode* node, const char* name, bool value);
   virtual bool ParseMatrix (iDocumentNode* node, csMatrix3 &m);
-  virtual bool ParseMatrix (iDocumentNode* node, CS::Math::Matrix4& m);
   virtual bool WriteMatrix (iDocumentNode* node, const csMatrix3& m);
   virtual bool ParsePlane (iDocumentNode* node, csPlane3 &p);
   virtual bool WritePlane (iDocumentNode* node, const csPlane3 &p);
@@ -99,14 +97,42 @@ public:
   virtual bool WriteMixmode (iDocumentNode* node, uint mixmode,
   	bool allowFxMesh);
   virtual bool HandlePortalParameter (
+	iDocumentNode* child, iLoaderContext* ldr_context,
+	uint32 &flags, bool &mirror, bool &warp, int& msv,
+	csMatrix3 &m, csVector3 &before, csVector3 &after,
+	iString* destSector, bool& handled, bool& autoresolve)
+  {
+    csRef<csRefCount> state;
+    CS::Utility::PortalParameters params;
+    params.flags = flags;
+    params.mirror = mirror;
+    params.warp = warp;
+    params.msv = msv;
+    params.m = m;
+    params.before = before;
+    params.after = after;
+    params.destSector = destSector;
+    params.autoresolve = autoresolve;
+    bool ret = HandlePortalParameter (child, ldr_context, state, params, handled);
+    flags = params.flags;
+    mirror = params.mirror;
+    warp = params.warp;
+    msv = params.msv;
+    m = params.m;
+    before = params.before;
+    after = params.after;
+    destSector = params.destSector;
+    autoresolve = params.autoresolve;
+    return ret;
+  }
+  virtual bool HandlePortalParameter (
     iDocumentNode* child, iLoaderContext* ldr_context,
     csRef<csRefCount>& parseState, CS::Utility::PortalParameters& params,
     bool& handled);
   virtual bool ParseGradient (iDocumentNode* node, iGradient* gradient);
   virtual bool WriteGradient (iDocumentNode* node, iGradient* gradient);
   virtual bool ParseShaderVar (iLoaderContext* ldr_context,
-      iDocumentNode* node, csShaderVariable& var,
-      iStringArray* failedTextures);
+      iDocumentNode* node, csShaderVariable& var);
   virtual csRef<iShaderVariableAccessor> ParseShaderVarExpr (
     iDocumentNode* node);
   virtual bool WriteShaderVar (iDocumentNode* node, csShaderVariable& var);
@@ -118,6 +144,7 @@ public:
     bool allowZmesh);
   virtual bool WriteZMode (iDocumentNode* node, csZBufMode zmode,
     bool allowZmesh);
+  virtual bool ParseKey (iDocumentNode* node, iKeyValuePair* &keyvalue);
   virtual csPtr<iKeyValuePair> ParseKey (iDocumentNode* node);
   virtual bool WriteKey (iDocumentNode* node, iKeyValuePair* keyvalue);
 
@@ -135,8 +162,6 @@ public:
   virtual csRef<iDataBuffer> StoreRenderBuffer (iRenderBuffer* rbuf);
 
   virtual csRef<iShader> ParseShaderRef (iLoaderContext* ldr_context,
-      iDocumentNode* node);
-  virtual csRef<iShader> ParseShader (iLoaderContext* ldr_context,
       iDocumentNode* node);
 
   virtual void ReportError (const char* msgid, iDocumentNode* errornode,

@@ -37,7 +37,6 @@ const size_t CS_SNDSYS_STREAM_UNKNOWN_LENGTH = (size_t)-1;
 
 #define CS_SNDSYS_STREAM_PAUSED     0
 #define CS_SNDSYS_STREAM_UNPAUSED   1
-#define CS_SNDSYS_STREAM_COMPLETED  2
 
 #define CS_SNDSYS_STREAM_DONTLOOP   0
 #define CS_SNDSYS_STREAM_LOOP       1
@@ -61,7 +60,8 @@ enum
 //
 struct iSndSysStream : public virtual iBase
 {
-  SCF_INTERFACE(iSndSysStream,1,2,0);
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
+  SCF_INTERFACE(iSndSysStream,1,0,0);
 
   /// Retrieve a description of this stream.  
   //  This is not guaranteed to be useful for any particular purpose, different,
@@ -136,10 +136,6 @@ struct iSndSysStream : public virtual iBase
    * - CS_SNDSYS_STREAM_PAUSED - The stream is paused.
    * - CS_SNDSYS_STREAM_UNPAUSED - The stream is not paused.  AdvancePosition
    *   is moving the stream position.
-   * - CS_SNDSYS_STREAM_COMPLETED - The stream's data has been processed but
-   *   not rendered yet. In order to keep the state consistent, the Sound
-   *   System's main processing thread should call Pause() once the data has
-   *   been entirely rendered.
    */
   virtual int GetPauseState() = 0;
 
@@ -269,42 +265,6 @@ struct iSndSysStream : public virtual iBase
 
   /// Whether this stream always needs to be treated as a stream regardless of size.
   virtual bool AlwaysStream() const = 0;
-    
-  /**
-   * Gets where the audio should rewind to loop.
-   * 
-   * \return The position where to restart playing when looping in frames.
-   */
-  virtual size_t GetLoopStart() = 0;
-
-  /**
-   * Gets when the audio should rewind to loop.
-   * 
-   * \return The position where to rewind to loop start when looping in frames.
-   */
-  virtual size_t GetLoopEnd() = 0;
-    
-  /**
-   * Sets the loop start and end bounduaries. The start position defines the position in frames
-   * where the loop will restart when the stream reaches the end of the stream, in case
-   * endPosition is 0 or the frame defined in endPosition.
-   * 
-   * \note The endPosition is exclusive while the start position is inclusive, so for example to get
-   *       a loop from frame 0 to frame 0 you should do startPosition 0 and endPosition 1
-   * \param startPosition The position in frames where to restart playing when looping.
-   * \param endPosition The position in frames where to rewind to loop start when looping.
-   * \return false if the parameters are out of bound or the audio format plugin doesn't support this.
-   */
-  virtual bool SetLoopBoundaries(size_t startPosition, size_t endPosition) = 0;
-  
-  /**
-   * Check if the stream is pending position replacement.
-   * Usually in this case it might be a good idea to flush buffers and
-   * rebuffer.
-   * \return TRUE if the position is being changed
-   */
-  virtual bool PendingSeek () = 0;
-
 };
 
 /// Sound System stream interface for callback notification
@@ -315,6 +275,7 @@ struct iSndSysStream : public virtual iBase
 //
 struct iSndSysStreamCallback : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE(iSndSysStreamCallback,0,1,0);
 
   /// Called when this stream loops

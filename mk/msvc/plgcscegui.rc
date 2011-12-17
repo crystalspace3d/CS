@@ -18,7 +18,7 @@ FILEFLAGS 0x0
       VALUE "ProductName", "Crystal Space"
       VALUE "ProductVersion", CS_VERSION
       VALUE "FileVersion", CS_VERSION
-      VALUE "LegalCopyright", "Copyright (C)1998-2011 Jorrit Tyberghein and others"
+      VALUE "LegalCopyright", "Copyright (C)1998-2008 Jorrit Tyberghein and others"
       VALUE "FileDescription", "CEGUI Wrapper Plugin"
 #ifdef CS_DEBUG
       VALUE "Comments", "Debug build"
@@ -45,7 +45,7 @@ FILEFLAGS 0x0
   "    <classes>",
   "      <class>",
   "        <name>crystalspace.cegui.wrapper</name>",
-  "        <implementation>Renderer</implementation>",
+  "        <implementation>csCEGUIRenderer</implementation>",
   "        <description>Crystal Space CEGUI Wrapper</description>",
   "        <requires>",
   "          <class>crystalspace.graphics3d.</class>",

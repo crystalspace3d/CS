@@ -16,8 +16,8 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef _CS_RESOURCEPROVIDER_H_
-#define _CS_RESOURCEPROVIDER_H_
+#ifndef _CS_CEGUIRESOURCEPROVIDER_H_
+#define _CS_CEGUIRESOURCEPROVIDER_H_
 
 /**\file 
 */
@@ -25,47 +25,48 @@
 * \addtogroup CEGUI
 * @{ */
 
-#include "ceguiimports.h"
+// hack: work around problems caused by #defining 'new'
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# undef new
+#endif
+#include <new>
+#include <CEGUI.h>
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# define new CS_EXTENSIVE_MEMDEBUG_NEW
+#endif
+
 #include "csutil/ref.h"
 #include "iutil/vfs.h"
 
 struct iObjectRegistry;
 
-CS_PLUGIN_NAMESPACE_BEGIN(cegui)
+/**
+ * This is a VFS implementation of the CEGUI::ResourceProvider.
+ */
+class csCEGUIResourceProvider : public CEGUI::ResourceProvider
 {
+public:
+  /// Constructor.
+  csCEGUIResourceProvider (iObjectRegistry*);
+
+  /// Destructor.
+  virtual ~csCEGUIResourceProvider ();
+
   /**
-   * This is a VFS implementation of the CEGUI::ResourceProvider.
+   * Load raw data container using VFS.
+   * @param filename VFS path.
+   * @param output Raw data container where file will be loaded into.
+   * @param resourceGroup Group the loaded data will belong to.
    */
-  class ResourceProvider : public CEGUI::ResourceProvider
-  {
-  public:
-    /// Constructor.
-    ResourceProvider (iObjectRegistry*);
+  virtual void loadRawDataContainer (const CEGUI::String& filename,
+    CEGUI::RawDataContainer& output, const CEGUI::String& resourceGroup);
 
-    /// Destructor.
-    virtual ~ResourceProvider ();
+  /// Delete the raw data container.
+  virtual void unloadRawDataContainer (CEGUI::RawDataContainer& data);
 
-    /**
-     * Load raw data container using VFS.
-     * @param filename VFS path.
-     * @param output Raw data container where file will be loaded into.
-     * @param resourceGroup Group the loaded data will belong to.
-     */
-    virtual void loadRawDataContainer (const CEGUI::String& filename,
-      CEGUI::RawDataContainer& output, const CEGUI::String& resourceGroup);
-
-    /// Delete the raw data container.
-    virtual void unloadRawDataContainer (CEGUI::RawDataContainer& data);
-
-    virtual size_t getResourceGroupFileNames(std::vector<CEGUI::String>& out_vec,
-      const CEGUI::String& file_pattern,
-      const CEGUI::String& resource_group);
-
-  protected:
-    iObjectRegistry* obj_reg;
-    csRef<iVFS> vfs;
-  };
-
-} CS_PLUGIN_NAMESPACE_END(cegui)
+protected:
+  iObjectRegistry* obj_reg;
+  csRef<iVFS> vfs;
+};
 
 #endif

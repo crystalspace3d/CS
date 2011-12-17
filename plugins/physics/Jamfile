@@ -1,7 +1,5 @@
 SubDir TOP plugins physics ;
 
-SubInclude TOP plugins physics bullet ;
-SubInclude TOP plugins physics dyndebug ;
 SubInclude TOP plugins physics loader ;
 SubInclude TOP plugins physics odedynam ;
-SubInclude TOP plugins physics softanim ;
+SubInclude TOP plugins physics bullet ;

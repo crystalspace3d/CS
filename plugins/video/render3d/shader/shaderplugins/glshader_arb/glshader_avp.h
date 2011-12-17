@@ -34,7 +34,7 @@ class csShaderGLAVP :
   public scfImplementationExt0<csShaderGLAVP, csShaderProgram>
 {
 private:
-  csRef<csGLShader_ARB> shaderPlug;
+  csGLShader_ARB* shaderPlug;
 
   GLuint program_num;
 
@@ -72,7 +72,7 @@ public:
   /// Setup states needed for proper operation of the shader
   virtual void SetupState (const CS::Graphics::RenderMesh* mesh,
     CS::Graphics::RenderMeshModes& modes,
-    const csShaderVariableStack& stack);
+    const iShaderVarStack* stacks);
 
   /// Reset states to original
   virtual void ResetState ();
@@ -88,7 +88,7 @@ public:
     csArray<csShaderVarMapping> &);
 
   /// Compile a program
-  virtual bool Compile (iHierarchicalCache*, csRef<iString>*);
+  virtual bool Compile();
 };
 
 

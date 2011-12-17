@@ -30,13 +30,10 @@
 
 class csVector3;
 class csMatrix3;
-
-CS_PLUGIN_NAMESPACE_BEGIN(Engine)
-{
-  class csCameraBase;
-  class csLight;
-  class csMeshWrapper;
-  class csMovable;
+class csMovable;
+class csLight;
+class csMeshWrapper;
+class csCamera;
 
 /// A list of sectors as the movable uses it
 class csMovableSectorList : public scfImplementation1<csMovableSectorList,
@@ -108,7 +105,7 @@ private:
   /**
    * Camera on which this movable operates.
    */
-  csCameraBase* cameraobject;
+  csCamera* cameraobject;
 
   /// Update number.
   long updatenr;
@@ -150,13 +147,13 @@ public:
   }
 
   /// Set camera on which this movable operates.
-  void SetCamera (csCameraBase* obj)
+  void SetCamera (csCamera* obj)
   {
     cameraobject = obj;
   }
 
   /// Get the camera on which we operate.
-  csCameraBase* GetCsCamera () const
+  csCamera* GetCsCamera () const
   {
     return cameraobject;
   }
@@ -254,7 +251,7 @@ public:
   csReversibleTransform& GetTransform () { return obj; }
 
   /**
-   * Get the local world to object transformation.
+   * Get the local world to object tranformation.
    */
   const csReversibleTransform& GetTransform () const { return obj; }
 
@@ -271,16 +268,6 @@ public:
     else
       return GetTransform () * parent->GetFullTransform ();
   }
-
-  /**
-   * Set the world to object transformation.
-   */
-  virtual void SetFullTransform (const csReversibleTransform& t);
-
-  /**
-   * Set the transformation vector.
-   */
-  virtual void SetFullPosition (const csVector3& v);
 
   /**
    * Relative move.
@@ -333,8 +320,5 @@ public:
     obj.Identity ();
   }
 };
-
-}
-CS_PLUGIN_NAMESPACE_END(Engine)
 
 #endif // __CS_MOVABLE_H__

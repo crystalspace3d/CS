@@ -28,11 +28,119 @@
 #include "csutil/comparator.h"
 #include "csutil/util.h"
 #include "csutil/tuple.h"
-#include "csutil/hashcomputer.h"
 
 /**\addtogroup util_containers
  * @{ */
 
+/**
+ * Compute a hash key for a null-terminated string.
+ * <p>
+ * Note that these keys are non-unique; some dissimilar strings may generate
+ * the same key. For unique keys, see csStringSet.
+ */
+CS_CRYSTALSPACE_EXPORT
+unsigned int csHashCompute (char const*);
+
+/**
+ * Compute a hash key for a string of a given length.
+ * <p>
+ * Note that these keys are non-unique; some dissimilar strings may generate
+ * the same key. For unique keys, see csStringSet.
+ */
+CS_CRYSTALSPACE_EXPORT
+unsigned int csHashCompute (char const*, size_t length);
+
+/**
+ * Template for hash value computing.
+ * Expects that T has a method 'uint GetHash() const'.
+ */
+template <class T>
+class csHashComputer
+{
+public:
+  /// Compute a hash value for \a key.
+  static uint ComputeHash (const T& key)
+  {
+    return key.GetHash();
+  }
+};
+
+/**
+ * Template for hash value computing, suitable for integral types and types 
+ * that can be casted to such.
+ */
+template <class T>
+class csHashComputerIntegral
+{
+public:
+  /// Compute a hash value for \a key.
+  static uint ComputeHash (const T& key)
+  {
+    return (uintptr_t)key;
+  }
+};
+
+//@{
+/**
+ * csHashComputer<> specialization for an integral type.
+ */
+template<>
+class csHashComputer<void*> : public csHashComputerIntegral<void*> {};
+  
+template<>
+class csHashComputer<int> : public csHashComputerIntegral<int> {}; 
+template<>
+class csHashComputer<unsigned int> : 
+  public csHashComputerIntegral<unsigned int> {}; 
+    
+template<>
+class csHashComputer<long> : public csHashComputerIntegral<long> {}; 
+template<>
+class csHashComputer<unsigned long> : 
+  public csHashComputerIntegral<unsigned long> {}; 
+
+#if (CS_LONG_SIZE < 8)    
+template<>
+class csHashComputer<longlong> : 
+  public csHashComputerIntegral<longlong> {}; 
+template<>
+class csHashComputer<ulonglong> : 
+  public csHashComputerIntegral<ulonglong> {}; 
+#endif
+    
+template<>
+class csHashComputer<float>
+{
+public:
+  /// Compute a hash value for \a key.
+  static uint ComputeHash (float key)
+  {
+    union
+    {
+      float f;
+      uint u;
+    } float2uint;
+    float2uint.f = key;
+    return float2uint.u;
+  }
+};
+template<>
+class csHashComputer<double>
+{
+public:
+  /// Compute a hash value for \a key.
+  static uint ComputeHash (double key)
+  {
+    union
+    {
+      double f;
+      uint u;
+    } double2uint;
+    double2uint.f = key;
+    return double2uint.u;
+  }
+};
+//@}
 
 /**
  * A helper template to use pointers as keys for hashes.
@@ -80,6 +188,50 @@ public:
   { ptr = other.ptr; return *this; }
 };
 
+/**
+ * Template that can be used as a base class for hash computers for 
+ * string types (must support cast to const char*).
+ * Example:
+ * \code
+ * template<> class csHashComputer<MyString> : 
+ *   public csHashComputerString<MyString> {};
+ * \endcode
+ */
+template <class T>
+class csHashComputerString
+{
+public:
+  static uint ComputeHash (const T& key)
+  {
+    return csHashCompute ((const char*)key);
+  }
+};
+
+/**
+ * csHashComputer<> specialization for strings that uses csHashCompute().
+ */
+template<>
+class csHashComputer<const char*> : public csHashComputerString<const char*> {};
+
+/**
+ * Template that can be used as a base class for hash computers for POD 
+ * structs.
+ * Example:
+ * \code
+ * template<> class csHashComputer<MyStruct> : 
+ *   public csHashComputerStruct<MyStruct> {};
+ * \endcode
+ */
+template <class T>
+class csHashComputerStruct
+{
+public:
+  static uint ComputeHash (const T& key)
+  {
+    return csHashCompute ((char*)&key, sizeof (T));
+  }
+};
+
 template <class T, class K, 
   class ArrayMemoryAlloc, class ArrayElementHandler> class csHash;
 
@@ -99,10 +251,11 @@ namespace CS
       template <class _T, class _K, class ArrayMemoryAlloc,
         class ArrayElementHandler> friend class csHash;
       
-      K key;
+      const K key;
       T value;
-    public:
+
       HashElement (const K& key0, const T &value0) : key (key0), value (value0) {}
+    public:
       HashElement (const HashElement& other) : key (other.key), value (other.value) {}
       
       const K& GetKey() const { return key; }
@@ -135,14 +288,15 @@ public:
 
 protected:
   typedef CS::Container::HashElement<T, K> Element;
-  typedef csArray<Element, ArrayElementHandler,
-    ArrayMemoryAlloc, csArrayCapacityDefault> ElementArray;
+  typedef csArray<Element,
+    ArrayElementHandler, ArrayMemoryAlloc> ElementArray;
   csArray<ElementArray, csArrayElementHandler<ElementArray>,
     ArrayMemoryAlloc> Elements;
 
   size_t Modulo;
   size_t Size;
 
+private:
   size_t InitModulo;
   size_t GrowRate;
   size_t MaxSize;
@@ -214,10 +368,10 @@ public:
 
   /**
    * Add an element to the hash table.
-   * \remarks If \a key is already present, does NOT replace the existing value,
-   *   but merely adds \a value as an additional value of \a key. To retrieve all
+   * \remarks If `key' is already present, does NOT replace the existing value,
+   *   but merely adds `value' as an additional value of `key'. To retrieve all
    *   values for a given key, use GetAll(). If you instead want to replace an
-   *   existing value for \a key, use PutUnique().
+   *   existing value for 'key', use PutUnique().
    */
   T& Put (const K& key, const T &value)
   {
@@ -369,7 +523,7 @@ public:
   }
 
   /**
-   * h["key"] shorthand notation for h.GetElementPointer ("key")
+   * h["key"] shorthand notation for h.GetElementPoint ("key")
    */
   T* operator[] (const K& key)
   {
@@ -377,7 +531,7 @@ public:
   }
 
   /**
-   * Get the first element matching the given key, or \a fallback if there is 
+   * Get the first element matching the given key, or \p fallback if there is 
    * none.
    */
   const T& Get (const K& key, const T& fallback) const
@@ -506,7 +660,7 @@ public:
     return GetSize() == 0;
   }
 
-  /// An iterator class for the csHash class.
+  /// An iterator class for the hash.
   class Iterator
   {
   private:
@@ -572,7 +726,7 @@ public:
   };
   friend class Iterator;
 
-  /// An iterator class for the csHash class.
+  /// An iterator class for the hash.
   class GlobalIterator
   {
   private:
@@ -613,9 +767,6 @@ public:
 
     friend class csHash<T, K, ArrayMemoryAlloc, ArrayElementHandler>;
   public:
-    /// Empty constructor.
-    GlobalIterator () : hash (0), size (0) { Zero (); }
-
     /// Copy constructor.
     GlobalIterator (const GlobalIterator &o) :
       hash (o.hash),
@@ -689,7 +840,7 @@ public:
   };
   friend class GlobalIterator;
 
-  /// An const iterator class for the csHash class.
+  /// An const iterator class for the hash.
   class ConstIterator
   {
   private:
@@ -700,7 +851,7 @@ public:
     void Seek ()
     {
       while ((element < size) && 
-        (csComparator<K, K>::Compare (hash->Elements[bucket][element].GetKey(), 
+        (csComparator<K, K>::Compare (hash->Elements[bucket][element].key, 
 	key) != 0))
           element++;
     }
@@ -744,7 +895,7 @@ public:
     /// Get the next element's value.
     const T& Next ()
     {
-      const T &ret = hash->Elements[bucket][element].GetValue();
+      const T &ret = hash->Elements[bucket][element].value;
       element++;
       Seek ();
       return ret;
@@ -755,7 +906,7 @@ public:
   };
   friend class ConstIterator;
 
-  /// An const iterator class for the csHash class.
+  /// An const iterator class for the hash.
   class ConstGlobalIterator
   {
   private:
@@ -796,9 +947,6 @@ public:
 
     friend class csHash<T, K, ArrayMemoryAlloc, ArrayElementHandler>;
   public:
-    /// Empty constructor.
-    ConstGlobalIterator () : hash (0), size (0) { Zero (); }
-
     /// Copy constructor.
     ConstGlobalIterator (const ConstGlobalIterator &o) :
       hash (o.hash),

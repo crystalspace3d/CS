@@ -28,6 +28,8 @@
 #include "csplugincommon/iopengl/openglinterface.h"
 #include "ivaria/xwindow.h"
 
+#include "iogldisp.h"
+
 #ifndef XK_MISCELLANY
 #define XK_MISCELLANY 1
 #endif
@@ -37,7 +39,8 @@
 
 /// XLIB version.
 class csGraphics2DGLX : public scfImplementationExt1<csGraphics2DGLX , 
-  csGraphics2DGLCommon, iOpenGLInterface>
+						       csGraphics2DGLCommon, 
+						       iOpenGLInterface>
 {
   csRef<iXWindow> xwin;
   // The display context
@@ -49,6 +52,9 @@ class csGraphics2DGLX : public scfImplementationExt1<csGraphics2DGLX ,
   GLXContext active_GLContext;
   bool hardwareaccelerated;
 
+  // we are using a specific displaydriver
+  csRef<iOpenGLDisp> dispdriver;
+
   /**
    * Helper function, attempts to choose a visual with the
    * desired attributes
@@ -57,14 +63,6 @@ class csGraphics2DGLX : public scfImplementationExt1<csGraphics2DGLX ,
   /// Obtain (and report) the actual attributes of the context.
   void GetCurrentAttributes ();
 
-  // Window transparency stuff
-  Atom compositingManagerPresenceSelection;
-  bool transparencyRequested;
-  bool transparencyAvailable;
-  
-  // Fit-to-working-area stuff
-  bool GetWorkspaceDimensions (int& width, int& height);
-  bool AddWindowFrameDimensions (int& width, int& height);
 public:
   csGraphics2DGLX (iBase *iParent);
   virtual ~csGraphics2DGLX ();
@@ -82,7 +80,6 @@ public:
   virtual bool PerformExtensionV (char const* command, va_list);
 
   virtual void AllowResize (bool iAllow);
-  virtual bool Resize (int w, int h);
 
   virtual void AlertV (int type, const char* title, const char* okMsg,
   	const char* msg, va_list arg) 
@@ -96,20 +93,6 @@ public:
 
   virtual void SetTitle (const char* title)
   { xwin->SetTitle (title); }
-  
-  /** Sets the icon of this window with the provided one.
-   *
-   *  @param image the iImage to set as the icon of this window.
-   */
-  virtual void SetIcon (iImage *image)
-  { xwin->SetIcon (image); }
-  
-  virtual bool IsWindowTransparencyAvailable();
-  virtual bool SetWindowTransparent (bool transparent);
-  virtual bool GetWindowTransparent ();
-
-  virtual bool SetWindowDecoration (WindowDecoration decoration, bool flag);
-  virtual bool GetWindowDecoration (WindowDecoration decoration);
 
   virtual void SetFullScreen (bool yesno);
 
@@ -126,7 +109,8 @@ public:
   { return xwin->SetMouseCursor (iShape);}
 
   virtual bool SetMouseCursor (iImage *image, const csRGBcolor* keycolor, 
-    int hotspot_x, int hotspot_y, csRGBcolor fg, csRGBcolor bg)
+                               int hotspot_x, int hotspot_y,
+			       csRGBcolor fg, csRGBcolor bg)
   { 
     return xwin->SetMouseCursor (image, keycolor, hotspot_x, hotspot_y,
       fg, bg);

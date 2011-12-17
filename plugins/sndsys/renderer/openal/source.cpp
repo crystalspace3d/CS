@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2006 by SÃ¸ren BÃ¸g
+	Copyright (C) 2006 by Søren Bøg
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -16,8 +16,6 @@
 	Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "cssysdef.h"
-
 #include "source.h"
 #include "listener.h"
 #include "renderer.h"
@@ -25,17 +23,9 @@
 #include "isndsys/ss_stream.h"
 #include "ivaria/reporter.h"
 
-#if defined CS_HAVE_ALEXT_H
-#if defined(CS_OPENAL_PATH)
-#include CS_HEADER_GLOBAL(CS_OPENAL_PATH,alext.h)
-#else
-#include <AL/alext.h>
-#endif
-#endif
-
 // Sounds under this size are played using an OpenAL static buffer, not streamed
 // When streaming is used, it's the length FillBuffer() will request.
-#define ADVANCE_LENGTH 65532
+#define ADVANCE_LENGTH 65536
 
 /*
  * 2D Sound source
@@ -80,70 +70,16 @@ SndSysSourceOpenAL2D::SndSysSourceOpenAL2D (csRef<iSndSysStream> stream, csSndSy
   alSourcei (m_Source, AL_SOURCE_RELATIVE, AL_TRUE);
 
   // Determine the OpenAL Format
-  switch (m_Stream->GetRenderedFormat()->Channels)
-  {
-  case 1:
-    {
-      switch (m_Stream->GetRenderedFormat()->Bits)
-      {
-      case 8:
-        m_Format = AL_FORMAT_MONO8;
-        break;
-      case 16:
-        m_Format = AL_FORMAT_MONO16;
-        break;
-      }
-    }
-    break;
-  case 2:
-    {
-      switch (m_Stream->GetRenderedFormat()->Bits)
-      {
-      case 8:
-        m_Format = AL_FORMAT_STEREO8;
-        break;
-      case 16:
-        m_Format = AL_FORMAT_STEREO16;
-        break;
-      }
-    }
-    break;
-  case 4:
-  case 6:
-  case 7:
-  case 8:
-    {
-#ifdef AL_EXT_MCFORMATS
-      if (renderer->extAL_EXT_MCFORMATS)
-      {
-	static const ALenum formats8[5] = { AL_FORMAT_QUAD8, 0,
-	  AL_FORMAT_51CHN8, AL_FORMAT_61CHN8, AL_FORMAT_71CHN8 };
-	static const ALenum formats16[5] = { AL_FORMAT_QUAD16, 0,
-	  AL_FORMAT_51CHN16, AL_FORMAT_61CHN16, AL_FORMAT_71CHN16 };
-	int fmtIndex = m_Stream->GetRenderedFormat()->Channels - 4;
-	switch(m_Stream->GetRenderedFormat()->Bits)
-	{
-	case 8:
-	  m_Format = formats8[fmtIndex];
-	  break;
-	case 16:
-	  m_Format = formats16[fmtIndex];
-	  break;
-	}
-      }
-      else
-#endif
-      {
-        // TODO: Some kind of fallback?
-      }
-    }
-    break;
-  default:
-    {
-      // Unsupported format
-      break;
-    }
-  }
+  if (m_Stream->GetRenderedFormat()->Bits == 8)
+    if (m_Stream->GetRenderedFormat()->Channels == 1)
+      m_Format = AL_FORMAT_MONO8;
+    else
+      m_Format = AL_FORMAT_STEREO8;
+  else
+    if (m_Stream->GetRenderedFormat()->Channels == 1)
+      m_Format = AL_FORMAT_MONO16;
+    else
+      m_Format = AL_FORMAT_STEREO16;
 
   // Save the sample rate locally
   m_SampleRate = m_Stream->GetRenderedFormat()->Freq;
@@ -207,24 +143,15 @@ void SndSysSourceOpenAL2D::PerformUpdate ( bool ExternalUpdates )
   ALint processedBuffers = 0;
   alGetSourcei (m_Source, AL_BUFFERS_PROCESSED, &processedBuffers);
 
-  // Did OpenAL finish processing some buffers? Are we going to seek in another position of the stream?
-  if (!m_Stream->PendingSeek())
+  // Did OpenAL finish processing some buffers?
+  if (processedBuffers > 0)
   {
     if (useStaticBuffer)
     {
-      //According to the openal-soft developer AL_BUFFERS_PROCESSED for
-      //AL_STATIC sources must be always 0 as we aren't queuing them.
-      //So to support 1.13+ we need to check for the source state to know
-      //if openal has finished playing the buffer.
-      ALint currentState = 0;
-      alGetSourcei (m_Source, AL_SOURCE_STATE, &currentState);
-      if (currentState != AL_PLAYING)
-      {
-        alSourcei (m_Source, AL_BUFFER, 0);
-        isStaticBufferEmpty = true;
-      }
+      alSourcei (m_Source, AL_BUFFER, 0);
+      isStaticBufferEmpty = true;
     }
-    else if (processedBuffers > 0)
+    else
     {
       // Unqueue any processed buffers
       CS_ALLOC_STACK_ARRAY(ALuint, unqueued, s_NumberOfBuffers);
@@ -236,15 +163,6 @@ void SndSysSourceOpenAL2D::PerformUpdate ( bool ExternalUpdates )
       m_CurrentBuffer = (m_CurrentBuffer + processedBuffers) % s_NumberOfBuffers;
 
     }
-  }
-  //we are going to seek in another position, so we have to prepare by flushing our buffers.
-  else if(m_Stream->PendingSeek())
-  {
-    alSourceStop(m_Source); //Openal needs to stop the source before flushing it's buffers
-    alSourcei(m_Source, AL_BUFFER, 0); //flush openal source from it's buffers
-    //reset positions for buffering again
-    m_CurrentBuffer = s_NumberOfBuffers-1;
-    m_EmptyBuffer = 0;
   }
 
   // Are there any empty buffers?
@@ -261,8 +179,6 @@ void SndSysSourceOpenAL2D::PerformUpdate ( bool ExternalUpdates )
         alSourceQueueBuffers (m_Source, 1, &m_Buffers[m_EmptyBuffer]);
         // Advance the empty pointer;
         m_EmptyBuffer = (m_EmptyBuffer + 1) % s_NumberOfBuffers;
-        // Increasing the number of queues
-        queuedBuffers++;
       }
       else
       {
@@ -297,16 +213,6 @@ void SndSysSourceOpenAL2D::PerformUpdate ( bool ExternalUpdates )
   // the attached buffers and set paused, while we still want it to play. 
   int currentState;
   alGetSourcei (m_Source, AL_SOURCE_STATE, &currentState);
-  if (m_Stream->GetPauseState() == CS_SNDSYS_STREAM_COMPLETED)
-  {
-    if (queuedBuffers == 0)
-    {
-      // Set state to paused so that it will be
-      // removed if auto unregistration is set
-      m_Stream->Pause();
-    }
-  }
-
   if (m_Stream->GetPauseState() == CS_SNDSYS_STREAM_PAUSED)
   {
     if (currentState != AL_PAUSED || currentState != AL_INITIAL)
@@ -322,7 +228,7 @@ void SndSysSourceOpenAL2D::PerformUpdate ( bool ExternalUpdates )
 void SndSysSourceOpenAL2D::Configure( csConfigAccess config ) {
   s_NumberOfBuffers = config->GetInt("SndSys.OpenALBuffers", 4);
 }
-ALsizei SndSysSourceOpenAL2D::s_NumberOfBuffers = 4;
+size_t SndSysSourceOpenAL2D::s_NumberOfBuffers = 4;
 
 bool SndSysSourceOpenAL2D::FillBuffer (ALuint buffer) {
 
@@ -345,7 +251,7 @@ bool SndSysSourceOpenAL2D::FillBuffer (ALuint buffer) {
     else
     {
       // The second buffer has data
-      alBufferData (buffer, m_Format, data2, (ALsizei)length2, m_SampleRate);
+      alBufferData (buffer, m_Format, data2, length2, m_SampleRate);
     }
   }
   else
@@ -353,7 +259,7 @@ bool SndSysSourceOpenAL2D::FillBuffer (ALuint buffer) {
     if (length2 == 0 )
     {
       // The first buffer has data
-      alBufferData (buffer, m_Format, data1, (ALsizei)length1, m_SampleRate);
+      alBufferData (buffer, m_Format, data1, length1, m_SampleRate);
     }
     else
     {
@@ -364,7 +270,7 @@ bool SndSysSourceOpenAL2D::FillBuffer (ALuint buffer) {
       memcpy (tempbuffer+length1, data2, length2);
 
       // Add the data to the buffer
-      alBufferData (buffer, m_Format, tempbuffer, (ALsizei)(length1+length2), m_SampleRate);
+      alBufferData (buffer, m_Format, tempbuffer, length1+length2, m_SampleRate);
     }
   }
   return true;

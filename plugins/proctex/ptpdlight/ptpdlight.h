@@ -21,6 +21,7 @@
 #define __CS_PTPDLIGHT_H__
 
 #include "iengine/light.h"
+#include "imesh/lighting.h"
 #include "ivideo/texture.h"
 
 #include "csgeom/csrect.h"
@@ -59,7 +60,7 @@ class ProctexPDLightLoader;
 class ProctexPDLight : 
   public scfImplementationExt1<ProctexPDLight, 
                                csProcTexture,
-                               iLightCallback>
+                               iLightingInfo>
 {
 public:
   struct Lumel
@@ -220,7 +221,7 @@ public:
     }
     ~MappedLight() { delete lightId; }
   };
-protected:
+private:
   csRef<ProctexPDLightLoader> loader;
   TileHelper tiles;
   csBitArray tilesDirty;
@@ -232,7 +233,9 @@ protected:
   enum
   {
     stateDirty = 1 << 0,
-    statePrepared = 1 << 1
+    statePrepared = 1 << 1,
+
+    stateDoMMX = 1 << 31
   };
   csFlags state;
   struct LightColorState
@@ -283,6 +286,8 @@ protected:
       return blitBuf;
     }
   };
+  void Animate_Generic ();
+  void Animate_MMX ();
 public:
   const char* AddLight (const MappedLight& light);
   void FinishLoad()
@@ -300,32 +305,30 @@ public:
   MappedLight NewLight (iImage* img) const
   { return MappedLight (tilesDirty.GetSize(), tiles, img); }
 
+  ProctexPDLight (ProctexPDLightLoader* loader, iImage* img);
+  ProctexPDLight (ProctexPDLightLoader* loader, int w, int h);
   virtual ~ProctexPDLight ();
 
   virtual bool PrepareAnim ();
 
-  virtual void Animate (csTicks current_time) = 0;
-  virtual void Animate () = 0;
+  virtual void Animate (csTicks /*current_time*/);
 
-  /**\name iLightCallback implementation
+  /**\name iLightingInfo implementation
    * @{ */
-  virtual void OnColorChange (iLight* light, const csColor& newcolor);
-  virtual void OnPositionChange (iLight* light, const csVector3& newpos) { };
-  virtual void OnSectorChange (iLight* light, iSector* newsector) { };
-  virtual void OnRadiusChange (iLight* light, float newradius) { };
-  virtual void OnDestroy (iLight* light);
-  virtual void OnAttenuationChange (iLight* light, int newatt) { };
+  void DisconnectAllLights ();
+  void InitializeDefault (bool /*clear*/) {}
+  void LightChanged (iLight* light);
+  void LightDisconnect (iLight* light);
+  void PrepareLighting () {}
+  bool ReadFromCache (iCacheManager* /*cache_mgr*/) { return true; }
+  bool WriteToCache (iCacheManager* /*cache_mgr*/) { return true; }
   /** @} */
 
-  using csProcTexture::UseTexture;
   virtual void UseTexture (iTextureWrapper*)
   { 
     if (!PrepareAnim ()) return;
     Animate (0);
   }
-protected:
-  ProctexPDLight (ProctexPDLightLoader* loader, iImage* img);
-  ProctexPDLight (ProctexPDLightLoader* loader, int w, int h);
 };
 
 }

@@ -51,9 +51,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     /// Create a new factory
     virtual csPtr<iMeshObjectFactory> NewFactory ();
-
-  public:
-    iObjectRegistry* object_reg;
   };
 
 
@@ -287,10 +284,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
     /** @} */
 
-  public:
-    csRef<ParticlesMeshObjectType> objectType;
-
   private:
+    ParticlesMeshObjectType* objectType;
+
     //-- Needed only for iMeshObjectFactory
     csFlags flags;
     iMeshFactoryWrapper* factoryWrapper;
@@ -314,6 +310,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     csRefArray<iParticleEmitter> emitters;
     csRefArray<iParticleEffector> effectors;
   };
+
+#include "csutil/deprecated_warn_off.h"
 
   /**
   * Particle mesh object
@@ -405,13 +403,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     virtual void SetMeshWrapper (iMeshWrapper* logparent)
     {
       meshWrapper = logparent;
-
-      // Check for delayed advance.
-      if(delayedAdvance > 0)
-      {
-        Advance(delayedAdvance);
-        delayedAdvance = 0;
-      }
     }
 
     virtual iMeshWrapper* GetMeshWrapper () const 
@@ -455,6 +446,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     {
       return mixMode;
     }
+
+    virtual void InvalidateMaterialHandles ()
+    {}
 
     virtual void PositionChild (iMeshObject* child,csTicks current_time)
     {}
@@ -641,15 +635,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     
   private:
     friend class ParticlesMeshFactory;
-
-  public:
     ParticlesMeshFactory* factory;
 
-  private:
     iVertexSetup* vertexSetup; //Helper object
-
-    // For delayed advance.
-    csTicks delayedAdvance;
     
     /**
      * Advance particle system by given amount of seconds.
@@ -729,6 +717,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     csRef<RenderBufferAccessor> renderBufferAccessor;
 
   };
+
+#include "csutil/deprecated_warn_on.h"
+
 }
 CS_PLUGIN_NAMESPACE_END(Particles)
 

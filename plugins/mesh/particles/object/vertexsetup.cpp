@@ -342,7 +342,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   {
   public:
     CS_FORCEINLINE_TEMPLATEMETHOD
-    BaseVertexSetup ()
+    BaseVertexSetup (const ParticleDirT& pd, const ParticleSizeT& ps)
+      : partDir (pd), partSize (ps)
     {}
 
     CS_FORCEINLINE_TEMPLATEMETHOD
@@ -372,8 +373,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   {
   public:
     CS_FORCEINLINE_TEMPLATEMETHOD
-    UnrotatedVertexSetup ()
-      : BaseVertexSetup<ParticleDirT, ParticleSizeT> ()
+    UnrotatedVertexSetup (const ParticleDirT& pd, const ParticleSizeT& ps)
+      : BaseVertexSetup<ParticleDirT, ParticleSizeT> (pd, ps)
     {}
 
     CS_FORCEINLINE_TEMPLATEMETHOD
@@ -408,8 +409,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   {
   public:
     CS_FORCEINLINE_TEMPLATEMETHOD
-    RotatedVertexSetup ()
-      : BaseVertexSetup<ParticleDirT, ParticleSizeT> ()
+    RotatedVertexSetup (const ParticleDirT& pd, const ParticleSizeT& ps)
+      : BaseVertexSetup<ParticleDirT, ParticleSizeT> (pd, ps)
     {}
 
     CS_FORCEINLINE_TEMPLATEMETHOD
@@ -459,11 +460,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   {
     if (rotMode == CS_PARTICLE_ROTATE_VERTICES)
     {
-      return new RotatedVertexSetup<PartDir, PartSize> ();
+      return new RotatedVertexSetup<PartDir, PartSize> 
+        (PartDir (), PartSize ());
     }
     else
     {
-      return new UnrotatedVertexSetup<PartDir, PartSize> ();
+      return new UnrotatedVertexSetup<PartDir, PartSize> 
+        (PartDir (), PartSize ());
     }
 
     return 0;

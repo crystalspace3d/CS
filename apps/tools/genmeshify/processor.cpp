@@ -30,16 +30,17 @@ namespace genmeshify
     InitTokenTable (xmltokens);
 
     static int n = 0;
-    collection = app->engine->CreateCollection (
+    region = app->engine->CreateRegion (
       csString().Format ("__genmeshify_region_%d__", n++));
-    loaderContext.AttachNew (new StdLoaderContext (app, app->engine, collection));
-    converter = new Converter (app, loaderContext, collection);
+    loaderContext.AttachNew (new StdLoaderContext (app, app->engine, region));
+    converter = new Converter (app, loaderContext, region);
   }
 
   Processor::~Processor ()
   {
     delete converter;
-    app->engine->RemoveCollection(collection);
+    app->engine->RemoveObject (region);
+    region->DeleteAll();
   }
 
   csRef<iFile> Processor::OpenPath (App* app, const char* path, 
@@ -51,9 +52,8 @@ namespace genmeshify
     fileNameToOpen = actualFilename;
     if (!file.IsValid ())
     {
-      app->Report ("Could not open a %s file at given path %s.", 
-        CS::Quote::Single (actualFilename),
-	CS::Quote::Single (path));
+      app->Report ("Could not open a '%s' file at given path '%s'.", 
+        actualFilename, path);
       return 0;
     }
 
@@ -108,8 +108,7 @@ namespace genmeshify
     csRef<iDataBuffer> data = buf->GetAllData ();
     if (!app->vfs->WriteFile (backupFile, data->GetData(), data->GetSize()))
     {
-      app->Report ("Error writing backup file %s!",
-		   CS::Quote::Single (backupFile.GetData()));
+      app->Report ("Error writing backup file '%s'!", backupFile.GetData());
       return false;
     }
 
@@ -167,8 +166,8 @@ namespace genmeshify
     buf = app->vfs->Open (fileNameToOpen, VFS_FILE_WRITE);
     if (!buf) 
     {
-      app->Report ("Error opening file %s for writing!", 
-        CS::Quote::Single (fileNameToOpen.GetData()));
+      app->Report ("Error opening file '%s' for writing!", 
+        fileNameToOpen.GetData());
       return false;
     }
     error = newDoc->Write (buf);
@@ -344,7 +343,7 @@ namespace genmeshify
     if (!sector)
     {
       sector = app->engine->CreateSector (0); 
-      collection->Add (sector->QueryObject());
+      region->QueryObject()->ObjAdd (sector->QueryObject());
     }
 
     csRef<iDocumentNodeIterator> it = from->GetNodes ();
@@ -515,7 +514,7 @@ namespace genmeshify
       }
     }
 
-    return app->loader->LoadMap (to, false, collection, false);
+    return app->loader->LoadMap (to, false, region, false);
   }
 
   bool Processor::PreloadSectors (iDocumentNode* from)
@@ -547,6 +546,6 @@ namespace genmeshify
       }
     }
 
-    return app->loader->LoadMap (to, false, collection, false);
+    return app->loader->LoadMap (to, false, region, false);
   }
 }

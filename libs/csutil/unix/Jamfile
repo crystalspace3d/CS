@@ -30,17 +30,15 @@ CSUTIL.GENERIC +=
   appdir.cpp
   apppath.cpp
   appfilename.cpp
+  csprocessorcap.cpp  
   expandname.cpp
   findlib.cpp
   getopt.cpp
   loadlib.cpp
-  memutil_impl_virtsize.cpp
-  mkdir.cpp
   mmap.cpp
   pathutil.cpp
   platformconfig.cpp 
   platformconfigpath.cpp
-  platformfile.cpp
   printf.cpp
   resdir.cpp
   runloop.cpp 

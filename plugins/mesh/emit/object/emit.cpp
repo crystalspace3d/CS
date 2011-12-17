@@ -34,7 +34,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-
+CS_IMPLEMENT_PLUGIN
 
 /// helper particle sorting structure
 struct csEmitCompPart
@@ -260,7 +260,7 @@ void csEmitMix::GetValue(csVector3& value, csVector3& given)
 
 void csEmitMix::AddEmitter (float weight, iEmitGen3D* emit)
 {
-  struct part *np = new struct csEmitMix::part ();
+  struct part *np = new struct csEmitMix::part;
   np->next = list;
   np->emit = emit;
   list = np;
@@ -609,9 +609,9 @@ void csEmitMeshObject::StartParticle (int i)
 {
   csVector3 pos;
   csVector3 startgiven(0,0,0);
-  if(startpos) startpos->GetValue(pos, startgiven);
-  if(startspeed) startspeed->GetValue(part_speed[i], pos);
-  if(startaccel) startaccel->GetValue(part_accel[i], pos);
+  startpos->GetValue(pos, startgiven);
+  startspeed->GetValue(part_speed[i], pos);
+  startaccel->GetValue(part_accel[i], pos);
   if(attractor) attractor->GetValue(part_attract[i], pos);
   csRef<iMeshObject> meshobj = scfQueryInterface<iMeshObject> (GetParticle (i));
   meshobj->SetMixMode (MixMode);

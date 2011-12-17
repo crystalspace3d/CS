@@ -1,7 +1,6 @@
 /*
     Copyright (C) 2005 by Jorrit Tyberghein
 	      (C) 2005 by Frank Richter
-              (C) 2009 by Marten Svanfeldt
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -41,81 +40,35 @@ struct iJob : public virtual iBase
 };
 
 /**
- * Interface to simple job management system. 
- * 
- * The queue will execute the jobs according to the policy of the implementation,
- * such as in parallel using multiple threads.
- *
- * \remark Implementations makes no gurantees as to the order or latency for job
- * execution.
+ * Interface to simple job management. Jobs are enqueued and run one after
+ * another, e.g. in another thread.
  * \sa csThreadJobQueue
  */
 struct iJobQueue : public virtual iBase
 {
-  SCF_INTERFACE(iJobQueue,4,1,0);
+  SCF_INTERFACE(iJobQueue, 2,1,0);
   
   /// Add a job to the queue.
   virtual void Enqueue (iJob* job) = 0;
-
+  
   /**
-   * Status values for Dequeue and PullAndRun
+   * Check if a job is still in the queue. If yes, remove it from the queue
+   * and run it immediately.
    */
-  enum JobStatus
-  {
-    /// The job was not enqueued
-    NotEnqueued,
-    /// The job is currently running
-    Pending,
-    /**
-     * The job was pulled from a queue and executed (PullAndRun()) resp.
-     * dropped (PullAndDrop())
-     */
-    Dequeued
-  };
+  virtual void PullAndRun (iJob* job) = 0;
   
   /**
    * Remove a job from the queue.
-   * If the job is currently running, this will wait for it to finish
-   * if \a waitForCompletion is \c true, otherwise nothing is done.
-   * \remarks The job queue will continue to hold a reference to the job
-   *   if it is currently running (return value \c Pending). Wait for
-   *   job completion if this is not desired.
+   * If the job is currently running and \a waitIfCurrent is true, wait until
+   * the job has finished. This guarantees that the queue won't hold any 
+   * reference to the job object.
    */
-  virtual JobStatus Dequeue (iJob* job, bool waitForCompletion = false) = 0;
-  
-  /**
-   * Check if a job is still in the queue and, 
-   * if so, remove it from the queue and run it immediately.
-   * If a job is currently running, either wait for it 
-   * (\a waitForCompletion is \c true) to finish or just let it be.
-   * \remarks The job queue will continue to hold a reference to the job
-   *   if it is currently running (return value \c Pending). Wait for
-   *   job completion if this is not desired.
-   */
-  virtual JobStatus PullAndRun (iJob* job, bool waitForCompletion = true) = 0;
-  
-  /**
-   * Wait for all jobs in queue to finish executing.
-   *
-   * \remark Might return prematurely if jobs are enqueued or dequeued from
-   * other threads during this call.
-   */
-  virtual void WaitAll () = 0;
+  virtual void Unqueue (iJob* job, bool waitIfCurrent = true) = 0;
 
   /**
    * Return true if all enqueued jobs are finished.
-   *
-   * \remark Might return wrong result if jobs are enqueued or dequeued from
-   * other threads during this call.
    */
   virtual bool IsFinished () = 0;
-
-  /**
-   * Return the number of jobs in the queue.
-   */
-  virtual int32 GetQueueCount() = 0;
-
-
 };
 
 #endif // __CS_IUTIL_JOB_H__

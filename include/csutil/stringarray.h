@@ -49,32 +49,22 @@ public:
   }
 };
 
-namespace CS
-{
-namespace Utility
-{
 /**
  * An array of strings. This array will properly make copies of the strings
  * and later delete those copies via delete[].
  */
- 
-template <class Allocator = CS::Memory::AllocatorMalloc,
-          class CapacityHandler = csArrayCapacityFixedGrow<16> >
-class StringArray :
-  public csArray<const char*, csStringArrayElementHandler, Allocator,
-                 CapacityHandler>
+class csStringArray : public csArray<const char*, csStringArrayElementHandler>
 {
 private:
-  typedef csArray<const char*, csStringArrayElementHandler, Allocator,
-                  CapacityHandler> superclass;
+  typedef csArray<const char*, csStringArrayElementHandler> superclass;
 
 public:
   /**
    * Initialize object to hold initially \c limit elements, and increase
    * storage by \c threshold each time the upper bound is exceeded.
    */
-  StringArray (size_t limit = 0, const CapacityHandler& ch = CapacityHandler())
-  	: superclass(limit, ch)
+  csStringArray (size_t limit = 0, size_t threshold = 0)
+  	: superclass(limit, threshold)
   {
   }
 
@@ -157,11 +147,11 @@ public:
    */
   char* Pop ()
   {
-    CS_ASSERT (this->GetSize () > 0);
-    size_t l = this->GetSize () - 1;
-    char* ret = (char*)this->Get (l);
-    this->InitRegion (l, 1);
-    this->SetSize (l);
+    CS_ASSERT (GetSize () > 0);
+    size_t l = GetSize () - 1;
+    char* ret = (char*)Get (l);
+    InitRegion (l, 1);
+    SetSize (l);
     return ret;
   }
 
@@ -173,8 +163,8 @@ public:
    */
   size_t Find (const char* str) const
   {
-    for (size_t i = 0; i < this->GetSize (); i++)
-      if (! strcmp (this->Get (i), str))
+    for (size_t i = 0; i < GetSize (); i++)
+      if (! strcmp (Get (i), str))
         return i;
     return (size_t)-1;
   }
@@ -187,8 +177,8 @@ public:
    */
   size_t FindCaseInsensitive (const char* str) const
   {
-    for (size_t i = 0; i < this->GetSize (); i++)
-      if (!csStrCaseCmp (this->Get (i), str))
+    for (size_t i = 0; i < GetSize (); i++)
+      if (!csStrCaseCmp (Get (i), str))
         return i;
     return (size_t)-1;
   }
@@ -227,34 +217,15 @@ public:
      */
     delimIgnoreDifferent
   };
-
-  /**
-   * Initialize object to hold initially \c limit elements, and increase
-   * storage by \c threshold each time the upper bound is exceeded.
-   * Additionally load in this array the splitted string provided.
-   * \param str The string to split and place in this array.
-   * \param delimiters The delimiters to use to split the string.
-   * \param delimMode The way to split this array
-   */
-  StringArray (const char* str, const char* delimiters, 
-               ConsecutiveDelimiterMode delimMode = delimSplitEach,
-               size_t limit = 0, const CapacityHandler& ch = CapacityHandler())
-  	: superclass(limit, ch)
-  {
-    SplitString(str, delimiters, delimMode);
-  }
-  
   /**
    * Add a number of strings to this array by splitting \a str at characters
-   * from \a delimiters. It will start from the first char and won't ignore
-   * delimiters before the first word (in other words even with delimIgnore
-   * you'll get at least an empty string if the string starts with delimiters).
+   * from \a delimiters.
    */
   size_t SplitString (const char* str, const char* delimiters, 
     ConsecutiveDelimiterMode delimMode = delimSplitEach)
   {
     size_t num = 0;
-    csString currentString = "";
+    csString currentString;
     int lastDelim = -1;
 
     const char* p = str;
@@ -276,7 +247,7 @@ public:
         }
         if (newString)
         {
-          this->Push (currentString);
+          Push (currentString);
           currentString.Empty();
           num++;
           lastDelim = *p;
@@ -290,33 +261,8 @@ public:
       p++;
     }
 
-    this->Push (currentString);
+    Push (currentString);
     return num + 1;
-  }
-};
-} // namespace Utility
-} // namespace CS
-
-/**
- * An array of strings.
- */
-class csStringArray : 
-  public CS::Utility::StringArray<CS::Memory::AllocatorMalloc,
-                                  csArrayCapacityDefault>
-{
-public:
-  csStringArray (size_t limit = 0, size_t threshold = 0)
-    : CS::Utility::StringArray<CS::Memory::AllocatorMalloc, 
-                               csArrayCapacityDefault> (limit, threshold)
-  {
-  }
-  csStringArray (const char* str, const char* delimiters, 
-               ConsecutiveDelimiterMode delimMode = delimSplitEach,
-               size_t limit = 0, size_t threshold = 0)
-    : CS::Utility::StringArray<CS::Memory::AllocatorMalloc, 
-                               csArrayCapacityDefault> (str, delimiters, 
-                               delimMode, limit, threshold)
-  {
   }
 };
 

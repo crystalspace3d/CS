@@ -40,11 +40,10 @@ class csSaver : public scfImplementation2<csSaver, iSaver, iComponent>
   csRef<iEngine> engine;
   csRef<iSyntaxService> synldr;
   csRef<iStringSet> strings;
-  csRef<iShaderVarStringSet> stringsSvName;
   csRef<iPluginManager> plugin_mgr;
   csHash<csString, csString> plugins;
   csRef<iDocumentNode> before;
-  iCollection* collection;
+  iRegion* curRegion;
   int fileType;
   
   void InitializePluginsHash ();
@@ -65,7 +64,6 @@ public:
 
   bool SaveTriMesh(iDocumentNode *parent, csStringID id,
       iTriangleMesh* trimesh);
-  bool SaveCameraPosition(iCameraPosition *position, iDocumentNode *parent);
   bool SaveCameraPositions(iDocumentNode *parent);
   bool SaveLibraryReferences(iDocumentNode *parent);
   bool SaveAddons(iDocumentNode *parent);
@@ -83,7 +81,7 @@ public:
   bool SavePortal (iPortal *portal, iDocumentNode *parent);
   bool SaveSectorLights(iSector *s, iDocumentNode *parent);
   bool SaveSectorMeshes(iMeshList *meshList, iDocumentNode *parent);
-  bool SaveSectorMeshes(csRef<iSceneNodeArray>& meshList,
+  bool SaveSectorMeshes(const csRefArray<iSceneNode>& meshList,
 		iDocumentNode *parent);
 
   bool SaveKeys (iDocumentNode* node, iObject* object);
@@ -91,11 +89,11 @@ public:
   virtual csRef<iString> SaveMapFile();
   virtual bool SaveMapFile(const char *filename);
   virtual bool SaveMapFile(csRef<iDocumentNode> &root);
-  virtual bool SaveAllCollections();
-  virtual bool SaveCollectionFile(iCollection* collection, const char* filename,
+  virtual bool SaveAllRegions();
+  virtual bool SaveRegionFile(iRegion* region, const char* filename,
     int filetype);
-  virtual csRef<iString> SaveCollection(iCollection* collection, int filetype);
-  virtual bool SaveCollection(iCollection* collection, int filetype,
+  virtual csRef<iString> SaveRegion(iRegion* region, int filetype);
+  virtual bool SaveRegion(iRegion* region, int filetype,
     csRef<iDocumentNode>& root);
 };
 

@@ -611,7 +611,7 @@ const char* TiXmlElement::Print( PrintState& print, int depth ) const
   int d;
   for ( d=0; d<depth; d++ )
   {
-    err = StrPuts ( print, "  " );
+    err = StrPuts ( print, "    " );
     if (err != 0) return err;
   }
 
@@ -664,7 +664,7 @@ const char* TiXmlElement::Print( PrintState& print, int depth ) const
     if (err != 0) return err;
     for( d=0; d<depth; ++d )
     {
-      err = StrPuts ( print, "  " );
+      err = StrPuts ( print, "    " );
       if (err != 0) return err;
     }
     err = StrPrintf ( print, "</%s>", value );
@@ -718,7 +718,6 @@ TiDocument::TiDocument() :
   //  ignoreWhiteSpace = true;
   SetType (DOCUMENT);
   parse.document = this;
-  parse.document = this;
 }
 
 TiDocument::TiDocument( const char * documentName ) :
@@ -731,7 +730,6 @@ TiDocument::TiDocument( const char * documentName ) :
   value = documentName;
   errorId = TIXML_NO_ERROR;
   SetType (DOCUMENT);
-  parse.document = this;
   parse.document = this;
 }
 
@@ -911,7 +909,7 @@ const char* TiXmlComment::Print( PrintState& print, int depth ) const
   const char* err;
   for ( int i=0; i<depth; i++ )
   {
-    err = StrPuts ( print, "  ");
+    err = StrPuts ( print, "    ");
     if (err != 0) return err;
   }
   return StrPrintf ( print, "<!--%s-->", value );
@@ -1043,7 +1041,7 @@ const char* TiXmlUnknown::Print( PrintState& print, int depth ) const
   const char* err;
   for ( int i=0; i<depth; i++ )
   {
-    err = StrPuts ( print, "  " );
+    err = StrPuts ( print, "    " );
     if (err != 0) return err;
   }
   return StrPrintf ( print, "<%s>", value.c_str() );

@@ -43,13 +43,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
       iStreamSource* ssource, iLoaderContext* ldr_context,
       iBase* context);
 
-    virtual bool IsThreadSafe() { return true; }
-
     bool ParseMorphTarget (iDocumentNode* child,
-      CS::Mesh::iAnimatedMeshFactory* amfact);
-
-    bool ParseBoundingBoxes (iDocumentNode* child,
-      CS::Mesh::iAnimatedMeshFactory* amfact);
+      iAnimatedMeshFactory* amfact);
 
     //-- iComponent
     virtual bool Initialize (iObjectRegistry*);
@@ -58,7 +53,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
     iObjectRegistry* object_reg;
 
     csRef<iSyntaxService> synldr;
-    csRef<CS::Animation::iSkeletonManager> skelMgr;
+    csRef<iSkeletonManager2> skelMgr;
 
     csStringHash xmltokens;
 #define CS_TOKEN_ITEM_FILE \
@@ -73,12 +68,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
                               iSaverPlugin,
                               iComponent>
   {
-  private:
-    iObjectRegistry* object_reg;
-    csRef<iReporter> reporter;
-    csRef<iSyntaxService> synldr;
-    csRef<iEngine> engine;
-
   public:
     AnimeshFactorySaver (iBase* parent);
 
@@ -104,18 +93,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
       iStreamSource* ssource, iLoaderContext* ldr_context,
       iBase* context);
 
-    virtual bool IsThreadSafe() { return true; }
-
-    bool ParseBoundingBoxes (iDocumentNode* child,
-      CS::Mesh::iAnimatedMesh* amesh);
-
     //-- iComponent
     virtual bool Initialize (iObjectRegistry*);
 
   private: 
     iObjectRegistry* object_reg;
     csRef<iSyntaxService> synldr;
-    csRef<CS::Animation::iSkeletonManager> skelMgr;
+    csRef<iSkeletonManager2> skelMgr;
 
     csStringHash xmltokens;
 #define CS_TOKEN_ITEM_FILE \

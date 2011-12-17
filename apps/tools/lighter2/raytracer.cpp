@@ -165,7 +165,7 @@ namespace lighter
     if (!tree || !tree->nodeList) 
       return false;
 
-    RaytraceProfiler prof (1, ray.type);
+    RaytraceProfiler prof (1);
 
     //Copy and clip the ray
     Ray myRay = ray;

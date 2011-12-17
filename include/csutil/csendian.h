@@ -28,8 +28,6 @@
 
 #include <math.h>
 #include "cstypes.h"
-#include "csgeom/math.h"
-#include "csutil/bitops.h"
 #if defined(CS_HAVE_BYTESWAP_H)
 #include <byteswap.h>
 #endif
@@ -221,107 +219,6 @@ struct csIEEEfloat
 #else
   #error Do not know how to convert to IEEE floats
 #endif
-
-  /// Convert IEEE half-precision float number to native 'float' type value
-  static CS_FORCEINLINE float ToNative (uint16 half)
-  {
-    union
-    {
-      uint32 u;
-      float f;
-    } u2f;
-
-    uint32 sign = (half & 0x8000) << 16;
-    int32 exponent = (half & 0x7C00) >> 10;
-    uint32 mantissa = (half & 0x03ff) << 13;
-   
-    // Check for INF or NaN.
-    if (exponent == 0x1F)
-    {
-      u2f.u = sign | mantissa;
-
-      if (mantissa != 0)
-      {
-        // NaN
-        u2f.u |= 0x7FC00000;
-      }
-      else
-      {
-        // INF
-        u2f.u |= 0x7f800000;
-      }
-
-      return u2f.f;
-    }
-
-    // Check for a denorm.
-    if(exponent == 0)
-    {
-      unsigned long index;
-      CS::Utility::BitOps::ScanBitReverse (mantissa, index);
-
-      exponent -= (index - 9);
-      mantissa <<= (index - 8);
-      mantissa &= 0x007FFFFF;
-    }
-
-    // Convert the exponent...
-    exponent += 112;
-    exponent <<= 23;
-
-    // And create the float...
-    u2f.u = sign | exponent | mantissa;
-
-    return u2f.f;
-  }
-
-  /**
-   * Convert native 'float' type value to IEEE half-precision float number.
-   *  Rounds towards zero.
-   */
-  static CS_FORCEINLINE uint16 FromNativeRTZ (float f)
-  {
-    union
-    {
-      float f;
-      unsigned int u;
-    } f2u;
-
-    f2u.f = f;
-    unsigned short sign = 0x8000 & (f2u.u >> 16);
-
-    // Get the absolute value.
-    f2u.u &= 0x7FFFFFFF;
-
-    // Check for a NaN
-    if(CS::IsNaN (f2u.f))
-    {
-      // Construct a silent NaN.
-      f2u.u >>= 13;
-      f2u.u &= 0x7fff;
-      f2u.u |= 0x0200;
-      return sign | f2u.u;
-    }
-
-    // Check for overflow.
-    if(f2u.u >= 0x47800000)
-    {
-      // Check for INF.
-      if(f2u.u == 0x7F800000)
-        return sign | 0x7C00;
-
-      return sign | 0x7BFF;
-    }
-
-    // Check for underflow and denorms (flush to zero).
-    if(f2u.u < 0x38800000)
-      return sign;
-
-    // Convert the float to a half (rounding to zero).
-    f2u.u &= 0xFFFFE000U;
-    f2u.u -= 0x38000000U;
-    return sign | (f2u.u >> 13);
-  }
 };
 
 /**
@@ -437,10 +334,8 @@ struct csSetToAddress
 /**
  * Convert a float to a cross-platform 32-bit format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
  */
-CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
-static inline int32 csFloatToLong (float f)
+/*CS_DEPRECATED_METHOD*/ static inline int32 csFloatToLong (float f)
 {
   int exp;
   int32 mant = csQroundSure (frexp (f, &exp) * 0x1000000);
@@ -453,10 +348,8 @@ static inline int32 csFloatToLong (float f)
 /**
  * Convert a 32-bit cross-platform float to native format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
  */
-CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
-static inline float csLongToFloat (int32 l)
+/*CS_DEPRECATED_METHOD*/ static inline float csLongToFloat (int32 l)
 {
   int exp = (l >> 24) & 0x7f;
   if (exp & 0x40) exp = exp | ~0x7f;
@@ -476,10 +369,8 @@ static inline float csLongToFloat (int32 l)
 /**
  * Convert a double to a cross-platform 64-bit format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
  */
-CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
-static inline int64 csDoubleToLongLong (double d)
+/*CS_DEPRECATED_METHOD*/ static inline int64 csDoubleToLongLong (double d)
 {
   int exp;
   int64 mant = (int64) (frexp (d, &exp) * ((int64)1 << 48));
@@ -493,10 +384,8 @@ static inline int64 csDoubleToLongLong (double d)
 /**
  * Convert a 64-bit cross-platform double to native format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
  */
-CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
-static inline double csLongLongToDouble (int64 i)
+/*CS_DEPRECATED_METHOD*/ static inline double csLongLongToDouble (int64 i)
 {
   int exp = (i >> 48) & 0x7fff;
   if (exp & 0x4000) exp = exp | ~0x7fff;
@@ -517,10 +406,8 @@ static inline double csLongLongToDouble (int64 i)
 /**
  * Convert a float to a cross-platform 16-bit format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
  */
-CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
-static inline short csFloatToShort (float f)
+/*CS_DEPRECATED_METHOD*/ static inline short csFloatToShort (float f)
 {
   int exp;
   long mant = csQroundSure (frexp (f, &exp) * 0x1000);
@@ -533,10 +420,8 @@ static inline short csFloatToShort (float f)
 /**
  * Convert a 16-bit cross-platform float to native format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
  */
-CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
-static inline float csShortToFloat (short s)
+/*CS_DEPRECATED_METHOD*/ static inline float csShortToFloat (short s)
 {
   int exp = (s >> 11) & 0xf;
   if (exp & 0x8) exp = exp | ~0xf;

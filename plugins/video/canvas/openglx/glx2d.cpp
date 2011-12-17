@@ -15,7 +15,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "cssysdef.h"
 #include "csutil/csinput.h"
 #include "csutil/scf.h"
@@ -35,18 +34,16 @@
 
 #include "plugins/video/canvas/openglx/glx2d.h"
 
-#ifdef CS_HAVE_XRENDER
-#include <X11/extensions/Xrender.h>
-#endif
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY (csGraphics2DGLX)
 
+#define DEF_OGLDISP "crystalspace.graphics2d.glx.disp.empty"
 #define XWIN_SCF_ID "crystalspace.window.x"
 
 // csGraphics2DGLX function
 csGraphics2DGLX::csGraphics2DGLX (iBase *iParent) :
-  scfImplementationType (this, iParent), cmap (0), hardwareaccelerated(false),
-  transparencyRequested (false), transparencyAvailable (false)
+  scfImplementationType (this, iParent), cmap (0), hardwareaccelerated(false)
 {
 }
 
@@ -67,6 +64,8 @@ void csGraphics2DGLX::Report (int severity, const char* msg, ...)
 
 bool csGraphics2DGLX::Initialize (iObjectRegistry *object_reg)
 {
+  const char *strDriver;
+  dispdriver = 0;
   xvis = 0;
   hardwareaccelerated = false;
 
@@ -88,6 +87,23 @@ bool csGraphics2DGLX::Initialize (iObjectRegistry *object_reg)
 
   csRef<iPluginManager> plugin_mgr (
   	csQueryRegistry<iPluginManager> (object_reg));
+  if ((strDriver = config->GetStr ("Video.OpenGL.Display.Driver", 0)))
+  {
+    dispdriver = csLoadPlugin<iOpenGLDisp> (plugin_mgr, strDriver);
+    if (!dispdriver)
+    {
+      Report (CS_REPORTER_SEVERITY_WARNING,
+        "Could not create an instance of %s ! Using 0 instead.",
+        strDriver);
+    }
+    else if (!dispdriver->open ())
+    {
+      Report (CS_REPORTER_SEVERITY_ERROR,
+        "open of displaydriver %s failed!", strDriver);
+      return false;
+    }
+  }
+
   xwin = csLoadPlugin<iXWindow> (plugin_mgr, XWIN_SCF_ID);
   if (!xwin)
   {
@@ -98,17 +114,13 @@ bool csGraphics2DGLX::Initialize (iObjectRegistry *object_reg)
 
   dpy = xwin->GetDisplay ();
   screen_num = xwin->GetScreen ();
-  {
-    /* According to http://standards.freedesktop.org/wm-spec/wm-spec-latest.html#id2552725
-       (section "Compositing Managers") presence of a compositing window manager
-       is signalled by the WM owning a selection "_NET_WM_CM_Sn", n being the screen
-       number. */
-    csString selname;
-    selname.Format ("_NET_WM_CM_S%d", screen_num);
-    compositingManagerPresenceSelection = XInternAtom (dpy, selname.GetData(), True);
-  }
-  
-  xwin->SetHWMouseMode (hwMouse);
+
+  pfmt.RedMask = 0;
+  pfmt.GreenMask = 0;
+  pfmt.BlueMask = 0;
+  pfmt.AlphaMask = 0;
+  pfmt.PalEntries = 0; // Texture mananger needs to know this.
+  pfmt.PixelBytes = 0;
 
   // Create the event outlet
   csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
@@ -125,7 +137,7 @@ csGraphics2DGLX::~csGraphics2DGLX ()
   Close ();
 }
 
-bool csGraphics2DGLX::Open ()
+bool csGraphics2DGLX::Open()
 {
   if (is_open) return true;
 
@@ -152,7 +164,7 @@ bool csGraphics2DGLX::Open ()
     return false;
   }
   window = xwin->GetWindow ();
-  active_GLContext = glXCreateContext (dpy, xvis, 0, True);
+  active_GLContext = glXCreateContext(dpy, xvis, 0, True);
 
   // this makes the context we just created the current
   // context, so that all subsequent OpenGL calls will set state and
@@ -163,7 +175,7 @@ bool csGraphics2DGLX::Open ()
   
   XSync (dpy, False);
   
-  GetCurrentAttributes ();
+  GetCurrentAttributes();
   
   // Open your graphic interface
   if (!csGraphics2DGLCommon::Open ())
@@ -174,7 +186,7 @@ bool csGraphics2DGLX::Open ()
   return true;
 }
 
-void csGraphics2DGLX::Close (void)
+void csGraphics2DGLX::Close(void)
 {
   if (!is_open) return;
     
@@ -182,9 +194,12 @@ void csGraphics2DGLX::Close (void)
   csGraphics2DGLCommon::Close ();
   if (active_GLContext != 0)
   {
-    glXDestroyContext (dpy,active_GLContext);
+    glXDestroyContext(dpy,active_GLContext);
     active_GLContext = 0;
   }
+
+  if (dispdriver)
+    dispdriver->close();
 
   if (xwin)
     xwin->Close ();
@@ -242,31 +257,26 @@ bool csGraphics2DGLX::ChooseVisual ()
   
   bool tryMultisample = ext.CS_GLX_ARB_multisample;
   
-  for (int run = (tryMultisample ? 2 : 1); (run-- > 0) && !xvis; )
+  for (int run = (tryMultisample?2:1); (run-- > 0) && !xvis; )
   {
     while (picker.GetNextFormat (format))
     {
       if (do_verbose)
       {
-        csString pfStr;
-        GetPixelFormatString (format, pfStr);
+	csString pfStr;
+	GetPixelFormatString (format, pfStr);
     
-        Report (CS_REPORTER_SEVERITY_NOTIFY,
-          "Probing pixel format: %s", pfStr.GetData ());
+	Report (CS_REPORTER_SEVERITY_NOTIFY,
+	  "Probing pixel format: %s", pfStr.GetData());
       }
       const int colorBits = format[glpfvColorBits];
       const int colorComponentSize = 
-        ((colorBits % 32) == 0) ? colorBits / 4 : colorBits / 3;
+	  ((colorBits % 32) == 0) ? colorBits / 4 : colorBits / 3;
       const int accumBits = format[glpfvAccumColorBits];
       const int accumComponentSize = 
-        ((accumBits % 32) == 0) ? accumBits / 4 : accumBits / 3;
+	  ((accumBits % 32) == 0) ? accumBits / 4 : accumBits / 3;
       desired_attributes.DeleteAll();
-      desired_attributes.Push (GLX_RENDER_TYPE);
-      desired_attributes.Push (GLX_RGBA_BIT);
-      desired_attributes.Push (GLX_DRAWABLE_TYPE);
-      desired_attributes.Push (GLX_WINDOW_BIT);
-      desired_attributes.Push (GLX_DOUBLEBUFFER);
-      desired_attributes.Push (True);
+      desired_attributes.Push (GLX_RGBA);
       desired_attributes.Push (GLX_DEPTH_SIZE);
       desired_attributes.Push (format[glpfvDepthBits]);
       desired_attributes.Push (GLX_RED_SIZE);
@@ -275,6 +285,7 @@ bool csGraphics2DGLX::ChooseVisual ()
       desired_attributes.Push (colorComponentSize);
       desired_attributes.Push (GLX_GREEN_SIZE);
       desired_attributes.Push (colorComponentSize);
+      desired_attributes.Push (GLX_DOUBLEBUFFER);
       desired_attributes.Push (GLX_ALPHA_SIZE);
       desired_attributes.Push (format[glpfvAlphaBits]);
       desired_attributes.Push (GLX_STENCIL_SIZE);
@@ -289,50 +300,18 @@ bool csGraphics2DGLX::ChooseVisual ()
       desired_attributes.Push (format[glpfvAccumAlphaBits]);
       if (run >= 1)
       {
-        desired_attributes.Push (GLX_SAMPLE_BUFFERS_ARB);
-        desired_attributes.Push ((format[glpfvMultiSamples] != 0) ? 1 : 0);
-        desired_attributes.Push (GLX_SAMPLES_ARB);
-        desired_attributes.Push (format[glpfvMultiSamples]);
+	desired_attributes.Push (GLX_SAMPLE_BUFFERS_ARB);
+	desired_attributes.Push ((format[glpfvMultiSamples] != 0) ? 1 : 0);
+	desired_attributes.Push (GLX_SAMPLES_ARB);
+	desired_attributes.Push (format[glpfvMultiSamples]);
       }
       desired_attributes.Push (None);
-      // find an fbconfig that supports all the features we need
-      int numConfigs;
-      GLXFBConfig* fbconfigs = glXChooseFBConfig (dpy, screen_num,
-						  desired_attributes.GetArray (),
-						  &numConfigs);
-      if (fbconfigs)
-      {
-	int fbconfig = 0; // Default to first available config
-      #ifdef CS_HAVE_XRENDER
-	// If transparency was requested, check if a transparent fbconfig is available
-	if (transparencyRequested)
-	{
-	  for (int i = 0; i < numConfigs; i++)
-	  {
-	    XVisualInfo* vis = glXGetVisualFromFBConfig (dpy, fbconfigs[i]);
-	    if (!vis) continue;
-	    XRenderPictFormat* pictFormat = XRenderFindVisualFormat (dpy, vis->visual);
-	    if (!pictFormat) continue;
-
-	    if(pictFormat->direct.alphaMask > 0)
-	    {
-	      fbconfig = i;
-	      transparencyAvailable = true;
-	      break;
-	    }
-
-	    XFree (vis);
-	  }
-	}
-      #endif
-	
-	xvis = glXGetVisualFromFBConfig (dpy, fbconfigs[fbconfig]);
-	XFree (fbconfigs);
-	break;
-      }
+      // find a visual that supports all the features we need
+      xvis = glXChooseVisual (dpy, screen_num, desired_attributes.GetArray());
+      if (xvis) break;
     }
   }
-  
+
   // if a visual was found that we can use, make a graphics context which
   // will be bound to the application window.  If a visual was not
   // found, then try to figure out why it failed
@@ -340,33 +319,45 @@ bool csGraphics2DGLX::ChooseVisual ()
   {
     Report (CS_REPORTER_SEVERITY_WARNING,
       "Cannot use preferred GLX visual - Generic visual will be used.");
+    hardwareaccelerated = false;
 
-    // try to get a basic fbconfig
-    static const int generic_attributes [] =
+    // what attribute was not supplied? we know that trying to get
+    // all the attributes at once doesn't work.  provide more user info by
+    // trying each of the pieces and seeing if any single piece is not provided
+
+    // try to get a visual with 12 bit color
+    int generic_attributes [] = {GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 1, None};
+    if (!(xvis=glXChooseVisual(dpy, screen_num, generic_attributes)) )
     {
-      GLX_RENDER_TYPE, 		GLX_RGBA_BIT,
-      GLX_DRAWABLE_TYPE,	GLX_WINDOW_BIT,
-      GLX_DOUBLEBUFFER,		True,
-      GLX_DEPTH_SIZE,		1,
-      GLX_RED_SIZE,		1,
-      GLX_GREEN_SIZE,		1,
-      GLX_BLUE_SIZE,		1,
-      None
-    };
-    int numConfigs;
-    GLXFBConfig* fbconfigs = glXChooseFBConfig (dpy, screen_num,
-						generic_attributes,
-						&numConfigs);
-    if (!fbconfigs)
-    {
-      Report (CS_REPORTER_SEVERITY_ERROR,
-	"Graphics display does not support basic GLX configuration");
-      return false;
+      Report (CS_REPORTER_SEVERITY_WARNING,
+        "Graphics display does not support a generic visual with double buffer and depth buffer");
+		
+      int doublebuffer_attributes [] = {GLX_RGBA, GLX_DOUBLEBUFFER, None};
+      if (!(xvis=glXChooseVisual (dpy, screen_num, doublebuffer_attributes)))
+      {
+        Report (CS_REPORTER_SEVERITY_WARNING,
+          "Graphics display does not provide double buffering");
+
+        int depthbuffer_attributes [] = {GLX_RGBA, GLX_DEPTH_SIZE,1, None};
+          
+        if (!(xvis=glXChooseVisual (dpy, screen_num, depthbuffer_attributes)))
+        {
+          Report (CS_REPORTER_SEVERITY_WARNING,
+            "Graphics display does not support a depth buffer");
+
+          int color_attributes[] =
+            { GLX_RGBA, GLX_RED_SIZE,4, GLX_BLUE_SIZE,4,GLX_GREEN_SIZE,4,None };
+
+          if (!(xvis=glXChooseVisual(dpy, screen_num, color_attributes)))
+          {
+            Report (CS_REPORTER_SEVERITY_WARNING,
+              "Graphics display does not support at least 12 bit color");
+            return false;
+          }
+        }
+      }
     }
-    xvis = glXGetVisualFromFBConfig (dpy, fbconfigs[0]);
-    XFree (fbconfigs);
   }
-  
   return true;
 }
 
@@ -374,7 +365,8 @@ void csGraphics2DGLX::GetCurrentAttributes ()
 {
   hardwareaccelerated = glXIsDirect (dpy, active_GLContext);
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Video driver GL/X version %s",
-    hardwareaccelerated ? "(direct renderer)" : "(indirect renderer)");
+    hardwareaccelerated ? "(direct renderer)" : 
+    "(indirect renderer)");
   if (!hardwareaccelerated)
   {
     Report (CS_REPORTER_SEVERITY_WARNING,
@@ -384,27 +376,49 @@ void csGraphics2DGLX::GetCurrentAttributes ()
 
   Depth = xvis->depth;
 
+  if (Depth == 24 || Depth == 32)
+    pfmt.PixelBytes = 4;
+  else
+    pfmt.PixelBytes = 2;
+
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Visual ID: %p, %dbit %s",
     xvis->visualid, Depth, visual_class_name (xvis->c_class));
 
   int ctype, frame_buffer_depth, size_depth_buffer, level;
-  glXGetConfig (dpy, xvis, GLX_RGBA, &ctype);
-  //glXGetConfig (dpy, xvis, GLX_DOUBLEBUFFER, &double_buffer);
-  glXGetConfig (dpy, xvis, GLX_BUFFER_SIZE, &frame_buffer_depth);
-  glXGetConfig (dpy, xvis, GLX_DEPTH_SIZE, &size_depth_buffer);
-  glXGetConfig (dpy, xvis, GLX_LEVEL, &level);
+  glXGetConfig(dpy, xvis, GLX_RGBA, &ctype);
+  //glXGetConfig(dpy, xvis, GLX_DOUBLEBUFFER, &double_buffer);
+  glXGetConfig(dpy, xvis, GLX_BUFFER_SIZE, &frame_buffer_depth);
+  glXGetConfig(dpy, xvis, GLX_DEPTH_SIZE, &size_depth_buffer);
+  glXGetConfig(dpy, xvis, GLX_LEVEL, &level);
 
-  int r_bits, g_bits, b_bits, color_bits = 0;
+  int color_bits = 0;
   int alpha_bits = 0;
   if (ctype)
   {
-    glXGetConfig (dpy, xvis, GLX_RED_SIZE, &r_bits);
-    color_bits += r_bits;
-    glXGetConfig (dpy, xvis, GLX_GREEN_SIZE, &g_bits);
-    color_bits += g_bits;
-    glXGetConfig (dpy, xvis, GLX_BLUE_SIZE, &b_bits);
-    color_bits += b_bits;
-    glXGetConfig (dpy, xvis, GLX_ALPHA_SIZE, &alpha_bits);
+    pfmt.RedMask = xvis->red_mask;
+    pfmt.GreenMask = xvis->green_mask;
+    pfmt.BlueMask = xvis->blue_mask;
+    glXGetConfig(dpy, xvis, GLX_RED_SIZE, &pfmt.RedBits);
+    color_bits += pfmt.RedBits;
+    glXGetConfig(dpy, xvis, GLX_GREEN_SIZE, &pfmt.GreenBits);
+    color_bits += pfmt.GreenBits;
+    glXGetConfig(dpy, xvis, GLX_BLUE_SIZE, &pfmt.BlueBits);
+    color_bits += pfmt.BlueBits;
+    glXGetConfig(dpy, xvis, GLX_ALPHA_SIZE, &alpha_bits);
+    pfmt.AlphaBits = alpha_bits;
+      
+    int bit;
+    // Fun hack, xvis doesn't provide alpha mask
+    bit=0; while (bit < alpha_bits) pfmt.AlphaMask |= (1<<(bit++));
+    pfmt.AlphaMask = pfmt.AlphaMask << color_bits;
+
+    bit=0; while (!(pfmt.RedMask & (1<<bit))) bit++; pfmt.RedShift = bit;
+    bit=0; while (!(pfmt.GreenMask & (1<<bit))) bit++; pfmt.GreenShift = bit;
+    bit=0; while (!(pfmt.BlueMask & (1<<bit))) bit++; pfmt.BlueShift = bit;
+    if (pfmt.AlphaMask)
+    {
+      bit=0; while (!(pfmt.AlphaMask & (1<<bit))) bit++; pfmt.AlphaShift = bit;
+    }
   }
 
   // Report Info
@@ -412,19 +426,19 @@ void csGraphics2DGLX::GetCurrentAttributes ()
   currentFormat[glpfvAlphaBits] = alpha_bits;
   currentFormat[glpfvDepthBits] = size_depth_buffer;
   int stencilSize = 0;
-  glXGetConfig (dpy, xvis, GLX_STENCIL_SIZE, &stencilSize);
+  glXGetConfig(dpy, xvis, GLX_STENCIL_SIZE, &stencilSize);
   currentFormat[glpfvStencilBits] = stencilSize;
   int accumBits = 0;
   int accumAlpha = 0;
   {
     int dummy;
-    glXGetConfig (dpy, xvis, GLX_ACCUM_RED_SIZE, &dummy);
+    glXGetConfig(dpy, xvis, GLX_ACCUM_RED_SIZE, &dummy);
     accumBits += dummy;
-    glXGetConfig (dpy, xvis, GLX_ACCUM_GREEN_SIZE, &dummy);
+    glXGetConfig(dpy, xvis, GLX_ACCUM_GREEN_SIZE, &dummy);
     accumBits += dummy;
-    glXGetConfig (dpy, xvis, GLX_ACCUM_BLUE_SIZE, &dummy);
+    glXGetConfig(dpy, xvis, GLX_ACCUM_BLUE_SIZE, &dummy);
     accumBits += dummy;
-    glXGetConfig (dpy, xvis, GLX_ACCUM_ALPHA_SIZE, &accumAlpha);
+    glXGetConfig(dpy, xvis, GLX_ACCUM_ALPHA_SIZE, &accumAlpha);
   }
   currentFormat[glpfvAccumColorBits] = accumBits;
   currentFormat[glpfvAccumAlphaBits] = accumAlpha;
@@ -432,27 +446,27 @@ void csGraphics2DGLX::GetCurrentAttributes ()
   if (ext.CS_GLX_ARB_multisample)
   {
     int v;
-    glXGetConfig (dpy, xvis, GLX_SAMPLES_ARB, &v);
+    glXGetConfig(dpy, xvis, GLX_SAMPLES_ARB, &v);
     currentFormat[glpfvMultiSamples] = v;
   }
 
   if (ctype)
   {
-    Report (CS_REPORTER_SEVERITY_NOTIFY, "R%d:G%d:B%d:A%d, ",
-      r_bits, g_bits, b_bits, alpha_bits);
+    if (pfmt.RedMask > pfmt.BlueMask)
+    {
+      Report (CS_REPORTER_SEVERITY_NOTIFY, "R%d:G%d:B%d:A%d, ",
+        pfmt.RedBits, pfmt.GreenBits, pfmt.BlueBits, alpha_bits);
+    }
+    else
+    {
+      Report (CS_REPORTER_SEVERITY_NOTIFY, "B%d:G%d:R%d:A%d, ",
+        pfmt.BlueBits, pfmt.GreenBits, pfmt.RedBits, alpha_bits);
+    }
   }
     
   Report (CS_REPORTER_SEVERITY_NOTIFY, "level %d, double buffered", level);
-}
 
-bool csGraphics2DGLX::GetWorkspaceDimensions (int& width, int& height)
-{
-  return xwin->GetWorkspaceDimensions (width, height);
-}
-
-bool csGraphics2DGLX::AddWindowFrameDimensions (int& width, int& height)
-{
-  return xwin->AddWindowFrameDimensions (width, height);
+  pfmt.complete ();
 }
 
 bool csGraphics2DGLX::PerformExtensionV (char const* command, va_list args)
@@ -481,55 +495,6 @@ void csGraphics2DGLX::Print (csRect const* /*area*/)
   glXSwapBuffers (dpy,window);
 }
 
-bool csGraphics2DGLX::IsWindowTransparencyAvailable()
-{
-#ifdef CS_HAVE_XRENDER
-  if (compositingManagerPresenceSelection == None) return false;
-  /* According to http://standards.freedesktop.org/wm-spec/wm-spec-latest.html#id2552725
-     (section "Compositing Managers") presence of a compositing window manager
-     is signalled by the WM owning a selection "_NET_WM_CM_Sn", n being the screen
-     number. Check that. */
-  return (XGetSelectionOwner (dpy, compositingManagerPresenceSelection) != None);
-#else
-  return false;
-#endif
-}
-
-bool csGraphics2DGLX::SetWindowTransparent (bool transparent)
-{
-#ifdef CS_HAVE_XRENDER
-  if (!is_open)
-  {
-    transparencyRequested = transparent;
-    return true;
-  }
-  else
-  {
-    // This train has left the station.
-    return false;
-  }
-#else
-  return false;
-#endif
-}
-
-bool csGraphics2DGLX::GetWindowTransparent ()
-{
-  return is_open ? transparencyAvailable : transparencyRequested;
-}
-
-bool csGraphics2DGLX::SetWindowDecoration (WindowDecoration decoration, bool flag)
-{
-  return xwin->SetWindowDecoration (decoration, flag);
-}
-
-bool csGraphics2DGLX::GetWindowDecoration (WindowDecoration decoration)
-{
-  bool flag;
-  if (xwin->GetWindowDecoration (decoration, flag))
-    return flag;
-  return csGraphics2D::GetWindowDecoration (decoration);
-}
 
 void csGraphics2DGLX::SetFullScreen (bool yesno)
 {
@@ -541,13 +506,6 @@ void csGraphics2DGLX::AllowResize (bool iAllow)
 {
   AllowResizing = iAllow;
   xwin->AllowResize (iAllow);
-}
-
-bool csGraphics2DGLX::Resize (int w, int h)
-{
-  if (!csGraphics2DGLCommon::Resize (w, h)) return false;
-  xwin->Resize (w, h);
-  return true;
 }
 
 #undef XWIN_SCF_ID

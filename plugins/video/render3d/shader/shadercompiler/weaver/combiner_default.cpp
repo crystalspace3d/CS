@@ -25,17 +25,12 @@
 #include "csutil/scfstr.h"
 
 #include "combiner_default.h"
-#include "synth.h"
 #include "weaver.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 {
-  CombinerDefault::CombinerDefault (const WeaverCompiler* compiler,
-                                    ShaderVarNodesHelper& shaderVarNodes,
-				    TagNodesHelper& tagNodes) : 
-    scfImplementationType (this), compiler (compiler),
-    xmltokens (compiler->xmltokens), shaderVarNodes (shaderVarNodes),
-    tagNodes (tagNodes)
+  CombinerDefault::CombinerDefault (WeaverCompiler* compiler) : 
+    scfImplementationType (this), compiler (compiler), xmltokens (compiler->xmltokens)
   {
   }
   
@@ -62,24 +57,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       while (nodes->HasNext())
       {
         passNodes.Push (nodes->Next());
-      }
-    }
-    else if (strcmp (location, "shadervars") == 0)
-    {
-      csRef<iDocumentNodeIterator> nodes = blockNode->GetNodes();
-      while (nodes->HasNext())
-      {
-        csRef<iDocumentNode> child = nodes->Next();
-        shaderVarNodes.AddNode (child);
-      }
-    }
-    else if (strcmp (location, "tags") == 0)
-    {
-      csRef<iDocumentNodeIterator> nodes = blockNode->GetNodes();
-      while (nodes->HasNext())
-      {
-        csRef<iDocumentNode> child = nodes->Next();
-        tagNodes.AddNode (child);
       }
     }
   }
@@ -138,23 +115,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
               // For now only support 1 tag...
               if (hasTag) return 0;
               hasTag = true;
-	      csString tagStr (node->GetAttributeValue ("name"));
-	      csString fallbackTex (node->GetAttributeValue ("fallback"));
-	      if (!fallbackTex.IsEmpty())
-	      {
-		tagStr.Append ("|");
-		tagStr.Append (fallbackTex);
-	      }
-              result.AttachNew (new scfString (tagStr));
-            }
-            break;
-          case WeaverCompiler::XMLTOKEN_INSTANCEPARAM:
-            {
-              // For now only support 1 tag...
-              if (hasTag) return 0;
-              hasTag = true;
               result.AttachNew (new scfString (
-                node->GetAttributeValue ("source")));
+                node->GetAttributeValue ("name")));
             }
             break;
           default:

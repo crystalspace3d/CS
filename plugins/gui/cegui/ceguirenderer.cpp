@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2005 Dan Hardfeldt, Seth Yastrov and Jelle Hellemans
+    Copyright (C) 2005 Dan Hardfeldt and Seth Yastrov
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,368 +16,448 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "ceguiimports.h"
+#include "cssysdef.h"
+
+#include "iutil/objreg.h"
+#include "ivaria/script.h"
+#include "ivideo/txtmgr.h"
+
 #include "ceguirenderer.h"
-#include "ceguigeometrybuffer.h"
-#include "ceguitexturetarget.h"
 #include "ceguitexture.h"
-#include "ceguiwindowtarget.h"
-#include "ceguicsimagecodec.h"
-#include "ceguiresourceprovider.h"
+#include "CEGUIExceptions.h"
 
+CS_IMPLEMENT_PLUGIN
 
-CS_PLUGIN_NAMESPACE_BEGIN(cegui)
+SCF_IMPLEMENT_FACTORY (csCEGUIRenderer)
+
+// TODO add description
+csCEGUIRenderer::csCEGUIRenderer (iBase *parent) :
+  scfImplementationType (this, parent),
+  obj_reg(0),
+  events(0),
+  scriptModule(0),
+  newQuadAdded(false),
+  queueing(true),
+  m_bufferPos(0),
+  texture(0)
 {
-  SCF_IMPLEMENT_FACTORY (Renderer)
+  d_identifierString = "Crystal Space Renderer";
+  d_resourceProvider = 0;
+}
 
-  //----------------------------------------------------------------------------//
-  CEGUI::String Renderer::d_rendererID(
-    "CS::Renderer - Crystal Space renderer module.");
+// TODO add description
+bool csCEGUIRenderer::Initialize (iScript* script)
+{
+  g3d = csQueryRegistry<iGraphics3D> (obj_reg);
 
-  //----------------------------------------------------------------------------//
-  CEGUI::RenderingRoot& Renderer::getDefaultRenderingRoot()
-  {
-    return *d_defaultRoot;
+  if (!g3d) {
+    return false;
   }
 
-  //----------------------------------------------------------------------------//
-  CEGUI::GeometryBuffer& Renderer::createGeometryBuffer()
+  int w, h, a;
+
+  // Initialize maximum texture size, CEGUI wants squares
+  g3d->GetTextureManager ()->GetMaxTextureSize (w, h, a);
+
+  if (w < h)
+    m_maxTextureSize = w;
+  else
+    m_maxTextureSize = h;
+
+  m_displayArea.d_left = 0;
+  m_displayArea.d_top = 0;
+  m_displayArea.d_right = g3d->GetWidth ();
+  m_displayArea.d_bottom = g3d->GetHeight ();
+
+  g2d = g3d->GetDriver2D ();
+
+  if (!g2d)
+    return false;
+
+  if (script)
   {
-    GeometryBuffer* gb = new GeometryBuffer(obj_reg);
-    d_geometryBuffers.push_back(gb);
-    return *gb;
+    scriptModule = new csCEGUIScriptModule (script, obj_reg);
+    new CEGUI::System (this, 0, 0, scriptModule);  
+  }
+  else
+  {
+    new CEGUI::System (this);
   }
 
-  //----------------------------------------------------------------------------//
-  void Renderer::destroyGeometryBuffer(const CEGUI::GeometryBuffer& buffer)
-  {
-    GeometryBufferList::iterator i = std::find(d_geometryBuffers.begin(),
-      d_geometryBuffers.end(),
-      &buffer);
+  g2d->SetMouseCursor (csmcNone);
+  events = new csCEGUIEventHandler (obj_reg, this);
+  events->Initialize ();
 
-    if (d_geometryBuffers.end() != i)
+  return true;
+}
+
+// TODO add description
+csCEGUIRenderer::~csCEGUIRenderer ()
+{
+  destroyAllTextures();
+  clearRenderList();
+  delete CEGUI::System::getSingletonPtr();
+  delete scriptModule;
+  delete events;
+}
+
+// TODO add description
+void csCEGUIRenderer::addQuad (const CEGUI::Rect& dest_rect, float z, 
+  const CEGUI::Texture* tex, const CEGUI::Rect& texture_rect,
+  const CEGUI::ColourRect& colours, CEGUI::QuadSplitMode quad_split_mode)
+{
+  if (!queueing)
+  {
+    RenderQuadDirect (dest_rect, z, tex, texture_rect, colours, quad_split_mode);
+  }
+  else
+  {
+    newQuadAdded = true;
+    QuadInfo quad;
+    quad.position = dest_rect;
+    quad.position.d_bottom = m_displayArea.d_bottom - dest_rect.d_bottom;
+    quad.position.d_top = m_displayArea.d_bottom - dest_rect.d_top;
+    quad.z = z;
+    quad.texid = (csCEGUITexture*) tex;
+    quad.texPosition = texture_rect;
+    quad.topLeftColor = ColorToCS(colours.d_top_left);
+    quad.topRightColor = ColorToCS(colours.d_top_right);
+    quad.bottomLeftColor = ColorToCS(colours.d_bottom_left);
+    quad.bottomRightColor = ColorToCS(colours.d_bottom_right);
+
+    quad.splitMode = quad_split_mode;
+
+    meshIsValid = false;
+    quadList.Push (quad);
+  }
+}
+
+// TODO add description
+void csCEGUIRenderer::doRender ()
+{
+  // If a new quad has been added since the last rendering
+  // process the vertex buffer, create the meshes and cache it
+  if(newQuadAdded)
+  {
+    // Add the new quads to meshes, empty the vertex buffer
+    texture = 0;
+
+    csArray<QuadInfo>::Iterator it = quadList.GetIterator();
+
+    // iterate over each quad in the list
+    while (it.HasNext())
     {
-      d_geometryBuffers.erase(i);
-      delete &buffer;
-    }
-  }
+      const QuadInfo& quad = it.Next();
 
-  //----------------------------------------------------------------------------//
-  void Renderer::destroyAllGeometryBuffers()
-  {
-    while (!d_geometryBuffers.empty())
-      destroyGeometryBuffer(**d_geometryBuffers.begin());
-  }
-
-  //----------------------------------------------------------------------------//
-  CEGUI::TextureTarget* Renderer::createTextureTarget()
-  {
-    //TextureTarget* tt = new TextureTarget(*this, obj_reg);
-    //d_textureTargets.push_back(tt);
-    //return tt;
-    return 0;
-  }
-
-  //----------------------------------------------------------------------------//
-  void Renderer::destroyTextureTarget(CEGUI::TextureTarget* target)
-  {
-    TextureTargetList::iterator i = std::find(d_textureTargets.begin(),
-      d_textureTargets.end(),
-      target);
-
-    if (d_textureTargets.end() != i)
-    {
-      d_textureTargets.erase(i);
-      delete target;
-    }
-  }
-
-  //----------------------------------------------------------------------------//
-  void Renderer::destroyAllTextureTargets()
-  {
-    while (!d_textureTargets.empty())
-      destroyTextureTarget(*d_textureTargets.begin());
-  }
-
-  //----------------------------------------------------------------------------//
-  CEGUI::Texture& Renderer::createTexture()
-  {
-    Texture* t = new Texture(this, obj_reg);
-    d_textures.push_back(t);
-    return *t;
-  }
-
-  //----------------------------------------------------------------------------//
-  CEGUI::Texture& Renderer::createTexture(const CEGUI::String& filename,
-    const CEGUI::String& resourceGroup)
-  {
-    Texture* t = new Texture(this, obj_reg);
-    t->loadFromFile(filename, resourceGroup);
-    d_textures.push_back(t);
-    return *t;
-  }
-
-  //----------------------------------------------------------------------------//
-  CEGUI::Texture& Renderer::createTexture(const CEGUI::Size& size)
-  {
-    /// TODO
-    //Texture* t = new Texture(size); TODO
-    Texture* t = new Texture(this, obj_reg);
-    d_textures.push_back(t);
-    return *t;
-  }
-
-  //----------------------------------------------------------------------------//
-  CEGUI::Texture& Renderer::CreateTexture(iTextureHandle* htxt)
-  {
-    Texture* t = new Texture(this, obj_reg);
-    t->SetTexHandle(htxt);
-    d_textures.push_back(t);
-    return *t;
-  }
-
-  //----------------------------------------------------------------------------//
-  void Renderer::destroyTexture(CEGUI::Texture& texture)
-  {
-    TextureList::iterator i = std::find(d_textures.begin(),
-      d_textures.end(),
-      &texture);
-
-    if (d_textures.end() != i)
-    {
-      d_textures.erase(i);
-      delete &static_cast<Texture&>(texture);
-    }
-  }
-
-  //----------------------------------------------------------------------------//
-  void Renderer::destroyAllTextures()
-  {
-    while (!d_textures.empty())
-      destroyTexture(**d_textures.begin());
-  }
-
-  //----------------------------------------------------------------------------//
-  void Renderer::beginRendering()
-  {
-    //if (!g3d->BeginDraw(engine->GetBeginDrawFlags() | CSDRAW_3DGRAPHICS))
-      //return;
-  }
-
-  //----------------------------------------------------------------------------//
-  void Renderer::endRendering()
-  {
-    //g3d->FinishDraw ();
-    //g3d->Print (0);
-  }
-
-  //----------------------------------------------------------------------------//
-  const CEGUI::Size& Renderer::getDisplaySize() const
-  {
-    return d_displaySize;
-  }
-
-  //----------------------------------------------------------------------------//
-  const CEGUI::Vector2& Renderer::getDisplayDPI() const
-  {
-    return d_displayDPI;
-  }
-
-  //----------------------------------------------------------------------------//
-  uint Renderer::getMaxTextureSize() const
-  {
-    return d_maxTextureSize;
-  }
-
-  //----------------------------------------------------------------------------//
-  const CEGUI::String& Renderer::getIdentifierString() const
-  {
-    return d_rendererID;
-  }
-
-  //----------------------------------------------------------------------------//
-  Renderer::Renderer(iBase *parent) :
-    scfImplementationType (this, parent),
-    d_displayDPI(96, 96),
-    initialized(false),
-    obj_reg(0),
-    events(0),
-    scriptModule(0)
-  {
-    d_defaultTarget = new WindowTarget(*this, obj_reg);
-    d_defaultRoot = new CEGUI::RenderingRoot(*d_defaultTarget);
-  }
-
-  //----------------------------------------------------------------------------//
-  bool Renderer::Initialize (iScript* script)
-  {
-    // Load the configuration file
-    csString logFile = "/tmp/CEGUI.log";
-    csRef<iVFS> vfs = csQueryRegistry<iVFS> (obj_reg);
-    if (vfs)
-    {
-      csRef<iConfigManager> cfg = csQueryRegistry<iConfigManager> (obj_reg);
-      cfg->AddDomain ("/config/cegui.cfg", vfs, iConfigManager::ConfigPriorityPlugin);
-      logFile = cfg->GetStr ("CEGUI.LogFile", logFile);
-    }
-
-    // Find the 3D renderer
-    g3d = csQueryRegistry<iGraphics3D> (obj_reg);
-
-    if (!g3d) {
-      return false;
-    }
-
-    int w, h, a;
-
-    // Initialize maximum texture size, CEGUI wants squares
-    g3d->GetTextureManager ()->GetMaxTextureSize (w, h, a);
-
-    if (w < h)
-      d_maxTextureSize = w;
-    else
-      d_maxTextureSize = h;
-
-    d_displaySize.d_width = g3d->GetWidth ();
-    d_displaySize.d_height = g3d->GetHeight ();
-
-    g2d = g3d->GetDriver2D ();
-
-    if (!g2d)
-      return false;
-
-    ResourceProvider* rp = new ResourceProvider(obj_reg);
-    ImageCodec* ic = new ImageCodec(obj_reg);
-
-    if (script)
-    {
-      scriptModule = new CEGUIScriptModule (script, obj_reg);
-      CEGUI::System::create (*this, rp, 0, ic, scriptModule, "", logFile.GetData ());
-    }
-    else
-    {
-      CEGUI::System::create (*this, rp, 0, ic, nullptr, "", logFile.GetData ());
-    }
-
-    settingsSliderFact.obj_reg = obj_reg;
-    CEGUI::WindowFactoryManager::getSingletonPtr()->addFactory(&settingsSliderFact);
-
-    settingComboBoxFact.obj_reg = obj_reg;
-    CEGUI::WindowFactoryManager::getSingletonPtr()->addFactory(&settingComboBoxFact);
-
-    g2d->SetMouseCursor (csmcNone);
-    events = new CEGUIEventHandler (obj_reg, this);
-    events->Initialize ();
-
-    initialized = true;
-
-    return true;
-  }
-
-  //----------------------------------------------------------------------------//
-  Renderer::~Renderer()
-  {
-    destroyAllGeometryBuffers();
-    destroyAllTextureTargets();
-    destroyAllTextures(); 
-
-    CEGUI::System* sys = CEGUI::System::getSingletonPtr();
-    if (sys)
-    {
-      ResourceProvider* rp = static_cast<ResourceProvider*>(sys->getResourceProvider());
-      ImageCodec* ic = &static_cast<ImageCodec&>(sys->getImageCodec());
-      CEGUI::System::destroy();
-      delete rp;
-      delete ic;
-    }
-    
-    delete d_defaultRoot;
-    delete d_defaultTarget;
-    
-    delete scriptModule;
-    delete events;
-    
-    RemoveAutoEventHandler ();
-  }
-
-  //----------------------------------------------------------------------------//
-
-  /// Allow CEGUI to capture mouse events.
-  void Renderer::EnableMouseCapture ()
-  {
-    events->EnableMouseCapture ();
-  }
-
-  /// Keep CEGUI from capturing mouse events.
-  void Renderer::DisableMouseCapture ()
-  {
-    events->DisableMouseCapture ();
-  }
-
-  /// Allow CEGUI to capture keyboard events.
-  void Renderer::EnableKeyboardCapture ()
-  {
-    events->EnableKeyboardCapture ();
-  }
-
-  /// Keep CEGUI from capturing keyboard events.
-  void Renderer::DisableKeyboardCapture ()
-  {
-    events->DisableKeyboardCapture ();
-  }
-
-  //----------------------------------------------------------------------------//
-  void Renderer::setDisplaySize(const CEGUI::Size& sz)
-  {
-    if (sz != d_displaySize)
-    {
-      d_displaySize = sz;
-
-      // FIXME: This is probably not the right thing to do in all cases.
-      CEGUI::Rect area(d_defaultTarget->getArea());
-      area.setSize(sz);
-      d_defaultTarget->setArea(area);
-    }
-
-  }
-
-  //----------------------------------------------------------------------------//
-  
-  void Renderer::SetAutoRender (bool autoRender)
-  {
-    if (autoRender)
-      InstallAutoEventHandler ();
-    else
-      RemoveAutoEventHandler ();
-  }
-  
-  bool Renderer::GetAutoRender ()
-  {
-    return autoRenderHandler.IsValid ();
-  }
-  
-  void Renderer::InstallAutoEventHandler ()
-  {
-    if (!autoRenderHandler.IsValid ())
-    {
-      csRef<iEventQueue> eventQueue = csQueryRegistry<iEventQueue> (obj_reg);
-      if (eventQueue)
+      if (texture != quad.texid)
       {
-	autoRenderHandler.AttachNew (new AutoRenderEventHandler (this));
-	eventQueue->RegisterListener (autoRenderHandler, csevFrame (obj_reg));
+        meshIsValid = false;
+        UpdateMeshList();
+        texture = quad.texid;
+      }
+
+      PrepareQuad (quad, myBuff[m_bufferPos]);
+
+      m_bufferPos++;
+
+      if (m_bufferPos >= 2048)
+      {
+        UpdateMeshList();
       }
     }
+    newQuadAdded = false;
+    UpdateMeshList();
   }
-  
-  void Renderer::RemoveAutoEventHandler ()
+  // Safe to clean up the quadList, all quads are now stored in meshes
+  quadList.DeleteAll();
+ 
+  // Render all meshes
+  csPDelArray<csSimpleRenderMesh>::Iterator it = meshList.GetIterator();
+
+  // iterate over each mesh in the list
+  while (it.HasNext())
   {
-    if (autoRenderHandler.IsValid ())
-    {
-      csRef<iEventQueue> eventQueue = csQueryRegistry<iEventQueue> (obj_reg);
-      if (eventQueue)
-	eventQueue->RemoveListener (autoRenderHandler);
-    }
-    autoRenderHandler.Invalidate ();
+    g3d->DrawSimpleMesh(*it.Next(), csSimpleMeshScreenspace);
+  }
+}
+
+// TODO add description
+void csCEGUIRenderer::clearRenderList(void)
+{
+  quadList.DeleteAll();
+ 
+  csPDelArray<csSimpleRenderMesh>::Iterator it = meshList.GetIterator();
+
+  // iterate over each mesh in the list
+  while (it.HasNext())
+  {
+    const csSimpleRenderMesh *mesh = it.Next();
+
+    delete[] mesh->texcoords;
+    delete[] mesh->vertices;
+    delete[] mesh->colors;
+    delete[] mesh->indices;
+  }
+  meshList.DeleteAll();
+   
+}
+
+// TODO add description
+CEGUI::Texture* csCEGUIRenderer::createTexture(void)
+{
+  csCEGUITexture* tex = new csCEGUITexture (this, obj_reg);
+  textureList.Push (tex);
+  return tex;
+}
+
+// TODO add description
+CEGUI::Texture* csCEGUIRenderer::createTexture (
+  const CEGUI::String& filename, const CEGUI::String& resourceGroup)
+{
+  csCEGUITexture* tex = (csCEGUITexture*) createTexture();
+  tex->loadFromFile (filename, resourceGroup);
+
+  return tex;
+}
+
+// TODO add description
+CEGUI::Texture* csCEGUIRenderer::createTexture (float size)
+{
+  csCEGUITexture* tex = (csCEGUITexture*) createTexture();
+  return tex;
+}
+
+// TODO add description
+void csCEGUIRenderer::destroyTexture (CEGUI::Texture* texture)
+{
+  if (texture)
+  {
+    textureList.Delete ((csCEGUITexture*) texture);
+  }
+}
+
+// TODO add description
+void csCEGUIRenderer::destroyAllTextures ()
+{
+  textureList.DeleteAll ();
+}
+
+// Convert all quads into meshes, store mesh in meshlist
+void csCEGUIRenderer::UpdateMeshList()
+{
+  // if bufferPos is 0 there is no data in the buffer and nothing to render
+  if (m_bufferPos == 0)
+  {
+    return;
   }
 
-} CS_PLUGIN_NAMESPACE_END(cegui)
+  csVector3 *verts = new csVector3[m_bufferPos*4];
+  csVector2 *tex = new csVector2[m_bufferPos*4];
+  csVector4 *col = new csVector4[m_bufferPos*4];
+  uint *ind = new uint[m_bufferPos*6];
+
+  csSimpleRenderMesh *mesh = new csSimpleRenderMesh();
+  mesh->vertices = verts;
+  mesh->vertexCount = m_bufferPos*4;
+  mesh->indices = ind;
+  mesh->indexCount = m_bufferPos*6;
+  mesh->colors = col;
+  mesh->meshtype = CS_MESHTYPE_TRIANGLES;
+  mesh->texture = texture->GetTexHandle();
+  mesh->texcoords = tex;
+
+  csAlphaMode mode;
+  mode.autoAlphaMode = false;
+  mode.alphaType = mesh->texture->GetAlphaType ();
+  mesh->alphaType = mode;
+
+  int idx = 0, idx2 = 0;
+
+  for (int i = 0; i < m_bufferPos; i++)
+  {
+    verts[idx] = myBuff[i].vertex[0];
+    verts[idx+1] = myBuff[i].vertex[1];
+    verts[idx+2] = myBuff[i].vertex[2];
+    verts[idx+3] = myBuff[i].vertex[3];
+    col[idx] = myBuff[i].color[0];
+    col[idx+1] = myBuff[i].color[1];
+    col[idx+2] = myBuff[i].color[2];
+    col[idx+3] = myBuff[i].color[3];
+    tex[idx] = myBuff[i].tex[0];
+    tex[idx+1] = myBuff[i].tex[1];
+    tex[idx+2] = myBuff[i].tex[2];
+    tex[idx+3] = myBuff[i].tex[3];
+    ind[idx2] = myBuff[i].indices[0]+idx;
+    ind[idx2+1] = myBuff[i].indices[1]+idx;
+    ind[idx2+2] = myBuff[i].indices[2]+idx;
+    ind[idx2+3] = myBuff[i].indices[3]+idx;
+    ind[idx2+4] = myBuff[i].indices[4]+idx;
+    ind[idx2+5] = myBuff[i].indices[5]+idx;
+    idx += 4;
+    idx2 += 6;
+  }
+
+  meshIsValid = true;
+  meshList.Push(mesh);
+
+  // reset buffer position to 0...
+  m_bufferPos = 0;
+}
+
+void csCEGUIRenderer::PrepareQuad (const QuadInfo quad, RenderQuad& rquad) const
+{
+  if (quad.splitMode == CEGUI::TopLeftToBottomRight)
+  {
+    rquad.indices[0] = 0;
+    rquad.indices[1] = 2;
+    rquad.indices[2] = 1;
+    rquad.indices[3] = 3;
+    rquad.indices[4] = 2;
+    rquad.indices[5] = 0;
+  }
+  else
+  {
+    rquad.indices[0] = 0;
+    rquad.indices[1] = 3;
+    rquad.indices[2] = 1;
+    rquad.indices[3] = 1;
+    rquad.indices[4] = 3;
+    rquad.indices[5] = 2;
+  }
+
+  rquad.vertex[0] = csVector3(quad.position.d_left, 
+    g2d->GetHeight()-quad.position.d_top, 0/*quad.z*/);
+  rquad.color[0] = quad.topLeftColor;
+  rquad.tex[0] = csVector2(quad.texPosition.d_left, quad.texPosition.d_top);
+
+  rquad.vertex[1] = csVector3(quad.position.d_left, 
+    g2d->GetHeight()-quad.position.d_bottom, 0/*quad.z*/);
+  rquad.color[1] = quad.bottomLeftColor;
+  rquad.tex[1] = csVector2(quad.texPosition.d_left, quad.texPosition.d_bottom);
+
+  rquad.vertex[2] = csVector3(quad.position.d_right, 
+    g2d->GetHeight()-quad.position.d_bottom, 0/*quad.z*/);
+  rquad.color[2] = quad.bottomRightColor;
+  rquad.tex[2] = csVector2(quad.texPosition.d_right, quad.texPosition.d_bottom);
+
+  rquad.vertex[3] = csVector3(quad.position.d_right, 
+    g2d->GetHeight()-quad.position.d_top, 0/*quad.z*/);
+  rquad.color[3] = quad.topRightColor;
+  rquad.tex[3] = csVector2(quad.texPosition.d_right, quad.texPosition.d_top);
+}
+
+// TODO add description
+void csCEGUIRenderer::RenderQuadDirect(const CEGUI::Rect& dest_rect, 
+  float z, const CEGUI::Texture* tex, const CEGUI::Rect& texture_rect,
+  const CEGUI::ColourRect& colours, CEGUI::QuadSplitMode quad_split_mode)
+{
+  QuadInfo quad;
+  quad.position = dest_rect;
+  quad.position.d_bottom = m_displayArea.d_bottom - dest_rect.d_bottom;
+  quad.position.d_top = m_displayArea.d_bottom - dest_rect.d_top;
+  quad.z = z;
+  quad.texid = (csCEGUITexture*) tex;
+  quad.texPosition = texture_rect;
+  quad.topLeftColor = ColorToCS(colours.d_top_left);
+  quad.topRightColor = ColorToCS(colours.d_top_right);
+  quad.bottomLeftColor = ColorToCS(colours.d_bottom_left);
+  quad.bottomRightColor = ColorToCS(colours.d_bottom_right);
+
+  quad.splitMode = quad_split_mode;
+
+  RenderQuad myquad;
+
+  PrepareQuad (quad, myquad);
+
+  csVector3 verts[4];
+  csVector2 texcoords[4];
+  csVector4 col[4];
+  uint ind[6];
+
+  csSimpleRenderMesh mesh;
+  mesh.vertices = verts;
+  mesh.vertexCount = 4;
+  mesh.indices = ind;
+  mesh.indexCount = 6;
+  mesh.colors = col;
+  mesh.texcoords = texcoords;
+  mesh.meshtype = CS_MESHTYPE_TRIANGLES;
+  mesh.texture = ((csCEGUITexture*)tex)->GetTexHandle();
+  
+  csAlphaMode mode;
+  mode.autoAlphaMode = false;
+  mode.alphaType = mesh.texture->GetAlphaType ();
+  mesh.alphaType = mode;
+
+  verts[0] = myquad.vertex[0];
+  verts[1] = myquad.vertex[1];
+  verts[2] = myquad.vertex[2];
+  verts[3] = myquad.vertex[3];
+  col[0] = myquad.color[0];
+  col[1] = myquad.color[1];
+  col[2] = myquad.color[2];
+  col[3] = myquad.color[3];
+  texcoords[0] = myquad.tex[0];
+  texcoords[1] = myquad.tex[1];
+  texcoords[2] = myquad.tex[2];
+  texcoords[3] = myquad.tex[3];
+  ind[0] = myquad.indices[0];
+  ind[1] = myquad.indices[1];
+  ind[2] = myquad.indices[2];
+  ind[3] = myquad.indices[3];
+  ind[4] = myquad.indices[4];
+  ind[5] = myquad.indices[5];
+
+  g3d->DrawSimpleMesh (mesh, csSimpleMeshScreenspace);
+}
+
+csVector4 csCEGUIRenderer::ColorToCS (const CEGUI::colour& col) const
+{
+  csVector4 color (col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha());
+  return color;
+}
+
+/// Allow CEGUI to capture mouse events.
+void csCEGUIRenderer::EnableMouseCapture ()
+{
+  events->EnableMouseCapture ();
+}
+
+/// Keep CEGUI from capturing mouse events.
+void csCEGUIRenderer::DisableMouseCapture ()
+{
+  events->DisableMouseCapture ();
+}
+
+/// Allow CEGUI to capture keyboard events.
+void csCEGUIRenderer::EnableKeyboardCapture ()
+{
+  events->EnableKeyboardCapture ();
+}
+
+/// Keep CEGUI from capturing keyboard events.
+void csCEGUIRenderer::DisableKeyboardCapture ()
+{
+  events->DisableKeyboardCapture ();
+}
+
+// TODO add description
+void csCEGUIRenderer::setDisplaySize (const CEGUI::Size& sz)
+{
+  if (m_displayArea.getSize() != sz)
+  {
+    m_displayArea.setSize(sz);
+
+    CEGUI::EventArgs args;
+    fireEvent(EventDisplaySizeChanged, args, EventNamespace);
+  }
+}
+  
+CEGUI::ResourceProvider* csCEGUIRenderer::createResourceProvider ()
+{
+  if (!d_resourceProvider) {
+    d_resourceProvider = new csCEGUIResourceProvider (obj_reg);
+  }
+
+  return d_resourceProvider;
+}

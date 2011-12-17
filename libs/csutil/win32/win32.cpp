@@ -19,7 +19,6 @@
 #include "cssysdef.h"
 #include <ctype.h>
 #include <stdarg.h>
-#include "csutil/cmdhelp.h"
 #include "csutil/csuctransform.h"
 #include "csutil/event.h"
 #include "csutil/eventnames.h"
@@ -45,7 +44,7 @@
 
 #include "csutil/win32/wintools.h"
 #include "win32kbd.h"
-#include "csutil/win32/cachedll.h"
+#include "cachedll.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -114,7 +113,6 @@ private:
   /// The window class name for this assistant
   uint8* windowClass;
 
-  void HandleWheelMessage (HWND hWnd, bool isHWheel, WPARAM wParam, LPARAM lParam);
   static LRESULT CALLBACK WindowProc (HWND hWnd, UINT message,
     WPARAM wParam, LPARAM lParam);
   static LRESULT CALLBACK CBTProc (int nCode, WPARAM wParam, LPARAM lParam);
@@ -224,7 +222,7 @@ bool csPlatformStartup(iObjectRegistry* r)
   /* Mark program as DPI aware on Vista to prevent automatic scaling
      by the system on high resolution screens */
   {
-    CS::Platform::Win32::CacheDLL hUser32 ("user32.dll");
+    cswinCacheDLL hUser32 ("user32.dll");
     CS_ASSERT (hUser32 != 0);
     LPFNSETPROCESSDPIAWARE SetProcessDPIAware =
       (LPFNSETPROCESSDPIAWARE)GetProcAddress (hUser32, "SetProcessDPIAware");
@@ -438,10 +436,6 @@ Win32Assistant::Win32Assistant (iObjectRegistry* r)
   // * Don't change the codepage, for now.
   //SetConsoleOutputCP (CP_UTF8);
   //
-
-  // Set console input CP to the ANSI codepage (it's OEM by default).
-  // @@@ Again, pure unicode input would be best.
-  SetConsoleCP (GetACP());
 
   registry = r;
 
@@ -670,13 +664,14 @@ bool Win32Assistant::HandleEvent (iEvent& e)
   {
 
    #ifdef CS_DEBUG 
-    const bool defcon = true;
+    const char *defcon = "yes";
    #else
-    const bool defcon = false;
+    const char *defcon = "no";
    #endif
 
-    csCommandLineHelper::PrintTitle ("Win32-specific options", 1);
-    csCommandLineHelper::PrintOption ("console", "Create a debug console", csVariant (defcon));
+    csPrintf ("Win32-specific options:\n");
+    csPrintf ("  -[no]console       Create a debug console (default = %s)\n",     
+      defcon);
   }
   return false;
 }
@@ -710,31 +705,11 @@ int Win32Assistant::GetCmdShow () const
 #define	WM_XBUTTONUP	0x020c
 #endif
 
-#ifndef WM_MOUSEHWHEEL
-#define	WM_MOUSEHWHEEL	0x020e
-#endif
-
 struct CreateInfo
 {
   Win32Assistant* assistant;
   iGraphics2D* canvas;
 };
-
-void Win32Assistant::HandleWheelMessage (HWND hWnd, bool isHWheel, WPARAM wParam, LPARAM lParam)
-{
-  int wheelDelta = (short)HIWORD (wParam);
-  // @@@ Only emit events when WHEEL_DELTA wheel ticks accumulated?
-  POINT coords;
-  coords.x = short (LOWORD (lParam));
-  coords.y = short (HIWORD (lParam));
-  ScreenToClient(hWnd, &coords);
-  int button;
-  if (isHWheel)
-    button = wheelDelta > 0 ? csmbHWheelRight : csmbHWheelLeft;
-  else
-    button = wheelDelta > 0 ? csmbWheelUp : csmbWheelDown;
-  EventOutlet->Mouse (button, true, coords.x, coords.y);
-}
 
 LRESULT CALLBACK Win32Assistant::WindowProc (HWND hWnd, UINT message,
   WPARAM wParam, LPARAM lParam)
@@ -854,10 +829,21 @@ LRESULT CALLBACK Win32Assistant::WindowProc (HWND hWnd, UINT message,
       return TRUE;
     }
     case WM_MOUSEWHEEL:
-    case WM_MOUSEHWHEEL:
     {
       if (assistant != 0)
-        assistant->HandleWheelMessage (hWnd, message == WM_MOUSEHWHEEL, wParam, lParam);
+      {
+        iEventOutlet* outlet = assistant->GetEventOutlet();
+	int wheelDelta = (short)HIWORD (wParam);
+	// @@@ Only emit events when WHEEL_DELTA wheel ticks accumulated?
+	POINT coords;
+	coords.x = short (LOWORD (lParam));
+	coords.y = short (HIWORD (lParam));
+	ScreenToClient(hWnd, &coords);
+	outlet->Mouse (wheelDelta > 0 ? csmbWheelUp : csmbWheelDown, true,
+	  coords.x, coords.y);
+	//outlet->Mouse (wheelDelta > 0 ? csmbWheelUp : csmbWheelDown, false,
+	  //coords.x, coords.y); 
+      }
       return 0;
     }
     case WM_XBUTTONUP:

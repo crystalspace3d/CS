@@ -113,10 +113,10 @@ AC_DEFUN([CS_BUILD_IFELSE],
     do
 	CS_SPLIT_TUPLE(
 	    [$cs_build_item],[cs_cflags_test,cs_lflags_test,cs_libs_test])
-	_CS_LANG_CFLAGS([$3])="$cs_cflags_save $cs_cflags_test $6"
+	_CS_LANG_CFLAGS([$3])="$cs_cflags_test $6 $cs_cflags_save"
 	LDFLAGS="$cs_lflags_test $7 $cs_lflags_save"
 	LIBS="$cs_libs_test $8 $cs_libs_save"
-	AC_LINK_IFELSE(AC_LANG_SOURCE[m4_default([$1], [AC_LANG_PROGRAM([],[])])],
+	AC_LINK_IFELSE(m4_default([$1], [AC_LANG_PROGRAM([],[])]),
 	    [m4_ifval([$10],
 		[AS_IF([AC_TRY_COMMAND(
 		    [grep "AS_ESCAPE([$10])" conftest.err >/dev/null 2>&1])],

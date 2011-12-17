@@ -22,14 +22,13 @@
 
 #include "profiler.h"
 #include "csutil/csstring.h"
-#include "csutil/platformfile.h"
 #include "csutil/scf.h"
 #include "iutil/vfs.h"
 #include "csutil/objreg.h"
 #include "ivaria/profile.h"
 #include "cstool/vfsdirchange.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 template<>
 class csComparator<const char*, csString> :
@@ -190,7 +189,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Profiler)
     }
     {
       // Use native logging
-      nativeLogfile = CS::Platform::File::Open (logfileNameHelper.FindNextFilename (), "w");
+      nativeLogfile = fopen (logfileNameHelper.FindNextFilename (), "w");
       if (nativeLogfile)
         isLogging = true;
     }

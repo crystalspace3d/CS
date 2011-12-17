@@ -21,28 +21,30 @@
 
 #include "basemapgen.h"
 
-#include "textureinfo.h"
+// The global pointer to basemapgen
+extern BaseMapGen *basemapgen;
 
 bool BaseMapGen::Terrain2Cell::Parse (iDocumentNode* node, bool isDefault)
 {
-  if (!isDefault)
-    cellNode = node;
   {
     csRef<iDocumentNode> name = node->GetNode ("name");
     if (name.IsValid())
       this->name = name->GetContentsValue();
+  }
+  if (name.IsEmpty() && !isDefault)
+  {
+    csPrintf ("There is a cell without name, it will not get a basemap.\n");
+    fflush (stdout);
   }
   {
     csRef<iDocumentNode> basematerial = node->GetNode ("basematerial");
     if (basematerial.IsValid())
       this->baseMaterial = basematerial->GetContentsValue();
   }
+  if (baseMaterial.IsEmpty())
   {
-    csRef<iDocumentNode> renderProperties = node->GetNode ("renderproperties");
-    if (isDefault)
-      this->defRenderPropertiesNode = renderProperties;
-    else
-      this->renderPropertiesNode = renderProperties;
+    csPrintf ("Cell '%s' does not have a base material set.\n", name.GetData());
+    fflush (stdout);
   }
   {
     csRef<iDocumentNode> feederProperties = node->GetNode ("feederproperties");
@@ -115,6 +117,9 @@ void BaseMapGen::ScanTerrain2Factories ()
     csRef<iDocumentNode> cells = params->GetNode ("cells");
     if (!cells) continue;
     
+    csPrintf ("Found factory '%s' ...\n", name);
+    fflush (stdout);
+      
     csRef<Terrain2Factory> factory;
     factory.AttachNew (new Terrain2Factory);
     
@@ -122,7 +127,7 @@ void BaseMapGen::ScanTerrain2Factories ()
     csRef<iDocumentNode> celldefault = cells->GetNode ("celldefault");
     if (celldefault)
     {
-      if (!defaultCell.Parse (celldefault))
+      if (!defaultCell.Parse (celldefault, true))
         continue;
     }
     
@@ -132,7 +137,7 @@ void BaseMapGen::ScanTerrain2Factories ()
       csRef<iDocumentNode> cellNode = cellsIt->Next();
       csRef<Terrain2Cell> cell;
       cell.AttachNew (new Terrain2Cell (defaultCell));
-      if (!cell->Parse (cellNode))
+      if (!cell->Parse (cellNode, false))
         continue;
       factory->cells.Put (cell->name, cell);
     }
@@ -177,7 +182,7 @@ void BaseMapGen::ScanTerrain2Meshes ()
         (Terrain2Factory*)0);
       if (!factory) continue;
     
-      csPrintf ("Found terrain %s ...\n", CS::Quote::Single (name.GetData()));
+      csPrintf ("Found terrain '%s' ...\n", name.GetData());
       fflush (stdout);
       
       // Get the materialpalette.
@@ -207,7 +212,12 @@ void BaseMapGen::ScanTerrain2Meshes ()
 	csRef<iDocumentNode> cellNode = cellsIt->Next();
 	
 	csRef<iDocumentNode> nameNode = cellNode->GetNode ("name");
-	if (!nameNode) continue;
+	if (!nameNode)
+	{
+	  csPrintf ("There is a cell without name, it will not get a basemap.\n");
+	  fflush (stdout);
+	  continue;
+	}
 	const char* cellName = nameNode->GetContentsValue();
 	
 	Terrain2Cell* factoryCell = factory->cells.Get (cellName,
@@ -215,10 +225,16 @@ void BaseMapGen::ScanTerrain2Meshes ()
 	if (!factoryCell) continue;
 	
 	Terrain2Cell cell (*factoryCell);
-	if (!cell.Parse (cellNode)) continue;
+	if (!cell.Parse (cellNode, false)) continue;
 	
 	MaterialLayer* mat = materials.Get (cell.baseMaterial, (MaterialLayer*)0);
-	if (!mat) continue;
+	if (!mat)
+	{
+	  csPrintf ("Base material '%s' in cell '%s' not found.\n",
+	    cell.baseMaterial.GetData(), cell.name.GetData());
+	  fflush (stdout);
+	  continue;
+	}
 	
 	if (!cell.alphaLayers.IsValid())
 	  cell.ApplyMaterialMap (mlayers);
@@ -235,34 +251,17 @@ void BaseMapGen::ScanTerrain2Meshes ()
 	  basemap_w = basemap_h = basemap_res;
 	}
       
-	const TextureInfo* texinfo = mat->texture;
-	if (!texinfo) continue;
-	if (texinfo->GetFileName ().IsEmpty()) continue;
-	
 	csPrintf ("Basemap resolution: %dx%d\n", basemap_w, basemap_h); fflush (stdout);
 	
 	csRef<iImage> basemap = CreateBasemap (basemap_w, basemap_h,
 	  *(cell.alphaLayers), cell.alphaMaterials);
 	if (!basemap) continue;
+	const char* texfile = textureFiles.Get (mat->texture_name, (const char*)0);
+	if (texfile == 0) continue;
 	
-	SaveImage (basemap, texinfo->GetFileName());
-	SetTextureClassNode (texinfo->GetDocumentNode(), "nosharpen");
-	SetTextureFlag (texinfo->GetDocumentNode(), "clamp");
+	SaveImage (basemap, texfile);
 	
-	csRef<iDocumentNode> renderPropertiesNode (cell.renderPropertiesNode);
-	if (!renderPropertiesNode)
-	{
-	  renderPropertiesNode = cell.cellNode->CreateNodeBefore (CS_NODE_ELEMENT);
-	  renderPropertiesNode->SetValue ("renderproperties");
-	}
-	SetShaderVarNode (renderPropertiesNode, "basemap scale", "vector4",
-			  csString().Format ("%.9g,%.9g,%.9g,%.9g",
-					     float (basemap_w-1) / basemap_w,
-					     float (basemap_h-1) / basemap_h,
-					     0.5 / basemap_w,
-					     0.5 / basemap_h));
-	
-	baseMapWriteCounts.GetOrCreate (texinfo->GetFileName(), 0)++;
+	baseMapWriteCounts.GetOrCreate (texfile, 0)++;
       }
     } // while meshobj
   } // while sector

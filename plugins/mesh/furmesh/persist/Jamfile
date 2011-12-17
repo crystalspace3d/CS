@@ -1,3 +1,0 @@
-SubDir TOP plugins mesh furmesh persist ;
-
-SubInclude TOP plugins mesh furmesh persist standard ;

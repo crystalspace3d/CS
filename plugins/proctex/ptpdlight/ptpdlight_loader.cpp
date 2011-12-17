@@ -31,14 +31,13 @@
 #include "csutil/cfgacc.h"
 #include "csutil/cscolor.h"
 #include "csutil/processorspecdetection.h"
-#include "csutil/stringquote.h"
 
 #include "ptpdlight.h"
 #include "ptpdlight_loader.h"
 
 // Plugin stuff
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(PTPDLight)
 {
@@ -83,20 +82,21 @@ bool ProctexPDLightLoader::Initialize(iObjectRegistry *object_reg)
 }
 
 csPtr<iBase> ProctexPDLightLoader::Parse (iDocumentNode* node,  
-				          iStreamSource*, iLoaderContext* /*ldr_context*/,
-  					      iBase* context)
+				          iStreamSource*,
+					  iLoaderContext* /*ldr_context*/,
+  					  iBase* context)
 {
   csRef<iLoader> LevelLoader = csQueryRegistry<iLoader> (object_reg);
   if (!LevelLoader) 
   {
     Report (CS_REPORTER_SEVERITY_ERROR, 0, "No level loader");
-    return 0;
+    return false;
   }
   csRef<iSyntaxService> synsrv = csQueryRegistry<iSyntaxService> (object_reg);
   if (!synsrv) 
   {
     Report (CS_REPORTER_SEVERITY_ERROR, 0, "No syntax services");
-    return 0;
+    return false;
   }
 
   csRef<iTextureLoaderContext> ctx;
@@ -124,7 +124,7 @@ csPtr<iBase> ProctexPDLightLoader::Parse (iDocumentNode* node,
         if (!img) 
         {
           Report (CS_REPORTER_SEVERITY_WARNING, file, 
-	    "Couldn't load image %s", CS::Quote::Single (fname));
+	    "Couldn't load image '%s'", fname);
         }
       }
     }
@@ -132,7 +132,7 @@ csPtr<iBase> ProctexPDLightLoader::Parse (iDocumentNode* node,
 
   csRef<ProctexPDLight> pt;
   if (img.IsValid())
-    pt.AttachNew (NewProctexPDLight (img));
+    pt.AttachNew (new ProctexPDLight (this, img));
   else
   {
     if (ctx)
@@ -141,7 +141,7 @@ csPtr<iBase> ProctexPDLightLoader::Parse (iDocumentNode* node,
       {
 	  int w, h;
 	  ctx->GetSize (w, h);
-        pt.AttachNew (NewProctexPDLight (w, h));
+        pt.AttachNew (new ProctexPDLight (this, w, h));
       }
     }
   }
@@ -186,7 +186,7 @@ csPtr<iBase> ProctexPDLightLoader::Parse (iDocumentNode* node,
             break;
           default:
             synsrv->ReportBadToken (child);
-            return 0;
+            return false;
         }
       }
     }
@@ -269,9 +269,7 @@ bool ProctexPDLightLoader::ParseMap (iDocumentNode* node, ProctexPDLight* pt,
   if ((hasSector || hasLightName) && (!hasSector || !hasLightName))
   {
     Report (CS_REPORTER_SEVERITY_WARNING, node, 
-      "Both %s and %s attributes need to be specified",
-      CS::Quote::Single ("lightsector"),
-      CS::Quote::Single ("lightname"));
+      "Both 'lightsector' and 'lightname' attributes need to be specified");
     return false;
   }
   const char* lightId = node->GetAttributeValue ("lightid");
@@ -279,11 +277,8 @@ bool ProctexPDLightLoader::ParseMap (iDocumentNode* node, ProctexPDLight* pt,
   if (!hasSector && !hasLightName && !hasLightID)
   {
     Report (CS_REPORTER_SEVERITY_WARNING, node, 
-      "%s and %s attributes or a %s attribute "
-      "need to be specified",
-      CS::Quote::Single ("lightsector"),
-      CS::Quote::Single ("lightname"),
-      CS::Quote::Single ("lightid"));
+      "'lightsector' and 'lightname' attributes or a 'lightid' attribute "
+      "need to be specified");
     return false;
   }
   const char* image = node->GetContentsValue ();
@@ -292,7 +287,7 @@ bool ProctexPDLightLoader::ParseMap (iDocumentNode* node, ProctexPDLight* pt,
   if (!map)
   {
     Report (CS_REPORTER_SEVERITY_WARNING, node, 
-      "Couldn't load image %s", CS::Quote::Single (image));
+      "Couldn't load image '%s'", image);
     return false;
   }
   ProctexPDLight::MappedLight light (pt->NewLight (map));;
@@ -307,7 +302,7 @@ bool ProctexPDLightLoader::ParseMap (iDocumentNode* node, ProctexPDLight* pt,
     if (!HexToLightID (light.lightId->lightId, lightId))
     {
       Report (CS_REPORTER_SEVERITY_WARNING, node, 
-        "Invalid light ID %s", CS::Quote::Single (lightId));
+        "Invalid light ID '%s'", lightId);
     }
     return false;
   }
@@ -315,8 +310,7 @@ bool ProctexPDLightLoader::ParseMap (iDocumentNode* node, ProctexPDLight* pt,
   if (err != 0)
   {
     Report (CS_REPORTER_SEVERITY_WARNING, node, 
-      "Couldn't add map %s for light %s: %s",
-      CS::Quote::Single (image), CS::Quote::Single (lightId), err);
+      "Couldn't add map '%s' for light '%s': %s", image, lightId, err);
   }
   
   return !err;
@@ -387,31 +381,6 @@ bool ProctexPDLightLoader::HexToLightID (uint8* lightID, const char* lightIDHex)
     }
   }
   return valid;
-}
-
-extern ProctexPDLight* NewProctexPDLight_Generic (ProctexPDLightLoader* loader, iImage* img);
-extern ProctexPDLight* NewProctexPDLight_Generic (ProctexPDLightLoader* loader, int w, int h);
-extern ProctexPDLight* NewProctexPDLight_MMX (ProctexPDLightLoader* loader, iImage* img);
-extern ProctexPDLight* NewProctexPDLight_MMX (ProctexPDLightLoader* loader, int w, int h);
-  
-ProctexPDLight* ProctexPDLightLoader::NewProctexPDLight (iImage* img)
-{
-#ifdef CS_SUPPORTS_MMX
-  if (doMMX)
-    return NewProctexPDLight_MMX (this, img);
-  else
-#endif
-    return NewProctexPDLight_Generic (this, img);
-}
-
-ProctexPDLight* ProctexPDLightLoader::NewProctexPDLight (int w, int h)
-{
-#ifdef CS_SUPPORTS_MMX
-  if (doMMX)
-    return NewProctexPDLight_MMX (this, w, h);
-  else
-#endif
-    return NewProctexPDLight_Generic (this, w, h);
 }
 
 }

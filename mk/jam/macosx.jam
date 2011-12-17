@@ -19,13 +19,9 @@
 #==============================================================================
 SHELL ?= "/bin/sh" ;
 
-MACOSX_ENVIRONMENT = "export MACOSX_DEPLOYMENT_TARGET=10.4" ;
+MACOSX_ENVIRONMENT = "export MACOSX_DEPLOYMENT_TARGET=10.2" ;
 
-PLUGIN.LFLAGS += "" ;
-
-# GNU linker on Mac OS X does not support the -shared flag, yet it is silently
-# accepted during the configure check, so filter it out.
-PLUGIN.LFLAGS = [ Filter $(PLUGIN.LFLAGS) : -shared ] ;
+PLUGIN.LFLAGS += "-bundle" ;
 
 # We use the ugly -Wl form, which does not contain embedded whitespace (unlike
 # "-framework AppKit"), to help external projects which use the result of
@@ -212,7 +208,7 @@ rule SystemLinkPlugin
 actions LinkPlugin bind NEEDLIBS bind EXTRAOBJECTS
 {
     $(MACOSX_ENVIRONMENT)
-    $(CMD.LINK) -o $(<) $(>) $(EXTRAOBJECTS) $(NEEDLIBS) $(LINKLIBS)
+    $(CMD.LINK) -bundle -o $(<) $(>) $(EXTRAOBJECTS) $(NEEDLIBS) $(LINKLIBS)
 }
 
 # LinkApplicationConsole exe : objects
@@ -245,7 +241,7 @@ rule CreateApplicationWrapper
     }
     if $(icon)
     {
-	$(<)_APPICON = $(icon:BS) ;
+	$(<)_APPICON = $(icon) ;
         AppIcon $(<) : $(icon) ;
     }
 }
@@ -390,7 +386,7 @@ EOT
 #    already set SEARCH on the icon, if necessary.
 rule AppIcon
 {
-    local icon = $(>:BSG=$(<)) ;
+    local icon = $(>:G=$(<)) ;
     Depends $(<) : $(icon) ; 
     Depends $(icon) : $(>) ;
     MakeLocate $(icon) : 

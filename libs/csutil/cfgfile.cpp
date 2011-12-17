@@ -20,7 +20,6 @@
 #include "csutil/cfgfile.h"
 #include "csutil/csstring.h"
 #include "csutil/databuf.h"
-#include "csutil/platformfile.h"
 #include "csutil/physfile.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/scfstringarray.h"
@@ -582,7 +581,7 @@ bool csConfigFile::SaveNow(const char *file, iVFS *vfs) const
   }
   else
   {
-    FILE *fp = CS::Platform::File::Open (file, "wb");
+    FILE *fp = fopen(file, "wb");
     if (!fp) return false;
     const size_t res = fwrite(Filedata.GetData(), sizeof(char), length, fp);
     const int errcode = errno;
@@ -828,14 +827,8 @@ void csConfigFile::LoadFromBuffer(const char *Filedata, bool overwrite)
   {
     s = Filedata + strcspn (Filedata, "\n\r");
     LastLine = (*s == 0);
-    if (!LastLine)
-    {
-      // Advance past LF, CR, or CRLF.
-      SkipCount = (*s == '\r' && *(s+1) == '\n' ? 2 : 1);
-      // If the next advance will get to the end of file this is the 
-      // last line we are parsing
-      if(*(s+SkipCount) == 0) LastLine = true;
-    }
+    // Advance past LF, CR, or CRLF.
+    SkipCount = (!LastLine && *s == '\r' && *(s+1) == '\n' ? 2 : 1);
 
     currentLineBuf.Replace (Filedata, s - Filedata);
     currentLineBuf.Trim ();

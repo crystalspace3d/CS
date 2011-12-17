@@ -32,10 +32,16 @@
 /// This is an SCF-compatible interface for csStringArray.
 struct iStringArray : public virtual iBase
 {
-  SCF_INTERFACE (iStringArray, 2, 1, 1);
-
+  SCF_INTERFACE(iStringArray, 2,1,0);
   /// Get array length.
   virtual size_t GetSize () const = 0;
+
+  /**
+   * Get array length.
+   * \deprecated Deprecated in 1.3. Use GetSize() instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use GetSize() instead.")
+  CS_FORCEINLINE size_t Length () const { return GetSize(); }
 
   /// Push a string onto the stack.
   virtual void Push (const char *value) = 0;
@@ -84,7 +90,7 @@ struct iStringArray : public virtual iBase
    * <p>
    * \remarks Some people find Contains() more idiomatic than Find().
    */
-  virtual size_t Contains (const char* str, bool case_sensitive = true) const=0;
+  virtual size_t Contains(const char* str, bool case_sensitive = true) const=0;
 
   /**
    * Sort array.
@@ -99,21 +105,22 @@ struct iStringArray : public virtual iBase
   /// Insert a string before entry \c n in the array.
   virtual bool Insert (size_t n, char const *value) = 0;
 
-  /// Remove all strings from the array, but does not release the memory allocated.
+  /// Remove all strings from array, releasing allocated memory.
   virtual void Empty () = 0;
+
+  /**
+   * Remove all strings from array.
+   * \deprecated Deprecated in 1.3. Use Empty() instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use Empty() instead.")
+  CS_FORCEINLINE void DeleteAll () { Empty(); }
 
   /**
    * Return true if the array is empty.
    * \remarks Rigidly equivalent to <tt>return GetSize() == 0</tt>, but more
    *   idiomatic.
    */
-  virtual bool IsEmpty () const = 0;
-
-  /**
-   * Insert or reset the element with index \c n.
-   * If the size of the array is smaller than \c n then it will be resized.
-   */
-  virtual void Put (size_t n, const char* value) = 0;
+  virtual bool IsEmpty() const = 0;
 };
 
 /** @} */

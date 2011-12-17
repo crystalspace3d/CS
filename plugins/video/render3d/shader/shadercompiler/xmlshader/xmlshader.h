@@ -28,8 +28,8 @@
 
 #include "cpi/condition.h"
 
-struct iLoaderContext;
 struct iSyntaxService;
+struct iLoaderContext;
 struct iVFS;
 
 CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
@@ -71,17 +71,10 @@ public:
   virtual csPtr<iShaderPriorityList> GetPriorities (
 		  iDocumentNode* templ);
 
-  bool PrecacheShader(iDocumentNode*, iHierarchicalCache*, bool);
-  
   void Report (int severity, const char* msg, ...);
-  void Report (int severity, iDocumentNode* node, const char* msg, ...);
 
   bool LoadSVBlock (iLoaderContext* ldr_context,
       iDocumentNode *node, iShaderVariableContext *context);
-  
-  csPtr<iDocumentNode> ReadNodeFromBuf (iDataBuffer* buf);
-  csPtr<iDataBuffer> WriteNodeToBuf (iDocument* doc);
-  csPtr<iDocument> CreateCachingDoc ();
 public:
   bool do_verbose;
   bool doDumpXML;
@@ -94,42 +87,18 @@ public:
   //Standard vars
   iObjectRegistry* objectreg;
   csRef<iStringSet> strings;
-  csRef<iShaderVarStringSet> stringsSvName;
   csWeakRef<iGraphics3D> g3d;
   csRef<iSyntaxService> synldr;
   csRef<iVFS> vfs;
-  csWeakRef<iEngine> engine; // only needed for frame number ...
   csWrappedDocumentNodeFactory* wrapperFact;
   /// Condition constants
   csConditionConstants condConstants;
   
-  csRef<csConditionEvaluator> sharedEvaluator;
-  
-  csRef<iDocumentSystem> binDocSys;
-  csRef<iDocumentSystem> xmlDocSys;
-  
-  CS::ShaderVarStringID string_mixmode_alpha;
-  CS::ShaderVarStringID stringLightCount;
+  csStringID string_mixmode_alpha;
 
 #define CS_TOKEN_ITEM_FILE \
   "plugins/video/render3d/shader/shadercompiler/xmlshader/xmlshader.tok"
 #include "cstool/tokenlist.h"
-};
-
-class csShaderPriorityList : public scfImplementation1<csShaderPriorityList, 
-                                                       iShaderPriorityList>
-{
-public:
-  csArray<int> priorities;
-  csShaderPriorityList () : scfImplementationType (this)
-  {
-  }
-  virtual ~csShaderPriorityList ()
-  {
-  }
-
-  virtual size_t GetCount () const { return priorities.GetSize (); }
-  virtual int GetPriority (size_t idx) const { return priorities[idx]; }
 };
 
 }

@@ -1,19 +1,21 @@
 @c -*-texinfo-*-
-@node MSVC7, MinGW, Debian, Platform Instructions
-@subsection Microsoft Visual C++ 8 or 9
+@node MSVC7, MinGW, Unix, Platform Instructions
+@subsection Microsoft Visual C++ 7, 7.1 or 8
 @cindex Windows, Building
 @cindex MSVC, Building
 
 @noindent
-Originally written by Philip Wyett @email{philswyett@@gmx.co.uk}.
+Originally written by Philip Wyett @email{philwyett@@gmx.com}.
 @noindent
-@emph{Last updated September 2009.}
+@emph{Last updated 18 May 2005.}
 
 In order to successfully compile the Crystal Space 3D Software Development Kit
-(@sc{sdk}), you will need a copy of @emph{Microsoft Visual C++ 8 (@sc{.net 2005})}
-or @emph{Microsoft Visual C++ 9 (@sc{.net 2008})}. The @emph{Express Editions} 
-are perfectly suitable to compile Crystal Space (although some extra steps are required
-for the Express Edition of @sc{msvc} 8 is, more below).
+(@sc{sdk}), you will need a copy of @emph{Microsoft Developer Studio @sc{.net}}
+or the stand alone version of @emph{Microsoft Visual C++ 7 (@sc{.net 2002})}, 
+@emph{Microsoft Visual C++ 7.1 (@sc{.net 2003})} or 
+@emph{Microsoft Visual C++ 8 (@sc{.net 2005})}. The @emph{Express Edition} of
+@sc{msvc} 8 is perfectly suitable to compile Crystal Space, once the Platform
+@sc{sdk} was installed (more below).
 
 @subsubheading Getting Extra Help
 
@@ -30,28 +32,12 @@ stated are not required.  However, if you choose not to install them, at
 compile time you must follow the documented instructions of how to unload these
 projects from the Crystal Space build process.
 
-@subsubheading Windows @sc{sdk} - required for Microsoft Visual C++ 2005 Express Edition, Microsoft Visual Studio 2005
+@subsubheading Platform @sc{sdk} - required for Microsoft Visual C++ 2005 Express Edition
 
-Microsoft Visual C++ 2005 Express Edition does not ship with a version of the
-Windows @sc{sdk}. Microsoft Visual Studio 2005 (non-Express) ships with version 5.0
-of the Windows @sc{sdk} which fails when building some applications (in particular,
-the resource compiler does not support the "Vista" version of the @sc{ico} file format).
-
-The Windows @sc{sdk} can be found at the following URL:
-@noindent
-@ifnottex
-@uref{http://msdn.microsoft.com/en-us/windows/bb980924.aspx}
-@end ifnottex
-@iftex
-@code{http://msdn.microsoft.com/en-us/windows/bb980924.aspx}
-@end iftex
-
-@itemize @bullet
-@item
-@emph{Microsoft Visual C++ 2005 Express Edition}:
-With the exception of using the Windows @sc{sdk} linked above instead of the
-Platform @sc{sdk} linked in the following document, exactly follow these
-instructions to set up the @sc{sdk}:
+All supported versions of Microsoft Visual C++ ship with a version of the
+Platform @sc{sdk} that suffices to compile Crystal Space, except the 
+Microsoft Visual C++ 2005 Express Edition, which requires a seperate setup of 
+the Platform SDK. Follow these instructions exactly to set up the @sc{psdk}:
 
 @noindent
 @ifnottex
@@ -60,16 +46,6 @@ instructions to set up the @sc{sdk}:
 @iftex
 @code{http://msdn2.microsoft.com/en-us/vstudio/aa700755.aspx}
 @end iftex
-
-@item
-@emph{Microsoft Visual Studio 2005}:
-After installing the Windows @sc{sdk}, configure Visual Studio to use the
-utilities from the newly installed @sc{sdk}: Select ``Options'', 
-``Projects and Solutions'', ``VC++ Directories''. Select ``Executable files''
-from ``Show directories for''. Add the @file{bin} subdirectory of the Windows
-@sc{sdk} installation directory at the top of the list. Repeat for ``x64''
-platform if desired.
-@end itemize
 
 @subsubheading cs-win32libs - Required
 
@@ -85,6 +61,37 @@ follow the setup instructions.  You may want to select ``VC typical'' in the
 components depending on your actual set up (e.g. install MinGW-related 
 components if you plan to also use CrystalSpace with MinGW/MSYS).
 
+@subsubheading DirectX - Optional
+
+In order to compile Crystal Space at its minimum i.e. the software renderer,
+you must have at least some form of the DirectX Software Development Kit 
+(@sc{sdk}) on your system. 
+
+Visual C++ 7 and later come with the minimum required DirectX @sc{sdk} 8.1 
+files in order to build Crystal Space. 
+
+The ``cs-win32libs'' package also come with minimum headers and libraries that 
+suffice to compile the parts of Crystal Space that utilize DirectX. However, 
+the version included in cs-win32libs is DirectX 7, so you may want to stick to 
+the DirectX 8.1 shipped with VC++ 7.
+
+You can optionally download the latest DirectX Software Development Kit 
+(@sc{sdk}), which can be obtained from:
+
+@uref{http://www.msdn.microsoft.com/directx}
+
+Thanks, to the miracle which is Microsoft.  If you download and install the
+latest DirectX  Software Development Kit (@sc{sdk}) and already have Visual
+C++ installed, it will ask you if you wish to add the paths to the @sc{sdk} to
+Visual C++ so it can use it.  We recommend you accept when offered this option.
+If it is not the latest @sc{sdk} you install you will have to manually point
+Visual C++ to where you installed the @sc{sdk} in-order for it to be used.
+This can be done from the Visual C++ file menu and selecting
+@emph{Tools->Options->Directories}.  You must add the paths for both the
+include files and libraries and being that we wish Visual C++ to see and use
+this new @sc{sdk} before all possible others on your system, you must click on
+and drag both paths you have entered to the top of the list.
+
 @subsubheading Python - Optional
 
 Crystal Space contains support for Python scripting and thus has projects
@@ -95,10 +102,15 @@ must install Python 2.2 or later, which can be obtained from:
 
 @uref{http://www.python.org}
 
+@sc{note}: To have parity with one of the latest versions of msvc_libs and take
+full advantage of the debug elements - you should have Python 2.2.3 or 2.3.0
+installed on your system. Whichever version you decide to use, make sure you
+download the comparable msvc_libs.
+
 @subsubheading Compiling Crystal Space
 
 To compile Crystal Space, you'll have to perform the following steps.  If
-anything doesn't work, see the Win32 @sc{faq}, @ref{MSVC8 FAQ}.
+anything doesn't work, see the Win32 @sc{faq}, @ref{MSVC7 FAQ}.
 
 @enumerate
 @item
@@ -199,7 +211,7 @@ for your own program which utilizes Crystal Space.
 @xref{HOWTO Creating External MSVC Application}.
 
 @subsubheading Frequently Asked Questions (@sc{faq})
-@anchor{MSVC8 FAQ}
+@anchor{MSVC7 FAQ}
 
 This is the list of frequently asked questions for the Win32 port of Crystal
 Space.  Please consult this list if you are having difficulty building or using
@@ -302,7 +314,7 @@ Q. @emph{I get the following (or similar) errors:}
 
 @example
 WARNING: could not load plugin
-  `crystalspace.graphics3d.opengl'
+  `crystalspace.graphics3d.software'
 WARNING: failed to initialize plugin
   `crystalspace.engine.3d'
 FATAL: No iGraphics3D plug-in loaded!
@@ -312,7 +324,7 @@ Error initializing system!
 
 A. You probably did not compile everything. Compiling only the @file{.exe}
 file is not sufficient!  You must also compile all plug-ins you want to use.
-In the above example the OpenGL renderer is missing.
+In the above example the software renderer is missing.
 
 If you are certain that everything is compiled, make sure your working
 directory is set to @file{CS\}.  To do this go to the @emph{Project} menu.

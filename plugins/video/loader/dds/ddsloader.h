@@ -31,14 +31,6 @@
 
 struct iObjectRegistry;
 
-namespace CS
-{
-  namespace Graphics
-  {
-    struct iDXTDecompressor;
-  }
-}
-
 CS_PLUGIN_NAMESPACE_BEGIN(DDSImageIO)
 {
 
@@ -64,6 +56,9 @@ enum csDDSRawDataType
   csrawAlphaLast = csrawA8R8G8B8
 };
 
+// For SetDithering()
+#include "csutil/deprecated_warn_off.h"
+
 class csDDSImageIO : 
   public scfImplementation2<csDDSImageIO,
                             iImageIO,
@@ -75,6 +70,7 @@ public:
 
   virtual const csImageIOFileFormatDescriptions& GetDescription ();
   virtual csPtr<iImage> Load (iDataBuffer* buf, int format);
+  virtual void SetDithering (bool dithering);
   virtual csPtr<iDataBuffer> Save (iImage* image, const char* mime,
 				   const char* options);
   virtual csPtr<iDataBuffer> Save (iImage* image,
@@ -82,16 +78,15 @@ public:
   
   virtual bool Initialize (iObjectRegistry* objreg);
 
-  iObjectRegistry* GetObjectReg () const { return object_reg; }
-  CS::Graphics::iDXTDecompressor* GetDXTDecompressor ();
 private:
   csImageIOFileFormatDescriptions formats;
   iObjectRegistry* object_reg;
-  csRef<CS::Graphics::iDXTDecompressor> dxt_decompress;
 
   csDDSRawDataType IdentifyPixelFormat (const dds::PixelFormat& pf, 
     uint32 dxgiFormat, bool isDX10, uint& bpp);
 };
+
+#include "csutil/deprecated_warn_on.h"
 
 class csDDSImageFile : public csImageMemory
 {
@@ -113,7 +108,7 @@ public:
   virtual csRef<iDataBuffer> GetRawData() const;
   virtual csImageType GetImageType() const { return imageType; }
 private:
-  csDDSImageFile (csDDSImageIO* iio,
+  csDDSImageFile (iObjectRegistry* object_reg, 
     int format, iDataBuffer* sourceData, csDDSRawDataType rawType, 
     const dds::PixelFormat& pixelFmt);
 
@@ -128,7 +123,8 @@ private:
 
   csRefArray<iImage> mipmaps;
   csRefArray<iImage> subImages;
-  csRef<csDDSImageIO> iio;
+  iObjectRegistry* object_reg;
+  csDDSImageIO* iio;
   csImageType imageType;
 
   void Report (int severity, const char* msg, ...);

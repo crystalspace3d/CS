@@ -4,8 +4,6 @@ Description lighter2 : "New Renderer Lightmap Calculator, take 2" ;
 ApplicationIcon win32 : lighter2 : lighter.ico ;
 Application lighter2 : [ Wildcard *.cpp *.h ] : console ;
 MsvcUsePCH lighter2 : common.h ;
-CFlags lighter2 : $(COMPILER.C++FLAGS.OPENMP) ;
-LFlags lighter2 : $(COMPILER.LFLAGS.OPENMP) ;
 LinkWith lighter2 : crystalspace ;
 FileListEntryApplications lighter2 : app-tool ;
 
@@ -24,7 +22,8 @@ LinkWith lighter2_static : crystalspace ;
 FileListEntryApplications lighter2_static : app-tool-static ;
 
 LIGHTER2.PLUGINLIST =
-  bindoc
+  bezier
+  bezierldr
   csbmpimg
   csddsimg
   csgifimg
@@ -38,11 +37,9 @@ LIGHTER2.PLUGINLIST =
   emit
   emitldr
   engine
-  engseq
   genmesh
   gmeshanim
   gmeshldr
-  gmeshanimpdl
   gmeshskelanim2
   skeleton
   skelldr
@@ -59,7 +56,6 @@ LIGHTER2.PLUGINLIST =
   rendstep_std
   rendstep_stencil
   reporter
-  rm_null
   sequence
   shadermgr
   shaderweaver
@@ -73,13 +69,12 @@ LIGHTER2.PLUGINLIST =
   spr3dldr
   stdpt
   stdrep
-  terrain2
-  terrain2ldr
   bruteblock
   terrainldr
+  thing
+  thingldr
   xmlread
   xmlshader
-  xmltiny
   ;
 
 if $(ZLIB.AVAILABLE) = "yes"
@@ -102,6 +97,10 @@ if $(GL.AVAILABLE) = "yes"
 {
   LIGHTER2.PLUGINLIST += glshader_arb glshader_fixed ;
   if $(CG.AVAILABLE) = "yes" { LIGHTER2.PLUGINLIST += glshader_cg ; }
+}
+else
+{
+  LIGHTER2.PLUGINLIST += softshader ;
 }
 
 LinkStaticPlugins lighter2_static : $(LIGHTER2.PLUGINLIST) ;

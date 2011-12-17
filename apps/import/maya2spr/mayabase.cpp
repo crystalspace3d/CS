@@ -22,12 +22,10 @@
 #include "cssysdef.h"
 #include "mayabase.h"
 
-#include "csutil/platformfile.h"
-
 bool MayaModel::CheckMagic(const char* mdlfile, const char* magic)
 {
   bool ok = false;
-  FILE* file = CS::Platform::File::Open (mdlfile, "rb");
+  FILE* file = fopen(mdlfile, "rb");
   if (file != 0)
   {
     char buff[512];

@@ -30,13 +30,11 @@
 #include "csutil/stringarray.h"
 #include "csutil/sysfunc.h"
 #include "csutil/syspath.h"
-#include "csutil/stringarray.h"
 #include "iutil/cmdline.h"
 #include "iutil/eventq.h"
 #include "csutil/event.h"
 #include "csutil/eventhandlers.h"
 #include "iutil/objreg.h"
-#include "iutil/systemopenmanager.h"
 #include "iutil/vfs.h"
 #include "ivaria/reporter.h"
 
@@ -64,7 +62,7 @@ extern "C"
 #endif
 }
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(cspython)
 {
@@ -87,10 +85,6 @@ csPython::~csPython()
   csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (object_reg);
   if (queue.IsValid())
     queue->RemoveListener (this);
-  csRef<iSystemOpenManager> sysOpen =
-    csQueryRegistry<iSystemOpenManager> (object_reg);
-  if (sysOpen.IsValid())
-    sysOpen->RemoveWeakListener (weakeh_open);
   Mode = CS_REPORTER_SEVERITY_BUG;
   Py_Finalize();
   object_reg = 0;
@@ -172,11 +166,6 @@ bool csPython::Initialize(iObjectRegistry* object_reg)
     queue->RegisterListener(this, csevCommandLineHelp(object_reg));
   // load further python modules from config file keys.
   LoadConfig();
-  
-  csRef<iSystemOpenManager> sysOpen =
-    csQueryRegistry<iSystemOpenManager> (object_reg);
-  if (sysOpen.IsValid())
-    sysOpen->RegisterWeak (this, weakeh_open);
   return true;
 }
 
@@ -194,15 +183,9 @@ void csPython::LoadConfig()
       Print(true,it->GetStr()+csString(" could not be added to pythonpath."));
     }
   }
-}
-
-void csPython::LoadComponents()
-{
-  csRef<iConfigManager> config;
-  config = csQueryRegistry<iConfigManager> (object_reg);
 
   // Parse Modules in config
-  csRef<iConfigIterator> it = config->Enumerate("CsPython.Module");
+  it = config->Enumerate("CsPython.Module");
   while (it->Next())
   {
     if (!LoadModule(it->GetStr()))
@@ -278,10 +261,6 @@ bool csPython::HandleEvent(iEvent& e)
 	   indent "When Python exception is thrown, launch Python debugger\n");
 #undef indent
     handled = true;
-  }
-  else if (e.Name == csevSystemOpen (object_reg))
-  {
-    LoadComponents();
   }
   return handled;
 }
@@ -466,7 +445,7 @@ csPtr<iScriptValue> csPython::Retrieve (const char *name)
   if (!py_curr)
   {
     ShowError();
-    return (iScriptValue*)nullptr;
+    return false;
   }
   return new Value (this, py_curr, true);
 }
@@ -540,13 +519,9 @@ csPtr<iScriptValue> csPython::CallBody (PyObject *py_func,
   // call function
   PyObject *py_result = PyObject_CallObject(py_func,py_args);
   if (bound_func)
-  {
     Py_DECREF(py_func);
-  }
   if (py_args)
-  {
     Py_DECREF(py_args);
-  }
   // check result and return
   if (py_result)
     return csPtr<iScriptValue>(new Value (this, py_result, false));

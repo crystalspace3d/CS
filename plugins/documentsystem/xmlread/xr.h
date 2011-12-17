@@ -378,10 +378,9 @@ private:
 class TrDocumentAttributeSet
 {
 public:
-  csArray<TrDocumentAttribute, csArrayElementHandler<TrDocumentAttribute>,
-    CS::Container::ArrayAllocDefault, csArrayCapacityFixedGrow<4> > set;
+  csArray<TrDocumentAttribute> set;
 
-  TrDocumentAttributeSet() : set (0) { }
+  TrDocumentAttributeSet() : set (0, 4) { }
   size_t Find (const char * name) const;
   size_t FindExact (const char * reg_name) const;
 };
@@ -709,7 +708,7 @@ public:
       csString location;
       location.Format ("line %d", parse.linenum);
       if (errorPos != 0)
-        location.AppendFmt (":%tu", errorPos - parse.startOfLine + 1);
+        location.AppendFmt (":%zu", errorPos - parse.startOfLine + 1);
       errorDesc += location.GetDataSafe();
       if (!errorPath.IsEmpty())
       {

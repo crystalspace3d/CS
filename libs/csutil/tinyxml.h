@@ -916,9 +916,9 @@ public:
   /// Interned strings.
   csStringSet strings;
   /// Block allocator for elements.
-  CS::Memory::FixedSizeAllocatorSafe<sizeof(TiXmlElement), DocHeapAlloc> blk_element;
+  csFixedSizeAllocator<sizeof(TiXmlElement), DocHeapAlloc> blk_element;
   /// Block allocator for text.
-  CS::Memory::FixedSizeAllocatorSafe<sizeof(TiXmlText), DocHeapAlloc> blk_text;
+  csFixedSizeAllocator<sizeof(TiXmlText), DocHeapAlloc> blk_text;
 
   /// Create an empty document, that has no name.
   TiDocument();

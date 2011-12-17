@@ -24,7 +24,6 @@
 #include "raydebug.h"
 #include "statistics.h"
 
-
 namespace lighter
 {
   class ElementAreasAlloc;
@@ -35,7 +34,6 @@ namespace lighter
   class Scene;
   class Sector;
   class SwapManager;
-  
 
   class Lighter : public csRefCount
   {
@@ -65,7 +63,7 @@ namespace lighter
     csRef<iCommandLineParser> cmdLine;
     csRef<iConfigManager> configMgr;
     iObjectRegistry *objectRegistry;
-    csRef<iShaderVarStringSet> svStrings;
+    csRef<iStringSet> strings;
     csRef<iJobQueue> jobManager;
     csRef<iSyntaxService> syntaxService;
 
@@ -82,13 +80,6 @@ namespace lighter
     // Calculate lightmapping
     void CalculateLightmaps ();
 
-    // Build the photon map
-    void BuildPhotonMaps();
-    void BalancePhotonMaps();
-
-    // Adjust light attenuation
-    void ForceRealisticAttenuation();
-
     // Initialize objects after LM construction
     void InitializeObjects ();
 
@@ -98,8 +89,8 @@ namespace lighter
     // Build per-sector KD-tree
     void BuildKDTrees ();
 
-    // Compute all lighting components (Fill the lightmaps)
-    void ComputeLighting (bool enableRaytracer, bool enablePhotonMapper);
+    // Shoot direct lighting
+    void DoDirectLighting ();
 
     // Post-process all lightmaps
     void PostprocessLightmaps ();
@@ -108,7 +99,7 @@ namespace lighter
     void LoadConfiguration ();
 
     // Print command line help
-    void CommandLineHelp (bool expert, bool raytraceopts, bool pmopts) const;
+    void CommandLineHelp (bool expert) const;
 
     Scene *scene;
 
@@ -128,14 +119,11 @@ namespace lighter
     Statistics::Progress progSaveMeshes;
     Statistics::Progress progSaveFinish;
     Statistics::Progress progBuildKDTree;
-    Statistics::Progress progPhotonEmission;
-    Statistics::Progress progPhotonBalancing;
-    Statistics::Progress progCalcLighting;
+    Statistics::Progress progDirectLighting;
     Statistics::Progress progPostproc;
     Statistics::Progress progPostprocSector;
     Statistics::Progress progPostprocLM;
     Statistics::Progress progSaveMeshesPostLight;
-    Statistics::Progress progSpecMaps;
     Statistics::Progress progSaveResult;
     Statistics::Progress progCleanLightingData;
     Statistics::Progress progApplyWorldChanges;

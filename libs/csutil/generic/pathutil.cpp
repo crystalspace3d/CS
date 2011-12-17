@@ -17,7 +17,6 @@
 */
 
 #include "cssysdef.h"
-#include "csutil/stringquote.h"
 #include "csutil/sysfunc.h"
 #include "csutil/syspath.h"
 
@@ -30,8 +29,8 @@ bool getcwdcheck (char* path, size_t size)
 {
   if (getcwd (path, size) == 0)
   {
-      csPrintfErr ("csPathUtilities: getcwd() error for %s (errno = %d)!\n",
-        CS::Quote::Single (path), errno);
+      csPrintfErr ("csPathUtilities: getcwd() error for '%s' (errno = %d)!\n",
+        path, errno);
     return false;
   }
   return true;

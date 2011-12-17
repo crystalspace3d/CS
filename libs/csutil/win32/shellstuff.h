@@ -22,16 +22,16 @@
 #define WIN32_LEAN_AND_MEAN
 #include <shlobj.h>
 #include "csutil/csstring.h"
-#include "csutil/win32/cachedll.h"
+#include "cachedll.h"
 
 // This file contains some newer SHELL32 stuff, for example not found
 // in MinGW Win32 headers.
 
-typedef HRESULT (STDAPICALLTYPE* SHGETFOLDERPATHWPROC)(HWND hwndOwner, 
+typedef HRESULT (STDAPICALLTYPE* SHGETFOLDERPATHAPROC)(HWND hwndOwner, 
 					      int nFolder, 
 					      HANDLE hToken, 
 					      DWORD dwFlags, 
-					      LPCWSTR pszPath);
+					      LPCSTR pszPath);
 
 #ifndef CSIDL_APPDATA 
 #define CSIDL_APPDATA			0x001a
@@ -52,20 +52,19 @@ GetShellFolderPath (int CSIDL, char* path)
   bool result = false;
 
   // ShFolder.dll can 'emulate' special folders on older Windowses.
-  static CS::Platform::Win32::CacheDLL shFolder ("shfolder.dll");
+  static cswinCacheDLL shFolder ("shfolder.dll");
 	
-  wchar_t pathW[MAX_PATH];
   if (shFolder)
   {
-    SHGETFOLDERPATHWPROC SHGetFolderPathW;
+    SHGETFOLDERPATHAPROC SHGetFolderPathA;
 
-    SHGetFolderPathW = 
-      (SHGETFOLDERPATHWPROC) GetProcAddress (shFolder, "SHGetFolderPathW");
+    SHGetFolderPathA = 
+      (SHGETFOLDERPATHAPROC) GetProcAddress (shFolder, "SHGetFolderPathA");
 
-    if (SHGetFolderPathW)
+    if (SHGetFolderPathA)
     {
-      result = (SHGetFolderPathW (0, CSIDL, 0, 
-	SHGFP_TYPE_CURRENT, pathW) == S_OK);
+      result = (SHGetFolderPathA (0, CSIDL, 0, 
+	SHGFP_TYPE_CURRENT, path) == S_OK);
     }
   }
   else
@@ -78,16 +77,11 @@ GetShellFolderPath (int CSIDL, char* path)
     {
       if (SUCCEEDED(SHGetSpecialFolderLocation (0, CSIDL, &pidl)))
       {
-	result = (SHGetPathFromIDListW (pidl, pathW) == TRUE);
+	result = (SHGetPathFromIDList (pidl, path) == TRUE);
 	MAlloc->Free (pidl);
       }
       MAlloc->Release ();
     }
-  }
-  if (result)
-  {
-    csUnicodeTransform::WCtoUTF8 ((utf8_char*)path, MAX_PATH,
-                                  pathW, (size_t)-1);
   }
   return result;
 }
@@ -95,25 +89,25 @@ GetShellFolderPath (int CSIDL, char* path)
 static inline bool GetShellFolderPath (int CSIDL, csString& path)
 {
   bool result = false;
-  wchar_t buf[MAX_PATH];
+  char buf[MAX_PATH];
 
   // ShFolder.dll can 'emulate' special folders on older Windowses.
-  static CS::Platform::Win32::CacheDLL shell32 ("shell32.dll");
-  static CS::Platform::Win32::CacheDLL shFolder ("shfolder.dll");
+  static cswinCacheDLL shell32 ("shell32.dll");
+  static cswinCacheDLL shFolder ("shfolder.dll");
 	
-  SHGETFOLDERPATHWPROC SHGetFolderPathW;
-  SHGetFolderPathW = 
-    (SHGETFOLDERPATHWPROC) GetProcAddress (shell32, "SHGetFolderPathW");
+  SHGETFOLDERPATHAPROC SHGetFolderPathA;
+  SHGetFolderPathA = 
+    (SHGETFOLDERPATHAPROC) GetProcAddress (shell32, "SHGetFolderPathA");
 
-  if (!SHGetFolderPathW && shFolder)
+  if (!SHGetFolderPathA && shFolder)
   {
-    SHGetFolderPathW = 
-      (SHGETFOLDERPATHWPROC) GetProcAddress (shFolder, "SHGetFolderPathW");
+    SHGetFolderPathA = 
+      (SHGETFOLDERPATHAPROC) GetProcAddress (shFolder, "SHGetFolderPathA");
   }
 
-  if (SHGetFolderPathW)
+  if (SHGetFolderPathA)
   {
-    result = (SHGetFolderPathW (0, CSIDL, 0, 
+    result = (SHGetFolderPathA (0, CSIDL, 0, 
       SHGFP_TYPE_CURRENT, buf) == S_OK);
   }
   else
@@ -126,7 +120,7 @@ static inline bool GetShellFolderPath (int CSIDL, csString& path)
     {
       if (SUCCEEDED(SHGetSpecialFolderLocation (0, CSIDL, &pidl)))
       {
-	result = (SHGetPathFromIDListW (pidl, buf) == TRUE);
+	result = (SHGetPathFromIDListA (pidl, buf) == TRUE);
 	MAlloc->Free (pidl);
       }
       MAlloc->Release ();

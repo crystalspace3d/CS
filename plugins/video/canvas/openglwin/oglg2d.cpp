@@ -20,7 +20,6 @@
 #include "csutil/sysfunc.h"
 
 
-#include "csplugincommon/win32/icontools.h"
 #include "csutil/win32/wintools.h"
 #include "csutil/win32/win32.h"
 
@@ -42,7 +41,7 @@
 #error OpenGL version 1.1 required! Stopping compilation.
 #endif
 
-#include "DwmapiAPI.h"
+CS_IMPLEMENT_PLUGIN
 
 /*
     In fs mode, the window is topmost, means above every other
@@ -57,11 +56,11 @@
 # define CS_WINDOW_Z_ORDER HWND_TOPMOST
 #endif
 
-static void SystemFatalError (const wchar_t* str, HRESULT hRes = ~0)
+static void SystemFatalError (wchar_t* str, HRESULT hRes = ~0)
 {
   wchar_t* newMsg = 0;
-  const wchar_t* szMsg;
-  const wchar_t szStdMessage[] = L"\nLast Error: ";
+  wchar_t* szMsg;
+  wchar_t szStdMessage[] = L"\nLast Error: ";
 
   if (hRes != ~0)
   {
@@ -69,9 +68,9 @@ static void SystemFatalError (const wchar_t* str, HRESULT hRes = ~0)
 
     szMsg = newMsg = new wchar_t[wcslen (lpMsgBuf) + wcslen (str)
       + wcslen (szStdMessage) + 1];
-    wcscpy (newMsg, str);
-    wcscat (newMsg, szStdMessage);
-    wcscat (newMsg, lpMsgBuf);
+    wcscpy (szMsg, str);
+    wcscat (szMsg, szStdMessage);
+    wcscat (szMsg, lpMsgBuf);
   
     delete[] lpMsgBuf ;
   }
@@ -90,24 +89,91 @@ static void SystemFatalError (const wchar_t* str, HRESULT hRes = ~0)
 
 SCF_IMPLEMENT_FACTORY (csGraphics2DOpenGL)
 
+#define CS_WIN_PALETTE_SIZE 256
+
+///// Windowed-mode palette stuff //////
+
+static HPALETTE hWndPalette = 0;
+
+static void ClearSystemPalette ()
+{
+  struct
+  {
+    WORD Version;
+    WORD nEntries;
+    PALETTEENTRY aEntries[CS_WIN_PALETTE_SIZE];
+  } Palette;
+
+  Palette.Version = 0x300;
+  Palette.nEntries = CS_WIN_PALETTE_SIZE;
+
+  int c;
+  for (c = 0; c < CS_WIN_PALETTE_SIZE; c++)
+  {
+    Palette.aEntries[c].peRed = 0;
+    Palette.aEntries[c].peGreen = 0;
+    Palette.aEntries[c].peBlue = 0;
+    Palette.aEntries[c].peFlags = PC_NOCOLLAPSE;
+  }
+
+  HDC hdc = GetDC (0);
+
+  HPALETTE BlackPal, OldPal;
+  BlackPal = CreatePalette ((LOGPALETTE *)&Palette);
+  OldPal = SelectPalette (hdc,BlackPal,FALSE);
+  RealizePalette (hdc);
+  SelectPalette (hdc, OldPal, FALSE);
+  DeleteObject (BlackPal);
+
+  ReleaseDC (0, hdc);
+}
+
+static void CreateIdentityPalette (csRGBpixel *p)
+{
+  struct
+  {
+    WORD Version;
+    WORD nEntries;
+    PALETTEENTRY aEntries[CS_WIN_PALETTE_SIZE];
+  } Palette;
+
+  Palette.Version = 0x300;
+  Palette.nEntries = CS_WIN_PALETTE_SIZE;
+
+  if (hWndPalette)
+    DeleteObject (hWndPalette);
+
+  Palette.aEntries[0].peFlags = 0;
+  Palette.aEntries[0].peFlags = 0;
+
+  int i;
+  for (i = 1; i < CS_WIN_PALETTE_SIZE; i++)
+  {
+    Palette.aEntries[i].peRed = p[i].red;
+    Palette.aEntries[i].peGreen = p[i].green;
+    Palette.aEntries[i].peBlue = p[i].blue;
+    Palette.aEntries[i].peFlags = PC_RESERVED;
+  }
+
+  hWndPalette = CreatePalette ((LOGPALETTE *)&Palette);
+
+  if (!hWndPalette)
+    SystemFatalError (L"Error creating identity palette.");
+}
+
 csGraphics2DOpenGL::csGraphics2DOpenGL (iBase *iParent) :
   scfImplementationType (this, iParent),
   m_nGraphicsReady (true),
   m_hWnd (0),
-  primaryMonitor (0),
-  modeSwitched (true),
-  customIcon (0),
-  transparencyRequested (false),
-  transparencyState (false),
-  hideDecoClientFrame (false)
+  m_bPalettized (false),
+  m_bPaletteChanged (false),
+  modeSwitched (true)
 {
-  Dwmapi::IncRef ();
 }
 
 csGraphics2DOpenGL::~csGraphics2DOpenGL (void)
 {
   m_nGraphicsReady = 0;
-  Dwmapi::DecRef ();
 }
 
 void csGraphics2DOpenGL::Report (int severity, const char* msg, ...)
@@ -137,6 +203,18 @@ bool csGraphics2DOpenGL::Initialize (iObjectRegistry *object_reg)
   // Get the creation parameters
   m_hInstance = m_piWin32Assistant->GetInstance ();
   m_nCmdShow  = m_piWin32Assistant->GetCmdShow ();
+
+  if (Depth == 8)
+  {
+    pfmt.PalEntries = CS_WIN_PALETTE_SIZE;
+    pfmt.PixelBytes = 1;
+  }
+
+  csRef<iCommandLineParser> cmdline (
+  	csQueryRegistry<iCommandLineParser> (object_reg));
+  m_bHardwareCursor = config->GetBool ("Video.SystemMouseCursor", true);
+  if (cmdline->GetOption ("sysmouse")) m_bHardwareCursor = true;
+  if (cmdline->GetOption ("nosysmouse")) m_bHardwareCursor = false;
 
   // store a copy of the refresh rate as we may need it later
   m_nDisplayFrequency = refreshRate;
@@ -204,7 +282,7 @@ int csGraphics2DOpenGL::FindPixelFormatWGL (csGLPixelFormatPicker& picker)
 
   HINSTANCE ModuleHandle = GetModuleHandle(0);
 
-  WNDCLASSA wc;
+  WNDCLASS wc;
   wc.hCursor        = 0;
   wc.hIcon	    = 0;
   wc.lpszMenuName   = 0;
@@ -216,7 +294,7 @@ int csGraphics2DOpenGL::FindPixelFormatWGL (csGLPixelFormatPicker& picker)
   wc.cbClsExtra     = 0;
   wc.cbWndExtra     = 0;
 
-  if (!RegisterClassA (&wc)) return false;
+  if (!RegisterClass (&wc)) return false;
 
   DummyWndInfo dwi;
   dwi.pixelFormat = -1;
@@ -224,12 +302,12 @@ int csGraphics2DOpenGL::FindPixelFormatWGL (csGLPixelFormatPicker& picker)
   dwi.chosenFormat = &currentFormat;
   dwi.picker = &picker;
 
-  HWND wnd = CreateWindowA (dummyClassName, 0, 0, CW_USEDEFAULT, 
+  HWND wnd = CreateWindow (dummyClassName, 0, 0, CW_USEDEFAULT, 
     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0,
     ModuleHandle, (LPVOID)&dwi);
   DestroyWindow (wnd);
 
-  UnregisterClassA (dummyClassName, ModuleHandle);
+  UnregisterClass (dummyClassName, ModuleHandle);
 
   ext.Reset();
 
@@ -294,7 +372,7 @@ LRESULT CALLBACK csGraphics2DOpenGL::DummyWindow (HWND hWnd, UINT message,
 	  iAttributes[index++] = GL_TRUE;
 	  iAttributes[index++] = WGL_SAMPLE_BUFFERS_ARB;
 	  iAttributes[index++] = 
-	    (format[glpfvMultiSamples] != 0) ? 1 : 0;
+	    (format[glpfvMultiSamples] != 0) ? GL_TRUE : GL_FALSE;
 	  iAttributes[index++] = WGL_SAMPLES_ARB;
 	  iAttributes[index++] = format[glpfvMultiSamples];
 	  iAttributes[index++] = WGL_COLOR_BITS_ARB;
@@ -379,34 +457,30 @@ bool csGraphics2DOpenGL::Open ()
 
   m_bActivated = true;
 
-  RECT wndRect;
   int wwidth = fbWidth;
   int wheight = fbHeight;
   DWORD exStyle = 0;
   DWORD style = WS_POPUP | WS_SYSMENU;
-  windowModeStyle = WS_CAPTION;
   int xpos = 0;
   int ypos = 0;
   if (FullScreen)
   {
     /*exStyle |= WS_EX_TOPMOST;*/
-    wndRect.left = 0;
-    wndRect.top = 0;
-    wndRect.right = fbWidth;
-    wndRect.bottom = fbHeight;
   }
   else
   {
-    style |= windowModeStyle | WS_MINIMIZEBOX;
+    style |= WS_CAPTION | WS_MINIMIZEBOX;
     if (AllowResizing) 
       style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
     
-    ComputeDefaultRect (wndRect, style, exStyle);
+    wwidth += 2 * GetSystemMetrics (SM_CXFIXEDFRAME);
+    wheight += 2 * GetSystemMetrics (SM_CYFIXEDFRAME) + GetSystemMetrics (SM_CYCAPTION);
+    xpos = (GetSystemMetrics (SM_CXSCREEN) - wwidth) / 2;
+    ypos = (GetSystemMetrics (SM_CYSCREEN) - wheight) / 2;
   }
 
   m_hWnd = m_piWin32Assistant->CreateCSWindow (this, exStyle, style,
-    wndRect.left, wndRect.top,
-    wndRect.right - wndRect.left, wndRect.bottom - wndRect.top);
+    xpos, ypos, wwidth, wheight);
 
   if (!m_hWnd)
     SystemFatalError (L"Cannot create Crystal Space window", GetLastError());
@@ -457,6 +531,21 @@ bool csGraphics2DOpenGL::Open ()
   hardwareAccelerated = !(pfd.dwFlags & PFD_GENERIC_FORMAT) ||
     (pfd.dwFlags & PFD_GENERIC_ACCELERATED);
 
+  pfmt.PixelBytes = (pfd.cColorBits == 32) ? 4 : (pfd.cColorBits + 7) >> 3;
+  pfmt.RedBits = pfd.cRedBits;
+  pfmt.RedShift = pfd.cRedShift;
+  pfmt.RedMask = ((1 << pfd.cRedBits) - 1) << pfd.cRedShift;
+  pfmt.GreenBits = pfd.cGreenBits;
+  pfmt.GreenShift = pfd.cGreenShift;
+  pfmt.GreenMask = ((1 << pfd.cGreenBits) - 1) << pfd.cGreenShift;
+  pfmt.BlueBits = pfd.cBlueBits;
+  pfmt.BlueShift = pfd.cBlueShift;
+  pfmt.BlueMask = ((1 << pfd.cBlueBits) - 1) << pfd.cBlueShift;
+  pfmt.AlphaBits = pfd.cAlphaBits;
+  pfmt.AlphaShift = pfd.cAlphaShift;
+  pfmt.AlphaMask = ((1 << pfd.cAlphaBits) - 1) << pfd.cAlphaShift;
+  pfmt.PalEntries = 0;
+
   hGLRC = wglCreateContext (hDC);
   wglMakeCurrent (hDC, hGLRC);
 
@@ -495,6 +584,12 @@ bool csGraphics2DOpenGL::Open ()
   if (!csGraphics2DGLCommon::Open ())
     return false;
 
+  if (Depth == 8)
+    m_bPalettized = true;
+  else
+    m_bPalettized = false;
+  m_bPaletteChanged = false;
+
   ext.InitWGL_EXT_swap_control (hDC);
 
   if (ext.CS_WGL_EXT_swap_control)
@@ -505,10 +600,6 @@ bool csGraphics2DOpenGL::Open ()
       "VSync is %s.", 
       vsync ? "enabled" : "disabled");
   }
-
-  hideDecoClientFrame = false;
-  // Set transparency, if any was requested
-  csGraphics2DOpenGL::SetWindowTransparent (transparencyRequested);
 
   return true;
 }
@@ -559,6 +650,7 @@ void csGraphics2DOpenGL::Close (void)
     wglDeleteContext (hGLRC);
   }
 
+  DeleteObject (hWndPalette);
   ReleaseDC (m_hWnd, hDC);
 
   if (m_hWnd != 0)
@@ -573,13 +665,51 @@ void csGraphics2DOpenGL::Print (csRect const* /*area*/)
   SwapBuffers(hDC);
 }
 
+HRESULT csGraphics2DOpenGL::SetColorPalette ()
+{
+  HRESULT ret = S_OK;
+
+  if ((Depth==8) && m_bPaletteChanged)
+  {
+    m_bPaletteChanged = false;
+
+    if (!FullScreen)
+    {
+      HPALETTE oldPal;
+      HDC dc = GetDC(0);
+
+      SetSystemPaletteUse (dc, SYSPAL_NOSTATIC);
+      PostMessage (HWND_BROADCAST, WM_SYSCOLORCHANGE, 0, 0);
+
+      CreateIdentityPalette (Palette);
+      ClearSystemPalette ();
+
+      oldPal = SelectPalette (dc, hWndPalette, FALSE);
+
+      RealizePalette (dc);
+      SelectPalette (dc, oldPal, FALSE);
+      ReleaseDC (0, dc);
+    }
+
+    return ret;
+  }
+
+  return S_OK;
+}
+
+void csGraphics2DOpenGL::SetRGB (int i, int r, int g, int b)
+{
+  csGraphics2D::SetRGB (i, r, g, b);
+  m_bPaletteChanged = true;
+}
+
 bool csGraphics2DOpenGL::SetMouseCursor (csMouseCursorID iShape)
 {
   csRef<iWin32Assistant> winhelper (
   	csQueryRegistry<iWin32Assistant> (object_reg));
   if (winhelper == 0) return false;
   bool rc;
-  if (hwMouse == hwmcOff)
+  if (!m_bHardwareCursor)
   {
     winhelper->SetCursor (csmcNone);
     rc = false;
@@ -595,7 +725,7 @@ bool csGraphics2DOpenGL::SetMouseCursor (iImage *image, const csRGBcolor* keycol
 					 int hotspot_x, int hotspot_y,
 					 csRGBcolor fg, csRGBcolor bg)
 {
-  if (hwMouse == hwmcOff)
+  if (!m_bHardwareCursor)
   {
     m_piWin32Assistant->SetCursor (csmcNone);
     return false;
@@ -682,14 +812,6 @@ void csGraphics2DOpenGL::SetTitle (const char* title)
   }
 }
 
-void csGraphics2DOpenGL::SetIcon (iImage *image)
-{
-  HICON icon = CS::Platform::Win32::IconTools::IconFromImage (image);
-  SendMessage (m_hWnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
-  if (customIcon != 0) DestroyIcon (customIcon);
-  customIcon = icon;
-}
-
 void csGraphics2DOpenGL::AlertV (int type, const char* title, const char* okMsg,
 	const char* msg, va_list arg)
 {
@@ -717,15 +839,26 @@ void csGraphics2DOpenGL::AllowResize (bool iAllow)
       AllowResizing = iAllow;
       if (AllowResizing)
       {
+	R.left -= GetSystemMetrics (SM_CXSIZEFRAME);
+	R.top -= (GetSystemMetrics (SM_CXSIZEFRAME)
+	  + GetSystemMetrics (SM_CYCAPTION));
+	R.right += GetSystemMetrics (SM_CXSIZEFRAME);
+	R.bottom += GetSystemMetrics (SM_CXSIZEFRAME);
+
 	style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
       }
       else
       {
+	R.left -= GetSystemMetrics (SM_CXFIXEDFRAME);
+	R.top -= (GetSystemMetrics (SM_CXFIXEDFRAME)
+	  + GetSystemMetrics (SM_CYCAPTION));
+	R.right += GetSystemMetrics (SM_CXFIXEDFRAME);
+	R.bottom += GetSystemMetrics (SM_CXFIXEDFRAME);
+
 	style &= ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
       }
       SetWindowLong (m_hWnd, GWL_STYLE, style);
 
-      AdjustWindowRectEx (&R, style, false, 0);
       SetWindowPos (m_hWnd, 0, R.left, R.top, R.right - R.left,
 	R.bottom - R.top, SWP_NOZORDER | SWP_DRAWFRAME);
     }
@@ -745,17 +878,15 @@ bool csGraphics2DOpenGL::Resize (int width, int height)
       // We only resize the window when the canvas is different. This only
       // happens on a manual Resize() from the app, as this is called after
       // the window resizing is finished     
-      RECT wndRect;
-      LONG style = GetWindowLong (m_hWnd, GWL_STYLE);
-      ComputeDefaultRect (wndRect, style);
+      int wwidth = fbWidth + 2 * GetSystemMetrics (SM_CXSIZEFRAME);
+      int wheight = fbHeight + 2 * GetSystemMetrics (SM_CYSIZEFRAME)
+        + GetSystemMetrics (SM_CYCAPTION);
 
       // To prevent a second resize of the canvas, we temporarily disable resizing
       AllowResizing = false;
 
-      SetWindowPos (m_hWnd, 0,
-    		    wndRect.left, wndRect.top,
-		    wndRect.right - wndRect.left, wndRect.bottom - wndRect.top,
-		    SWP_NOZORDER);
+      SetWindowPos (m_hWnd, 0, (GetSystemMetrics (SM_CXSCREEN) - wwidth) / 2,
+        (GetSystemMetrics (SM_CYSCREEN) - wheight) / 2, wwidth, wheight, SWP_NOZORDER);
       
       // Reset. AllowResizing must be true in order to reach this point anyway
       AllowResizing = true;
@@ -775,7 +906,6 @@ void csGraphics2DOpenGL::SetFullScreen (bool b)
     DWORD style;
     if (FullScreen)
     {
-      windowModeStyle = GetWindowLong (m_hWnd, GWL_STYLE);
       SwitchDisplayMode (false);
       style = WS_POPUP | WS_VISIBLE | WS_SYSMENU;
       SetWindowLong (m_hWnd, GWL_STYLE, style);
@@ -785,17 +915,24 @@ void csGraphics2DOpenGL::SetFullScreen (bool b)
     else
     {
       SwitchDisplayMode (true);
-      style = WS_MINIMIZEBOX | WS_POPUP | WS_SYSMENU;
-      style |= (windowModeStyle & (WS_CAPTION));
-      RECT wndRect;
-      ComputeDefaultRect (wndRect, style);
+      style = WS_CAPTION | WS_MINIMIZEBOX | WS_POPUP | WS_SYSMENU;
+      int wwidth, wheight;
       if (AllowResizing)
+      {
         style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
+        wwidth = fbWidth + 2 * GetSystemMetrics (SM_CXSIZEFRAME);
+        wheight = fbHeight + 2 * GetSystemMetrics (SM_CYSIZEFRAME)
+          + GetSystemMetrics (SM_CYCAPTION);
+      }
+      else
+      {
+        wwidth = fbWidth + 2 * GetSystemMetrics (SM_CXFIXEDFRAME);
+        wheight = fbHeight + 2 * GetSystemMetrics (SM_CYFIXEDFRAME)
+          + GetSystemMetrics (SM_CYCAPTION);
+      }
       SetWindowLong (m_hWnd, GWL_STYLE, style);
-      SetWindowPos (m_hWnd, HWND_NOTOPMOST,
-		    wndRect.left, wndRect.right,
-		    wndRect.right - wndRect.left, wndRect.bottom - wndRect.top,
-		    SWP_FRAMECHANGED);
+      SetWindowPos (m_hWnd, HWND_NOTOPMOST, (GetSystemMetrics (SM_CXSCREEN) - wwidth) / 2,
+        (GetSystemMetrics (SM_CYSCREEN) - wheight) / 2, wwidth, wheight, SWP_FRAMECHANGED);
       ShowWindow (m_hWnd, SW_SHOW);
     }
   }
@@ -832,11 +969,6 @@ LRESULT CALLBACK csGraphics2DOpenGL::WindowProc (HWND hWnd, UINT message,
       break;
     case WM_DESTROY:
       This->m_hWnd = 0;
-      break;
-    case WM_DWMCOMPOSITIONCHANGED:
-      /* Desktop compositing was enabled or disabled.
-         Try to restore the last set window transparency state. */
-      This->csGraphics2DOpenGL::SetWindowTransparent (This->transparencyState);
       break;
   }
   if (IsWindowUnicode (hWnd))
@@ -976,208 +1108,4 @@ void csGraphics2DOpenGL::SwitchDisplayMode (bool userMode)
   curdmode.dmDriverExtra = 0;
   EnumDisplaySettings (0, ENUM_CURRENT_SETTINGS, &curdmode);
   refreshRate = curdmode.dmDisplayFrequency;
-}
-
-static BOOL CALLBACK GrabPrimaryMonitor (HMONITOR monitor, HDC, LPRECT, LPARAM data)
-{
-  *(reinterpret_cast<HMONITOR*> (data)) = monitor;
-  return false;
-}
-
-csRect csGraphics2DOpenGL::GetWorkspaceRect ()
-{
-  // Monitor used to get the workspace.
-  HMONITOR workspaceMonitor;
-  if (!m_hWnd)
-  {
-    // No window yet: use primary monitor
-    if (!primaryMonitor)
-    {
-      EnumDisplayMonitors (NULL, NULL, &GrabPrimaryMonitor,
-                           reinterpret_cast<LPARAM> (&primaryMonitor));
-    }
-    workspaceMonitor = primaryMonitor;
-  }
-  else
-  {
-    workspaceMonitor = MonitorFromWindow (m_hWnd, MONITOR_DEFAULTTOPRIMARY);
-  }
-  MONITORINFO info;
-  memset (&info, 0, sizeof (info));
-  info.cbSize = sizeof (info);
-  if (!GetMonitorInfo (workspaceMonitor, &info))
-  {
-    return csRect (0, 0, GetSystemMetrics (SM_CXSCREEN),
-                   GetSystemMetrics (SM_CXSCREEN));
-  }
-  return csRect (info.rcWork.left, info.rcWork.top,
-                 info.rcWork.right, info.rcWork.bottom);
-}
-
-void csGraphics2DOpenGL::ComputeDefaultRect (RECT& windowRect, LONG style, LONG exStyle)
-{
-  csRect workspace (GetWorkspaceRect ());
-  RECT clientRect;
-  clientRect.left = 0;
-  clientRect.top = 0;
-  clientRect.right = fbWidth;
-  clientRect.bottom = fbHeight;
-  AdjustWindowRectEx (&clientRect, style, false, exStyle);
-  int wndW (clientRect.right - clientRect.left), wndH (clientRect.bottom - clientRect.top);
-  windowRect.left = workspace.xmin + (workspace.Width() - wndW) / 2;
-  windowRect.top = workspace.ymin + (workspace.Height() - wndH) / 2;
-  windowRect.right = windowRect.left + wndW;
-  windowRect.bottom = windowRect.top + wndH;
-}
-
-bool csGraphics2DOpenGL::GetWorkspaceDimensions (int& width, int& height)
-{
-  csRect workspace (GetWorkspaceRect ());
-  width = workspace.Width();
-  height = workspace.Height();
-  return true;
-}
-
-bool csGraphics2DOpenGL::AddWindowFrameDimensions (int& width, int& height)
-{
-  RECT clientRect;
-  clientRect.left = 0;
-  clientRect.top = 0;
-  clientRect.right = width;
-  clientRect.bottom = height;
-  DWORD style (WS_POPUP), exStyle (0);
-  if (!FullScreen)
-  {
-    style |= WS_CAPTION;
-    if (AllowResizing) style |= WS_THICKFRAME;
-  }
-  AdjustWindowRectEx (&clientRect, style, false, exStyle);
-  width = clientRect.right - clientRect.left;
-  height = clientRect.bottom - clientRect.top;
-  return true;
-}
-
-bool csGraphics2DOpenGL::IsWindowTransparencyAvailable()
-{
-  if (!Dwmapi::DwmapiAvailable ()) return false;
-  BOOL compositionFlag;
-  HRESULT hr = Dwmapi::DwmIsCompositionEnabled (&compositionFlag);
-  if (!SUCCEEDED (hr))
-    return false;
-  return compositionFlag != FALSE; // NB: != avoids warning on MSVC
-}
-
-bool csGraphics2DOpenGL::SetWindowTransparent (bool transparent)
-{
-  if (!csGraphics2DOpenGL::IsWindowTransparencyAvailable()) return false;
-
-  if (!is_open)
-  {
-    transparencyRequested = transparent;
-    return true;
-  }
-
-  DWM_BLURBEHIND bb;
-  memset (&bb, 0, sizeof (bb));
-  bb.dwFlags = DWM_BB_ENABLE;
-  bb.fEnable = transparent;
-  HRESULT hr = Dwmapi::DwmEnableBlurBehindWindow (m_hWnd, &bb);
-  if (SUCCEEDED (hr))
-  {
-    transparencyState = transparent;
-    if (hideDecoClientFrame)
-    {
-      dwmMARGINS frameMargins = {-1};
-      Dwmapi::DwmExtendFrameIntoClientArea (m_hWnd, &frameMargins);
-    }
-    return true;
-  }
-  else
-    return false;
-}
-
-bool csGraphics2DOpenGL::GetWindowTransparent ()
-{
-  if (!Dwmapi::DwmapiAvailable ()) return false;
-
-  if (!is_open) return transparencyRequested;
-
-  return IsWindowTransparencyAvailable() && transparencyState;
-}
-
-bool csGraphics2DOpenGL::SetWindowDecoration (WindowDecoration decoration, bool flag)
-{
-  if (FullScreen) return false;
-
-  LONG style = GetWindowLong (m_hWnd, GWL_STYLE);
-  LONG exstyle = GetWindowLong (m_hWnd, GWL_EXSTYLE);
-  RECT newRect;
-  GetClientRect (m_hWnd, &newRect);
-  ClientToScreen (m_hWnd, (POINT*)(&newRect.left));
-  ClientToScreen (m_hWnd, (POINT*)(&newRect.right));
-  switch (decoration)
-  {
-  case decoCaption:
-    if (flag)
-    {
-      style |= WS_CAPTION;
-    }
-    else
-    {
-      style &= ~WS_CAPTION;
-    }
-    break;
-  case decoClientFrame:
-    {
-      if (GetWindowTransparent ())
-      {
-	dwmMARGINS frameMargins;
-	hideDecoClientFrame = !flag;
-	if (hideDecoClientFrame)
-	{
-	  frameMargins.cxLeftWidth = frameMargins.cxRightWidth =
-	    frameMargins.cyTopHeight = frameMargins.cyBottomHeight = -1;
-	}
-	else
-	{
-	  frameMargins.cxLeftWidth = frameMargins.cxRightWidth =
-	    frameMargins.cyTopHeight = frameMargins.cyBottomHeight = 0;
-	}
-	HRESULT hr = Dwmapi::DwmExtendFrameIntoClientArea (m_hWnd, &frameMargins);
-	return SUCCEEDED (hr);
-      }
-    }
-    // else fall through
-  default:
-    return false;
-  }
-
-  SetWindowLong (m_hWnd, GWL_STYLE, style);
-  AdjustWindowRectEx (&newRect, style, false, exstyle);
-  SetWindowPos (m_hWnd, 0,
-		newRect.left, newRect.top,
-		newRect.right - newRect.left, newRect.bottom - newRect.top,
-		SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOZORDER);
-  return true;
-}
-
-bool csGraphics2DOpenGL::GetWindowDecoration (WindowDecoration decoration)
-{
-  LONG style = GetWindowLong (m_hWnd, GWL_STYLE);
-  switch (decoration)
-  {
-  case decoCaption:
-    return (style & WS_CAPTION) != 0;
-  case decoClientFrame:
-    {
-      // Client frame not drawn w/o compositing
-      if (!IsWindowTransparencyAvailable()) return false;
-      return !hideDecoClientFrame;
-    }
-    break;
-  default:
-    break;
-  }
-
-  return csGraphics2DGLCommon::GetWindowDecoration (decoration);
 }

@@ -39,13 +39,16 @@ public:
   float GetAlpha (size_t layer, float coord_x, float coord_y) const;
 };
 
-class TextureInfo;
-
 struct MaterialLayer : public csRefCount
 {
   csString name;
   csVector2 texture_scale;
-  csRef<TextureInfo> texture;
+  csString texture_name;
+  csString texture_file;
+  
+  iImage* GetImage();
+protected:
+  csRef<iImage> image;
 };
 typedef csRefArray<MaterialLayer> MaterialLayers;
 

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2005 Dan Hardfeldt, Seth Yastrov and Jelle Hellemans
+    Copyright (C) 2005 Dan Hardfeldt and Seth Yastrov
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,219 +25,285 @@
 * \addtogroup CEGUI
 * @{ */
 
+// hack: work around problems caused by #defining 'new'
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# undef new
+#endif
+#include <new>
+#include <CEGUI.h>
+#if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
+# define new CS_EXTENSIVE_MEMDEBUG_NEW
+#endif
+
 #include "csgeom/vector2.h"
 #include "csgeom/vector3.h"
 #include "csgeom/vector4.h"
-#include "csutil/dirtyaccessarray.h"
 #include "csutil/parray.h"
 #include "csutil/ref.h"
 #include "csutil/scf.h"
-#include "csutil/weakref.h"
 #include "iutil/comp.h"
 #include "ivaria/icegui.h"
 #include "ivideo/graph2d.h"
 #include "ivideo/graph3d.h"
 
-#include "ceguiimports.h"
 #include "ceguievthandler.h"
 #include "ceguiresourceprovider.h"
 #include "ceguiscriptmodule.h"
 
-#include "windowfactory.h"
-#include "config/settingslider.h"
-#include "config/settingcombobox.h"
+struct iObjectRegistry;
 
-#include <vector>
+class csCEGUITexture;
 
-namespace CEGUI
+/**
+* The actual implementation of the CEGUI wrapper for CS.
+*/
+class csCEGUIRenderer : public CEGUI::Renderer, 
+  public scfImplementation2<csCEGUIRenderer, 
+			    iCEGUI,
+			    iComponent>
 {
-  class GeometryBuffer;
-  class Texture;
-  class ResourceProvider;
-  class ImageCodec;
-}
+public:
+  /// Constructor.
+  csCEGUIRenderer (iBase *parent);
 
-CS_PLUGIN_NAMESPACE_BEGIN(cegui)
-{
-  class GeometryBuffer;
-  class Texture;
-  class ResourceProvider;
-  class ImageCodec;
-  class RenderTarget;
-  class TextureTarget;
+  /// Destructor.
+  virtual ~csCEGUIRenderer ();
 
   /**
-   * The actual implementation of the CEGUI wrapper for CS.
+   * Initialize the plugin.
+   * \param script iScript plugin to use as a scripting module.
    */
-  class Renderer : public CEGUI::Renderer, 
-    public scfImplementation2<Renderer, 
-    iCEGUI,
-    iComponent>
+  virtual bool Initialize (iScript* script=0);
+
+  /// Initialize with an iObjectRegistry pointer (called by plugin loader).
+  virtual bool Initialize (iObjectRegistry *reg) 
   {
-  public:
-    /// Constructor.
-    Renderer (iBase *parent);
+    obj_reg = reg; 
+    return true;
+  }
 
-    /// Destructor.
-    virtual ~Renderer ();
+  /// Render the GUI.
+  virtual void Render () const
+  {
+    CEGUI::System::getSingletonPtr()->renderGUI();
+  }
 
-    /**
-     * Initialize the plugin.
-     * \param script iScript plugin to use as a scripting module.
-     */
-    virtual bool Initialize (iScript* script=0);
+  /// Get a pointer to the CEGUI system.
+  virtual CEGUI::System* GetSystemPtr () const
+  {return CEGUI::System::getSingletonPtr();}
 
-    virtual bool IsInitialized () { return initialized; }
+  /// Get a pointer to the CEGUI font manager.
+  virtual CEGUI::FontManager* GetFontManagerPtr () const
+  {return CEGUI::FontManager::getSingletonPtr();}
 
-    /// Initialize with an iObjectRegistry pointer (called by plugin loader).
-    virtual bool Initialize (iObjectRegistry *reg) 
-    {
-      obj_reg = reg; 
-      return true;
-    }
+  /// Get a pointer to the CEGUI global event set.
+  virtual CEGUI::GlobalEventSet* GetGlobalEventSetPtr () const
+  {return CEGUI::GlobalEventSet::getSingletonPtr();}
 
-    /// Render the GUI.
-    virtual void Render () const
-    {
-      CEGUI::System::getSingletonPtr()->renderGUI();
-    }
+  /// Get a pointer to the CEGUI imageset manager.
+  virtual CEGUI::ImagesetManager* GetImagesetManagerPtr () const
+  {return CEGUI::ImagesetManager::getSingletonPtr();}
 
-    /// Get a pointer to the CEGUI system.
-    virtual CEGUI::System* GetSystemPtr () const
-    {return CEGUI::System::getSingletonPtr();}
+  /// Get a pointer to the CEGUI logger.
+  virtual CEGUI::Logger* GetLoggerPtr () const
+  {return CEGUI::Logger::getSingletonPtr();}
 
-    /// Get a pointer to the CEGUI font manager.
-    virtual CEGUI::FontManager* GetFontManagerPtr () const
-    {return CEGUI::FontManager::getSingletonPtr();}
+  /// Get a pointer to the CEGUI mouse cursor.
+  virtual CEGUI::MouseCursor* GetMouseCursorPtr () const
+  {return CEGUI::MouseCursor::getSingletonPtr();}
 
-    /// Get a pointer to the CEGUI global event set.
-    virtual CEGUI::GlobalEventSet* GetGlobalEventSetPtr () const
-    {return CEGUI::GlobalEventSet::getSingletonPtr();}
+  /// Get a pointer to the CEGUI scheme manager.
+  virtual CEGUI::SchemeManager* GetSchemeManagerPtr () const
+  {return CEGUI::SchemeManager::getSingletonPtr();}
 
-    /// Get a pointer to the CEGUI imageset manager.
-    virtual CEGUI::ImagesetManager* GetImagesetManagerPtr () const
-    {return CEGUI::ImagesetManager::getSingletonPtr();}
+  /// Get a pointer to the CEGUI window factory manager.
+  virtual CEGUI::WindowFactoryManager* GetWindowFactoryManagerPtr () const
+  {return CEGUI::WindowFactoryManager::getSingletonPtr();}
 
-    /// Get a pointer to the CEGUI logger.
-    virtual CEGUI::Logger* GetLoggerPtr () const
-    {return CEGUI::Logger::getSingletonPtr();}
+  /// Get a pointer to the CEGUI window manager.
+  virtual CEGUI::WindowManager* GetWindowManagerPtr () const
+  {return CEGUI::WindowManager::getSingletonPtr();}
 
-    /// Get a pointer to the CEGUI mouse cursor.
-    virtual CEGUI::MouseCursor* GetMouseCursorPtr () const
-    {return CEGUI::MouseCursor::getSingletonPtr();}
+  /// Allow CEGUI to capture mouse events.
+  void EnableMouseCapture ();
 
-    /// Get a pointer to the CEGUI scheme manager.
-    virtual CEGUI::SchemeManager* GetSchemeManagerPtr () const
-    {return CEGUI::SchemeManager::getSingletonPtr();}
+  /// Keep CEGUI from capturing mouse events.
+  void DisableMouseCapture ();
 
-    /// Get a pointer to the CEGUI window factory manager.
-    virtual CEGUI::WindowFactoryManager* GetWindowFactoryManagerPtr () const
-    {return CEGUI::WindowFactoryManager::getSingletonPtr();}
+  /// Allow CEGUI to capture keyboard events.
+  void EnableKeyboardCapture ();
 
-    /// Get a pointer to the CEGUI window manager.
-    virtual CEGUI::WindowManager* GetWindowManagerPtr () const
-    {return CEGUI::WindowManager::getSingletonPtr();}
+  /// Keep CEGUI from capturing keyboard events.
+  void DisableKeyboardCapture ();
 
-    /// Allow CEGUI to capture mouse events.
-    void EnableMouseCapture ();
+  /// Set the display size of the CEGUI render area.
+  void setDisplaySize (const CEGUI::Size& sz);
 
-    /// Keep CEGUI from capturing mouse events.
-    void DisableMouseCapture ();
+  /// Destroy all textures that are still active.
+  virtual void destroyAllTextures ();
 
-    /// Allow CEGUI to capture keyboard events.
-    void EnableKeyboardCapture ();
+private:
+  iObjectRegistry* obj_reg;
+  csCEGUIEventHandler* events;
+  csCEGUIScriptModule* scriptModule;
 
-    /// Keep CEGUI from capturing keyboard events.
-    void DisableKeyboardCapture ();
+  csRef<iGraphics3D> g3d;
+  csRef<iGraphics2D> g2d;
 
+  /// Add a quad to the renderer queue.
+  virtual void addQuad (const CEGUI::Rect& dest_rect, float z, 
+    const CEGUI::Texture* tex, const CEGUI::Rect& texture_rect, 
+    const CEGUI::ColourRect& colours, CEGUI::QuadSplitMode quad_split_mode);
 
-    // implement CEGUI::Renderer interface
-    CEGUI::RenderingRoot& getDefaultRenderingRoot();
-    CEGUI::GeometryBuffer& createGeometryBuffer();
-    void destroyGeometryBuffer(const CEGUI::GeometryBuffer& buffer);
-    void destroyAllGeometryBuffers();
-    CEGUI::TextureTarget* createTextureTarget();
-    void destroyTextureTarget(CEGUI::TextureTarget* target);
-    void destroyAllTextureTargets();
-    CEGUI::Texture& createTexture();
-    CEGUI::Texture& createTexture(const CEGUI::String& filename, const CEGUI::String& resourceGroup);
-    CEGUI::Texture& createTexture(const CEGUI::Size& size);
-    // iCEGUI interface
-    CEGUI::Texture& CreateTexture(iTextureHandle* htxt);
-    void destroyTexture(CEGUI::Texture& texture);
-    void destroyAllTextures();
-    void beginRendering();
-    void endRendering();
-    void setDisplaySize(const CEGUI::Size& sz);
-    const CEGUI::Size& getDisplaySize() const;
-    const CEGUI::Vector2& getDisplayDPI() const;
-    uint getMaxTextureSize() const;
-    const CEGUI::String& getIdentifierString() const;
+  /// Render the GUI.
+  virtual void doRender ();
 
-    void SetAutoRender (bool autoRender);
-    bool GetAutoRender ();
-  protected:
+  /// Remove all meshes in the render list.
+  virtual void clearRenderList ();
 
-    /// String holding the renderer identification text.
-    static CEGUI::String d_rendererID;
-    /// What the renderer considers to be the current display size.
-    CEGUI::Size d_displaySize;
-    /// What the renderer considers to be the current display DPI resolution.
-    CEGUI::Vector2 d_displayDPI;
-    /// The default rendering root object
-    CEGUI::RenderingRoot* d_defaultRoot;
-    /// The default RenderTarget (used by d_defaultRoot)
-    RenderTarget* d_defaultTarget;
-    /// container type used to hold TextureTargets we create.
-    typedef std::vector<TextureTarget*> TextureTargetList;
-    /// Container used to track texture targets.
-    TextureTargetList d_textureTargets;
-    /// container type used to hold GeometryBuffers we create.
-    typedef std::vector<GeometryBuffer*> GeometryBufferList;
-    /// Container used to track geometry buffers.
-    GeometryBufferList d_geometryBuffers;
-    /// container type used to hold Textures we create.
-    typedef std::vector<Texture*> TextureList;
-    /// Container used to track textures.
-    TextureList d_textures;
-    /// What the renderer thinks the max texture size is.
-    uint d_maxTextureSize;
+  /**
+   * Set if queueing for quads should be enabled.
+   * If enabled, queueing gives a large speed boost when quads are rendered
+   * several times, although it is better to disable this
+   * for the mouse cursor and similar things. This method is
+   * called from CEGUI.
+   */
+  virtual void setQueueingEnabled (bool setting)
+  {
+    queueing = setting;
+  }
 
-  private:
-    bool initialized;
-    iObjectRegistry* obj_reg;
-    CEGUIEventHandler* events;
-    CEGUIScriptModule* scriptModule;
-
-    csRef<iGraphics3D> g3d;
-    csRef<iGraphics2D> g2d;
-
-    csWindowFactory<SettingSlider> settingsSliderFact;
-    csWindowFactory<SettingComboBox> settingComboBoxFact;
-  
-    class AutoRenderEventHandler :
-      public scfImplementation1<AutoRenderEventHandler, iEventHandler>
-    {
-      csWeakRef<Renderer> renderer;
-    public:
-      AutoRenderEventHandler (Renderer* renderer)
-       : scfImplementationType (this), renderer (renderer) {}
-    
-      bool HandleEvent (iEvent& ev)
-      {
-	if (renderer) renderer->Render ();
-	return true;
-      }
-      
-      CS_EVENTHANDLER_PHASE_2D("crystalspace.cegui.autorender");
-    };
-    csRef<AutoRenderEventHandler> autoRenderHandler;
-    
-    void InstallAutoEventHandler ();
-    void RemoveAutoEventHandler ();
+  struct RenderQuad
+  {
+    csVector2 tex[4];
+    csVector4 color[4];
+    csVector3 vertex[4];
+    uint indices[6];
   };
 
+  struct QuadInfo
+  {
+    csCEGUITexture* texid;
+    CEGUI::Rect	position;
+    float z;
+    CEGUI::Rect	texPosition;
 
-} CS_PLUGIN_NAMESPACE_END(cegui)
+    csVector4 topLeftColor;
+    csVector4 topRightColor;
+    csVector4 bottomLeftColor;
+    csVector4 bottomRightColor;
 
-#endif  // end of guard _CS_CEGUI_RENDERER_H
+    CEGUI::QuadSplitMode splitMode;
+  };
+
+  /// Create an empty texture.
+  virtual CEGUI::Texture* createTexture ();
+
+  /**
+   * Create a texture based on a filename, belonging to a special resource
+   * group.
+   */
+  virtual CEGUI::Texture* createTexture (const CEGUI::String& filename, 
+    const CEGUI::String& resourceGroup);
+
+  /// Create an empty texture, but specify its size (square, and power of 2).
+  virtual CEGUI::Texture* createTexture (float size);
+
+  /// Destroy a texture, given the pointer to it.
+  virtual void destroyTexture (CEGUI::Texture* texture);
+
+  /// Check if queuing is enabled or not.
+  virtual bool isQueueingEnabled () const
+  {
+    return queueing;
+  }
+
+  /// Get the display area width.
+  virtual float getWidth () const
+  {
+    return m_displayArea.getWidth();
+  }
+
+  /// Get the display area height.
+  virtual float getHeight () const
+  {
+    return m_displayArea.getHeight();
+  }
+
+  /// Get the display area size.
+  virtual CEGUI::Size getSize () const
+  {
+    return m_displayArea.getSize();
+  }
+
+  /// Get the display area.
+  virtual CEGUI::Rect getRect () const
+  {
+    return m_displayArea;
+  }
+
+  /// Get the maximum possible texture size.
+  virtual uint getMaxTextureSize () const
+  {
+    return m_maxTextureSize;
+  }
+
+  /// Get the horizontal dots per inch.
+  virtual uint getHorzScreenDPI () const
+  {
+    return 96;
+  }
+
+  /// Get the vertical dots per inch.
+  virtual uint getVertScreenDPI () const
+  {
+    return 96;
+  }
+
+  /// Create a resource provider, which enables the use of VFS.
+  virtual CEGUI::ResourceProvider* createResourceProvider ();
+
+  /**
+   * Adds all current vertices in buffer to a mesh, 
+   * to enable rendering.
+   */
+  void UpdateMeshList();
+
+  /**
+   * Prepare a quad for rendering. This fills a RenderQuad structure
+   * with vertex, index, color, and texcoord information.
+   */
+  void PrepareQuad (const QuadInfo quad, RenderQuad& rquad) const;
+
+  /// Render a quad directly instead of queueing it.
+  void RenderQuadDirect (const CEGUI::Rect& dest_rect, float z, 
+    const CEGUI::Texture* tex, const CEGUI::Rect& texture_rect, 
+    const CEGUI::ColourRect& colours, CEGUI::QuadSplitMode quad_split_mode);
+
+  /// Convert a CEGUI::colour to a CS csVector4 color
+  csVector4 ColorToCS (const CEGUI::colour &color) const;
+
+  csArray<QuadInfo> quadList;
+
+  bool newQuadAdded;
+
+  CEGUI::Rect m_displayArea;
+
+  RenderQuad myBuff[2048];
+
+  bool queueing;
+  int m_bufferPos;
+  csCEGUITexture* texture;
+
+  //!< List used to track textures.
+  csPDelArray<csCEGUITexture> textureList;
+
+  csPDelArray<csSimpleRenderMesh> meshList;
+
+  bool meshIsValid;
+
+  /// Maximum supported texture size (in pixels).
+  uint m_maxTextureSize;
+};
+
+#endif

@@ -49,9 +49,10 @@
 #include "iengine/material.h"
 #include "iengine/sharevar.h"
 #include "imesh/object.h"
+#include "imesh/thing.h"
 #include "engseq.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 //---------------------------------------------------------------------------
 
@@ -300,12 +301,15 @@ class OpSetMaterial : public OpStandard
 {
 private:
   csRef<iParameterESM> meshpar;
+  csRef<iParameterESM> polygonpar;
   csRef<iParameterESM> materialpar;
   csRef<iMeshWrapper> mesh;
+  csRef<iPolygonHandle> polygon;
   csRef<iMaterialWrapper> material;
 
 public:
-  OpSetMaterial (iParameterESM* meshpar, iParameterESM* materialpar)
+  OpSetMaterial (iParameterESM* meshpar, iParameterESM* polygonpar,
+  	iParameterESM* materialpar)
   {
     if (meshpar)
     {
@@ -313,6 +317,13 @@ public:
         mesh = scfQueryInterface<iMeshWrapper> (meshpar->GetValue ());
       else
         OpSetMaterial::meshpar = meshpar;
+    }
+    if (polygonpar)
+    {
+      if (polygonpar->IsConstant ())
+        polygon = scfQueryInterface<iPolygonHandle> (polygonpar->GetValue ());
+      else
+        OpSetMaterial::polygonpar = polygonpar;
     }
     if (materialpar->IsConstant ())
       material = scfQueryInterface<iMaterialWrapper> (
@@ -326,11 +337,28 @@ public:
     if (materialpar)
       material = scfQueryInterface<iMaterialWrapper> (
       	materialpar->GetValue (params));
-    if (meshpar)
-      mesh = scfQueryInterface<iMeshWrapper> (meshpar->GetValue (params));
-    mesh->GetMeshObject ()->SetMaterialWrapper (material);
-    if (meshpar)
-      mesh = 0;
+    if (polygon || polygonpar)
+    {
+      if (polygonpar)
+        polygon = 
+		scfQueryInterface<iPolygonHandle> (polygonpar->GetValue (params));
+      int poly_idx = polygon->GetIndex ();
+      iThingFactoryState* tfs = polygon->GetThingFactoryState ();
+      if (tfs)
+      {
+	tfs->SetPolygonMaterial (CS_POLYRANGE_SINGLE (poly_idx), material);
+      }
+      if (polygonpar)
+        polygon = 0;
+    }
+    else
+    {
+      if (meshpar)
+        mesh = scfQueryInterface<iMeshWrapper> (meshpar->GetValue (params));
+      mesh->GetMeshObject ()->SetMaterialWrapper (material);
+      if (meshpar)
+        mesh = 0;
+    }
     if (materialpar)
       material = 0;
   }
@@ -842,8 +870,7 @@ public:
   virtual void Do (float time, iBase*)
   {
     csVector3 new_pos = start_pos + time * offset;
-    light->GetMovable ()->SetPosition (new_pos);
-    light->GetMovable ()->UpdateMove ();
+    light->SetCenter (new_pos);
   }
 };
 
@@ -924,7 +951,7 @@ public:
     {
       MoveLightInfo* mi = new MoveLightInfo ();
       mi->light = light;
-      mi->start_pos = light->GetMovable ()->GetPosition ();
+      mi->start_pos = light->GetCenter ();
       mi->offset = offset;
       eseqmgr->FireTimedOperation (dt, duration, mi, 0, sequence_id);
       mi->DecRef ();
@@ -1215,10 +1242,18 @@ void csSequenceWrapper::AddOperationSetVariable (csTicks time,
   op->DecRef ();
 }
 
+void csSequenceWrapper::AddOperationSetPolygonMaterial (csTicks time,
+	iParameterESM* polygon, iParameterESM* material)
+{
+  OpSetMaterial* op = new OpSetMaterial (0, polygon, material);
+  sequence->AddOperation (time, op, 0, sequence_id);
+  op->DecRef ();
+}
+
 void csSequenceWrapper::AddOperationSetMaterial (csTicks time,
 	iParameterESM* mesh, iParameterESM* material)
 {
-  OpSetMaterial* op = new OpSetMaterial (mesh, material);
+  OpSetMaterial* op = new OpSetMaterial (mesh, 0, material);
   sequence->AddOperation (time, op, 0, sequence_id);
   op->DecRef ();
 }
@@ -1889,8 +1924,7 @@ bool csEngineSequenceManager::HandleEvent (iEvent &event)
     {
       csVector3 v;
       // Setup perspective vertex, invert mouse Y axis.
-      csRef<iGraphics2D> g2d = csQueryRegistry<iGraphics2D> (object_reg);
-      csVector2 p (mouse_x, g2d->GetHeight () - mouse_y);
+      csVector2 p (mouse_x, camera->GetShiftY() * 2 - mouse_y);
 
       v = camera->InvPerspective (p, 1);
       csVector3 vw = camera->GetTransform ().This2Other (v);

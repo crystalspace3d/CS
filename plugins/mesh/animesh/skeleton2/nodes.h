@@ -21,11 +21,10 @@
 
 #include "csutil/scf_implementation.h"
 #include "imesh/skeleton2.h"
-#include "imesh/animnode/skeleton2anim.h"
+#include "imesh/skeleton2anim.h"
 #include "csutil/leakguard.h"
 #include "csutil/refarr.h"
 #include "csutil/csstring.h"
-#include "csutil/weakrefarr.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 {
@@ -37,11 +36,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   protected:
     CS_LEAKGUARD_DECLARE(BaseNodeSingle);
   
-    BaseNodeSingle (CS::Animation::iSkeletonAnimNode* owner)
+    BaseNodeSingle (iSkeletonAnimNode2* owner)
       : owner (owner)
     {}
-
-    inline void FireAnimationFinishedCb ()
+    
+    void FireAnimationFinishedCb ()
     {
       for (size_t i = 0; i < callbacks.GetSize (); ++i)
       {
@@ -49,7 +48,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
       }
     }
 
-    inline void FireAnimationCycleCb ()
+    void FireAnimationCycleCb ()
     {
       for (size_t i = 0; i < callbacks.GetSize (); ++i)
       {
@@ -57,7 +56,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
       }
     }
 
-    inline void FireStateChangeCb (bool playing)
+    void FireStateChangeCb (bool playing)
     {
       for (size_t i = 0; i < callbacks.GetSize (); ++i)
       {
@@ -65,7 +64,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
       }
     }
 
-    inline void FireDurationChangeCb ()
+    void FireDurationChangeCb ()
     {
       for (size_t i = 0; i < callbacks.GetSize (); ++i)
       {
@@ -73,18 +72,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
       }
     }
 
-    inline void AddAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback)
+    void AddAnimationCallback (iSkeletonAnimCallback2* callback)
     {
       callbacks.PushSmart (callback);
     }
 
-    inline void RemoveAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback)
+    void RemoveAnimationCallback (iSkeletonAnimCallback2* callback)
     {
       callbacks.Delete (callback);
     }    
     
-    csWeakRefArray<CS::Animation::iSkeletonAnimCallback> callbacks;
-    CS::Animation::iSkeletonAnimNode* owner;
+    csRefArray<iSkeletonAnimCallback2> callbacks;
+    iSkeletonAnimNode2* owner;
   };
 
 
@@ -96,42 +95,44 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   protected:
     CS_LEAKGUARD_DECLARE(BaseNodeChildren);
   
-    BaseNodeChildren (CS::Animation::iSkeletonAnimNode* owner)
+    BaseNodeChildren (iSkeletonAnimNode2* owner)
       : BaseNodeSingle (owner), manualCbInstall (false)
     {}
-    virtual ~BaseNodeChildren () {}
 
-    void AddAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback);
-    void RemoveAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback);
+    virtual ~BaseNodeChildren ()
+    {}
+
+    void AddAnimationCallback (iSkeletonAnimCallback2* callback);
+    void RemoveAnimationCallback (iSkeletonAnimCallback2* callback);
 
     void InstallInnerCb (bool manual);
     void RemoveInnerCb (bool manual);
 
-    virtual void AnimationFinished (CS::Animation::iSkeletonAnimNode* node);
-    virtual void AnimationCycled (CS::Animation::iSkeletonAnimNode* node);
-    virtual void PlayStateChanged (CS::Animation::iSkeletonAnimNode* node, bool isPlaying);
-    virtual void DurationChanged (CS::Animation::iSkeletonAnimNode* node);
+    virtual void AnimationFinished (iSkeletonAnimNode2* node);
+    virtual void AnimationCycled (iSkeletonAnimNode2* node);
+    virtual void PlayStateChanged (iSkeletonAnimNode2* node, bool isPlaying);
+    virtual void DurationChanged (iSkeletonAnimNode2* node);
 
     class InnerCallback : public scfImplementation1<InnerCallback,
-                                                    CS::Animation::iSkeletonAnimCallback>
+                                                    iSkeletonAnimCallback2>
     {
     public:
       InnerCallback (BaseNodeChildren* parent);
 
       virtual ~InnerCallback () {}
 
-      //-- CS::Animation::iSkeletonAnimCallback
-      virtual void AnimationFinished (CS::Animation::iSkeletonAnimNode* node);
-      virtual void AnimationCycled (CS::Animation::iSkeletonAnimNode* node);
-      virtual void PlayStateChanged (CS::Animation::iSkeletonAnimNode* node, bool isPlaying);
-      virtual void DurationChanged (CS::Animation::iSkeletonAnimNode* node);
+      //-- iSkeletonAnimCallback2
+      virtual void AnimationFinished (iSkeletonAnimNode2* node);
+      virtual void AnimationCycled (iSkeletonAnimNode2* node);
+      virtual void PlayStateChanged (iSkeletonAnimNode2* node, bool isPlaying);
+      virtual void DurationChanged (iSkeletonAnimNode2* node);
 
     private:
       BaseNodeChildren* parent;
     };
 
     csRef<InnerCallback> cb;
-    csRefArray<CS::Animation::iSkeletonAnimNode> subNodes;
+    csRefArray<iSkeletonAnimNode2> subNodes;
     bool manualCbInstall;
     friend class BaseFactoryChildren; 
   };
@@ -144,18 +145,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   protected:
     CS_LEAKGUARD_DECLARE(BaseFactoryChildren);
   
-    void SetupInstance (BaseNodeChildren* child, CS::Animation::iSkeletonAnimPacket* packet, 
-      CS::Animation::iSkeleton* skeleton)
+    void SetupInstance (BaseNodeChildren* child, iSkeletonAnimPacket2* packet, 
+      iSkeleton2* skeleton)
     {
       for (size_t i = 0; i < subFactories.GetSize (); ++i)
       {
-        csRef<CS::Animation::iSkeletonAnimNode> node = 
+        csRef<iSkeletonAnimNode2> node = 
           subFactories[i]->CreateInstance (packet, skeleton);
         child->subNodes.Push (node);
       }
     }
 
-    csRefArray<CS::Animation::iSkeletonAnimNodeFactory> subFactories;
+    csRefArray<iSkeletonAnimNodeFactory2> subFactories;
   };
 
 
@@ -166,17 +167,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
   class AnimationNodeFactory :
     public scfImplementation2<AnimationNodeFactory,
-                              CS::Animation::iSkeletonAnimationNodeFactory,
-                              scfFakeInterface<CS::Animation::iSkeletonAnimNodeFactory> >
+                              iSkeletonAnimationNodeFactory2,
+                              scfFakeInterface<iSkeletonAnimNodeFactory2> >
   {
   public:
     CS_LEAKGUARD_DECLARE(AnimationNodeFactory);
   
     AnimationNodeFactory (const char* name);
 
-    //-- CS::Animation::iSkeletonAnimationNodeFactory
-    virtual void SetAnimation (CS::Animation::iSkeletonAnimation* animation);
-    virtual CS::Animation::iSkeletonAnimation* GetAnimation () const;
+    //-- iSkeletonAnimationNodeFactory2
+    virtual void SetAnimation (iSkeletonAnimation2* animation);
+    virtual iSkeletonAnimation2* GetAnimation () const;
     virtual void SetCyclic (bool cyclic);
     virtual bool IsCyclic () const;
     virtual void SetPlaybackSpeed (float speed);
@@ -186,26 +187,26 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     virtual void SetAutomaticStop (bool enabled);
     virtual bool GetAutomaticStop () const;
 
-    //-- CS::Animation::iSkeletonAnimNodeFactory
-    virtual csPtr<CS::Animation::iSkeletonAnimNode> CreateInstance (
-      CS::Animation::iSkeletonAnimPacket* packet, CS::Animation::iSkeleton* skeleton);
+    //-- iSkeletonAnimNodeFactory2
+    virtual csPtr<iSkeletonAnimNode2> CreateInstance (
+      iSkeletonAnimPacket2* packet, iSkeleton2* skeleton);
     virtual const char* GetNodeName () const;
-    virtual CS::Animation::iSkeletonAnimNodeFactory* FindNode (const char* name);
+    virtual iSkeletonAnimNodeFactory2* FindNode (const char* name);
 
   private:
     csString name;
 
-    csRef<CS::Animation::iSkeletonAnimation> animation;
+    csRef<iSkeletonAnimation2> animation;
     bool cyclic, automaticReset, automaticStop;
-    float playbackSpeed;
+    float playbackSpeed, animationDuration;
 
     friend class AnimationNode;
   };
 
   class AnimationNode :
     public scfImplementation2<AnimationNode,
-                              CS::Animation::iSkeletonAnimationNode,
-                              scfFakeInterface<CS::Animation::iSkeletonAnimNode> >,
+                              iSkeletonAnimationNode2,
+                              scfFakeInterface<iSkeletonAnimNode2> >,
     public BaseNodeSingle
   {
   public:
@@ -213,10 +214,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   
     AnimationNode (AnimationNodeFactory* factory);
 
-    //-- CS::Animation::iSkeletonAnimationNode
+    //-- iSkeletonAnimationNode2
     
 
-    //-- CS::Animation::iSkeletonAnimNode
+    //-- iSkeletonAnimNode2
     virtual void Play ();
     virtual void Stop ();
     virtual void SetPlaybackPosition (float time);
@@ -224,13 +225,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     virtual float GetDuration () const;
     virtual void SetPlaybackSpeed (float speed);
     virtual float GetPlaybackSpeed () const;
-    virtual void BlendState (CS::Animation::AnimatedMeshState* state, float baseWeight = 1.0f);
+    virtual void BlendState (csSkeletalState2* state, float baseWeight = 1.0f);
     virtual void TickAnimation (float dt);
     virtual bool IsActive () const;
-    virtual CS::Animation::iSkeletonAnimNodeFactory* GetFactory () const;
-    virtual CS::Animation::iSkeletonAnimNode* FindNode (const char* name);
-    virtual void AddAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback);
-    virtual void RemoveAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback);
+    virtual iSkeletonAnimNodeFactory2* GetFactory () const;
+    virtual iSkeletonAnimNode2* FindNode (const char* name);
+    virtual void AddAnimationCallback (iSkeletonAnimCallback2* callback);
+    virtual void RemoveAnimationCallback (iSkeletonAnimCallback2* callback);
 
   private:
     csRef<AnimationNodeFactory> factory;

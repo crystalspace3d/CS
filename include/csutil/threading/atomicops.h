@@ -163,6 +163,7 @@ namespace Threading
   namespace CS { namespace Threading {
     typedef AtomicOperationsBase<AtomicOperationsArmGCC> AtomicOperations;
   } }
+
 #else
 #error "No atomic operations defined for your platform!"
 #endif

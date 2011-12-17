@@ -27,14 +27,13 @@
 #include "csgeom/quaternion.h"
 #include "csutil/hash.h"
 #include "csutil/leakguard.h"
-#include "csutil/weakref.h"
 #include "csutil/csstring.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 {
 
   class SkeletonSystem : public scfImplementation2<SkeletonSystem, 
-                                                   CS::Animation::iSkeletonManager,
+                                                   iSkeletonManager2,
                                                    iComponent>
   {
   public:
@@ -42,13 +41,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   
     SkeletonSystem (iBase* parent);
 
-    //-- CS::Animation::iSkeletonManager
-    virtual CS::Animation::iSkeletonFactory* CreateSkeletonFactory (const char* name);
-    virtual CS::Animation::iSkeletonFactory* FindSkeletonFactory (const char* name);
+    //-- iSkeletonManager2
+    virtual iSkeletonFactory2* CreateSkeletonFactory (const char* name);
+    virtual iSkeletonFactory2* FindSkeletonFactory (const char* name);
     virtual void ClearSkeletonFactories ();
 
-    virtual CS::Animation::iSkeletonAnimPacketFactory* CreateAnimPacketFactory (const char* name);
-    virtual CS::Animation::iSkeletonAnimPacketFactory* FindAnimPacketFactory (const char* name);
+    virtual iSkeletonAnimPacketFactory2* CreateAnimPacketFactory (const char* name);
+    virtual iSkeletonAnimPacketFactory2* FindAnimPacketFactory (const char* name);
     virtual void ClearAnimPacketFactories ();
 
     virtual void ClearAll ();
@@ -57,66 +56,60 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     virtual bool Initialize (iObjectRegistry*);
   
   private:
-    csHash<csRef<CS::Animation::iSkeletonFactory>, csString> factoryHash;
-    csHash<csRef<CS::Animation::iSkeletonAnimPacketFactory>, csString> animPackets;
+    csHash<csRef<iSkeletonFactory2>, csString> factoryHash;
+    csHash<csRef<iSkeletonAnimPacketFactory2>, csString> animPackets;
   };
 
 
 
 
   class SkeletonFactory : public scfImplementation1<SkeletonFactory,
-                                                    CS::Animation::iSkeletonFactory>
+                                                    iSkeletonFactory2>
   {
   public:
     CS_LEAKGUARD_DECLARE(SkeletonFactory);
   
-    SkeletonFactory (const char* name);
+    SkeletonFactory ();
 
-    //-- CS::Animation::iSkeletonFactory
-    virtual CS::Animation::BoneID CreateBone (CS::Animation::BoneID parent = CS::Animation::InvalidBoneID);
-    virtual CS::Animation::BoneID FindBone (const char *name) const;
-    virtual void RemoveBone (CS::Animation::BoneID bone);
-    virtual CS::Animation::BoneID GetBoneParent (CS::Animation::BoneID bone) const;
-    virtual bool HasBone (CS::Animation::BoneID bone) const;
-    virtual void SetBoneName (CS::Animation::BoneID bone, const char* name);
-    virtual const char* GetBoneName (CS::Animation::BoneID bone) const;
-    virtual CS::Animation::BoneID GetTopBoneID () const;
+    //-- iSkeletonFactory2
+    virtual BoneID CreateBone (BoneID parent = InvalidBoneID);
+    virtual BoneID FindBone (const char *name) const;
+    virtual void RemoveBone (BoneID bone);
+    virtual BoneID GetBoneParent (BoneID bone) const;
+    virtual bool HasBone (BoneID bone) const;
+    virtual void SetBoneName (BoneID bone, const char* name);
+    virtual const char* GetBoneName (BoneID bone) const;
+    virtual BoneID GetTopBoneID () const;
 
-    virtual void GetTransformBoneSpace (CS::Animation::BoneID bone, csQuaternion& rot, 
+    virtual void GetTransformBoneSpace (BoneID bone, csQuaternion& rot, 
       csVector3& offset) const;
-    virtual void SetTransformBoneSpace (CS::Animation::BoneID bone, const csQuaternion& rot, 
+    virtual void SetTransformBoneSpace (BoneID bone, const csQuaternion& rot, 
       const csVector3& offset);
 
-    virtual void GetTransformAbsSpace (CS::Animation::BoneID bone, csQuaternion& rot, 
+    virtual void GetTransformAbsSpace (BoneID bone, csQuaternion& rot, 
       csVector3& offset) const;
-    virtual void SetTransformAbsSpace (CS::Animation::BoneID bone, const csQuaternion& rot, 
+    virtual void SetTransformAbsSpace (BoneID bone, const csQuaternion& rot, 
       const csVector3& offset);
 
-    virtual csPtr<CS::Animation::iSkeleton> CreateSkeleton ();
+    virtual csPtr<iSkeleton2> CreateSkeleton ();
  
-    virtual CS::Animation::iSkeletonAnimPacketFactory* GetAnimationPacket () const;
-    virtual void SetAnimationPacket (CS::Animation::iSkeletonAnimPacketFactory* fact);
-
-    virtual void SetAutoStart (bool autostart);
-    virtual bool GetAutoStart ();
-
-    virtual csString Description () const;
-
-    virtual const csArray<CS::Animation::BoneID>& GetBoneOrderList ();
-
-    virtual const char* GetName () const;
+    virtual iSkeletonAnimPacketFactory2* GetAnimationPacket () const;
+    virtual void SetAnimationPacket (iSkeletonAnimPacketFactory2* fact);
 
     //-- "Private"
+    inline const csArray<size_t>& GetOrderList () const
+    {
+      return boneOrderList;
+    }
+
     void UpdateCachedTransforms ();
     void UpdateOrderList ();
 
-  private:
-
-    void BoneDescription (CS::Animation::BoneID bone, csString& txt, size_t level) const;
+  private:    
 
     struct Bone
     {      
-      CS::Animation::BoneID parent;
+      BoneID parent;
       bool created;
       
       // Bone space transform
@@ -135,58 +128,52 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     csArray<Bone> allBones;
     csSafeCopyArray<csString> boneNames;
 
-    csArray<CS::Animation::BoneID> boneOrderList;
-    csRef<CS::Animation::iSkeletonAnimPacketFactory> animationPacket;
-
-    bool autostart;
+    csArray<size_t> boneOrderList;
+    csRef<iSkeletonAnimPacketFactory2> animationPacket;    
 
     bool cachedTransformsDirty;
     bool orderListDirty;
-
-    csString name;
 
     friend class Skeleton;
   };
 
 
-  class Skeleton : public scfImplementation1<Skeleton, CS::Animation::iSkeleton>
+  class Skeleton : public scfImplementation1<Skeleton, iSkeleton2>
   {
   public:
     CS_LEAKGUARD_DECLARE(Skeleton);
   
     Skeleton (SkeletonFactory* factory);
 
-    //-- CS::Animation::iSkeleton
+
+    //-- iSkeleton2
     virtual iSceneNode* GetSceneNode ();
-    virtual void SetAnimatedMesh (CS::Mesh::iAnimatedMesh* animesh);
-    virtual CS::Mesh::iAnimatedMesh* GetAnimatedMesh ();
 
-    virtual void GetTransformBoneSpace (CS::Animation::BoneID bone, csQuaternion& rot, 
+    virtual void GetTransformBoneSpace (BoneID bone, csQuaternion& rot, 
       csVector3& offset) const;
-    virtual void SetTransformBoneSpace (CS::Animation::BoneID bone, const csQuaternion& rot, 
+    virtual void SetTransformBoneSpace (BoneID bone, const csQuaternion& rot, 
       const csVector3& offset);
 
-    virtual void GetTransformAbsSpace (CS::Animation::BoneID bone, csQuaternion& rot, 
+    virtual void GetTransformAbsSpace (BoneID bone, csQuaternion& rot, 
       csVector3& offset) const;
-    virtual void SetTransformAbsSpace (CS::Animation::BoneID bone, const csQuaternion& rot, 
+    virtual void SetTransformAbsSpace (BoneID bone, const csQuaternion& rot, 
       const csVector3& offset);
 
-    virtual void GetTransformBindSpace (CS::Animation::BoneID bone, csQuaternion& rot, 
+    virtual void GetTransformBindSpace (BoneID bone, csQuaternion& rot, 
       csVector3& offset) const;
-    virtual void SetTransformBindSpace (CS::Animation::BoneID bone, const csQuaternion& rot, 
+    virtual void SetTransformBindSpace (BoneID bone, const csQuaternion& rot, 
       const csVector3& offset);
 
-    virtual csPtr<CS::Animation::AnimatedMeshState> GetStateAbsSpace ();
-    virtual csPtr<CS::Animation::AnimatedMeshState> GetStateBoneSpace ();
-    virtual csPtr<CS::Animation::AnimatedMeshState> GetStateBindSpace ();
+    virtual csPtr<csSkeletalState2> GetStateAbsSpace ();
+    virtual csPtr<csSkeletalState2> GetStateBoneSpace ();
+    virtual csPtr<csSkeletalState2> GetStateBindSpace ();
 
-    virtual CS::Animation::iSkeletonFactory* GetFactory () const;
+    virtual iSkeletonFactory2* GetFactory () const;
 
-    virtual CS::Animation::iSkeletonAnimPacket* GetAnimationPacket () const;
-    virtual void SetAnimationPacket (CS::Animation::iSkeletonAnimPacket* packet);
+    virtual iSkeletonAnimPacket2* GetAnimationPacket () const;
+    virtual void SetAnimationPacket (iSkeletonAnimPacket2* packet);
 
     virtual void RecreateSkeleton ();
-    virtual void ResetSkeletonState ();
     virtual void UpdateSkeleton (float dt);
 
     virtual unsigned int GetSkeletonStateVersion () const;
@@ -198,7 +185,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
 
     struct Bone
     {      
-      CS::Animation::BoneID parent;
+      BoneID parent;
       bool created;
 
       // Bone space transform
@@ -221,10 +208,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     csArray<Bone> allBones;
 
     SkeletonFactory* factory;
-    csRef<CS::Animation::iSkeletonAnimPacket> animationPacket;
+    csRef<iSkeletonAnimPacket2> animationPacket;
     bool cachedTransformsDirty;
-    unsigned int version;
-    csWeakRef<CS::Mesh::iAnimatedMesh> animesh;
+    unsigned int version, versionLastReset;
   };
 
 }

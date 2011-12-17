@@ -19,10 +19,7 @@
 #ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
-#include "common.h"
 #include "swappable.h"
-
-#include <typeinfo>
 
 namespace lighter
 {
@@ -89,8 +86,6 @@ namespace lighter
       CS_ASSERT (colorArray == BogusPointer ());
       colorArray = (T*)data;
     }
-    const char* Describe() const
-    { return typeid(*this).name(); }
   protected:
     // The color data itself
     mutable T *colorArray;
@@ -103,24 +98,12 @@ namespace lighter
 
   struct RadMaterial
   {
-    
-    // The original texture image
-    CS::ImageAutoConvert * textureImg;
     csRef<MaterialImage<csColor> > filterImage;
-    float refractiveIndex;
-    bool isTexImageValid;
-    bool produceCaustic;
-	   
-    RadMaterial() {refractiveIndex = 1; isTexImageValid=false; produceCaustic= false;}
+     
+    RadMaterial() {}
+    
     bool IsTransparent () const { return filterImage.IsValid(); }
     void ComputeFilterImage (iImage* img);
-    void SetTextureImage (iImage * img);
-    void SetRefractiveIndex(float refrIndex) {refractiveIndex = refrIndex;}
-    bool IsTextureValid() const {return isTexImageValid;}
-    float GetRefractiveIndex(){return refractiveIndex;}
-    //Returns the color at uv coordinates in original texture
-    csColor GetTextureValue(csVector2 uv) const;
-
   };
   typedef csHash<RadMaterial, csString> MaterialHash;
 } // namespace lighter

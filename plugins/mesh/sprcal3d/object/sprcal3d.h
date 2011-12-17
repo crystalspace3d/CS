@@ -37,9 +37,12 @@
 #include "csutil/refarr.h"
 #include "csutil/sysfunc.h"
 #include "csutil/weakref.h"
+#include "iengine/light.h"
+#include "iengine/lightmgr.h"
 #include "iengine/lod.h"
 #include "iengine/material.h"
 #include "iengine/mesh.h"
+#include "imesh/lighting.h"
 #include "imesh/object.h"
 #include "imesh/spritecal3d.h"
 #include "imesh/skeleton.h"
@@ -192,6 +195,8 @@ public:
 
 class csSpriteCal3DMeshObject;
 
+#include "csutil/deprecated_warn_off.h"
+
 class csCal3dSkeletonFactory;
 
 /**
@@ -211,23 +216,6 @@ private:
 
   /// Material handle as returned by iTextureManager.
   iMeshFactoryWrapper* logparent;
-  
-  /// Container for last Cal3D error
-  class LastCalError
-  {
-    csString descr;
-    csString text;
-    csString file;
-    int line;
-  public:
-    void Clear ();
-    void Stash ();
-    void Report (iObjectRegistry* objreg,
-		 int severity,
-		 const char* msgId,
-		 const char* msg);
-  };
-  LastCalError lastError;
 
   csSpriteCal3DMeshObjectType* sprcal3d_type;
 
@@ -244,8 +232,6 @@ private:
   csPDelArray<csSpriteCal3DSocket> sockets;
   csFlags flags;
   csBox3 obj_bbox;
-  
-  float currentScalingFactor; ///< Stores how much the model has been scaled
 
   csRef<csCal3dSkeletonFactory> skel_factory;
 
@@ -262,6 +248,7 @@ public:
   iVirtualClock* vc;
 
   csWeakRef<iGraphics3D> g3d;
+  csRef<iLightManager> light_mgr;
 
   /**
    * Reference to the engine (optional because sprites can also be
@@ -282,19 +269,16 @@ public:
   /// Create a new core object.
   bool Create(const char *name);
   void ReportLastError ();
-  void SetLoadFlags(int flags) {}
+  void SetLoadFlags(int flags);
   void SetBasePath(const char *path);
   void RescaleFactory(float factor);
-  void AbsoluteRescaleFactory(float factor);
   void CalculateAllBoneBoundingBoxes();
 
-  bool LoadCoreSkeleton(iVFS *vfs,const char *filename,
-			int loadFlags);
+  bool LoadCoreSkeleton(iVFS *vfs,const char *filename);
 
   int  LoadCoreAnimation(iVFS *vfs,const char *filename,const char *name,
     int type,float base_vel, float min_vel,float max_vel,int min_interval,
-    int max_interval,int idle_pct, bool lock,
-    int loadFlags);
+    int max_interval,int idle_pct, bool lock);
 
   /** Load a core mesh for the factory.  Reads in the mesh details and stores
     * them in a list for use by models.
@@ -308,11 +292,10 @@ public:
     * \return The id of the mesh that cal3d as assigned to it.
     */
   int LoadCoreMesh(iVFS *vfs,const char *filename,const char *name,
-    bool attach,iMaterialWrapper *defmat,
-    int loadFlags);
+    bool attach,iMaterialWrapper *defmat);
 
   int LoadCoreMorphTarget(iVFS *vfs,int mesh_index,const char *filename,
-    const char *name, int loadFlags);
+    const char *name);
   int AddMorphAnimation(const char *name);
   bool AddMorphTarget(int morphanimation_index,const char *mesh_name,
     const char *morphtarget_name);
@@ -418,9 +401,10 @@ class csCal3dSkeleton;
  * a skeleton).
  */
 class csSpriteCal3DMeshObject :
-  public scfImplementationExt3<csSpriteCal3DMeshObject,
+  public scfImplementationExt4<csSpriteCal3DMeshObject,
 			       csObjectModel,
 			       iMeshObject,
+			       iLightingInfo,
 			       iSpriteCal3DState,
 			       iLODControl>
 {
@@ -469,25 +453,23 @@ private:
   protected:
     csSpriteCal3DMeshObject* meshobj;
     int mesh;
-    uint normalVersion, binormalVersion, tangentVersion;
+    uint colorVersion, normalVersion;
     int vertexCount;
 
-    csRef<iRenderBuffer> binormal_buffer;
-    csRef<iRenderBuffer> tangent_buffer;
     csRef<iRenderBuffer> normal_buffer;
+    csRef<iRenderBuffer> color_buffer;
 
-    void UpdateNormals (csRenderBufferHolder* holder);
-    void UpdateBinormals (csRenderBufferHolder* holder);
-    void UpdateTangents (csRenderBufferHolder* holder);
+    void UpdateNormals (CalRenderer* render, int meshIndex,
+      CalMesh* calMesh, size_t vertexCount);
   public:
     iMovable* movable;
-	
+
     MeshAccessor (csSpriteCal3DMeshObject* meshobj, int mesh) :
       scfImplementationType (this)
     {
       MeshAccessor::meshobj = meshobj;
       MeshAccessor::mesh = mesh;
-      normalVersion = binormalVersion = tangentVersion = (uint)-1;
+      colorVersion = normalVersion = (uint)-1;
       vertexCount = meshobj->ComputeVertexCount (mesh);
     }
 
@@ -517,6 +499,7 @@ private:
     void UpdatePosition (float delta, CalModel*);
   };
 
+  csRef<iStringSet> strings;
   csWeakRef<iGraphics3D> G3D;
 
   /* The deal with meshes, submeshes and attached meshes:
@@ -534,6 +517,7 @@ private:
   uint meshVersion;
   csBox3 object_bbox;
   uint bboxVersion;
+  bool lighting_dirty;
 
   /** A mesh attached to the model.  These form the list of meshes that
     * the current model has attached to it.
@@ -573,6 +557,12 @@ private:
   int FindAnimCycleNamePos(char const*) const;
   void ClearAnimCyclePos(int pos, float delay);
 
+  void InitSubmeshLighting (int mesh, int submesh, CalRenderer *pCalRenderer,
+    iMovable* movable, csColor* colors);
+  void UpdateLightingSubmesh (const csArray<iLightSectorInfluence*>& lights,
+      iMovable*, CalRenderer*, int mesh, int submesh, float* have_normals,
+      csColor* colors);
+
 public:
   float updateanim_sqdistance1;
   int updateanim_skip1;		// 0 is normal, > 0 is skip
@@ -600,6 +590,17 @@ public:
 
   /// Get the factory.
   csSpriteCal3DMeshObjectFactory* GetFactory3D () const { return factory; }
+
+  /**\name iLightingInfo interface
+   * @{ */
+  void InitializeDefault (bool /*clear*/) {}
+  bool ReadFromCache (iCacheManager* /*cache_mgr*/) { return true; }
+  bool WriteToCache (iCacheManager* /*cache_mgr*/) { return true; }
+  virtual void PrepareLighting () { }
+  void LightChanged (iLight* light);
+  void LightDisconnect (iLight* light);
+  void DisconnectAllLights ();
+  /** @} */
 
   /**\name iMeshObject implementation
    * @{ */
@@ -630,7 +631,7 @@ public:
   }
   virtual void SetMixMode (uint) { }
   virtual uint GetMixMode () const { return CS_FX_COPY; }
-
+  virtual void InvalidateMaterialHandles () { }
   /**
    * See imesh/object.h for specification. The default implementation
    * does nothing.
@@ -735,7 +736,6 @@ public:
   }
 
   bool SetMaterial(const char *mesh_name,iMaterialWrapper *mat);
-  iMaterialWrapper* GetMaterial(const char *mesh_name);
 
   float GetAnimationTime()
   {
@@ -1044,6 +1044,8 @@ public:
 
 };
 
+#include "csutil/deprecated_warn_on.h"
+
 /**
  * Sprite Cal3D type. This is the plugin you have to use to create instances
  * of csSpriteCal3DMeshObjectFactory.
@@ -1058,7 +1060,6 @@ private:
   csRef<iVirtualClock> vc;
   csWeakRef<iEngine> engine;
 
-  CS::Threading::Mutex loaderLock;
 public:
   float updateanim_sqdistance1;
   int updateanim_skip1;		// 0 is normal, > 0 is skip
@@ -1087,17 +1088,6 @@ public:
   /// New Factory.
   virtual csPtr<iMeshObjectFactory> NewFactory ();
   /** @} */
-  
-  /**
-   * Scoped lock to serialize access to Cal loader.
-   * This is needed because the Cal3D loader uses global variables during loading.
-   */
-  class CalLoaderLock
-  {
-    CS::Threading::MutexScopedLock theLock;
-  public:
-    CalLoaderLock (csSpriteCal3DMeshObjectType* objType) : theLock (objType->loaderLock) {}
-  };
 };
 
 }

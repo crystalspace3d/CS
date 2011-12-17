@@ -25,7 +25,6 @@
 #include "csutil/objreg.h"
 #include "csutil/ref.h"
 #include "csutil/scf.h"
-#include "csutil/stringquote.h"
 #include "iutil/databuff.h"
 #include "iutil/document.h"
 #include "iutil/string.h"
@@ -61,7 +60,7 @@ void csShaderGLAFP::Deactivate()
 
 void csShaderGLAFP::SetupState (const CS::Graphics::RenderMesh* /*mesh*/, 
                                 CS::Graphics::RenderMeshModes& /*modes*/,
-	                        const csShaderVariableStack& stack)
+	                        const iShaderVarStack* stacks)
 {
   size_t i;
   const csGLExtensionManager* ext = shaderPlug->ext;
@@ -72,7 +71,7 @@ void csShaderGLAFP::SetupState (const CS::Graphics::RenderMesh* /*mesh*/,
   {
     VariableMapEntry& mapping = variablemap[i];
 
-    var = csGetShaderVariableFromStack (stack, mapping.name);
+    var = csGetShaderVariableFromStack (stacks, mapping.name);
     if (!var.IsValid ())
       var = mapping.mappingParam.var;
 
@@ -268,10 +267,10 @@ bool csShaderGLAFP::LoadProgramStringToGL ()
       *(end-1) = 0;
 
     Report (CS_REPORTER_SEVERITY_WARNING, 
-      "Couldn't load fragment program %s", CS::Quote::Double (description.GetDataSafe ()));
-    Report (CS_REPORTER_SEVERITY_WARNING, "Program error at: %s", CS::Quote::Double (start));
-    Report (CS_REPORTER_SEVERITY_WARNING, "Error string: %s", 
-      CS::Quote::Single ((const char*)programErrorString));
+      "Couldn't load fragment program \"%s\"", description.GetDataSafe ());
+    Report (CS_REPORTER_SEVERITY_WARNING, "Program error at: \"%s\"", start);
+    Report (CS_REPORTER_SEVERITY_WARNING, "Error string: '%s'", 
+      programErrorString);
     return false;
   }
   else
@@ -279,9 +278,8 @@ bool csShaderGLAFP::LoadProgramStringToGL ()
     if (doVerbose && (programErrorString != 0) && (*programErrorString != 0))
     {
       Report (CS_REPORTER_SEVERITY_WARNING, 
-	"Warning for fragment program %s: %s", 
-	CS::Quote::Double (description.GetDataSafe ()),
-	CS::Quote::Single ((const char*)programErrorString));
+	"Warning for fragment program \"%s\": '%s'", 
+	description.GetDataSafe (), programErrorString);
     }
   }
 
@@ -309,7 +307,7 @@ bool csShaderGLAFP::Load(iShaderDestinationResolver*, iDocumentNode* program)
   return true;
 }
 
-bool csShaderGLAFP::Compile (iHierarchicalCache*, csRef<iString>* tag)
+bool csShaderGLAFP::Compile()
 {
   shaderPlug->Open ();
 
@@ -330,7 +328,6 @@ bool csShaderGLAFP::Compile (iHierarchicalCache*, csRef<iString>* tag)
   }
 
   variablemap.ShrinkBestFit();
-  tag->AttachNew (new scfString ("default"));
 
   return LoadProgramStringToGL ();
 }

@@ -20,200 +20,490 @@
 #ifndef __CS_CONDEVAL_H__
 #define __CS_CONDEVAL_H__
 
-#include "csplugincommon/shader/shadercachehelper.h"
+#include "csutil/array.h"
+#include "csutil/bitarray.h"
+#include "csutil/blockallocator.h"
+#include "csutil/cowwrapper.h"
 #include "csutil/hashr.h"
-#include "csutil/memfile.h"
-#include "csutil/weakref.h"
-#include "csgfx/shadervararrayhelper.h"
-#include "csgfx/shadervarnameparser.h"
-#include "iengine/engine.h"
+#include "csutil/memheap.h"
+#include "csutil/ptrwrap.h"
+#include "csgeom/math.h"
+#include "iutil/strset.h"
+#include "ivideo/shader/shader.h"
 
 #include "condition.h"
 #include "expparser.h"
+#include "logic3.h"
+#include "valueset.h"
 #include "mybitarray.h"
-
-#include "condeval_var.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 {
+
 /// Container for shader expression constants
 class csConditionEvaluator;
 
-class ConditionIDMapper
+/**
+ * Class for an optimization: Some compilers use a 'vector ctor' even if the
+ * array has just a size of 1, so specialize 1-elemented arrays that they 
+ * aren't arrays at all.
+ */
+template<int N>
+struct ValueSetArray
 {
-  csConditionID nextConditionID;
-  csHashReversible<csConditionID, CondOperation> conditions;
+  ValueSet x[N];
 
-public:
-  ConditionIDMapper() : nextConditionID (0) {}
-
-  /// Get number of conditions allocated so far
-  size_t GetNumConditions() { return nextConditionID; }
-
-  csConditionID GetConditionID (const CondOperation& operation,
-    bool get_new = true);
-  CondOperation GetCondition (csConditionID condition);
+  ValueSet& operator[] (size_t index) 
+  {
+    CS_ASSERT(index < N);
+    return x[index];
+  }
+  const ValueSet& operator[] (size_t index) const
+  {
+    CS_ASSERT(index < N);
+    return x[index];
+  }
 };
 
-struct EvaluatorShadervarValues;
-struct EvaluatorShadervarValuesSimple;
+template<>
+struct ValueSetArray<1>
+{
+  ValueSet x;
+
+  ValueSet& operator[] (size_t index) 
+  {
+    CS_ASSERT(index == 0);
+    (void)index;
+    return x;
+  }
+  const ValueSet& operator[] (size_t index) const
+  {
+    CS_ASSERT(index == 0);
+    (void)index;
+    return x;
+  }
+};
+
+class Variables
+{
+public:
+  struct Values
+  {
+    void IncRef () { refcount++; }
+    static size_t deallocCount;
+    void DecRef () 
+    { 
+      refcount--; 
+      if (refcount == 0) 
+      {
+        Variables::ValAlloc().Free (this);
+        /*deallocCount++;
+        if (deallocCount > 65536)
+        {
+          Variables::ValAlloc().Compact();
+          deallocCount = 0;
+        }*/
+      }
+    }
+    int GetRefCount () const { return refcount; }
+
+  private:
+    int refcount;
+    CS_DECLARE_STATIC_CLASSVAR_REF (def, Def, ValueSet);
+
+    enum
+    {
+      valueVar = 0,
+      valueVec0,
+      valueVec1,
+      valueVec2,
+      valueVec3,
+      valueTex,
+      valueBuf,
+
+      valueFirst = valueVar,
+      valueLast = valueBuf,
+
+      // Bits needed to store one of the value* values above
+      valueBits = 3,
+      valueIndexOffs = valueLast + 1
+    };
+    uint valueFlags;
+    void SetValueIndex (uint value, uint index)
+    {
+      static const uint valueMask = (1 << valueBits) - 1;
+      uint shift = valueIndexOffs + value * valueBits;
+      valueFlags &= ~(valueMask << shift);
+      valueFlags |= index << shift;
+    }
+    uint GetValueIndex (uint value) const
+    {
+      static const uint valueMask = (1 << valueBits) - 1;
+      uint shift = valueIndexOffs + value * valueBits;
+      return (valueFlags >> shift) & valueMask;
+    }
+
+    /* It works like this:
+     * - the first inlinedSets value sets are inlined
+     * - all sets above that stored in multiValues
+     * - since the references may not move, use a linked list for the
+     *   non-inlined sets.
+     */
+    const static uint inlinedSets = 1;
+    ValueSetArray<inlinedSets> inlineValues;
+    struct ValueSetChain
+    {
+      ValueSet vs;
+      ValueSetChain* nextPlease;
+
+      ValueSetChain () : nextPlease (0) {}
+      ValueSetChain (const ValueSetChain& other) : vs (other.vs), 
+        nextPlease (0) {}
+      ~ValueSetChain() { delete nextPlease; }
+      // @@@ TODO: probably should use a blockalloc here as well
+    };
+    ValueSetChain* multiValues;
+
+    ValueSet& GetMultiValue (uint num);
+    const ValueSet& GetMultiValue (uint num) const;
+
+    ValueSet& GetValue (int type);
+    const ValueSet& GetValue (int type) const;
+
+    uint ValueCount (uint flags) const
+    {
+      uint n = 0;
+      for (uint v = valueFirst; v <= valueLast; v++)
+        if (flags & (1 << v)) n++;
+      return n;
+    }
+    
+  public:
+    ValueSet& GetVar() { return GetValue (valueVar); }
+    const ValueSet& GetVar() const { return GetValue (valueVar); }
+    ValueSet& GetVec (int n) 
+    { 
+      CS_ASSERT((n >= 0) && (n < 4));
+      return GetValue (valueVec0 + n);
+    }
+    const ValueSet& GetVec (int n) const
+    { 
+      CS_ASSERT((n >= 0) && (n < 4));
+      return GetValue (valueVec0 + n);
+    }
+    ValueSet& GetTex() { return GetValue (valueTex); }
+    const ValueSet& GetTex() const { return GetValue (valueTex); }
+    ValueSet& GetBuf() { return GetValue (valueBuf); }
+    const ValueSet& GetBuf() const { return GetValue (valueBuf); }
+
+    Values () : refcount (1), valueFlags (0), multiValues (0) { }
+    Values (const Values& other) : refcount (1), valueFlags (other.valueFlags), 
+      multiValues (0)
+    {
+      for (uint n = 0; n < inlinedSets; n++)
+      {
+        inlineValues[n] = other.inlineValues[n];
+      }
+
+      ValueSetChain* s = other.multiValues;
+      ValueSetChain** d = &multiValues;
+      while (s != 0)
+      {
+        ValueSetChain* p = new ValueSetChain (*s);
+        *d = p;
+        d = &p->nextPlease;
+        s = s->nextPlease;
+      }
+    }
+    ~Values()
+    {
+      delete multiValues;
+    }
+
+    Values& operator=(const Values& other)
+    {
+      valueFlags = other.valueFlags;
+
+      for (uint n = 0; n < inlinedSets; n++)
+      {
+        inlineValues[n] = other.inlineValues[n];
+      }
+
+      delete multiValues; multiValues = 0;
+      ValueSetChain* s = other.multiValues;
+      ValueSetChain** d = &multiValues;
+      while (s != 0)
+      {
+        ValueSetChain* p = new ValueSetChain (*s);
+        *d = p;
+        d = &p->nextPlease;
+        s = s->nextPlease;
+      }
+      return *this;
+    }
+    friend Values operator& (const Values& a, const Values& b)
+    {
+      Values newValues;
+      for (int v = valueFirst; v <= valueLast; v++)
+      {
+        const bool aHas = (a.valueFlags & (1 << v)) != 0;
+        const bool bHas = (b.valueFlags & (1 << v)) != 0;
+        if (aHas && bHas)
+          newValues.GetValue (v) = a.GetValue (v) & b.GetValue (v);
+        else if (aHas && !bHas)
+          newValues.GetValue (v) = a.GetValue (v);
+        else if (!aHas && bHas)
+          newValues.GetValue (v) = b.GetValue (v);
+      }
+      return newValues;
+    }
+    Values& operator&= (const Values& other)
+    {
+      for (int v = valueFirst; v <= valueLast; v++)
+      {
+        if (other.valueFlags & (1 << v))
+          GetValue (v) &= other.GetValue (v);
+      }
+      return *this;
+    }
+    friend Values operator| (const Values& a, const Values& b)
+    {
+      Values newValues;
+      for (int v = valueFirst; v <= valueLast; v++)
+      {
+        const bool aHas = (a.valueFlags & (1 << v)) != 0;
+        const bool bHas = (b.valueFlags & (1 << v)) != 0;
+        if (aHas && bHas)
+          newValues.GetValue (v) = a.GetValue (v) | b.GetValue (v);
+      }
+      return newValues;
+    }
+    Values& operator|= (const Values& other)
+    {
+      for (int v = valueFirst; v <= valueLast; v++)
+      {
+        if (valueFlags & (1 << v))
+          GetValue (v) |= other.GetValue (v);
+      }
+      return *this;
+    }
+    friend Logic3 operator== (const Values& a, const Values& b);
+    friend Logic3 operator!= (const Values& a, const Values& b);
+
+    friend Logic3 operator< (const Values& a, const Values& b);
+    friend Logic3 operator<= (const Values& a, const Values& b);
+
+    void Dump (csString& str) const
+    {
+      static const char* const valueNames[] = {
+        "var", "v0", "v1", "v2", "v3", "tex", "buf"
+      };
+      for (uint v = valueFirst; v <= valueLast; v++)
+      {
+        if (valueFlags & (1 << v))
+        {
+          str << valueNames[v-valueFirst];
+          str << ": ";
+          csString valuesStr;
+          GetValue (v).Dump (valuesStr);
+          str << valuesStr;
+          str << "; ";
+        }
+      }
+    }
+
+    static void CompactAllocator()
+    {
+      ValAlloc().Compact();
+      CowBlockAllocator::CompactAllocator();
+    }
+  };
+protected:
+  typedef csBlockAllocator<Values, TempHeapAlloc> ValBlockAlloc;
+  CS_DECLARE_STATIC_CLASSVAR_REF (valAlloc,
+    ValAlloc, ValBlockAlloc);
+  static size_t valDeAllocCount;
+  CS_DECLARE_STATIC_CLASSVAR (def,
+    Def, Values);
+
+  class ValuesWrapper
+  {
+    csRef<Values> values;
+  public:
+    operator const Values* () const 
+    { 
+      return values; 
+    }
+    operator csRef<Values>& () 
+    { 
+      if (values.IsValid() && (values->GetRefCount() > 1))
+      {
+        Values* newVals = ValAlloc().Alloc ();
+        *newVals = *values;
+        values.AttachNew (newVals);
+      }
+      return values; 
+    }
+  };
+
+  struct ValuesArray
+  {
+    struct Entry
+    {
+      csStringID n;
+      ValuesWrapper v;
+
+      inline operator csStringID() const { return n; }
+    };
+    typedef csArray<Entry, csArrayElementHandler<Entry>,
+      TempHeapAlloc,
+      csArrayCapacityLinear<csArrayThresholdFixed<4> > > ArrayType;
+
+    ArrayType _array;
+    inline operator ArrayType& ()
+    {
+      return _array;
+    }
+    inline ValuesWrapper& GetExtend (csStringID n) 
+    { 
+      size_t candidate;
+      size_t index = _array.FindSortedKey (csArrayCmp<Entry, csStringID> (n),
+        &candidate);
+      if (index != csArrayItemNotFound) return _array[index].v;
+      Entry newEntry;
+      newEntry.n = n;
+      _array.Insert (candidate, newEntry);
+      return _array[candidate].v;
+    }
+    inline size_t GetSize () const { return _array.GetSize (); }
+    inline ValuesWrapper& GetIndex (size_t n) { return _array.Get (n).v; }
+    inline const ValuesWrapper& GetIndex (size_t n) const { return _array.Get (n).v; }
+    inline csStringID GetIndexName (size_t n) const { return _array.Get (n).n; }
+    inline const ValuesWrapper& Get (csStringID n) const 
+    { 
+      size_t index = _array.FindSortedKey (csArrayCmp<Entry, csStringID> (n));
+      return _array[index].v;
+    }
+    inline bool Has (csStringID n) const
+    { 
+      size_t index = _array.FindSortedKey (csArrayCmp<Entry, csStringID> (n));
+      return index != csArrayItemNotFound;
+    }
+    inline const Entry& operator[] (size_t n) const { return _array[n]; }
+    inline void Delete (csStringID n)
+    {
+      size_t index = _array.FindSortedKey (csArrayCmp<Entry, csStringID> (n));
+      _array.DeleteIndex (index);
+    }
+    inline void DeleteIndex (size_t index) { _array.DeleteIndex (index); }
+  };
+  class CowBlockAllocator;
+  typedef CS::CowWrapper<ValuesArray, CowBlockAllocator> ValuesArrayWrapper;
+  class CowBlockAllocator
+  {
+  public:
+    typedef csFixedSizeAllocator<ValuesArrayWrapper::allocSize, 
+      TempHeapAlloc> BlockAlloc;
+  private:
+    CS_DECLARE_STATIC_CLASSVAR_REF (allocator,
+      Allocator, BlockAlloc);
+  public:
+    static void* Alloc (size_t n)
+    {
+      (void)n; // Pacify compiler warnings
+      CS_ASSERT(n == ValuesArrayWrapper::allocSize);
+      return Allocator().Alloc ();
+    }
+    static void Free (void* p)
+    {
+      Allocator().Free (p);
+    }
+    static void CompactAllocator()
+    {
+      Allocator().Compact();
+    }
+  };
+  ValuesArrayWrapper possibleValues;
+public:
+  Variables () : possibleValues (ValuesArray ()) {}
+  Variables (const Variables& other) : possibleValues (other.possibleValues)
+  { }
+  Variables& operator= (const Variables& other)
+  {
+    possibleValues = other.possibleValues;
+    return *this;
+  }
+  ~Variables () 
+  {
+  }
+
+  Values* GetValues (csStringID variable)
+  {
+    csRef<Values>& vals = possibleValues->GetExtend (variable);
+    if (!vals) vals.AttachNew (ValAlloc().Alloc());
+    return vals;
+  }
+  const Values* GetValues (csStringID variable) const
+  {
+    const Values* vals = 0;
+    if (possibleValues->Has (variable))
+      vals = possibleValues->Get (variable);
+    if (vals != 0)
+      return vals;
+    else
+      return Def();
+  }
+  void Dump (csString& out) const
+  {
+    for (size_t n = 0; n < possibleValues->GetSize(); n++)
+    {
+      const Values* vals = possibleValues->GetIndex (n);
+      if (vals == 0) continue;
+      out.AppendFmt ("var %lu: ", 
+	(unsigned long)possibleValues->GetIndexName (n));
+      vals->Dump (out);
+    }
+  }
+  friend Variables operator| (const Variables& a, const Variables& b)
+  {
+    Variables newVars (a);
+    ValuesArray& nva = *newVars.possibleValues;
+    const ValuesArray& pvB = *b.possibleValues;
+    for (size_t n = 0; n < nva.GetSize(); )
+    {
+      csStringID name = nva[n].n;
+      if (pvB.Has (name))
+      {
+        const Values* entry = pvB.Get (name);
+        csRef<Values>& vw = nva.GetIndex (n);
+        *vw |= *entry;
+        n++;
+      }
+      else
+        nva.DeleteIndex (n);
+    }
+    return newVars;
+  }
+};
 
 /**
  * Processes an expression tree and converts it into an internal 
  * representation and allows later evaluation of this expression.
  */
-class csConditionEvaluator :
-  public csRefCount,
-  public CS::Memory::CustomAllocated
+class csConditionEvaluator
 {
-  typedef CS::Threading::Mutex MutexType;
-  typedef CS::Threading::ScopedLock<MutexType> LockType;
-  mutable MutexType mutex;
-
-  struct EvalState;
-  struct EvaluatorShadervar
-  {
-    typedef bool EvalResult;
-    typedef bool BoolType;
-    struct FloatType
-    {
-      float v;
-
-      FloatType () {}
-      FloatType (float f) : v (f) {}
-      operator float() const { return v; }
-      bool operator== (const FloatType& other)
-      { return fabsf (v - other.v) < SMALL_EPSILON; }
-      bool operator!= (const FloatType& other)
-      { return !operator==(other); }
-    };
-    typedef int IntType;
-    csConditionEvaluator& evaluator;
-    EvalState* evalState;
-    const CS::Graphics::RenderMeshModes* modes;
-    const csShaderVariableStack* stack;
-
-    EvalResult GetDefaultResult() const { return false; }
-
-    EvaluatorShadervar (csConditionEvaluator& evaluator,
-      EvalState* evalState,
-      const CS::Graphics::RenderMeshModes* modes, const csShaderVariableStack* stack) : 
-        evaluator (evaluator), evalState (evalState), modes (modes), stack (stack)
-    { }
-    BoolType Boolean (const CondOperand& operand);
-    IntType Int (const CondOperand& operand);
-    FloatType Float (const CondOperand& operand);
-
-    EvalResult LogicAnd (const CondOperand& a, const CondOperand& b)
-    { return Boolean (a) && Boolean (b); }
-    EvalResult LogicOr (const CondOperand& a, const CondOperand& b)
-    { return Boolean (a) || Boolean (b); }
-    
-   private:
-    csShaderVariable* GetShaderVar (const CondOperand& operand)
-    {
-      csShaderVariable* sv = 0;
-      if (stack && stack->GetSize () > operand.svLocation.svName)
-      {
-	sv = (*stack)[operand.svLocation.svName];
-	if (sv && operand.svLocation.indices != 0)
-	{
-	  sv = CS::Graphics::ShaderVarArrayHelper::GetArrayItem (sv,
-	    operand.svLocation.indices + 1, *operand.svLocation.indices,
-	    CS::Graphics::ShaderVarArrayHelper::maFail);
-	}
-      }
-      return sv;
-    }
-  };
-  friend class TicketEvaluator;
-public:
-  class TicketEvaluator : public CS::Utility::FastRefCount<TicketEvaluator>
-  {
-  protected:
-    friend class csConditionEvaluator;
-    union
-    {
-      csConditionEvaluator* owner;
-      TicketEvaluator* poolNext;
-    };
-    MutexType& mutex;
-    bool inEval : 1;
-    bool hasLock : 1;
-    EvalState* evalState;
-    EvaluatorShadervar eval;
-    
-    TicketEvaluator (csConditionEvaluator* owner, bool hasLock,
-      EvalState* evalState, EvaluatorShadervar& eval);
-    ~TicketEvaluator();
-  public:
-    void DecRef ();
-    
-    /// Evaluate a condition and return the result.
-    bool Evaluate (csConditionID condition);
-    /// End evaluation (cleanup)
-    void EndEvaluation();
-  private:
-    TicketEvaluator (const TicketEvaluator& other); // unimplemented, verboten
-  };
-private:
-  friend struct EvaluatorShadervarValues;
-  friend struct EvaluatorShadervarValuesSimple;
-
   /// Used to resolve SV names.
-  csRef<iShaderVarStringSet> strings;
-  /// Needed for frame counter
-  csWeakRef<iEngine> engine;
-  
-  ConditionIDMapper conditions;
+  csRef<iStringSet> strings;
 
-  // Evaluation cache (checked conditions + results)
-  struct EvalState
-  {
-    EvalState* poolNext;
+  csConditionID nextConditionID;
+  csHashReversible<csConditionID, CondOperation> conditions;
 
-    MyBitArrayMalloc condChecked;
-    MyBitArrayMalloc condResult;
-
-    EvalState() : poolNext (0) {}
-    void Clear() { condChecked.Clear(); }
-  };
-  // Evaluation state cache for caching between frames
-  struct EvalCacheState : public EvalState
-  {
-    uint lastEvalFrame;
-    csArray<const csShaderVariable*> lastShaderVars;
-
-    EvalCacheState() { Clear(); }
-    void Clear() { lastEvalFrame = ~0; EvalState::Clear(); }
-  };
-  EvalCacheState evalCache;
-  
-  TicketEvaluator* ticketEvalPool;
-  void RecycleTicketEvaluator (TicketEvaluator* p);
-  EvalState* evalStatePool;
-  void RecycleEvalState (EvalState* p);
-  
-  csMemoryPool scratch;
+  // Evaluation cache
+  MyBitArrayMalloc condChecked;
+  MyBitArrayMalloc condResult;
 
   // Constants
   const csConditionConstants& constants;
-  
-  // For each shadervar, marks which conditions are affected
-  struct SVAffection
-  {
-    CS::ShaderVarStringID svName;
-    MyBitArrayMalloc affectedConditions;
-      
-    explicit SVAffection (CS::ShaderVarStringID svName) : svName (svName) {}
-    bool operator< (const SVAffection& other) const { return svName < other.svName; }
-    bool operator< (const CS::ShaderVarStringID& other) const { return svName < other; }
-    friend bool operator< (const CS::ShaderVarStringID& a,
-      const SVAffection& b)
-    { return a < b.svName; }
-  };
-  csSafeCopyArray<SVAffection> svAffectedConditions;
-  MyBitArrayMalloc bufferAffectConditions;
 
   csString lastError;
   const char* SetLastError (const char* msg, ...) CS_GNUC_PRINTF (2, 3);
@@ -241,68 +531,64 @@ private:
 
   void GetUsedSVs2 (csConditionID condition, MyBitArrayTemp& affectedSVs);
 
-  void MarkAffectionBySVs (csConditionID condition, const CondOperand& operand);
+  struct EvaluatorShadervar
+  {
+    typedef bool EvalResult;
+    typedef bool BoolType;
+    struct FloatType
+    {
+      float v;
 
-  csString OperandToString (const CondOperand& operand);
-  csString OperationToString (const CondOperation& operation);
+      FloatType () {}
+      FloatType (float f) : v (f) {}
+      operator float() const { return v; }
+      bool operator== (const FloatType& other)
+      { return fabsf (v - other.v) < SMALL_EPSILON; }
+      bool operator!= (const FloatType& other)
+      { return !operator==(other); }
+    };
+    typedef int IntType;
+    csConditionEvaluator& evaluator;
+    const CS::Graphics::RenderMeshModes& modes;
+    const iArrayReadOnly<csShaderVariable*>* stacks;
 
-  /* "Internal" methods - do the same as their non-internal namesakes
-     except they don't lock. Used for internal/recursive calls. */
-  template<typename Evaluator>
-  typename Evaluator::EvalResult EvaluateInternal (Evaluator& eval,
-    csConditionID condition);
-  size_t* AllocSVIndicesInternal (const CS::Graphics::ShaderVarNameParser& parser);
-  size_t* AllocSVIndicesInternal (size_t num);
-  const char* ProcessExpressionInternal (csExpression* expression, 
-    csConditionID& cond);
-  void SetupEvalCacheInternal (const csShaderVariableStack* stack);
-  bool EvaluateCachedInternal (EvalState* evalState, EvaluatorShadervar& eval,
-    csConditionID condition);
-  Logic3 CheckConditionResultsInternal (csConditionID condition,
-    const Variables& vars, Variables& trueVars, Variables& falseVars);
-  Logic3 CheckConditionResultsInternal (csConditionID condition,
-    const Variables& vars);
-  const char* ProcessExpressionInternal (csExpression* expression, 
-    CondOperation& operation);
-  csConditionID FindOptimizedConditionInternal (
-    const CondOperation& operation);
-  bool IsConditionPartOfInternal (csConditionID condition,
-    csConditionID containerCondition);
-  csString GetConditionStringInternal (csConditionID id);
+    EvalResult GetDefaultResult() const { return false; }
+
+    EvaluatorShadervar (csConditionEvaluator& evaluator,
+      const CS::Graphics::RenderMeshModes& modes, const iShaderVarStack* stacks) : 
+        evaluator (evaluator), modes (modes), stacks (stacks)
+    { }
+    BoolType Boolean (const CondOperand& operand);
+    IntType Int (const CondOperand& operand);
+    FloatType Float (const CondOperand& operand);
+
+    EvalResult LogicAnd (const CondOperand& a, const CondOperand& b)
+    { return Boolean (a) && Boolean (b); }
+    EvalResult LogicOr (const CondOperand& a, const CondOperand& b)
+    { return Boolean (a) || Boolean (b); }
+  };
 public:
   template<typename Evaluator>
   typename Evaluator::EvalResult Evaluate (Evaluator& eval, csConditionID condition);
 
-  csConditionEvaluator (iShaderVarStringSet* strings,
+  csConditionEvaluator (iStringSet* strings, 
     const csConditionConstants& constants);
-  ~csConditionEvaluator();
-  void SetEngine (iEngine* engine) { this->engine = engine; }
-    
-  iShaderVarStringSet* GetStrings() const { return strings; }
-  size_t* AllocSVIndices (size_t num);
 
   /// Convert expression into internal representation.
   const char* ProcessExpression (csExpression* expression, 
     csConditionID& cond);
 
+  /// Evaluate a condition and return the result.
+  bool Evaluate (csConditionID condition, const CS::Graphics::RenderMeshModes& modes,
+    const iShaderVarStack* stacks);
   /**
-   * Create an evaluator object with the given parameters.
-   * \warning Locks the csConditionEvaluator until evaluation was ended!
+   * Reset the evaluation cache. Prevents same conditions from being evaled 
+   * twice.
    */
-  csPtr<TicketEvaluator> BeginTicketEvaluationCaching (const CS::Graphics::RenderMeshModes& modes,
-    const csShaderVariableStack* stack);
-  /**
-   * Create an evaluator object with a given set of condition results.
-   */
-  csPtr<TicketEvaluator> BeginTicketEvaluation (
-    const csBitArray& condSet, const csBitArray& condResults);
-  
+  void ResetEvaluationCache();
+
   /// Get number of conditions allocated so far
-  size_t GetNumConditions()
-  { 
-    LockType lock (mutex);
-    return conditions.GetNumConditions(); 
-  }
+  size_t GetNumConditions() { return nextConditionID; }
 
   /*
    * Check whether a condition, given a set of possible values for
@@ -323,12 +609,6 @@ public:
    * expression. 
    */
   csConditionID FindOptimizedCondition (const CondOperation& operation);
-  
-  CondOperation GetCondition (csConditionID condition)
-  { 
-    LockType lock (mutex);
-    return conditions.GetCondition (condition);
-  }
 
   /**
    * Test if \c condition is a sub-condition of \c containerCondition 
@@ -342,58 +622,6 @@ public:
 
   /// Try to release unused temporary memory
   static void CompactMemory ();
-  
-  /// Debugging: get string for condition
-  csString GetConditionString (csConditionID id);
-};
-
-class ConditionsWriter
-{
-  csConditionEvaluator& evaluator;
-  
-  csMemFile* savedConds;
-  CS::PluginCommon::ShaderCacheHelper::StringStoreWriter stringStore;
-  csHash<uint32, csConditionID> condToDiskID;
-  uint32 currentDiskID;
-
-  bool WriteCondition (iFile* cacheFile,
-    CS::PluginCommon::ShaderCacheHelper::StringStoreWriter& strStore,
-    const CondOperation& cond);
-    
-  bool WriteCondOperand (iFile* cacheFile,
-    CS::PluginCommon::ShaderCacheHelper::StringStoreWriter& strStore,
-    const CondOperand& operand, uint32 operationID);
-public:
-  ConditionsWriter (csConditionEvaluator& evaluator);
-  ~ConditionsWriter();
-  
-  uint32 GetDiskID (csConditionID cond);
-  uint32 GetDiskID (csConditionID cond) const;
-  
-  csPtr<iDataBuffer> GetPersistentData ();
-};
-
-class ConditionsReader
-{
-  bool status;
-  csConditionEvaluator& evaluator;
-  
-  csHash<csConditionID, uint32> diskIDToCond;
-
-  bool ReadCondition (iFile* cacheFile,
-    const CS::PluginCommon::ShaderCacheHelper::StringStoreReader& strStore,
-    CondOperation& cond);
-  
-  bool ReadCondOperand (iFile* cacheFile,
-    const CS::PluginCommon::ShaderCacheHelper::StringStoreReader& strStore,
-    CondOperand& operand, bool hasIndices);
-public:
-  ConditionsReader (csConditionEvaluator& evaluator,
-    iDataBuffer* src);
-  ~ConditionsReader ();
-  
-  bool GetStatus() const { return status; }
-  csConditionID GetConditionID (uint32 diskID) const;
 };
 
 }

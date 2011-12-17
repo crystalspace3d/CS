@@ -24,7 +24,6 @@
 #include "csutil/scfstringarray.h"
 #include "csutil/strhash.h"
 #include "csutil/stringconv.h"
-#include "csutil/stringquote.h"
 #include "csutil/sysfunc.h"
 #include "csutil/util.h"
 
@@ -277,8 +276,8 @@ csConfigManager::~csConfigManager()
 {
   // save our config.
   if (!Save())
-    csPrintf("Error saving configuration %s.\n",
-	    CS::Quote::Single (DynamicDomain->Cfg->GetFileName()));
+    csPrintf("Error saving configuration '%s'.\n",
+	    DynamicDomain->Cfg->GetFileName());
   CleanUp ();
 }
 
@@ -531,35 +530,30 @@ void csConfigManager::SetStr (const char *Key, const char *Value)
 {
   DynamicDomain->Cfg->SetStr(Key, Value);
   ClearKeyAboveDynamic(Key);
-  NotifyListeners(Key, Value);
 }
 
 void csConfigManager::SetInt (const char *Key, int Value)
 {
   DynamicDomain->Cfg->SetInt(Key, Value);
   ClearKeyAboveDynamic(Key);
-  NotifyListeners(Key, Value);
 }
 
 void csConfigManager::SetFloat (const char *Key, float Value)
 {
   DynamicDomain->Cfg->SetFloat(Key, Value);
   ClearKeyAboveDynamic(Key);
-  NotifyListeners(Key, Value);
 }
 
 void csConfigManager::SetBool (const char *Key, bool Value)
 {
   DynamicDomain->Cfg->SetBool(Key, Value);
   ClearKeyAboveDynamic(Key);
-  NotifyListeners(Key, Value);
 }
 
 void csConfigManager::SetTuple (const char *Key, iStringArray* Value)
 {
   DynamicDomain->Cfg->SetTuple(Key, Value);
   ClearKeyAboveDynamic(Key);
-  NotifyListeners(Key, Value);
 }
 
 bool csConfigManager::SetComment (const char *Key, const char *Text)
@@ -593,16 +587,6 @@ void csConfigManager::SetEOFComment(const char *Text)
   for (csConfigDomain *d=DynamicDomain->Next; d!=0; d=d->Next)
     if (d->Cfg)
       d->Cfg->SetEOFComment(0);
-}
-
-void csConfigManager::AddListener (iConfigListener* l)
-{
-  listeners.PushSmart(l);
-}
-
-void csConfigManager::RemoveListener (iConfigListener* l)
-{
-  listeners.Delete(l);
 }
 
 void csConfigManager::ClearKeyAboveDynamic(const char *Key)

@@ -35,13 +35,12 @@
 #include "iutil/object.h"
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
-#include "iutil/stringarray.h"
 #include "iutil/vfs.h"
 #include "ivaria/terraform.h"
 
 #include "terrainldr.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 enum
 {
@@ -85,6 +84,9 @@ bool csTerrainFactoryLoader::Initialize (iObjectRegistry* objreg)
 csPtr<iBase> csTerrainFactoryLoader::Parse (iDocumentNode* node,
   iStreamSource*, iLoaderContext* /*ldr_context*/, iBase* /*context*/)
 {
+  synldr->Report ("crystalspace.terrainloader.parse",
+		CS_REPORTER_SEVERITY_WARNING,
+		node, "Terrain objects are deprecated! Please use terrain2 instead!");
   csRef<iPluginManager> plugin_mgr = 
     csQueryRegistry<iPluginManager> (object_reg);
 
@@ -269,6 +271,9 @@ bool csTerrainObjectLoader::Initialize (iObjectRegistry* objreg)
 csPtr<iBase> csTerrainObjectLoader::Parse (iDocumentNode* node, 
   iStreamSource*, iLoaderContext* ldr_context, iBase* /*context*/)
 {
+  synldr->Report ("crystalspace.terrainloader.parse",
+		CS_REPORTER_SEVERITY_WARNING,
+		node, "Terrain objects are deprecated! Please use terrain2 instead!");
   csRef<iMeshObject> mesh;
   csRef<iTerrainObjectState> state;
   bool palette_set = false;
@@ -288,22 +293,20 @@ csPtr<iBase> csTerrainObjectLoader::Parse (iDocumentNode* node,
         const char* factname = child->GetContentsValue ();
         csRef<iMeshFactoryWrapper> fact = ldr_context->FindMeshFactory (
           factname);
-
-        if(!fact)
+        if (!fact)
         {
           synldr->ReportError ("crystalspace.terrain.object.loader",
-            child, "Couldn't find factory %s!", CS::Quote::Single (factname));
+            child, "Couldn't find factory '%s'!", factname);
           return 0;
         }
-
         mesh = fact->GetMeshObjectFactory ()->NewInstance ();
         state = scfQueryInterface<iTerrainObjectState> (mesh);
 	if (!state)
 	{
       	  synldr->ReportError (
 		"crystalspace.terrain.parse.badfactory",
-		child, "Factory %s doesn't appear to be a terrain factory!",
-		CS::Quote::Single (factname));
+		child, "Factory '%s' doesn't appear to be a terrain factory!",
+		factname);
 	  return 0;
 	}
         break;
@@ -328,7 +331,7 @@ csPtr<iBase> csTerrainObjectLoader::Parse (iDocumentNode* node,
         if (!mat)
         {
           synldr->ReportError ("crystalspace.terrain.object.loader",
-            child, "Couldn't find material %s!", CS::Quote::Single (matname));
+            child, "Couldn't find material '%s'!", matname);
           return 0;
         }
 	CHECK_MESH (mesh);
@@ -376,8 +379,7 @@ csPtr<iBase> csTerrainObjectLoader::Parse (iDocumentNode* node,
 	if (name == 0)
 	{
           synldr->ReportError ("crystalspace.terrain.factory.loader",
-              child, "<lodvalue> has no %s attribute",
-	      CS::Quote::Single ("name"));
+              child, "<lodvalue> has no 'name' attribute");
           return 0;
 	}
         float val = child->GetContentsValueAsFloat ();
@@ -432,7 +434,7 @@ bool csTerrainObjectLoader::ParseMaterialPalette (iDocumentNode *node,
         {
           synldr->ReportError (
             "crystalspace.terrain.object.loader.materialpalette",
-            child, "Couldn't find material %s!", CS::Quote::Single (matname));
+            child, "Couldn't find material '%s'!", matname);
           return false;
         }
         palette.Push (mat);

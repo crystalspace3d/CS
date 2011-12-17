@@ -38,11 +38,10 @@
 #include "iutil/objreg.h"
 #include "iutil/eventh.h"
 #include "iutil/comp.h"
-#include "iutil/stringarray.h"
 #include "imap/ldrctxt.h"
 #include "ivaria/reporter.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 enum
 {
@@ -95,7 +94,8 @@ bool csLightningFactoryLoader::Initialize (iObjectRegistry* object_reg)
 
 
 csPtr<iBase> csLightningFactoryLoader::Parse (iDocumentNode* node,
-  iStreamSource*, iLoaderContext* ldr_context, iBase* /* context */)
+        iStreamSource*, iLoaderContext* ldr_context,
+        iBase* /* context */)
 {
   csVector3 a;
 
@@ -125,8 +125,7 @@ csPtr<iBase> csLightningFactoryLoader::Parse (iDocumentNode* node,
           {
             synldr->ReportError (
                 "crystalspace.lightningloader.parse.badmaterial",
-                child, "Could not find material %s!",
-		CS::Quote::Single (matname));
+                child, "Could not find material '%s'!", matname);
             return 0;
           }
           fact->SetMaterialWrapper (mat);
@@ -338,24 +337,21 @@ csPtr<iBase> csLightningLoader::Parse (iDocumentNode* node,
           const char* factname = child->GetContentsValue ();
           iMeshFactoryWrapper* fact =
               ldr_context->FindMeshFactory (factname);
-
-          if(!fact)
+          if (!fact)
           {
             synldr->ReportError (
-              "crystalspace.lightningloader.parse.badfactory",
-              child, "Could not find factory %s!",
-	      CS::Quote::Single (factname));
+                "crystalspace.lightningloader.parse.badfactory",
+                child, "Could not find factory '%s'!", factname);
             return 0;
           }
-
           mesh = fact->GetMeshObjectFactory ()->NewInstance ();
           Lightningstate = scfQueryInterface<iLightningState> (mesh);
 	  if (!Lightningstate)
 	  {
       	    synldr->ReportError (
 		"crystalspace.lightningloader.parse.badfactory",
-		child, "Factory %s doesn't appear to be a lightning factory!",
-		CS::Quote::Single (factname));
+		child, "Factory '%s' doesn't appear to be a lightning factory!",
+		factname);
 	    return 0;
 	  }
           LightningFactoryState = scfQueryInterface<iLightningFactoryState> (

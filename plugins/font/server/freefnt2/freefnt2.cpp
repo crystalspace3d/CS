@@ -38,7 +38,7 @@
 
 #include "freefnt2.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(FreeFont2)
 {
@@ -248,14 +248,14 @@ csPtr<iFont> csFreeType2Server::LoadFont (const char *filename, float size)
 	  encName[3] = map->encoding & 0xff;
 	  encName[4] = 0;
 	  if (FreetypeError (FT_Set_Charmap (ftFace, map),
-	    "Could not select charmap %s for %s", CS::Quote::Single (encName), filename))
+	    "Could not select charmap '%s' for %s", encName, filename))
 	  {
 	    return 0;
 	  }
 	  else
 	  {
 	    Report (GetErrorSeverity (),
-	      "Using charmap %s for %s", CS::Quote::Single (encName), filename);
+	      "Using charmap '%s' for %s", encName, filename);
 	  }
 	}
 
@@ -293,7 +293,7 @@ csFreeType2Font::csFreeType2Font (csFreeType2Server* server,
 				  char* fontid,
 				  csFt2FaceWrapper* face, 
 				  float iSize) :
-  scfImplementationType (this), DeleteCallbacks (4)
+  scfImplementationType (this), DeleteCallbacks (4, 4)
 {
   name = strchr (fontid, ':') + 1;
   csFreeType2Font::fontid = fontid;
@@ -411,8 +411,7 @@ csPtr<iDataBuffer> csFreeType2Font::GetGlyphBitmap (utf32_char c,
   GridFitCbox (cbox, glyphW, glyphH);
 
   int maxrows = (size->metrics.height + 63) >> 6;
-  int stride = 0;
-  int bitmapsize = 0;
+  int stride, bitmapsize;
   uint8* bitmap;
   if ((glyphW > 0) && (glyphH > 0))
   {
@@ -425,6 +424,8 @@ csPtr<iDataBuffer> csFreeType2Font::GetGlyphBitmap (utf32_char c,
     stride = (face->face->glyph->bitmap.width + 7) / 8;
     bitmapsize = maxrows*stride;
   }
+  else
+    bitmapsize = 0;
 
   int descend = (-size->metrics.descender + 63) >> 6;;
 
@@ -485,8 +486,7 @@ csPtr<iDataBuffer> csFreeType2Font::GetGlyphAlphaBitmap (utf32_char c,
   GridFitCbox (cbox, glyphW, glyphH);
 
   int maxrows = (size->metrics.height + 63) >> 6;
-  int stride = 0;
-  int bitmapsize = 0;
+  int stride, bitmapsize;
   uint8* bitmap;
   if ((glyphW > 0) && (glyphH > 0))
   {
@@ -508,6 +508,7 @@ csPtr<iDataBuffer> csFreeType2Font::GetGlyphAlphaBitmap (utf32_char c,
   }
   else
   {
+    bitmapsize = 0;
     metrics.width = glyphW >> 6;
     metrics.left = (FT_Int)( cbox.xMin >> 6 );
   }

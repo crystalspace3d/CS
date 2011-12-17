@@ -74,22 +74,20 @@ private:
   /// How many ticks per one fake frame
   float fakeTicksPerFrame;
   /// Number of current ticks since start fake clock started,
-  /// now as csMicroTicks
-  csMicroTicks fakeClockTicks;
+  /// now as csTicks
+  csTicks fakeClockTicks;
   /// How many ticks in our fake clocks have elapsed since last advance.
-  csMicroTicks fakeClockElapsed;
+  csTicks fakeClockElapsed;
   bool paused;
   // some statistic
   int numFrames;
-  csMicroTicks totalFrameEncodeTime, minFrameEncodeTime, maxFrameEncodeTime;
-  csMicroTicks totalWriteToDiskTime, minWriteToDiskTime, maxWriteToDiskTime;
-  csMicroTicks frameStartTime, totalFrameTime, minFrameTime, maxFrameTime;
+  csTicks totalFrameEncodeTime, minFrameEncodeTime, maxFrameEncodeTime;
+  csTicks totalWriteToDiskTime, minWriteToDiskTime, maxWriteToDiskTime;
+  csTicks frameStartTime, totalFrameTime, minFrameTime, maxFrameTime;
 
   /// format of the movie filename (e.g. "/this/cryst%03d.nuv")
   CS::NumberedFilenameHelper captureFormat;
-  csString filenameFormat;
   csString movieFileName;
-  csString recordingFile;
 
   /// Capture settings
   float frameRate, rtjQuality;
@@ -134,9 +132,6 @@ public:
   void ClockResume ();
   csTicks ClockGetElapsedTicks () const;
   csTicks ClockGetCurrentTicks () const;
-  csMicroTicks ClockGetElapsedMicroTicks () const;
-  csMicroTicks ClockGetCurrentMicroTicks () const;
-  float ClockGetElapsedSeconds ();
 
   /// Start/stop the recorder
   virtual void Start(void);
@@ -145,8 +140,6 @@ public:
   virtual void Pause(void);
   virtual void UnPause(void);
   virtual bool IsPaused(void) const;
-  virtual void SetRecordingFile (const char* filename);
-  virtual void SetFilenameFormat (const char* format);
 
   /**
    * Embedded iEventHandler interface that handles keyboard events
@@ -263,18 +256,6 @@ public:
     virtual csTicks GetCurrentTicks () const
     {
       return parent ? parent->ClockGetCurrentTicks() : 0;
-    }
-    virtual csMicroTicks GetElapsedMicroTicks () const
-    {
-      return parent ? parent->ClockGetElapsedMicroTicks() : 0;
-    }
-    virtual float GetElapsedSeconds ()
-    {
-      return parent ? parent->ClockGetElapsedSeconds() : 0.0f;
-    }
-    virtual csMicroTicks GetCurrentMicroTicks () const
-    {
-      return parent ? parent->ClockGetCurrentMicroTicks() : 0;
     }
   };
   csRef<VirtualClock> virtualClock;

@@ -30,22 +30,19 @@
 
 struct iObjectRegistry;
 struct iScript;
-struct iTextureHandle;
 
 /**
  * Interface for the CS CEGUI wrapper.
  */
 struct iCEGUI : public virtual iBase
 {
-  SCF_INTERFACE (iCEGUI, 3, 0, 1);
+  SCF_INTERFACE (iCEGUI, 1, 0, 0);
 
   /**
    * Initialize the plugin.
    * \param script iScript plugin to use as a scripting module.
    */
   virtual bool Initialize (iScript* script=0) = 0;
-
-  virtual bool IsInitialized () = 0;
 
   /// Render the GUI.
   virtual void Render () const = 0;
@@ -88,19 +85,6 @@ struct iCEGUI : public virtual iBase
 
   /// Keep CEGUI from capturing keyboard events.
   virtual void DisableKeyboardCapture () = 0;
-
-  /// Create a texture from a CS texturehandle.
-  virtual CEGUI::Texture& CreateTexture (iTextureHandle* htxt)= 0;
-  
-  /**
-   * Enable/disable auto rendering.
-   * Auto rendering causes the GUI to be rendered every frame, during the "2D"
-   * phase (see #CS_EVENTHANDLER_PHASE_2D). By default, auto rendering is
-   * disables.
-   */
-  virtual void SetAutoRender (bool autoRender) = 0;
-  /// Query auto rendering
-  virtual bool GetAutoRender () = 0;
 };
 
 #endif

@@ -31,13 +31,15 @@
 
 #define IMGPLEX_CLASSNAME "crystalspace.graphic.image.io.multiplexer"
 
+CS_IMPLEMENT_PLUGIN
+
 CS_PLUGIN_NAMESPACE_BEGIN(ImgPlex)
 {
 
 SCF_IMPLEMENT_FACTORY(csImageIOMultiplexer)
 
 csImageIOMultiplexer::csImageIOMultiplexer (iBase *pParent) :
-  scfImplementationType (this, pParent)
+  scfImplementationType (this, pParent), global_dither (0)
 {
 }
 
@@ -71,6 +73,9 @@ void csImageIOMultiplexer::StoreDesc (
     formats.Push (format[i]);
 }
 
+// For SetDithering()
+#include "csutil/deprecated_warn_off.h"
+
 bool csImageIOMultiplexer::LoadNextPlugin ()
 {
   if (!classlist) return false;
@@ -94,6 +99,7 @@ bool csImageIOMultiplexer::LoadNextPlugin ()
     plugin = csLoadPlugin<iImageIO> (plugin_mgr, classname);
     if (plugin)
     {
+      plugin->SetDithering (global_dither);
       // remember the plugin
       list.Push (plugin);
       // and load its description, since we gonna return it on request
@@ -104,6 +110,8 @@ bool csImageIOMultiplexer::LoadNextPlugin ()
   return true;
 }
 
+#include "csutil/deprecated_warn_on.h"
+
 const csImageIOFileFormatDescriptions& csImageIOMultiplexer::GetDescription ()
 {
   // need all plugins.
@@ -111,9 +119,20 @@ const csImageIOFileFormatDescriptions& csImageIOMultiplexer::GetDescription ()
   return formats;
 }
 
+// For SetDithering()
+#include "csutil/deprecated_warn_off.h"
+
+void csImageIOMultiplexer::SetDithering (bool iEnable)
+{
+  global_dither = iEnable;
+  for (size_t i = 0; i < list.GetSize (); i++)
+    list[i]->SetDithering (global_dither);
+}
+
+#include "csutil/deprecated_warn_on.h"
+
 csPtr<iImage> csImageIOMultiplexer::Load (iDataBuffer* buf, int iFormat)
 {
-  CS::Threading::MutexScopedLock slock(lock);
   bool consecutive = false; // set to true if we searched the list completely.
   do
   {

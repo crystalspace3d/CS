@@ -86,7 +86,7 @@ void SndTest::Frame ()
   sprite->GetMovable ()->UpdateMove ();
 
   // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
+  if (!g3d->BeginDraw (engine->GetBeginDrawFlags () | CSDRAW_3DGRAPHICS))
     return;
 
   // Tell the camera to render into the frame buffer.
@@ -161,11 +161,11 @@ bool SndTest::LoadSound ()
 
   csRef<iDataBuffer> soundbuf = vfs->ReadFile (fname.GetData ());
   if (!soundbuf)
-    return ReportError ("Can't load file %s!", CS::Quote::Single (fname.GetData ()));
+    return ReportError ("Can't load file '%s'!", fname.GetData ());
 
   csRef<iSndSysData> snddata = sndloader->LoadSound (soundbuf);
   if (!snddata)
-    return ReportError ("Can't load sound %s!", CS::Quote::Single (fname.GetData ()));
+    return ReportError ("Can't load sound '%s'!", fname.GetData ());
 
   const csSndSysSoundFormat* format = snddata->GetFormat ();
   csPrintf ("=== iSndSysData format informations ===\n");
@@ -178,7 +178,7 @@ bool SndTest::LoadSound ()
   csRef<iSndSysStream> sndstream = sndrenderer->CreateStream (snddata,
         cmdline->GetBoolOption("no3d") ? CS_SND3D_DISABLE : CS_SND3D_ABSOLUTE);
   if (!sndstream)
-    return ReportError ("Can't create stream for %s!", CS::Quote::Single (fname.GetData ()));
+    return ReportError ("Can't create stream for '%s'!", fname.GetData ());
 
   const csSndSysSoundFormat* rformat = sndstream->GetRenderedFormat ();
   csPrintf ("=== iSndSysStream \"rendered\" format informations ===\n");
@@ -189,7 +189,7 @@ bool SndTest::LoadSound ()
 
   sndsource = sndrenderer->CreateSource (sndstream);
   if (!sndsource)
-    return ReportError ("Can't create source for %s!", CS::Quote::Single (fname.GetData ()));
+    return ReportError ("Can't create source for '%s'!", fname.GetData ());
   sndsource3d = scfQueryInterface<iSndSysSource3D> (sndsource);
   if (sndsource3d)
     sndsource3d->SetPosition (GetSoundPos (0));
@@ -243,6 +243,10 @@ bool SndTest::Application()
   // We use the full window to draw the world.
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
 
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
+
   // Here we create our world.
   if (!CreateRoom())
     return false;
@@ -250,9 +254,6 @@ bool SndTest::Application()
   // Let the engine prepare all lightmaps for use and also free all images 
   // that were loaded for the texture manager.
   engine->Prepare ();
-
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
 
   // Now we need to position the camera in our world.
   view->GetCamera ()->SetSector (room);
@@ -284,8 +285,7 @@ bool SndTest::CreateRoom ()
   // CS/data/standard.zip and mounted as /lib/std using the Virtual
   // File System (VFS) plugin.
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
-    return ReportError("Error loading %s texture!",
-		       CS::Quote::Single ("stone4"));
+    return ReportError("Error loading 'stone4' texture!");
 
   iMaterialWrapper* tm = engine->GetMaterialList ()->FindByName ("stone");
 
@@ -303,6 +303,10 @@ bool SndTest::CreateRoom ()
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, "walls", "walls_factory", &box);
+
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
 
   // Now we need light to see something.

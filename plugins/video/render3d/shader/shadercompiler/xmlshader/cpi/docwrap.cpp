@@ -22,10 +22,7 @@
 
 #include "csgeom/math.h"
 #include "csutil/bitarray.h"
-#include "csutil/csendian.h"
-#include "csutil/documenthelper.h"
 #include "csutil/set.h"
-#include "csutil/stringquote.h"
 #include "csutil/sysfunc.h"
 #include "csutil/util.h"
 #include "csutil/xmltiny.h"
@@ -37,7 +34,6 @@
 
 #include "docwrap.h"
 #include "tokenhelper.h"
-#include "../foreignnodes.h"
 #include "../xmlshader.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
@@ -47,386 +43,246 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 
 class ConditionTree
 {
-  /// Indices for node branches
-  enum
-  {
-    /// Index for 'condition is true' branch
-    bTrue = 0,
-    /// Index for 'condition is false' branch
-    bFalse = 1
-  };
-
   struct Node
   {
-    Node* parent;
+    static const csConditionID csCondUnknown = (csConditionID)~2;    
     
+    Node* parent;
+    ConditionTree* owner;
+
     csConditionID condition;
     Node* branches[2];
     Variables values;
     MyBitArrayTemp conditionAffectedSVs;
-    MyBitArrayTemp conditionResults[2];
-    MyBitArrayTemp conditionResultsSet;
 
-    Node (Node* p, int parentBranch) : parent (p), condition (csCondUnknown)
+    Node (Node* p, ConditionTree* owner) : parent (p), owner (owner),
+      condition (csCondUnknown)
     {
-      if (p != 0)
-      {
-	conditionResults[bTrue] = conditionResults[bFalse] =
-	  p->conditionResults[parentBranch];
-	conditionResultsSet = p->conditionResultsSet;
-      }
-      branches[bTrue] = 0;
-      branches[bFalse] = 0;
+      branches[0] = 0;
+      branches[1] = 0;
     }
-    
-    void SetConditionResult (int _branches, csConditionID cond, bool val)
+    ~Node ()
     {
-      for (int b = 0; b < 2; b++)
-      {
-	if (!(_branches & (1 << b))) continue;
-	if (conditionResults[b].GetSize() <= cond)
-	  conditionResults[b].SetSize (cond+1);
-	if (val)
-	  conditionResults[b].SetBit (cond);
-	
-	if (branches[b]) branches[b]->SetConditionResult (0x3, cond, val);
-      }
-      if (conditionResultsSet.GetSize() <= cond)
-	conditionResultsSet.SetSize (cond+1);
-      conditionResultsSet.SetBit (cond);
-    }
-
-    void MergeConditionResults (const Node* other, int otherBranch)
-    {
-      for (size_t c = 0; c < other->conditionResultsSet.GetSize(); c++)
-      {
-	if (!other->conditionResultsSet[c]) continue;
-	if ((c >= conditionResultsSet.GetSize())
-	    || !conditionResultsSet.IsBitSet (c))
-	{
-	  SetConditionResult (0x3, c,
-	    other->conditionResults[otherBranch].IsBitSet (c));
-	}
-      }
+      if (branches[0]) branches[0]->~Node();
+      owner->nodeAlloc.Free (branches[0]);
+      if (branches[1]) branches[1]->~Node();
+      owner->nodeAlloc.Free (branches[1]);
     }
   };
 
   csFixedSizeAllocator<sizeof (Node), TempHeapAlloc> nodeAlloc;
   Node* root;
   int currentBranch;
-  
-  typedef csArray<Node*, csArrayElementHandler<Node*>, TempHeapAlloc,
-    CS::Container::ArrayCapacityExponential<> > NodeArray;
+  typedef csArray<Node*, csArrayElementHandler<Node*>, TempHeapAlloc> 
+    NodeArray;
   struct NodeStackEntry
   {
     NodeArray branches[2];
   };
-  csBlockAllocator<NodeStackEntry, TempHeapAlloc,
-    csBlockAllocatorDisposeDelete<NodeStackEntry> > nodeStackEntryAlloc;
-    
-  csArray<NodeStackEntry*, csArrayElementHandler<NodeStackEntry*>,
+
+  csArray<NodeStackEntry, csArrayElementHandler<NodeStackEntry>, 
     TempHeapAlloc> nodeStack;
   csArray<int, csArrayElementHandler<int>, TempHeapAlloc> branchStack;
-  
-  csConditionID cheapshotCondition;
-  Variables cheapshotTrueVals;
-  Variables cheapshotFalseVals;
-  MyBitArrayTemp affectedSVs;
-  
-  struct CommitNode
-  {
-    Node* owner;
-    int branch;
-    Node* newNode;
-
-    csConditionID oldCondition;
-    MyBitArrayTemp oldConditionAffectedSVs;
-    MyBitArrayTemp oldConditionResults[2];
-    MyBitArrayTemp oldConditionResultsSet;
-  };
-  typedef csArray<CommitNode> CommitArray;
-  csArray<CommitArray> commitArrays;
 
   void RecursiveAdd (csConditionID condition, Node* node, 
-    NodeStackEntry& newCurrent, MyBitArrayTemp& affectedSVs,
-    CommitArray& commitNodes);
+    NodeStackEntry& newCurrent, MyBitArrayTemp& affectedSVs);
   void ToResolver (iConditionResolver* resolver, Node* node,
     csConditionNode* parent);
 
   bool HasContainingCondition (Node* node, csConditionID containedCondition,
     csConditionID& condition, int& branch);
 
-  void ClearCommitArray (CommitArray& ca);
-  void RecursiveFree (Node* node);
-  
   csConditionEvaluator& evaluator;
   void DumpNode (csString& out, const Node* node, int level);
 public:
   ConditionTree (csConditionEvaluator& evaluator) : nodeAlloc (256), evaluator (evaluator)
   {
     root = (Node*)nodeAlloc.Alloc();
-    new (root) Node (0, 0);
-    currentBranch = bTrue;
-    NodeStackEntry* newPair = nodeStackEntryAlloc.Alloc();
-    newPair->branches[bTrue].Push (root);
+    new (root) Node (0, this);
+    currentBranch = 0;
+    NodeStackEntry newPair;
+    newPair.branches[0].Push (root);
     nodeStack.Push (newPair);
-    cheapshotCondition = csCondUnknown;
   }
   ~ConditionTree ()
   {
-    RecursiveFree (root);
+    root->~Node();
+    nodeAlloc.Free (root);
   }
-  
-  void PresetConditions (const MyBitArrayTemp& presetCondResults);
 
   Logic3 Descend (csConditionID condition);
   // Switch the current branch from "true" to "false"
   void SwitchBranch ();
   void Ascend (int num);
   int GetBranch() const { return currentBranch; }
-  void Commit ();
 
   void ToResolver (iConditionResolver* resolver);
 
   void Dump (csString& out);
 };
 
+
 void ConditionTree::RecursiveAdd (csConditionID condition, Node* node, 
                                   NodeStackEntry& newCurrent, 
-                                  MyBitArrayTemp& affectedSVs,
-                                  CommitArray& commitNodes)
+                                  MyBitArrayTemp& affectedSVs)
 {
   /* Shortcut */
   if (node->condition == condition)
   {
-    newCurrent.branches[bTrue].Push (node->branches[bTrue]);
-    newCurrent.branches[bFalse].Push (node->branches[bFalse]);
+    newCurrent.branches[0].Push (node->branches[0]);
+    newCurrent.branches[1].Push (node->branches[1]);
     return;
   }
 
+  Variables trueVals;
+  Variables falseVals;
   Logic3 r;
-  bool isLeaf = node->condition == csCondUnknown;
-  bool doCheck = true;
-  if (node->parent != 0)
-  {
-    /* Do a check if a condition result check is worthwhile.
-      * For each node, the SVs which affect the node's and its
-      * parents conditions are recorded; if the intersection of
-      * that set with the set of SVs that affect the current
-      * condition is empty, we don't need to do a check.
-      *
-      * Though, if the node is a leaf, always check since the
-      * "true values" and "false values" are required.
-      */
-    MyBitArrayTemp& nodeAffectedSVs = node->parent->conditionAffectedSVs;
-    if (affectedSVs.GetSize() != nodeAffectedSVs.GetSize())
-    {
-      size_t newSize = csMax (affectedSVs.GetSize(),
-	nodeAffectedSVs.GetSize());
-      affectedSVs.SetSize (newSize);
-      nodeAffectedSVs.SetSize (newSize);
-    }
-    doCheck = !(affectedSVs & nodeAffectedSVs).AllBitsFalse();
-  }
-  if (isLeaf)
-  {
-    Variables trueVals;
-    Variables falseVals;
-    if (doCheck)
-    {
-      r = evaluator.CheckConditionResults (condition, 
-	node->values, trueVals, falseVals);
-    }
-    else
-    {
-      if (cheapshotCondition != condition)
-      {
-        Variables v;
-	r = evaluator.CheckConditionResults (condition, 
-	  v, cheapshotTrueVals, cheapshotFalseVals);
-	cheapshotCondition = condition;
-      }
-      trueVals = node->values & cheapshotTrueVals;
-      falseVals = node->values & cheapshotFalseVals;
-    }
-  
-    switch (r.state)
-    {
-      case Logic3::Truth:
-        node->SetConditionResult (0x3, condition, true);
-	newCurrent.branches[bTrue].Push (node);
-	break;
-      case Logic3::Lie:
-        node->SetConditionResult (0x3, condition, false);
-	newCurrent.branches[bFalse].Push (node);
-	break;
-      case Logic3::Uncertain:
-	{
-	  csConditionID containerCondition;
-	  int containingBranch;
-	  bool hasContainer = HasContainingCondition (node, condition,
-	    containerCondition, containingBranch);
-
-	  CommitNode commitNode;
-  
-	  commitNode.oldCondition = node->condition;
-	  commitNode.oldConditionAffectedSVs = node->conditionAffectedSVs;
-	  commitNode.oldConditionResults[0] = node->conditionResults[0];
-	  commitNode.oldConditionResults[1] = node->conditionResults[1];
-	  commitNode.oldConditionResultsSet = node->conditionResultsSet;
-	  node->condition = condition;
-	  node->conditionAffectedSVs = affectedSVs;
-	  if (node->parent)
-	  {
-	    MyBitArrayTemp& nodeAffectedSVs = node->conditionAffectedSVs;
-	    MyBitArrayTemp& parentAffectedSVs = node->parent->conditionAffectedSVs;
-	    if (nodeAffectedSVs.GetSize() != parentAffectedSVs.GetSize())
-	    {
-	      size_t newSize = csMax (nodeAffectedSVs.GetSize(),
-		parentAffectedSVs.GetSize());
-	      nodeAffectedSVs.SetSize (newSize);
-	      parentAffectedSVs.SetSize (newSize);
-	      affectedSVs.SetSize (newSize);
-	    }
-	    nodeAffectedSVs |= parentAffectedSVs;
-	  }
-	  for (int b = 0; b < 2; b++)
-	  {
-	    Node* nn = (Node*)nodeAlloc.Alloc();
-	    new (nn) Node (node, b);
-	    if (hasContainer)
-	    {
-	      /* If this condition is part of a "composite condition"
-	       * (|| or &&) up above in the tree, use the possible values
-	       * from running that containing condition with the possible
-	       * values from the contained condition. That way, in cases
-	       * like 'a' nested in 'a || b', a true 'a' will result in
-	       * a set of possible values of only true for 'b', allowing
-	       * the latter to be possibly folded away later.
-	       */
-	      Variables newTrueVals;
-	      Variables newFalseVals;
-	      if (b == bTrue)
-	      {
-		evaluator.CheckConditionResults (containerCondition, 
-		  trueVals, newTrueVals, newFalseVals);
-	      }
-	      else
-	      {
-		evaluator.CheckConditionResults (containerCondition, 
-		  falseVals, newTrueVals, newFalseVals);
-	      }
-	      /* Pick the results for the branch of the containing condition
-	      * the contained one appears in. */
-	      if (containingBranch == bTrue)
-		nn->values = newTrueVals;
-	      else
-		nn->values = newFalseVals;
-	    }
-	    else
-	    {
-	      nn->values = (b == bTrue) ? trueVals : falseVals;
-	    }
-	    commitNode.owner = node;
-	    commitNode.branch = b;
-	    commitNode.newNode = nn;
-	    commitNodes.Push (commitNode);
-	    newCurrent.branches[b].Push (nn);
-	  }
-	} 
-	break;
-    }
-  }
+  if (condition == csCondAlwaysTrue)
+    r.state = Logic3::Truth;
+  else if (condition == csCondAlwaysFalse)
+    r.state = Logic3::Lie;
   else
   {
+    bool isLeaf = node->condition == Node::csCondUnknown;
+    bool doCheck = true;
+    if (!isLeaf && (node->parent != 0))
+    {
+      /* Do a check if a condition result check is worthwhile.
+       * For each node, the SVs which affect the node's and its
+       * parents conditions are recorded; if the intersection of
+       * that set with the set of SVs that affect the current
+       * condition is empty, we don't need to do a check.
+       *
+       * Though, if the node is a leaf, always check since the
+       * "true values" and "false values" are required.
+       */
+      MyBitArrayTemp& nodeAffectedSVs = node->parent->conditionAffectedSVs;
+      if (affectedSVs.GetSize() != nodeAffectedSVs.GetSize())
+      {
+        size_t newSize = csMax (affectedSVs.GetSize(),
+          nodeAffectedSVs.GetSize());
+        affectedSVs.SetSize (newSize);
+        nodeAffectedSVs.SetSize (newSize);
+      }
+      doCheck = !(affectedSVs & nodeAffectedSVs).AllBitsFalse();
+    }
     if (doCheck)
     {
-      r = evaluator.CheckConditionResults (condition, 
-	node->values);
-    }
-  
-    switch (r.state)
-    {
-      case Logic3::Truth:
-        node->SetConditionResult (0x3, condition, true);
-	newCurrent.branches[bTrue].Push (node);
-	break;
-      case Logic3::Lie:
-        node->SetConditionResult (0x3, condition, false);
-	newCurrent.branches[bFalse].Push (node);
-	break;
-      case Logic3::Uncertain:
-	RecursiveAdd (condition, node->branches[0], newCurrent, affectedSVs,
-	  commitNodes);
-	RecursiveAdd (condition, node->branches[1], newCurrent, affectedSVs,
-	  commitNodes);
-	break;
+      if (isLeaf)
+        r = evaluator.CheckConditionResults (condition, 
+          node->values, trueVals, falseVals);
+      else
+        r = evaluator.CheckConditionResults (condition, 
+          node->values);
     }
   }
-}
 
-void ConditionTree::PresetConditions (const MyBitArrayTemp& presetCondResults)
-{
-  CS_ASSERT(root->condition == csCondUnknown);
-  
-  size_t numCond = presetCondResults.GetSize()/2;
-  for (size_t c = 0; c < numCond; c++)
+  switch (r.state)
   {
-    int condBits = (presetCondResults[2*c] ? 2 : 0) | (presetCondResults[2*c+1] ? 1 : 0);
-    if ((condBits == 2) || (condBits == 1))
-    {
-      Variables trueVals;
-      Variables falseVals;
-      
-      evaluator.CheckConditionResults (c, root->values, trueVals, falseVals);
-      root->values = (condBits == 2) ? trueVals : falseVals;
-    }
+    case Logic3::Truth:
+      newCurrent.branches[0].Push (node);
+      break;
+    case Logic3::Lie:
+      newCurrent.branches[1].Push (node);
+      break;
+    case Logic3::Uncertain:
+      if (node->condition == Node::csCondUnknown)
+      {
+        csConditionID containerCondition;
+        int containingBranch;
+        bool hasContainer = HasContainingCondition (node, condition,
+          containerCondition, containingBranch);
+
+        node->condition = condition;
+        node->conditionAffectedSVs = affectedSVs;
+        if (node->parent)
+        {
+          MyBitArrayTemp& nodeAffectedSVs = node->conditionAffectedSVs;
+          MyBitArrayTemp& parentAffectedSVs = node->parent->conditionAffectedSVs;
+          if (nodeAffectedSVs.GetSize() != parentAffectedSVs.GetSize())
+          {
+            size_t newSize = csMax (nodeAffectedSVs.GetSize(),
+              parentAffectedSVs.GetSize());
+            nodeAffectedSVs.SetSize (newSize);
+            parentAffectedSVs.SetSize (newSize);
+          }
+          nodeAffectedSVs |= parentAffectedSVs;
+        }
+        for (int b = 0; b < 2; b++)
+        {
+          Node* nn = (Node*)nodeAlloc.Alloc();
+          new (nn) Node (node, this);
+          if (hasContainer)
+          {
+            /* If this condition is part of a "composite condition"
+             * (|| or &&) up above in the tree, use the possible values
+             * from running that containing condition with the possible
+             * values from the contained condition. That way, in cases
+             * like 'a' nested in 'a || b', a true 'a' will result in
+             * a set of possible values of only true for 'b', allowing
+             * the latter to be possibly folded away later.
+             */
+            Variables newTrueVals;
+            Variables newFalseVals;
+            if (b == 0)
+            {
+              evaluator.CheckConditionResults (containerCondition, 
+                trueVals, newTrueVals, newFalseVals);
+            }
+            else
+            {
+              evaluator.CheckConditionResults (containerCondition, 
+                falseVals, newTrueVals, newFalseVals);
+            }
+            /* Pick the results for the branch of the containing condition
+             * the contained one appears in. */
+            if (containingBranch == 0)
+              nn->values = newTrueVals;
+            else
+              nn->values = newFalseVals;
+          }
+          else
+          {
+            nn->values = (b == 0) ? trueVals : falseVals;
+          }
+          node->branches[b] = nn;
+          newCurrent.branches[b].Push (nn);
+        }
+      } 
+      else
+      {
+        RecursiveAdd (condition, node->branches[0], newCurrent, affectedSVs);
+        RecursiveAdd (condition, node->branches[1], newCurrent, affectedSVs);
+      }
+      break;
   }
 }
 
 Logic3 ConditionTree::Descend (csConditionID condition)
 {
-  bool conditionReserved = (condition == csCondAlwaysTrue)
-    || (condition == csCondAlwaysFalse);
-  
-  const NodeStackEntry& current = *(nodeStack[nodeStack.GetSize()-1]);
-  NodeStackEntry* newCurrent = nodeStackEntryAlloc.Alloc();
-  
-  CommitArray ca;
+  const NodeStackEntry& current = 
+    nodeStack[nodeStack.GetSize()-1];
+
+  NodeStackEntry newCurrent;
+
+  MyBitArrayTemp affectedSVs;
+  evaluator.GetUsedSVs (condition, affectedSVs);
   const NodeArray& currentNodes = current.branches[currentBranch];
-  if (conditionReserved)
+  for (size_t i = 0; i < currentNodes.GetSize(); i++)
   {
-    switch (condition)
-    {
-      case csCondAlwaysTrue:
-        newCurrent->branches[bTrue] = currentNodes;
-	break;
-      case csCondAlwaysFalse:
-        newCurrent->branches[bFalse] = currentNodes;
-	break;
-    }
+    RecursiveAdd (condition, currentNodes[i], newCurrent, affectedSVs);
   }
-  else
-  {
-    affectedSVs.Clear();
-    evaluator.GetUsedSVs (condition, affectedSVs);
-    for (size_t i = 0; i < currentNodes.GetSize(); i++)
-    {
-      RecursiveAdd (condition, currentNodes[i], *newCurrent, affectedSVs, ca);
-    }
-  }
-  commitArrays.Push (ca);
-    
+
   nodeStack.Push (newCurrent);
   branchStack.Push (currentBranch);
-  currentBranch = bTrue;
+  currentBranch = 0;
 
   Logic3 r;
-  if (newCurrent->branches[bTrue].IsEmpty()
-    && !newCurrent->branches[bFalse].IsEmpty())
+  if (newCurrent.branches[0].IsEmpty()
+    && !newCurrent.branches[1].IsEmpty())
     r.state = Logic3::Lie;
-  else if (!newCurrent->branches[bTrue].IsEmpty()
-    && newCurrent->branches[bFalse].IsEmpty())
+  else if (!newCurrent.branches[0].IsEmpty()
+    && newCurrent.branches[1].IsEmpty())
     r.state = Logic3::Truth;
 
   return r;
@@ -434,8 +290,8 @@ Logic3 ConditionTree::Descend (csConditionID condition)
 
 void ConditionTree::SwitchBranch ()
 {
-  CS_ASSERT(currentBranch == bTrue);
-  currentBranch = bFalse;
+  CS_ASSERT(currentBranch == 0);
+  currentBranch = 1;
 }
 
 void ConditionTree::Ascend (int num)
@@ -444,64 +300,29 @@ void ConditionTree::Ascend (int num)
     nodeStack.GetSize() > 1);
   while (num-- > 0)
   {
-    NodeStackEntry* oldNodes = nodeStack.Pop();
-    nodeStackEntryAlloc.Free (oldNodes);
+    nodeStack.Pop();
     currentBranch = branchStack.Pop();
-    
-    if (commitArrays.GetSize() > 0)
-    {
-      CommitArray ca (commitArrays.Pop ());
-      for (size_t n = ca.GetSize(); n-- > 0; )
-      {
-	Node* node = ca[n].owner;
-	node->condition = ca[n].oldCondition;
-	node->conditionAffectedSVs = ca[n].oldConditionAffectedSVs;
-	node->conditionResults[0] = ca[n].oldConditionResults[0];
-	node->conditionResults[1] = ca[n].oldConditionResults[1];
-	node->conditionResultsSet = ca[n].oldConditionResultsSet;
-      }
-      ClearCommitArray (ca);
-    }
   }
-}
-
-void ConditionTree::Commit ()
-{
-  for (size_t c = 0; c < commitArrays.GetSize(); c++)
-  {
-    CommitArray& ca = commitArrays[c];
-    for (size_t n = 0; n < ca.GetSize(); n++)
-    {
-      Node* node = ca[n].owner;
-      node->branches[ca[n].branch] = ca[n].newNode;
-      node->SetConditionResult (1 << ca[n].branch, node->condition,
-	ca[n].branch == bTrue);
-      ca[n].newNode->MergeConditionResults (node, ca[n].branch);
-    }
-  }
-  commitArrays.Empty();
 }
 
 void ConditionTree::ToResolver (iConditionResolver* resolver, 
                                 Node* node, csConditionNode* parent)
 {
-  if (node->condition == csCondUnknown) return;
-  
+  if (node->condition == Node::csCondUnknown) return;
+
   csConditionNode* trueNode;
   csConditionNode* falseNode;
 
-  resolver->AddNode (parent, node->condition, trueNode, falseNode,
-    node->conditionResults[bTrue], node->conditionResults[bFalse],
-    node->conditionResultsSet);
-  if (node->branches[bTrue] != 0)
-    ToResolver (resolver, node->branches[bTrue], trueNode);
-  if (node->branches[bFalse] != 0)
-    ToResolver (resolver, node->branches[bFalse], falseNode);
+  resolver->AddNode (parent, node->condition, trueNode, falseNode);
+  if (node->branches[0] != 0)
+    ToResolver (resolver, node->branches[0], trueNode);
+  if (node->branches[1] != 0)
+    ToResolver (resolver, node->branches[1], falseNode);
 }
 
 void ConditionTree::ToResolver (iConditionResolver* resolver)
 {
-  if (root->branches[bTrue] != 0)
+  if (root->branches[0] != 0)
   {
     ToResolver (resolver, root, 0);
     resolver->FinishAdding();
@@ -518,29 +339,11 @@ bool ConditionTree::HasContainingCondition (Node* node,
   if (evaluator.IsConditionPartOf (containedCondition, condition)
     && (containedCondition != condition))
   {
-    branch = (node == node->parent->branches[bTrue]) ? bTrue : bFalse;
+    branch = (node == node->parent->branches[0]) ? 0 : 1;
     return true;
   }
   return HasContainingCondition (node->parent, containedCondition, condition, 
     branch);
-}
-  
-void ConditionTree::ClearCommitArray (CommitArray& ca)
-{
-  for (size_t n = 0; n < ca.GetSize(); n++)
-  {
-    ca[n].newNode->~Node();
-    nodeAlloc.Free (ca[n].newNode);
-  }
-}
-
-void ConditionTree::RecursiveFree (Node* node)
-{
-  if (node == 0) return;
-  RecursiveFree (node->branches[bTrue]);
-  RecursiveFree (node->branches[bFalse]);
-  node->~Node();
-  nodeAlloc.Free (node);
 }
 
 void ConditionTree::DumpNode (csString& out, const Node* node, int level)
@@ -566,8 +369,8 @@ void ConditionTree::DumpNode (csString& out, const Node* node, int level)
         out.AppendFmt ("condition %zu", node->condition);
     }
     out += '\n';
-    DumpNode (out, node->branches[bTrue], level+1);
-    DumpNode (out, node->branches[bFalse], level+1);
+    DumpNode (out, node->branches[0], level+1);
+    DumpNode (out, node->branches[1], level+1);
   }
 }
 
@@ -578,7 +381,7 @@ void ConditionTree::Dump (csString& out)
 
 //---------------------------------------------------------------------------
 
-typedef CS::Memory::FixedSizeAllocatorSafe<sizeof (csWrappedDocumentNode::WrappedChild)>
+typedef csFixedSizeAllocator<sizeof (csWrappedDocumentNode::WrappedChild)> 
   WrappedChildAlloc;
 CS_IMPLEMENT_STATIC_VAR (ChildAlloc, WrappedChildAlloc, (256));
 
@@ -603,29 +406,13 @@ csWrappedDocumentNode::csWrappedDocumentNode (ConditionEval& eval,
                                               iDocumentNode* wrapped_node,
 					      iConditionResolver* res,
 					      csWrappedDocumentNodeFactory* shared_fact, 
-					      GlobalProcessingState* global_state,
-                                              uint parseOpts)
+					      GlobalProcessingState* global_state)
   : scfImplementationType (this), wrappedNode (wrapped_node), parent (parent),
-    resolver (res), shared (shared_fact), globalState (global_state)
+    resolver (res), objreg (shared_fact->plugin->objectreg), 
+    shared (shared_fact), globalState (global_state)
 {
-  ProcessWrappedNode (eval, parseOpts);
+  ProcessWrappedNode (eval);
   globalState = 0;
-}
-  
-csWrappedDocumentNode::csWrappedDocumentNode (csWrappedDocumentNode* parent,
-                                              iDocumentNode* wrappedNode,
-                                              csWrappedDocumentNodeFactory* shared)
-  : scfImplementationType (this), wrappedNode (wrappedNode), parent (parent),
-    shared (shared)
-{
-}
-  
-csWrappedDocumentNode::csWrappedDocumentNode (csWrappedDocumentNode* parent,
-					      iConditionResolver* resolver,
-                                              csWrappedDocumentNodeFactory* shared)
-  : scfImplementationType (this), parent (parent), resolver (resolver),
-    shared (shared)
-{
 }
 
 csWrappedDocumentNode::~csWrappedDocumentNode ()
@@ -745,7 +532,7 @@ static void GetNextArg (const char*& p, TempString<>& arg)
 
 struct WrapperStackEntry
 {
-  csRef<csWrappedDocumentNode::WrappedChild> child;
+  csWrappedDocumentNode::WrappedChild* child;
 
   WrapperStackEntry () : child (0) {}
 };
@@ -796,7 +583,7 @@ void csWrappedDocumentNode::ParseCondition (WrapperStackEntry& newWrapper,
 					    size_t condLen, 
 					    iDocumentNode* node)
 {
-  newWrapper.child.AttachNew (new WrappedChild);
+  newWrapper.child = new WrappedChild;
   const char* result = resolver->ParseCondition (cond,
     condLen, newWrapper.child->condition);
   if (result)
@@ -804,11 +591,11 @@ void csWrappedDocumentNode::ParseCondition (WrapperStackEntry& newWrapper,
     TempString<> condStr;
     condStr.Append (cond, condLen);
     Report (syntaxErrorSeverity, node,
-      "Error parsing condition %s: %s", CS::Quote::Single (condStr.GetData()),
+      "Error parsing condition '%s': %s", condStr.GetData(),
       result);
     newWrapper.child->condition = csCondAlwaysFalse;
   }
-  globalState->condDumper->Dump (newWrapper.child->condition,
+  shared->DumpCondition (newWrapper.child->condition,
     cond, condLen);
 }
 
@@ -818,86 +605,66 @@ void csWrappedDocumentNode::CreateElseWrapper (NodeProcessingState* state,
   WrapperStackEntry oldCurrentWrapper = state->currentWrapper;
   state->currentWrapper = state->wrapperStack.Pop ();
   elseWrapper = oldCurrentWrapper;
-  elseWrapper.child.AttachNew (new WrappedChild);
+  elseWrapper.child = new WrappedChild;
   elseWrapper.child->condition = oldCurrentWrapper.child->condition;
-  elseWrapper.child->SetConditionValue (false);
-  
-  if (!oldCurrentWrapper.child->childNode.IsValid()
-      && (oldCurrentWrapper.child->childrenWrappers.GetSize() == 0))
-  {
-    state->currentWrapper.child->childrenWrappers.Delete (
-      oldCurrentWrapper.child);
-  }
+  elseWrapper.child->conditionValue = false;
 }
 
 template<typename ConditionEval>
 void csWrappedDocumentNode::ProcessInclude (ConditionEval& eval, 
                                             const TempString<>& filename,
 					    NodeProcessingState* state, 
-					    iDocumentNode* node,
-					    uint parseOpts)
+					    iDocumentNode* node)
 {
-  iVFS* vfs = globalState->vfs;
-  csRef<iDataBuffer> pathExpanded = vfs->ExpandPath (filename);
-  
-  csRef<iDocumentNode> includeNode;
-  includeNode = globalState->includesCache.Get (pathExpanded->GetData(),
-    (iDocumentNode*)0);
-  if (!includeNode.IsValid())
+  csRef<iVFS> vfs = csQueryRegistry<iVFS> (objreg);
+  CS_ASSERT (vfs.IsValid ());
+  csRef<iFile> include = vfs->Open (filename, VFS_FILE_READ);
+  if (!include.IsValid ())
   {
-    csRef<iFile> include = vfs->Open (filename, VFS_FILE_READ);
-    if (!include.IsValid ())
+    Report (syntaxErrorSeverity, node,
+      "could not open '%s'", filename.GetData ());
+  }
+  else
+  {
+    csRef<iDocumentSystem> docsys (
+      csQueryRegistry<iDocumentSystem> (objreg));
+    if (!docsys.IsValid())
+      docsys.AttachNew (new csTinyDocumentSystem ());
+
+    csRef<iDocument> includeDoc = docsys->CreateDocument ();
+    const char* err = includeDoc->Parse (include, false);
+    if (err != 0)
     {
       Report (syntaxErrorSeverity, node,
-	"could not open %s", CS::Quote::Single (filename.GetData ()));
+	"error parsing '%s': %s", filename.GetData (), err);
     }
     else
     {
-      csRef<iDocumentSystem> docsys (
-	csQueryRegistry<iDocumentSystem> (shared->objreg));
-      if (!docsys.IsValid())
-	docsys.AttachNew (new csTinyDocumentSystem ());
-  
-      csRef<iDocument> includeDoc = docsys->CreateDocument ();
-      const char* err = includeDoc->Parse (include, false);
-      if (err != 0)
+      csRef<iDocumentNode> rootNode = includeDoc->GetRoot ();
+      csRef<iDocumentNode> includeNode = rootNode->GetNode ("include");
+      if (!includeNode)
       {
-	Report (syntaxErrorSeverity, node,
-	  "error parsing %s: %s", CS::Quote::Single (filename.GetData ()), err);
+	Report (syntaxErrorSeverity, rootNode,
+	  "%s: no <include> node", filename.GetData ());
 	return;
       }
-      else
+      csVfsDirectoryChanger dirChange (vfs);
+      dirChange.ChangeTo (filename);
+
+      csRef<iDocumentNodeIterator> it = includeNode->GetNodes ();
+      while (it->HasNext ())
       {
-	csRef<iDocumentNode> rootNode = includeDoc->GetRoot ();
-        includeNode = rootNode->GetNode ("include");
-	if (!includeNode)
-	{
-	  Report (syntaxErrorSeverity, rootNode,
-	    "%s: no <include> node", filename.GetData ());
-	  return;
-	}
-	globalState->includesCache.Put (pathExpanded->GetData(),
-          includeNode);
+	csRef<iDocumentNode> child = it->Next ();
+	ProcessSingleWrappedNode (eval, state, child);
       }
     }
-  }
-  
-  csVfsDirectoryChanger dirChange (vfs);
-  dirChange.ChangeTo (filename);
-
-  csRef<iDocumentNodeIterator> it = includeNode->GetNodes ();
-  while (it->HasNext ())
-  {
-    csRef<iDocumentNode> child = it->Next ();
-    ProcessSingleWrappedNode (eval, state, child, parseOpts);
   }
 }
 
 template<typename ConditionEval>
 bool csWrappedDocumentNode::ProcessTemplate (ConditionEval& eval, 
                                              iDocumentNode* templNode, 
-					     NodeProcessingState* state, 
-					     uint parseOpts)
+					     NodeProcessingState* state)
 {
   if (!(state->templActive || state->generateActive))
     return false;
@@ -916,8 +683,7 @@ bool csWrappedDocumentNode::ProcessTemplate (ConditionEval& eval,
           if (shared->plugin->do_verbose)
           {
             Report (CS_REPORTER_SEVERITY_WARNING, node,
-              "Deprecated syntax, please use %s",
-	      CS::Quote::Single ("Endtemplate"));
+              "Deprecated syntax, please use 'Endtemplate'");
           }
           // Fall through
 	case csWrappedDocumentNodeFactory::PITOKEN_ENDTEMPLATE_NEW:
@@ -934,8 +700,7 @@ bool csWrappedDocumentNode::ProcessTemplate (ConditionEval& eval,
           if (shared->plugin->do_verbose)
           {
             Report (CS_REPORTER_SEVERITY_WARNING, node,
-              "Deprecated syntax, please use %s",
-	      CS::Quote::Single ("Template"));
+              "Deprecated syntax, please use 'Template'");
           }
           // Fall through
 	case csWrappedDocumentNodeFactory::PITOKEN_TEMPLATE_NEW:
@@ -1018,7 +783,7 @@ bool csWrappedDocumentNode::ProcessTemplate (ConditionEval& eval,
           size_t i;
           for (i = 0; i < templatedNodes.GetSize (); i++)
           {
-            ProcessSingleWrappedNode (eval, state, templatedNodes[i], parseOpts);
+            ProcessSingleWrappedNode (eval, state, templatedNodes[i]);
           }
 
           v += step;
@@ -1071,8 +836,7 @@ bool csWrappedDocumentNode::InvokeTemplate (ConditionEval& eval,
                                             const char* name, 
                                             iDocumentNode* node,
 					    NodeProcessingState* state, 
-					    const Template::Params& params,
-					    uint parseOpts)
+					    const Template::Params& params)
 {
   shared->DebugProcessing ("Invoking template %s\n", name);
   Template* templNodes = 
@@ -1086,7 +850,7 @@ bool csWrappedDocumentNode::InvokeTemplate (ConditionEval& eval,
   size_t i;
   for (i = 0; i < nodes.GetSize (); i++)
   {
-    ProcessSingleWrappedNode (eval, state, nodes[i], parseOpts);
+    ProcessSingleWrappedNode (eval, state, nodes[i]);
   }
   return true;
 }
@@ -1097,8 +861,7 @@ void csWrappedDocumentNode::ValidateTemplateEnd (iDocumentNode* node,
   if ((state->templActive) && (state->templNestLevel != 0))
   {
     Report (syntaxErrorSeverity, node,
-      "%s without %s",
-      CS::Quote::Single ("Template"), CS::Quote::Single ("EndTemplate"));
+      "'Template' without 'Endtemplate'");
   }
 }
 
@@ -1108,8 +871,7 @@ void csWrappedDocumentNode::ValidateGenerateEnd (iDocumentNode* node,
   if ((state->generateActive) && (state->generateNestLevel != 0))
   {
     Report (syntaxErrorSeverity, node,
-      "%s without %s",
-      CS::Quote::Single ("Generate"), CS::Quote::Single ("EndGenerate"));
+      "'Generate' without 'Endgenerate'");
   }
 }
 
@@ -1119,8 +881,7 @@ void csWrappedDocumentNode::ValidateStaticIfEnd (iDocumentNode* node,
   if (!state->staticIfStateStack.IsEmpty())
   {
     Report (syntaxErrorSeverity, node,
-      "%s without %s",
-      CS::Quote::Single ("SIfDef"), CS::Quote::Single ("SEndIf"));
+      "'SIfDef' without 'SEndIf'");
   }
 }
 
@@ -1164,8 +925,7 @@ bool csWrappedDocumentNode::ProcessStaticIf (NodeProcessingState* state,
             if (ifState.elseBranch)
             {
               Report (syntaxErrorSeverity, node,
-                "Multiple %ss in %s",
-		CS::Quote::Single ("SElse"), CS::Quote::Single ("SIfDef"));
+                "Multiple 'SElse's in 'SIfDef'");
               ifState.processNodes = false;
             }
             else
@@ -1187,8 +947,7 @@ bool csWrappedDocumentNode::ProcessStaticIf (NodeProcessingState* state,
             if (ifState.elseBranch)
             {
               Report (syntaxErrorSeverity, node,
-                "Multiple %ss in %s",
-		CS::Quote::Single ("SElse"), CS::Quote::Single ("SIfDef"));
+                "Multiple 'SElse's in 'SIfDef'");
               ifState.processNodes = false;
             }
             else
@@ -1237,8 +996,8 @@ bool csWrappedDocumentNode::ProcessInstrTemplate (NodeProcessingState* state,
       if (dupeCheck.Contains (paramNames[i]))
       {
         Report (syntaxErrorSeverity, node,
-                "Duplicate template parameter %s", 
-	        CS::Quote::Single (paramNames[i].GetData()));
+                "Duplicate template parameter '%s'", 
+	        paramNames[i].GetData());
         return false;
       }
       newTempl.paramMap.Push (paramNames[i]);
@@ -1250,14 +1009,13 @@ bool csWrappedDocumentNode::ProcessInstrTemplate (NodeProcessingState* state,
   if (templateName.IsEmpty())
   {
     Report (syntaxErrorSeverity, node,
-            "%s without name",
-            CS::Quote::Single ("template"));
+            "'template' without name");
     return false;
   }
   if (shared->pitokens.Request (templateName) != csInvalidStringID)
   {
     Report (syntaxErrorSeverity, node,
-            "Reserved template name %s", CS::Quote::Single (templateName.GetData()));
+            "Reserved template name '%s'", templateName.GetData());
     return false;
   }
   state->templateName = templateName;
@@ -1279,8 +1037,7 @@ bool csWrappedDocumentNode::ProcessDefine (NodeProcessingState* state,
   if (param.IsEmpty() || (*p != 0))
   {
     Report (syntaxErrorSeverity, node,
-            "One parameter expected for %s",
-	    CS::Quote::Single ("Define"));
+            "One parameter expected for 'Define'");
     return false;
   }
   globalState->defines.Add (param);
@@ -1298,8 +1055,7 @@ bool csWrappedDocumentNode::ProcessUndef (NodeProcessingState* state,
   if (param.IsEmpty() || (*p != 0))
   {
     Report (syntaxErrorSeverity, node,
-            "One parameter expected for %s",
-	    CS::Quote::Single ("Undef"));
+            "One parameter expected for 'Undef'");
     return false;
   }
   globalState->defines.Delete (param);
@@ -1317,8 +1073,7 @@ bool csWrappedDocumentNode::ProcessStaticIfDef (NodeProcessingState* state,
   if (param.IsEmpty() || (*p != 0))
   {
     Report (syntaxErrorSeverity, node,
-            "One parameter expected for %s",
-	    CS::Quote::Single ("SIfDef"));
+            "One parameter expected for 'SIfDef'");
     return false;
   }
   bool lastState = 
@@ -1333,12 +1088,11 @@ bool csWrappedDocumentNode::ProcessStaticIfDef (NodeProcessingState* state,
 
 template<typename ConditionEval>
 void csWrappedDocumentNode::ProcessSingleWrappedNode (
-  ConditionEval& eval, NodeProcessingState* state, iDocumentNode* node,
-  uint parseOpts)
+  ConditionEval& eval, NodeProcessingState* state, iDocumentNode* node)
 {
   CS_ASSERT(globalState);
 
-  if (ProcessTemplate (eval, node, state, parseOpts)) return;
+  if (ProcessTemplate (eval, node, state)) return;
   if (ProcessStaticIf (state, node))
   {
     // Template invokation has precedence over dropping nodes...
@@ -1350,7 +1104,7 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
       {
         ParseTemplateArguments (args, params, false);
       }
-      InvokeTemplate (eval, tokenStr, node, state, params, parseOpts);
+      InvokeTemplate (eval, tokenStr, node, state, params);
     }
     return;
   }
@@ -1408,50 +1162,45 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
 	switch (tokenID)
 	{
 	  case csWrappedDocumentNodeFactory::PITOKEN_IF:
-	    if (parseOpts & wdnfpoHandleConditions)
 	    {
 	      WrapperStackEntry newWrapper;
 	      ParseCondition (newWrapper, space + 1, valLen - cmdLen - 1, 
 		node);
 
-              csConditionID condition = newWrapper.child->condition;
-              // If the parent condition is always false, so is this
-              if (currentWrapper.child->IsUnreachable())
-              {
-                condition = csCondAlwaysFalse;
-              }
+              const csConditionID condition = newWrapper.child->condition;
               Logic3 r = eval.Descend (condition);
+              // If the parent condition is always false, so is this
+              if ((((currentWrapper.child->condition == csCondAlwaysFalse)
+                && (currentWrapper.child->conditionValue == true))
+                  || ((currentWrapper.child->condition == csCondAlwaysTrue)
+                && (currentWrapper.child->conditionValue == false))))
+              {
+                r.state = Logic3::Lie;
+              }
               if (r.state == Logic3::Truth)
                 newWrapper.child->condition = csCondAlwaysTrue;
               else if (r.state == Logic3::Lie)
                 newWrapper.child->condition = csCondAlwaysFalse;
               globalState->ascendStack.Push (1);
 
-	      if (!newWrapper.child->IsUnreachable())
-		currentWrapper.child->childrenWrappers.Push (newWrapper.child);
+	      currentWrapper.child->childrenWrappers.Push (newWrapper.child);
 	      wrapperStack.Push (currentWrapper);
 	      currentWrapper = newWrapper;
-	      handled = true;
 	    }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_ENDIF:
-	    if (parseOpts & wdnfpoHandleConditions)
 	    {
 	      bool okay = true;
 	      if (space != 0)
 	      {
 		Report (syntaxErrorSeverity, node,
-		  "%s has parameters",
-		  CS::Quote::Single ("endif"));
+		  "'endif' has parameters");
 		okay = false;
 	      }
 	      if (okay && (wrapperStack.GetSize () == 0))
 	      {
 		Report (syntaxErrorSeverity, node,
-		  "%s without %s or %s",
-		  CS::Quote::Single ("endif"),
-		  CS::Quote::Single ("if"),
-		  CS::Quote::Single ("elsif"));
+		  "'endif' without 'if' or 'elsif'");
 		okay = false;
 	      }
 	      if (okay)
@@ -1459,44 +1208,29 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
                 int ascendNum = globalState->ascendStack.Pop ();
                 eval.Ascend (ascendNum);
                 while (ascendNum-- > 0)
-                {
-                  WrapperStackEntry lastWrapper = currentWrapper;
 		  currentWrapper = wrapperStack.Pop ();
-		  if (!lastWrapper.child->childNode.IsValid()
-		      && (lastWrapper.child->childrenWrappers.GetSize() == 0))
-		  {
-		    currentWrapper.child->childrenWrappers.Delete (
-		      lastWrapper.child);
-		  }
-		}
               }
-	      handled = true;
 	    }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_ELSE:
-	    if (parseOpts & wdnfpoHandleConditions)
 	    {
 	      bool okay = true;
 	      if (space != 0)
 	      {
 		Report (syntaxErrorSeverity, node,
-		  "%s has parameters",
-		  CS::Quote::Single ("else"));
+		  "'else' has parameters");
 		okay = false;
 	      }
 	      if (okay && (wrapperStack.GetSize () == 0))
 	      {
 		Report (syntaxErrorSeverity, node,
-		  "%s without %s or %s",
-		  CS::Quote::Single ("else"),
-		  CS::Quote::Single ("if"),
-		  CS::Quote::Single ("elsif"));
+		  "'else' without 'if' or 'elsif'");
 		okay = false;
 	      }
               if (eval.GetBranch() != 0)
 	      {
 	        Report (syntaxErrorSeverity, node,
-	          "Double %s", CS::Quote::Single ("else"));
+	          "Double 'else'");
 	        okay = false;
 	      }
 	      if (okay)
@@ -1504,33 +1238,27 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
 		WrapperStackEntry newWrapper;
 		CreateElseWrapper (state, newWrapper);
 
-		if (!newWrapper.child->IsUnreachable())
-		  currentWrapper.child->childrenWrappers.Push (newWrapper.child);
+		currentWrapper.child->childrenWrappers.Push (newWrapper.child);
 		wrapperStack.Push (currentWrapper);
 		currentWrapper = newWrapper;
 
                 eval.SwitchBranch ();
 	      }
-	      handled = true;
 	    }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_ELSIF:
-	    if (parseOpts & wdnfpoHandleConditions)
 	    {
 	      bool okay = true;
 	      if (wrapperStack.GetSize () == 0)
 	      {
 		Report (syntaxErrorSeverity, node,
-		  "%s without %s or %s",
-		  CS::Quote::Single ("elsif"),
-		  CS::Quote::Single ("if"),
-		  CS::Quote::Single ("elsif"));
+		  "'elsif' without 'if' or 'elsif'");
 		okay = false;
 	      }
               if (okay && (eval.GetBranch() != 0))
 	      {
 		Report (syntaxErrorSeverity, node,
-		  "Double %s", CS::Quote::Single ("else"));
+		  "Double 'else'");
 		okay = false;
 	      }
 	      if (okay)
@@ -1538,8 +1266,7 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
 		WrapperStackEntry elseWrapper;
 		CreateElseWrapper (state, elseWrapper);
 
-		if (!elseWrapper.child->IsUnreachable())
-		  currentWrapper.child->childrenWrappers.Push (elseWrapper.child);
+		currentWrapper.child->childrenWrappers.Push (elseWrapper.child);
 		wrapperStack.Push (currentWrapper);
 		currentWrapper = elseWrapper;
 
@@ -1548,37 +1275,36 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
 		  node);
           
                 eval.SwitchBranch ();
-                csConditionID condition = newWrapper.child->condition;
-                // If the parent condition is always false, so is this
-                if (currentWrapper.child->IsUnreachable())
-                {
-                  condition = csCondAlwaysFalse;
-                }
+                const csConditionID condition = newWrapper.child->condition;
                 Logic3 r = eval.Descend (condition);
+                // If the parent condition is always false, so is this
+                if ((((currentWrapper.child->condition == csCondAlwaysFalse)
+                  && (currentWrapper.child->conditionValue == true))
+                    || ((currentWrapper.child->condition == csCondAlwaysTrue)
+                  && (currentWrapper.child->conditionValue == false))))
+                {
+                  r.state = Logic3::Lie;
+                }
+                globalState->ascendStack[globalState->ascendStack.GetSize()-1]++;
                 if (r.state == Logic3::Truth)
                   newWrapper.child->condition = csCondAlwaysTrue;
                 else if (r.state == Logic3::Lie)
                   newWrapper.child->condition = csCondAlwaysFalse;
-                globalState->ascendStack[globalState->ascendStack.GetSize()-1]++;
 
-		if (!newWrapper.child->IsUnreachable())
-		  elseWrapper.child->childrenWrappers.Push (newWrapper.child);
+		elseWrapper.child->childrenWrappers.Push (newWrapper.child);
 		wrapperStack.Push (currentWrapper);
 		currentWrapper = newWrapper;
 	      }
-	      handled = true;
 	    }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_INCLUDE:
             if (shared->plugin->do_verbose)
             {
               Report (CS_REPORTER_SEVERITY_WARNING, node,
-                "Deprecated syntax, please use %s",
-		CS::Quote::Single ("Include"));
+                "Deprecated syntax, please use 'Include'");
             }
             // Fall through
 	  case csWrappedDocumentNodeFactory::PITOKEN_INCLUDE_NEW:
-	    if (parseOpts & wdnfpoExpandTemplates)
 	    {
 	      bool okay = true;
 	      TempString<> filename;
@@ -1593,57 +1319,46 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
 	      if ((space == 0) || (filename.IsEmpty ()))
 	      {
 		Report (syntaxErrorSeverity, node,
-		  "%s without filename", CS::Quote::Single ("Include"));
+		  "'include' without filename");
 		okay = false;
 	      }
 	      if (okay)
 	      {
-		ProcessInclude (eval, filename, state, node, parseOpts);
+		ProcessInclude (eval, filename, state, node);
 	      }
-	      handled = true;
 	    }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_TEMPLATE:
             if (shared->plugin->do_verbose)
             {
               Report (CS_REPORTER_SEVERITY_WARNING, node,
-                "Deprecated syntax, please use %s",
-		CS::Quote::Single ("Template"));
+                "Deprecated syntax, please use 'Template'");
             }
             // Fall through
           case csWrappedDocumentNodeFactory::PITOKEN_TEMPLATE_NEW:
 	  case csWrappedDocumentNodeFactory::PITOKEN_TEMPLATEWEAK:
-	    if (parseOpts & wdnfpoExpandTemplates)
             {
               TempString<> args (valStart + cmdLen, valLen - cmdLen);
               args.LTrim();
               ProcessInstrTemplate (state, node, args, 
                 tokenID == csWrappedDocumentNodeFactory::PITOKEN_TEMPLATEWEAK);
-	      handled = true;
             }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_ENDTEMPLATE:
             if (shared->plugin->do_verbose)
             {
               Report (CS_REPORTER_SEVERITY_WARNING, node,
-                "Deprecated syntax, please use %s",
-		CS::Quote::Single ("Endtemplate"));
-	      handled = true;
+                "Deprecated syntax, please use 'Endtemplate'");
             }
             // Fall through
 	  case csWrappedDocumentNodeFactory::PITOKEN_ENDTEMPLATE_NEW:
-	    if (parseOpts & wdnfpoExpandTemplates)
 	    {
 	      Report (syntaxErrorSeverity, node,
-		"%s without %s",
-		CS::Quote::Single ("Endtemplate"),
-		CS::Quote::Single ("Template"));
+		"'Endtemplate' without 'Template'");
               // ProcessTemplate() would've handled it otherwise
-	      handled = true;
 	    }
 	    break;
           case csWrappedDocumentNodeFactory::PITOKEN_GENERATE:
-	    if (parseOpts & wdnfpoExpandTemplates)
             {
 	      bool okay = true;
               Template::Params args;
@@ -1656,8 +1371,7 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
               {
                 okay = false;
 	        Report (syntaxErrorSeverity, node,
-		  "%s expects 3 or 4 arguments, got %zu",
-		  CS::Quote::Single ("Generate"), args.GetSize());
+		  "'Generate' expects 3 or 4 arguments, got %zu", args.GetSize());
               }
               if (okay)
               {
@@ -1668,13 +1382,13 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
                 if (sscanf (args[1], "%d%c", &start, &dummy) != 1)
                 {
 	          Report (syntaxErrorSeverity, node,
-		    "Argument %s is not an integer", CS::Quote::Single (args[1].GetData()));
+		    "Argument '%s' is not an integer", args[1].GetData());
                   okay = false;
                 }
                 if (okay && sscanf (args[2], "%d%c", &end, &dummy) != 1)
                 {
 	          Report (syntaxErrorSeverity, node,
-		    "Argument %s is not an integer", CS::Quote::Single (args[2].GetData()));
+		    "Argument '%s' is not an integer", args[2].GetData());
                   okay = false;
                 }
                 if (okay)
@@ -1684,7 +1398,7 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
                     if (sscanf (args[3], "%d%c", &step, &dummy) != 1)
                     {
 	              Report (syntaxErrorSeverity, node,
-		        "Argument %s is not an integer", CS::Quote::Single (args[3].GetData()));
+		        "Argument '%s' is not an integer", args[3].GetData());
                       okay = false;
                     }
                   }
@@ -1696,12 +1410,12 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
                 if (okay)
                 {
                   state->generateActive = true;
-		              state->generateNestLevel = 1;
+		  state->generateNestLevel = 1;
                   if (((start > end) && (step >= 0))
-                    || ((end >= start) && (step <= 0)))
+                    || (end >= start) && (step <= 0))
                   {
-	                  Report (syntaxErrorSeverity, node,
-		                  "Can't reach end value %d starting from %d with step %d", 
+	            Report (syntaxErrorSeverity, node,
+		      "Can't reach end value %d starting from %d with step %d", 
                       end, start, step);
                     state->generateValid = false;
                   }
@@ -1715,95 +1429,77 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
                   }
                 }
               }
-	      handled = true;
             }
             break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_ENDGENERATE:
-	    if (parseOpts & wdnfpoExpandTemplates)
 	    {
 	      Report (syntaxErrorSeverity, node,
-		"%s without %s",
-		CS::Quote::Single ("Endgenerate"),
-		CS::Quote::Single ("Generate"));
+		"'Endgenerate' without 'Generate'");
               // ProcessTemplate() would've handled it otherwise
 	    }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_DEFINE:
-	    if (parseOpts & wdnfpoExpandTemplates)
             {
               TempString<> args (valStart + cmdLen, valLen - cmdLen);
               args.LTrim();
               ProcessDefine (state, node, args);
-	      handled = true;
             }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_UNDEF:
-	    if (parseOpts & wdnfpoExpandTemplates)
             {
               TempString<> args (valStart + cmdLen, valLen - cmdLen);
               args.LTrim();
               ProcessUndef (state, node, args);
-	      handled = true;
             }
 	    break;
 	  case csWrappedDocumentNodeFactory::PITOKEN_STATIC_IFDEF:
 	  case csWrappedDocumentNodeFactory::PITOKEN_STATIC_IFNDEF:
-	    if (parseOpts & wdnfpoExpandTemplates)
             {
               TempString<> args (valStart + cmdLen, valLen - cmdLen);
               args.LTrim();
               ProcessStaticIfDef (state, node, args,
                 tokenID == csWrappedDocumentNodeFactory::PITOKEN_STATIC_IFNDEF);
-	      handled = true;
             }
             break;
           case csWrappedDocumentNodeFactory::PITOKEN_STATIC_ELSIFDEF:
           case csWrappedDocumentNodeFactory::PITOKEN_STATIC_ELSIFNDEF:
           case csWrappedDocumentNodeFactory::PITOKEN_STATIC_ELSE:
           case csWrappedDocumentNodeFactory::PITOKEN_STATIC_ENDIF:
-	    if (parseOpts & wdnfpoExpandTemplates)
             {
 	      Report (syntaxErrorSeverity, node,
-		"%s without %s",
-		CS::Quote::Single (shared->pitokens.Request (tokenID)),
-		CS::Quote::Single ("SIfDef"));
+		"'%s' without 'SIfDef'", shared->pitokens.Request (tokenID));
               // ProcessStaticIf() would've handled it otherwise
-	      handled = true;
             }
             break;
 	  default:
 	    {
-	      CS_ASSERT_MSG(
-	        "Document has templates but template expansion is disabled",
-	        parseOpts & wdnfpoExpandTemplates);
 	      Template::Params params;
 	      if (space != 0)
 	      {
 		TempString<> pStr (space + 1, valLen - cmdLen - 1);
 		ParseTemplateArguments (pStr, params, false);
 	      }
-	      if (!InvokeTemplate (eval, tokenStr, node, state, params, parseOpts))
+	      if (!InvokeTemplate (eval, tokenStr, node, state, params))
 	      {
 		Report (syntaxErrorSeverity, node,
-		  "Unknown command %s", CS::Quote::Single (tokenStr.GetData()));
+		  "Unknown command '%s'", tokenStr.GetData());
 	      }
-	      handled = true;
 	    }
 	}
+
+	handled = true;
       }
     }
   }
-  if (!handled && !currentWrapper.child->IsUnreachable())
+  if (!handled
+    && !(((currentWrapper.child->condition == csCondAlwaysFalse)
+        && (currentWrapper.child->conditionValue == true))
+      || ((currentWrapper.child->condition == csCondAlwaysTrue)
+        && (currentWrapper.child->conditionValue == false))))
   {
-    eval.Commit();
-    csRef<WrappedChild> newWrapper;
-    newWrapper.AttachNew (new WrappedChild);
-    if (parseOpts & wdnfpoOnlyOneLevelConditions)
-    {
-      parseOpts &= ~wdnfpoHandleConditions;
-    }
+    WrappedChild* newWrapper = new WrappedChild;
     newWrapper->childNode.AttachNew (new csWrappedDocumentNode (eval, this, 
-      node, resolver, shared, globalState, parseOpts));
+      node, resolver, shared, globalState));
     currentWrapper.child->childrenWrappers.Push (newWrapper);
   }
 }
@@ -1811,8 +1507,7 @@ void csWrappedDocumentNode::ProcessSingleWrappedNode (
 template<typename ConditionEval>
 void csWrappedDocumentNode::ProcessWrappedNode (ConditionEval& eval, 
                                                 NodeProcessingState* state, 
-						iDocumentNode* wrappedNode,
-						uint parseOpts)
+						iDocumentNode* wrappedNode)
 {
   if ((wrappedNode->GetType() == CS_NODE_ELEMENT)
     || (wrappedNode->GetType() == CS_NODE_DOCUMENT))
@@ -1821,7 +1516,7 @@ void csWrappedDocumentNode::ProcessWrappedNode (ConditionEval& eval,
     while (state->iter->HasNext ())
     {
       csRef<iDocumentNode> node = state->iter->Next();
-      ProcessSingleWrappedNode (eval, state, node, parseOpts);
+      ProcessSingleWrappedNode (eval, state, node);
     }
     ValidateTemplateEnd (wrappedNode, state);
     ValidateGenerateEnd (wrappedNode, state);
@@ -1830,12 +1525,12 @@ void csWrappedDocumentNode::ProcessWrappedNode (ConditionEval& eval,
 }
 
 template<typename T>
-void csWrappedDocumentNode::ProcessWrappedNode (T& eval, uint parseOpts)
+void csWrappedDocumentNode::ProcessWrappedNode (T& eval)
 {
   NodeProcessingState state;
-  state.currentWrapper.child.AttachNew (new WrappedChild);
+  state.currentWrapper.child = new WrappedChild;
   wrappedChildren.Push (state.currentWrapper.child);
-  ProcessWrappedNode (eval, &state, wrappedNode, parseOpts);
+  ProcessWrappedNode (eval, &state, wrappedNode);
 }
 
 void csWrappedDocumentNode::Report (int severity, iDocumentNode* node, 
@@ -1847,8 +1542,7 @@ void csWrappedDocumentNode::Report (int severity, iDocumentNode* node,
   va_list args;
   va_start (args, msg);
 
-  csRef<iSyntaxService> synsrv =
-    csQueryRegistry<iSyntaxService> (shared->objreg);
+  csRef<iSyntaxService> synsrv = csQueryRegistry<iSyntaxService> (objreg);
   if (synsrv.IsValid ())
   {
     csString str;
@@ -1858,7 +1552,7 @@ void csWrappedDocumentNode::Report (int severity, iDocumentNode* node,
   }
   else
   {
-    csReportV (shared->objreg, severity, messageID, msg, args);
+    csReportV (objreg, severity, messageID, msg, args);
   }
   va_end (args);
 }
@@ -1892,52 +1586,32 @@ const char* csWrappedDocumentNode::GetValue ()
 
 csRef<iDocumentNodeIterator> csWrappedDocumentNode::GetNodes ()
 {
-  if (wrappedChildren.GetSize() > 0)
-  {
-    csWrappedDocumentNodeIterator* iter = 
-      new (shared->iterPool) csWrappedDocumentNodeIterator (this, 0);
-    return csPtr<iDocumentNodeIterator> (iter);
-  }
-  else if (wrappedNode.IsValid())
-    return wrappedNode->GetNodes();
-  else
-    return 0;
+  csWrappedDocumentNodeIterator* iter = 
+    new (shared->iterPool) csWrappedDocumentNodeIterator (this, 0);
+  return csPtr<iDocumentNodeIterator> (iter);
 }
 
 csRef<iDocumentNodeIterator> csWrappedDocumentNode::GetNodes (
   const char* value)
 {
-  if (wrappedChildren.GetSize() > 0)
-  {
-    csWrappedDocumentNodeIterator* iter = 
-      new (shared->iterPool) csWrappedDocumentNodeIterator (this, value);
-    return csPtr<iDocumentNodeIterator> (iter);
-  }
-  else if (wrappedNode.IsValid())
-    return wrappedNode->GetNodes (value);
-  else
-    return 0;
+  csWrappedDocumentNodeIterator* iter = 
+    new (shared->iterPool) csWrappedDocumentNodeIterator (this, value);
+  return csPtr<iDocumentNodeIterator> (iter);
 }
 
 #include "csutil/custom_new_enable.h"
 
 csRef<iDocumentNode> csWrappedDocumentNode::GetNode (const char* value)
 {
-  if (wrappedChildren.GetSize() > 0)
+  WrapperWalker walker (wrappedChildren, resolver);
+  while (walker.HasNext ())
   {
-    WrapperWalker walker (wrappedChildren, resolver);
-    while (walker.HasNext ())
-    {
-      iDocumentNode* node = walker.Next ();
-      if (strcmp (node->GetValue (), value) == 0)
-	return node;
-    }
-    return 0;
+    iDocumentNode* node = walker.Next ();
+    if (strcmp (node->GetValue (), value) == 0)
+      return node;
   }
-  else if (wrappedNode.IsValid())
-    return wrappedNode->GetNode (value);
-  else
-    return 0;
+
+  return 0;
 }
 
 const char* csWrappedDocumentNode::GetContentsValue ()
@@ -1992,223 +1666,10 @@ bool csWrappedDocumentNode::GetAttributeValueAsBool (const char* name,
   return wrappedNode->GetAttributeValueAsBool (name, defaultvalue);
 }
 
-// Magic value to validate it's a wrapped doc and that the format is right
-static const uint32 cachedWrappedDocMagic = 0x01214948;
-
-bool csWrappedDocumentNode::StoreToCache (iFile* cacheFile,
-  ForeignNodeStorage& foreignNodes, const ConditionsWriter& condWriter)
-{
-  uint32 magicLE = csLittleEndian::UInt32 (cachedWrappedDocMagic);
-  if (cacheFile->Write ((char*)&magicLE, sizeof (magicLE)) != sizeof (magicLE))
-    return false;
-
-  //ForeignNodeStorage foreignNodes (shared->plugin);
-  //if (!foreignNodes.StartUse (cacheFile)) return false;
-  if (!StoreToCacheReal (cacheFile, foreignNodes, condWriter)) return false;
-  //if (!foreignNodes.EndUse ()) return false;
-  return true;
-}
-
-void csWrappedDocumentNode::CollectUsedConditions (ConditionsWriter& condWrite)
-{
-  CollectUsedConditions (wrappedChildren, condWrite);
-}
-
-bool csWrappedDocumentNode::StoreToCacheReal (iFile* cacheFile,
-                                          ForeignNodeStorage& foreignNodes,
-                                          const ConditionsWriter& condWriter)
-{
-  int32 wrappedNodeID;
-  if (wrappedChildren.GetSize() > 0)
-    wrappedNodeID = foreignNodes.StoreNodeShallow (wrappedNode);
-  else
-    wrappedNodeID = foreignNodes.StoreNodeDeep (wrappedNode);
-  int32 wrappedNodeLE = csLittleEndian::Int32 (wrappedNodeID);
-  if (cacheFile->Write ((char*)&wrappedNodeLE, sizeof (wrappedNodeLE))
-      != sizeof (wrappedNodeLE)) return false;
-  
-  return StoreWrappedChildren (cacheFile, foreignNodes, wrappedChildren,
-    condWriter);
-}
-
-bool csWrappedDocumentNode::ReadFromCache (iFile* cacheFile,
-  ForeignNodeReader& foreignNodes, 
-  const ConditionsReader& condReader, ConditionDumper& condDump)
-{
-  uint32 magic;
-  if (cacheFile->Read ((char*)&magic, sizeof (magic)) != sizeof (magic))
-    return false;
-  if (csLittleEndian::UInt32 (magic) != cachedWrappedDocMagic)
-    return false;
-
-  //ForeignNodeReader foreignNodes (shared->plugin);
-  //if (!foreignNodes.StartUse (cacheFile)) return false;
-  if (!ReadFromCacheReal (cacheFile, foreignNodes, condReader, condDump)) return false;
-  //if (!foreignNodes.EndUse ()) return false;
-  return true;
-}
-
-bool csWrappedDocumentNode::ReadFromCacheReal (iFile* cacheFile,
-                                           ForeignNodeReader& foreignNodes,
-                                           const ConditionsReader& condReader,
-					   ConditionDumper& condDump)
-{
-  int32 wrappedNodeLE;
-  if (cacheFile->Read ((char*)&wrappedNodeLE, sizeof (wrappedNodeLE))
-      != sizeof (wrappedNodeLE)) return false;
-  wrappedNode = foreignNodes.GetNode (csLittleEndian::Int32 (wrappedNodeLE));
-  if (!wrappedNode.IsValid()) return false;
-  
-  return ReadWrappedChildren (cacheFile, foreignNodes, wrappedChildren,
-    condReader, condDump);
-}
-
-enum
-{
-  childValue = 0x80000000,
-  childIsNull = 0x40000000,
-  conditionIsTrue = 0x20000000,
-
-  flagsExtract = 0xe0000000
-};
-
-bool csWrappedDocumentNode::StoreWrappedChildren (iFile* file, 
-  ForeignNodeStorage& foreignNodes, const csRefArray<WrappedChild>& children,
-  const ConditionsWriter& condWriter)
-{
-  uint32 numChildrenLE = csLittleEndian::UInt32 ((uint32)children.GetSize());
-  if (file->Write ((char*)&numChildrenLE, sizeof (numChildrenLE))
-      != sizeof (numChildrenLE)) return false;
-
-  for (size_t i = 0; i < children.GetSize(); i++)
-  {
-    uint32 flags = 0;
-    if (children[i]->GetConditionValue()) flags |= childValue;
-    
-    csRef<iWrappedDocumentNode> wrapper;
-    if (!children[i]->childNode.IsValid())
-    {
-      flags |= childIsNull;
-    }
-    else
-    {
-      wrapper =
-        scfQueryInterface<iWrappedDocumentNode> (children[i]->childNode);
-      CS_ASSERT(wrapper);
-    }
-    
-    if (children[i]->condition == csCondAlwaysTrue)
-      flags |= conditionIsTrue;
-    else if (children[i]->condition == csCondAlwaysFalse)
-    {
-      /* AlwaysFalse and 'true' condition value should've been filtered out
-         earlier ... */
-      CS_ASSERT (!children[i]->GetConditionValue());
-      /* AlwaysFalse and 'false' condition value is equivalent to
-         AlwaysTrue and 'true', so convert into that */
-      flags |= conditionIsTrue;
-      flags &= ~childValue;
-    }
-
-    uint32 flagsAndCond = flags;
-    if (children[i]->condition != csCondAlwaysTrue)
-    {
-      flagsAndCond |= condWriter.GetDiskID (children[i]->condition);
-    }
-    
-    uint32 flagsAndCondLE = csLittleEndian::UInt32 (flagsAndCond);
-    if (file->Write ((char*)&flagsAndCondLE, sizeof (flagsAndCondLE))
-	!= sizeof (flagsAndCondLE)) return false;
-
-    if (wrapper.IsValid())
-    {
-      csWrappedDocumentNode* child = static_cast<csWrappedDocumentNode*> (
-	(iWrappedDocumentNode*)wrapper);
-      if (!child->StoreToCacheReal (file, foreignNodes, condWriter))
-	return false;
-    }
-    if (!StoreWrappedChildren (file, foreignNodes, children[i]->childrenWrappers,
-        condWriter))
-      return false;
-  }
-  return true;
-}
-  
-void csWrappedDocumentNode::CollectUsedConditions (
-  const csRefArray<WrappedChild>& children, ConditionsWriter& condWriter)
-{
-  for (size_t i = 0; i < children.GetSize(); i++)
-  {
-    condWriter.GetDiskID (children[i]->condition);
-    
-    csRef<iWrappedDocumentNode> wrapper;
-    wrapper =
-      scfQueryInterfaceSafe<iWrappedDocumentNode> (children[i]->childNode);
-    
-    if (wrapper.IsValid())
-    {
-      csWrappedDocumentNode* child = static_cast<csWrappedDocumentNode*> (
-	(iWrappedDocumentNode*)wrapper);
-      child->CollectUsedConditions (condWriter);
-    }
-    CollectUsedConditions (children[i]->childrenWrappers,
-      condWriter);
-  }
-}
-
-bool csWrappedDocumentNode::ReadWrappedChildren (iFile* file,
-  ForeignNodeReader& foreignNodes, csRefArray<WrappedChild>& children,
-  const ConditionsReader& condReader, ConditionDumper& condDump)
-{
-  uint32 numChildrenLE;
-  if (file->Read ((char*)&numChildrenLE, sizeof (numChildrenLE))
-      != sizeof (numChildrenLE)) return false;
-      
-  size_t numChildren = csLittleEndian::UInt32 (numChildrenLE);
-  children.SetSize (numChildren);
-  for (size_t i = 0; i < numChildren; i++)
-  {
-    uint32 flagsAndCondLE;
-    if (file->Read ((char*)&flagsAndCondLE, sizeof (flagsAndCondLE))
-	!= sizeof (flagsAndCondLE)) return false;
-    uint32 flags = csLittleEndian::UInt32 (flagsAndCondLE) & flagsExtract;
-    
-    csRef<WrappedChild> child;
-    child.AttachNew (new WrappedChild);
-    child->SetConditionValue ((flags & childValue) != 0);
-    
-    if ((flags & conditionIsTrue) != 0)
-      child->condition = csCondAlwaysTrue;
-    else
-    {
-      child->condition = condReader.GetConditionID (
-        csLittleEndian::UInt32 (flagsAndCondLE) & ~flagsExtract);
-      if (condDump.DoesDumping())
-      {
-        csString condStr (condDump.GetConditionString (child->condition));
-        condDump.Dump (child->condition, condStr, condStr.Length());
-      }
-    }
-    if ((flags & childIsNull) == 0)
-    {
-      csWrappedDocumentNode* childWrapper = new csWrappedDocumentNode (
-        this, resolver, shared);
-      if (!childWrapper->ReadFromCacheReal (file, foreignNodes, condReader, condDump))
-        return false;
-      child->childNode.AttachNew (childWrapper);
-    }
-    if (!ReadWrappedChildren (file, foreignNodes, child->childrenWrappers,
-        condReader, condDump))
-      return false;
-    children.Put (i, child);
-  }
-  return true;
-}
-
 //---------------------------------------------------------------------------
 
 csWrappedDocumentNode::WrapperWalker::WrapperWalker (
-  csRefArray<WrappedChild>& wrappedChildren, iConditionResolver* resolver)
+  csPDelArray<WrappedChild>& wrappedChildren, iConditionResolver* resolver)
 {
   SetData (wrappedChildren, resolver);
 }
@@ -2218,7 +1679,7 @@ csWrappedDocumentNode::WrapperWalker::WrapperWalker ()
 }
 
 void csWrappedDocumentNode::WrapperWalker::SetData (
-  csRefArray<WrappedChild>& wrappedChildren, iConditionResolver* resolver)
+  csPDelArray<WrappedChild>& wrappedChildren, iConditionResolver* resolver)
 {
   currentPos = &posStack.GetExtend (0);
   currentPos->currentIndex = 0;
@@ -2246,7 +1707,7 @@ void csWrappedDocumentNode::WrapperWalker::SeekNext()
       else
       {
         if ((wrapper.condition == csCondAlwaysTrue)
-          || (resolver->Evaluate (wrapper.condition) == wrapper.GetConditionValue()))
+          || (resolver->Evaluate (wrapper.condition) == wrapper.conditionValue))
 	{
 	  currentPos = &posStack.GetExtend (posStack.GetSize ());
 	  currentPos->currentIndex = 0;
@@ -2354,7 +1815,7 @@ csRef<iDocumentNode> csWrappedDocumentNodeIterator::Next ()
 //---------------------------------------------------------------------------
 
 csWrappedDocumentNodeFactory::csWrappedDocumentNodeFactory (
-  csXMLShaderCompiler* plugin) : plugin (plugin), objreg (plugin->objectreg)
+  csXMLShaderCompiler* plugin) : plugin (plugin)
 {
   InitTokenTable (pitokens);
   pitokens.Register ("Template", PITOKEN_TEMPLATE_NEW);
@@ -2371,6 +1832,28 @@ csWrappedDocumentNodeFactory::csWrappedDocumentNodeFactory (
   pitokens.Register ("SElsIfNDef", PITOKEN_STATIC_ELSIFNDEF);
   pitokens.Register ("SElse", PITOKEN_STATIC_ELSE);
   pitokens.Register ("SEndIf", PITOKEN_STATIC_ENDIF);
+}
+
+void csWrappedDocumentNodeFactory::DumpCondition (size_t id, 
+						  const char* condStr, 
+						  size_t condLen)
+{
+  if (currentOut)
+  {
+    switch (id)
+    {
+      case csCondAlwaysTrue:
+	currentOut->AppendFmt ("condition \"always true\" = '");
+	break;
+      case csCondAlwaysFalse:
+	currentOut->AppendFmt ("condition \"always false\" = '");
+	break;
+      default:
+        currentOut->AppendFmt ("condition %zu = '", id);
+    }
+    currentOut->Append (condStr, condLen);
+    currentOut->Append ("'\n");
+  }
 }
 
 void csWrappedDocumentNodeFactory::DebugProcessing (const char* format, ...)
@@ -2393,44 +1876,31 @@ struct EvalCondTree
   void SwitchBranch () { condTree.SwitchBranch (); }
   void Ascend (int num) { condTree.Ascend (num); }
   int GetBranch() const { return condTree.GetBranch(); }
-  void Commit() { condTree.Commit(); }
 };
 
 csWrappedDocumentNode* csWrappedDocumentNodeFactory::CreateWrapper (
   iDocumentNode* wrappedNode, iConditionResolver* resolver, 
   csConditionEvaluator& evaluator, 
-  const csRefArray<iDocumentNode>& extraNodes, csString* dumpOut,
-  uint parseOpts, const MyBitArrayTemp* presetCondResults)
+  const csRefArray<iDocumentNode>& extraNodes, csString* dumpOut)
 {
-  ConditionDumper condDump (dumpOut, &evaluator);
+  currentOut = dumpOut;
 
   csWrappedDocumentNode* node;
   {
     EvalCondTree eval (evaluator);
-    if (presetCondResults)
-      eval.condTree.PresetConditions (*presetCondResults);
-    if (parseOpts & wdnfpoHandleConditions)
+    for (size_t i = 0; i < extraNodes.GetSize(); i++)
     {
-      for (size_t i = 0; i < extraNodes.GetSize(); i++)
-      {
-	csRef<csWrappedDocumentNode::GlobalProcessingState> globalState;
-	globalState.AttachNew (csWrappedDocumentNode::GlobalProcessingState::Create ());
-	globalState->vfs = csQueryRegistry<iVFS> (objreg);
-	CS_ASSERT (globalState->vfs);
-	globalState->condDumper = &condDump;
-	/* "extra nodes" here just contribute to the conditions in the condition
-	* tree, so they're parsed, but not retained. */
-	delete new csWrappedDocumentNode (eval, 0, extraNodes[i], resolver, 
-	  this, globalState, parseOpts);
-      }
+      csRef<csWrappedDocumentNode::GlobalProcessingState> globalState;
+      globalState.AttachNew (csWrappedDocumentNode::GlobalProcessingState::Create ());
+      /* "extra nodes" here just contribute to the conditions in the condition
+       * tree, so they're parsed, but not retained. */
+      delete new csWrappedDocumentNode (eval, 0, extraNodes[i], resolver, 
+        this, globalState);
     }
     csRef<csWrappedDocumentNode::GlobalProcessingState> globalState;
     globalState.AttachNew (csWrappedDocumentNode::GlobalProcessingState::Create ());
-    globalState->vfs = csQueryRegistry<iVFS> (objreg);
-    CS_ASSERT (globalState->vfs);
-    globalState->condDumper = &condDump;
     node = new csWrappedDocumentNode (eval, 0, wrappedNode, resolver, this,
-      globalState, parseOpts);
+      globalState);
     eval.condTree.ToResolver (resolver);
     if (plugin->doDumpValues && dumpOut)
     {
@@ -2463,94 +1933,29 @@ struct EvalStatic
     CS_ASSERT(currentBranch == 0);
     currentBranch = 1;
   }
-  void Ascend (int num)
+  void Ascend (int num) 
   { 
     while (num-- > 0)
       branchStack.Pop ();
   }
   int GetBranch() const { return currentBranch; }
-  void Commit () {}
 };
 
 csWrappedDocumentNode* csWrappedDocumentNodeFactory::CreateWrapperStatic (
-  iDocumentNode* wrappedNode, iConditionResolver* resolver, csString* dumpOut,
-  uint parseOptions)
+  iDocumentNode* wrappedNode, iConditionResolver* resolver, csString* dumpOut)
 {
-  ConditionDumper condDump (dumpOut, 0);
+  currentOut = dumpOut;
 
   csWrappedDocumentNode* node;
   {
     csRef<csWrappedDocumentNode::GlobalProcessingState> globalState;
     globalState.AttachNew (csWrappedDocumentNode::GlobalProcessingState::Create ());
-    globalState->vfs = csQueryRegistry<iVFS> (objreg);
-    CS_ASSERT (globalState->vfs);
-    globalState->condDumper = &condDump;
     EvalStatic eval (resolver);
     node = new csWrappedDocumentNode (eval, 0, wrappedNode, resolver, this, 
-      globalState, parseOptions);
+      globalState);
     CS_ASSERT(globalState->GetRefCount() == 1);
   }
   return node;
-}
-
-csWrappedDocumentNode* csWrappedDocumentNodeFactory::CreateWrapperFromCache (
-  iFile* cacheFile, iConditionResolver* resolver, csConditionEvaluator& evaluator,
-  ForeignNodeReader& foreignNodes, const ConditionsReader& condReader, csString* dumpOut)
-{
-  ConditionDumper condDump (dumpOut, &evaluator);
-  csWrappedDocumentNode* node;
-  node = new csWrappedDocumentNode (0, resolver, this);
-  if (!node->ReadFromCache (cacheFile, foreignNodes, condReader, condDump))
-  {
-    delete node;
-    return 0;
-  }
-  return node;
-}
-
-//---------------------------------------------------------------------------
-
-void ConditionDumper::Dump (size_t id, const char* condStr, size_t condLen)
-{
-  if (currentOut)
-  {
-    if ((seenConds.GetSize() > id) && (seenConds[id])) return;
-    
-    switch (id)
-    {
-      case csCondAlwaysTrue:
-	currentOut->AppendFmt ("condition \"always true\" = '");
-	break;
-      case csCondAlwaysFalse:
-	currentOut->AppendFmt ("condition \"always false\" = '");
-	break;
-      default:
-	{
-	  if (seenConds.GetSize() <= id) seenConds.SetSize (id+1);
-	  seenConds.SetBit (id);
-	  
-	  if (currentEval)
-	  {
-	    const CondOperation& condOp = currentEval->GetCondition (id);
-	    if (condOp.left.type == operandOperation)
-	    {
-	      csString condStr;
-	      condStr = currentEval->GetConditionString (condOp.left.operation);
-	      Dump (condOp.left.operation, condStr, condStr.Length ());
-	    }
-	    if (condOp.right.type == operandOperation)
-	    {
-	      csString condStr;
-	      condStr = currentEval->GetConditionString (condOp.right.operation);
-	      Dump (condOp.right.operation, condStr, condStr.Length ());
-	    }
-	  }
-	}
-        currentOut->AppendFmt ("condition %zu = '", id);
-    }
-    currentOut->Append (condStr, condLen);
-    currentOut->Append ("'\n");
-  }
 }
 
 }

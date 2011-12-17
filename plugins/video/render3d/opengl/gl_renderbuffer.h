@@ -32,16 +32,17 @@ class csGLStateCache;
 CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 {
 
-class csGLGraphics3D;
-
-static const GLenum compGLtypes[CS_BUFCOMP_BASE_TYPECOUNT] =
+static const GLenum compGLtypes[CS_BUFCOMP_TYPECOUNT] =
 {
   GL_BYTE, GL_UNSIGNED_BYTE,
   GL_SHORT, GL_UNSIGNED_SHORT,
   GL_INT, GL_UNSIGNED_INT,
   GL_FLOAT,
   GL_DOUBLE,
-  GL_HALF_FLOAT
+
+  GL_BYTE, GL_UNSIGNED_BYTE,
+  GL_SHORT, GL_UNSIGNED_SHORT,
+  GL_INT, GL_UNSIGNED_INT,
 };
 
 enum csGLRenderBufferLockType
@@ -55,9 +56,8 @@ class csGLVBOBufferManager : public scfImplementation1<csGLVBOBufferManager,
 {
 public:  
   CS_LEAKGUARD_DECLARE (csGLVBOBufferManager);
-  csGLVBOBufferManager (csGLGraphics3D* G3D, csGLExtensionManager *ext,
-    csGLStateCache *state, size_t maxAlloction = 64*1024*1024,
-    bool forceSeparateVBOs = false);
+  csGLVBOBufferManager (csGLExtensionManager *ext, csGLStateCache *state, 
+    size_t maxAlloction = 64*1024*1024);
   virtual ~csGLVBOBufferManager ();
 
   /**
@@ -87,12 +87,9 @@ private:
   // Internal constants
   enum
   {
-    // Bit 0: indicates whether the buffer is a vertex or index buffer
-    VBO_BUFFER_IS_VERTEX = 0,
-    VBO_BUFFER_IS_INDEX = 1,
-    // Bit 1: if set, buffer is static
-    VBO_BUFFER_IS_STATIC = 2,
-    VBO_BUFFER_TYPE_COUNT = 4,
+    VBO_BUFFER_VERTEX = 0,
+    VBO_BUFFER_INDEX = 1,
+    VBO_BUFFER_TYPE_COUNT = 2,
 
     // Smallest allocation slot is 256 byte
     VBO_MIN_SLOT_SIZE_PO2 = 8,
@@ -107,13 +104,11 @@ private:
   static const size_t VBO_SLOT_PER_BUFFER[VBO_NUM_SLOT_SIZES];
 
   // Global state
-  csGLGraphics3D* G3D;
   csGLExtensionManager *extensionManager; 
   csGLStateCache *stateCache;
 
   size_t currentVBOAllocation;
   size_t maxVBOAllocation;
-  bool forceSeparateVBOs;
 
   struct VBOSlot;
 
@@ -181,9 +176,6 @@ private:
   {
     return csMax<size_t> (csLog2 (csFindNearestPowerOf2 ((int)size)), VBO_MIN_SLOT_SIZE_PO2);
   }
-  
-  inline bool IsSizePO2Slotted (size_t slotSizePO2) const
-  { return !forceSeparateVBOs && (slotSizePO2 <= VBO_MAX_SLOT_SIZE_PO2); }
 
   // Given a renderbuffer, get a VBO slot if possible, otherwise 0
   VBOSlot* GetVBOSlot (iRenderBuffer* buffer);

@@ -22,8 +22,6 @@
  * subdirectory of the top Crystal Space include directory.
  */
 #include "cssysdef.h"
-#include "cstool/animeshtools.h"
-#include "cstool/animnodetmpl.h"
 #include "cstool/basetexfact.h"
 #include "cstool/bitmasktostr.h"
 #include "cstool/collider.h"
@@ -33,7 +31,6 @@
 #include "cstool/cspixmap.h"
 #include "cstool/csview.h"
 #include "cstool/debugimagewriter.h"
-#include "cstool/demoapplication.h"
 #include "cstool/enginetools.h"
 #include "cstool/fogmath.h"
 #include "cstool/framedataholder.h"
@@ -43,10 +40,7 @@
 #include "cstool/initapp.h"
 #include "cstool/keyval.h"
 #include "cstool/mapnode.h"
-#include "cstool/materialbuilder.h"
-#include "cstool/meshfilter.h"
 #include "cstool/meshobjtmpl.h"
-#include "cstool/mocapparser.h"
 #include "cstool/normalcalc.h"
 #include "cstool/numberedfilenamehelper.h"
 #include "cstool/objmodel.h"

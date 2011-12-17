@@ -29,9 +29,6 @@ struct iEngine;
 struct iReporter;
 struct iPluginManager;
 struct iObjectRegistry;
-struct iSpriteAction;
-struct iSprite3DFactoryState;
-struct iSpriteFrame;
 
 namespace CS
 {
@@ -52,11 +49,6 @@ private:
   iObjectRegistry* object_reg;
   csRef<iSyntaxService> synldr;
 
-  template<typename FloatGetter>
-  bool ReadFrame (iSprite3DFactoryState* spr3dLook, iSpriteFrame* fr, const char*& p,
-		  bool has_normals);
-  template<typename FloatGetter>
-  bool ReadAction (iSprite3DFactoryState* spr3dLook, iSpriteAction* act, const char*& p);
 public:
   /// Constructor.
   csSprite3DBinFactoryLoader (iBase*);
@@ -69,10 +61,7 @@ public:
 
   /// Parse data  and return a new object for it.
   virtual csPtr<iBase> Parse (iDataBuffer* data,
-    iStreamSource*, iLoaderContext* ldr_context, iBase* context,
-    iStringArray*);
-
-  virtual bool IsThreadSafe() { return true; }
+    iStreamSource*, iLoaderContext* ldr_context, iBase* context);
 };
 
 /**

@@ -20,7 +20,6 @@
 #ifndef __CS_CSGFX_VERTEXLISTWALKER_H__
 #define __CS_CSGFX_VERTEXLISTWALKER_H__
 
-#include "csutil/csendian.h"
 #include "cstool/rbuflock.h"
 
 /**\file
@@ -31,7 +30,7 @@
  * Helper class to make it easier to iterate over elements from
  * renderbuffers, with automatic conversion to \a Tbase. Elements
  * can also be queried as \a Tcomplex, which must consist of multiple
- * \a Tbase and support left- and right-value operator[].
+ * \a Tbase.
  * \remarks The element actually returned (converted or not) is stored 
  *  in an array internal to the class. That has the consequence that for a
  *  queried element, you will only get what you expect as long as 
@@ -39,7 +38,7 @@
  *  have to copy it! This also means you cannot really manipulate the
  *  buffer this way...
  */
-template<typename Tbase, typename Tcomplex = Tbase[4]>
+template<typename Tbase, typename Tcomplex = Tbase>
 class csVertexListWalker
 {
 public:
@@ -60,6 +59,7 @@ public:
     bufferComponents = buffer ? buffer->GetComponentCount () : 0;
     components = (desiredComponents != 0) ? desiredComponents : 
       bufferComponents;
+    CS_ASSERT (components <= maxComponents);
     if (buffer)
     {
       elements = buffer->GetElementCount();
@@ -75,15 +75,17 @@ public:
 
   //@{
   /// Get current element.
-  operator Tcomplex const& () const
+  operator Tbase const*() const
   {
     CS_ASSERT(currElement<elements);
-    return converted;
+    return convertedComps;
   }
   const Tcomplex& operator*() const
   {
     CS_ASSERT(currElement<elements);
-    return converted;
+    const Tbase* x = convertedComps;
+    const Tcomplex* y = (Tcomplex*)x;
+    return *y;
   }
   //@}
 
@@ -106,14 +108,6 @@ public:
   
   /// Get number of elements in the iterated buffer.
   size_t GetSize() const { return elements; }
-  
-  /// Set position to a specific element
-  void SetElement (size_t newElement)
-  {
-    CS_ASSERT(newElement < elements);
-    currElement = newElement;
-    FetchCurrentElement();
-  }
 private:
   /// Number of elements
   size_t elements;
@@ -126,8 +120,10 @@ private:
   size_t components;
   /// Number of components in the buffer
   size_t bufferComponents;
+  /// Max number of components this class can handle
+  enum { maxComponents = 4 };
   /// Converted components are stored here
-  Tcomplex converted;
+  Tbase convertedComps[maxComponents];
   /// Default component values
   const Tbase* const defaultComponents;
   /// Component type
@@ -147,25 +143,12 @@ private:
     uint8* data = bufLock + (currElement * bufferComponents * sizeof (C));
     for (size_t c = 0; c < components; c++)
     {
-      converted[c] = 
+      convertedComps[c] = 
 	(c < bufferComponents) ? Tbase(*(C*)data) :
 	GetDefaultComponent (c);
       data += sizeof (C);
     }
   }
-
-  void FetchCurrentElementHalf()
-  {
-    uint16* data = (uint16*)((uint8*)bufLock) + (currElement * bufferComponents);
-    for (size_t c = 0; c < components; c++)
-    {
-      converted[c] = 
-	(c < bufferComponents) ? Tbase (csIEEEfloat::ToNative (*data)) :
-	GetDefaultComponent (c);
-      data++;
-    }
-  }
-  
   template<typename C, bool Signed, int range>
   void FetchCurrentElementRealNorm()
   {
@@ -189,7 +172,7 @@ private:
       }
       else
         newComp = GetDefaultComponent (c);
-      converted[c] = newComp;
+      convertedComps[c] = newComp;
       data += sizeof (C);
     }
   }
@@ -248,9 +231,6 @@ private:
 	break;
       case CS_BUFCOMP_DOUBLE:
         FetchCurrentElementReal<double>();
-	break;
-      case CS_BUFCOMP_HALF:
-        FetchCurrentElementHalf ();
 	break;
     }
   }

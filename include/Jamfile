@@ -30,14 +30,10 @@ Recurse FilelistEntryHeader : .h .i .inc .fun .tok ;
 # they are specialized polymorphic files intended for inclusion several times
 # under different contexts.
 CS_MASTER_HEADER_REJECTS =
-  [ Wildcard [ ConcatDirs csplugincommon directx       ] : *.h ]
-  [ Wildcard [ ConcatDirs csplugincommon macosx        ] : *.h ]
-  [ Wildcard [ ConcatDirs csplugincommon opengl        ] : *.h ]
-  [ Wildcard [ ConcatDirs csplugincommon win32         ] : *.h ]
-  [ Wildcard [ ConcatDirs csplugincommon rendermanager ] : *.h ]
-  [ Wildcard [ ConcatDirs cstool noise                 ] : *.h ]
-  [ Wildcard [ ConcatDirs cstool noise model           ] : *.h ]
-  [ Wildcard [ ConcatDirs cstool noise module          ] : *.h ]
+  [ Wildcard [ ConcatDirs csplugincommon directx ] : *.h ]
+  [ Wildcard [ ConcatDirs csplugincommon macosx  ] : *.h ]
+  [ Wildcard [ ConcatDirs csplugincommon opengl  ] : *.h ]
+  [ Wildcard [ ConcatDirs csplugincommon win32   ] : *.h ]
   [ ConcatDirs cstool   tokenlist.h  ]
   [ ConcatDirs csutil   archive.h    ]
   [ ConcatDirs csutil   csosdefs.h   ]
@@ -66,7 +62,6 @@ CS_MASTER_HEADER_REJECTS =
 # are deprecated.
 CS_MASTER_HEADER_REJECTS +=
   [ ConcatDirs iengine collectn.h     ]
-  [ ConcatDirs csutil   csmd5.h           ]
   [ ConcatDirs csutil   scopedmutexlock.h ]
   [ ConcatDirs csutil   win32 msvc_deprecated_warn_off.h ]
   [ ConcatDirs csutil   win32 msvc_deprecated_warn_on.h ]
@@ -76,26 +71,22 @@ CS_MASTER_HEADER_REJECTS +=
 # are platform-specific.
 CS_MASTER_HEADER_REJECTS +=
   [ ConcatDirs csutil generic   regex.h             ]
-  [ Wildcard [ ConcatDirs csutil threading ] : atomicops_*.h ]
+  [ ConcatDirs csutil threading atomicops_gcc_ppc.h ]
+  [ ConcatDirs csutil threading atomicops_gcc_x86.h ]
+  [ ConcatDirs csutil threading atomicops_msvc.h    ]
+  [ ConcatDirs csutil threading atomicops_sparc.h   ]
   [ ConcatDirs csutil threading pthread_condition.h ]
   [ ConcatDirs csutil threading pthread_mutex.h     ]
   [ ConcatDirs csutil threading pthread_thread.h    ]
-  [ ConcatDirs csutil threading pthread_tls.h       ]
   [ ConcatDirs csutil threading win32_apifuncs.h    ]
   [ ConcatDirs csutil threading win32_condition.h   ]
   [ ConcatDirs csutil threading win32_mutex.h       ]
-  [ ConcatDirs csutil threading win32_thread.h      ] 
-  [ ConcatDirs csutil threading win32_tls.h         ]
+  [ ConcatDirs csutil threading win32_thread.h      ]  
   ;
 
-# List of headers that should not appear in the master-headers because they 
-# may somehow conflict with platform headers.
-CS_MASTER_HEADER_REJECTS +=
-  [ ConcatDirs csutil   win32 DbgHelpAPI.h ]
-  ;
-  
 {
   local CSWIN32LIBS_REJECTS =
+    caca.h
     CEGUI*.h
     d3d.h
     d3dcaps.h

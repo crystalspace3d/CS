@@ -71,14 +71,14 @@ void csCameraPosition::Set (
 
 bool csCameraPosition::Load (iCamera *camera, iEngine *e)
 {
-  // First get the collection for this camera position.
-  csRef<iCollection> this_collection;
+  // First get the region for this camera position.
+  csRef<iRegion> this_region;
   if (GetObjectParent () != 0)
   {
-    this_collection = scfQueryInterface<iCollection> (GetObjectParent ());
+    this_region = scfQueryInterface<iRegion> (GetObjectParent ());
   }
 
-  iSector *room = e->FindSector (sector, this_collection);
+  iSector *room = e->FindSector (sector, this_region);
   if (!room)
     room = e->FindSector (sector);	// Try globally.
   if (!room) return false;
@@ -91,22 +91,6 @@ bool csCameraPosition::Load (iCamera *camera, iEngine *e)
   camera->SetFarPlane (far_plane);
 
   return true;
-}
-
-void csCameraPosition::Save (iCamera* camera)
-{
-  sector = camera->GetSector ()->QueryObject ()->GetName ();
-  csReversibleTransform& transform = camera->GetTransform ();
-  position = transform.GetOrigin ();
-  upward.Set (0.0f, 1.0f, 0.0f);
-  upward = transform.This2OtherRelative (upward);
-  forward.Set (0.0f, 0.0f, 1.0f);
-  forward = transform.This2OtherRelative (forward);
-  ClearFarPlane ();
-  far_plane = camera->GetFarPlane ();
-  // Copy the plane if it is valid
-  if (far_plane)
-    far_plane = new csPlane3 (*far_plane);
 }
 
 void csCameraPosition::SetFarPlane (csPlane3 *fp)

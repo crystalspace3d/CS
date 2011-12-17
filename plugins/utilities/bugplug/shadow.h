@@ -30,6 +30,8 @@ struct iEngine;
 struct iMeshWrapper;
 struct iCamera;
 
+#include "csutil/deprecated_warn_off.h"
+
 /**
  * BugPlug is the hiding place for many dark creatures. While Spider only
  * places a curse on the country and any unsuspecting wanderer that might
@@ -157,7 +159,7 @@ public:
   virtual iMaterialWrapper* GetMaterialWrapper () const { return 0; }
   virtual void SetMixMode (uint) { }
   virtual uint GetMixMode () const { return CS_FX_COPY; }
-
+  virtual void InvalidateMaterialHandles () { }
   /**
    * see imesh/object.h for specification. The default implementation
    * does nothing.
@@ -170,5 +172,7 @@ public:
   }
 
 };
+
+#include "csutil/deprecated_warn_on.h"
 
 #endif // __CS_SHADOW_H__

@@ -55,7 +55,6 @@
  *   (as some members will be likely bogus.)
  * \sa csArray
  * \sa csMemoryPool
- * \sa CS::Memory::FixedSizeAllocatorSafe for a thread-safe version
  */
 template <size_t Size, class Allocator = CS::Memory::AllocatorMalloc>
 class csFixedSizeAllocator
@@ -279,32 +278,6 @@ protected: // 'protected' allows access by test-suite.
     }
     return true;
   }
-  /**
-   * Free all objects without releasing the memory blocks themselves.
-   * This works almost as DisposeAll but does not free the memory.
-   * \param disposer Disposer object that is passed to DestroyObject().
-   */
-  template<typename Disposer>
-  void FreeAll (Disposer& disposer)
-  {
-    insideDisposeAll = true;
-    csBitArray const mask(GetAllocationMap());
-    size_t node = 0;
-    for (size_t b = 0, bN = blocks.b.GetSize(); b < bN; b++)
-    {
-      for (uint8 *p = blocks.b[b], *pN = p + blocksize; p < pN; p += elsize)
-      {
-        if (mask.IsBitSet(node++))
-        {
-          DestroyObject (disposer, p);
-          FreeNode* f = (FreeNode*)p;
-          f->next = freenode;
-          freenode = f;          
-        }
-      }
-    }
-    insideDisposeAll = false;
-  }
 
   /// Find and allocate a block
   void* AllocCommon ()
@@ -381,9 +354,6 @@ public:
     elcount (other.elcount), elsize (other.elsize), 
     blocksize (other.blocksize), freenode (0), insideDisposeAll (false)
   {
-#ifdef CS_MEMORY_TRACKER
-    blocks.SetMemTrackerInfo (typeid(*this).name());
-#endif
     /* Technically, an allocator can be empty even with freenode != 0 */
     CS_ASSERT(other.freenode == 0);
   }
@@ -452,15 +422,6 @@ public:
       freenode = nextfree;
     }
   }
-  
-  /**
-   * Return number of allocated elements (potentially slow).
-   */
-  size_t GetAllocatedElems() const
-  {
-    csBitArray mask(GetAllocationMap());
-    return mask.NumBitsSet();
-  }
 
   /**
    * Allocate a chunk of memory. 
@@ -508,76 +469,6 @@ public:
   void SetMemTrackerInfo (const char* /*info*/) { }
   /** @} */
 };
-
-namespace CS
-{
-  namespace Memory
-  {
-    /**
-     * Thread-safe allocator for blocks of the same size.
-     * Has the same purpose and interface as csFixedSizeAllocator but is safe
-     * to be used concurrently from different threads.
-     */
-    template <size_t Size, class Allocator = CS::Memory::AllocatorMalloc>
-    class FixedSizeAllocatorSafe :
-      public CS::Memory::AllocatorSafe<csFixedSizeAllocator<Size, Allocator> >
-    {
-    protected:
-      typedef csFixedSizeAllocator<Size, Allocator> WrappedAllocatorType;
-      typedef CS::Memory::AllocatorSafe<csFixedSizeAllocator<Size, Allocator> >
-        AllocatorSafeType;
-    public:
-      FixedSizeAllocatorSafe (size_t nelem = 32) : AllocatorSafeType (nelem)
-      {
-      }
-      FixedSizeAllocatorSafe (size_t nelem, const Allocator& alloc) :
-        AllocatorSafeType (nelem, alloc)
-      {
-      }
-      
-      FixedSizeAllocatorSafe (FixedSizeAllocatorSafe const& other) : 
-	AllocatorSafeType (other)
-      {
-      }
-      
-      void Empty()
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        WrappedAllocatorType::Empty();
-      }
-    
-      void Compact()
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        WrappedAllocatorType::Compact();
-      }
-      
-      size_t GetAllocatedElems() const
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::GetAllocatedElems();
-      }
-    
-      void* Alloc ()
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::Alloc();
-      }
-      using AllocatorSafeType::Alloc;
-    
-      bool TryFree (void* p)
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::TryFree (p);
-      }
-      size_t GetBlockElements() const
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::GetBlockElements();
-      }
-    };
-  } // namespace Memory
-} // namespace CS
 
 /** @} */
 

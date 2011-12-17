@@ -73,14 +73,6 @@ public:
   virtual csLockedHeightData LockHeightData (const csRect& rectangle);
   virtual void UnlockHeightData ();
 
-  virtual csLockedNormalData GetNormalData ();
-  virtual csLockedNormalData LockNormalData (const csRect& rectangle);
-  virtual void UnlockNormalData ();
-  virtual void RecalculateNormalData ();
-  virtual csLockedNormalData GetTangentData ();
-  virtual csLockedNormalData GetBitangentData ();
-  void RecalculateTangentData ();
-
   virtual const csVector2& GetPosition () const;
   virtual const csVector3& GetSize () const;
 
@@ -100,18 +92,10 @@ public:
   virtual void SetBaseMaterial (iMaterialWrapper* material);
   virtual iMaterialWrapper* GetBaseMaterial () const;
 
-  virtual void SetAlphaSplatMaterial (iMaterialWrapper* material);
-  virtual iMaterialWrapper* GetAlphaSplatMaterial () const;
-
-  virtual void SetSplatBaseMaterial (iMaterialWrapper* material);
-  virtual iMaterialWrapper* GetSplatBaseMaterial () const;
-
   virtual bool CollideSegment (const csVector3& start, const csVector3& end,
     bool oneHit, iTerrainVector3Array* points);
   virtual csTerrainColliderCollideSegmentResult CollideSegment (
       const csVector3& start, const csVector3& end);
-  virtual bool CollideSegment (const csVector3& start, const csVector3& end,
-			       csVector3& hitPoint);
 
   virtual bool CollideTriangles (const csVector3* vertices,
     size_t tri_count,
@@ -126,11 +110,9 @@ public:
   virtual float GetHeight (int x, int y) const;
   virtual float GetHeight (const csVector2& pos) const;
 
-  inline csVector3 GetTangentDN (int x, int y) const;
   virtual csVector3 GetTangent (int x, int y) const;
   virtual csVector3 GetTangent (const csVector2& pos) const;
 
-  inline csVector3 GetBinormalDN (int x, int y) const;
   virtual csVector3 GetBinormal (int x, int y) const;
   virtual csVector3 GetBinormal (const csVector2& pos) const;
 
@@ -168,23 +150,15 @@ private:
   csVector2 position;
   csVector3 size;
   float step_x, step_z;
-  float minHeight, maxHeight;
-  csBox3 boundingBox;
   
   csRef<iTerrainCellRenderProperties> renderProperties;
   csRef<iTerrainCellCollisionProperties> collisionProperties;
   csRef<iTerrainCellFeederProperties> feederProperties;
   csRef<iMaterialWrapper> baseMaterial;
-  csRef<iMaterialWrapper> splatBaseMaterial;
-  csRef<iMaterialWrapper> alphaSplatMaterial;
 
   // Stored data (if any)
   csDirtyAccessArray<unsigned char> materialmap;
   csDirtyAccessArray<float> heightmap;
-  csDirtyAccessArray<csVector3> normalmap;
-  bool needTangentsUpdate;
-  csDirtyAccessArray<csVector3> tangentmap;
-  csDirtyAccessArray<csVector3> bitangentmap;
 
   LoadState loadState;
 

@@ -66,44 +66,44 @@ struct iCollection : public virtual iBase
   virtual bool IsParentOf(iObject* obj) = 0;
 
   /**
-   * Find the sector with the given name in this collection. Returns
-   * nullptr if the sector is not found.
+   * Looks to see if this collection contains the sector. If so,
+   * it returns the sector.
    */
   virtual iSector* FindSector(const char *name) = 0;
   
   /**
-   * Find the mesh with the given name in this collection. Returns
-   * nullptr if the mesh is not found.
+   * Looks to see if this collection contains the sector. If so,
+   * it returns the sector.
    */
   virtual iMeshWrapper* FindMeshObject(const char *name) = 0;
 
   /**
-   * Find the mesh factory with the given name in this collection. Returns
-   * nullptr if the mesh factory is not found.
+   * Looks to see if this collection contains the mesh factory. If so,
+   * it returns the mesh factory.
    */
   virtual iMeshFactoryWrapper* FindMeshFactory (const char *name) = 0;
 
   /**
-   * Find the texture with the given name in this collection. Returns
-   * nullptr if the texture is not found.
+   * Looks to see if this collection contains the texture. If so,
+   * it returns the texture.
    */
   virtual iTextureWrapper* FindTexture(const char *name) = 0;
 
   /**
-   * Find the material with the given name in this collection. Returns
-   * nullptr if the material is not found.
+   * Looks to see if this collection contains the material. If so,
+   * it returns the material.
    */
   virtual iMaterialWrapper* FindMaterial(const char *name) = 0;
 
   /**
-   * Find the shader with the given name in this collection. Returns
-   * nullptr if the shader is not found.
+   * Looks to see if this collection contains the shader. If so,
+   * it returns the shader.
    */
   virtual iShader* FindShader(const char *name) = 0;
 
   /**
-   * Find the camera position with the given name in this collection. Returns
-   * nullptr if the camera position is not found.
+   * Looks to see if this collection contains the camera position. If so,
+   * it returns the camera position.
    */
   virtual iCameraPosition* FindCameraPosition(const char *name) = 0;
 };

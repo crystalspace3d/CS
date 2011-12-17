@@ -36,9 +36,10 @@ Help maintainerclean :
 # Set up subdirectories into which the different generated project for 
 # different go.
 MsvcGenSubDir TOP msvc : common ;
+MsvcGenSubDir TOP msvc 7 : 7 ;
+MsvcGenSubDir TOP msvc 71 : 71 ;
 MsvcGenSubDir TOP msvc 8 : 8 ;
 MsvcGenSubDir TOP msvc 9 : 9 ;
-MsvcGenSubDir TOP msvc 10 : 10 ;
 MsvcGenTemplateDir TOP mk msvcgen ;
 
 # Customize the build configurations to contain some defines required by
@@ -58,19 +59,19 @@ MsvcGenConfig CRYSTAL.LIBS : "libcrystalspace.lib" ;
 MsvcGenConfig CRYSTAL.LIBS.DEBUG : "libcrystalspace_d.lib" ;
 MsvcGenConfig CRYSTAL.INCDIRS :
   [ ConcatDirs .. .. .. CS include ]
-  [ ConcatDirs .. .. .. CS win32libs include ]
+  [ ConcatDirs .. .. .. CS include csutil win32 ]
   [ ConcatDirs "$(hash)(CRYSTAL)" include ]
-  [ ConcatDirs "$(hash)(CRYSTAL)" win32libs include ] ;
+  [ ConcatDirs "$(hash)(CRYSTAL)" include csutil win32 ] ;
 MsvcGenConfig CRYSTAL.LIBDIRS :
   [ ConcatDirs .. .. .. CS out release$(MSVC_VERSION) libs ]
-  [ ConcatDirs .. .. .. CS win32libs lib ]
+  [ ConcatDirs .. .. .. CS libs csutil win32 libs ]
   [ ConcatDirs "$(hash)(CRYSTAL)" out release$(MSVC_VERSION) libs ]
-  [ ConcatDirs "$(hash)(CRYSTAL)" win32libs lib ] ;
+  [ ConcatDirs "$(hash)(CRYSTAL)" libs csutil win32 libs ] ;
 MsvcGenConfig CRYSTAL.LIBDIRS.DEBUG :
   [ ConcatDirs .. .. .. CS out debug$(MSVC_VERSION) libs ]
-  [ ConcatDirs .. .. .. CS win32libs lib ]
+  [ ConcatDirs .. .. .. CS libs csutil win32 libs ]
   [ ConcatDirs "$(hash)(CRYSTAL)" out debug$(MSVC_VERSION) libs ]
-  [ ConcatDirs "$(hash)(CRYSTAL)" win32libs lib ] ;
+  [ ConcatDirs "$(hash)(CRYSTAL)" libs csutil win32 libs ] ;
 
 if $(CEL.DESIRED) = yes
 {

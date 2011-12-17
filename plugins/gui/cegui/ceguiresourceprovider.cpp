@@ -17,75 +17,52 @@
 */
 
 #include "cssysdef.h"
+
 #include "iutil/databuff.h"
 #include "iutil/objreg.h"
 
-#include "ceguiimports.h"
 #include "ceguiresourceprovider.h"
 
+#include "CEGUIExceptions.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(cegui)
+csCEGUIResourceProvider::csCEGUIResourceProvider (iObjectRegistry *reg) :
+  CEGUI::ResourceProvider ()
 {
-  //----------------------------------------------------------------------------//
-  ResourceProvider::ResourceProvider (iObjectRegistry *reg) :
-    CEGUI::ResourceProvider ()
+  obj_reg = reg;
+  vfs = csQueryRegistry<iVFS> (obj_reg);
+}
+csCEGUIResourceProvider::~csCEGUIResourceProvider ()
+{
+}
+
+void csCEGUIResourceProvider::loadRawDataContainer (const CEGUI::String& filename,
+    CEGUI::RawDataContainer& output, const CEGUI::String& resourceGroup)
+{
+  csRef<iDataBuffer> buffer = vfs->ReadFile (filename.c_str());
+
+  // Reading failed
+  if (!buffer.IsValid ())
   {
-    obj_reg = reg;
-    vfs = csQueryRegistry<iVFS> (obj_reg);
+    CEGUI::String msg= (uint8*)"csCEGUIResourceProvider::loadRawDataContainer - "
+      "Filename supplied for loading must be valid";
+    msg += (uint8*)" ["+filename+(uint8*)"]";
+    throw CEGUI::InvalidRequestException(msg);
   }
-
-  //----------------------------------------------------------------------------//
-  ResourceProvider::~ResourceProvider ()
+  else
   {
+    uint8* data = new uint8[buffer->GetSize ()];
+    memcpy (data, buffer->GetUint8 (), sizeof(uint8) * buffer->GetSize ());
+    output.setData(data);
+    output.setSize(buffer->GetSize ());
   }
+}
 
-  //----------------------------------------------------------------------------//
-  void ResourceProvider::loadRawDataContainer (const CEGUI::String& filename,
-                                                 CEGUI::RawDataContainer& output, 
-                                                 const CEGUI::String& resourceGroup)
+void csCEGUIResourceProvider::unloadRawDataContainer (CEGUI::RawDataContainer& data)
+{
+  if (data.getDataPtr())
   {
-    // Hack around schema files not found when CEGUI is compiled with the Xerces parser
-    // TODO: this would be much cleaner to use the resource groups of CEGUI
-    CEGUI::String file = filename.c_str();
-    if (!vfs->Exists (file.c_str()))
-      file = "/cegui/" + file;
-
-    csRef<iDataBuffer> buffer = vfs->ReadFile (file.c_str());
-
-    // Reading failed
-    if (!buffer.IsValid ())
-    {
-      CEGUI::String msg= (uint8*)"ResourceProvider::loadRawDataContainer - "
-        "Filename supplied for loading must be valid";
-      msg += (uint8*)" ["+ file +(uint8*)"]";
-      throw CEGUI::InvalidRequestException(msg);
-    }
-    else
-    {
-      uint8* data = new uint8[buffer->GetSize ()];
-      memcpy (data, buffer->GetUint8 (), sizeof(uint8) * buffer->GetSize ());
-      output.setData(data);
-      output.setSize(buffer->GetSize ());
-    }
+    delete[] data.getDataPtr();
+    data.setData(0);
+    data.setSize(0);
   }
-
-  //----------------------------------------------------------------------------//
-  void ResourceProvider::unloadRawDataContainer (CEGUI::RawDataContainer& data)
-  {
-    if (data.getDataPtr())
-    {
-      delete[] data.getDataPtr();
-      data.setData(0);
-      data.setSize(0);
-    }
-  }
-
-  //----------------------------------------------------------------------------//
-  size_t ResourceProvider::getResourceGroupFileNames(std::vector<CEGUI::String>& out_vec,
-                                                       const CEGUI::String& file_pattern,
-                                                       const CEGUI::String& resource_group)
-  {
-    return 0;
-  }
-
-} CS_PLUGIN_NAMESPACE_END(cegui)
+}

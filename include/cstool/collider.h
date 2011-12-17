@@ -43,6 +43,7 @@ struct iMeshWrapper;
 struct iMovable;
 struct iObject;
 struct iTriangleMesh;
+struct iRegion;
 struct iSector;
 struct iTerrainSystem;
 
@@ -215,20 +216,23 @@ public:
   	iMeshWrapper* mesh);
 
   /**
-   * Initialize collision detection (ie create csColliderWrapper) for
-   * all objects in the engine. If the optional collection is given only
-   * the objects from that collection will be initialized.
+   * Initialize collision detection (i.e. create csColliderWrapper) for
+   * all objects in the engine. If the optional region is given only
+   * the objects from that region will be initialized.
    */
   static void InitializeCollisionWrappers (iCollideSystem* colsys,
       iEngine* engine, iCollection* collection = 0);
-
-  /**
-   * Initialize collision detection (ie create csColliderWrapper) for
-   * all objects in a sector. If the optional collection is given only
-   * the objects from that collection will be initialized.
-   */
+  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
   static void InitializeCollisionWrappers (iCollideSystem* colsys,
-      iSector* sector, iCollection* collection = 0);
+      iEngine* engine, iRegion* region);
+  /* Hack to ensure source compatibility when a 0 collection/region is used.
+   * Remove with region variant. */
+  static CS_FORCEINLINE void InitializeCollisionWrappers (iCollideSystem* colsys,
+      iEngine* engine, int dummy)
+  { 
+    InitializeCollisionWrappers (colsys, engine, (iCollection*)0);
+  }
+
 
   /**
    * Test collision between one collider and an array of colliders.
@@ -240,7 +244,7 @@ public:
    * \param num_colliders is the number of colliders that we are going to use
    *        to collide with.
    * \param colliders is an array of colliders. Typically you can obtain such a
-   *        list by doing iEngine::GetNearbyMeshes() and then getting the
+   *        list by doing iEngine->GetNearbyMeshes() and then getting the
    *        colliders from all meshes you get (possibly using
    *        csColliderWrapper). Note that it is safe to have 'collider' sitting
    *        in this list. This function will ignore that collider.
@@ -284,7 +288,7 @@ public:
    * \param num_colliders is the number of colliders that we are going
    * to use to collide with.
    * \param colliders is an array of colliders. Typically you can obtain
-   * such a list by doing iEngine::GetNearbyMeshes() and then getting
+   * such a list by doing iEngine->GetNearbyMeshes() and then getting
    * the colliders from all meshes you get (possibly using csColliderWrapper).
    * Note that it is safe to have 'collider' sitting in this list. This
    * function will ignore that collider.
@@ -359,6 +363,7 @@ public:
 class CS_CRYSTALSPACE_EXPORT csColliderActor
 {
 private:
+  bool revertMove;
   bool onground;
   bool cd;
   csArray<csCollisionPair> our_cd_contact;
@@ -383,6 +388,8 @@ private:
   csVector3 topSize;
   csVector3 bottomSize;
   csVector3 intervalSize;
+
+  int revertCount;
 
   /**
    * Performs the collision detection for the provided csColliderWrapper vs
@@ -506,6 +513,11 @@ public:
    * Enable/disable collision detection (default enabled).
    */
   void SetCD (bool c) { cd = c; }
+
+  /**
+   * Check if we should revert a move (revert rotation).
+   */
+  bool CheckRevertMove () const { return revertMove; }
 
   /**
    * Enable remembering of the meshes we hit.

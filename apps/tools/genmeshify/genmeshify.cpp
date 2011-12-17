@@ -83,9 +83,9 @@ namespace genmeshify
     vfs = csQueryRegistry<iVFS> (objectRegistry);
     if (!vfs) return Report ("No iVFS!");
 
-    svStrings = csQueryRegistryTagInterface<iShaderVarStringSet> (
-      objectRegistry, "crystalspace.shader.variablenameset");
-    if (!svStrings) return Report ("No shared shader var string set!");
+    strings = csQueryRegistryTagInterface<iStringSet> (
+      objectRegistry, "crystalspace.shared.stringset");
+    if (!strings) return Report ("No shared string set!");
 
     // Open the systems
     if (!csInitializer::OpenApplication (objectRegistry))
@@ -170,9 +170,8 @@ namespace genmeshify
     csPrintf ("  genmeshify {-preload=Map} {-preload=Map} ... {-shallow} "
       "[Map] [Map] ...\n");
     csPrintf ("\n");
-    csPrintf ("%s can be the name of a level, a VFS directory with "
-      "a %s file,.\n",
-      CS::Quote::Single ("Map"), CS::Quote::Double ("world"));
+    csPrintf ("'Map' can be the name of a level, a VFS directory with "
+      "a \"world\" file,.\n");
     csPrintf ("or the name of a filename of a world or library.\n");
     csPrintf ("\n");
     csPrintf ("One or more of the above can also be preloaded before the "
@@ -180,8 +179,8 @@ namespace genmeshify
     csPrintf ("(useful to e.g. preload libraries with textures used by the "
       "map).\n");
     csPrintf ("\n");
-    csPrintf ("%s disables conversion of nested referenced "
-      "libraries.\n", CS::Quote::Double ("-shallow"));
+    csPrintf ("\"-shallow\" disables conversion of nested referenced "
+      "libraries.\n");
   }
 
 }

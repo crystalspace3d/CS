@@ -20,11 +20,8 @@
 
 #include "cssysdef.h"
 
-#include "ivaria/reporter.h"
-
-#include "csgfx/imagecubemapmaker.h"
 #include "csgfx/imagememory.h"
-#include "csutil/measuretime.h"
+#include "csplugincommon/render3d/txtmgr.h"
 
 #include "gl_render3d.h"
 #include "gl_txtmgr_basictex.h"
@@ -34,28 +31,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 
 CS_LEAKGUARD_IMPLEMENT(csGLBasicTextureHandle);
 
-static void CalculateNextBestPo2Size (int texFlags, 
-                                      const int orgDim, int& newDim)
-{
-  const int sizeFlags = CS_TEXTURE_SCALE_UP | CS_TEXTURE_SCALE_DOWN;
-  
-  newDim = csFindNearestPowerOf2 (orgDim);
-  if (newDim != orgDim)
-  {
-    if ((texFlags & sizeFlags) == CS_TEXTURE_SCALE_UP)
-      /* newDim is fine */;
-    else if ((texFlags & sizeFlags) == CS_TEXTURE_SCALE_DOWN)
-      newDim >>= 1;
-    else
-    {
-      int dU = newDim - orgDim;
-      int dD = orgDim - (newDim >> 1);
-      if (dD < dU)
-        newDim >>= 1;
-    }
-  }
-}
-
 csGLBasicTextureHandle::csGLBasicTextureHandle (int width,
                                                 int height,
                                                 int depth,
@@ -63,10 +38,9 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (int width,
                                                 int flags, 
                                                 csGLGraphics3D *iG3D) : 
   scfImplementationType (this), txtmgr (iG3D->txtmgr), 
-  textureClass (txtmgr->GetTextureClassID ("default")),
-  alphaType (csAlphaMode::alphaNone), Handle (0), pbo (0),
+  textureClass (txtmgr->GetTextureClassID ("default")), Handle (0), pbo (0),
   orig_width (width), orig_height (height), orig_d (depth),
-  G3D (iG3D), texFormat((TextureBlitDataFormat)-1)
+  uploadData(0), G3D (iG3D), texFormat((TextureBlitDataFormat)-1)
 {
   switch (imagetype)
   {
@@ -89,7 +63,7 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (int width,
       (G3D->ext->CS_GL_ARB_texture_rectangle
       || G3D->ext->CS_GL_EXT_texture_rectangle
       || G3D->ext->CS_GL_NV_texture_rectangle
-      || txtmgr->tweaks.enableNonPowerOfTwo2DTextures
+      || txtmgr->enableNonPowerOfTwo2DTextures
       || G3D->ext->CS_GL_ARB_texture_non_power_of_two)
       // Certain additional texture flags, unless we have ARB_tnpot
       && (((flags & npotsNeededFlags) == npotsNeededFlags) 
@@ -101,7 +75,7 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (int width,
     {
       flags &= ~CS_TEXTURE_NPOTS;
     }
-    else if (!txtmgr->tweaks.enableNonPowerOfTwo2DTextures
+    else if (!txtmgr->enableNonPowerOfTwo2DTextures
       && !G3D->ext->CS_GL_ARB_texture_non_power_of_two)
       /* Note that 'enableNonPowerOfTwo2DTextures' is the flag for ATI's
        * support of non-POT _2D_ textures; that is, the textures, being
@@ -127,6 +101,7 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (
   orig_width (0),
   orig_height (0),
   orig_d (0),
+  uploadData (0),
   G3D (iG3D),
   texType (texType),
   texFormat ((TextureBlitDataFormat)-1)
@@ -139,20 +114,11 @@ csGLBasicTextureHandle::~csGLBasicTextureHandle()
   Clear ();
   txtmgr->MarkTexturesDirty ();
   if (pbo != 0) txtmgr->G3D->ext->glDeleteBuffersARB (1, &pbo);
-  if (IsInFBO() && (G3D->GetR2TBackend() != 0))
-  {
-    G3D->GetR2TBackend()->CleanupFBOs();
-  }
-}
-
-iObjectRegistry* csGLBasicTextureHandle::GetObjectRegistry() const 
-{ 
-  return txtmgr->GetObjectRegistry();
 }
 
 bool csGLBasicTextureHandle::SynthesizeUploadData (
   const CS::StructuredTextureFormat& format,
-  iString* fail_reason, bool zeroTexture)
+  iString* fail_reason)
 {
   TextureStorageFormat glFormat;
   TextureSourceFormat srcFormat;
@@ -173,27 +139,6 @@ bool csGLBasicTextureHandle::SynthesizeUploadData (
     if (fail_reason) fail_reason->Replace ("compressed formats not supported");
     return false;
   }
-  
-  desiredReadbackFormat = srcFormat;
-  desiredReadbackBPP = 0;
-  for (int i = 0; i < format.GetComponentCount(); i++)
-    desiredReadbackBPP += format.GetComponentSize (i);
-  desiredReadbackBPP = ((desiredReadbackBPP+7)/8);
-
-  const void* zeroData = 0;
-  csRef<iBase> zeroRef;
-  if (zeroTexture)
-  {
-    int texelBits = 0;
-    for (int i = 0; i < format.GetComponentCount(); i++)
-      texelBits += format.GetComponentSize (i);
-    size_t zeroSize = actual_width * actual_height * actual_d
-      * ((texelBits+7)/8);
-    CS::DataBuffer<>* zeroBuf = new CS::DataBuffer<> (zeroSize);
-    memset (zeroBuf->GetData(), 0, zeroSize);
-    zeroData = zeroBuf->GetData();
-    zeroRef.AttachNew (zeroBuf);
-  }
 
   const int imgNum = (texType == texTypeCube) ? 6 : 1;
 
@@ -203,8 +148,7 @@ bool csGLBasicTextureHandle::SynthesizeUploadData (
     for (int i = 0; i < imgNum; i++)
     {
       csGLUploadData upload;
-      upload.image_data = zeroData;
-      upload.dataRef = zeroRef;
+      upload.image_data = 0;
       upload.w = actual_width;
       upload.h = actual_height;
       upload.d = actual_d;
@@ -228,8 +172,7 @@ bool csGLBasicTextureHandle::SynthesizeUploadData (
       do
       {
         csGLUploadData upload;
-	upload.image_data = zeroData;
-	upload.dataRef = zeroRef;
+        upload.image_data = 0;
         upload.w = w;
         upload.h = h;
         upload.d = d;
@@ -255,7 +198,11 @@ bool csGLBasicTextureHandle::SynthesizeUploadData (
 
 void csGLBasicTextureHandle::Clear()
 {
-  uploadData.Reset();
+  if (uploadData != 0)
+  {
+    delete uploadData;
+    uploadData = 0;
+  }
   Unload ();
 }
 
@@ -277,6 +224,16 @@ bool csGLBasicTextureHandle::GetRendererDimensions (int &mw, int &mh, int &md)
   mh = actual_height;
   md = actual_d;
   return true;
+}
+
+void *csGLBasicTextureHandle::GetPrivateObject ()
+{
+  return (csGLBasicTextureHandle *)this;
+}
+
+bool csGLBasicTextureHandle::GetAlphaMap () 
+{
+  return (alphaType != csAlphaMode::alphaNone);
 }
 
 void csGLBasicTextureHandle::PrepareInt ()
@@ -326,9 +283,9 @@ void csGLBasicTextureHandle::ComputeNewPo2ImageSize (int texFlags,
   int& newwidth, int& newheight, int& newdepth,
   int max_tex_size)
 {
-  CalculateNextBestPo2Size (texFlags, orig_width, newwidth);
-  CalculateNextBestPo2Size (texFlags, orig_height, newheight);
-  CalculateNextBestPo2Size (texFlags, orig_depth, newdepth);
+  csTextureHandle::CalculateNextBestPo2Size (texFlags, orig_width, newwidth);
+  csTextureHandle::CalculateNextBestPo2Size (texFlags, orig_height, newheight);
+  csTextureHandle::CalculateNextBestPo2Size (texFlags, orig_depth, newdepth);
 
   // If necessary rescale if bigger than maximum texture size,
   // but only if a dimension has changed. For textures that are
@@ -343,10 +300,10 @@ void csGLBasicTextureHandle::ComputeNewPo2ImageSize (int texFlags,
 
 void csGLBasicTextureHandle::FreshUploadData ()
 {
-  if (uploadData.IsValid())
+  if (uploadData != 0)
     uploadData->DeleteAll();
   else
-    uploadData.Reset (new csArray<csGLUploadData>);
+    uploadData = new csArray<csGLUploadData>;
 }
 
 void csGLBasicTextureHandle::AdjustSizePo2 ()
@@ -421,23 +378,12 @@ void csGLBasicTextureHandle::SetupAutoMipping()
   // Set up mipmap generation
   if ((!(texFlags.Get() & CS_TEXTURE_NOMIPMAPS))
     && (!G3D->ext->CS_GL_EXT_framebuffer_object 
-      || txtmgr->tweaks.disableGenerateMipmap))
+      || txtmgr->disableGenerateMipmap))
   {
-    GLenum textarget = GetGLTextureTarget();
     if (G3D->ext->CS_GL_SGIS_generate_mipmap)
-    {
-      glTexParameteri (textarget, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-      if (G3D->ext->CS_GL_SGIS_texture_lod
-          && txtmgr->tweaks.generateMipMapsExcessOne)
-      {
-        texFlags.SetBool (flagExcessMaxMip, true);
-	GLint maxLevel;
-	glGetTexParameteriv (textarget, GL_TEXTURE_MAX_LEVEL_SGIS, &maxLevel);
-	glTexParameteri (textarget, GL_TEXTURE_MAX_LEVEL_SGIS, maxLevel+1);
-      }
-    }
+      glTexParameteri (GetGLTextureTarget(), GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
     else
-      glTexParameteri (textarget, GL_TEXTURE_MIN_FILTER,
+      glTexParameteri  (GetGLTextureTarget(), GL_TEXTURE_MIN_FILTER,
 	txtmgr->rstate_bilinearmap ? GL_LINEAR : GL_NEAREST);
   }
 }
@@ -446,7 +392,7 @@ void csGLBasicTextureHandle::RegenerateMipmaps()
 {
   if ((!(texFlags.Get() & CS_TEXTURE_NOMIPMAPS))
     && G3D->ext->CS_GL_EXT_framebuffer_object
-    && !txtmgr->tweaks.disableGenerateMipmap)
+    && !txtmgr->disableGenerateMipmap)
   {
     G3D->ActivateTexture (this);
     G3D->ext->glGenerateMipmapEXT (GetGLTextureTarget());
@@ -455,24 +401,14 @@ void csGLBasicTextureHandle::RegenerateMipmaps()
 
 void csGLBasicTextureHandle::Load ()
 {
-  if (IsUploaded() || IsForeignHandle()) return;
-  
+  if (Handle != 0) return;
+
   static const GLint textureMinFilters[3] = {GL_NEAREST_MIPMAP_NEAREST, 
     GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR};
   static const GLint textureMagFilters[3] = {GL_NEAREST, GL_LINEAR, 
     GL_LINEAR};
 
-  GLRENDER3D_CHECKED_COMMAND(G3D, glGenTextures (1, &Handle));
-  
-  /* @@@ FIXME: That seems to happen with PS occasionally.
-     Reason unknown. */
-  CS_ASSERT(uploadData);
-  if (!uploadData)
-  {
-    G3D->Report (CS_REPORTER_SEVERITY_WARNING, "WEIRD: no uploadData in %s!",
-		 CS_FUNCTION_NAME);
-    return;
-  }
+  glGenTextures (1, &Handle);
 
   const int texFilter = texFlags.Check (CS_TEXTURE_NOFILTER) ? 0 : 
     txtmgr->rstate_bilinearmap;
@@ -592,12 +528,6 @@ void csGLBasicTextureHandle::Load ()
       glTexParameterf (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT,
         txtmgr->texture_filter_anisotropy);
     }
-    if (G3D->ext->CS_GL_AMD_seamless_cubemap_per_texture)
-    {
-      bool seamless = !texFlags.Check (CS_TEXTURE_CUBEMAP_DISABLE_SEAMLESS);
-      glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_CUBE_MAP_SEAMLESS,
-		       seamless ? GL_TRUE : GL_FALSE);
-    }
 
     size_t i;
     for (i = 0; i < uploadData->GetSize (); i++)
@@ -659,13 +589,12 @@ void csGLBasicTextureHandle::Load ()
     }
   }
 
-  uploadData.Reset();
-  SetUploaded (true);
+  delete uploadData; uploadData = 0;
 }
 
-THREADED_CALLABLE_IMPL(csGLBasicTextureHandle, Unload)
+void csGLBasicTextureHandle::Unload ()
 {
-  if (!IsUploaded() || IsForeignHandle()) return false;
+  if ((Handle == 0) || IsForeignHandle()) return;
   if (texType == texType1D)
     csGLTextureManager::UnsetTexture (GL_TEXTURE_1D, Handle);
   else if (texType == texType2D)
@@ -678,8 +607,6 @@ THREADED_CALLABLE_IMPL(csGLBasicTextureHandle, Unload)
     csGLTextureManager::UnsetTexture (GL_TEXTURE_RECTANGLE_ARB, Handle);
   glDeleteTextures (1, &Handle);
   Handle = 0;
-  SetUploaded (false);
-  return true;
 }
 
 void csGLBasicTextureHandle::Precache ()
@@ -707,47 +634,6 @@ GLuint csGLBasicTextureHandle::GetHandle ()
 {
   Precache ();
   return Handle;
-}
-  
-void csGLBasicTextureHandle::ChangeTextureCompareMode (
-  const CS::Graphics::TextureComparisonMode& mode)
-{
-  if (!G3D->ext->CS_GL_ARB_shadow) return;
-
-  GLenum textarget = GetGLTextureTarget();
-  csGLGraphics3D::statecache->SetTexture (textarget, GetHandle ());
-  
-  if (mode.mode != texCompare.mode)
-  {
-    GLint compareMode = GL_NONE;
-    switch (mode.mode)
-    {
-      case CS::Graphics::TextureComparisonMode::compareNone:
-	//compareMode = GL_NONE;
-	break;
-      case CS::Graphics::TextureComparisonMode::compareR:
-	compareMode = GL_COMPARE_R_TO_TEXTURE;
-	break;
-    }
-    glTexParameteri (textarget, GL_TEXTURE_COMPARE_MODE, compareMode);
-    texCompare.mode = mode.mode;
-  }
-  if (mode.mode
-    && (mode.function != texCompare.function))
-  {
-    GLint compareFunc = GL_LEQUAL;
-    switch (mode.function)
-    {
-      case CS::Graphics::TextureComparisonMode::funcLEqual:
-	//compareFunc = GL_LEQUAL;
-	break;
-      case CS::Graphics::TextureComparisonMode::funcGEqual:
-	compareFunc = GL_GEQUAL;
-	break;
-    }
-    glTexParameteri (textarget, GL_TEXTURE_COMPARE_FUNC, compareFunc);
-    texCompare.function = mode.function;
-  }
 }
 
 GLenum csGLBasicTextureHandle::GetGLTextureTarget() const
@@ -955,249 +841,43 @@ void csGLBasicTextureHandle::ApplyBlitBufferPBO (uint8* buf)
     csGLGraphics3D::statecache->SetBufferARB (GL_PIXEL_UNPACK_BUFFER_ARB, 0, true);
   }
 }
-  
-void csGLBasicTextureHandle::SetMipmapLimits (int maxMip, int minMip)
-{
-  if (G3D->ext->CS_GL_SGIS_texture_lod)
-  {
-    GLenum textarget = GetGLTextureTarget();
-    csGLGraphics3D::statecache->SetTexture (textarget, GetHandle ());
-    if (texFlags.Check (flagExcessMaxMip))
-      maxMip++;
-    glTexParameteri (textarget, GL_TEXTURE_BASE_LEVEL_SGIS, minMip);
-    glTexParameteri (textarget, GL_TEXTURE_MAX_LEVEL_SGIS, maxMip);
-  }
-}
 
-void csGLBasicTextureHandle::GetMipmapLimits (int& maxMip, int& minMip)
-{
-  if (G3D->ext->CS_GL_SGIS_texture_lod)
-  {
-    GLenum textarget = GetGLTextureTarget();
-    csGLGraphics3D::statecache->SetTexture (textarget, GetHandle ());
-    GLint baseLevel, maxLevel;
-    glGetTexParameteriv (textarget, GL_TEXTURE_BASE_LEVEL_SGIS, &baseLevel);
-    glGetTexParameteriv (textarget, GL_TEXTURE_MAX_LEVEL_SGIS, &maxLevel);
-    minMip = baseLevel;
-    maxMip = maxLevel;
-    if (texFlags.Check (flagExcessMaxMip))
-      maxMip--;
-  }
-  else
-  {
-    maxMip = 1000;
-    minMip = 0;
-  }
-}
-
-void csGLBasicTextureHandle::SetDesiredReadbackFormat (const CS::StructuredTextureFormat& format)
-{
-  TextureStorageFormat glFormat;
-  TextureSourceFormat sourceFormat;
-  if (!txtmgr->DetermineGLFormat (format, glFormat, sourceFormat))
-  {
-    desiredReadbackFormat = TextureSourceFormat();
-    desiredReadbackBPP = 0;
-    return;
-  }
-    
-  desiredReadbackFormat = sourceFormat;
-
-  int s = 0;
-  for (int i = 0; i < format.GetComponentCount(); i++)
-    s += format.GetComponentSize (i);
-  s = ((s+7)/8);
-  desiredReadbackBPP = s;
-}
-
-template<typename Action>
-csPtr<iDataBuffer> csGLBasicTextureHandle::ReadbackPerform (
-  size_t readbackSize, Action& readbackAction)
-{
-  if (G3D->ext->CS_GL_ARB_pixel_buffer_object)
-  {
-    csRef<PBOWrapper> pbo = txtmgr->GetPBOWrapper (readbackSize);
-    GLuint _pbo = pbo->GetPBO (GL_PIXEL_PACK_BUFFER_ARB);
-    csGLGraphics3D::statecache->SetBufferARB (GL_PIXEL_PACK_BUFFER_ARB, _pbo, true);
-    readbackAction (0);
-    csGLGraphics3D::statecache->SetBufferARB (GL_PIXEL_PACK_BUFFER_ARB, 0, true);
-    
-    csRef<iDataBuffer> db;
-#include "csutil/custom_new_disable.h"
-    db.AttachNew (new (txtmgr->pboTextureReadbacks) TextureReadbackPBO (
-      pbo, readbackSize));
-#include "csutil/custom_new_enable.h"
-    return csPtr<iDataBuffer> (db);
-  }
-  else
-  {
-    void* data = cs_malloc (readbackSize);
-  
-    readbackAction (data);
-    
-    csRef<iDataBuffer> db;
-#include "csutil/custom_new_disable.h"
-    db.AttachNew (new (txtmgr->simpleTextureReadbacks) TextureReadbackSimple (
-      data, readbackSize));
-#include "csutil/custom_new_enable.h"
-    return csPtr<iDataBuffer> (db);
-  }
-}
-  
-#include "csutil/custom_new_disable.h"
-
-struct ReadbackActionGetTexImage
-{
-  GLenum target;
-  GLint level;
-  GLenum format;
-  GLenum type;
-
-  ReadbackActionGetTexImage (GLenum target, GLint level, GLenum format, GLenum type)
-   : target (target), level (level), format (format), type (type) {}
-
-  void operator() (GLvoid *pixels) const
-  {
-    glGetTexImage (target, level, format, type, pixels);
-  }
-};
-
-csPtr<iDataBuffer> csGLBasicTextureHandle::Readback (GLenum textarget,
-    const CS::StructuredTextureFormat& format, int mip)
-{
-  if (format.GetFormat() == CS::StructuredTextureFormat::Special)
-    return 0;
-  
-  if ((mip > 0) && (texFlags.Get() & CS_TEXTURE_NOMIPMAPS)) return 0;
-
-  TextureStorageFormat glFormat;
-  TextureSourceFormat sourceFormat;
-  if (!txtmgr->DetermineGLFormat (format, glFormat, sourceFormat))
-    return 0;
-    
-  if (lastReadbackFormat == sourceFormat)
-  {
-    return csPtr<iDataBuffer> (lastReadback);
-  }
-  SetDesiredReadbackFormat (format);
-  
-  int w = csMax (actual_width >> mip, 1);
-  int h = csMax (actual_height >> mip, 1);
-  int d = csMax (actual_d >> mip, 1);
-  size_t byteSize = w * h * d * desiredReadbackBPP;
-  
-  ReadbackActionGetTexImage action (textarget, mip, sourceFormat.format, sourceFormat.type);
-  return ReadbackPerform (byteSize, action);
-}
-  
-struct ReadbackActionReadPixels
-{
-  GLint x;
-  GLint y;
-  GLsizei width;
-  GLsizei height;
-  GLenum format;
-  GLenum type;
-
-  ReadbackActionReadPixels (GLint x, GLint y, GLsizei width, GLsizei height,
-    GLenum format, GLenum type)
-   : x (x), y (y), width (width), height (height), format (format), type (type) {}
-
-  void operator() (GLvoid *pixels) const
-  {
-    glReadPixels (x, y, width, height, format, type, pixels);
-  }
-};
-
-void csGLBasicTextureHandle::ReadbackFramebuffer ()
-{
-  size_t byteSize = actual_width * actual_height * desiredReadbackBPP;
-  
-  ReadbackActionReadPixels action (0, 0, actual_width, actual_height,
-    desiredReadbackFormat.format, desiredReadbackFormat.type);
-  lastReadback = ReadbackPerform (byteSize, action);
-  lastReadbackFormat = desiredReadbackFormat;
-}
-
-#include "csutil/custom_new_enable.h"
-
-csPtr<iDataBuffer> csGLBasicTextureHandle::Readback (
-  const CS::StructuredTextureFormat& format, int mip)
-{
-  GLenum textarget = GetGLTextureTarget();
-  textarget = (textarget == GL_TEXTURE_CUBE_MAP) 
-      ? GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB : textarget;
-  csGLGraphics3D::statecache->SetTexture (textarget, GetHandle ());
-  return Readback (textarget, format, mip);
-}
-  
-class ReadbackImage :
-  public scfImplementationExt0<ReadbackImage, csImageBase>
-{
-  int w, h, d;
-  csRef<iDataBuffer> data;
-public:
-  ReadbackImage (int w, int h, int d, iDataBuffer* data)
-   : scfImplementationType (this), w (w), h (h), d (d), data (data)
-  {}
-  
-  const void* GetImageData() { return data->GetData(); }
-  int GetWidth() const { return w; }
-  int GetHeight() const { return h; }
-  int GetDepth() const { return d; }
-  csRef<iDataBuffer> GetRawData() const { return data; }
-  /* @@@ Lies, damn lies: causes at least depth data to be reinterpreted as
-     RGBA data. Useful for dumping, but not necessarily other scenarios */
-  int GetFormat() const
-  { return CS_IMGFMT_TRUECOLOR | CS_IMGFMT_ALPHA; }
-  const char* GetRawFormat() const { return "abgr8"; }
-};
-
-csPtr<iImage> csGLBasicTextureHandle::GetTextureFromGL ()
+csPtr<iImage> csGLBasicTextureHandle::Dump ()
 {
   // @@@ hmm... or just return an empty image?
   if (GetHandle () == (GLuint)~0) return 0;
 
+  GLint tw, th;
   GLenum textarget = GetGLTextureTarget();
-  GLenum usetarget = (textarget == GL_TEXTURE_CUBE_MAP) 
-      ? GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB : textarget;
   csGLGraphics3D::statecache->SetTexture (textarget, GetHandle ());
-  
-  CS::StructuredTextureFormat texFormat;
+  if (textarget == GL_TEXTURE_3D) return 0; // @@@ Not supported yet
+
+  glGetTexLevelParameteriv (textarget, 0, GL_TEXTURE_WIDTH, &tw);
+  glGetTexLevelParameteriv (textarget, 0, GL_TEXTURE_HEIGHT, &th);
+
   GLint depthSize;
-  glGetTexLevelParameteriv (usetarget, 0, GL_TEXTURE_DEPTH_SIZE, &depthSize);
+  glGetTexLevelParameteriv ((textarget == GL_TEXTURE_CUBE_MAP) 
+      ? GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB : textarget, 
+      0, GL_TEXTURE_DEPTH_SIZE, &depthSize);
+  
+  uint8* data = new uint8[tw * th * 4];
+  
   if (depthSize > 0)
   {
     // Depth texture
-    texFormat = CS::StructuredTextureFormat ('d', 32);
+    glGetTexImage (textarget, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, data);
   }
   else
   {
     // Color texture
-    texFormat = CS::StructuredTextureFormat ('a', 8, 'b', 8, 'g', 8, 'r', 8);
+    glGetTexImage (textarget, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
   }
+  csImageMemory* lmimg = 
+      new csImageMemory (tw, th,
+			 data, true, 
+    CS_IMGFMT_TRUECOLOR | CS_IMGFMT_ALPHA);
   
-  if (textarget == GL_TEXTURE_CUBE_MAP)
-  {
-    csRef<iImage> face[6];
-    for (int f = 0; f < 6; f++)
-    {
-      csRef<iDataBuffer> texData (Readback (
-        GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+f, texFormat, 0));
-      face[f].AttachNew (new ReadbackImage (actual_width, actual_height,
-        actual_d, texData));
-    }
-    csImageCubeMapMaker* img = new csImageCubeMapMaker (
-      face[0], face[1], face[2], face[3], face[4], face[5]);
-    return csPtr<iImage> (img);
-  }
-  else
-  {
-    csRef<iDataBuffer> texData (Readback (usetarget, texFormat, 0));
-    ReadbackImage* img = new ReadbackImage (actual_width, actual_height,
-      actual_d, texData);
-    return csPtr<iImage> (img);
-  }
+  return csPtr<iImage> (lmimg);
 }
 
 }

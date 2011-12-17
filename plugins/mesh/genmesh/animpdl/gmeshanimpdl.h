@@ -34,6 +34,7 @@
 #include "iengine/light.h"
 #include "imesh/genmesh.h"
 #include "imesh/gmeshanim.h"
+#include "imesh/lighting.h"
 #include "iutil/comp.h"
 #include "iutil/eventh.h"
 #include "ivideo/rndbuf.h"
@@ -96,8 +97,6 @@ private:
   };
   csArray<ColorBuffer> buffers;
 
-  csString lastError;
-  const char* SetLastError (const char* msg, ...);
   void Report (iSyntaxService* synsrv, int severity, iDocumentNode* node, 
     const char* msg, ...);
   bool HexToLightID (uint8* lightID, const char* lightIDHex);
@@ -126,9 +125,10 @@ public:
  * Genmesh animation control.
  */
 class GenmeshAnimationPDL :
-  public scfImplementation2<GenmeshAnimationPDL,
-    iGenMeshAnimationControl,
-    iLightCallback>
+  public scfImplementation3<GenmeshAnimationPDL,
+    iGenMeshAnimationControl, 
+    iGenMeshAnimationControl1_4, 
+    iLightingInfo>
 {
 private:
   csRef<GenmeshAnimationPDLFactory> factory;
@@ -143,20 +143,14 @@ private:
 
     struct MappedLight
     {
+      csWeakRef<iLight> light;
       csRef<iRenderBuffer> colors;
-      csColor lastUpdateColor;
-      
-      MappedLight() : lastUpdateColor (-1, -1, -1) {}
     };
-    typedef csHash<MappedLight, csPtrKey<iLight> > LightsHash;
-    LightsHash lights;
+    csSafeCopyArray<MappedLight> lights;
     csRef<iRenderBuffer> staticColors;
     csDirtyAccessArray<csColor4> combinedColors;
 
     ColorBuffer() : name (0), lightsDirty (true), lastMeshVersion (~0) {}
-      
-    void UpdateLight (iLight* l, const csColor& col, float thresh);
-    void RemoveLight (iLight* l);
   };
 
   bool prepared;
@@ -184,7 +178,7 @@ public:
   virtual bool AnimatesTexels () const { return false; }
   virtual bool AnimatesNormals () const { return false; }
   virtual bool AnimatesColors () const { return true; }
-  virtual bool AnimatesBBoxRadius () const { return false; }
+  virtual void Update(csTicks current) { }
   virtual void Update(csTicks current, int num_verts, uint32 version_id);
   virtual const csVector3* UpdateVertices (csTicks current,
   	const csVector3* verts, int num_verts, uint32 version_id);
@@ -194,22 +188,33 @@ public:
   	const csVector3* normals, int num_normals, uint32 version_id);
   virtual const csColor4* UpdateColors (csTicks current,
   	const csColor4* colors, int num_colors, uint32 version_id);
-  virtual const csBox3& UpdateBoundingBox (csTicks current, uint32 version_id,
-	const csBox3& bbox) { return bbox; }
-  virtual const float UpdateRadius (csTicks current, uint32 version_id,
-	const float radius) { return radius; }
-  virtual const csBox3* UpdateBoundingBoxes (csTicks current, uint32 version_id)
-  { return nullptr; }
   /** @} */
 
-  /**\name iLightCallback implementation
+  /**\name iLightingInfo implementation
    * @{ */
-  virtual void OnColorChange (iLight* light, const csColor& newcolor);
-  virtual void OnPositionChange (iLight* light, const csVector3& newpos) { }
-  virtual void OnSectorChange (iLight* light, iSector* newsector) { }
-  virtual void OnRadiusChange (iLight* light, float newradius) { }
-  virtual void OnDestroy (iLight* light);
-  virtual void OnAttenuationChange (iLight* light, int newatt) { }
+  void DisconnectAllLights ()
+  { 
+    colorsBuffer.lightsDirty = true;
+    colorsBuffer.lights.DeleteAll ();
+    for (size_t i = 0; i < buffers.GetSize(); i++)
+    {
+      buffers[i].lightsDirty = true;
+      buffers[i].lights.DeleteAll ();
+    }
+  }
+  void InitializeDefault (bool /*clear*/) {}
+  void LightChanged (iLight* /*light*/) 
+  {
+    colorsBuffer.lightsDirty = true;
+    for (size_t i = 0; i < buffers.GetSize(); i++)
+    {
+      buffers[i].lightsDirty = true;
+    }
+  }
+  void LightDisconnect (iLight* light);
+  void PrepareLighting () {}
+  bool ReadFromCache (iCacheManager* /*cache_mgr*/) { return true; }
+  bool WriteToCache (iCacheManager* /*cache_mgr*/) { return true; }
   /** @} */
 };
 

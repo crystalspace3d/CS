@@ -27,7 +27,6 @@
 
 #include "csgeom/math.h"
 #include "csgfx/imageautoconvert.h"
-#include "csutil/stringquote.h"
 
 #include "ptpdlight.h"
 #include "ptpdlight_loader.h"
@@ -366,16 +365,18 @@ ProctexPDLight::ProctexPDLight (ProctexPDLightLoader* loader, iImage* img) :
 {
   mat_w = img->GetWidth();
   mat_h = img->GetHeight();
+  if (loader->doMMX) state.Set (stateDoMMX);
 }
 
 ProctexPDLight::ProctexPDLight (ProctexPDLightLoader* loader, int w, int h) : 
   scfImplementationType (this), loader (loader),
   tiles (w, h), tilesDirty (tiles.ComputeTileCount()),
   baseColor (0, 0, 0), baseMap (tilesDirty.GetSize()), 
-  state (0)
+  state (stateDirty)
 {
   mat_w = w;
   mat_h = h;
+  if (loader->doMMX) state.Set (stateDoMMX);
 }
 
 ProctexPDLight::~ProctexPDLight ()
@@ -414,17 +415,17 @@ bool ProctexPDLight::PrepareAnim ()
         if (!light.light)
         {
           Report (CS_REPORTER_SEVERITY_WARNING, 
-            "Could not find light %s in sector %s", 
-            CS::Quote::Single (light.lightId->lightName.GetData()),
-            CS::Quote::Single (light.lightId->sectorName.GetData()));
+            "Could not find light '%s' in sector '%s'", 
+            light.lightId->lightName.GetData(),
+            light.lightId->sectorName.GetData());
         }
       }
       else
       {
         Report (CS_REPORTER_SEVERITY_WARNING, 
-          "Could not find sector %s for light %s", 
-          CS::Quote::Single (light.lightId->sectorName.GetData()),
-          CS::Quote::Single (light.lightId->lightName.GetData()));
+          "Could not find sector '%s' for light '%s'", 
+          light.lightId->sectorName.GetData(),
+          light.lightId->lightName.GetData());
       }
     }
     else
@@ -436,13 +437,14 @@ bool ProctexPDLight::PrepareAnim ()
         for (int i = 0; i < 16; i++)
           hexId.AppendFmt ("%02x", light.lightId->lightId[i]);
         Report (CS_REPORTER_SEVERITY_WARNING, 
-          "Could not find light with ID %s", CS::Quote::Single (hexId.GetData()));
+          "Could not find light with ID '%s'", hexId.GetData());
       }
     }
     if (light.light)
     {
       success = true;
-      light.light->SetLightCallback(this);
+      light.light->AddAffectedLightingInfo (
+        static_cast<iLightingInfo*> (this));
       dirtyLights.Add ((iLight*)light.light);
 
       LightColorState colorState;
@@ -471,31 +473,63 @@ bool ProctexPDLight::PrepareAnim ()
   }
   lightBits.SetSize (lights.GetSize ());
   state.Set (statePrepared);
-  tilesDirty.FlipAllBits();
-  
-  // Initially fill texture (starts out with garbage)
-  Animate();
-  
   return true;
 }
 
-void ProctexPDLight::OnColorChange (iLight* light, const csColor& newcolor)
+void ProctexPDLight::Animate (csTicks current_time)
 {
+  if (state.Check (stateDirty))
+  {
+    if (!loader->UpdatePT (this, current_time)) return;
+
+    csTicks startTime = csGetTicks();
+
+    CS_PROFILER_ZONE(ProctexPDLight_Animate)
+#ifdef CS_SUPPORTS_MMX
+    if (state.Check (stateDoMMX))
+      Animate_MMX ();
+    else
+#endif
+      Animate_Generic ();
+
+    state.Reset (stateDirty);
+    dirtyLights.DeleteAll ();
+    tilesDirty.Clear ();
+
+    csTicks endTime = csGetTicks();
+    loader->RecordUpdateTime (endTime-startTime);
+  }
+}
+
+void ProctexPDLight::DisconnectAllLights ()
+{ 
+  lights.DeleteAll ();
+  lightBits.SetSize (0); 
+  tilesDirty.Clear ();
+  tilesDirty.FlipAllBits ();
+  dirtyLights.DeleteAll ();
+  lightColorStates.DeleteAll ();
+}
+
+void ProctexPDLight::LightChanged (iLight* light) 
+{ 
   dirtyLights.Add (light);
-  const LightColorState& colorState = *lightColorStates.GetElementPointer (light);
+  const LightColorState& colorState = 
+    *lightColorStates.GetElementPointer (light);
+  const csColor& lightColor = light->GetColor ();
   /* When the light color difference to the value last used at updating
      is below the amount needed for a visible difference an update of the
      texture because of this light isn't needed. */
-  if ((fabsf (colorState.lastColor.red - newcolor.red) 
+  if ((fabsf (colorState.lastColor.red - lightColor.red) 
       >= colorState.minChangeThresh.red)
-    || (fabsf (colorState.lastColor.green - newcolor.green) 
+    || (fabsf (colorState.lastColor.green - lightColor.green) 
       >= colorState.minChangeThresh.green)
-    || (fabsf (colorState.lastColor.blue - newcolor.blue) 
+    || (fabsf (colorState.lastColor.blue - lightColor.blue) 
       >= colorState.minChangeThresh.blue))
     state.Set (stateDirty); 
 }
 
-void ProctexPDLight::OnDestroy (iLight* light)
+void ProctexPDLight::LightDisconnect (iLight* light)
 {
   for (size_t i = 0; i < lights.GetSize(); i++)
   {
@@ -506,8 +540,6 @@ void ProctexPDLight::OnDestroy (iLight* light)
       state.Set (stateDirty);
       dirtyLights.Add (light);
       lightBits.SetSize (lights.GetSize ());
-      tilesDirty.Clear();
-      tilesDirty.FlipAllBits();
       return;
     }
   }

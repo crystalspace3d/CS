@@ -78,7 +78,7 @@ private:
   csWeakRef<iSkeleton> skeleton;
 
   csRef<csGenmeshSkelAnimationControlFactory> factory;
-  CS::ShaderVarStringID bones_name;
+  csStringID bones_name;
   iMeshObject *mesh_obj;
   csArray<csReversibleTransform> in_trs;
   csArray<int> used_bones;
@@ -150,8 +150,7 @@ public:
   virtual bool AnimatesColors () const { return animates_colors; }
   virtual bool AnimatesTangents () const { return animates_tangents; }
   virtual bool AnimatesBiTangents () const { return animates_bitangents; }
-  virtual bool AnimatesBBoxRadius () const { return false; }
-  virtual void Update (csTicks current, int, uint32);
+  virtual void Update (csTicks current);
   virtual const csVector3* UpdateVertices (csTicks current,
   	const csVector3* verts, int num_verts, uint32 version_id);
   virtual const csVector2* UpdateTexels (csTicks current,
@@ -164,12 +163,6 @@ public:
   	const csVector3* tangents, int num_tangents, uint32 version_id);
   virtual const csVector3* UpdateBiTangents (csTicks current,
   	const csVector3* bitangents, int num_bitangents, uint32 version_id);
-  virtual const csBox3& UpdateBoundingBox (csTicks current, uint32 version_id,
-	const csBox3& bbox) { return bbox; }
-  virtual const float UpdateRadius (csTicks current, uint32 version_id,
-	const float radius) { return radius; }
-  virtual const csBox3* UpdateBoundingBoxes (csTicks current, uint32 version_id)
-  { return nullptr; }
 
   virtual int GetAnimatedVerticesCount()
   { return num_animated_verts; }
@@ -249,7 +242,7 @@ private:
 
   csString error_buf;
   iMeshObjectFactory *mesh_fact;
-  csRef<iSkeletonGraveyard> the_graveyard;
+  iSkeletonGraveyard *the_graveyard;
 
   bool use_parent;
 public:

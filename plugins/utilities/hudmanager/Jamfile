@@ -1,3 +1,0 @@
-SubDir TOP plugins utilities hudmanager ;
-
-SubInclude TOP plugins utilities hudmanager texthud ;

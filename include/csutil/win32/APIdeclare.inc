@@ -17,13 +17,7 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */	
 
-namespace CS {
-namespace Platform {
-namespace Win32 {
-class CacheDLL;
-}
-}
-}
+class cswinCacheDLL;
 
 #ifndef CS_API_EXPORT
 #define CS_API_EXPORT CS_CRYSTALSPACE_EXPORT
@@ -33,7 +27,7 @@ class CacheDLL;
 class CS_API_EXPORT CS_API_NAME
 {
 private:
-  static CS::Platform::Win32::CacheDLL* dll;
+  static cswinCacheDLL* dll;
   static bool dllLoaded;
   static int refCount;
 

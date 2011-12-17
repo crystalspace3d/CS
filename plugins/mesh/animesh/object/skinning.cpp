@@ -21,7 +21,7 @@
 #include "csgfx/renderbuffer.h"
 #include "csgfx/vertexlistwalker.h"
 #include "imesh/skeleton2.h"
-#include "imesh/animnode/skeleton2anim.h"
+#include "imesh/skeleton2anim.h"
 
 #include "animesh.h"
 
@@ -31,88 +31,93 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
   typedef csVertexListWalker<float, csVector3> MorphTargetOffsetsWalker;
   
 #include "csutil/custom_new_disable.h"
-
   void AnimeshObject::MorphVertices ()
   {
-    // Don't do anything if the morph weights haven't be changed
-    if (!morphStateChanged)
-      return;
+    bool hasMorphing = false;
+    for (size_t i = 0; i < morphTargetWeights.GetSize(); i++)
+    {
+      if (morphTargetWeights[i] != 0)
+      {
+        hasMorphing = true;
+        break;
+      }
+    }
 
-    // Flag the new morphing version
-    morphStateChanged = false;
-    morphVersion++;
-
-    // Check if a morph target is active
-    const size_t morphTargetCount = morphTargetWeights.GetSize();
-    size_t activeMorphCount = 0;
-    for (size_t i = 0; i < morphTargetCount; i++)
-      if (morphTargetWeights[i] > SMALL_EPSILON)
-	activeMorphCount++;
-
-    if (!activeMorphCount)
+    if (!hasMorphing)
     {
       postMorphVertices = factory->vertexBuffer;
       return;
     }
 
-    // Create the render buffer where the targets will be morphed
+    // Setup the morph target VB
     if (!postMorphVertices || postMorphVertices == factory->vertexBuffer)
     {
       postMorphVertices = csRenderBuffer::CreateRenderBuffer (factory->GetVertexCountP (),
         CS_BUF_STREAM, CS_BUFCOMP_FLOAT, 3);
     }
 
-    // Morph the targets
-    // Copy the vertex buffer into the destination buffer
-    csRenderBufferLock<csVector3> srcVerts (factory->vertexBuffer);
-    csRenderBufferLock<csVector3> dstVerts (postMorphVertices);
-    for (size_t vi = 0; vi < factory->vertexCount; vi++)      
-      dstVerts[vi] = srcVerts[vi];
-     
-    // Apply the morph targets to each subset 
-    // (except subset 0 which has no morph target)
-    CS_ASSERT (factory->GetSubsetCount ());
-    for (size_t mti = 0; mti < morphTargetCount; mti++)
+    const size_t numMorphTargets =  morphTargetWeights.GetSize();
+    CS_ALLOC_STACK_ARRAY(uint8, morphWalkersRaw, 
+      numMorphTargets * sizeof (MorphTargetOffsetsWalker));
+
+    MorphTargetOffsetsWalker* morphWalkers =
+      (MorphTargetOffsetsWalker*)(void*)morphWalkersRaw;
+
+    for (size_t m = 0; m < numMorphTargets; m++)
     {
-      if (morphTargetWeights[mti] > SMALL_EPSILON)
-      {
-	MorphTarget* target = factory->subsetMorphTargets[mti];
-	csVertexListWalker<float, csVector3> offsets (target->GetVertexOffsets ());
-	for (uint si = 0; si < target->subsetList.GetSize (); si++)
-	{
-	  size_t subsetIndex = target->subsetList[si];
-	  Subset& set = factory->subsets[subsetIndex];
-	  for (uint vi = 0; vi < set.vertexCount; vi++)
-	  {
-	    uint vertIndex = set.vertices[vi];
-	    dstVerts[vertIndex] += (*offsets) * morphTargetWeights[mti];
-	    ++offsets;
-	  }
-
-	}
-
-      }
+      new (morphWalkers + m) MorphTargetOffsetsWalker (
+        factory->morphTargets[m]->offsets);
     }
 
+    csVertexListWalker<float, csVector3> srcVerts (factory->vertexBuffer);
+    csRenderBufferLock<csVector3> dstVerts (postMorphVertices);
+
+    for (size_t i = 0; i < factory->GetVertexCountP (); ++i)
+    {
+      csVector3 morphedVert = *srcVerts;
+
+      for (size_t m = 0; m < numMorphTargets; m++)
+      {
+        MorphTargetOffsetsWalker& walk = morphWalkers[m];
+        morphedVert += (*walk) * morphTargetWeights[m];
+        ++walk;
+      }
+
+      dstVerts[i] = morphedVert;
+
+      ++srcVerts;
+    }
+
+    for (size_t m = 0; m < numMorphTargets; m++)
+    {
+      morphWalkers[m].~MorphTargetOffsetsWalker();
+    }
   }
 
 #include "csutil/custom_new_enable.h"
 
-  // We use a template version to benefit of optimizations from the compiler
   template<bool SkinV, bool SkinN, bool SkinTB>
   void AnimeshObject::Skin ()
   {
     if (!skeleton)
       return;
 
-    CS_ASSERT (SkinV ?
-	       skinnedVertices->GetElementCount () >= factory->vertexCount : true);
-    CS_ASSERT (SkinN ?
-	       skinnedNormals->GetElementCount () >= factory->vertexCount : true);
-    CS_ASSERT (SkinTB ?
-	       skinnedTangents->GetElementCount () >= factory->vertexCount
-	       && skinnedBinormals->GetElementCount () >= factory->vertexCount
-	       : true);
+    // @@Better checks/handling...
+    if (SkinV)
+    {
+      CS_ASSERT (skinnedVertices->GetElementCount () >= factory->vertexCount);
+    }
+
+    if (SkinN)
+    {
+      CS_ASSERT (skinnedNormals->GetElementCount () >= factory->vertexCount);
+    }
+    
+    if (SkinTB)
+    {
+      CS_ASSERT (skinnedTangents->GetElementCount () >= factory->vertexCount);
+      CS_ASSERT (skinnedBinormals->GetElementCount () >= factory->vertexCount);
+    }    
 
     // Setup some local data
     csVertexListWalker<float, csVector3> srcVerts (postMorphVertices);
@@ -125,9 +130,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
     csVertexListWalker<float, csVector3> srcBinormals (factory->binormalBuffer);
     csRenderBufferLock<csVector3> dstBinormals (skinnedBinormals);
 
-    CS::Animation::AnimatedMeshState* skeletonState = lastSkeletonState;
+    csSkeletalState2* skeletonState = lastSkeletonState;    
 
-    CS::Mesh::AnimatedMeshBoneInfluence* influence = factory->boneInfluences.GetArray ();
+    csAnimatedMeshBoneInfluence* influence = factory->boneInfluences.GetArray ();
 
     for (size_t i = 0; i < factory->vertexCount; ++i)
     {
@@ -135,11 +140,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       int numInfluences = 0;
 
       csDualQuaternion dq (csQuaternion (0,0,0,0), csQuaternion (0,0,0,0)); 
-      csQuaternion pivot;
+      csQuaternion pivot;   
 
       for (size_t j = 0; j < 4; ++j, ++influence) // @@SOLVE 4
       {
-        if (influence->influenceWeight > 0.0f)
+        if (influence->influenceWeight > 0)
         {
           numInfluences++;
 
@@ -205,6 +210,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       ++srcBinormals;
     }
   }
+
 
   void AnimeshObject::SkinVertices ()
   {

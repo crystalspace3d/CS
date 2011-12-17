@@ -56,9 +56,6 @@ struct TerraFormerFeederProperties : public
     terraFormer = csQueryRegistryTagInterface<iTerraFormer> (objectReg, source);
   }
 
-  void SetNormalMapSource (const char* source)
-  {}
-
   void SetMaterialMapSource (const char* source)
   {}
 
@@ -217,7 +214,6 @@ bool csTerrainTerraFormerDataFeeder::Load (iTerrainCell* cell)
   }
 
   cell->UnlockHeightData ();
-  cell->RecalculateNormalData ();
 
   int mwidth = cell->GetMaterialMapWidth ();
   int mheight = cell->GetMaterialMapHeight ();

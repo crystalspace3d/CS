@@ -25,19 +25,6 @@
 #include "csutil/threading/atomicops.h"
 #include "csutil/threading/mutex.h"
 
-#ifdef CS_HAVE_VALGRIND_MEMCHECK_H
-#include <valgrind/memcheck.h>
-#endif
-#ifndef VALGRIND_MAKE_MEM_DEFINED
-#define VALGRIND_MAKE_MEM_DEFINED(mem, bytes)			(void)0
-#endif
-#ifndef VALGRIND_MAKE_MEM_UNDEFINED
-#define VALGRIND_MAKE_MEM_UNDEFINED(mem, bytes)			(void)0
-#endif
-
-#define DLMALLOC_DEFINES_ONLY
-#include "dlmalloc-settings.h" // for MALLOC_ALIGNMENT
-
 // ptmalloc functions
 namespace CS
 {
@@ -94,12 +81,6 @@ namespace
   static const size_t maxRequest = (~(size_t)0) - cookieOverhead;
   
   static const uint32 indicator = 0x58585858;
-
-  static inline size_t PadToAlignment (size_t x)
-  {
-    return (MALLOC_ALIGNMENT - (x & (MALLOC_ALIGNMENT-1)))
-      & (MALLOC_ALIGNMENT-1);
-  }
 
   class AllocatorMallocPlatform
   {
@@ -167,7 +148,7 @@ namespace
     {
       const AllocatedBlock& block = allocatedPointers[i];
       
-      fprintf (f, ">>> addr %p  %lu bytes\n", 
+      fprintf (f, ">>> %p %lu\n", 
         block.address, (unsigned long)block.size);
       block.stack->Print (f);
       fflush (f);
@@ -175,8 +156,7 @@ namespace
   }
 
   template<bool keepLocation>
-  static bool mem_check_real (const void* p,
-                              const char* msg, bool condition,
+  static bool mem_check_real (const char* msg, bool condition,
                               const char* exprString,
                               csCallStack* stack, 
                               const char* file, int line)
@@ -187,8 +167,6 @@ namespace
       {
 	fprintf (stderr, 
 	  "Memory error:     %s\n", exprString);
-	fprintf (stderr, 
-	  "Memory block:     %p\n", p);
 	fprintf (stderr, 
 	  "Message:          %s\n", msg);
 	fflush (stderr);
@@ -226,34 +204,31 @@ namespace
     }
     return true;
   }
-  #define mem_check(keepLocation, p, msg, condition, stack, file, line) \
-    mem_check_real<keepLocation> (p, msg, condition, #condition, stack, file, line)
+  #define mem_check(keepLocation, msg, condition, stack, file, line) \
+    mem_check_real<keepLocation> (msg, condition, #condition, stack, file, line)
   
   static bool VerifyMemoryCookie (const AllocatedBlock& block)
   {
     bool ret = true;
     
     // Compute original allocated address
-    const size_t extraDataStart = sizeof (size_t) + sizeof (CookieType)
-      + sizeof(indicator);
-    uint8* p_org = (uint8*)(((uintptr_t)block.address) - extraDataStart
-      - PadToAlignment (extraDataStart));
-    uint8* p_cookie = (uint8*)block.address;
-    p_cookie -= sizeof (CookieType);
-    const CookieType startCookie = GetCookie (p_org);
+    uint8* p = (uint8*)block.address;
+    p -= sizeof(CookieType);
+    const CookieType startCookie = GetCookie (p
+      - (sizeof(size_t) + sizeof (indicator)));
     const CookieType endCookie = CookieSwap (startCookie);
     
-    CookieType theCookie = *(CookieType*)p_cookie;
-    p_cookie -= sizeof(size_t);
-    size_t n = *((size_t*)p_cookie);
-    p_cookie -= sizeof(indicator);
+    CookieType theCookie = *(CookieType*)p;
+    p -= sizeof(size_t);
+    size_t n = *((size_t*)p);
+    p -= sizeof(indicator);
     
     // Verify cookies
-    ret &= mem_check (true, block.address,
+    ret &= mem_check (true,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
       theCookie == startCookie, block.stack, __FILE__, __LINE__);
-    ret &= mem_check (true, block.address,
+    ret &= mem_check (true,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)block.address + n) == endCookie, block.stack, 
@@ -313,15 +288,11 @@ namespace
       errno = ENOMEM;
       return 0;
     }
-    size_t extraDataStart = sizeof (size_t) + sizeof (CookieType);
-    size_t extraDataEnd = sizeof (CookieType);
-    if (keepLocation) extraDataStart += sizeof (indicator);
-    size_t startPad = PadToAlignment (extraDataStart);
-    uint8* p = (uint8*)ptmalloc_::ptmalloc (
-      startPad + extraDataStart + n + extraDataEnd);
+    size_t extraData = sizeof (size_t) + 2*sizeof (CookieType);
+    if (keepLocation) extraData += sizeof (indicator);
+    uint8* p = (uint8*)ptmalloc_::ptmalloc (n + extraData);
     const CookieType startCookie = GetCookie (p);
     const CookieType endCookie = CookieSwap (startCookie);
-    p += startPad;
     // Write location
     if (keepLocation)
     {
@@ -336,7 +307,6 @@ namespace
     *((CookieType*)(p + n)) = endCookie;
     // Pepper.
     memset (p, 0xca, n);
-    VALGRIND_MAKE_MEM_UNDEFINED(p, n);
     if (keepLocation)
     {
       AllocatedBlock newBlock;
@@ -362,35 +332,32 @@ namespace
     if (keepLocation) block = FindAllocatedBlock (P);
     
     // Compute original allocated address
-    const size_t extraDataStart = sizeof (size_t) + sizeof (CookieType)
-      + locationSize;
-    uint8* p_org = (uint8*)(((uintptr_t)P) - extraDataStart
-      - PadToAlignment (extraDataStart));
-    uint8* p_cookie = (uint8*)P;
-    p_cookie -= sizeof (CookieType);
-    const CookieType startCookie = GetCookie (p_org);
+    uint8* p = (uint8*)P;
+    p -= sizeof(CookieType);
+    const CookieType startCookie = GetCookie (p
+      - (sizeof(size_t) + locationSize));
     const CookieType endCookie = CookieSwap (startCookie);
     // Verify cookies
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
-      *(CookieType*)p_cookie == startCookie, block ? block->stack : 0,
+      *(CookieType*)p == startCookie, block ? block->stack : 0,
       __FILE__, __LINE__);
-    p_cookie -= sizeof(size_t);
-    size_t n = *((size_t*)p_cookie);
+    p -= sizeof(size_t);
+    size_t n = *((size_t*)p);
     if (keepLocation)
     {
-      p_cookie -= sizeof (indicator);
+      p -= sizeof (indicator);
     }
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)P + n) == endCookie, 
       block ? block->stack : 0, __FILE__, __LINE__);
     // Salt.
     size_t extraData = sizeof (size_t) + 2*sizeof (CookieType);
-    memset (p_cookie + locationSize, 0xcf, n + extraData);
-    ptmalloc_::ptfree (p_org);
+    memset (p + locationSize, 0xcf, n + extraData);
+    ptmalloc_::ptfree (p);
     if (keepLocation)
     {
       CS::Threading::ScopedLock<CS::Threading::RecursiveMutex> lock (
@@ -443,41 +410,36 @@ namespace
     if (keepLocation) oldBlock = FindAllocatedBlock (P);
     
     // Compute original allocated address
-    const size_t extraDataStart = sizeof (size_t) + sizeof (CookieType)
-      + locationSize;
-    uint8* p_org = (uint8*)(((uintptr_t)P) - extraDataStart
-      - PadToAlignment (extraDataStart));
-    uint8* p_cookie = (uint8*)P;
-    p_cookie -= sizeof (CookieType);
+    uint8* p = (uint8*)P;
+    p -= sizeof(CookieType);
     // Verify cookies
-    const CookieType startCookie = GetCookie (p_org);
+    const CookieType startCookie = GetCookie (p
+      - (sizeof(size_t) + locationSize));
     const CookieType endCookie = CookieSwap (startCookie);
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(was probably allocated in another module)",
-      *(CookieType*)p_cookie == startCookie, 
+      *(CookieType*)p == startCookie, 
       oldBlock ? oldBlock->stack : 0, __FILE__, __LINE__);
-    p_cookie -= sizeof(size_t);
-    size_t nOld = *((size_t*)p_cookie);
+    p -= sizeof(size_t);
+    size_t nOld = *((size_t*)p);
     if (keepLocation)
     {
-      p_cookie -= sizeof (indicator);
+      p -= sizeof (indicator);
     }
-    mem_check (keepLocation, P,
+    mem_check (keepLocation,
       "Memory block has wrong cookie "
       "(probably corrupted by an overflow)",
       *(CookieType*)((uint8*)P + nOld) == endCookie, 
       oldBlock ? oldBlock->stack : 0, __FILE__, __LINE__);
   
-    size_t extraDataEnd = sizeof (CookieType);
-    size_t startPad = PadToAlignment (extraDataStart);
-    uint8* np = (uint8*)ptmalloc_::ptrealloc (p_org, 
-      startPad + extraDataStart + n + extraDataEnd); 
+    size_t extraData = sizeof (size_t) + 2*sizeof (CookieType) + locationSize;
+    uint8* np = (uint8*)ptmalloc_::ptrealloc (p, 
+      n + extraData); 
     // Cookie may have changed since the memory address may have changed,
     // update
     const CookieType newStartCookie = GetCookie (np);
     const CookieType newEndCookie = CookieSwap (newStartCookie);
-    np += startPad;
     if (keepLocation)
     {
       np += sizeof (indicator);
@@ -489,10 +451,7 @@ namespace
     *((CookieType*)(np + n)) = newEndCookie;
     // Spice the enlarged area
     if (n > nOld)
-    {
       memset (np + nOld, 0xca, n-nOld);
-      VALGRIND_MAKE_MEM_UNDEFINED(np + nOld, n-nOld);
-    }
     if (keepLocation)
     {
       CS::Threading::ScopedLock<CS::Threading::RecursiveMutex> lock (

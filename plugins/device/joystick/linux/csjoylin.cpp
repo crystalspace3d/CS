@@ -18,6 +18,7 @@
 */
 
 #include "cssysdef.h"
+#include "csver.h"
 
 #include "iutil/csinput.h" /* for JS max/mins */
 #include "iutil/verbositymanager.h"
@@ -42,7 +43,7 @@
 #define CS_LINUX_JOYSTICK_CFG "/config/joystick.cfg"
 #define CS_LINUX_JOYSTICK_KEY "Device.Joystick." CS_PLATFORM_NAME "."
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(JoyLin)
 {
@@ -156,7 +157,7 @@ bool csLinuxJoystick::Init ()
     }
     else if (verbose || errno != ENOENT)
     {
-      Report (CS_REPORTER_SEVERITY_DEBUG,
+      Report (CS_REPORTER_SEVERITY_WARNING,
               "Failed to open joystick device %s - error: %s\n",
               it->GetStr (),
               strerror (errno));

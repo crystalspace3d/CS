@@ -22,11 +22,8 @@
 #include <unistd.h>
 
 #include "cssysdef.h"
-/* Small hack: include the _template_ as only the major & minor version is
-   needed here */
-#include "csver.h.template"
+#include "csver.h"
 #include "csutil/util.h"
-#include "csutil/stringquote.h"
 #include "csutil/sysfunc.h"
 #include "csutil/syspath.h"
 
@@ -110,8 +107,8 @@ csString csGetConfigPath ()
     }
     
     csFPrintf (stderr,
-        "Failed to find vfs.cfg in %s (defined by "
-        "CRYSTAL_" VERSION_STR " var).\n", CS::Quote::Single (crystal));
+        "Failed to find vfs.cfg in '%s' (defined by "
+        "CRYSTAL_" VERSION_STR " var).\n", crystal);
     return "";
   }
 

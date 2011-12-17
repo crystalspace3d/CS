@@ -20,47 +20,10 @@
 
 #include "csutil/threading/thread.h"
 #include "csutil/threading/win32_thread.h"
-#include "csutil/threading/win32_tls.h"
 #include "csutil/threading/barrier.h"
 #include "csutil/threading/condition.h"
 
 #include <process.h>
-
-#ifdef CS_COMPILER_MSVC
-// Helper to set thread name in debugger
-#define MS_VC_EXCEPTION 0x406D1388
-
-#pragma pack(push,8)
-typedef struct tagTHREADNAME_INFO
-{
-  DWORD dwType; // Must be 0x1000.
-  LPCSTR szName; // Pointer to name (in user addr space).
-  DWORD dwThreadID; // Thread ID (-1=caller thread).
-  DWORD dwFlags; // Reserved for future use, must be zero.
-} THREADNAME_INFO;
-#pragma pack(pop)
-
-static void SetThreadName (DWORD dwThreadID, const char* threadName)
-{
-  THREADNAME_INFO info;
-  info.dwType = 0x1000;
-  info.szName = threadName;
-  info.dwThreadID = dwThreadID;
-  info.dwFlags = 0;
-
-  __try
-  {
-    RaiseException( MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(ULONG_PTR), (ULONG_PTR*)&info );
-  }
-  __except(EXCEPTION_EXECUTE_HANDLER)
-  {
-  }
-}
-#else
-static void SetThreadName (DWORD dwThreadID, const char* threadName)
-{}
-#endif
-
 
 #if defined (__CYGWIN__) 
 //No _beginthreadex, emulate it
@@ -113,48 +76,42 @@ namespace Implementation
     class ThreadStartParams : public CS::Memory::CustomAllocated
     {
     public:
-      ThreadStartParams (ThreadBase* thread, Runnable* runner, int32* isRunningPtr, 
+      ThreadStartParams (Runnable* runner, int32* isRunningPtr, 
         Barrier* startupBarrier)
-        : thread (thread), runnable (runner), isRunningPtr (isRunningPtr), 
+        : runnable (runner), isRunningPtr (isRunningPtr), 
         startupBarrier (startupBarrier)
       {
       }
 
-      ThreadBase* thread;
       Runnable* runnable;
       int32* isRunningPtr;
       Barrier* startupBarrier;
     };
 
+    unsigned int __stdcall proxyFunc (void* param)
+    {
+      // Extract the parameters
+      ThreadStartParams* tp = static_cast<ThreadStartParams*> (param);
+      int32* isRunningPtr = tp->isRunningPtr;
+      Runnable* runnable = tp->runnable;
+      Barrier* startupBarrier = tp->startupBarrier;
+
+      // Set as running and wait for main thread to catch up
+      AtomicOperations::Set (isRunningPtr, 1);
+      startupBarrier->Wait ();
+      
+      // Run      
+      runnable->Run ();
+
+      // Set as non-running
+      AtomicOperations::Set (isRunningPtr, 0);
+
+      
+      return 0;
+    }
+
   }
 
-  unsigned int __stdcall ThreadBase::proxyFunc (void* param)
-  {
-    // Extract the parameters
-    ThreadStartParams* tp = static_cast<ThreadStartParams*> (param);
-    csRef<ThreadBase> thread (tp->thread);
-    int32* isRunningPtr = tp->isRunningPtr;
-    Runnable* runnable = tp->runnable;
-    Barrier* startupBarrier = tp->startupBarrier;
-
-    // Set as running and wait for main thread to catch up
-    AtomicOperations::Set (isRunningPtr, 1);
-    startupBarrier->Wait ();
-      
-    // Set the name, for debugging
-    SetThreadName ((DWORD)-1, runnable->GetName ());
-
-    // Run      
-    runnable->Run ();
-
-    // Clean up TLSed objects
-    CleanupAllTlsInstances ();
-
-    // Set as non-running
-    AtomicOperations::Set (isRunningPtr, 0);
-      
-    return 0;
-  }
 
   ThreadBase::ThreadBase (Runnable* runnable)
     : runnable (runnable), threadHandle (0), threadId (0), isRunning (0), 
@@ -171,7 +128,7 @@ namespace Implementation
   {
     if (!threadHandle)
     {
-      ThreadStartParams param (this, runnable, &isRunning, &startupBarrier);
+      ThreadStartParams param (runnable, &isRunning, &startupBarrier);
 
       // _beginthreadex does not always return a void*,
       // on some versions of MSVC it gives uintptr_t
@@ -244,44 +201,6 @@ namespace Implementation
     return GetCurrentThreadId ();
   }
 
-  struct TlsInstances
-  {
-    Mutex mutex;
-    csArray<ThreadLocalBase*,
-            csArrayElementHandler<ThreadLocalBase*>,
-            CS::Memory::AllocatorMallocPlatform> instances;
-  };
-  CS_IMPLEMENT_STATIC_VAR(GetTlsInstances, TlsInstances, )
-
-  void ThreadBase::RegisterTlsInstance (ThreadLocalBase* tls)
-  {
-    TlsInstances& tlsInstances = *GetTlsInstances();
-    ScopedLock<Mutex> lockInstances (tlsInstances.mutex);
-
-    tlsInstances.instances.InsertSorted (tls);
-  }
-
-  void ThreadBase::UnregisterTlsInstance (ThreadLocalBase* tls)
-  {
-    TlsInstances& tlsInstances = *GetTlsInstances();
-    ScopedLock<Mutex> lockInstances (tlsInstances.mutex);
-
-    size_t tlsIndex = tlsInstances.instances.FindSortedKey (
-      csArrayCmp<ThreadLocalBase*, ThreadLocalBase*> (tls));
-    CS_ASSERT (tlsIndex != csArrayItemNotFound);
-    tlsInstances.instances.DeleteIndex (tlsIndex);
-  }
-
-  void ThreadBase::CleanupAllTlsInstances ()
-  {
-    TlsInstances& tlsInstances = *GetTlsInstances();
-    ScopedLock<Mutex> lockInstances (tlsInstances.mutex);
-
-    for (size_t i = 0; i < tlsInstances.instances.GetSize(); i++)
-    {
-      tlsInstances.instances[i]->CleanupInstance ();
-    }
-  }
 }
 }
 }

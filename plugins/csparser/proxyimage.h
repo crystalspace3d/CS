@@ -19,24 +19,21 @@
 #ifndef __PROXYIMAGE_H__
 #define __PROXYIMAGE_H__
 
-#include "iutil/databuff.h"
-
-struct iBase;
-
 CS_PLUGIN_NAMESPACE_BEGIN(csparser)
 {
+  class csLoader;
+
   class ProxyImage : public scfImplementation1<ProxyImage, iImage>
   {
     csString filename;
     
-    mutable csRef<iThreadedLoader> loader;
+    mutable csRef<csLoader> loader;
     mutable csRef<iImage> proxiedImage;
   public:
-    ProxyImage (iThreadedLoader* loader, const char* fn, iObjectRegistry* object_reg) : 
+    ProxyImage (csLoader* loader, const char* fn) : 
       scfImplementationType (this), filename (fn),
-      loader (loader), object_reg(object_reg) {}
+      loader (loader) {}
       
-    iObjectRegistry* object_reg;
     iImage* GetProxiedImage() const;
     
     const void *GetImageData ()

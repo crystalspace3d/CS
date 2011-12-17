@@ -28,15 +28,12 @@
 #endif
 
 #include "csutil/leakguard.h"
-#include "csutil/pooledscfclass.h"
 #include "csutil/ref.h"
 #include "csutil/scf.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/scopedpointer.h"
 #include "csutil/weakref.h"
 
 #include "igraphic/image.h"
-#include "iutil/databuff.h"
 #include "ivideo/texture.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
@@ -74,11 +71,6 @@ struct TextureSourceFormat
   /// Init for uncompressed texture
   TextureSourceFormat (GLenum format, GLenum type) :
     format (format), type (type) {}
-    
-  bool operator== (const TextureSourceFormat& other) const
-  {
-    return (format == other.format) && (type == other.type);
-  }
 };
 
 struct csGLUploadData
@@ -97,35 +89,10 @@ struct csGLUploadData
 
 struct csGLTextureClassSettings;
 
-class TextureReadbackSimple :
-  public scfImplementationPooled<scfImplementation1<TextureReadbackSimple,
-                                                    iDataBuffer> >
-{
-  typedef scfImplementationPooled<scfImplementation1<TextureReadbackSimple,
-                                                    iDataBuffer> > SuperClass;
-
-  void* data;
-  size_t size;
-public:
-  TextureReadbackSimple (void* data, size_t size) : SuperClass (this),
-    data (data), size (size) {}
-  ~TextureReadbackSimple()
-  {
-    cs_free (data);
-  }
-  
-  char* GetData () const { return (char*)data; }
-  int8* GetInt8 () { return (int8*)data; }
-  size_t GetSize () const { return size; }
-  uint8* GetUint8 () { return (uint8*)data; }
-  char* operator * () const { return (char*)data; }
-};
-
 // For GetTextureTarget ()
 #include "csutil/deprecated_warn_off.h"
 
 class csGLBasicTextureHandle :
-  public ThreadedCallable<csGLBasicTextureHandle>,
   public scfImplementation1<csGLBasicTextureHandle,
 			    iTextureHandle>
 {
@@ -146,19 +113,12 @@ protected:
     flagPrepared = 1 << 30,
     flagForeignHandle = 1 << 29,
     flagWasRenderTarget = 1 << 28,
-    flagExcessMaxMip = 1 << 27,
 
     // Flags below are used by csGLTextureHandle
     /// Does it have a keycolor?
-    flagTransp = 1 << 26,
+    flagTransp = 1 << 27,
     /// Is the color valid?
-    flagTranspSet = 1 << 25,
-    
-    /// Special flag to mark this texture is used in an FBO
-    flagInFBO = 1 << 24,
-    
-    /// Texture has been uploaded
-    flagUploaded = 1 << 23,
+    flagTranspSet = 1 << 26,
 
     flagLast,
     /// Mask to get only the "public" flags
@@ -168,16 +128,14 @@ protected:
   csAlphaMode::AlphaType alphaType;
   bool IsTexupdateNeeded() const
   {
-    return texFlags.Check ((uint32)flagTexupdateNeeded);
+    return texFlags.Check (flagTexupdateNeeded);
   }
   void SetTexupdateNeeded (bool b)
   {
-    texFlags.SetBool ((uint32)flagTexupdateNeeded, b);
+    texFlags.SetBool (flagTexupdateNeeded, b);
   }
   bool IsPrepared() const { return texFlags.Check (flagPrepared); }
   void SetPrepared (bool b) { texFlags.SetBool (flagPrepared, b); }
-  bool IsUploaded() const { return texFlags.Check (flagUploaded); }
-  void SetUploaded (bool b) { texFlags.SetBool (flagUploaded, b); }
   bool IsTransp() const { return texFlags.Check (flagTransp); }
   void SetTransp (bool b) { texFlags.SetBool (flagTransp, b); }
   bool IsForeignHandle() const { return texFlags.Check (flagForeignHandle); }
@@ -221,31 +179,15 @@ protected:
   GLuint pbo;
   /// Upload the texture to GL.
   void Load ();
-  // Needs to be done in the main thread.
-  THREADED_CALLABLE_DECL(csGLBasicTextureHandle, Unload, csThreadReturn, HIGH, true, false);
-  
-  CS::Graphics::TextureComparisonMode texCompare;
-  
-  // Readback data
-  TextureSourceFormat lastReadbackFormat;
-  csRef<iDataBuffer> lastReadback;
-  TextureSourceFormat desiredReadbackFormat;
-  int desiredReadbackBPP;
-  
-  void SetDesiredReadbackFormat (const CS::StructuredTextureFormat&);
-  template<typename Action>
-  csPtr<iDataBuffer> ReadbackPerform (size_t readbackSize, Action& readbackAction);
+  void Unload ();
 public:
   /// The dimensions which were requested upon texture creation
   int orig_width, orig_height, orig_d;
   /// The dimensions actually used
   int actual_width, actual_height, actual_d;
-  CS::Utility::ScopedPointer<csArray<csGLUploadData> > uploadData;
+  csArray<csGLUploadData>* uploadData;
   csWeakRef<csGLGraphics3D> G3D;
   TextureType texType;
-
-  iObjectRegistry* GetObjectRegistry() const;
-
   /// Format used for last Blit() call
   TextureBlitDataFormat texFormat;
   bool IsWasRenderTarget() const
@@ -256,15 +198,7 @@ public:
   {
     texFlags.SetBool (flagWasRenderTarget, b);
   }
-  
-  bool IsInFBO() const { return texFlags.Check (flagInFBO); }
-  void SetInFBO (bool b) { texFlags.SetBool (flagInFBO, b); }
-  
-  bool IsSeamlessCubemapDisabled () const
-  { return texFlags.Check (CS_TEXTURE_CUBEMAP_DISABLE_SEAMLESS); }
-  
-  void ReadbackFramebuffer ();
-  
+
   /// Create a texture with given dimensions
   csGLBasicTextureHandle (int width, int height, int depth,
     csImageType imagetype, int flags, csGLGraphics3D *iG3D);
@@ -277,7 +211,7 @@ public:
    * Synthesize empty upload data structures for textures of the format
    * \a format. */
   bool SynthesizeUploadData (const CS::StructuredTextureFormat& format,
-    iString* fail_reason, bool zeroTexture);
+    iString* fail_reason);
 
   void Clear();
 
@@ -346,6 +280,22 @@ public:
   void SetupAutoMipping();
   void RegenerateMipmaps();
 
+  /// Get the texture target
+  virtual int GetTextureTarget () const { return int (texType); }
+
+  /**
+   * Query the private object associated with this handle.
+   * For internal usage by the 3D driver.
+   */
+  virtual void *GetPrivateObject ();
+
+  /**
+   * Query if the texture has an alpha channel.<p>
+   * This depends both on whenever the original image had an alpha channel
+   * and of the fact whenever the renderer supports alpha maps at all.
+   */
+  virtual bool GetAlphaMap ();
+
   virtual csAlphaMode::AlphaType GetAlphaType () const
   { return alphaType; }
   virtual void SetAlphaType (csAlphaMode::AlphaType alphaType)
@@ -362,8 +312,6 @@ public:
   void UpdateTexture ();
 
   GLuint GetHandle ();
-  void ChangeTextureCompareMode (
-    const CS::Graphics::TextureComparisonMode& mode);
 
   /**
    * Return the texture target for this texture (e.g. GL_TEXTURE_2D)
@@ -396,15 +344,8 @@ public:
   void ApplyBlitBuffer (uint8* buf);
   BlitBufferNature GetBufferNature (uint8* buf);
 
-  void SetMipmapLimits (int maxMip, int minMip = 0);
-  void GetMipmapLimits (int& maxMip, int& minMip);
-  
-  csPtr<iDataBuffer> Readback (GLenum textarget,
-    const CS::StructuredTextureFormat&, int);
-  csPtr<iDataBuffer> Readback (const CS::StructuredTextureFormat&, int);
-  
-  /// Download texture from GL as an image
-  csPtr<iImage> GetTextureFromGL ();
+  /// Dump the contents onto an image.
+  csPtr<iImage> Dump ();
 };
 
 #include "csutil/deprecated_warn_on.h"

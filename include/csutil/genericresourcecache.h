@@ -135,69 +135,6 @@ namespace CS
       };
       
       /**
-       * Reuse condition: a resource is reused if only one reference is held 
-       * to it. (The resource type must be a csRef<>.)
-       */
-      class ReuseIfOnlyOneRef
-      {
-      public:
-	struct AddParameter
-	{
-	  AddParameter () {}
-	};
-	struct StoredAuxiliaryInfo
-	{
-	  template<typename ResourceCacheType>
-	  StoredAuxiliaryInfo (const ResourceCacheType& cache, 
-	    const AddParameter& param) {}
-	};
-	
-	template<typename ResourceCacheType>
-	void MarkActive (const ResourceCacheType& cache,
-	    StoredAuxiliaryInfo& elementInfo)
-	{ }
-  
-	template<typename ResourceCacheType>
-	bool IsReusable (const ResourceCacheType& cache,
-	  const StoredAuxiliaryInfo& elementInfo,
-	  const typename ResourceCacheType::CachedType& data)
-	{
-	  return data->GetRefCount() == 1;
-	}
-      };
-      
-      /**
-       * Reuse condition: allow immediate reuse.
-       */
-      class ReuseAlways
-      {
-      public:
-	struct AddParameter
-	{
-	  AddParameter () {}
-	};
-	struct StoredAuxiliaryInfo
-	{
-	  template<typename ResourceCacheType>
-	  StoredAuxiliaryInfo (const ResourceCacheType& cache, 
-	    const AddParameter& param) {}
-	};
-	
-	template<typename ResourceCacheType>
-	void MarkActive (const ResourceCacheType& cache,
-	    StoredAuxiliaryInfo& elementInfo)
-	{ }
-  
-	template<typename ResourceCacheType>
-	bool IsReusable (const ResourceCacheType& cache,
-	  const StoredAuxiliaryInfo& elementInfo,
-	  const typename ResourceCacheType::CachedType& data)
-	{
-	  return true;
-	}
-      };
-      
-      /**
        * Purge condition: a resource is purged after a certain time has passed
        */
       template<typename TimeType = uint>
@@ -243,38 +180,6 @@ namespace CS
 	}
       };
 
-      /**
-       * Purge condition: a resource is purged if only one reference is held 
-       * to it. (The resource type must be a csRef<>.)
-       */
-      class PurgeIfOnlyOneRef
-      {
-      public:
-	struct AddParameter
-	{
-	  AddParameter () {}
-	};
-	struct StoredAuxiliaryInfo
-	{
-	  template<typename ResourceCacheType>
-	  StoredAuxiliaryInfo (const ResourceCacheType& cache, 
-	    const AddParameter& param) {}
-	};
-	
-	template<typename ResourceCacheType>
-	void MarkActive (const ResourceCacheType& cache,
-	    StoredAuxiliaryInfo& elementInfo)
-	{ }
-  
-	template<typename ResourceCacheType>
-	bool IsPurgeable (const ResourceCacheType& cache,
-	  StoredAuxiliaryInfo& elementInfo,
-	  const typename ResourceCacheType::CachedType& data)
-	{
-	  return data->GetRefCount() == 1;
-	}
-      };
-      
     } // namespace ResourceCache
     
     /**
@@ -347,38 +252,38 @@ namespace CS
 	ElementWrapper (const ElementWrapper& other) : ptr (other.ptr) { }
 	
 	Element* operator->() { return ptr; }
+	operator Element*() const { return ptr; }
 	
-	// Comparisons among ElementWrappers
+	// FIXME: Comparisons are fragile, rely on csComparator only using <
 	bool operator== (const ElementWrapper& other) const
-	{
-	  return ResourceSorting::IsEqual (ptr->data, other.ptr->data);
-	}
-	bool operator<= (const ElementWrapper& other) const
-	{
-	  return ResourceSorting::IsLargerEqual (ptr->data, other.ptr->data);
-	}
+	{ return ptr == other.ptr; }
 	
-	// Comparisons against ResourceSortingKeyType
-	bool operator== (const ResourceSortingKeyType& other) const
+	bool operator< (const ElementWrapper& other) const
 	{
-	  return ResourceSorting::IsEqual (ptr->data, other);
+	  // @@@ Make more efficient...
+	  if (ResourceSorting::IsEqual (ptr->data, other.ptr->data)) return false;
+	  if (ResourceSorting::IsLargerEqual (ptr->data, other.ptr->data)) return false;
+	  return true;
 	}
-	bool operator<= (const ResourceSortingKeyType& other) const
+	bool operator< (const ResourceSortingKeyType& other) const
 	{
-	  return ResourceSorting::IsLargerEqual (ptr->data, other);
+	  // @@@ Make more efficient...
+	  if (ResourceSorting::IsEqual (ptr->data, other)) return false;
+	  if (ResourceSorting::IsLargerEqual (ptr->data, other)) return false;
+	  return true;
 	}
-	friend bool operator<= (const ResourceSortingKeyType& key, 
-			        const ElementWrapper& el)
+	friend bool operator< (const ResourceSortingKeyType& key, 
+			       const ElementWrapper& el)
 	{
-	  return ResourceSorting::IsLargerEqual (key, el.ptr->data);
+	  // @@@ Make more efficient...
+	  if (ResourceSorting::IsEqual (el.ptr->data, key)) return false;
+	  if (ResourceSorting::IsLargerEqual (el.ptr->data, key)) return true;
+	  return false;
 	}
 	
       };
       
       csBlockAllocator<Element> elementAlloc;
-      typedef csRedBlackTree<ElementWrapper,
-	  CS::Container::DefaultRedBlackTreeAllocator<ElementWrapper>,
-	  CS::Container::RedBlackTreeOrderingPartial> AvailableResourcesTree;
       // Tree of available resources
       struct AvailableResourcesWrapper : public ReuseCondition
       {
@@ -391,13 +296,13 @@ namespace CS
 	  RBTraverser (csBlockAllocator<Element>& elementAlloc) :
 	    elementAlloc (elementAlloc) {}
 	  
-	  void operator() (ElementWrapper& el)
+	  void Process (Element* el)
 	  {
-	    elementAlloc.Free (el.ptr);
+	    elementAlloc.Free (el);
 	  }
 	};
       public:
-	AvailableResourcesTree v;
+	csRedBlackTree<ElementWrapper> v;
         
         AvailableResourcesWrapper (const ReuseCondition& other,
           csBlockAllocator<Element>& elementAlloc)
@@ -427,7 +332,7 @@ namespace CS
 	  typename csList<ElementWrapper>::Iterator listIt (v);
 	  while (listIt.HasNext())
 	  {
-	    Element* el = listIt.Next().ptr;
+	    Element* el = listIt.Next();
 	    elementAlloc.Free (el);
 	  }
 	  v.DeleteAll();
@@ -456,11 +361,11 @@ namespace CS
 	SearchDataTraverser (T* entry, Element*& ret) 
 	  : entry (entry), ret (ret) {}
 	
-        bool operator() (ElementWrapper& el)
+        bool Process (Element* el)
 	{
-	  if (&(el.ptr->data) == entry)
+	  if (&(el->data) == entry)
 	  {
-	    ret = el.ptr;
+	    ret = el;
 	    return false;
 	  }
 	  return true;
@@ -478,7 +383,7 @@ namespace CS
 	typename csList<ElementWrapper>::Iterator listIt (activeResources.v);
 	while (listIt.HasNext())
 	{
-	  Element* el = listIt.Next().ptr;
+	  Element* el = listIt.Next();
 	  if (&(el->data) == entry) return el;
 	}
 	
@@ -506,7 +411,6 @@ namespace CS
       
       ~GenericResourceCache()
       {
-        availableResources.Destroy ();
       }
 
       /**
@@ -534,9 +438,9 @@ namespace CS
       public:
 	VerifyTraverser (Element* el) : el (el) {}
 	
-        bool operator() (ElementWrapper& el)
+        bool Process (Element* el)
 	{
-	  CS_ASSERT(el.ptr != this->el);
+	  CS_ASSERT(el != this->el);
 	  return true;
 	}
       };
@@ -567,11 +471,11 @@ namespace CS
 	
 	if (time >= lastPurgeAged + agedPurgeInterval)
 	{
-	  typename AvailableResourcesTree::Iterator treeIt (
+	  typename csRedBlackTree<ElementWrapper>::Iterator treeIt (
 	    availableResources.v.GetIterator ());
 	  while (treeIt.HasNext())
 	  {
-	    Element* el = treeIt.PeekNext ().ptr;
+	    Element* el = treeIt.PeekNext ();
 	    if (GetPurgeCondition().IsPurgeable (*this, 
 		el->GetPurgeAuxiliary(), el->data))
 	    {
@@ -596,7 +500,7 @@ namespace CS
 	  if (GetReuseCondition().IsReusable (*this,
 	      el->GetReuseAuxiliary(), el->data))
 	  {
-	    VerifyElementNotInTree (el.ptr);
+	    VerifyElementNotInTree (el);
 	    availableResources.v.Insert (el);
 	    activeResources.v.Delete (listIt);
 	  }
@@ -608,17 +512,17 @@ namespace CS
       T* Query (const ResourceSortingKeyType& key = 
 	ResourceSortingKeyType(), bool exact = false)
       {
-	const AvailableResourcesTree& constTree = availableResources.v;
+	const csRedBlackTree<ElementWrapper>& constTree = availableResources.v;
 	ElementWrapper const* el;
 	if (exact)
 	  el = constTree.Find (key);
 	else
-	  el = constTree.FindGreatestSmallerEqual (key);
+	  el = constTree.FindSmallestGreaterEqual (key);
 	if (el != 0)
 	{
 	  ElementWrapper myElement = *el;
 	  availableResources.v.DeleteExact (el);
-	  VerifyElementNotInTree (myElement.ptr);
+	  VerifyElementNotInTree (myElement);
 	  activeResources.v.PushFront (myElement);
 	  GetPurgeCondition().MarkActive (*this, myElement->GetPurgeAuxiliary());
 	  GetReuseCondition().MarkActive (*this, myElement->GetReuseAuxiliary());

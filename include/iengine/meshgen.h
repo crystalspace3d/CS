@@ -49,13 +49,12 @@ struct iTerraFormer;
  */
 struct iMeshGeneratorGeometry : public virtual iBase
 {
-  SCF_INTERFACE(iMeshGeneratorGeometry, 1, 1, 3);
+  SCF_INTERFACE(iMeshGeneratorGeometry, 1, 0, 0);
 
   /**
    * Add a factory and the maximum distance after which this factory
    * will no longer be used. The minimum distance will be calculated
    * from the maximum distance used for other factories in this geometry.
-   * \sa SetMinimumDrawDistance to set a minimum drawing distance for all factories.
    */
   virtual void AddFactory (iMeshFactoryWrapper* factory, float maxdist) = 0;
 
@@ -145,73 +144,6 @@ struct iMeshGeneratorGeometry : public virtual iBase
 
   virtual void AddPositionsFromMap (iTerraFormer* map, const csBox2 &region,
     uint resx, uint resy, float value, const csStringID & type) = 0;
-
-  /**
-   * Set the direction that simulated wind will blow towards.
-   * \param x is the x coordinate direction.
-   * \param z is the z coordinate direction.
-   */
-  virtual void SetWindDirection (float x, float z) = 0;
-
-  /**
-   * Set the swing bias of simulated wind.
-   * A higher bias equals a lower back swing on foliage.
-   * Min bias of 1.0;
-   * \param bias is the value of the wind bias.
-   */
-  virtual void SetWindBias (float bias) = 0;
-
-  /**
-   * Set the swing speed of simulated wind.
-   * Min speed of 0.0;
-   * \param speed is the value of the wind speed.
-   */
-  virtual void SetWindSpeed (float speed) = 0;
-
-  /**
-   * Use a density factor map.
-   * The sum of all densities from factor maps will affect the density
-   * at a given point. The value from the map will be scaled by the given
-   * factor. The final density will be based on
-   * base density * sum of density factor map values.
-   * \param factorMapID The identifier with which the map was added to the
-   *   mesh generator.
-   * \param factor Factor by which the density from the image is multiplied.
-   */
-  virtual bool UseDensityFactorMap (const char* factorMapID,
-				    float factor) = 0;
-
-  /**
-   * Set the minimum drawing distance for any mesh in this geometry.
-   * A mesh is not displayed if it is closer than this distance.
-   */
-  virtual void SetMinimumDrawDistance (float dist) = 0;
-  /// Get the minimum drawing distance for any mesh in this geometry.
-  virtual float GetMinimumDrawDistance () = 0;
-  
-  /**
-   * Set the minimum distance at which meshes appear opaque.
-   * A mesh, at the minimum drawing distance, is drawn fully transparent and
-   * is faded in until it reaches the minimum opacity distance (where it is
-   * drawn fully opaque).
-   */
-  virtual void SetMinimumOpaqueDistance (float dist) = 0;
-  /// Get the minimum distance at which meshes appear opaque.
-  virtual float GetMinimumOpaqueDistance () = 0;
-
-  /**
-   * Set the maximum distance at which meshes appear opaque.
-   * A mesh, at the maximum opacity distance, is drawn fully opaque and
-   * is faded out until it reaches the maximum drawing distance (where it is
-   * drawn fully transparent).
-   * 
-   * \remarks If the mesh generator has distances to fade in between set 
-   * (with iMeshGenerator::SetAlphaScale), the closer of the per-generator
-   * and per-geometry distances are used for fading.
-   */
-  virtual void SetMaximumOpaqueDistance (float dist) = 0;
-  /// Get the maximum distance at which meshes appear opaque.
-  virtual float GetMaximumOpaqueDistance () = 0;
 };
 
 /**
@@ -228,7 +160,7 @@ struct iMeshGeneratorGeometry : public virtual iBase
  */
 struct iMeshGenerator : public virtual iBase
 {
-  SCF_INTERFACE(iMeshGenerator, 1, 0, 4);
+  SCF_INTERFACE(iMeshGenerator, 1, 0, 0);
 
   /**
    * Get the iObject for this mesh generator.
@@ -236,13 +168,18 @@ struct iMeshGenerator : public virtual iBase
   virtual iObject *QueryObject () = 0;
 
   /**
-   * \deprecated Feature removed in 2.1.
-   *   Similar functionality can be achieved by using multiple geometries with
-   *   different densities.
+   * Set the density scale. If this is set then objects in the distance
+   * can have a lower density.
+   * \param mindist is the minimum distance at which density scale starts. At
+   * this distance the density factor will be 1 (meaning original density
+   * as given by the geometry itself).
+   * \param maxdist is the maximum distance at which density scale ends. At
+   * this distance the density factor will be equal to 'maxdensityfactor'.
+   * Note that this is a linear function so distances beyond 'maxdist' will get
+   * even lower density.
+   * \param maxdensityfactor is the density factor to use at 'maxdist'. 1 means
+   * full density and 0 means nothing left.
    */
-  CS_DEPRECATED_METHOD_MSG("Feature removed in 2.1. "
-    "Similar functionality can be achieved by using multiple geometries with "
-   "different densities.")
   virtual void SetDensityScale (float mindist, float maxdist,
   	float maxdensityfactor) = 0;
 
@@ -337,70 +274,6 @@ struct iMeshGenerator : public virtual iBase
    * Remove a mesh.
    */
   virtual void RemoveMesh (size_t idx) = 0;
-
-  /**
-   * Clear the block at a certain position. This is useful for regenerating
-   * the block after making changes to the density map (for example).
-   */
-  virtual void ClearPosition (const csVector3& pos) = 0;
-  
-  /**
-   * Add a density factor map in grayscale.
-   * These can be used by geometries to influence the density at some given
-   * point.
-   * \param factorMapID Identifier by which this map is referenced.
-   *   Used to link factor maps to geometries.
-   * \param mapImage Image with density data.
-   * \param worldToMap Transformation to map world coordinates into
-   *   normalized image coordinates. Transform is applied to coordinates
-   *   for which the density is to be determined, and the X and Y
-   *   components of the transformed coordinates are used as image 
-   *   coordinates.
-   */
-  virtual void AddDensityFactorMap (const char* factorMapID,
-				    iImage* mapImage,
-				    const CS::Math::Matrix4& worldToMap) = 0;
-
-  /**
-   * Update a density factor map from an image.
-   * This function does nothing if the factor map doesn't exist.
-   */
-  virtual void UpdateDensityFactorMap (const char* factorMapID, iImage* mapImage) = 0;
-
-  /**
-   * Check if a given density factor map exists.
-   */
-  virtual bool IsValidDensityFactorMap (const char* factorMapID) const = 0;
-
-  /**
-   * Return the world to map transform of a density factor map. This function
-   * does not attempt to check if the factor map actually exists so use
-   * IsValidDensityFactorMap() first!
-   */
-  virtual const CS::Math::Matrix4& GetWorldToMapTransform (const char* factorMapID) const = 0;
-
-  /**
-   * Get the width of the density factory map. If the map doesn't exist then this
-   * will return 0.
-   */
-  virtual int GetDensityFactorMapWidth (const char* factorMapID) const = 0;
-  /**
-   * Get the height of the density factory map. If the map doesn't exist then this
-   * will return 0.
-   */
-  virtual int GetDensityFactorMapHeight (const char* factorMapID) const = 0;
-
-  /**
-   * Set a default density factor. This factor is the final multiplier
-   * for density and so it can be used to control global density to cater
-   * for higher/lower-end hardware more easily. The default is 1.0.
-   */
-  virtual void SetDefaultDensityFactor (float factor) = 0;
-
-  /**
-   * Get the default density factor.
-   */
-  virtual float GetDefaultDensityFactor () const = 0;
 };
 
 /** @} */

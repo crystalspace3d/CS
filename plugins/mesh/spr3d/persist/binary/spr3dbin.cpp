@@ -52,6 +52,8 @@
 
 #include "spr3dbin.h"
 
+CS_IMPLEMENT_PLUGIN
+
 using namespace CS::Plugins::Spr3dBin;
 
 /**
@@ -94,44 +96,27 @@ bool csSprite3DBinFactoryLoader::Initialize (iObjectRegistry* object_reg)
   return true;
 }
 
-const char binsprMagic_oldfloat[4] = {'5','1', '5','0'};
-const char binsprMagic[4] = {'6','1', '5','0'};
+const char binsprMagic[4] = {'5','1', '5','0'};
 
-static int GetInt32 (const char*& p)
+static int GetInt32 (char*& p)
 {
   int i = csLittleEndian::Convert (csGetFromAddress::Int32 (p));
   p += sizeof(int32);
   return i;
 }
 
-struct FloatGetter_Compat
+static float GetFloat (char*& p)
 {
-  static float GetFloat (const char*& p)
-  {
-    int32 l = GetInt32 (p);
-    // Copied from csendian.h to avoid deprecation warnings
-    int exp = (l >> 24) & 0x7f;
-    if (exp & 0x40) exp = exp | ~0x7f;
-    float mant = float (l & 0x00ffffff) / 0x1000000;
-    if (l & 0x80000000) mant = -mant;
-    return (float) ldexp (mant, exp);
-  }
-};
-struct FloatGetter_IEEE
-{
-  static float GetFloat (const char*& p)
-  {
-    int32 l = GetInt32 (p);
-    return csIEEEfloat::ToNative (uint32 (l));
-  }
-};
+  return csLongToFloat (GetInt32 (p));
+}
 
 /**
  * Loads a csSprite3DBinFactoryLoader
  */
 csPtr<iBase> csSprite3DBinFactoryLoader::Parse (iDataBuffer* data,
-				       iStreamSource*, iLoaderContext* ldr_context,
-				       iBase* context, iStringArray*)
+				       iStreamSource*,
+				       iLoaderContext* ldr_context,
+				       iBase* context)
 {
   csRef<iPluginManager> plugin_mgr (
     csQueryRegistry<iPluginManager> (object_reg));
@@ -166,11 +151,10 @@ csPtr<iBase> csSprite3DBinFactoryLoader::Parse (iDataBuffer* data,
   csRef<iSprite3DFactoryState> spr3dLook (
     scfQueryInterface<iSprite3DFactoryState> (fact));
 
-  const char* p = data->GetData();
+  char* p = data->GetData();
 
   // Read the magic number so we can ID the file
-  if ((memcmp(binsprMagic, p, 4) != 0)
-      && (memcmp(binsprMagic_oldfloat, p, 4) != 0))
+  if (memcmp(binsprMagic, p, 4) != 0)
   {
     ReportError (object_reg,
 	"crystalspace.sprite3dbinfactoryloader.setup.objecttype",
@@ -178,8 +162,6 @@ csPtr<iBase> csSprite3DBinFactoryLoader::Parse (iDataBuffer* data,
     return 0;
   }
   p += 4;
-  
-  bool floatCompat = memcmp(binsprMagic_oldfloat, p, 4) == 0;
 
   // Read the version number so we can ID the file
   bool has_normals = false;
@@ -203,7 +185,7 @@ csPtr<iBase> csSprite3DBinFactoryLoader::Parse (iDataBuffer* data,
   {
     ReportError (object_reg,
 	"crystalspace.sprite3dbinfactoryloader.parse.unknownmaterial",
-	"Couldn't find material named %s", CS::Quote::Single (mat_name));
+	"Couldn't find material named '%s'", mat_name);
     return 0;
   }
   fact->SetMaterialWrapper (mat);
@@ -218,13 +200,67 @@ csPtr<iBase> csSprite3DBinFactoryLoader::Parse (iDataBuffer* data,
   {
     iSpriteFrame* fr = spr3dLook->AddFrame ();
 
-    bool result;
-    if (floatCompat)
-      result = ReadFrame<FloatGetter_Compat> (spr3dLook, fr, p, has_normals);
-    else
-      result = ReadFrame<FloatGetter_IEEE> (spr3dLook, fr, p, has_normals);
-    if (!result)
-      return (iBase*)nullptr;
+    char frame_name[255];
+    strcpy(frame_name, p);
+    p += strlen(frame_name) + 1;
+
+    fr->SetName (frame_name);
+
+    int anm_idx = fr->GetAnmIndex ();
+    int tex_idx = fr->GetTexIndex ();
+    float x, y, z, u, v, nx, ny, nz;
+    x = y = z = u = v = nx = ny = nz = 0.0f;
+
+    if (!has_normals)
+    {
+      nx = ny = nz = 0.0f;
+    }
+
+    // Read the number of vertecies
+    int vertex_count = GetInt32 (p);
+    p += sizeof(int);
+
+    int j;
+    for (j = 0; j < vertex_count; j++)
+    {
+      x = GetFloat (p);
+      y = GetFloat (p);
+      z = GetFloat (p);
+      u = GetFloat (p);
+      v = GetFloat (p);
+      if (has_normals)
+      {
+	nx = GetFloat (p);
+	ny = GetFloat (p);
+	nz = GetFloat (p);
+      }
+
+      // check if it's the first frame
+      if (spr3dLook->GetFrameCount () == 1)
+      {
+	spr3dLook->AddVertices (1);
+      }
+      else if (i >= spr3dLook->GetVertexCount ())
+      {
+	ReportError (object_reg,
+	    "crystalspace.sprite3dbinfactoryloader.parse.frame.vertices",
+	    "Trying to add too many vertices to frame '%s'!",
+	    fr->GetName ());
+	return 0;
+      }
+      spr3dLook->SetVertex (anm_idx, j, csVector3 (x, y, z));
+      spr3dLook->SetTexel  (tex_idx, j, csVector2 (u, v));
+      spr3dLook->SetNormal (anm_idx, j, csVector3 (nx, ny, nz));
+    }
+
+    if (j < spr3dLook->GetVertexCount ())
+    {
+      ReportError (object_reg,
+	"crystalspace.sprite3dbinfactoryloader.parse.frame.vertices",
+	"Too few vertices in frame '%s'!",
+	fr->GetName ());
+      return 0;
+    }
   }
 
   // Read the number of actions
@@ -236,13 +272,40 @@ csPtr<iBase> csSprite3DBinFactoryLoader::Parse (iDataBuffer* data,
   {
     iSpriteAction* act = spr3dLook->AddAction ();
 
-    bool result;
-    if (floatCompat)
-      result = ReadAction<FloatGetter_Compat> (spr3dLook, act, p);
-    else
-      result = ReadAction<FloatGetter_IEEE> (spr3dLook, act, p);
-    if (!result)
-      return (iBase*)nullptr;
+    char action_name[255];
+    strcpy(action_name, p);
+    p += strlen(action_name) + 1;
+
+    act->SetName (action_name);
+
+    int as = GetInt32 (p);
+
+    int j;
+    for (j = 0; j < as; j++)
+    {
+      char fn[64];
+      strcpy(fn, p);
+      p += strlen(fn) + 1;
+
+      iSpriteFrame* ff = spr3dLook->FindFrame (fn);
+      if (!ff)
+      {
+	ReportError (object_reg,
+	  "crystalspace.sprite3dbinfactoryloader.parse.action.badframe",
+	  "Trying to add unknown frame '%s' to action '%s'!",
+	  fn, act->GetName ());
+	return 0;
+      }
+
+      // Read the delay
+      int delay = GetInt32 (p);
+      float disp = 0;
+      if (!delay)  // read optional displacement if no delay
+      {
+        disp = GetFloat (p);
+      }
+      act->AddFrame (ff, delay,disp);
+    }
   }
 
   // Read the number of triangles
@@ -284,118 +347,6 @@ csPtr<iBase> csSprite3DBinFactoryLoader::Parse (iDataBuffer* data,
   return csPtr<iBase> (fact);
 }
 
-template<typename FloatGetter>
-bool csSprite3DBinFactoryLoader::ReadFrame (iSprite3DFactoryState* spr3dLook,
-					    iSpriteFrame* fr,
-					    const char*& p,
-					    bool has_normals)
-{
-  char frame_name[255];
-  strcpy(frame_name, p);
-  p += strlen(frame_name) + 1;
-
-  fr->SetName (frame_name);
-
-  int anm_idx = fr->GetAnmIndex ();
-  int tex_idx = fr->GetTexIndex ();
-  float x, y, z, u, v, nx, ny, nz;
-  x = y = z = u = v = nx = ny = nz = 0.0f;
-
-  if (!has_normals)
-  {
-    nx = ny = nz = 0.0f;
-  }
-
-  // Read the number of vertecies
-  int vertex_count = GetInt32 (p);
-  p += sizeof(int);
-
-  int j;
-  for (j = 0; j < vertex_count; j++)
-  {
-    x = FloatGetter::GetFloat (p);
-    y = FloatGetter::GetFloat (p);
-    z = FloatGetter::GetFloat (p);
-    u = FloatGetter::GetFloat (p);
-    v = FloatGetter::GetFloat (p);
-    if (has_normals)
-    {
-      nx = FloatGetter::GetFloat (p);
-      ny = FloatGetter::GetFloat (p);
-      nz = FloatGetter::GetFloat (p);
-    }
-
-    // check if it's the first frame
-    if (spr3dLook->GetFrameCount () == 1)
-    {
-      spr3dLook->AddVertices (1);
-    }
-    else if (j >= spr3dLook->GetVertexCount ())
-    {
-      ReportError (object_reg,
-	  "crystalspace.sprite3dbinfactoryloader.parse.frame.vertices",
-	  "Trying to add too many vertices to frame %s!",
-	  CS::Quote::Single (fr->GetName ()));
-      return false;
-    }
-    spr3dLook->SetVertex (anm_idx, j, csVector3 (x, y, z));
-    spr3dLook->SetTexel  (tex_idx, j, csVector2 (u, v));
-    spr3dLook->SetNormal (anm_idx, j, csVector3 (nx, ny, nz));
-  }
-
-  if (j < spr3dLook->GetVertexCount ())
-  {
-    ReportError (object_reg,
-      "crystalspace.sprite3dbinfactoryloader.parse.frame.vertices",
-      "Too few vertices in frame %s!",
-      CS::Quote::Single (fr->GetName ()));
-    return false;
-  }
-  
-  return true;
-}
-
-template<typename FloatGetter>
-bool csSprite3DBinFactoryLoader::ReadAction (iSprite3DFactoryState* spr3dLook, iSpriteAction* act, const char*& p)
-{
-  char action_name[255];
-  strcpy(action_name, p);
-  p += strlen(action_name) + 1;
-
-  act->SetName (action_name);
-
-  int as = GetInt32 (p);
-
-  int j;
-  for (j = 0; j < as; j++)
-  {
-    char fn[64];
-    strcpy(fn, p);
-    p += strlen(fn) + 1;
-
-    iSpriteFrame* ff = spr3dLook->FindFrame (fn);
-    if (!ff)
-    {
-      ReportError (object_reg,
-	"crystalspace.sprite3dbinfactoryloader.parse.action.badframe",
-	"Trying to add unknown frame %s to action %s!",
-	CS::Quote::Single (fn), CS::Quote::Single (act->GetName ()));
-      return false;
-    }
-
-    // Read the delay
-    int delay = GetInt32 (p);
-    float disp = 0;
-    if (!delay)  // read optional displacement if no delay
-    {
-      disp = FloatGetter::GetFloat (p);
-    }
-    act->AddFrame (ff, delay,disp);
-  }
-  
-  return true;
-}
-
 //---------------------------------------------------------------------------
 
 /**
@@ -430,7 +381,7 @@ static void WriteInt32 (iFile* file, int i)
 
 static void WriteFloat (iFile* file, float f)
 {
-  WriteInt32 (file, csIEEEfloat::FromNative (f));
+  WriteInt32 (file, csFloatToLong (f));
 }
 
 /**

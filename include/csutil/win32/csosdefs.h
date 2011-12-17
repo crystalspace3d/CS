@@ -23,13 +23,13 @@
 #define CS_EXPORT_SYM_DLL       __declspec(dllexport)
 #define CS_IMPORT_SYM_DLL       __declspec(dllimport)
 
-#ifdef CS_USE_SHARED_LIBS
+#ifdef CS_BUILD_SHARED_LIBS
   #define CS_EXPORT_SYM CS_EXPORT_SYM_DLL
   #define CS_IMPORT_SYM CS_IMPORT_SYM_DLL
 #else
   #define CS_EXPORT_SYM
   #define CS_IMPORT_SYM
-#endif // CS_USE_SHARED_LIBS
+#endif // CS_BUILD_SHARED_LIBS
 
 #if defined(CS_COMPILER_MSVC)
   #pragma warning(disable:4244)   // conversion from 'double' to 'float'
@@ -49,18 +49,16 @@
   #pragma warning(disable:4355)   // 'this' used in base member initializer list
 
 
-#if !defined(__INTEL_COMPILER)
   #pragma inline_depth (255)
   #pragma inline_recursion (on)
+  #pragma auto_inline (on)
+  
+  #define CS_FORCEINLINE __forceinline
+
   #pragma intrinsic (memset, memcpy, memcmp)
   #pragma intrinsic (strcpy, strcmp, strlen, strcat)
   #pragma intrinsic (abs, fabs)
   #pragma intrinsic (_byteswap_ushort, _byteswap_ulong, _byteswap_uint64)
-#endif
-
-  #pragma auto_inline (on)
-  
-  #define CS_FORCEINLINE __forceinline
   
   #if _MSC_VER >= 1400
     /* Work around an apparent incompatibility between VC8's intrin.h and
@@ -82,14 +80,12 @@
     extern "C" unsigned char _BitScanForward (unsigned long* Index, unsigned long Mask);
     extern "C" unsigned char _BitScanReverse (unsigned long* Index, unsigned long Mask);
   #endif
-#if !defined(__INTEL_COMPILER)
   #pragma intrinsic (_InterlockedCompareExchange)
   #pragma intrinsic (_InterlockedDecrement)
   #pragma intrinsic (_InterlockedExchange)
   #pragma intrinsic (_InterlockedIncrement)
   #pragma intrinsic (_BitScanForward)
   #pragma intrinsic (_BitScanReverse)
-#endif
 
   #define CS_HAVE_BITSCAN_INTRINSICS
 
@@ -139,12 +135,8 @@
 #ifdef __GNUC__
 #ifndef NONAMELESSUNION
 #if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95) 
-#ifndef _ANONYMOUS_UNION
 #define _ANONYMOUS_UNION __extension__
-#endif
-#ifndef _ANONYMOUS_STRUCT
 #define _ANONYMOUS_STRUCT __extension__
-#endif
 #else
 #if defined(__cplusplus)
 #define _ANONYMOUS_UNION __extension__
@@ -279,7 +271,8 @@
   #define CS_INITIALIZE_PLATFORM_APPLICATION CS_WIN32_MSVC_DEBUG_GOOP
 #endif
 
-// The 2D graphics driver used by renderers on this platform
+// The 2D graphics driver used by software renderer on this platform
+#define CS_SOFTWARE_2D_DRIVER "crystalspace.graphics2d.directdraw"
 #define CS_OPENGL_2D_DRIVER "crystalspace.graphics2d.glwin32"
 
 // The sound driver
@@ -329,6 +322,12 @@ static inline longlong strtoll(char const* s, char** sN, int base)
 #define CS_PATH_DELIMITER ';'
 #define CS_PATH_SEPARATOR '\\'
 
+#if defined (__CYGWIN32__)
+#  define CS_MKDIR(path) mkdir(path, 0755)
+#else
+#  define CS_MKDIR(path) _mkdir(path)
+#endif
+
 // Directory read functions, file access, etc.
 #include <io.h>
 #ifndef F_OK
@@ -370,7 +369,7 @@ struct DIR;
   extern "C" CS_IMPORT_SYM dirent *readdir (DIR *dirp);
   extern "C" CS_IMPORT_SYM int closedir (DIR *dirp);
   extern "C" CS_IMPORT_SYM bool isdir (const char *path, dirent *de);
-# endif // CS_CRYSTALSPACE_LIB
+# endif // CS_BUILD_SHARED_LIBS
 #endif
 
 #ifdef CS_COMPILER_BCC
@@ -408,7 +407,7 @@ struct DIR;
 // just to avoid windows.h inclusion
 #define csSW_SHOWNORMAL 1
 
-#if defined(CS_COMPILER_GCC) && defined(__STRICT_ANSI__) && !(CS_PROCESSOR_SIZE == 64)
+#if defined(CS_COMPILER_GCC) && defined(__STRICT_ANSI__)
 // Need those...
   extern int		_argc;
   extern char**	_argv;

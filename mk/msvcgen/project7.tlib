@@ -1,7 +1,7 @@
 [% FILTER null;
 #==============================================================================
 # TemplateToolkit2 template for MSVC7 project (vcproj) file.
-# Copyright (C) 2004,2008 by Eric Sunshine <sunshine@sunshineco.com>
+# Copyright (C) 2004 by Eric Sunshine <sunshine@sunshineco.com>
 #
 #    This library is free software; you can redistribute it and/or modify it
 #    under the terms of the GNU Library General Public License as published by
@@ -22,26 +22,14 @@
   PROCESS control.tlib;
   PROCESS projectx7.tlib;
 
-  MACRO composedefs(defs) GET compose('defines', defs, ';').replace('"', '\\&quot;');
-  MACRO composedirs(tag, seed) BLOCK;
-    buildtag = ${"build.${tag}key"};
-    GET composepaths("${buildtag}${platform.suffix}",seed,';');
-  END;
-  MACRO debugformat(platform,tag) GET ${"platform.debugformat_${tag}"};
-  MACRO comparable_msvc_version BLOCK;
-    IF my.doc.msvcversion.0 < 71;
-      GET my.doc.msvcversion.0 * 10;
-    ELSE;
-      GET my.doc.msvcversion.0;
-    END;
-  END;
+  MACRO composedefs(defs) GET compose('defines', defs, ';');
+  MACRO composedirs(tag, seed) GET composepaths(${"build.${tag}key"},seed,';');
 
   my = {};
   load(respfile, 'doc');
   FOREACH f IN my.doc.customize; PROCESS $f | null; END;
 
   files = striproots(filter(my.doc.file).split('\|')).split('\|').sort;
-  files_obj_unique = striproots(filter(my.doc.file_obj_unique).split('\|')).split('\|').sort;
 END -%]
 <?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
@@ -52,19 +40,14 @@ END -%]
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
-[% FOREACH platform IN platforms -%]
-  [% IF comparable_msvc_version >= platform.min_vc_version -%]
-		<Platform Name="[% platform.name %]"/>
-  [% END -%]
-[% END -%]
+		<Platform
+			Name="Win32"/>
 	</Platforms>
 	<Configurations>
-[% FOREACH platform IN platforms -%]
-  [% IF comparable_msvc_version >= platform.min_vc_version -%]
-    [% FOREACH build IN builds -%]
-      [% FOREACH mutator IN mutators -%]
+[% FOREACH build IN builds -%]
+  [% FOREACH mutator IN mutators -%]
 		<Configuration
-			Name="[% build.name %][% mutator.namesuffix %]|[% platform.name %]"
+			Name="[% build.name %][% mutator.namesuffix %]|Win32"
 			OutputDirectory="[% workbuild([]) %]"
 			IntermediateDirectory="[% workbuild([]) %]"
 [% interpolate('global') -%]
@@ -78,15 +61,14 @@ END -%]
 				OptimizeForProcessor="1"
 				AdditionalOptions="[% flags(compose('cflags', [], ' ')) | html %] [% flags(compose('cflags7', [], ' ')) | html %]"
 				AdditionalIncludeDirectories="[% composedirs('incdirs', ['.']) %]"
-				PrecompiledHeaderFile="[% workbuild([my.doc.project.0, '.pch']) %]"
+				PrecompiledHeaderFile="[% workbuild([my.doc.project.0,'.pch']) %]"
 				AssemblerListingLocation="[% workbuild([]) %]"
 				ObjectFile="[% workbuild([]) %]"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="TRUE"
 				TreatWChar_tAsBuiltInType="false"
 				ForceConformanceInForLoopScope="true"
-				DebugInformationFormat="[% debugformat(platform, build.tag) %]"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -97,8 +79,7 @@ END -%]
 				AdditionalDependencies="[% compose('libs', [], ' ') %]"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="[% composedirs('libdirs', []) %]"
-				LargeAddressAware="2"
-				TargetMachine="[% platform.targetmachine %]"/>
+				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
 [% interpolate('librarian') -%]
@@ -109,7 +90,7 @@ END -%]
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="[% workbuild([my.doc.project.0, '.tlb']) %]"/>
+				TypeLibraryName="[% workbuild([my.doc.project.0,'.tlb']) %]"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 [% interpolate('postbuild') -%]
@@ -120,53 +101,38 @@ END -%]
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="
-[%- composedefs(platform.rcdefs.merge([glue (['PROJECTGEN_VERSION', my.doc.msvcversion.0], '=')])) %]"
+				PreprocessorDefinitions="[% composedefs([glue (['PROJECTGEN_VERSION', my.doc.msvcversion.0], '=')]) %]"
 				AdditionalIncludeDirectories="[% composedirs('incdirs', ['.', path([my.doc.sourceroot.0, my.doc.subdir.0])]) %]"
 				Culture="1033"/>
-[%- IF ${"my.doc.manifest${platform.suffix}"} %]
-			<Tool
-				Name="VCManifestTool"
-				AdditionalManifestFiles="[% path([my.doc.sourceroot.0, ${"my.doc.manifest${platform.suffix}.0"}]) %]"
-				/>
-[%- END %]
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
-      [% END -%]
-    [% END -%]
   [% END -%]
 [% END -%]
 	</Configurations>
 	<Files>
 		[%- FOREACH group IN groups %]
 		[%- items = files.grep(group.types) %]
-		[%- items2 = files_obj_unique.grep(group.types) %]
-		[%- IF (items.size > 0) || (items2.size > 0) %]
+		[%- IF items.size > 0 %]
 		<Filter
 			Name="[% group.name %]"
 			Filter="">
 			[%- FOREACH file IN items %]
 			<File
 				RelativePath="[% path([my.doc.sourceroot.0, file]) %]">
-			</File>
-			[%- END %]
-			[%- FOREACH file IN items2 %]
-			<File
-				RelativePath="[% path([my.doc.sourceroot.0, file]) %]">
+				[%- IF my.doc.static %]
 				[%- UNLESS file.match('\\.(h|hpp|rc)$') %]
 				[%- FOREACH build IN builds %]
                                   [% FOREACH mutator IN mutators -%]
-				    [% FOREACH platform IN platforms -%]
 					<FileConfiguration
-						Name="[% build.name %][% mutator.namesuffix %]|[% platform.name %]">
+						Name="[% build.name %][% mutator.namesuffix %]|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="[% workbuild([file.replace('/', '_'), '.obj']) %]"/>
 					</FileConfiguration>
-				  [%- END %]
+				[%- END %]
 				[%- END %]
 				[%- END %]
 				[%- END %]

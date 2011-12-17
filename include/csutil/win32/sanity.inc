@@ -22,7 +22,6 @@
  * #undefines various MS macros which interfere with method names in our own
  * classes.
  */
-#undef CreateDirectory
 #undef DeleteFile
 #undef GetClassName
 #undef LoadImage

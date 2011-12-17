@@ -60,8 +60,6 @@ namespace CS
     csRef<iEngine> engine;
     /// View used to render the tiles
     csRef<iView> shotView;
-    /// Original camera
-    csRef<iCamera> originalCam;
     
     /**
      * Draw the view, set up to cover the current tile.

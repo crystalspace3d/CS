@@ -47,7 +47,7 @@
 #include "driver_alsa.h"
 
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(SndSysALSA)
 {
@@ -133,7 +133,6 @@ bool SndSysDriverALSA::SetupHWParams()
   snd_pcm_hw_params_alloca(&pHWParams);
 
   // Retrieve all current parameters
-  // Ignore GCC warning(s) on systems with alsa pre 1.0.16
   result = snd_pcm_hw_params_any(m_pPCMDevice, pHWParams);
   if (result < 0) 
   {
@@ -305,7 +304,6 @@ bool SndSysDriverALSA::SetupSWParams()
 
 
   // Retrieve all current parameters
-  // Ignore GCC warning(s) on systems with alsa pre 1.0.16
   result = snd_pcm_sw_params_current(m_pPCMDevice, pSWParams);
   if (result < 0) 
   {
@@ -315,7 +313,7 @@ bool SndSysDriverALSA::SetupSWParams()
   }
 
   
-  /*  
+  /*
   // start the transfer when the buffer is almost full: 
   // (buffer_size / avail_min) * avail_min 
   err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
@@ -330,6 +328,15 @@ bool SndSysDriverALSA::SetupSWParams()
     return err;
   }
   */
+
+  // Align transfers to 1 sample
+  result = snd_pcm_sw_params_set_xfer_align(m_pPCMDevice, pSWParams, 1);
+  if (result < 0) 
+  {
+    RecordEvent(SSEL_ERROR, "Failed to set sound software transfer to 1 sample.  Error [%s]", 
+      snd_strerror(result));
+    return false;
+  }
 
   // Apply the parameters
   result = snd_pcm_sw_params(m_pPCMDevice, pSWParams);

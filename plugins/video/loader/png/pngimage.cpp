@@ -37,7 +37,7 @@ extern "C"
 
 #include "pngimage.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(PNGImageIO)
 {
@@ -60,7 +60,7 @@ struct datastore
 
 static void png_write (png_structp png, png_bytep data, png_size_t length)
 {
-  datastore *ds = (datastore *)png_get_io_ptr (png);
+  datastore *ds = (datastore *)png->io_ptr;
   if (ds->pos + (long)length > ds->length)
   {
     ds->data = (unsigned char*)cs_realloc (ds->data, ds->pos + (long)length);
@@ -116,6 +116,10 @@ csPtr<iImage> csPNGImageIO::Load (iDataBuffer* buf, int iFormat)
   return csPtr<iImage> (i);
 }
 
+void csPNGImageIO::SetDithering (bool)
+{
+}
+
 csPtr<iDataBuffer> csPNGImageIO::Save (iImage *Image,
     iImageIO::FileFormatDescription *, const char* extraoptions)
 {
@@ -169,7 +173,7 @@ error2:
   }
 
   /* Catch processing errors */
-  if (setjmp(png_jmpbuf(png)))
+  if (setjmp(png->jmpbuf))
   {
     /* If we get here, we had a problem reading the file */
     png_destroy_write_struct (&png, &info);
@@ -351,7 +355,7 @@ csPtr<iDataBuffer> csPNGImageIO::Save (iImage *Image, const char *mime,
 void ImagePngFile::PngLoader::ImagePngRead (png_structp png, png_bytep data, 
 					    png_size_t size)
 {
-  ImagePngRawData *self = (ImagePngRawData *) png_get_io_ptr (png);
+  ImagePngRawData *self = (ImagePngRawData *) png->io_ptr;
 
   if (self->r_size < size)
     png_error (png, "Read Error");
@@ -390,7 +394,7 @@ bool ImagePngFile::PngLoader::InitOk ()
     return false;
   }
 
-  if (setjmp (png_jmpbuf (png)))
+  if (setjmp (png->jmpbuf))
   {
 nomem2:
     // If we get here, we had a problem reading the file
@@ -520,7 +524,7 @@ bool ImagePngFile::PngLoader::LoadData ()
 {
   size_t rowbytes, exp_rowbytes;
 
-  if (setjmp (png_jmpbuf (png)))
+  if (setjmp (png->jmpbuf))
   {
 nomem2:
     // If we get here, we had a problem reading the file
@@ -539,9 +543,6 @@ nomem2:
     // Expand pictures with less than 8bpp to 8bpp
     png_set_packing (png);
 
-  // Let the PNG lib handle any interlacing
-  png_set_interlace_handling (png);
-
   // Update structure with the above settings
   png_read_update_info (png, info);
 
@@ -557,6 +558,14 @@ nomem2:
   if (rowbytes != exp_rowbytes)
     goto nomem2;                        // Yuck! Something went wrong!
 
+  png_bytep * const row_pointers = new png_bytep[Height];
+
+  if (setjmp (png->jmpbuf))             // Set a new exception handler
+  {
+    delete [] row_pointers;
+    goto nomem2;
+  }
+
   uint8 *NewImage = 0;
   if (ImageType == imgRGB)
     NewImage = new uint8 [Width * Height * 4];
@@ -566,42 +575,6 @@ nomem2:
     NewImage = new uint8 [Width * Height];
   if (!NewImage)
     goto nomem2;
-
-  png_bytep * const row_pointers = new png_bytep[Height];
-
-  if (setjmp (png_jmpbuf (png)))             // Set a new exception handler
-  {
-    /* Set some dummy image data. Necessary because threaded image loading
-       expects _some_ data to be returned (too late for reporting a load
-       failure...) */
-    if (ImageType == imgRGB)
-    {
-      rgbaData = (csRGBpixel*)NewImage;
-      memset (NewImage, 0xff, Width * Height * 4);
-    }
-    else if (ImageType == imgPAL)
-    {
-      paletteCount = 256;
-      palette = new csRGBpixel[paletteCount];
-      memset (palette, 0xff, paletteCount * sizeof (csRGBpixel));
-      memset (palette, 0xff, paletteCount);
-      indexData = NewImage;
-      memset (NewImage, 0xff, Width * Height);
-    }
-    else // grayscale + alpha
-    {
-      paletteCount = 256;
-      palette = new csRGBpixel[paletteCount];
-      memset (palette, 0xff, paletteCount * sizeof (csRGBpixel));
-      indexData = NewImage;
-      memset (NewImage, 0xff, Width * Height);
-      alpha = new uint8 [Width * Height];
-      memset (alpha, 0xff, Width * Height);
-    }
-  
-    delete [] row_pointers;
-    goto nomem2;
-  }
 
   for (int row = 0; row < Height; row++)
     row_pointers [row] = ((png_bytep)NewImage) + row * rowbytes;

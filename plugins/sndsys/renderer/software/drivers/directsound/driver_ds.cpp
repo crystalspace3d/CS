@@ -42,7 +42,7 @@
 #include "driver_ds.h"
 
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(SndSysDIRECTSOUND)
 {
@@ -94,12 +94,10 @@ bool SndSysDriverDirectSound::Initialize (iObjectRegistry *pObjectRegistry)
   }
 
   // Check for sound config file option. Default to 36 ms if no option is found.
-  // 36 is used as a default since the Windows XP/2K scheduling quanta is 12 ms
-  // and we fill 1/3 of the buffer at a time (36 ms / 3 = 12 ms).
-  // (vk) Default value changed to 72 on 2011-05-26 as a fix for
-  // http://crystalspace3d.org/trac/CS/ticket/722
+  //   36 is used as a default since the Windows XP/2K scheduling quanta is 12 ms
+  //      and we fill 1/3 of the buffer at a time (36 ms / 3 = 12 ms).
   if (m_BufferLengthms<=0)
-    m_BufferLengthms = Config->GetInt("SndSys.Driver.Win.SoundBufferms", 72);
+    m_BufferLengthms = Config->GetInt("SndSys.Driver.Win.SoundBufferms", 36);
 
   // The number of underbuffer events before the buffer size is automatically increased
   m_UnderBuffersAllowed=5;
@@ -259,8 +257,8 @@ bool SndSysDriverDirectSound::CreateBuffer()
 
   // Setup notifications at 0, 1/3 and 2/3 of the buffer
   PositionNotify[0].dwOffset=0;
-  PositionNotify[1].dwOffset=(DWORD)(((m_DirectSoundBufferBytes/3) / m_BytesPerFrame) * m_BytesPerFrame); 
-  PositionNotify[2].dwOffset=(DWORD)(((m_DirectSoundBufferBytes*2/3) / m_BytesPerFrame) * m_BytesPerFrame);
+  PositionNotify[1].dwOffset=((m_DirectSoundBufferBytes/3) / m_BytesPerFrame) * m_BytesPerFrame; 
+  PositionNotify[2].dwOffset=((m_DirectSoundBufferBytes*2/3) / m_BytesPerFrame) * m_BytesPerFrame;
 
   DirectSoundResult=lpDsNotify->SetNotificationPositions(3, PositionNotify);
   if (FAILED(DirectSoundResult))

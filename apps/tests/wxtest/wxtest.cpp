@@ -28,14 +28,11 @@
 #include "csutil/common_handlers.h"
 #include "csutil/cfgfile.h"
 #include "csutil/cfgmgr.h"
-#include "csutil/syspath.h"
-#include "csutil/weakref.h"
 #include "iutil/vfs.h"
 #include "csutil/cscolor.h"
 #include "cstool/csview.h"
 #include "cstool/initapp.h"
 #include "cstool/genmeshbuilder.h"
-#include "cstool/simplestaticlighter.h"
 #include "wxtest.h"
 #include "iutil/eventq.h"
 #include "iutil/event.h"
@@ -57,6 +54,7 @@
 #include "ivideo/material.h"
 #include "ivideo/fontserv.h"
 #include "ivideo/natwin.h"
+#include "ivideo/wxwin.h"
 #include "igraphic/imageio.h"
 #include "imap/loader.h"
 #include "ivaria/reporter.h"
@@ -67,9 +65,6 @@
 /* Fun fact: should occur after csutil/event.h, otherwise, gcc may report
  * missing csMouseEventHelper symbols. */
 #include <wx/wx.h>
-#include <wx/imaglist.h>
-#include <wx/treectrl.h>
-#include <wx/xrc/xmlres.h>
 
 CS_IMPLEMENT_APPLICATION
 
@@ -91,23 +86,19 @@ int main (int argc, const char* const argv[])
 
 //-----------------------------------------------------------------------------
 
-#include "data/wxtest/sceneIcon.xpm"
 
 BEGIN_EVENT_TABLE(Simple, wxFrame)
   EVT_SHOW( Simple::OnShow )
   EVT_ICONIZE( Simple::OnIconize )
 END_EVENT_TABLE()
 
-BEGIN_EVENT_TABLE(Simple::Panel, wxPanel)
-  EVT_SIZE(Simple::Panel::OnSize)
-END_EVENT_TABLE()
 
 // The global pointer to simple
 Simple* simple = 0;
 
 Simple::Simple (iObjectRegistry* object_reg)
-  : wxFrame (0, -1, wxT ("Crystal Space WxWidget Canvas test"), 
-             wxDefaultPosition, wxSize (1000, 600))
+  : wxFrame(0, -1, wxT("Crystal Space WxWidget Canvas test"), 
+    wxDefaultPosition, wxSize(500, 500))
 {
   Simple::object_reg = object_reg;
 }
@@ -172,7 +163,7 @@ void Simple::SetupFrame ()
   c->SetTransform (ot);
 
   // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
+  if (!g3d->BeginDraw (engine->GetBeginDrawFlags () | CSDRAW_3DGRAPHICS))
     return;
 
   // Tell the camera to render into the frame buffer.
@@ -315,88 +306,21 @@ bool Simple::Initialize ()
     return false;
   }
 
-  // Load the frame from an XRC file
-  wxXmlResource::Get ()->InitAllHandlers ();
-  /* Find the file in the CS dirs.
-   * (This is slightly more complicated as there may not be "one" CS dir.) */
-  csPathsList* installPaths = csInstallationPathsHelper::GetPlatformInstallationPaths ();
-  wxString searchPath;
-  for (size_t i = 0; i < installPaths->GetSize(); i++)
-  {
-    if (!searchPath.IsEmpty()) searchPath.Append (wxPATH_SEP);
-    searchPath.Append (wxString::FromUTF8 ((*installPaths)[i].path));
-  }
-  delete installPaths;
-  wxString resourceLocation;
-  wxFileSystem wxfs;
-  if (!wxfs.FindFileInPath (&resourceLocation, searchPath, wxT ("data/wxtest/wxtest.xrc"))
-    || !wxXmlResource::Get ()->Load (resourceLocation))
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.wxtest",
-              "Could not load XRC ressource file!");
-    return false;
-  }
+  new wxPanel(this, -1, wxPoint(0, 0), wxSize(1, 1));
+  wxPanel* panel = new wxPanel(this, -1, wxPoint(50, 50), wxSize(400, 400));
+  Show(true);
+  panel->Show(true);
 
-  wxPanel* mainPanel = wxXmlResource::Get ()->LoadPanel (this, wxT ("MyPanel"));
-  if (!mainPanel)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.wxtest",
-              "Could not find main panel in XRC ressource file!");
-    return false;
-  }
-
-  // Populate the tree with some test items
-  wxTreeCtrl* tree = XRCCTRL (*mainPanel, "m_treeCtrl", wxTreeCtrl);
-  if (!tree)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.wxtest",
-              "Could not find tree in XRC ressource file!");
-    return false;
-  }
-
-  wxImageList* imageList = new wxImageList (16, 16);
-  tree->AssignImageList (imageList);
-  
-  wxBitmap sceneBmp (sceneIcon_xpm);
-  int rootIconIdx = imageList->Add (sceneBmp);
-
-  wxTreeItemId rootId = tree->AddRoot (wxT ("Root node"), rootIconIdx);
-  tree->AppendItem (rootId, wxT ("test1"), rootIconIdx);
-  tree->AppendItem (rootId, wxT ("test2"), rootIconIdx);
-  tree->AppendItem (rootId, wxT ("test3"), rootIconIdx);
-  tree->AppendItem (rootId, wxT ("test4"), rootIconIdx);
-  tree->ExpandAll ();
-
-  // Find the panel where to place the wxgl canvas
-  wxPanel* panel = XRCCTRL (*this, "m_panel1", wxPanel);
-  if (!panel)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.wxtest",
-              "Could not find the panel for the wxgl canvas in XRC ressource file!");
-    return false;
-  }
-
-  // Create the wxgl canvas
-  iGraphics2D* g2d = g3d->GetDriver2D ();
-  g2d->AllowResize (true);
-  wxwindow = scfQueryInterface<iWxWindow> (g2d);
-  if (!wxwindow)
+  iGraphics2D* g2d = g3d->GetDriver2D();
+  csRef<iWxWindow> wxwin = scfQueryInterface<iWxWindow> (g2d);
+  if( !wxwin )
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
               "crystalspace.application.wxtest",
               "Canvas is no iWxWindow plugin!");
     return false;
   }
-
-  wxPanel* panel1 = new Simple::Panel (panel, this);
-  panel->GetSizer ()->Add (panel1, 1, wxALL | wxEXPAND);
-  wxwindow->SetParent (panel1);
-
-  Show (true);
+  wxwin->SetParent(panel);
 
   // Open the main system. This will open all the previously loaded plug-ins.
   if (!csInitializer::OpenApplication (object_reg))
@@ -407,11 +331,15 @@ bool Simple::Initialize ()
     return false;
   }
 
+  // First disable the lighting cache. Our app is simple enough
+  // not to need this.
+  engine->SetLightingCacheMode (0);
+
   /* Manually focus the GL canvas.
      This is so it receives keyboard events (and conveniently translate these
      into CS keyboard events/update the CS keyboard state).
    */
-  wxwindow->GetWindow ()->SetFocus ();
+  wxwin->GetWindow()->SetFocus ();
 
   // Load the texture from the standard library.  This is located in
   // CS/data/standard.zip and mounted as /lib/std using the Virtual
@@ -420,8 +348,7 @@ bool Simple::Initialize ()
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
               "crystalspace.application.wxtest",
-              "Error loading %s texture!",
-              CS::Quote::Single ("stone4"));
+              "Error loading 'stone4' texture!");
     return false;
   }
   iMaterialWrapper* tm = engine->GetMaterialList ()->FindByName ("stone");
@@ -442,6 +369,10 @@ bool Simple::Initialize ()
   // Now we make a factory and a mesh at once.
   csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh (
       engine, room, "walls", "walls_factory", &box);
+
+  csRef<iGeneralMeshState> mesh_state = scfQueryInterface<
+    iGeneralMeshState> (walls->GetMeshObject ());
+  mesh_state->SetShadowReceiving (true);
   walls->GetMeshObject ()->SetMaterialWrapper (tm);
 
   csRef<iLight> light;
@@ -461,14 +392,10 @@ bool Simple::Initialize ()
 
   engine->Prepare ();
 
-  using namespace CS::Lighting;
-  SimpleStaticLighter::ShineLights (room, engine, 4);
-
   view = csPtr<iView> (new csView (engine, g3d));
-  view->SetAutoResize (false);
-  view->GetPerspectiveCamera ()->SetFOV ((float) (g2d->GetHeight ()) / (float) (g2d->GetWidth ()), g2d->GetWidth ());
   view->GetCamera ()->SetSector (room);
   view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 5, -3));
+
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
 
   printer.AttachNew (new FramePrinter (object_reg));
@@ -488,19 +415,7 @@ void Simple::PushFrame ()
   q->Process();
 }
 
-void Simple::OnSize (wxSizeEvent& event)
-{
-  if (!wxwindow->GetWindow ()) return;
-
-  wxSize size = event.GetSize();
-  wxwindow->GetWindow ()->SetSize (size); // TODO: csGraphics2DGLCommon::Resize is called here...
-
-  view->GetPerspectiveCamera ()->SetFOV ((float) (size.y) / (float) (size.x), 1.0f);
-  // TODO: ... but here the CanvasResize event has still not been catched by iGraphics3D
-  view->SetRectangle (0, 0, size.x, size.y);
-}
-
-void Simple::OnClose (wxCloseEvent& event)
+void Simple::OnClose(wxCloseEvent& event)
 {
   csPrintf("got close event\n");
   
@@ -512,14 +427,14 @@ void Simple::OnClose (wxCloseEvent& event)
   simple = 0;
 }
 
-void Simple::OnIconize (wxIconizeEvent& event)
+void Simple::OnIconize(wxIconizeEvent& event)
 {
-  csPrintf("got iconize %d\n", (int) event.Iconized ());
+  csPrintf("got iconize %d\n", (int)event.Iconized());
 }
 
-void Simple::OnShow (wxShowEvent& event)
+void Simple::OnShow(wxShowEvent& event)
 {
-  csPrintf("got show %d\n", (int) event.GetShow ());
+  csPrintf("got show %d\n", (int)event.GetShow());
 }
 
 /* There are two ways to drive the CS event loop, from
@@ -536,11 +451,11 @@ void Simple::OnShow (wxShowEvent& event)
 class Pump : public wxTimer
 {
 public:
-  csWeakRef<Simple> s;
+  Simple* s;
   Pump() { };
   virtual void Notify()
     {
-    if (s) s->PushFrame ();
+    s->PushFrame();
     }
 };
 #endif
@@ -552,12 +467,12 @@ class MyApp: public wxApp
 public:
   iObjectRegistry* object_reg;
 
-  virtual bool OnInit (void);
-  virtual int OnExit (void);
+  virtual bool OnInit(void);
+  virtual int OnExit(void);
 
 #ifdef USE_IDLE
-  virtual void OnIdle ();
-  DECLARE_EVENT_TABLE ();
+  virtual void OnIdle();
+  DECLARE_EVENT_TABLE();
 #endif
 };
 
@@ -573,10 +488,8 @@ IMPLEMENT_APP(MyApp)
 /*---------------------------------------------------------------------*
  * Main function
  *---------------------------------------------------------------------*/
-  bool MyApp::OnInit (void)
+  bool MyApp::OnInit(void)
 {
-  wxInitAllImageHandlers ();
-
 #if defined(wxUSE_UNICODE) && wxUSE_UNICODE
   char** csargv;
   csargv = (char**)cs_malloc(sizeof(char*) * argc);
@@ -603,21 +516,21 @@ IMPLEMENT_APP(MyApp)
    the timer triggers the next frame.
   */
 
-  Pump* p = new Pump ();
+  Pump* p = new Pump();
   p->s = simple;
-  p->Start (20);
+  p->Start(20);
 #endif
 
   return true;
 }
 
 #ifdef USE_IDLE
-void MyApp::OnIdle () {
-  simple->PushFrame ();
+void MyApp::OnIdle() {
+  simple->PushFrame();
 }
 #endif
 
-int MyApp::OnExit ()
+int MyApp::OnExit()
 {
   csInitializer::DestroyApplication (object_reg);
   return 0;

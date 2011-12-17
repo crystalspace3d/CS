@@ -34,8 +34,6 @@
 
 #include "iengine/collection.h"
 #include "iengine/light.h"
-#include "iutil/threadmanager.h"
-#include "ivideo/rendermesh.h"
 
 class csBox3;
 class csColor;
@@ -46,8 +44,8 @@ struct iCamera;
 struct iCameraPosition;
 struct iCameraPositionList;
 struct iClipper2D;
-struct iCustomMatrixCamera;
 struct iDataBuffer;
+struct iFrustumView;
 struct iLight;
 struct iLightIterator;
 struct iLoaderContext;
@@ -65,12 +63,12 @@ struct iMeshWrapperIterator;
 struct iObject;
 struct iObjectIterator;
 struct iObjectWatcher;
-struct iPerspectiveCamera;
 struct iPortal;
 struct iProgressMeter;
+struct iRegion;
+struct iRegionList;
 struct iRenderLoop;
 struct iRenderLoopManager;
-struct iRenderManager;
 struct iRenderView;
 struct iSector;
 struct iSectorIterator;
@@ -79,9 +77,26 @@ struct iSharedVariableList;
 struct iTextureHandle;
 struct iTextureList;
 struct iTextureWrapper;
-struct iThreadedLoader;
 
 struct iEngine;
+
+/** \name SetLightingCacheMode() settings
+ * @{ */
+/**
+ * Read the cache.
+ */
+#define CS_ENGINE_CACHE_READ 1
+
+/**
+ * Write the cache.
+ */
+#define CS_ENGINE_CACHE_WRITE 2
+
+/**
+ * Do not calculate lighting if not up-to-date. On by default.
+ */
+#define CS_ENGINE_CACHE_NOUPDATE 4
+/** @} */
 
 /** \name RegisterRenderPriority() flags
  * @{ */
@@ -104,27 +119,6 @@ enum csRenderPrioritySorting
 };
 /** @} */
 
-namespace CS
-{
-  /// Render grouping for mesh multipass rendering
-  enum RenderPriorityGrouping
-  {
-    /**
-     * This first renders layer 1 for all meshes, then layer 2 for all meshes and
-     * and so on. This is the faster way of multipass rendering; however, some
-     * multipass effects produce incorrect results with this (especially when
-     * alpha transparency is involved).
-     */
-    rpgByLayer = 0,
-    /**
-     * This all layers in order for the first mesh, then all layers in order for
-     * the second mesh and so on. This is the slower way of multipass rendering;
-     * however, it always results in correct results (and should thus be used
-     * when alpha transparency is involved).
-     */
-    rpgByMesh = 1
-  };
-} // namespace CS
 
 /**
  * A callback that will be fired whenever the engine starts drawing
@@ -180,7 +174,7 @@ struct iEngineSectorCallback : public virtual iBase
  */
 struct iEngine : public virtual iBase
 {
-  SCF_INTERFACE(iEngine, 8, 0, 1);
+  SCF_INTERFACE(iEngine, 4, 0, 0);
   
   /// Get the iObject for the engine.
   virtual iObject *QueryObject() = 0;
@@ -224,6 +218,68 @@ struct iEngine : public virtual iBase
   virtual void PrepareMeshes () = 0;
 
   /**
+   * Force a relight of all lighting. It is better to call this instead
+   * of calling engine->Prepare() again as engine->Prepare() will also do
+   * other stuff (like registering textures). Warning! This function can
+   * be very slow (depending on the number of lights and objects in the
+   * world). The optional region can be given to limit calculation to
+   * objects in the region.
+   * <p>
+   * The current flags set with SetLightingCacheMode() controls if the
+   * lightmaps will be cached or not.
+   * \param region only relight objects in this region 
+   * (will relight every object in the engine by default)
+   * \param meter If supplied, the meter object will be called back
+   * periodically to report the progress of engine lighting calculation.
+   */
+  virtual void ForceRelight (iRegion* region = 0,
+  	iProgressMeter* meter = 0) = 0;
+
+  /**
+   * Force a relight for the given light. This is useful to update the
+   * lightmaps after a static or pseudo-dynamic light has been added (don't
+   * use this for dynamic lights). If there are a lot of objects this function
+   * can be slow. The optional region can be given to limit calculation to
+   * objects in the region.
+   * <p>
+   * The current flags set with SetLightingCacheMode() controls if the
+   * lightmaps will be cached or not.
+   * \param light The newly added light to shine
+   * \param region If supplied, only affect objects in this region
+   */
+  virtual void ForceRelight (iLight* light, iRegion* region = 0) = 0;
+
+  /**
+   * Calculate all lighting information. Normally you shouldn't call
+   * this function directly, because it will be called by Prepare().
+   * If the optional 'region' parameter is given then only lights will
+   * be recalculated for the given region.
+   * \param region If supplied, only calculate lighting for lights and objects
+   * in the given region.
+   * \param meter If supplied, the meter object will be called back
+   * periodically to report the progress of engine lighting calculation.
+   */
+  virtual void ShineLights (iBase* base = 0,
+  	iProgressMeter* meter = 0) = 0;
+
+  /**
+   * Set the mode for the lighting cache (combination of CS_ENGINE_CACHE_???).
+   * Default is #CS_ENGINE_CACHE_READ | #CS_ENGINE_CACHE_NOUPDATE.
+   * \param mode 
+   *  - #CS_ENGINE_CACHE_READ: Read the cache.
+   *  - #CS_ENGINE_CACHE_WRITE: Write the cache.
+   *  - #CS_ENGINE_CACHE_NOUPDATE: Don't update lighting automatically
+   *     if it is not up-to-date. This is on by default. If you disable
+   *     this then lighting will be calculated even if CS_ENGINE_CACHE_WRITE
+   *     is not set which means that the resulting calculation is not
+   *     written to the cache.
+   */
+  virtual void SetLightingCacheMode (int mode) = 0;
+
+  /// Get the mode for the lighting cache.
+  virtual int GetLightingCacheMode () = 0;
+
+  /**
    * Set the cache manager that the engine will use. If this is not
    * done then the engine will use its own cache manager based on VFS.
    * This will do an incref on the given cache manager and a decref
@@ -250,6 +306,40 @@ struct iEngine : public virtual iBase
    */
   virtual iCacheManager* GetCacheManager () = 0;
 
+  /**
+   * Set the maximum lightmap dimensions. Polys with lightmaps larger than
+   * this are not lit.  
+   * \param w lightmap width 
+   * \param h lightmap height
+   * \deprecated Deprecated in 1.3 since thing meshes are deprecated.
+   */
+  CS_DEPRECATED_METHOD_MSG("Since thing meshes are deprecated SetMaxLightmapSize() is too.")
+  virtual void SetMaxLightmapSize (int w, int h) = 0;
+
+  /**\
+   * Retrieve maximum lightmap size.
+   * \param w lightmap width
+   * \param h lightmap height
+   * \deprecated Deprecated in 1.3 since thing meshes are deprecated.
+  */
+  CS_DEPRECATED_METHOD_MSG("Since thing meshes are deprecated GetMaxLightmapSize() is too.")
+  virtual void GetMaxLightmapSize (int& w, int& h) = 0;
+
+  /** Retrieve default maximum lightmap size.  
+   * \param w lightmap width
+   * \param h lightmap height
+   * \deprecated Deprecated in 1.3 since thing meshes are deprecated.
+  */
+  CS_DEPRECATED_METHOD_MSG("Since thing meshes are deprecated GetDefaultMaxLightmapSize() is too.")
+  virtual void GetDefaultMaxLightmapSize (int& w, int& h) = 0;
+
+  /**
+   * Get the maximum aspect ratio for lightmaps.
+   * \deprecated Deprecated in 1.3 since thing meshes are deprecated.
+   */
+  CS_DEPRECATED_METHOD_MSG("Since thing meshes are deprecated GetMaxLightmapAspectRatio() is too.")
+  virtual int GetMaxLightmapAspectRatio () const = 0;
+  
   /** @} */
 
   /**\name Render priority functions
@@ -285,59 +375,40 @@ struct iEngine : public virtual iBase
    * (in that priority order, where 'init' is rendered first and 
    * 'final' is rendered last).  Should you wish to add your own render 
    * priority, you must call ClearRenderPriorities() and re-add the 
-   * default render priorities (using RegisterDefaultRenderPriorities())
-   * along with your own new priorities.
-   *
-   * Priorities are identified by their number, not their name:
-   * If you call RegisterRenderPriority() twice, with the same
-   * priority number, but different names, the second call will
-   * <em>change the name</em>.
+   * default render priorities along with your own new priorities.
    */
-  virtual void RegisterRenderPriority (const char* name, uint priority,
-  	csRenderPrioritySorting rendsort = CS_RENDPRI_SORT_NONE,
-        CS::RenderPriorityGrouping grouping = CS::rpgByLayer) = 0;
-  /**
-   * Register default render priorities.
-   * \sa RegisterRenderPriority for list of default render priorities.
-   */
-  virtual void RegisterDefaultRenderPriorities () = 0;
+  virtual void RegisterRenderPriority (const char* name, long priority,
+  	csRenderPrioritySorting rendsort = CS_RENDPRI_SORT_NONE) = 0;
 
   /**
    * Get a render priority by name.
    * \param name is the name you want (one of the standard names
    * or your own if you have defined your own render priorities).
-   * \return -1 if render priority doesn't exist.
+   * \return 0 if render priority doesn't exist.
    */
-  virtual CS::Graphics::RenderPriority GetRenderPriority (const char* name) const = 0;
+  virtual long GetRenderPriority (const char* name) const = 0;
   /// Get the render priority sorting flag.
   virtual csRenderPrioritySorting GetRenderPrioritySorting (
   	const char* name) const = 0;
   /// Get the render priority sorting flag.
   virtual csRenderPrioritySorting GetRenderPrioritySorting (
-  	CS::Graphics::RenderPriority priority) const = 0;
-  //@{
-  /// Get the render priority grouping flag.
-  virtual CS::RenderPriorityGrouping GetRenderPriorityGrouping (
-  	const char* name) const = 0;
-  virtual CS::RenderPriorityGrouping GetRenderPriorityGrouping (
-  	CS::Graphics::RenderPriority priority) const = 0;
-  //@}
+  	long priority) const = 0;
   /// Get the render priority for sky objects (attached to 'sky' name).
-  virtual CS::Graphics::RenderPriority GetSkyRenderPriority () = 0;
+  virtual long GetSkyRenderPriority () = 0;
   /// Get the render priority for portal objects (attached to 'portal' name).
-  virtual CS::Graphics::RenderPriority GetPortalRenderPriority () = 0;
+  virtual long GetPortalRenderPriority () = 0;
   /// Get the render priority for wall objects (attached to 'wall' name).
-  virtual CS::Graphics::RenderPriority GetWallRenderPriority () = 0;
+  virtual long GetWallRenderPriority () = 0;
   /// Get the render priority for general objects (attached to 'object' name).
-  virtual CS::Graphics::RenderPriority GetObjectRenderPriority () = 0;
+  virtual long GetObjectRenderPriority () = 0;
   /// Get the render priority for alpha objects (attached to 'alpha' name).
-  virtual CS::Graphics::RenderPriority GetAlphaRenderPriority () = 0;
+  virtual long GetAlphaRenderPriority () = 0;
   /// Clear all render priorities.
   virtual void ClearRenderPriorities () = 0;
   /// Get the number of render priorities.
-  virtual size_t GetRenderPriorityCount () const = 0;
-  /// Get the name of the render priority or 0 if it's not valid or registered.
-  virtual const char* GetRenderPriorityName (CS::Graphics::RenderPriority priority) const = 0;
+  virtual int GetRenderPriorityCount () const = 0;
+  /// Get the name of the render priority or 0 if none existant.
+  virtual const char* GetRenderPriorityName (long priority) const = 0;
 
   /** @} */
   
@@ -380,6 +451,13 @@ struct iEngine : public virtual iBase
    */
 
   virtual iMaterialWrapper* FindMaterial (const char* name,
+  	iBase* base = 0) = 0;
+
+  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
+  virtual iMaterialWrapper* FindMaterialRegion (const char* name,
+  	iRegion* region) = 0;
+
+  virtual iMaterialWrapper* FindMaterialCollection (const char* name,
   	iCollection* collection = 0) = 0;
 
   /** @} */
@@ -441,6 +519,13 @@ struct iEngine : public virtual iBase
    * \param collection if specified, search only this collection (also see note above)
    */
   virtual iTextureWrapper* FindTexture (const char* name,
+  	iBase* base = 0) = 0;
+
+  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
+  virtual iTextureWrapper* FindTextureRegion (const char* name,
+  	iRegion* region) = 0;
+
+  virtual iTextureWrapper* FindTextureCollection (const char* name,
   	iCollection* collection = 0) = 0;
 
   /** @} */
@@ -492,7 +577,10 @@ struct iEngine : public virtual iBase
    * \param collection only iterate over the lights in this collection
    * (otherwise iterate over all lights)
    */
-  virtual csPtr<iLightIterator> GetLightIterator (iCollection* collection = 0) = 0;
+  virtual csPtr<iLightIterator> GetLightIterator (iBase* base = 0) = 0;
+  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
+  virtual csPtr<iLightIterator> GetLightIteratorRegion (iRegion* region) = 0;
+  virtual csPtr<iLightIterator> GetLightIteratorCollection (iCollection* collection = 0) = 0;
 
   /**
    * Remove a light and update all lightmaps. This function only works
@@ -553,7 +641,7 @@ struct iEngine : public virtual iBase
    * Create a empty sector with given name.
    * \param name the sector name
    */
-  virtual iSector *CreateSector (const char *name, bool addToList = true) = 0;
+  virtual iSector *CreateSector (const char *name) = 0;
 
   /// Get the list of sectors
   virtual iSectorList* GetSectors () = 0;
@@ -571,6 +659,11 @@ struct iEngine : public virtual iBase
    * \param collection if specified, search only this collection (also see note above)
    */
   virtual iSector* FindSector (const char* name,
+  	iBase* base = 0) = 0;
+  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
+  virtual iSector* FindSectorRegion (const char* name,
+  	iRegion* region) = 0;
+  virtual iSector* FindSectorCollection (const char* name,
   	iCollection* collection = 0) = 0;
 
   /**
@@ -636,8 +729,8 @@ struct iEngine : public virtual iBase
    * or 0 on failure.
    */
   virtual csPtr<iMeshWrapper> CreateMeshWrapper (iMeshFactoryWrapper* factory,
-  	const char* name, iSector* sector = 0, const csVector3& pos = csVector3 (0, 0, 0),
-    bool addToList = true) = 0;
+  	const char* name, iSector* sector = 0,
+	const csVector3& pos = csVector3 (0, 0, 0)) = 0;
 
   /**
    * Create a mesh wrapper for an existing mesh object.
@@ -652,14 +745,15 @@ struct iEngine : public virtual iBase
    * or 0 on failure.
    */
   virtual csPtr<iMeshWrapper> CreateMeshWrapper (iMeshObject* meshobj,
-  	const char* name, iSector* sector = 0, const csVector3& pos = csVector3 (0, 0, 0),
-    bool addToList = true) = 0;
+  	const char* name, iSector* sector = 0,
+	const csVector3& pos = csVector3 (0, 0, 0)) = 0;
 
   /**
    * Create a mesh wrapper from a class id.
    * This function will first make a factory from the plugin and then
-   * see if that factory itself implements iMeshObject too.
-   * If that fails this function
+   * see if that factory itself implements iMeshObject too. This means
+   * this function is useful to create thing mesh objects (which are both 
+   * factory and object at the same time). If that fails this function
    * will call NewInstance() on the factory and return that object then.
    * \param classid The SCF name of the plugin 
    * (like 'crystalspace.mesh.object.ball').  The type plugin will only 
@@ -674,14 +768,45 @@ struct iEngine : public virtual iBase
    * or 0 on failure.
    */
   virtual csPtr<iMeshWrapper> CreateMeshWrapper (const char* classid,
-  	const char* name, iSector* sector = 0, const csVector3& pos = csVector3 (0, 0, 0),
-    bool addToList = true) = 0;
+  	const char* name, iSector* sector = 0,
+	const csVector3& pos = csVector3 (0, 0, 0)) = 0;
 
   /**
    * Create an uninitialized mesh wrapper
    * Assign to a csRef.
    */
-  virtual csPtr<iMeshWrapper> CreateMeshWrapper (const char* name, bool addToList = true) = 0;
+  virtual csPtr<iMeshWrapper> CreateMeshWrapper (const char* name) = 0;
+
+  /**
+   * Convenience function to create the thing containing the
+   * convex outline of a sector. The thing will be empty but
+   * it will have #CS_ZBUF_FILL set (so that the Z-buffer will be filled
+   * by the polygons of this object) and have 'wall' as render
+   * priority. This version creates a mesh wrapper.
+   * Assign to a csRef.
+   * \param sector the sector to add walls to
+   * \param name the engine name of the walls mesh that will be created
+   * \deprecated Deprecated in 1.3. Use CS::Geometry::GeneralMeshBuilder
+   * instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use CS::Geometry::GeneralMeshBuilder instead")
+  virtual csPtr<iMeshWrapper> CreateSectorWallsMesh (iSector* sector,
+      const char* name) = 0;
+
+  /**
+   * Convenience function to create a thing mesh in a sector.
+   * This mesh will have #CS_ZBUF_USE set (use Z-buffer fully)
+   * and have 'object' as render priority. This means this function
+   * is useful for general objects.
+   * Assign to a csRef.
+   * \param sector the sector to add the object to
+   * \param name the engine name of the mesh that will be created
+   * \deprecated Deprecated in 1.3. Use CS::Geometry::GeneralMeshBuilder
+   * instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use CS::Geometry::GeneralMeshBuilder instead")
+  virtual csPtr<iMeshWrapper> CreateThingMesh (iSector* sector,
+  	const char* name) = 0;
 
   /**
    * Convenience function to load a mesh object from a given loader plugin.
@@ -705,7 +830,7 @@ struct iEngine : public virtual iBase
    * Convenience function to add a mesh and all children of that
    * mesh to the engine.
    */
-  THREADED_INTERFACE1(AddMeshAndChildren, iMeshWrapper* mesh);
+  virtual void AddMeshAndChildren (iMeshWrapper* mesh) = 0;
 
   /**
    * This routine returns an iterator to iterate over
@@ -752,7 +877,15 @@ struct iEngine : public virtual iBase
    * \param name the engine name of the desired mesh
    * \param collection if specified, search only this collection (also see note above)
    */
+
   virtual iMeshWrapper* FindMeshObject (const char* name,
+  	iBase* base = 0) = 0;
+
+  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
+  virtual iMeshWrapper* FindMeshObjectRegion (const char* name,
+  	iRegion* region) = 0;
+
+  virtual iMeshWrapper* FindMeshObjectCollection (const char* name,
   	iCollection* collection = 0) = 0;
 
   /**
@@ -782,7 +915,7 @@ struct iEngine : public virtual iBase
    * use DecRef().
    */
   virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (const char* classId,
-  	const char* name, bool addToList = true) = 0;
+  	const char* name) = 0;
 
   /**
    * Create a mesh factory wrapper for an existing mesh factory
@@ -792,16 +925,14 @@ struct iEngine : public virtual iBase
    * \param name the engine name for the factory wrapper
    */
   virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (
-  	iMeshObjectFactory * factory, const char* name,
-    bool addToList = true) = 0;
+  	iMeshObjectFactory * factory, const char* name) = 0;
 
   /**
    * Create an uninitialized mesh factory wrapper
    * Assign to a csRef.
    * \param name the engine name for the factory wrapper
    */
-  virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (const char* name,
-    bool addToList = true) = 0;
+  virtual csPtr<iMeshFactoryWrapper> CreateMeshFactory (const char* name) = 0;
 
   /**
    * Convenience function to load a mesh factory from a given loader plugin.
@@ -812,7 +943,7 @@ struct iEngine : public virtual iBase
    */
   virtual csPtr<iMeshFactoryWrapper> LoadMeshFactory (
   	const char* name, const char* loaderClassId,
-	iDataBuffer* input, bool addToList = true) = 0;
+	iDataBuffer* input) = 0;
 
   /**
    * Find the given mesh factory. The name can be a normal
@@ -827,6 +958,13 @@ struct iEngine : public virtual iBase
    * \param collection if specified, search only this collection (also see note above)
    */
   virtual iMeshFactoryWrapper* FindMeshFactory (const char* name,
+  	iBase* base = 0) = 0;
+
+  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
+  virtual iMeshFactoryWrapper* FindMeshFactoryRegion (const char* name,
+  	iRegion* region) = 0;
+
+  virtual iMeshFactoryWrapper* FindMeshFactoryCollection (const char* name,
   	iCollection* collection = 0) = 0;
 
   /// Get the list of mesh factories
@@ -834,38 +972,34 @@ struct iEngine : public virtual iBase
 
   /** @} */
   
+  /**\name Region handling
+   * @{ */
+  
+  /**
+   * Create a new region and add it to the region list.
+   * If the region already exists then this function will just
+   * return the pointer to that region.
+   * \param name the engine name for the region
+   * \remarks Can be removed with RemoveObject().
+   */
+  virtual iRegion* CreateRegion (const char* name) = 0;
+  /// Get the list of all regions
+  virtual iRegionList* GetRegions () = 0;
+
   /**\name Collection handling
    * @{ */
 
-  /**
-   * Create a new collection with the given name.
-   */
-  virtual iCollection* CreateCollection (const char* name) = 0;
+  virtual iCollection* CreateCollection(const char* name) = 0;
 
-  /**
-   * Get the collection of the given name.
-   */
-  virtual iCollection* GetCollection (const char* name) const = 0;
+  virtual iCollection* GetCollection(const char* name) const = 0;
 
-  /**
-   * Return all collections created.
-   */
-  virtual csPtr<iCollectionArray> GetCollections () = 0;
+  virtual csPtr<iCollectionArray> GetCollections() = 0;
 
-  /**
-   * Remove the given collection from the list of collections.
-   */
-  virtual void RemoveCollection (iCollection* collect) = 0;
+  virtual void RemoveCollection(iCollection* collect) = 0;
 
-  /**
-   * Remove the collection of the given name.
-   */
-  virtual void RemoveCollection (const char* name) = 0;
+  virtual void RemoveCollection(const char* name) = 0;
 
-  /**
-   * Remove all the collections.
-   */
-  virtual void RemoveAllCollections () = 0;
+  virtual void RemoveAllCollections() = 0;
 
   /** @} */
   
@@ -876,7 +1010,6 @@ struct iEngine : public virtual iBase
    * Create a new camera.
    * Assign to a csRef.
    */
-  CS_DEPRECATED_METHOD_MSG("Use CreatePerspectiveCamera instead")
   virtual csPtr<iCamera> CreateCamera () = 0;
 
   /**
@@ -891,7 +1024,15 @@ struct iEngine : public virtual iBase
    * \param name the engine name of the desired camera position
    * \param collection if specified, search only this collection (also see note above)
    */
+
   virtual iCameraPosition* FindCameraPosition (const char* name,
+    iBase* base = 0) = 0;
+
+  CS_DEPRECATED_METHOD_MSG("Regions are deprecated. Use Collections instead.")
+  virtual iCameraPosition* FindCameraPositionRegion (const char* name,
+  	iRegion* region) = 0;
+
+  virtual iCameraPosition* FindCameraPositionCollection (const char* name,
   	iCollection* collection = 0) = 0;
 
   /// Get the list of camera positions.
@@ -986,17 +1127,14 @@ struct iEngine : public virtual iBase
    * \param yesno true to clear the Z buffer after each frame, 
    * false to leave the zbuffer as-is
    */
-  CS_DEPRECATED_METHOD_MSG("Z buffer clearing handled by the rendermanager.")
   virtual void SetClearZBuf (bool yesno) = 0;
 
   /**
    * Get the value of the clear Z-buffer flag set with SetClearZBuf().
    */
-  CS_DEPRECATED_METHOD_MSG("Z buffer clearing handled by the rendermanager.")
   virtual bool GetClearZBuf () const = 0;
 
   /// Get default clear z-buffer flag.
-  CS_DEPRECATED_METHOD_MSG("Z buffer clearing handled by the rendermanager.")
   virtual bool GetDefaultClearZBuf () const = 0;
 
   /**
@@ -1011,17 +1149,14 @@ struct iEngine : public virtual iBase
    * \param yesno true to clear the screen before each frame, 
    * false to leave the screen as-is (which may leave garbage on the screen)
    */
-  CS_DEPRECATED_METHOD_MSG("Screen clearing handled by the rendermanager.")
   virtual void SetClearScreen (bool yesno) = 0;
 
   /**
    * Get the value of the clear screen flag set with SetClearScreen().
    */
-  CS_DEPRECATED_METHOD_MSG("Screen clearing handled by the rendermanager.")
   virtual bool GetClearScreen () const = 0;
 
   /// Get default clear screen flag
-  CS_DEPRECATED_METHOD_MSG("Screen clearing handled by the rendermanager.")
   virtual bool GetDefaultClearScreen () const = 0;
 
   /**
@@ -1030,18 +1165,12 @@ struct iEngine : public virtual iBase
    * flags that the application might be interested in. Use SetClearZBuf()
    * to let this function return that the Z-buffer must be cleared.
    */
-  CS_DEPRECATED_METHOD_MSG("Screen and Z buffer clearing handled by the rendermanager.")
   virtual int GetBeginDrawFlags () const = 0;
 
   /**
    * Get the top-level clipper.
    */
   virtual iRenderView* GetTopLevelClipper () const = 0;
-
-  /**
-   * Precache a single mesh.
-   */
-  virtual void PrecacheMesh (iMeshWrapper* s) = 0;
 
   /**
    * This function precaches all meshes by calling GetRenderMeshes()
@@ -1051,7 +1180,18 @@ struct iEngine : public virtual iBase
    * \param collection is an optional collection. If given then only objects
    *        in that collection will be precached.
    */
-  virtual void PrecacheDraw (iCollection* collection = 0) = 0;
+  virtual void PrecacheDraw (iBase* base = 0) = 0;
+  virtual void PrecacheDrawCollection (iCollection* collection = 0) = 0;
+
+  /**
+   * This function precaches all meshes by calling GetRenderMeshes()
+   * on them. By doing this the level will run smoother if you walk
+   * through it because all meshes will have had a chance to update
+   * caches and stuff.
+   * \param region is an optional region. If given then only objects
+   *        in that region will be precached.
+   */
+  virtual void PrecacheDrawRegion (iRegion* region) = 0;
 
   /**
    * Draw the 3D world given a camera and a clipper. Note that
@@ -1108,31 +1248,8 @@ struct iEngine : public virtual iBase
    */
   virtual uint GetCurrentFrameNumber () const = 0;
 
-  /**
-   * Update the engine and animations etc for a new frame
-   */
-  virtual void UpdateNewFrame () = 0;
   /** @} */
-
-  /**\name Adaptive progressive LODs
-   * @{ */
-
-  /**
-   * Enable adaptive LODs.
-   */
-  virtual void EnableAdaptiveLODs(bool enable, float target_fps) = 0;
-
-  /**
-   * Must be called once per frame if you use adaptive LODs.
-   */
-  virtual void UpdateAdaptiveLODs() = 0;
-
-  /**
-   * Get a multiplier based on the average elapsed time for the last n frames.
-   */
-  virtual float GetAdaptiveLODsMultiplier() const = 0;
-  /** @} */
-
+  
   /**\name Saving/loading
    * @{ */
 
@@ -1155,24 +1272,13 @@ struct iEngine : public virtual iBase
   /**
    * Create a loader context that you can give to loader plugins.
    * It will basically allow loader plugins to find materials.
-   * \param collection optional loader collection
-   * \param searchCollectionOnly if collection is valid and searchCollectionOnly is true 
-   * then only that collection will be searched. 
+   * \param base optional loader region or collection
+   * \param curRegOnly if region is valid and and curRegOnly is true 
+   * then only that region will be searched. 
    * Assign to a csRef.
    */
   virtual csPtr<iLoaderContext> CreateLoaderContext (
-  	iCollection* collection = 0, bool searchCollectionOnly = true) = 0;
-
-  /**
-   * Set the default value for the "keep image" flag of texture wrappers.
-   */
-  virtual void SetDefaultKeepImage (bool enable) = 0;
-
-  /**
-   * Get the default value for the "keep image" flag of texture wrappers 
-    *(default OFF).
-   */
-  virtual bool GetDefaultKeepImage () = 0;
+  	iBase* base = 0, bool curRegOnly = true) = 0;
 
   /** @} */
   
@@ -1239,6 +1345,14 @@ struct iEngine : public virtual iBase
     const csFrustum& frustum) = 0;
 
   /**
+   * Create a iFrustumView instance that you can give to
+   * iVisibilityCuller->CastShadows(). You can initialize that
+   * instance so that your own function is called for every object
+   * that is being visited.
+   */
+  virtual csPtr<iFrustumView> CreateFrustumView () = 0;
+
+  /**
    * Create an object watcher instance that you can use to watch
    * other objects. The engine will not keep a reference to this object.
    */
@@ -1252,7 +1366,7 @@ struct iEngine : public virtual iBase
    * This will not clear the object but it will remove all references
    * to that object that the engine itself keeps. This function works
    * for: iCameraPosition, iLight, iMaterialWrapper, 
-   * iMeshFactoryWrapper,iMeshWrapper, iSector and iTextureWrapper.
+   * iMeshFactoryWrapper,iMeshWrapper, iRegion, iSector and iTextureWrapper.
    * Note that the object is only removed if the resulting ref count will
    * become zero. So basically this function only releases the references
    * that the engine holds.
@@ -1282,7 +1396,7 @@ struct iEngine : public virtual iBase
   virtual void RemoveDelayedRemoves (bool remove = false) = 0;
  
   /// Delete everything in the engine.
-  THREADED_INTERFACE(DeleteAll);
+  virtual void DeleteAll () = 0;
 
   /**
    * Reset a subset of flags/settings (which may differ from one world/map to 
@@ -1295,58 +1409,21 @@ struct iEngine : public virtual iBase
   
   /** @} */
 
-  /// Fire all frame callbacks
-  virtual void FireStartFrame (iRenderView* rview) = 0;
-  
-  /**\name Camera handling
+  /**\name Saving/loading
    * @{ */
 
   /**
-   * Create a new perspective projection camera.
+   * Set the default value for the "keep image" flag of texture wrappers.
    */
-  virtual csPtr<iPerspectiveCamera> CreatePerspectiveCamera () = 0;
+  virtual void SetDefaultKeepImage (bool enable) = 0;
 
   /**
-   * Create a new custom projection camera.
-   * \param copyFrom If given, the new camera's initial tranform, settings 
-   *   and projection matrix are copied from that camera.
+   * Get the default value for the "keep image" flag of texture wrappers 
+    *(default OFF).
    */
-  virtual csPtr<iCustomMatrixCamera> CreateCustomMatrixCamera (
-    iCamera* copyFrom = 0) = 0;
+  virtual bool GetDefaultKeepImage () = 0;
+
   /** @} */
-
-  /**\name Render manager
-   * @{ */
-  /// Get the default render manager
-  virtual iRenderManager* GetRenderManager () = 0;
-  /**
-   * Set the default render manager.
-   * \remarks Also replaces the iRenderManager in the object registry.
-   */
-  virtual void SetRenderManager (iRenderManager*) = 0;
-  
-  /**
-   * Reload the default render manager given the current configuration
-   * settings.
-   */
-  virtual void ReloadRenderManager() = 0;
-  /** @} */
-
-  // @{
-  /**
-   * Loader List Sync
-   */
-  THREADED_INTERFACE1(SyncEngineLists, csRef<iThreadedLoader> loader);
-  virtual void SyncEngineListsNow(csRef<iThreadedLoader> loader) = 0;
-  // @}
-  
-  /**\name Camera default properties
-   * @{ */
-  /// Retrieve default near plane clipping distance for perspective cameras
-  virtual float GetDefaultNearClipDistance () const = 0;
-  /// Set default near plane clipping distance for perspective cameras
-  virtual void SetDefaultNearClipDistance (float dist) = 0;
-  /**@} */
 };
 
 /** @} */

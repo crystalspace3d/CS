@@ -1,7 +1,6 @@
 /*
     Copyright (C) 2005 by Jorrit Tyberghein
 	      (C) 2005 by Frank Richter
-              (C) 2009 by Marten Svanfeldt
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,7 +27,6 @@
 #include "csextern.h"
 #include "csutil/fifo.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/csstring.h"
 #include "iutil/job.h"
 
 #include "csutil/threading/condition.h"
@@ -44,80 +42,65 @@ class CS_CRYSTALSPACE_EXPORT ThreadedJobQueue :
   public scfImplementation1<ThreadedJobQueue, iJobQueue>
 {
 public:
-  /**
-   * Construct job queue.
-   * \param numWorkers Number of worker threads to use.
-   * \param priority Priority of worker threads.
-   * \param name Optional name of the queue.
-   *   Used in worker thread naming and shows up in the debugger,
-   *   if supported.
-   */
-  ThreadedJobQueue (size_t numWorkers = 1, ThreadPriority priority = THREAD_PRIO_NORMAL,
-    const char* name = 0);
+  ThreadedJobQueue (size_t numWorkers = 1, ThreadPriority priority = THREAD_PRIO_NORMAL);
   virtual ~ThreadedJobQueue ();
 
   virtual void Enqueue (iJob* job);
-  virtual JobStatus Dequeue (iJob* job, bool waitForCompletion);
-  virtual JobStatus PullAndRun (iJob* job, bool waitForCompletion = true);
-  virtual bool IsFinished ();  
-  virtual int32 GetQueueCount();
-  virtual void WaitAll ();
+  virtual void PullAndRun (iJob* job);
+  virtual void Unqueue (iJob* job, bool waitIfCurrent = true);
+  virtual bool IsFinished ();
 
-  /// Get name of this queue
-  const char* GetName () const { return name; }
+  enum
+  {
+    MAX_WORKER_THREADS = 16
+  };
+
 private:
-
-  bool PullFromQueues (iJob* job);
-  JobStatus CheckCompletion (iJob* job, bool waitForCompletion);
-
+  
   // Runnable
-  struct ThreadState;  
+  struct ThreadState;
 
   class QueueRunnable : public Runnable
   {
   public:
-    QueueRunnable (ThreadedJobQueue* queue, ThreadState* ts, unsigned int id);
+    QueueRunnable (ThreadedJobQueue* queue, ThreadState* ts);
 
     virtual void Run ();
-    virtual const char* GetName () const;
+
   private:
-    friend class ThreadedJobQueue;
-    
     ThreadedJobQueue* ownerQueue;
-    int32 shutdownQueue;
-    csRef<ThreadState> threadState;
-    csString name;
+    ThreadState* threadState;
   };
 
   // Per thread state
-  struct ThreadState : public CS::Utility::AtomicRefCount
+  struct ThreadState
   {
-    ThreadState (ThreadedJobQueue* queue, unsigned int id)
+    ThreadState (ThreadedJobQueue* queue)
     {
-      runnable.AttachNew (new QueueRunnable (queue, this, id));
+      runnable.AttachNew (new QueueRunnable (queue, this));
       threadObject.AttachNew (new Thread (runnable, false));
     }
 
     csRef<QueueRunnable> runnable;
     csRef<Thread> threadObject;
     csRef<iJob> currentJob;
-    
-    // 
-    Mutex tsMutex;
-    Condition tsNewJob;
-    Condition tsJobFinished;
-
-    csFIFO<csRef<iJob> > jobQueue;
+    Condition jobFinished;
   };
 
-  csRef<ThreadState>* allThreadState;
-  ThreadGroup allThreads;
+  // Shared queue state
+  typedef csFIFO<csRef<iJob> > JobFifo;
+  JobFifo jobQueue;
+  Mutex jobMutex;
+  Condition newJob;
 
-  Mutex finishMutex;
+  ThreadState* allThreadState[MAX_WORKER_THREADS];
+  ThreadGroup allThreads;
+  Mutex threadStateMutex;
+  Mutex jobFinishMutex;
 
   size_t numWorkerThreads;
+  bool shutdownQueue;
   int32 outstandingJobs;
-  csString name;
 };
 
 }

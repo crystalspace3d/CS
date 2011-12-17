@@ -139,71 +139,38 @@ namespace CS
       Special = '*'
     };
   private:
-    // Component data
-    struct CompData
-    {
-      // Must be first entry. Will be '*' in case of special formats...
-      unsigned char format;
-      union
-      {
-	uint64 coded_components;
-	char* specialStrPtr;
-      };
-    };
-    enum
-    {
-      SpecialStrExtern = 0x80,
-      SpecialStrMax = sizeof (CompData)
-    };
-    union
-    {
-      CompData cd;
-      // Store 'small' special formats inline.
-      char specialStr[SpecialStrMax];
-    };
+    uint64 coded_components;
+    TextureFormat format;
+    csString special;
 
-    void FreeSpecialStr ();
   public:
     /// Construct an invalid texture format.
     StructuredTextureFormat ();
-    /// Construct a texture format with the given components and sizes.
-    StructuredTextureFormat (char cmp1, int size1,
-      char cmp2 = 0, int size2 = 0,
-      char cmp3 = 0, int size3 = 0,
-      char cmp4 = 0, int size4 = 0,
-      TextureFormat fmt = Integer);
-    /// Copy constructor
-    StructuredTextureFormat (const StructuredTextureFormat& other);
-    /// Destruct texture format
-    ~StructuredTextureFormat ();
 
     /**
      * A special format (like '*dxt1').
      */
-    void SetSpecial (const char* special);
+    void SetSpecial (const char* special)
+    {
+      StructuredTextureFormat::special = special;
+      format = Special;
+    }
 
     /**
      * Add a new component to the texture format.
      * \param cmp One of the 'Component types' listed in \ref tfs_g_comptypes.
      * \param size Size of that component. Can be 0, but then it will have to 
      *   be set later using FixSizes().
-     * \remarks No effect for special formats.
      * \return Whether the component could be added or not.
      */
     bool AddComponent (char cmp, int size);
 
     /**
      * Set the format.
-     * \remarks You can't use this method to set 'Special' formats. Use
-     *   SetSpecial() instead.
      */
     void SetFormat (TextureFormat format)
     {
-      CS_ASSERT_MSG ("Use SetSpecial() to set special formats", format != Special);
-      if (format == Special) return;
-      FreeSpecialStr ();
-      if (cd.format == Special) cd.coded_components = 0;
-      cd.format = format;
+      StructuredTextureFormat::format = format;
     }
 
     /**
@@ -220,42 +187,13 @@ namespace CS
 
     bool operator== (const StructuredTextureFormat& other) const
     {
-      if (GetFormat() != other.GetFormat()) return false;
-      if (GetFormat() == Special)
-      {
-	const char* s1 = GetSpecial();
-	const char* s2 = GetSpecial();
-	if ((s1 == static_cast<const char*>(nullptr)) && (s2 == static_cast<const char*>(nullptr))) return true;
-	if (s1 == static_cast<const char*>(nullptr)) return false;
-	if (s1 == static_cast<const char*>(nullptr)) return false;
-	return strcmp (s1, s2) == 0;
-      }
-      else
-      {
-	return (cd.coded_components == other.cd.coded_components);
-      }
-    }
-
-    bool operator!= (const StructuredTextureFormat& other) const
-    {
-      if (GetFormat() != other.GetFormat()) return true;
-      if (GetFormat() == Special)
-      {
-	const char* s1 = GetSpecial();
-	const char* s2 = GetSpecial();
-	if ((s1 == static_cast<const char*>(nullptr)) && (s2 == static_cast<const char*>(nullptr))) return false;
-	if (s1 == static_cast<const char*>(nullptr)) return true;
-	if (s1 == static_cast<const char*>(nullptr)) return true;
-	return strcmp (s1, s2) != 0;
-      }
-      else
-      {
-	return (cd.coded_components != other.cd.coded_components);
-      }
+      if (coded_components != other.coded_components) return false;
+      if (format != other.format) return false;
+      return (special == other.special);
     }
 
     /// Returns whether the contained format is a valid texture format.
-    bool IsValid () { return cd.format != Invalid; }
+    bool IsValid () { return format != Invalid; }
 
     /**
      * Returns the number of components in this format. Returns 0 for
@@ -263,11 +201,9 @@ namespace CS
      */
     int GetComponentCount () const
     {
-      if (((cd.format & ~SpecialStrExtern) == Special)
-	  || (cd.format == Invalid))
-	return 0;
+      if ((format == Special) || (format == Invalid)) return 0;
       int n = 0;
-      uint64 comp = cd.coded_components;
+      uint64 comp = coded_components;
       while (comp != 0) 
       {
         comp >>= 16;
@@ -283,7 +219,7 @@ namespace CS
     {
       int num = GetComponentCount ();
       if ((n < 0) || (n >= num)) return 0;
-      return (cd.coded_components >> (16 * (num - 1 - n) + 8)) & 255;
+      return (coded_components >> (16 * (num - 1 - n) + 8)) & 255;
     }
 
     /**
@@ -298,24 +234,20 @@ namespace CS
     {
       int num = GetComponentCount ();
       if ((n < 0) || (n >= num)) return 0;
-      return (cd.coded_components >> (16 * (num - 1 - n))) & 255;
+      return (coded_components >> (16 * (num - 1 - n))) & 255;
     }
 
     /**
      * Returns the basic storage type for this texture format.
      * \sa \ref tfs_g_format
      */
-    TextureFormat GetFormat() const
-    { return static_cast<TextureFormat> (cd.format & ~SpecialStrExtern); }
+    TextureFormat GetFormat() const { return format; }
 
     /// Return the special format string.
     const char* GetSpecial() const
     {
-      if ((cd.format & ~SpecialStrExtern) != Special) return 0;
-      if (cd.format & SpecialStrExtern)
-	return cd.specialStrPtr;
-      else
-	return specialStr;
+      if (format != Special) return 0;
+      return special;
     }
 
     /**

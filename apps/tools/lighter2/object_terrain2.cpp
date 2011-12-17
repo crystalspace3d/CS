@@ -33,6 +33,13 @@ namespace lighter
   {
     if (!factory || !meshWrapper) return false;
 
+    if (factory->hasTangents)
+    {
+      objFlags.Set (OBJECT_FLAG_TANGENTS);
+      vdataBitangents = factory->vdataBitangents;
+      vdataTangents = factory->vdataTangents;
+    }
+
     this->sector = sector;
 
     const csReversibleTransform transform = meshWrapper->GetMovable ()->
@@ -74,14 +81,6 @@ namespace lighter
        Later, the data is copied into a lightmap image. */
     lightPerVertex = true;
 
-    if (factory->hasTangents)
-    {
-      objFlags.Set (OBJECT_FLAG_TANGENTS);
-      vdataBitangents = factory->vdataBitangents;
-      vdataTangents = factory->vdataTangents;
-    }
-    vertexData = factory->GetVertexData();
-
     size_t numCells = terrSys->GetCellCount();
     for (size_t c = 0; c < numCells; c++)
     {
@@ -92,10 +91,10 @@ namespace lighter
 
       uint lmSamplesX = csMin ((uint)csFindNearestPowerOf2 (
         int (cellSize.x * factory->GetLMDensity())),
-        globalConfig.GetTerrainProperties().maxLightmapU);
+        globalConfig.GetLMProperties().maxLightmapU);
       uint lmSamplesY = csMin ((uint)csFindNearestPowerOf2 (
         int (cellSize.z * factory->GetLMDensity())),
-        globalConfig.GetTerrainProperties().maxLightmapV);
+        globalConfig.GetLMProperties().maxLightmapV);
 
       {
 	uint primSamplesX = cell->GetGridWidth();
@@ -156,13 +155,13 @@ namespace lighter
 	{
 	  for (uint x = 0; x < primSamplesX-1; x++)
 	  {
-	    Primitive prim1 (primVertexData, 0);
+	    Primitive prim1 (primVertexData);
 	    prim1.GetTriangle().a = indexOffs + (y*primSamplesX) + x;
 	    prim1.GetTriangle().b = indexOffs + (y*primSamplesX) + x + 1;
 	    prim1.GetTriangle().c = indexOffs + ((y+1)*primSamplesX) + x;
 	    prim1.ComputePlane ();
 
-	    Primitive prim2 (primVertexData, 0);
+	    Primitive prim2 (primVertexData);
 	    prim2.GetTriangle().a = indexOffs + ((y+1)*primSamplesX) + x;
 	    prim2.GetTriangle().b = indexOffs + (y*primSamplesX) + x + 1;
 	    prim2.GetTriangle().c = indexOffs + ((y+1)*primSamplesX) + x + 1;
@@ -194,15 +193,6 @@ namespace lighter
 	      p.x + cellPos.x, height, 
 	      cellSize.z - p.y + cellPos.y));
 	    vertexData.normals.Push (norm);
-	    if (factory->hasTangents)
-	    {
-	      csVector3 tang (cell->GetTangent (p));
-	      csVector3 bitang (cell->GetBinormal (p));
-	      size_t v = vertexData.positions.GetSize()-1;
-	      vertexData.customData.SetSize ((v+1)*vertexData.customDataTotalComp);
-	      *((csVector3*)vertexData.GetCustomData (v, vdataTangents)) = tang;
-	      *((csVector3*)vertexData.GetCustomData (v, vdataBitangents)) = bitang;
-	    }
 	  }
 	}
 
@@ -227,10 +217,10 @@ namespace lighter
 
     CS::ShaderVarName lightmapName[4] =
     { 
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 1"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 2"),
-      CS::ShaderVarName (globalLighter->svStrings, "tex lightmap dir 3")
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 1"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 2"),
+      CS::ShaderVarName (globalLighter->strings, "tex lightmap dir 3")
     };
     int numLMs = globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
 
@@ -375,13 +365,6 @@ namespace lighter
       factory->GetMeshObjectFactory());
     if (!terrFact.IsValid()) return;
 
-    if (globalConfig.GetLighterProperties().directionalLMs)
-    {
-      vdataTangents = vertexData.AddCustomData (3);
-      vdataBitangents = vertexData.AddCustomData (3);
-      hasTangents = true;
-    }
-    
     // Each cell needs a unique name
     uint counter = 0;
     csSet<csString> usedCellNames;

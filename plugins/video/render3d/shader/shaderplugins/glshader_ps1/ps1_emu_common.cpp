@@ -28,9 +28,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "ivideo/graph3d.h"
 #include "ivideo/shader/shader.h"
 #include "glshader_ps1.h"
-
 #include "ps1_emu_common.h"
-#include "ps1_parser.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(GLShaderPS1)
 {
@@ -82,7 +80,7 @@ bool csShaderGLPS1_Common::Load (iShaderDestinationResolver*,
 }
 
 
-bool csShaderGLPS1_Common::Compile (iHierarchicalCache*, csRef<iString>* tag)
+bool csShaderGLPS1_Common::Compile ()
 {
   
   for (size_t i = 0; i < variablemap.GetSize (); i++)
@@ -91,19 +89,17 @@ bool csShaderGLPS1_Common::Compile (iHierarchicalCache*, csRef<iString>* tag)
     if ((sscanf (variablemap[i].destination, "register %d", &dest) != 1) &&
       (sscanf (variablemap[i].destination, "c%d", &dest) != 1))
     {
-      if (shaderPlug->doVerbose)
-        Report (CS_REPORTER_SEVERITY_WARNING, 
-	  "Unknown variable destination %s", 
-	  variablemap[i].destination.GetData());
+      Report (CS_REPORTER_SEVERITY_WARNING, 
+	"Unknown variable destination %s", 
+	variablemap[i].destination.GetData());
       continue;
     }
 
     if ((dest < 0) || (dest >= MAX_CONST_REGS))
     {
-      if (shaderPlug->doVerbose)
-        Report (CS_REPORTER_SEVERITY_WARNING, 
-	  "Invalid constant register number %d, must be in range [0..%d]", 
-	  dest, MAX_CONST_REGS);
+      Report (CS_REPORTER_SEVERITY_WARNING, 
+	"Invalid constant register number %d, must be in range [0..%d]", 
+	dest, MAX_CONST_REGS);
       continue;
     }
 
@@ -112,37 +108,7 @@ bool csShaderGLPS1_Common::Compile (iHierarchicalCache*, csRef<iString>* tag)
 
   variablemap.DeleteAll();
 
-  if (tag) tag->AttachNew (new scfString ("default"));
-  
-  if (!programBuffer.IsValid())
-    programBuffer = GetProgramData();
-  if(!programBuffer.IsValid())
-    return false;
-
-  csPixelShaderParser parser (shaderPlug->object_reg);
-
-  if(!parser.ParseProgram (programBuffer)) return false;
-
-  if (parser.GetVersion() > shaderPlug->supportedPSVersion)
-  {
-    if (shaderPlug->doVerbose)
-      Report (CS_REPORTER_SEVERITY_WARNING, 
-	"PS version %s not support (up to %s)", 
-        shaderPlug->PSVersionStr (parser.GetVersion()),
-        shaderPlug->PSVersionStr (shaderPlug->supportedPSVersion));
-    return false;
-  }
-
-  return LoadProgramStringToGL (parser);
-}
-
-
-void csShaderGLPS1_Common::GetUsedShaderVars (csBitArray& bits) const
-{
-  for (size_t c = 0; c < MAX_CONST_REGS; c++)
-  {
-    TryAddUsedShaderVarProgramParam (constantRegs[c], bits);
-  }
+  return LoadProgramStringToGL();
 }
 
 }

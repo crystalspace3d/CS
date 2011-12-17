@@ -201,7 +201,7 @@ const char* csBinaryDocAttribute::GetValue ()
 	{
   	  char buf[50];
 	  cs_snprintf (buf, sizeof (buf) - 1,
-	    "%g", node->doc->ConvertToFloat (csLittleEndian::UInt32 (attrPtr->value)));
+	    "%g", csLongToFloat (csLittleEndian::UInt32 (attrPtr->value)));
 	  cs_free (vstr); 
 	  vstr = CS::StrDup (buf);
 	  vsptr = attrPtr;
@@ -231,7 +231,7 @@ int csBinaryDocAttribute::GetValueAsInt ()
       }
     case BD_VALUE_TYPE_FLOAT:
       {
-	return (int)node->doc->ConvertToFloat (csLittleEndian::UInt32 (attrPtr->value));
+	return (int)csLongToFloat (csLittleEndian::UInt32 (attrPtr->value));
       }
     default:
       return 0;
@@ -256,7 +256,7 @@ float csBinaryDocAttribute::GetValueAsFloat ()
       }
     case BD_VALUE_TYPE_FLOAT:
       {
-	return node->doc->ConvertToFloat (csLittleEndian::UInt32 (attrPtr->value));
+	return csLongToFloat (csLittleEndian::UInt32 (attrPtr->value));
       }
     default:
       return 0.0f;
@@ -287,7 +287,7 @@ bool csBinaryDocAttribute::GetValueAsBool ()
       }
     case BD_VALUE_TYPE_FLOAT:
       {
-	return (node->doc->ConvertToFloat (csLittleEndian::UInt32 (attrPtr->value))== 0);
+	return (csLongToFloat (csLittleEndian::UInt32 (attrPtr->value))== 0);
       }
     default:
       return false;
@@ -353,7 +353,7 @@ void csBinaryDocAttribute::SetValue (const char* val)
     {
       attrPtr->flags = (attrPtr->flags & ~BD_VALUE_TYPE_MASK) | 
 	BD_VALUE_TYPE_FLOAT;
-      attrPtr->value = csLittleEndian::UInt32 (csIEEEfloat::FromNative (f));
+      attrPtr->value = csLittleEndian::UInt32 (csFloatToLong (f));
     }
     else 
     {
@@ -384,13 +384,13 @@ void csBinaryDocAttribute::SetValueAsFloat (float f)
     cs_free (vstr); vstr = 0;
     attrPtr->flags = (attrPtr->flags & ~BD_VALUE_TYPE_MASK) | 
       BD_VALUE_TYPE_FLOAT;
-    attrPtr->value = csLittleEndian::UInt32 (csIEEEfloat::FromNative (f));
+    attrPtr->value = csLittleEndian::UInt32 (csFloatToLong (f));
   }
 }
 
 void csBinaryDocAttribute::Store (csMemFile* nodesFile)
 {
-  bdNodeAttributePOD diskAttr;
+  bdNodeAttribute diskAttr;
   size_t attrSize = sizeof (diskAttr);
 
   diskAttr.flags = attrPtr->flags & BD_VALUE_TYPE_MASK;
@@ -413,18 +413,13 @@ void csBinaryDocAttribute::Store (csMemFile* nodesFile)
     diskAttr.value = attrPtr->value;
 
   bool putFlagsInName = false;
-  const size_t nameSize = strlen (attrPtr->GetNameStr (node->doc))+1;
-  if (nameSize <= MAX_IMM_ATTR_NAME_STR)
+  const size_t nameLen = strlen (attrPtr->GetNameStr (node->doc));
+  if (nameLen < MAX_IMM_ATTR_NAME_STR)
   {
     diskAttr.flags |= BD_ATTR_NAME_IMMEDIATE;
     diskAttr.nameID = 0;
-    /* We really want to copy into nameID.
-     * Yes, it may spill over, that's by design.
-     * But since fortify will complain when that happens, directly
-     * copy into an offset of the diskAttr struct. */
-    memcpy ((char*)&diskAttr + offsetof (bdNodeAttributePOD, nameID),
-      attrPtr->GetNameStr (node->doc), nameSize);
-    putFlagsInName = (nameSize <= MAX_IMM_ATTR_NAME_STR_W_FLAGS);
+    strcpy ((char*)&diskAttr.nameID, attrPtr->GetNameStr (node->doc));
+    putFlagsInName = (nameLen < MAX_IMM_ATTR_NAME_STR_W_FLAGS);
   }
   else
   {
@@ -760,8 +755,9 @@ void csBinaryDocNode::DecRef ()
 {
   /* In case we're freed the doc's node pool will be accessed; to make sure
      it's valid keep a ref to the doc while we're (potentially) destructed */
-  csRef<csBinaryDocument> tmp(doc);
+  doc->csBinaryDocument::IncRef();
   scfPooledImplementationType::DecRef();
+  doc->csBinaryDocument::DecRef();
 }
 
 csBinaryDocNode::csBinaryDocNode (csBdNode* ptr,
@@ -833,7 +829,7 @@ const char* csBinaryDocNode::nodeValueStr (csBdNode* nodeData)
 	{
   	  char buf[50];
 	  cs_snprintf (buf, sizeof (buf) - 1, "%g", 
-	    doc->ConvertToFloat (csLittleEndian::UInt32 (nodeData->value)));
+	    csLongToFloat (csLittleEndian::UInt32 (nodeData->value)));
 	  cs_free (vstr);
 	  vstr = CS::StrDup (buf);
 	  vsptr = nodeData;
@@ -863,7 +859,7 @@ int csBinaryDocNode::nodeValueInt (csBdNode* nodeData)
       }
     case BD_VALUE_TYPE_FLOAT:
       {
-	return (int)doc->ConvertToFloat (csLittleEndian::UInt32 (nodeData->value));
+	return (int)csLongToFloat (csLittleEndian::UInt32 (nodeData->value));
       }
     default:
       return 0;
@@ -888,7 +884,7 @@ float csBinaryDocNode::nodeValueFloat (csBdNode* nodeData)
       }
     case BD_VALUE_TYPE_FLOAT:
       {
-	return doc->ConvertToFloat (csLittleEndian::UInt32 (nodeData->value));
+	return csLongToFloat (csLittleEndian::UInt32 (nodeData->value));
       }
     default:
       return 0.0f;
@@ -1016,7 +1012,7 @@ void csBinaryDocNode::SetValue (const char* value)
     {
       nodeData->flags = (nodeData->flags & ~BD_VALUE_TYPE_MASK) | 
 	BD_VALUE_TYPE_FLOAT;
-      nodeData->value = csLittleEndian::UInt32 (csIEEEfloat::FromNative (f));
+      nodeData->value = csLittleEndian::UInt32 (csFloatToLong (f));
     }
     else 
     {
@@ -1045,7 +1041,7 @@ void csBinaryDocNode::SetValueAsFloat (float value)
     cs_free (vstr); vstr = 0;
     nodeData->flags = (nodeData->flags & ~BD_VALUE_TYPE_MASK) | 
       BD_VALUE_TYPE_FLOAT;
-    nodeData->value = csLittleEndian::UInt32 (csIEEEfloat::FromNative (value));
+    nodeData->value = csLittleEndian::UInt32 (csFloatToLong (value));
   }
 }
 
@@ -1282,7 +1278,7 @@ csRef<iDocumentAttribute> csBinaryDocNode::GetAttribute (const char* name)
   return 0;
 }
 
-const char* csBinaryDocNode::GetAttributeValue (const char* name, const char* defaultValue)
+const char* csBinaryDocNode::GetAttributeValue (const char* name)
 {
   getAttributeValueStrKeeper = GetAttribute (name);
   if (getAttributeValueStrKeeper)
@@ -1291,11 +1287,11 @@ const char* csBinaryDocNode::GetAttributeValue (const char* name, const char* de
   }
   else
   {
-    return defaultValue;
+    return 0;
   }
 }
 
-int csBinaryDocNode::GetAttributeValueAsInt (const char* name, int defaultValue)
+int csBinaryDocNode::GetAttributeValueAsInt (const char* name)
 {
   csRef<iDocumentAttribute> attr = GetAttribute (name);
   if (attr)
@@ -1304,11 +1300,11 @@ int csBinaryDocNode::GetAttributeValueAsInt (const char* name, int defaultValue)
   }
   else
   {
-    return defaultValue;
+    return 0;
   }
 }
 
-float csBinaryDocNode::GetAttributeValueAsFloat (const char* name, float defaultValue)
+float csBinaryDocNode::GetAttributeValueAsFloat (const char* name)
 {
   csRef<iDocumentAttribute> attr = GetAttribute (name);
   if (attr)
@@ -1317,12 +1313,12 @@ float csBinaryDocNode::GetAttributeValueAsFloat (const char* name, float default
   }
   else
   {
-    return defaultValue;
+    return 0.0f;
   }
 }
 
 bool csBinaryDocNode::GetAttributeValueAsBool (const char* name,
-					       bool defaultValue)
+					       bool defaultvalue)
 {
   csRef<iDocumentAttribute> attr = GetAttribute (name);
   if (attr)
@@ -1331,7 +1327,7 @@ bool csBinaryDocNode::GetAttributeValueAsBool (const char* name,
   }
   else
   {
-    return defaultValue;
+    return defaultvalue;
   }
 }
 
@@ -1400,16 +1396,10 @@ void csBinaryDocNode::Store (csMemFile* nodesFile)
 	(diskNode.flags & ~BD_VALUE_TYPE_MASK) | BD_VALUE_TYPE_STR_IMMEDIATE;
     // Hack: cram one more byte into value, if possible
     if ((newFlags & BE (0xff)) == 0) maximmvalue++;
-    size_t vstrsize = strlen (nodeData->vstr)+1;
-    if (vstrsize <= maximmvalue)
+    if (strlen (nodeData->vstr) < maximmvalue)
     {
       diskNode.value = 0;
-      /* We really want to copy into value.
-       * Yes, it may spill over, that's by design.
-       * But since fortify will complain when that happens, copy into the
-       * diskNode struct directly, exploiting that value is the first
-       * member. */
-      memcpy (&diskNode, nodeData->vstr, vstrsize);
+      strcpy ((char*)&diskNode.value, nodeData->vstr);
       diskNode.flags = (diskNode.flags & ~BD_VALUE_TYPE_MASK) | 
 	BD_VALUE_TYPE_STR_IMMEDIATE;
     }
@@ -1510,8 +1500,7 @@ void csBinaryDocNode::Store (csMemFile* nodesFile)
 // =================================================
 
 csBinaryDocument::csBinaryDocument () : scfImplementationType (this),
-  oldStyleFloats (false), root (0), attrAlloc (2000), nodeAlloc (2000),
-  outStrHash (0)
+  root (0), attrAlloc (0), nodeAlloc (0), outStrHash (0)
 {
 }
 
@@ -1519,26 +1508,32 @@ csBinaryDocument::~csBinaryDocument ()
 {
   if (root && (root->flags & BD_NODE_MODIFIED))
     delete root;
+  delete attrAlloc;
+  delete nodeAlloc;
 }
 
 csBdAttr* csBinaryDocument::AllocBdAttr ()
 {
-  return attrAlloc.Alloc();
+  if (!attrAlloc) attrAlloc = new csBlockAllocator<csBdAttr> (2000);
+  return attrAlloc->Alloc();
 }
 
 void csBinaryDocument::FreeBdAttr (csBdAttr* attr)
 {
-  attrAlloc.Free (attr);
+  CS_ASSERT(attrAlloc);
+  attrAlloc->Free (attr);
 }
 
 csBdNode* csBinaryDocument::AllocBdNode ()
 {
-  return nodeAlloc.Alloc();
+  if (!nodeAlloc) nodeAlloc = new csBlockAllocator<csBdNode> (2000);
+  return nodeAlloc->Alloc();
 }
 
 void csBinaryDocument::FreeBdNode (csBdNode* node)
 {
-  nodeAlloc.Free (node);
+  CS_ASSERT(nodeAlloc);
+  nodeAlloc->Free (node);
 }
 
 #include "csutil/custom_new_disable.h"
@@ -1575,7 +1570,7 @@ uint32 csBinaryDocument::GetOutStringID (const char* str)
   val = outStrHash->Request (str);
   if (val == csInvalidStringID)
   {
-    val = (CS::StringIDValue)(outStrStorage->GetPos() - outStrTabOfs);
+    val = (csStringID)(outStrStorage->GetPos() - outStrTabOfs);
     outStrStorage->Write (str, strlen (str) + 1);
     outStrHash->Register (str, val);
   }
@@ -1596,7 +1591,6 @@ void csBinaryDocument::Clear ()
   data = 0; 
   dataStart = 0;
   root = 0;
-  oldStyleFloats = false;
 }
 
 csRef<iDocumentNode> csBinaryDocument::CreateRoot ()
@@ -1631,8 +1625,7 @@ const char* csBinaryDocument::Parse (iDataBuffer* buf, bool /* collapse */)
     return "Not enough data";
   }
   bdHeader *head = (bdHeader*)buf->GetData();
-  if ((head->magic != (uint32)BD_HEADER_MAGIC)
-      && (head->magic != (uint32)BD_HEADER_MAGIC_OLDFLOAT))
+  if (head->magic != (uint32)BD_HEADER_MAGIC)
   {
     return "Not a binary CS document";
   }
@@ -1647,7 +1640,6 @@ const char* csBinaryDocument::Parse (iDataBuffer* buf, bool /* collapse */)
   }
   
   Clear();
-  oldStyleFloats = head->magic == (uint32)BD_HEADER_MAGIC_OLDFLOAT;
   root = 0;
   data = buf;
   dataStart = data->GetUint8();

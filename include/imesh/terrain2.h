@@ -20,14 +20,9 @@
 #ifndef __CS_IMESH_TERRAIN2_H__
 #define __CS_IMESH_TERRAIN2_H__
 
-/**\file
- * Terrain2 interfaces
- */
-
 #include "csutil/scf_interface.h"
 #include "iutil/array.h"
 #include "ivideo/shader/shader.h"
-#include "imesh/object.h"
 
 class csVector3;
 struct csCollisionPair;
@@ -56,7 +51,7 @@ struct csLockedHeightData
 };
 
 /**
- * Locked material data. This class holds an information needed to
+ * Locked height data. This class holds an information needed to
  * fill/interpret material map data. The elements are indices of materials
  * in material palette.
  *
@@ -68,23 +63,6 @@ struct csLockedMaterialMap
 {
   /// material index data array
   unsigned char* data;	
-
-  /// array pitch
-  size_t pitch;	
-};
-
-/**
- * Locked normal data. This class holds an information needed to
- * fill/interpret normal data. The elements are object space normals.
- *
- * Two-dimensional normal array is linearized, so additional math is
- * needed to get access to desired values:
- * Instead of data[y][x], use data[y * pitch + x]
- */
-struct csLockedNormalData
-{
-  /// normal data array
-  csVector3* data;
 
   /// array pitch
   size_t pitch;	
@@ -211,17 +189,12 @@ struct iTerrainCellRenderProperties : public virtual iShaderVariableContext
  */
 struct iTerrainCellFeederProperties : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainCellFeederProperties, 3, 2, 0);
+  SCF_INTERFACE (iTerrainCellFeederProperties, 3, 1, 0);
   
   /**
    * Set heightmap source.
    */
   virtual void SetHeightmapSource (const char* source, const char* format) = 0;
-
-  /**
-   * Set normalmap source.
-   */
-  virtual void SetNormalMapSource (const char* source) = 0;
 
   /**
    * Set materialmap source
@@ -329,9 +302,7 @@ struct iTerrainDataFeeder : public virtual iBase
 };
 
 /**
- * Return structure for the
- * iTerrainCollider::CollideSegment(iTerrainCell*, const csVector3&, const csVector3&)
- * routine.
+ * Return structure for the iTerrainCollider->CollideSegment() routines.
  */
 struct csTerrainColliderCollideSegmentResult
 {
@@ -345,15 +316,12 @@ struct csTerrainColliderCollideSegmentResult
   /// Triangle we hit.
   csVector3 a, b, c;	
   //@}
-  
-  csTerrainColliderCollideSegmentResult()
-   : hit (false), isect (0), a (0), b (0), c (0) {}
 };
 
 /// Provides an interface for custom collision
 struct iTerrainCollider : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainCollider, 3, 0, 0);
+  SCF_INTERFACE (iTerrainCollider, 2, 0, 1);
 
   /**
    * Create an object that implements iTerrainCellCollisionProperties
@@ -381,21 +349,6 @@ struct iTerrainCollider : public virtual iBase
                                const csVector3& end, bool oneHit, 
                                iTerrainVector3Array* points) = 0;
 
-  /**
-   * Collide segment with cell.
-   * Stops on finding the first intersection point (the closest to the segment
-   * start).
-   * \param cell cell
-   * \param start segment start (specified in object space)
-   * \param end segment end (specified in object space)
-   * \param hitPoint receives the intersection point
-   * 
-   * \return true if there was an intersections, false if there was none
-   */
-  virtual bool CollideSegment (iTerrainCell* cell, const csVector3& start,
-                               const csVector3& end,
-			       csVector3& hitPoint) = 0;
-			       
   /**
    * Collide segment with cell
    *
@@ -456,10 +409,10 @@ struct iTerrainCollider : public virtual iBase
 /// Provides an interface for custom rendering
 struct iTerrainRenderer : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainRenderer, 3, 0, 0);
+  SCF_INTERFACE (iTerrainRenderer, 2, 0, 0);
 
   /**
-   * Create an object that implements iTerrainCellRenderProperties
+   * Create an object that implements iTerrainCellCollisionProperties
    * This object will be stored in the cell. This function gets invoked
    * at cells creation.
    *
@@ -494,7 +447,7 @@ struct iTerrainRenderer : public virtual iBase
    */
   virtual CS::Graphics::RenderMesh** GetRenderMeshes (int& n, iRenderView* rview,
                                    iMovable* movable, uint32 frustum_mask,
-                                   const csArray<iTerrainCell*>& cells) = 0;
+                                   const csArray<iTerrainCell*> cells) = 0;
 
   
   /**
@@ -590,8 +543,6 @@ struct iTerrainCellLoadCallback : public virtual iBase
   virtual void OnCellUnload (iTerrainCell* cell) = 0;
 };
 
-struct iTerrainFactoryCell;
-
 /**
  * This class represents the terrain object as a set of cells. The object
  * can be rendered and collided with. To gain access to some operations that
@@ -600,7 +551,7 @@ struct iTerrainFactoryCell;
  */
 struct iTerrainSystem : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainSystem, 3, 0, 0);
+  SCF_INTERFACE (iTerrainSystem, 2, 0, 0);
 
   /**
    * Query a cell by name
@@ -653,7 +604,8 @@ struct iTerrainSystem : public virtual iBase
   virtual void SetMaterialPalette (const csTerrainMaterialPalette& array) = 0;
 
   /**
-   * Collide segment with the terrain.
+   * Collide segment with the terrain
+   *
    * \param start segment start (specified in object space)
    * \param end segment end (specified in object space)
    * \param oneHit if this is true, than stop on finding the first
@@ -670,29 +622,7 @@ struct iTerrainSystem : public virtual iBase
    * property set to false
    */
   virtual bool CollideSegment (const csVector3& start, const csVector3& end,
-                           bool oneHit, iTerrainVector3Array* points,
-                           iMaterialArray* materials) = 0;
-			   
-  /**
-   * Collide segment with the terrain.
-   * Stops on finding the first intersection point (the closest to the segment
-   * start).
-   * \param start segment start (specified in object space)
-   * \param end segment end (specified in object space)
-   * \param hitPoint receives intersection point
-   * \param hitMaterial receives material at intersection point if not null
-   * 
-   * \return true if there was an intersections, false if there were none
-   *
-   * \rem this will perform cell loading for the cells that potentially
-   * collide with the segment
-   *
-   * \rem this will not perform collision for cells that have Collideable
-   * property set to false
-   */
-  virtual bool CollideSegment (const csVector3& start, const csVector3& end,
-			       csVector3& hitPoint,
-			       iMaterialWrapper** hitMaterial) = 0;
+                           bool oneHit, iTerrainVector3Array* points) = 0;
 
   /**
    * Collide segment with the terrain
@@ -900,21 +830,7 @@ struct iTerrainSystem : public virtual iBase
   /**
    * Remove a listener to the cell height update callback
    */
-  virtual void RemoveCellHeightUpdateListener (iTerrainCellHeightDataCallback* cb) = 0;
-
-  /**
-   * Add a cell to the terrain instance based on the given iTerrainFactoryCell.
-   *
-   * \return added cell
-   * \rem If you change the renderer, collider or feeder after adding cells
-   * you might get into trouble.
-   */
-  virtual iTerrainCell* AddCell (iTerrainFactoryCell*) = 0;
-
-  /**
-   * Remove the given cell from this instance
-   */
-  virtual void RemoveCell (iTerrainCell*) = 0;
+  virtual void RemoveCellHeightUpdateListener (iTerrainCellHeightDataCallback* cb) = 0;  
 };
 
 /**
@@ -927,7 +843,7 @@ struct iTerrainSystem : public virtual iBase
  */
 struct iTerrainCell : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainCell, 6, 0, 0);
+  SCF_INTERFACE (iTerrainCell, 3, 0, 1);
 
   /// Enumeration that specifies current cell state
   enum LoadState
@@ -1050,40 +966,6 @@ struct iTerrainCell : public virtual iBase
   virtual void UnlockHeightData () = 0;
 
   /**
-   * Get normal data (for reading purposes: do not modify it!)
-   * This can be used to perform very fast normal lookups.
-   *
-   * \return cell normal data
-   */
-  virtual csLockedNormalData GetNormalData () = 0;
-  
-  /**
-   * Lock an area of normal data (for reading/writing purposes)
-   * If you want to lock the whole cell, use the rectangle
-   * csRect(0, 0, grid width, grid height).
-   *
-   * Only one area may be locked at a time, locking more than once results in
-   * undefined behaviour.
-   *
-   * \param rectangle the rectangle which you want to lock.
-   *
-   * \return cell normal data
-   */
-  virtual csLockedNormalData LockNormalData (const csRect& rectangle) = 0;
-  
-  /**
-   * Commit changes to height data. Use it after changing the desired height values.
-   *
-   * Unlocking the cell that was not locked results in undefined behaviour
-   */
-  virtual void UnlockNormalData () = 0;
-
-  /**
-   * Recalculates the cell normals.
-   */
-  virtual void RecalculateNormalData () = 0;
-
-  /**
    * Get cell position (in object space). X and Y components specify the
    * offsets along X and Z axes, respectively.
    *
@@ -1200,20 +1082,6 @@ struct iTerrainCell : public virtual iBase
   virtual iMaterialWrapper* GetBaseMaterial () const = 0;
 
   /**
-   * Set the optional alpha-splat material for the cell.
-   *
-   * \param material material handle of the alpha-splat material.
-   */
-  virtual void SetAlphaSplatMaterial (iMaterialWrapper* material) = 0;
-
-  /**
-   * Get the optional alpha-splat material for the cell.
-   *
-   * \return nullptr if no material, else the material.
-   */
-  virtual iMaterialWrapper* GetAlphaSplatMaterial () const = 0;
-
-  /**
    * Collide segment with cell (using the collider)
    *
    * \param start segment start (specified in object space)
@@ -1227,20 +1095,6 @@ struct iTerrainCell : public virtual iBase
    */
   virtual bool CollideSegment (const csVector3& start, const csVector3& end,
                            bool oneHit, iTerrainVector3Array* points) = 0;
-
-  /**
-   * Collide segment with cell.
-   * Stops on finding the first intersection point (the closest to the segment
-   * start).
-   * \param cell cell
-   * \param start segment start (specified in object space)
-   * \param end segment end (specified in object space)
-   * \param hitPoint receives the intersection point
-   * 
-   * \return true if there was an intersections, false if there was none
-   */
-  virtual bool CollideSegment (const csVector3& start, const csVector3& end,
-			       csVector3& hitPoint) = 0;
 
   /**
    * Collide set of triangles with cell (using the collider)
@@ -1386,35 +1240,12 @@ struct iTerrainCell : public virtual iBase
    *   careless changing of cell names can confuse the mapping of cells.
    */
   virtual void SetName (const char* name) = 0;
-
-  /**
-   * Set optional splat base material for the cell.
-   * The splat base material is rendered before splatting or
-   * alpha-splatting is rendered for the cell.
-   * \param material material handle of spalt base material.
-   */
-  virtual void SetSplatBaseMaterial (iMaterialWrapper* material) = 0;
-  
-  /// Get splat base material for the cell.
-  virtual iMaterialWrapper* GetSplatBaseMaterial () const = 0;
-
-  /**
-   * Get tangent data (for reading purposes: do not modify it!).
-   * \return cell tangent data
-   */
-  virtual csLockedNormalData GetTangentData () = 0;
-  
-  /**
-   * Get tangent data (for reading purposes: do not modify it!).
-   * \return cell tangent data
-   */
-  virtual csLockedNormalData GetBitangentData () = 0;
 };
 
 /// Factory representation of a cell
 struct iTerrainFactoryCell : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainFactoryCell, 2, 0, 1);
+  SCF_INTERFACE (iTerrainFactoryCell, 1, 0 ,1);
 
   /**
    * Get cell rendering properties. Returns pointer to a renderer-specific
@@ -1443,16 +1274,9 @@ struct iTerrainFactoryCell : public virtual iBase
   /**
    * Set base material for the cell.
    *
-   * \param material material handle of base material.
+   * \param material material handle of base material
    */
   virtual void SetBaseMaterial (iMaterialWrapper* material) = 0;
-
-  /**
-   * Set the optional alpha-splat material for the cell.
-   *
-   * \param material material handle of the alpha-splat material.
-   */
-  virtual void SetAlphaSplatMaterial (iMaterialWrapper* material) = 0;
 
   /// Get name of this cell
   virtual const char* GetName() = 0;
@@ -1511,16 +1335,9 @@ struct iTerrainFactoryCell : public virtual iBase
   virtual int GetMaterialMapHeight () const = 0;
 
   /**
-   * Get base material for the cell.
+   * Get base material for the cell
    */
   virtual iMaterialWrapper* GetBaseMaterial () const = 0;
-
-  /**
-   * Get the optional alpha-splat material for the cell.
-   *
-   * \return nullptr if no material, else the material.
-   */
-  virtual iMaterialWrapper* GetAlphaSplatMaterial () const = 0;
 
   /**
    * Get material persistent flag. If it is true, material data is stored in
@@ -1572,23 +1389,12 @@ struct iTerrainFactoryCell : public virtual iBase
    * \sa GetMaterialPersistent
    */
   virtual void SetMaterialPersistent (bool flag) = 0;
-
-  /**
-   * Set optional splat base material for the cell.
-   * The splat base material is rendered before splatting or
-   * alpha-splatting is rendered for the cell.
-   * \param material material handle of spalt base material.
-   */
-  virtual void SetSplatBaseMaterial (iMaterialWrapper* material) = 0;
-  
-  /// Get splat base material for the cell.
-  virtual iMaterialWrapper* GetSplatBaseMaterial () const = 0;
 };
 
 /// Provides an interface for creating terrain system
 struct iTerrainFactory : public virtual iBase
 {
-  SCF_INTERFACE (iTerrainFactory, 2, 0, 3);
+  SCF_INTERFACE (iTerrainFactory, 2, 0, 2);
 
   /**
    * Set desired renderer (there is a single renderer for the whole terrain)
@@ -1700,9 +1506,6 @@ struct iTerrainFactory : public virtual iBase
 
   /// Get a cell in this factory by name
   virtual iTerrainFactoryCell* GetCell (const char* name) = 0;
-
-  /// Remove the given cell from this factory
-  virtual void RemoveCell (iTerrainFactoryCell*) = 0;
 };
 
 

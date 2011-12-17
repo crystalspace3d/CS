@@ -42,23 +42,12 @@
 #undef CS_PROCESSOR_X86
 #undef CS_PROCESSOR_POWERPC
 #undef CS_PROCESSOR_NAME
-#undef CS_PROCESSOR_SIZE
-#undef CS_LONG_SIZE
 #if defined(__ppc__)
 #define CS_PROCESSOR_POWERPC
 #define CS_PROCESSOR_NAME "powerpc"
-#define CS_PROCESSOR_SIZE 32
-#define CS_LONG_SIZE 4
 #elif defined(__i386__)
 #define CS_PROCESSOR_X86
 #define CS_PROCESSOR_NAME "x86"
-#define CS_PROCESSOR_SIZE 32
-#define CS_LONG_SIZE 4
-#elif defined(__x86_64__)
-#define CS_PROCESSOR_X86
-#define CS_PROCESSOR_NAME "x86(64)"
-#define CS_PROCESSOR_SIZE 64
-#define CS_LONG_SIZE 8
 #else
 #error Unknown host CPU type for Mac OS X universal binary build
 #endif
@@ -68,6 +57,11 @@
 #define CS_USE_CUSTOM_ISDIR
 #define CS_PATH_DELIMITER ':'
 #define CS_PATH_SEPARATOR '/'
+
+#define CS_MKDIR(p) mkdir(p,0755)
+
+#undef  CS_SOFTWARE_2D_DRIVER
+#define CS_SOFTWARE_2D_DRIVER "crystalspace.graphics2d.coregraphics"
 
 #undef  CS_OPENGL_2D_DRIVER
 #define CS_OPENGL_2D_DRIVER "crystalspace.graphics2d.glosx"

@@ -67,7 +67,7 @@
 
 #include "GLWXDriver2D.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY (csGraphics2DWX)
 
@@ -75,29 +75,6 @@ SCF_IMPLEMENT_FACTORY (csGraphics2DWX)
 csGraphics2DWX::csGraphics2DWX (iBase *iParent) :
     scfImplementationType (this, iParent), myParent (0), theCanvas (0)
 {
-}
-
-void csGraphics2DWX::AlertV (int type, const char* title,
-    const char* okMsg, const char* msg, va_list args)
-{
-  csString message;
-  message.FormatV (msg, args);
-  switch (type)
-  {
-    case CS_ALERT_ERROR:
-      wxMessageBox (wxString::FromUTF8 (message), wxT("Error!"),
-	  wxICON_ERROR, myParent);
-      break;
-    case CS_ALERT_WARNING:
-      wxMessageBox (wxString::FromUTF8 (message), wxT("Warning!"),
-	  wxICON_EXCLAMATION, myParent);
-      break;
-    default:
-    case CS_ALERT_NOTE:
-      wxMessageBox (wxString::FromUTF8 (message), wxT("Note!"),
-	  wxICON_INFORMATION, myParent);
-      break;
-  }
 }
 
 void csGraphics2DWX::Report (int severity, const char* msg, ...)
@@ -122,17 +99,14 @@ bool csGraphics2DWX::Initialize (iObjectRegistry *object_reg)
   if (!csGraphics2DGLCommon::Initialize (object_reg))
     return false;
 
+  // The texture manager only needs to know this:
+  pfmt.PalEntries = 0;
+
   // Create the event outlet
   csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
   if (q != 0)
     EventOutlet = q->CreateEventOutlet (this);
 
-  return true;
-}
-
-bool csGraphics2DWX::SetMousePosition (int x, int y)
-{
-  myParent->WarpPointer (x, y);
   return true;
 }
 
@@ -239,6 +213,21 @@ bool csGraphics2DWX::Open()
 
   Depth = pfd.cColorBits; 
 
+  pfmt.PixelBytes = (pfd.cColorBits == 32) ? 4 : (pfd.cColorBits + 7) >> 3;
+  pfmt.RedBits = pfd.cRedBits;
+  pfmt.RedShift = pfd.cRedShift;
+  pfmt.RedMask = ((1 << pfd.cRedBits) - 1) << pfd.cRedShift;
+  pfmt.GreenBits = pfd.cGreenBits;
+  pfmt.GreenShift = pfd.cGreenShift;
+  pfmt.GreenMask = ((1 << pfd.cGreenBits) - 1) << pfd.cGreenShift;
+  pfmt.BlueBits = pfd.cBlueBits;
+  pfmt.BlueShift = pfd.cBlueShift;
+  pfmt.BlueMask = ((1 << pfd.cBlueBits) - 1) << pfd.cBlueShift;
+  pfmt.AlphaBits = pfd.cAlphaBits;
+  pfmt.AlphaShift = pfd.cAlphaShift;
+  pfmt.AlphaMask = ((1 << pfd.cAlphaBits) - 1) << pfd.cAlphaShift;
+  pfmt.PalEntries = 0;
+ 
   int desired_attributes[] =
   {
       WX_GL_RGBA,
@@ -279,7 +268,11 @@ bool csGraphics2DWX::Open()
 
   int w, h;
   myParent->GetClientSize(&w, &h);
-
+  if(w < 0 || h < 0)
+  {
+    w = 0;
+    h = 0;
+  }
   theCanvas = new csGLCanvas(this, myParent, wxID_ANY,
                              wxPoint(0, 0), wxSize(w, h), 0, wxT(""), desired_attributes);
 
@@ -306,6 +299,11 @@ bool csGraphics2DWX::Open()
 
     Depth = xvis->depth;
 
+    if (Depth == 24 || Depth == 32)
+      pfmt.PixelBytes = 4;
+    else
+      pfmt.PixelBytes = 2;
+
     Report (CS_REPORTER_SEVERITY_NOTIFY, "Visual ID: %lx, %dbit %s",
       xvis->visualid, Depth, visual_class_name (xvis->c_class));
 
@@ -316,17 +314,34 @@ bool csGraphics2DWX::Open()
     glXGetConfig(dpy, xvis, GLX_DEPTH_SIZE, &size_depth_buffer);
     glXGetConfig(dpy, xvis, GLX_LEVEL, &level);
 
-    int r_bits, g_bits, b_bits, color_bits = 0;
+    int color_bits = 0;
     int alpha_bits = 0;
     if (ctype)
     {
-      glXGetConfig(dpy, xvis, GLX_RED_SIZE, &r_bits);
-      color_bits += r_bits;
-      glXGetConfig(dpy, xvis, GLX_GREEN_SIZE, &g_bits);
-      color_bits += g_bits;
-      glXGetConfig(dpy, xvis, GLX_BLUE_SIZE, &b_bits);
-      color_bits += b_bits;
+      pfmt.RedMask = xvis->red_mask;
+      pfmt.GreenMask = xvis->green_mask;
+      pfmt.BlueMask = xvis->blue_mask;
+      glXGetConfig(dpy, xvis, GLX_RED_SIZE, &pfmt.RedBits);
+      color_bits += pfmt.RedBits;
+      glXGetConfig(dpy, xvis, GLX_GREEN_SIZE, &pfmt.GreenBits);
+      color_bits += pfmt.GreenBits;
+      glXGetConfig(dpy, xvis, GLX_BLUE_SIZE, &pfmt.BlueBits);
+      color_bits += pfmt.BlueBits;
       glXGetConfig(dpy, xvis, GLX_ALPHA_SIZE, &alpha_bits);
+      pfmt.AlphaBits = alpha_bits;
+
+      int bit;
+      // Fun hack, xvis doesn't provide alpha mask
+      bit=0; while (bit < alpha_bits) pfmt.AlphaMask |= (1<<(bit++));
+      pfmt.AlphaMask = pfmt.AlphaMask << color_bits;
+
+      bit=0; while (!(pfmt.RedMask & (1<<bit))) bit++; pfmt.RedShift = bit;
+      bit=0; while (!(pfmt.GreenMask & (1<<bit))) bit++; pfmt.GreenShift = bit;
+      bit=0; while (!(pfmt.BlueMask & (1<<bit))) bit++; pfmt.BlueShift = bit;
+      if (pfmt.AlphaMask)
+      {
+  bit=0; while (!(pfmt.AlphaMask & (1<<bit))) bit++; pfmt.AlphaShift = bit;
+      }
     }
 
     // Report Info
@@ -353,9 +368,19 @@ bool csGraphics2DWX::Open()
 
     if (ctype)
     {
-      Report (CS_REPORTER_SEVERITY_NOTIFY, "R%d:G%d:B%d:A%d, ",
-	r_bits, g_bits, b_bits, alpha_bits);
+      if (pfmt.RedMask > pfmt.BlueMask)
+      {
+  Report (CS_REPORTER_SEVERITY_NOTIFY, "R%d:G%d:B%d:A%d, ",
+    pfmt.RedBits, pfmt.GreenBits, pfmt.BlueBits, alpha_bits);
+      }
+      else
+      {
+  Report (CS_REPORTER_SEVERITY_NOTIFY, "B%d:G%d:R%d:A%d, ",
+    pfmt.BlueBits, pfmt.GreenBits, pfmt.RedBits, alpha_bits);
+      }
     }
+
+    pfmt.complete ();
   }
 #endif
 
@@ -551,7 +576,6 @@ void csGraphics2DWX::SetFullScreen (bool yesno)
 void csGraphics2DWX::AllowResize (bool iAllow)
 {
   AllowResizing = iAllow;
-  // TODO: do something?
 }
 
 BEGIN_EVENT_TABLE(csGLCanvas, wxGLCanvas)
@@ -575,12 +599,12 @@ csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
 {
   int w, h;
   GetClientSize(&w, &h);
+
   if(w < 0 || h < 0)
   {
     w = 0;
     h = 0;
   }
-
   // Canvas on creation not necessarily visible
   bool visible = IsShown();
   wxWindow* p = parent;
@@ -622,12 +646,12 @@ void csGLCanvas::OnSize(wxSizeEvent& event)
 
   int w, h;
   GetClientSize(&w, &h);
+
   if(w < 0 || h < 0)
   {
     w = 0;
     h = 0;
   }
-
   SetCurrent();
   g2d->Resize(w, h);
 }
@@ -646,7 +670,6 @@ void csGLCanvas::OnMouseEvent( wxMouseEvent& event )
   }
   else if(event.GetEventType() == wxEVT_LEFT_DOWN)
   {
-    SetFocus ();
     g2d->EventOutlet->Mouse(csmbLeft, true, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_LEFT_UP)
@@ -655,7 +678,6 @@ void csGLCanvas::OnMouseEvent( wxMouseEvent& event )
   }
   else if(event.GetEventType() == wxEVT_MIDDLE_DOWN)
   {
-    SetFocus ();
     g2d->EventOutlet->Mouse(csmbMiddle, true, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_MIDDLE_UP)
@@ -664,7 +686,6 @@ void csGLCanvas::OnMouseEvent( wxMouseEvent& event )
   }
   else if(event.GetEventType() == wxEVT_RIGHT_DOWN)
   {
-    SetFocus ();
     g2d->EventOutlet->Mouse(csmbRight, true, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_RIGHT_UP)
@@ -781,25 +802,17 @@ void csGLCanvas::EmitKeyEvent(wxKeyEvent& event, bool down)
   utf32_char cskey_raw = 0, cskey_cooked = 0, cskey_cooked_new = 0;
   wxCodeToCSCode (event.GetKeyCode(), cskey_raw, cskey_cooked);
 
-#if wxUSE_UNICODE
+#if wxHAS_UNICODE
   cskey_cooked_new = event.GetUnicodeKey();
 #else
   // Argh! Seems there is no way to get the character code for non-ASCII keys
   // in non-Unicode builds... not even a character in the local charset...
   if (event.GetKeyCode() <= 127)
-  {
     cskey_cooked_new = event.GetKeyCode();
-  }
 #endif
-  // @@@ This is not very nice. But WX sends keycodes for alpha characters
-  // only in uppercase so we have to correct it to lower case. The EVT_CHAR
-  // event should generate the correct case but I don't see how it can be used
-  // in this situation as there doesn't appear to be an 'up' and 'down'. So
-  // we have to translate it manually here.
-  if (event.GetModifiers () != wxMOD_SHIFT)
-    cskey_cooked_new = csUnicodeTransform::MapToLower (cskey_cooked_new);
   if (cskey_raw == 0)
-    cskey_raw = csUnicodeTransform::MapToLower (cskey_cooked_new);
+    csUnicodeTransform::MapToLower (cskey_cooked_new, &cskey_raw, 1,
+      csUcMapSimple);
   if (cskey_cooked == 0) cskey_cooked = cskey_cooked_new;
   if (cskey_raw != 0) g2d->EventOutlet->Key (cskey_raw, cskey_cooked, down);
 }

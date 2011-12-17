@@ -30,13 +30,12 @@
 #include "ivaria/reporter.h"
 
 #include "csutil/cfgacc.h"
-#include "csutil/xmltiny.h"
 
 #include "cpi/docwrap.h"
 #include "shader.h"
 #include "xmlshader.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 {
@@ -50,15 +49,6 @@ SCF_IMPLEMENT_FACTORY (csXMLShaderCompiler)
 csXMLShaderCompiler::csXMLShaderCompiler(iBase* parent) : 
   scfImplementationType (this, parent), debugInstrProcessing (false)
 {
-  static bool staticInited = false;
-  if (!staticInited)
-  {
-    TempHeap::Init();
-    Variables::Init();
-    
-    staticInited = true;
-  }
-
   wrapperFact = 0;
   InitTokenTable (xmltokens);
 
@@ -83,18 +73,6 @@ void csXMLShaderCompiler::Report (int severity, const char* msg, ...)
   va_end (args);
 }
 
-void csXMLShaderCompiler::Report (int severity, iDocumentNode* node,
-							const char* msg, ...)
-{
-  va_list args;
-  va_start (args, msg);
-  csString formattedMsg;
-  formattedMsg.FormatV (msg, args);
-  synldr->Report ("crystalspace.graphics3d.shadercompiler.xmlshader", 
-    severity, node, "%s", formattedMsg.GetData());
-  va_end (args);
-}
-
 bool csXMLShaderCompiler::Initialize (iObjectRegistry* object_reg)
 {
   objectreg = object_reg;
@@ -106,11 +84,8 @@ bool csXMLShaderCompiler::Initialize (iObjectRegistry* object_reg)
 
   strings = csQueryRegistryTagInterface<iStringSet> (
     object_reg, "crystalspace.shared.stringset");
-  stringsSvName = csQueryRegistryTagInterface<iShaderVarStringSet> (
-    object_reg, "crystalspace.shader.variablenameset");
   
-  string_mixmode_alpha = stringsSvName->Request ("mixmode alpha");
-  stringLightCount = stringsSvName->Request ("light count");
+  string_mixmode_alpha = strings->Request ("mixmode alpha");
 
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
   vfs = csQueryRegistry<iVFS> (object_reg);
@@ -127,19 +102,12 @@ bool csXMLShaderCompiler::Initialize (iObjectRegistry* object_reg)
   else
     do_verbose = false;
     
-  binDocSys = csLoadPluginCheck<iDocumentSystem> (plugin_mgr,
-    "crystalspace.documentsystem.binary");
-  xmlDocSys.AttachNew (new csTinyDocumentSystem);
-  
   csConfigAccess config (object_reg);
   doDumpXML = config->GetBool ("Video.XMLShader.DumpVariantXML");
   doDumpConds = config->GetBool ("Video.XMLShader.DumpConditions");
   doDumpValues = config->GetBool ("Video.XMLShader.DumpPossibleValues");
   debugInstrProcessing = 
     config->GetBool ("Video.XMLShader.DebugInstructionProcessing");
-    
-  sharedEvaluator.AttachNew (new csConditionEvaluator (stringsSvName,
-    condConstants));
 
   return true;
 }
@@ -152,21 +120,12 @@ csPtr<iShader> csXMLShaderCompiler::CompileShader (
 
   if (!ValidateTemplate (templ))
     return 0;
-
-  /* We might only be loaded as a dependency of the engine, so query it
-     here instead of Initialize() */
-  if (!engine.IsValid())
-  {
-    engine = csQueryRegistry<iEngine> (objectreg);
-    sharedEvaluator->SetEngine (engine);
-  }
   
   csTicks startTime = 0, endTime = 0;
   // Create a shader. The actual loading happens later.
   csRef<csXMLShader> shader;
   if (do_verbose) startTime = csGetTicks();
   shader.AttachNew (new csXMLShader (this, ldr_context, templ, forcepriority));
-  if (!shader->Load (templ)) return 0;
   if (do_verbose) endTime = csGetTicks();
   shader->SetName (templ->GetAttributeValue ("name"));
   shader->SetDescription (templ->GetAttributeValue ("description"));
@@ -191,35 +150,22 @@ csPtr<iShader> csXMLShaderCompiler::CompileShader (
   csRef<iShader> ishader (shader);
   return csPtr<iShader> (ishader);
 }
-  
-bool csXMLShaderCompiler::PrecacheShader(iDocumentNode* templ,
-                                         iHierarchicalCache* cache,
-                                         bool quick)
-{
-  if (!templ) return 0;
 
-  if (!ValidateTemplate (templ))
-    return 0;
-  
-  csTicks startTime = 0, endTime = 0;
-  // Create a shader. The actual loading happens later.
-  csRef<csXMLShader> shader;
-  if (do_verbose) startTime = csGetTicks();
-  shader.AttachNew (new csXMLShader (this));
-  shader->SetName (templ->GetAttributeValue ("name"));
-  bool result = shader->Precache (templ, cache, quick);
-  if (do_verbose) endTime = csGetTicks();
-  if (do_verbose)
+class csShaderPriorityList : public scfImplementation1<csShaderPriorityList, 
+                                                       iShaderPriorityList>
+{
+public:
+  csArray<int> priorities;
+  csShaderPriorityList () : scfImplementationType (this)
   {
-    csString str;
-    shader->DumpStats (str);
-    Report(CS_REPORTER_SEVERITY_NOTIFY, 
-      "Shader %s: %s, %u ms", shader->GetName (), str.GetData (),
-      endTime - startTime);
   }
-  
-  return result;
-}
+  virtual ~csShaderPriorityList ()
+  {
+  }
+
+  virtual size_t GetCount () const { return priorities.GetSize (); }
+  virtual int GetPriority (size_t idx) const { return priorities[idx]; }
+};
 
 csPtr<iShaderPriorityList> csXMLShaderCompiler::GetPriorities (
 	iDocumentNode* templ)
@@ -294,10 +240,8 @@ bool csXMLShaderCompiler::IsTemplateToCompiler(iDocumentNode *templ)
     XMLTOKEN_XMLSHADER))
   {
     Report (CS_REPORTER_SEVERITY_ERROR, 
-      "Type of shader %s is not %s, but %s",
-      CS::Quote::Single (shaderName),
-      CS::Quote::Single ("xmlshader"),
-      CS::Quote::Single (shaderType));
+      "Type of shader '%s' is not 'xmlshader', but '%s'",
+      shaderName, shaderType);
     return false;
   }
 
@@ -307,71 +251,6 @@ bool csXMLShaderCompiler::IsTemplateToCompiler(iDocumentNode *templ)
 
   //Ok, passed check. We will try to validate it
   return true;
-}
-  
-csPtr<iDocumentNode> csXMLShaderCompiler::ReadNodeFromBuf (iDataBuffer* buf)
-{
-  csRef<iDocument> boilerplate;
-  csRef<iDocumentSystem> docsys = binDocSys;
-  if (docsys.IsValid())
-  {
-    boilerplate = docsys->CreateDocument ();
-    const char* err = boilerplate->Parse (buf);
-    if (err != 0)
-    {
-      if (do_verbose)
-	Report (CS_REPORTER_SEVERITY_ERROR, 
-	  "Couldn't read document: %s", err);
-    }
-  }
-  if (!boilerplate.IsValid())
-  {
-    docsys = xmlDocSys;
-    if (docsys.IsValid())
-    {
-      boilerplate = docsys->CreateDocument ();
-      const char* err = boilerplate->Parse (buf);
-      if (err != 0)
-      {
-      if (do_verbose)
-	Report (CS_REPORTER_SEVERITY_ERROR, 
-	  "Couldn't read document: %s", err);
-      }
-    }
-  }
-  if (!boilerplate.IsValid()) return 0;
-  
-  csRef<iDocumentNode> root = boilerplate->GetRoot();
-  if (!root.IsValid()) return 0;
-  
-  csRef<iDocumentNodeIterator> it = root->GetNodes();
-  if (!it->HasNext()) return 0;
-  csRef<iDocumentNode> firstNode = it->Next();
-  if (it->HasNext()) return 0;
-  
-  return csPtr<iDocumentNode> (firstNode);
-}
-
-csPtr<iDataBuffer> csXMLShaderCompiler::WriteNodeToBuf (iDocument* doc)
-{
-  csMemFile docFile;
-  const char* err = doc->Write (&docFile);
-  if (err != 0)
-  {
-    if (do_verbose)
-      Report (CS_REPORTER_SEVERITY_WARNING,
-	  "Couldn't write document: %s", err);
-    return 0;
-  }
-  return docFile.GetAllData (false);
-}
-  
-csPtr<iDocument> csXMLShaderCompiler::CreateCachingDoc ()
-{
-  csRef<iDocumentSystem> docsys = binDocSys;
-  if (!docsys.IsValid()) docsys = xmlDocSys;
-  
-  return csPtr<iDocument> (docsys->CreateDocument());
 }
 
 }

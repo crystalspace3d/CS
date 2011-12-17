@@ -36,6 +36,7 @@
 
 #include "csgfx/rgbpixel.h"
 #include "plugins/engine/3d/engine.h"
+#include "plugins/engine/3d/rview.h"
 #include "plugins/engine/3d/sector.h"
 #include "csutil/xmltiny.h"
 #include "cstool/rviewclipper.h"
@@ -68,20 +69,19 @@ void csRenderLoop::Draw (iRenderView *rview, iSector *s, iMeshWrapper* mesh)
 
     // Needed so halos are correctly recognized as "visible".
     csRef<iClipper2D> oldClipper = rview->GetGraphics3D()->GetClipper();
-    int oldClipType = rview->GetGraphics3D()->GetClipType();    
+    int oldClipType = rview->GetGraphics3D()->GetClipType();
+
+    csRef<iShaderVarStack> varStack = shadermanager->GetShaderVariableStack ();
 
     s->IncRecLevel ();
     s->PrepareDraw (rview);
     csSector* cs = (csSector*)s;
     cs->SetSingleMesh (mesh);
 
-    csShaderVariableStack stack;
-    stack.Setup (shadermanager->GetShaderVariableStack ().GetSize());
     size_t i;
     for (i = 0; i < steps.GetSize (); i++)
     {
-      stack.Clear ();
-      steps[i]->Perform (rview, s, stack);
+      steps[i]->Perform (rview, s, varStack);
     }
     s->DecRecLevel ();
     cs->SetSingleMesh (0);
@@ -93,7 +93,7 @@ void csRenderLoop::Draw (iRenderView *rview, iSector *s, iMeshWrapper* mesh)
     for (i = lights->GetCount (); i-- > 0;)
       // Tell the engine to try to add this light into the halo queue
       engine->AddHalo (rview->GetCamera(), 
-        ((csLight*)lights->Get ((int)i))->GetPrivateObject ());    
+        ((csLight*)lights->Get ((int)i))->GetPrivateObject ());
   }
 }
 
@@ -163,11 +163,6 @@ bool csRenderLoopManager::Register (const char* name, iRenderLoop* loop,
  
 iRenderLoop* csRenderLoopManager::Retrieve (const char* name)
 {
-  if (name && (strcmp (name, CS_DEFAULT_RENDERLOOP_NAME) == 0))
-  {
-    // Special case to ensure it's loaded
-    engine->GetCurrentDefaultRenderloop();
-  }
   return (loops.Get (name, (iRenderLoop*)0));
 }
 
@@ -226,15 +221,15 @@ csPtr<iRenderLoop> csRenderLoopManager::Load (const char* fileName)
 
   if (rlLoader == 0)
   {
-    engine->Error ("Error loading %s: could not retrieve render loop loader",
-      CS::Quote::Single (fileName));
+    engine->Error ("Error loading '%s': could not retrieve render loop loader",
+      fileName);
     return 0;
   }
 
   csRef<iFile> file = engine->VFS->Open (fileName, VFS_FILE_READ);
   if (file == 0)
   {
-    engine->Error ("Error loading %s: could open file on VFS", CS::Quote::Single (fileName));
+    engine->Error ("Error loading '%s': could open file on VFS", fileName);
     return 0;
   }
 
@@ -247,14 +242,14 @@ csPtr<iRenderLoop> csRenderLoopManager::Load (const char* fileName)
   const char* error = doc->Parse (file, true);
   if (error != 0)
   {
-    engine->Error ("Error parsing %s: %s", CS::Quote::Single (fileName), error);
+    engine->Error ("Error parsing '%s': %s", fileName, error);
     return 0;
   }
 
   csRef<iDocumentNode> rlNode = doc->GetRoot ()->GetNode ("params");
   if (rlNode == 0)
   {
-    engine->Error ("Error loading %s: no <params> node", CS::Quote::Single (fileName));
+    engine->Error ("Error loading '%s': no <params> node", fileName);
     return 0;
   }
 
@@ -268,8 +263,8 @@ csPtr<iRenderLoop> csRenderLoopManager::Load (const char* fileName)
   if (rl == 0)
   {
     engine->ReportBug (
-      "Error loading %s: returned object doesn't implement iRenderLoop", 
-      CS::Quote::Single (fileName));
+      "Error loading '%s': returned object doesn't implement iRenderLoop", 
+      fileName);
   }
   return (csPtr<iRenderLoop> (rl));
 }

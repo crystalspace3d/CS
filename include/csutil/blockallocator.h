@@ -25,7 +25,7 @@
  */
 
 #include "csutil/fixedsizeallocator.h"
-#include "csutil/metautils.h"
+
 #include "csutil/custom_new_disable.h"
 
 /**\addtogroup util_memory
@@ -105,23 +105,6 @@ public:
 };
 
 /**
- * 
- */
-template<typename T>
-struct csBlockAllocatorSizeObject
-{
-  static const unsigned int value = sizeof(T);
-};
-
-/**
- * 
- */
-template<typename T, unsigned int Alignment>
-struct csBlockAllocatorSizeObjectAlign
-{
-  static const unsigned int value = CS::Meta::AlignSize<T, Alignment>::value;
-};
-/**
  * This class implements a memory allocator which can efficiently allocate
  * objects that all have the same size. It has no memory overhead per
  * allocation (unless the objects are smaller than sizeof(void*) bytes) and is
@@ -136,26 +119,19 @@ struct csBlockAllocatorSizeObjectAlign
  *
  * \sa csArray
  * \sa csMemoryPool
- * \sa CS::Memory::BlockAllocatorSafe for a thread-safe version
  */
 template <class T,
-  typename Allocator = CS::Memory::AllocatorMalloc, 
-  typename ObjectDispose = csBlockAllocatorDisposeDelete<T>,
-  typename SizeComputer = csBlockAllocatorSizeObject<T>
->
-class csBlockAllocator : 
-  public csFixedSizeAllocator<
-    SizeComputer::value,
-    Allocator>
+  class Allocator = CS::Memory::AllocatorMalloc, 
+  class ObjectDispose = csBlockAllocatorDisposeDelete<T> >
+class csBlockAllocator : public csFixedSizeAllocator<sizeof (T), Allocator>
 {
 public:
-  typedef csBlockAllocator<T, Allocator, ObjectDispose, SizeComputer> ThisType;
+  typedef csBlockAllocator<T, Allocator> ThisType;
   typedef T ValueType;
   typedef Allocator AllocatorType;
 
 protected:
-  typedef csFixedSizeAllocator<SizeComputer::value, Allocator> superclass;
-
+  typedef csFixedSizeAllocator<sizeof (T), Allocator> superclass;
 private:
   void* Alloc (size_t /*n*/) { return 0; }                       // Illegal
   void* Alloc (void* /*p*/, size_t /*newSize*/) { return 0; }   // Illegal
@@ -171,7 +147,7 @@ public:
    *   elements, though allocated, will remain unused (until you add more
    *   elements).
    *
-   * \remarks If you use csBlockAllocator as a convenient and lightweight
+   * \remarks If use use csBlockAllocator as a convenient and lightweight
    *   garbage collection facility (for which it is well-suited), and expect it
    *   to dispose of allocated objects when the pool itself is destroyed, then
    *   set \c warn_unfreed to false. On the other hand, if you use
@@ -182,9 +158,6 @@ public:
    */
   csBlockAllocator(size_t nelem = 32) : superclass (nelem)
   {
-#ifdef CS_MEMORY_TRACKER
-    superclass::blocks.SetMemTrackerInfo (typeid(*this).name());
-#endif
   }
 
   /**
@@ -197,22 +170,11 @@ public:
   }
 
   /**
-   * Destroy all objects allocated by the pool without releasing the memory.
+   * Destroy all objects allocated by the pool.
    * \remarks All pointers returned by Alloc() are invalidated. It is safe to
    *   perform new allocations from the pool after invoking Empty().
    */
-  void Empty ()
-  {
-    ObjectDispose dispose (*this, true);
-    FreeAll (dispose);
-  }
-
-  /**
-   * Destroy all objects allocated by the pool and release the memory.
-   * \remarks All pointers returned by Alloc() are invalidated. It is safe to
-   *   perform new allocations from the pool after invoking DeleteAll().
-   */
-  void DeleteAll ()
+  void Empty()
   {
     ObjectDispose dispose (*this, true);
     DisposeAll (dispose);
@@ -248,16 +210,6 @@ public:
   }
 
   /**
-   * Allocate a new object. 
-   * The one-argument constructor of \a T is invoked. 
-   */
-  template<typename A1>
-  T* Alloc (A1& a1)
-  {
-    return new (superclass::Alloc()) T (a1);
-  }
-
-  /**
    * Deallocate an object. It is safe to provide a null pointer.
    * \param p Pointer to deallocate.
    */
@@ -278,92 +230,6 @@ public:
   }
 };
 
-namespace CS
-{
-  namespace Memory
-  {
-    /**
-     * Thread-safe allocator for objects of a class.
-     * Has the same purpose and interface as csBlockAllocator but is safe
-     * to be used concurrently from different threads.
-     */
-    template <class T,
-      typename Allocator = AllocatorMalloc, 
-      typename ObjectDispose = csBlockAllocatorDisposeDelete<T>,
-      typename SizeComputer = csBlockAllocatorSizeObject<T>
-    >
-    class BlockAllocatorSafe : 
-      public AllocatorSafe<csBlockAllocator<T, Allocator, ObjectDispose,
-        SizeComputer> >
-    {
-    protected:
-      typedef csBlockAllocator<T, Allocator,
-        ObjectDispose, SizeComputer> WrappedAllocatorType;
-      typedef AllocatorSafe<WrappedAllocatorType> AllocatorSafeType;
-    public:
-      BlockAllocatorSafe (size_t nelem = 32) : AllocatorSafeType (nelem)
-      {
-      }
-    
-      void Empty ()
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        WrappedAllocatorType::Empty ();
-      }
-    
-      void DeleteAll ()
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        WrappedAllocatorType::DeleteAll ();
-      }
-      
-      void Compact()
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        WrappedAllocatorType::Compact();
-      }
-    
-      T* Alloc ()
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::Alloc ();
-      }
-    
-      template<typename A1, typename A2>
-      T* Alloc (A1& a1, A2& a2)
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::Alloc (a1, a2);
-      }
-    
-      template<typename A1, typename A2, typename A3>
-      T* Alloc (A1& a1, A2& a2, A3& a3)
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::Alloc (a1, a2, a3);
-      }
-    
-      template<typename A1>
-      T* Alloc (A1& a1)
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::Alloc (a1);
-      }
-    
-      void Free (T* p)
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        WrappedAllocatorType::Free (p);
-      }
-      bool TryFree (T* p)
-      {
-        CS::Threading::RecursiveMutexScopedLock lock (AllocatorSafeType::mutex);
-        return WrappedAllocatorType::TryFree (p);
-      }
-    };
-  } // namespace Memory
-} // namespace CS
-  
 /** @} */
 
 #include "csutil/custom_new_enable.h"

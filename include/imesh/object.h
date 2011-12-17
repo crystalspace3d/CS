@@ -20,7 +20,6 @@
 #define __CS_IMESH_OBJECT_H__
 
 #include "csutil/scf.h"
-#include "iutil/array.h"
 
 /**\file
  * Mesh object and mesh object factory interfaces
@@ -84,15 +83,6 @@ class csVector3;
 /** @} */
 
 /**
- * An array of materials.
- */
-struct iMaterialArray : public iArrayChangeAll<iMaterialWrapper*>
-{
-  SCF_IARRAYCHANGEALL_INTERFACE (iMaterialArray);
-};
-
-
-/**
  * Set a callback which is called just before the object is drawn.
  */
 struct iMeshObjectDrawCallback : virtual public iBase
@@ -124,7 +114,7 @@ struct iMeshObjectDrawCallback : virtual public iBase
  */
 struct iMeshObject : public virtual iBase
 {
-  SCF_INTERFACE(iMeshObject, 4,0,0);
+  SCF_INTERFACE(iMeshObject, 2,1,0);
   /**
    * Get the reference to the factory that created this mesh object.
    */
@@ -195,12 +185,7 @@ struct iMeshObject : public virtual iBase
    * This will do a test based on the outline of the object. This means
    * that it is more accurate than HitBeamBBox(). Note that this routine
    * will typically be faster than HitBeamObject(). The hit may be on the front
-   * or the back of the object, but will indicate that it interrupts the beam.
-   * \param start Start of the beam to trace in object coordinate.
-   * \param end End of the beam to trace in object coordinate.
-   * \param isect Will be set to the point of the hit in object coordinate.
-   * \param pr Will be set to the position of the hit as a value between 0 and 1,
-   *   where 0 means \a start and 1 means \a end.
+   * or the back of the object, but will indicate that it iterrupts the beam.
    */
   virtual bool HitBeamOutline (const csVector3& start,
   	const csVector3& end, csVector3& isect, float* pr) = 0;
@@ -212,10 +197,10 @@ struct iMeshObject : public virtual iBase
    * returned hit will be guaranteed to be the point closest to the
    * 'start' of the beam. If the object supports this then an index
    * of the hit polygon will be returned (or -1 if not supported or no hit).
-   * \param start Start of the beam to trace in object coordinate.
-   * \param end End of the beam to trace in object coordinate.
-   * \param isect Will be set to the point of the hit in object coordinate.
-   * \param pr Will be set to the position of the hit as a value between 0 and 1,
+   * \param start Start of the beam to trace.
+   * \param end End of the beam to trace.
+   * \param isect Returns the point of the hit.
+   * \param pr Returns the position of the hit as a value between 0 and 1,
    *   where 0 means \a start and 1 means \a end.
    * \param polygon_idx Index of the polygon hit on the mesh (or -1 if not
    *   supported).
@@ -275,6 +260,17 @@ struct iMeshObject : public virtual iBase
   virtual void SetMixMode (uint mode) = 0;
   /// Get mix mode.
   virtual uint GetMixMode () const = 0;
+
+  /**
+   * Material changed. This is an 'event' that the engine (or another
+   * party managing materials) will send out as soon as the material
+   * handles are changed in some way which requires the mesh object
+   * to fetch it again (i.e. to call materialwrapper->GetMaterialHandle())
+   * again.
+   * \deprecated Deprecated in 1.3. Obsolete and unused.
+   */
+  CS_DEPRECATED_METHOD_MSG("Obsolete and unused.")
+  virtual void InvalidateMaterialHandles () = 0;
 
   /**
    * The engine asks this mesh object to place one of his hierarchical

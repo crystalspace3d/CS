@@ -32,7 +32,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   {
   }
 
-  void BlendNodeFactory::AddNode (CS::Animation::iSkeletonAnimNodeFactory* node, float weight)
+  void BlendNodeFactory::AddNode (iSkeletonAnimNodeFactory2* node, float weight)
   {
     subFactories.Push (node);
     weightList.Push (weight);
@@ -59,7 +59,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     }
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* BlendNodeFactory::GetNode (uint node)
+  iSkeletonAnimNodeFactory2* BlendNodeFactory::GetNode (uint node)
   {
     CS_ASSERT(node < subFactories.GetSize ());
     return subFactories[node];
@@ -76,15 +76,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     weightList.DeleteAll ();
   }
 
-  csPtr<CS::Animation::iSkeletonAnimNode> BlendNodeFactory::CreateInstance (
-    CS::Animation::iSkeletonAnimPacket* packet, CS::Animation::iSkeleton* skeleton)
+  csPtr<iSkeletonAnimNode2> BlendNodeFactory::CreateInstance (
+    iSkeletonAnimPacket2* packet, iSkeleton2* skeleton)
   {
     csRef<BlendNode> newB;
-    newB.AttachNew (new BlendNode (this));
+    newB = new BlendNode (this);
 
     BaseFactoryChildren::SetupInstance (newB, packet, skeleton);
 
-    return csPtr<CS::Animation::iSkeletonAnimNode> (newB);
+    return csPtr<iSkeletonAnimNode2> (newB);
   }
 
   const char* BlendNodeFactory::GetNodeName () const
@@ -92,14 +92,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return name;
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* BlendNodeFactory::FindNode (const char* name)
+  iSkeletonAnimNodeFactory2* BlendNodeFactory::FindNode (const char* name)
   {
     if (this->name == name)
       return this;
 
     for (size_t i = 0; i < subFactories.GetSize (); ++i)
     {
-      CS::Animation::iSkeletonAnimNodeFactory* r = subFactories[i]->FindNode (name);
+      iSkeletonAnimNodeFactory2* r = subFactories[i]->FindNode (name);
       if (r)
         return r;
     }
@@ -219,7 +219,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return playbackSpeed;
   }
 
-  void BlendNode::BlendState (CS::Animation::AnimatedMeshState* state, float baseWeight)
+  void BlendNode::BlendState (csSkeletalState2* state, float baseWeight)
   {
     float accWeight = 0.0f;
 
@@ -257,19 +257,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return false;
   }
 
-  CS::Animation::iSkeletonAnimNodeFactory* BlendNode::GetFactory () const
+  iSkeletonAnimNodeFactory2* BlendNode::GetFactory () const
   {
     return factory;
   }
 
-  CS::Animation::iSkeletonAnimNode* BlendNode::FindNode (const char* name)
+  iSkeletonAnimNode2* BlendNode::FindNode (const char* name)
   {
     if (factory->name == name)
       return this;
 
     for (size_t i = 0; i < subNodes.GetSize (); ++i)
     {
-      CS::Animation::iSkeletonAnimNode* r = subNodes[i]->FindNode (name);
+      iSkeletonAnimNode2* r = subNodes[i]->FindNode (name);
       if (r)
         return r;
     }
@@ -277,12 +277,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     return 0;
   }
 
-  void BlendNode::AddAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback)
+  void BlendNode::AddAnimationCallback (iSkeletonAnimCallback2* callback)
   {
     BaseNodeChildren::AddAnimationCallback (callback);
   }
 
-  void BlendNode::RemoveAnimationCallback (CS::Animation::iSkeletonAnimCallback* callback)
+  void BlendNode::RemoveAnimationCallback (iSkeletonAnimCallback2* callback)
   {
     BaseNodeChildren::RemoveAnimationCallback (callback);
   }
@@ -369,7 +369,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     }
   }
 
-  void BlendNode::PlayStateChanged (CS::Animation::iSkeletonAnimNode* node, bool isPlaying)
+  void BlendNode::PlayStateChanged (iSkeletonAnimNode2* node, bool isPlaying)
   {
     FireStateChangeCb (isPlaying);
 
@@ -383,7 +383,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     }    
   }
 
-  void BlendNode::DurationChanged (CS::Animation::iSkeletonAnimNode* node)
+  void BlendNode::DurationChanged (iSkeletonAnimNode2* node)
   {
     SynchronizeSubnodes ();
   }

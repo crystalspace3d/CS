@@ -60,9 +60,6 @@ C++FLAGS += -pipe ;
 LINKLIBS += -L/usr/lib/w32api -lgdi32 -lshell32 ;
 PLUGIN.LFLAGS += -mwindows ;
 WINDRES.FLAGS = --use-temp-file ;
-APPLICATION.LFLAGS += $(LINK.GC_SECTIONS) ;
-PLUGIN.LFLAGS += $(LINK.GC_SECTIONS) ;
-LIBRARY.LFLAGS += $(LINK.GC_SECTIONS) ;
 
 if "$(USE_DLLWRAP)" = "yes"
 {
@@ -157,7 +154,7 @@ __EOF__
     echo '$(PACKAGE_VERSION_NORM[1]).$(PACKAGE_VERSION_NORM[2]).$(PACKAGE_VERSION_NORM[3]).$(PACKAGE_VERSION_NORM[4])' | $(SED) 's/RC\([0-9]\)//g' | $(SED) 's/[^0123456789.]//g' | $(SED) 's/\(.*\)/    version="\1"/' >> $(<)
   
     cat >> $(<) << __EOF__
-    processorArchitecture="$(MANIFEST_ARCH)"
+    processorArchitecture="X86"
     name="$(PRODUCT_NAME)"
     type="win32"
 />
@@ -168,7 +165,7 @@ __EOF__
 	      type="win32"
 	      name="Microsoft.Windows.Common-Controls"
 	      version="6.0.0.0"
-	      processorArchitecture="$(MANIFEST_ARCH)"
+	      processorArchitecture="X86"
 	      publicKeyToken="6595b64144ccf1df"
 	      language="*"
 	  />
@@ -307,14 +304,11 @@ rule MakeManifestFile
   local desc = [ Description $(>) ] ;
   if ! $(desc) { desc = "$(>)" ; }
   PRODUCT_DESCRIPTION on $(<) = $(desc) ;
-  local arch = $(3) ;
-  if ! $(arch) { arch = X86 ; }
 
   local name ;
   if $(PACKAGE_NAME) { name = $(PACKAGE_NAME).$(>) ; }
   else { name = $(>) ; }
   PRODUCT_NAME on $(<) = $(name) ;
-  MANIFEST_ARCH on $(<) = $(arch) ;
       
   GenerateWin32Manifest $(<) ;
 }
@@ -434,12 +428,6 @@ rule SystemLinkApplication
   local target = $($(<)_TARGET) ;
 
   Depends $(target) : $(>) ;
-  if ! [ IsElem console : $(3) ] && $(MODE) = optimize
-  {
-    # Like the MSVC projects build GUI applications as such in optimize builds.
-    # In debug mode, let everything be console apps.
-    EXTRALFLAGS on $(target) += -mwindows ;
-  }
   LinkApplication $(target) : $(>) ;
   # setup clean rules
   Clean clean : $(target) ;
@@ -620,16 +608,12 @@ actions WriteDefHeader
   echo "EXPORTS" > $(<)
 }
 
-# Take an extracted .drectve section and generate .def file entries of it
-# - Convertes spaces to newlines
-# - Filters out any option other than '-export' ones
-# - Filter the symbol name, handle ',data' decoration
 actions piecemeal together DrectveToDef
 {
   for d in $(>)
   do
     sed -e "s/ /\\
-/g" $d | grep "-export" | sed -e "s/-export:\(.*\)/\1/g" | sed -e "s/,data/ DATA/g" >> $(<)
+/g" $d | sed -e "s/-export:\(.*\)/\1/g" | sed -e "s/,data/ DATA/g" >> $(<)
   done
 }
 
@@ -640,7 +624,7 @@ actions GenerateImportLib
 
 actions LinkApplication bind NEEDLIBS bind EXTRAOBJECTS
 {
-  $(CMD.LINK) -o $(<) $(>) $(EXTRAOBJECTS) $(NEEDLIBS) $(LINKLIBS) $(EXTRALFLAGS)
+  $(CMD.LINK) -o $(<) $(>) $(EXTRAOBJECTS) $(NEEDLIBS) $(LINKLIBS)
 }
 
 if $(USE_DLLWRAP) != "yes"

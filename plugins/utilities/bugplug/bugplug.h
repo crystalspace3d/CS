@@ -50,8 +50,10 @@ struct iMeshWrapper;
 struct iObjectRegistry;
 struct iObjectRegistry;
 struct iPluginManager;
+struct iRegion;
 struct iSector;
 struct iTextureManager;
+struct iThingFactoryState;
 struct iVFS;
 struct iVirtualClock;
 struct iVisibilityCuller;
@@ -90,9 +92,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(BugPlug)
 #define DEBUGCMD_DUMPENG	1000	// Dump structure of world
 #define DEBUGCMD_DUMPSEC	1001	// Dump structure of current sector
 #define DEBUGCMD_EDGES		1002	// Enable edge drawing
+#define DEBUGCMD_CLEAR		1003	// Clear screen every frame
 #define DEBUGCMD_CACHEDUMP	1004	// Dump texture cache
 #define DEBUGCMD_CACHECLEAR	1005	// Clear texture cache
+#define DEBUGCMD_TEXTURE	1006	// Enable texture mapping
+#define DEBUGCMD_BILINEAR	1007	// Enable bi-linear filtering
+#define DEBUGCMD_TRILINEAR	1008	// Enable tri-linear filtering
+#define DEBUGCMD_LIGHTING	1009	// Enable lighting
+#define DEBUGCMD_GOURAUD	1010	// Enable gouraud
+#define DEBUGCMD_ILACE		1011	// Enable interlacing
+#define DEBUGCMD_MMX		1012	// Enable MMX
+#define DEBUGCMD_TRANSP		1013	// Enable transparent mode
 #define DEBUGCMD_GAMMA		1016	// Set gamma
+#define DEBUGCMD_DBLBUFF	1017	// Set double buffering (G2D)
 #define DEBUGCMD_DUMPCAM	1018	// Dump the camera
 #define DEBUGCMD_FOV		1019	// Set fov
 #define DEBUGCMD_FOVANGLE	1020	// Set fov in angles
@@ -124,7 +136,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(BugPlug)
 #define DEBUGCMD_SHADOWDEBUG	1046	// Toggle shadow debugging
 #define DEBUGCMD_DEBUGCMD   	1047	// Send a debug command to a plugin
 #define DEBUGCMD_MEMORYDUMP   	1048	// Memory dump
-//#define DEBUGCMD_UNPREPARE   	1049	// Unprepare all things
+#define DEBUGCMD_UNPREPARE   	1049	// Unprepare all things
 #define DEBUGCMD_COLORSECTORS  	1050	// Give all sectors a different color
 #define DEBUGCMD_SWITCHCULLER  	1051	// Switch to culler
 #define DEBUGCMD_SELECTMESH  	1052	// Select a mesh by name
@@ -145,10 +157,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(BugPlug)
 #define DEBUGCMD_PROFAUTORESET	1067	// Reset profiler automagically at end of every frame
 #define DEBUGCMD_UBERSCREENSHOT 1068    // Create an "uberscreenshot"
 #define DEBUGCMD_MESHNORM       1069    // Draw normals of selected mesh
-#define DEBUGCMD_TOGGLEFPSTIME  1070    // Toggle between fps and frame time display
+#define DEBUGCMD_TOGGLEFPSTIME 1070 // Toggle between fps and frame time display
 #define DEBUGCMD_MESHSKEL       1080    // Draw skeleton of selected mesh
-#define DEBUGCMD_PRINTPORTALS   1090    // Print portal info for the current sector
-#define DEBUGCMD_PRINTPOSITION  1091    // Print current camera position in CS format
 
 // For showing of polygon meshes.
 #define BUGPLUG_POLYMESH_NO	0
@@ -228,7 +238,6 @@ private:
   csRef<iVirtualClock> vc;
   csRef<iFont> fnt;
   csRef<iStringSet> stringSet;
-  csRef<iShaderVarStringSet> stringSetSvName;
   csRef<iStandardReporterListener> stdrep;
   bool initialized;
   csConfigAccess config;
@@ -257,6 +266,9 @@ private:
   int fps_tottime;
   float fps_cur;
 
+  // For 'clear' command.
+  bool do_clear;
+
   // For profiling
   bool do_profiler_reset;
   bool do_profiler_log;
@@ -267,6 +279,7 @@ private:
   void Dump (int indent, iMeshWrapper* mesh);
   void Dump (iMeshFactoryWrapper* meshfact);
   void Dump (iCamera* c);
+  void Dump (iThingFactoryState* fact, int polyidx);
   void Dump (int indent, const csMatrix3& m, char const* name);
   void Dump (int indent, const csVector3& v, char const* name);
   void Dump (int indent, const csVector2& v, char const* name);
@@ -276,11 +289,11 @@ private:
 
   void Report (int severity, const char* msg, ...);
 
+  // Toggle a G3D boolean option.
   bool do_shadow_debug;
   csRef<iShader> standardShadowShader;
   csRef<iShader> debugShadowShader;
-  // Report on the result of a G3D state toggling
-  void ReportG3DState (bool prevState, bool state, const char* name);
+  void ToggleG3DState (G3D_RENDERSTATEOPTION op, const char* name);
 
   // The selected mesh.
   csWeakRefArray<iMeshWrapper> selected_meshes;

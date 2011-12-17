@@ -29,8 +29,6 @@ namespace lighter
   class KDTree;
   class Scene;
   class Sector;
-  class PhotonMap;
-  class IrradianceCache;
 
   class Portal : public csRefCount
   {
@@ -51,10 +49,13 @@ namespace lighter
   {
   public:
     Sector (Scene* scene)
-      : kdTree (0), scene (scene), photonMap(NULL), causticPhotonMap(NULL), irradianceCache(NULL)
+      : kdTree (0), scene (scene)
     {}
 
-    ~Sector ();
+    ~Sector ()
+    {
+      delete kdTree;
+    }
 
     // Initialize any extra data in the sector
     void Initialize (Statistics::Progress& progress);
@@ -64,40 +65,6 @@ namespace lighter
     // Build kd tree for Sector
     void BuildKDTree (Statistics::Progress& progress);
 
-    void SavePhotonMap(const char* filename);
-
-    void SaveCausticPhotonMap(const char* filename);
-
-    void InitPhotonMap();
-
-    void InitCausticPhotonMap();
-
-    void AddPhoton(const csColor power, const csVector3 pos,
-      const csVector3 dir );
-
-    void AddCausticPhoton(const csColor power, const csVector3 pos,
-      const csVector3 dir );
-
-    void ScalePhotons(const float scale);
-
-    void ScaleCausticPhotons(const float scale);
-
-    size_t GetPhotonCount();
-    
-    void BalancePhotons(Statistics::ProgressState& prog);
-
-    bool SampleIRCache(const csVector3 point, const csVector3 normal,
-                       csColor &irrad);
-
-    csColor SamplePhoton(const csVector3 point, const csVector3 normal,
-                         const float searchRad);
-
-    void AddToIRCache(const csVector3 point, const csVector3 normal,
-                      const csColor irrad, const float mean);
-
-    // Hash of all mesh names and materials
-
-    //csHash <csString,csRef<RadMaterial>> materialHash;
     // All objects in sector
     ObjectHash allObjects;
 
@@ -117,17 +84,6 @@ namespace lighter
     csString sectorName;
 
     Scene* scene;
-
-  protected:
-    // Photon map for indirect lighting
-    PhotonMap *photonMap;
-
-    // Caustic Photon Map
-
-    PhotonMap *causticPhotonMap;
-
-    // Irradiance cache to speed up photon mapping
-    IrradianceCache *irradianceCache;
   };
   typedef csHash<csRef<Sector>, csString> SectorHash;
 
@@ -154,8 +110,6 @@ namespace lighter
 
     // Copy the temporary file created in SaveWorld() over the actual world file.
     bool ApplyWorldChanges (Statistics::Progress& progress);
-    // Generate specular direction maps
-    bool GenerateSpecularDirectionMaps (Statistics::Progress& progress);
     // Write the generated lightmaps out.
     bool SaveLightmaps (Statistics::Progress& progress);
     // Save any mesh data that can only be saved after lighting.
@@ -185,9 +139,6 @@ namespace lighter
 
     csArray<LightmapPtrDelArray*> GetAllLightmaps ();
     
-    enum { specDirectionMapCount = 3 };
-    iTextureWrapper* GetSpecDirectionMapTexture (uint ID, int subNum);
-    
     const RadMaterial* GetRadMaterial (iMaterialWrapper* matWrap) const
     {
       if (matWrap == 0) return 0;
@@ -213,7 +164,6 @@ namespace lighter
       void ApplyExposure (csColor* colors, size_t numColors);
       //@}
 
-      
       //@{
       /**
        * Apply ambient term.
@@ -232,35 +182,22 @@ namespace lighter
       csSet<csPtrKey<Portal> > seenPortals;
     };
     void PropagateLights (Sector* sector);
-
-    // Materials
-    MaterialHash radMaterials;
-
   protected:
     
     //  factories
     ObjectFactoryHash radFactories;
     
+    // Materials
+    MaterialHash radMaterials;
+ 
     // All sectors
     SectorHash sectors;
     typedef csHash<Sector*, csPtrKey<iSector> > SectorOrigSectorHash;
     SectorOrigSectorHash originalSectorHash;
 
-    CS::Threading::Mutex lightmapMutex;
     LightmapPtrDelArray lightmaps;
     typedef csHash<LightmapPtrDelArray*, csPtrKey<Light> > PDLightmapsHash;
     PDLightmapsHash pdLightmaps;
-    DirectionMapPtrDelArray directionMaps[2];
-    csStringArray directionMapBaseNames;
-    csString GetDirectionMapFilename (uint ID, int subNum) const;
-    
-    struct DirectionMapTextures
-    {
-      iTextureWrapper* t[specDirectionMapCount];
-      
-      DirectionMapTextures() { memset (t, 0, sizeof (t)); }
-    };
-    csArray<DirectionMapTextures> directionMapTextures;
 
     struct LoadedFile
     {
@@ -323,11 +260,6 @@ namespace lighter
                                     iDocumentNode *objNode, 
                                     Sector* sect, LoadedFile* fileInfo);
 
-    void GenerateSpecularDirectionMaps (LoadedFile* fileInfo,
-      Statistics::Progress& progress);
-    void SaveSpecularDirectionMaps (LoadedFile* fileInfo,
-      csStringArray& filenames, csStringArray& textureNames);
-
     csStringHash solidColorFiles;
     const char* GetSolidColorFile (LoadedFile* fileInfo, const csColor& col);
     void SaveLightmapsToDom (iDocumentNode* root, LoadedFile* fileInfo,
@@ -359,7 +291,7 @@ namespace lighter
       PropagateLight (light, lightFrustum, state);
     }
     
-    iCollection* GetCollection (iObject* obj);
+    iRegion* GetRegion (iObject* obj);
     bool IsObjectFromBaseDir (iObject* obj, const char* baseDir);
     bool IsFilenameFromBaseDir (const char* filename, const char* baseDir);
 

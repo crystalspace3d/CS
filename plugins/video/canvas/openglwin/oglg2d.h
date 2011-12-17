@@ -67,6 +67,10 @@ public:
 
   virtual void Print (csRect const* area = 0);
 
+  virtual void SetRGB(int i, int r, int g, int b);
+
+  virtual HRESULT SetColorPalette();
+
   virtual bool SetMouseCursor (csMouseCursorID iShape);
   virtual bool SetMouseCursor (iImage *image, const csRGBcolor* keycolor, 
                                int hotspot_x, int hotspot_y,
@@ -77,12 +81,6 @@ public:
 
   /// Set the window title
   virtual void SetTitle (const char* title);
-  
-  /** Sets the icon of this window with the provided one.
-   *
-   *  @param image the iImage to set as the icon of this window.
-   */  
-  virtual void SetIcon (iImage *image);
   /// Display a nice message box.
   virtual void AlertV (int type, const char* title, const char* okMsg,
   	const char* msg, va_list args);
@@ -95,19 +93,16 @@ public:
 
   int m_nGraphicsReady;
 
+  /**
+   * Get address of video RAM at given x,y coordinates.
+   * The OpenGL version of this function just returns 0.
+   */
+  static unsigned char* GetPixelAtGL (int x, int y);
+
   virtual void *GetProcAddress (const char *funcname)
   { return (void*)(wglGetProcAddress ((const char *)funcname)); }
 
   virtual HWND GetWindowHandle() { return m_hWnd; }
-
-  // Vista+ window transparency
-  virtual bool IsWindowTransparencyAvailable();
-  virtual bool SetWindowTransparent (bool transparent);
-  virtual bool GetWindowTransparent ();
-
-  // Window decorations
-  virtual bool SetWindowDecoration (WindowDecoration decoration, bool flag);
-  virtual bool GetWindowDecoration (WindowDecoration decoration);
 protected:
 
   HDC hDC;
@@ -115,11 +110,15 @@ protected:
   HWND m_hWnd;
   HINSTANCE  m_hInstance;
   int m_nCmdShow;
-  HMONITOR primaryMonitor;
 
   csDetectDriver detector;
 
   csRef<iWin32Assistant> m_piWin32Assistant;
+
+  bool m_bPalettized;
+  bool m_bPaletteChanged;
+
+  bool m_bHardwareCursor;
 
   uint m_nDisplayFrequency;
 
@@ -140,24 +139,8 @@ protected:
   void SwitchDisplayMode (bool userMode);
   /// hardware accelerated?
   bool hardwareAccelerated;
-  /// Window style in windowed mode
-  LONG windowModeStyle;
 
   csWin32CustomCursors cursors;
-  HICON customIcon;
-
-  bool transparencyRequested;
-  bool transparencyState;
-
-  bool hideDecoClientFrame;
-
-  // Get the current working area rect
-  csRect GetWorkspaceRect ();
-  // Compute the default window rect (centered on screen)
-  void ComputeDefaultRect (RECT& windowRect, LONG style, LONG exStyle = 0);
-
-  bool GetWorkspaceDimensions (int& width, int& height);
-  bool AddWindowFrameDimensions (int& width, int& height);
 };
 
 #endif // __CS_OGLG2D_H__

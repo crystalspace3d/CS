@@ -23,12 +23,6 @@
 
 namespace lighter
 {
-  enum LightingEngine
-  {
-    LIGHT_ENGINE_NONE,
-    LIGHT_ENGINE_RAYTRACER,
-    LIGHT_ENGINE_PHOTONMAPPER
-  };
 
   // Object holding global and part-local config
   class Configuration
@@ -43,23 +37,9 @@ namespace lighter
     struct LighterProperties
     {
       // Direct lighting from light sources
-      LightingEngine directLightEngine;
-
-      // Indirect lighting from scattered light
-      LightingEngine indirectLightEngine;
-
-      // Enable/Disable constant ambient light
-      bool globalAmbient;
-      // Override lighting attenuation to be realistic for all lights
-      bool forceRealistic;
-      // Scale the power of all light sources evenly by indicated value
-      float lightPowerScale;
-      // Scale the power of all light source for photonmapping only
-      float PMLightScale;
+      bool doDirectLight;
       // HL2-style directional LMs
       bool directionalLMs;
-      // Whether to generate maps containing light directions for specular
-      bool specularDirectionMaps;
       // Number of threads to use for multicore parts
       uint numThreads;
       // Save buffers as binary
@@ -86,13 +66,6 @@ namespace lighter
 
       // Whether to store PD light maps as grayscale maps.
       bool grayPDMaps;
-    };
-    
-    // Terrain lighting properties
-    struct TerrainProperties
-    {
-      // Max lightmap sizes
-      uint maxLightmapU, maxLightmapV;
     };
 
     // Direct light (direct illumination) calculation settings
@@ -123,29 +96,6 @@ namespace lighter
       
     };
 
-    // Indirect Light calculations and settings
-    struct INDIProperties
-    {
-      // Number of photons to emit
-      int numPhotons;
-      // Number of photons for Caustic 
-      int numCausticPhotons;
-      // Enable Caustic
-      bool caustics;
-      // Maximum photon recursion depth
-      int maxRecursionDepth;
-      // Maximum number of samples for density estimation
-      int maxDensitySamples;
-      // The sample distance for sampling photons
-      float sampleDistance;
-      // Flag for Final Gather
-      bool finalGather;
-      // Number of final gather rays
-      int numFinalGatherRays;
-      // Save photon map
-      bool savePhotonMap;
-    };
-
     struct DebugProperties
     {
       /* Regular expression for meshes for which to generate "debug occlusion"
@@ -165,11 +115,6 @@ namespace lighter
       return lmProperties;
     }
 
-    const TerrainProperties& GetTerrainProperties () const
-    {
-      return terrainProperties;
-    }
-
     const DIProperties& GetDIProperties () const
     {
       return diProperties;
@@ -179,20 +124,13 @@ namespace lighter
     {
       return debugProperties;
     }
-		
-    const INDIProperties& GetIndirectProperties() const
-    {
-      return indtLightProperties;
-    }
 
   protected:
     // Properties
     LighterProperties     lighterProperties;
     LightmapProperties    lmProperties;
-    TerrainProperties     terrainProperties;
     DIProperties          diProperties;
     DebugProperties       debugProperties;
-    INDIProperties        indtLightProperties;
   };
 
 }

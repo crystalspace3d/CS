@@ -27,6 +27,7 @@
 #include "iengine/renderloop.h"
 #include "imap/services.h"
 #include "imap/ldrctxt.h"
+#include "iengine/region.h"
 #include "ivaria/reporter.h"
 #include "iengine/rendersteps/irenderstep.h"
 #include "iengine/rendersteps/icontainer.h"
@@ -37,7 +38,7 @@ CS_LEAKGUARD_IMPLEMENT (csRenderLoopLoader);
 
 // Plugin stuff
 
-
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY(csRenderLoopLoader)
 
@@ -113,6 +114,10 @@ csPtr<iBase> csRenderLoopLoader::Parse (iDocumentNode* node,
     {
       ldr_context->GetCollection ()->Add (obj);
     }
+    else if(ldr_context->GetRegion ())
+    {
+      ldr_context->GetRegion ()->QueryObject ()->ObjAdd (obj);
+    }
   }
   
 
@@ -160,9 +165,9 @@ csPtr<iBase> csRenderLoopLoader::Parse (iDocumentNode* node,
 	  "crystalspace.renderloop.loop.loader",
 	  CS_REPORTER_SEVERITY_WARNING,
 	  node,
-	  "Couldn't register render loop %s. Maybe a loop of the same "
+	  "Couldn't register render loop '%s'. Maybe a loop of the same "
 	  "name already exists?",
-	  CS::Quote::Single (loopName));
+	  loopName);
       }
     }
   }

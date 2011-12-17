@@ -57,11 +57,6 @@ public:
   virtual bool SetPosition (size_t newposition) { return false; }
 
   /**
-    * Not permitted (yet) operations.
-    */
-  virtual bool SetLoopBoundaries(size_t &startPosition, size_t &endPosition) { return false; }
-
-  /**
    * Reset the stream back to the beginning.
    */
   virtual bool ResetPosition(bool clear = true);

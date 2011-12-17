@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2006 by SÃ¸ren BÃ¸g
+	Copyright (C) 2006 by Søren Bøg
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -47,7 +47,7 @@
 
 #include "al_stringlists.h"
 
-extern "C" int libopenal_is_present;
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY (csSndSysRendererOpenAL)
 
@@ -69,12 +69,6 @@ csSndSysRendererOpenAL::~csSndSysRendererOpenAL()
  */
 bool csSndSysRendererOpenAL::Initialize (iObjectRegistry *obj_reg)
 {
-  if (!libopenal_is_present)
-  {
-    Report (CS_REPORTER_SEVERITY_WARNING, "OpenAL is not available (libopenal is missing)");
-    return false;
-  }
-  
   // Save the object registry for later use
   m_ObjectRegistry = obj_reg;
 
@@ -287,7 +281,7 @@ csPtr<iSndSysSource> csSndSysRendererOpenAL::CreateSource(iSndSysStream* stream)
   for (size_t i=0;i<iMax;i++)
     m_Callback[i]->SourceAddNotification ((iSndSysSource*)source);
 
-  return csPtr<iSndSysSource> (source);
+  return scfQueryInterface<iSndSysSource>( source );
 }
 
 bool csSndSysRendererOpenAL::RemoveStream(iSndSysStream* stream)
@@ -309,7 +303,7 @@ bool csSndSysRendererOpenAL::RemoveSource(iSndSysSource* source)
   ScopedRendererLock lock (*this);
 
   // I have got to be overlooking something here.
-  m_Sources.Delete (static_cast<SndSysSourceOpenAL2D*> (source));
+  m_Sources.Delete (dynamic_cast<SndSysSourceOpenAL2D*> (source));
 
   // Notify any callbacks
   size_t iMax = m_Callback.GetSize();
@@ -396,8 +390,7 @@ void csSndSysRendererOpenAL::Update()
   for (size_t i=0;i<iMax;i++)
   {
     m_Sources[i]->PerformUpdate( ExternalUpdates );
-	if (m_Sources[i]->GetStream()->GetPauseState() == CS_SNDSYS_STREAM_PAUSED &&
-        m_Sources[i]->GetStream()->GetAutoUnregisterRequested() == true) // sound has finished and is not looping
+	if (m_Sources[i]->GetStream()->GetAutoUnregisterRequested() == true) // sound has finished and is not looping
 	{
 	  RemoveStream(m_Sources[i]->GetStream());
 	  RemoveSource(m_Sources[i]);
@@ -434,8 +427,6 @@ void csSndSysRendererOpenAL::Open()
   {
     ALC_REFRESH,   m_Config->GetInt ("SndSys.OpenALRefresh", 10),    // How often do we update the mixahead buffer (hz).
     ALC_SYNC,      AL_FALSE,                                         // We want an asynchronous context.
-    ALC_STEREO_SOURCES, 12,
-    ALC_MONO_SOURCES, 120,
     0
   };
   // Note: If the sound is choppy, it may be because your OpenAL
@@ -466,9 +457,6 @@ void csSndSysRendererOpenAL::Open()
     Report (CS_REPORTER_SEVERITY_ERROR, "An OpenAL error occured: %s", alcGetString (m_Device, err));
     CS_ASSERT (err == ALC_NO_ERROR);
   }
-
-  // Query available extensions
-  QueryExtensions ();
 
   // Create a listener
   m_Listener.AttachNew(new SndSysListenerOpenAL());
@@ -512,32 +500,4 @@ void csSndSysRendererOpenAL::Close()
     alcCloseDevice (m_Device);
     m_Device = 0;
   }
-}
-
-void csSndSysRendererOpenAL::QueryExtensions ()
-{
-#define EXTS_TO_QUERY	\
-    EXT(AL_EXT_MCFORMATS)
-  
-#define EXT(Ext)					\
-  {			 				\
-    ext##Ext =(alIsExtensionPresent(#Ext) == AL_TRUE);	\
-    if (ext##Ext)					\
-    {							\
-      Report (CS_REPORTER_SEVERITY_NOTIFY, 		\
-	"Found extension: %s", 				\
-	CS::Quote::Single (#Ext));			\
-    }							\
-    else						\
-    {							\
-      Report (CS_REPORTER_SEVERITY_NOTIFY,		\
-	"Did not find extension: %s", 			\
-	CS::Quote::Single (#Ext));			\
-    }							\
-  }
-  
-  EXTS_TO_QUERY
-  
-#undef EXT
-#undef EXTS_TO_QUERY
 }

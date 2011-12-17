@@ -43,13 +43,14 @@
 #include "iutil/object.h"
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
-#include "iutil/stringarray.h"
 #include "iutil/vfs.h"
 #include "ivaria/reporter.h"
 #include "ivideo/graph3d.h"
 
 
 #include "spr3dldr.h"
+
+CS_IMPLEMENT_PLUGIN
 
 using namespace CS::Plugins::Spr3dLoader;
 
@@ -113,7 +114,8 @@ bool csSprite3DFactoryLoader::Initialize (iObjectRegistry* object_reg)
 }
 
 csPtr<iBase> csSprite3DFactoryLoader::Parse (iDocumentNode* node,
-				       iStreamSource*, iLoaderContext* ldr_context, 
+				       iStreamSource*,
+				       iLoaderContext* ldr_context, 
 				       iBase* context)
 {
   csRef<iPluginManager> plugin_mgr (csQueryRegistry<iPluginManager>
@@ -160,14 +162,14 @@ csPtr<iBase> csSprite3DFactoryLoader::Parse (iDocumentNode* node,
         {
           const char* matname = child->GetContentsValue ();
           iMaterialWrapper* mat = ldr_context->FindMaterial (matname);
-          if (!mat)
-          {
-            synldr->ReportError (
-              "crystalspace.sprite3dfactoryloader.parse.unknownmaterial",
-              child, "Couldn't find material named %s", CS::Quote::Single (matname));
+	  if (!mat)
+	  {
+	    synldr->ReportError (
+		  "crystalspace.sprite3dfactoryloader.parse.unknownmaterial",
+		  child, "Couldn't find material named '%s'", matname);
             return 0;
-          }
-          fact->SetMaterialWrapper (mat);
+	  }
+	  fact->SetMaterialWrapper (mat);
         }
         break;
 
@@ -203,8 +205,8 @@ csPtr<iBase> csSprite3DFactoryLoader::Parse (iDocumentNode* node,
 	            synldr->ReportError (
 		      "crystalspace.sprite3dfactoryloader.parse.action",
 		      childchild,
-		      "Trying to add unknown frame %s to action %s!",
-		      CS::Quote::Single (fn), CS::Quote::Single (act->GetName ()));
+		      "Trying to add unknown frame '%s' to action '%s'!",
+		      fn, act->GetName ());
                     return 0;
 	          }
                   act->AddFrame (ff, d, disp);
@@ -255,8 +257,8 @@ csPtr<iBase> csSprite3DFactoryLoader::Parse (iDocumentNode* node,
 	            synldr->ReportError (
 		            "crystalspace.sprite3dfactoryloader.parse.frame",
 		            childchild,
-			    "Trying to add too many vertices to frame %s!",
-		            CS::Quote::Single (fr->GetName ()));
+			    "Trying to add too many vertices to frame '%s'!",
+		            fr->GetName ());
 		    return 0;
                   }
                   spr3dLook->SetVertex (anm_idx, i, csVector3 (x, y, z));
@@ -274,7 +276,7 @@ csPtr<iBase> csSprite3DFactoryLoader::Parse (iDocumentNode* node,
           {
 	    synldr->ReportError (
 		 "crystalspace.sprite3dfactoryloader.parse.frame.vertices",
-		 child, "Too few vertices in frame %s!", CS::Quote::Single (fr->GetName ()));
+		 child, "Too few vertices in frame '%s'!", fr->GetName ());
 	    return 0;
           }
         }
@@ -313,10 +315,7 @@ csPtr<iBase> csSprite3DFactoryLoader::Parse (iDocumentNode* node,
 	    synldr->ReportError (
 		  "crystalspace.sprite3dfactoryloader.parse.badsmooth",
 		  child,
-		  "Please specify %s when specifying %s in %s!",
-		  CS::Quote::Single ("base"),
-		  CS::Quote::Single ("frame"),
-		  CS::Quote::Single ("smooth"));
+		  "Please specify 'base' when specifying 'frame' in 'smooth'!");
 	    return 0;
 	  }
 	  if (base == -1)
@@ -519,23 +518,21 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
 	{
 	  const char* factname = child->GetContentsValue ();
 	  iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
-
-    if(!fact)
-    {
-      synldr->ReportError (
-        "crystalspace.sprite3dloader.parse.unknownfactory",
-        child, "Couldn't find factory %s!", CS::Quote::Single (factname));
-      return 0;
-    }
-
+	  if (!fact)
+	  {
+      	    synldr->ReportError (
+		"crystalspace.sprite3dloader.parse.unknownfactory",
+		child, "Couldn't find factory '%s'!", factname);
+	    return 0;
+	  }
 	  mesh = fact->GetMeshObjectFactory ()->NewInstance ();
 	  spr3dLook = scfQueryInterface<iSprite3DState> (mesh);
 	  if (!spr3dLook)
 	  {
       	    synldr->ReportError (
 		"crystalspace.sprite3dloader.parse.badfactory",
-		child, "Factory %s doesn't appear to be a spr3d factory!",
-		CS::Quote::Single (factname));
+		child, "Factory '%s' doesn't appear to be a spr3d factory!",
+		factname);
 	    return 0;
 	  }
 	}
@@ -546,8 +543,7 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
       	  synldr->ReportError (
 		"crystalspace.sprite3dloader.parse.missingfactory",
 		child,
-		"No Factory! Please define %s before %s!",
-		CS::Quote::Single ("factory"), CS::Quote::Single ("action"));
+		"No Factory! Please define 'factory' before 'action'!");
 	  return 0;
 	}
 	else
@@ -558,7 +554,7 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
       	    synldr->ReportError (
 		  "crystalspace.sprite3dloader.parse.action",
 		  child,
-		  "Action %s failed to start!", CS::Quote::Single (action));
+		  "Action '%s' failed to start!", action);
 	    return 0;
 	  }
 	}
@@ -569,8 +565,7 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
       	  synldr->ReportError (
 		"crystalspace.sprite3dloader.parse.missingfactory",
 		child,
-		"No Factory! Please define %s before %s!",
-		CS::Quote::Single ("factory"), CS::Quote::Single ("basecolor"));
+		"No Factory! Please define 'factory' before 'basecolor'!");
 	  return 0;
 	}
 	else
@@ -587,8 +582,7 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
       	  synldr->ReportError (
 		"crystalspace.sprite3dloader.parse.missingfactory",
 		child,
-		"No Factory! Please define %s before %s!",
-		CS::Quote::Single ("factory"), CS::Quote::Single ("lighting"));
+		"No Factory! Please define 'factory' before 'lighting'!");
 	  return 0;
 	}
 	else
@@ -605,8 +599,7 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
       	  synldr->ReportError (
 		"crystalspace.sprite3dloader.parse.missingfactory",
 		child,
-		"No Factory! Please define %s before %s!",
-		CS::Quote::Single ("factory"), CS::Quote::Single ("material"));
+		"No Factory! Please define 'factory' before 'material'!");
 	  return 0;
 	}
 	else
@@ -617,7 +610,7 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
 	  {
       	    synldr->ReportError (
 		"crystalspace.sprite3dloader.parse.unknownmaterial",
-		child, "Couldn't find material %s!", CS::Quote::Single (matname));
+		child, "Couldn't find material '%s'!", matname);
             return 0;
 	  }
 	  mesh->SetMaterialWrapper (mat);
@@ -629,8 +622,7 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
       	  synldr->ReportError (
 		"crystalspace.sprite3dloader.parse.missingfactory",
 		child,
-		"No Factory! Please define %s before %s!",
-		CS::Quote::Single ("factory"), CS::Quote::Single ("mixmode"));
+		"No Factory! Please define 'factory' before 'mixmode'!");
 	  return 0;
 	}
 	else
@@ -647,8 +639,7 @@ csPtr<iBase> csSprite3DLoader::Parse (iDocumentNode* node,
       	  synldr->ReportError (
 		"crystalspace.sprite3dloader.parse.missingfactory",
 		child,
-		"No Factory! Please define %s before %s!",
-		CS::Quote::Single ("factory"), CS::Quote::Single ("tween"));
+		"No Factory! Please define 'factory' before 'tween'!");
 	  return 0;
 	}
 	else

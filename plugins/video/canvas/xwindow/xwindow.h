@@ -25,7 +25,6 @@
 #include "csutil/hash.h"
 #include "csutil/scf.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/weakkeyedhash.h"
 #include "csutil/weakref.h"
 #include "iutil/eventh.h"
 #include "iutil/comp.h"
@@ -44,8 +43,11 @@
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
 
-class csXWindow : public scfImplementation3<csXWindow, iXWindow, 
-  iEventPlug, iComponent>
+class csXWindow : 
+  public scfImplementation3<csXWindow,
+                            iXWindow, 
+                            iEventPlug,
+                            iComponent>
 {
   /// The Object Registry
   iObjectRegistry *object_reg;
@@ -75,9 +77,7 @@ class csXWindow : public scfImplementation3<csXWindow, iXWindow,
   Window wm_win;
   /// Dimensions
   int wm_width, wm_height;
-  // "_MOTIF_WM_HINTS" atom, for window decoration manipulation
-  Atom xaMotifWmHints;
-  
+
   XEvent storedEvent;
 
   // "WM_DELETE_WINDOW" atom
@@ -86,42 +86,18 @@ class csXWindow : public scfImplementation3<csXWindow, iXWindow,
   bool allow_resize;
   /// Determines grab status of keyboard (only in release build)
   int keyboard_grabbed;
-  /// Keyboard input method
-  XIM keyboardIM;
-  /// Keyboard input context
-  XIC keyboardIC;
+
   //-------------------------------------------------------------
   // Hardware mouse cursor or software emulation?
-  csGraphics2D::HWMouseMode hwMouse;
-  // Number of CS mouse cursors
-  enum { lastCursor = csmcWait, cursorNum = lastCursor+1 };
+  bool do_hwmouse;
   /// Mouse cursors (if hardware mouse cursors are used)
-  Cursor MouseCursor [cursorNum];
+  Cursor MouseCursor [int(csmcWait) + 1];
   /// Empty mouse cursor (consist of EmptyPixmap)
   Cursor EmptyMouseCursor;
   /// A empty pixmap
   Pixmap EmptyPixmap;
-  
-  /// Wrapper for X mouse cursors
-  class CursorWrapper : public CS::Utility::FastRefCount<CursorWrapper>
-  {
-    Display* dpy;
-    Cursor xcur;
-  public:
-    CursorWrapper (Display* dpy, Cursor xcur) : dpy (dpy), xcur (xcur) {}
-    ~CursorWrapper() { XFreeCursor (dpy, xcur); }
-    
-    operator Cursor() const { return xcur; }
-  };
   /// List of image-based cursors
-  typedef CS::Container::WeakKeyedHash<csRef<CursorWrapper>, csWeakRef<iImage> > CursorCache;
-  CursorCache cachedCursors;
-  
-  Cursor GetXCursor (csMouseCursorID shape);
-  
-  // RGBA cursor support
-  bool haveRGBAcursors;
-  Cursor CreateRGBACursor (iImage* imageRGBA, int hotspotX, int hotspotY);
+  csHash<Cursor, csString> cachedCursors;
   //------------------------------------------------------------
   
   typedef int (*XErrorHandler)(Display*, XErrorEvent*);
@@ -147,15 +123,8 @@ public:
   { SetVideoMode (yesno, false, false); }
 
   virtual void AllowResize (bool iAllow);
-  virtual void Resize (int w, int h);
 
   virtual void SetTitle (const char* title);
-  
-  /** Sets the icon of this window with the provided one.
-   *
-   *  @param image the iImage to set as the icon of this window.
-   */  
-  virtual void SetIcon (iImage *image);
   virtual void SetCanvas (iGraphics2D *canvas);
 
   virtual XEvent GetStoredEvent()
@@ -192,17 +161,10 @@ public:
   bool AlertV_GTK (int type, const char* title, const char* okMsg,
   	const char* msg, va_list arg) CS_GNUC_PRINTF (5, 0);
 #endif
-  void SetHWMouseMode (csGraphics2D::HWMouseMode hwMouse)
-  { this->hwMouse = hwMouse; }
-  
-  bool SetWindowDecoration (iNativeWindow::WindowDecoration decoration, bool flag);
-  bool GetWindowDecoration (iNativeWindow::WindowDecoration decoration, bool& result);
-
-  bool GetWorkspaceDimensions (int& width, int& height);
-  bool AddWindowFrameDimensions (int& width, int& height);
 
   struct EventHandler : 
-    public scfImplementation1<EventHandler, iEventHandler>
+    public scfImplementation1<EventHandler, 
+                              iEventHandler>
   {
   private:
     csWeakRef<csXWindow> parent;
@@ -212,8 +174,7 @@ public:
       EventHandler::parent = parent;
     }
     virtual ~EventHandler () { }
-    virtual bool HandleEvent (iEvent& e)
-    { return parent ? parent->HandleEvent(e) : false; }
+    virtual bool HandleEvent (iEvent& e) { return parent ? parent->HandleEvent(e) : false; }
     CS_EVENTHANDLER_PHASE_LOGIC("crystalspace.window")
   };
   csRef<EventHandler> scfiEventHandler;

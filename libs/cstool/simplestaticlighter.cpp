@@ -82,10 +82,10 @@ void SimpleStaticLighter::CalculateLighting (iMeshWrapper* mesh,
   {
     const csBox3& world_box = mesh->GetWorldBoundingBox ();
     bool shadowed = true;
-    for (int j = 0 ; shadowed && j < 8 ; j++)
+    for (i = 0 ; shadowed && i < 8 ; i++)
     {
       csSectorHitBeamResult rc = light_sector->HitBeamPortals (center,
-        world_box.GetCorner (j));
+	  world_box.GetCorner (i));
       if (rc.mesh == 0 || rc.mesh == mesh) shadowed = false;
     }
     if (shadowed)
@@ -192,8 +192,6 @@ void SimpleStaticLighter::ShineLight (iMeshWrapper* mesh, iLight* light,
   rbuf->CopyInto (colors, count);
   csRef<iGeneralMeshState> state = scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
   state->AddRenderBuffer ("static color", rbuf);
-  
-  mesh->GetFlags().Set (CS_ENTITY_STATICLIT);
 }
 
 void SimpleStaticLighter::ShineLights (iMeshWrapper* mesh, iEngine* engine, int maxlights,
@@ -238,16 +236,14 @@ void SimpleStaticLighter::ShineLights (iMeshWrapper* mesh, iEngine* engine, int 
   rbuf->CopyInto (colors, count);
   csRef<iGeneralMeshState> state = scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
   state->AddRenderBuffer ("static color", rbuf);
-  
-  mesh->GetFlags().Set (CS_ENTITY_STATICLIT);
 }
 
 void SimpleStaticLighter::ShineLights (iSector* sector, iEngine* engine, int maxlights,
       ShadowType shadow_type)
 {
   iMeshList* meshes = sector->GetMeshes ();
-  int i;
-  for (i = 0 ; i < meshes->GetCount () ; i++)
+  size_t i;
+  for (i = 0 ; i < (size_t)meshes->GetCount () ; i++)
   {
     iMeshWrapper* mesh = meshes->Get (i);
     ShineLights (mesh, engine, maxlights, shadow_type);

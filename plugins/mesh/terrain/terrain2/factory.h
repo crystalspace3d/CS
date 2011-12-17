@@ -62,8 +62,6 @@ public:
   virtual iTerrainCellFeederProperties* GetFeederProperties () const;
 
   virtual void SetBaseMaterial (iMaterialWrapper* material);
-  virtual void SetAlphaSplatMaterial (iMaterialWrapper* material);
-  virtual void SetSplatBaseMaterial (iMaterialWrapper* material);
 
   virtual const char* GetName() { return name; }
   virtual void SetName (const char* name) { this->name = name; }
@@ -78,8 +76,6 @@ public:
   virtual int GetMaterialMapHeight () const { return materialMapHeight; }
 
   virtual iMaterialWrapper* GetBaseMaterial () const { return baseMaterial; }
-  virtual iMaterialWrapper* GetAlphaSplatMaterial () const { return alphaSplatMaterial; }
-  virtual iMaterialWrapper* GetSplatBaseMaterial () const { return splatBaseMaterial; }
   virtual bool GetMaterialPersistent() const { return materialMapPersistent; }
 
   virtual void SetGridWidth (int w) { gridWidth = w; }
@@ -99,8 +95,6 @@ private:
   int gridWidth, gridHeight, materialMapWidth, materialMapHeight;
   bool materialMapPersistent;
   csRef<iMaterialWrapper> baseMaterial;
-  csRef<iMaterialWrapper> splatBaseMaterial;
-  csRef<iMaterialWrapper> alphaSplatMaterial;
 
   csRef<iTerrainCellRenderProperties> rendererProperties;
   csRef<iTerrainCellCollisionProperties> colliderProperties;
@@ -157,8 +151,6 @@ public:
     int materialMapHeight, bool materialMapPersistent,
     const csVector2& position, const csVector3& size);
   virtual iTerrainFactoryCell* AddCell ();
-
-  virtual void RemoveCell (iTerrainFactoryCell*);
 
   virtual void SetMaxLoadedCells (size_t value);
   virtual void SetVirtualViewDistance (float distance);

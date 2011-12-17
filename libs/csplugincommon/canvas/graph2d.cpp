@@ -23,10 +23,9 @@
 #include "csutil/eventnames.h"
 #include <stdarg.h>
 #include <stdlib.h>
-#include "csplugincommon/canvas/fontcache.h"
 #include "csplugincommon/canvas/graph2d.h"
 #include "csqint.h"
-#include "iutil/cmdline.h"
+#include "csplugincommon/canvas/scrshot.h"
 #include "iutil/plugin.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/texture.h"
@@ -39,12 +38,17 @@
 #include "iutil/comp.h"
 #include "ivaria/reporter.h"
 
+#include "csplugincommon/canvas/softfontcache.h"
+#include "csplugincommon/canvas/softfontcacheimpl.h"
+
 csGraphics2D::csGraphics2D (iBase* parent) : 
-  scfImplementationType (this, parent), fontCache (0), hwMouse (hwmcOff),
-  fitToWorkingArea (false)
+  scfImplementationType (this, parent)
 {
   static uint g2d_count = 0;
 
+  Memory = 0;
+  LineAddress = 0;
+  Palette = 0;
   fbWidth = 640;
   fbHeight = 480;
   Depth = 16;
@@ -72,6 +76,7 @@ csGraphics2D::~csGraphics2D ()
       CS::RemoveWeakListener (q, weakEventHandler);
   }
   Close ();
+  delete [] Palette;
 }
 
 bool csGraphics2D::Initialize (iObjectRegistry* r)
@@ -85,33 +90,9 @@ bool csGraphics2D::Initialize (iObjectRegistry* r)
   vpHeight = fbHeight = config->GetInt ("Video.ScreenHeight", fbHeight);
   Depth = config->GetInt ("Video.ScreenDepth", Depth);
   FullScreen = config->GetBool ("Video.FullScreen", FullScreen);
-  fitToWorkingArea = config->GetBool ("Video.FitToWorkingArea", fitToWorkingArea);
   DisplayNumber = config->GetInt ("Video.DisplayNumber", DisplayNumber);
   refreshRate = config->GetInt ("Video.DisplayFrequency", 0);
   vsync = config->GetBool ("Video.VSync", false);
-  
-  const char* hwMouseFlag = config->GetStr ("Video.SystemMouseCursor", "yes");
-  if ((strcasecmp (hwMouseFlag, "yes") == 0)
-      || (strcasecmp (hwMouseFlag, "true") == 0)
-      || (strcasecmp (hwMouseFlag, "on") == 0)
-      || (strcmp (hwMouseFlag, "1") == 0))
-  {
-    hwMouse = hwmcOn;
-  }
-  else if (strcasecmp (hwMouseFlag, "rgbaonly") == 0)
-  {
-    hwMouse = hwmcRGBAOnly;
-  }
-  else
-  {
-    hwMouse = hwmcOff;
-  }
-  csRef<iCommandLineParser> cmdline (
-    csQueryRegistry<iCommandLineParser> (object_reg));
-  if (cmdline->GetOption ("sysmouse") || cmdline->GetOption ("nosysmouse"))
-  {
-    hwMouse = cmdline->GetBoolOption ("sysmouse") ? hwmcOn : hwmcOff;
-  }
 
   // Get the font server: A missing font server is NOT an error
   if (!FontServer)
@@ -129,6 +110,22 @@ bool csGraphics2D::Initialize (iObjectRegistry* r)
   }
 #endif
 
+  Palette = new csRGBpixel [256];
+  pfmt.PalEntries = 256;
+  pfmt.PixelBytes = 1;
+  // Initialize pointers to default drawing methods
+  _DrawPixel = DrawPixel8;
+  _GetPixelAt = GetPixelAt8;
+  // Mark all slots in palette as free
+  int i;
+  for (i = 0; i < 256; i++)
+  {
+    PaletteAlloc [i] = false;
+    Palette [i].red = 0;
+    Palette [i].green = 0;
+    Palette [i].blue = 0;
+  }
+
   csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
   if (q != 0)
   {
@@ -140,6 +137,89 @@ bool csGraphics2D::Initialize (iObjectRegistry* r)
   return true;
 }
 
+// For iOffscreenCanvasCallback
+#include "csutil/deprecated_warn_off.h"
+
+bool csGraphics2D::Initialize (iObjectRegistry* r, int width, int height,
+    int depth, void* memory, iOffscreenCanvasCallback* ofscb)
+{
+  CS_ASSERT (r != 0);
+  object_reg = r;
+  plugin_mgr = csQueryRegistry<iPluginManager> (object_reg);
+  // Get the system parameters
+  config.AddConfig (object_reg, "/config/video.cfg");
+  fbWidth = width;
+  fbHeight = height;
+  Depth = depth;
+  FullScreen = false;
+  Memory = (unsigned char*)memory;
+
+  // Get the font server: A missing font server is NOT an error
+  if (!FontServer)
+  {
+    FontServer = csQueryRegistry<iFontServer> (object_reg);
+  }
+
+  // Initialize pointers to default drawing methods
+  _DrawPixel = DrawPixel8;
+  _GetPixelAt = GetPixelAt8;
+
+  Palette = new csRGBpixel [256];
+  if (Depth == 8)
+  {
+    pfmt.RedMask    = 0xff;
+    pfmt.GreenMask  = 0xff;
+    pfmt.BlueMask   = 0xff;
+    pfmt.AlphaMask  = 0xff;
+    pfmt.PalEntries = 256;
+    pfmt.PixelBytes = 1;
+  }
+  else if (Depth == 16)
+  {
+    _DrawPixel = DrawPixel16;
+    _GetPixelAt = GetPixelAt16;
+
+    // Set pixel format
+    pfmt.RedMask    = 0x1f << 11;
+    pfmt.GreenMask  = 0x3f << 5;
+    pfmt.BlueMask   = 0x1f << 0;
+    pfmt.AlphaMask  = 0x00;
+    pfmt.PixelBytes = 2;
+    pfmt.PalEntries = 0;
+  }
+  else if (Depth == 32)
+  {
+    _DrawPixel = DrawPixel32;
+    _GetPixelAt = GetPixelAt32;
+
+    // calculate CS's pixel format structure.
+    pfmt.RedMask    = 0xff << 16;
+    pfmt.GreenMask  = 0xff << 8;
+    pfmt.BlueMask   = 0xff << 0;
+    pfmt.AlphaMask  = 0xff << 24;
+    pfmt.PixelBytes = 4;
+    pfmt.PalEntries = 0;
+  }
+  pfmt.complete ();
+  // Mark all slots in palette as free
+  int i;
+  for (i = 0; i < 256; i++)
+  {
+    PaletteAlloc [i] = false;
+    Palette [i].red = 0;
+    Palette [i].green = 0;
+    Palette [i].blue = 0;
+  }
+
+  weakEventHandler = 0;
+
+  csGraphics2D::ofscb = ofscb;
+
+  return true;
+}
+
+#include "csutil/deprecated_warn_on.h"
+
 void csGraphics2D::ChangeDepth (int d)
 {
   if (Depth == d) return;
@@ -149,6 +229,28 @@ void csGraphics2D::ChangeDepth (int d)
 const char* csGraphics2D::GetName() const
 {
   return name;
+}
+
+void csGraphics2D::CreateDefaultFontCache ()
+{
+  if (!fontCache)
+  {
+    if (pfmt.PixelBytes == 1)
+    {
+      fontCache = new csSoftFontCacheImpl<uint8, 
+	csPixMixerCopy <uint8> > (this);
+    }
+    else if (pfmt.PixelBytes == 2)
+    {
+      fontCache = new csSoftFontCacheImpl<uint16, 
+	csPixMixerRGBA<uint16> > (this);
+    }
+    else if (pfmt.PixelBytes == 4)
+    {
+      fontCache = new csSoftFontCacheImpl<uint32,
+	csPixMixerRGBA<uint32> > (this);
+    }
+  }
 }
 
 bool csGraphics2D::HandleEvent (iEvent& Event)
@@ -179,19 +281,18 @@ bool csGraphics2D::Open ()
   
   FrameBufferLocked = 0;
 
+  // Allocate buffer for address of each scan line to avoid multuplication
+  LineAddress = new int [fbHeight];
+  if (LineAddress == 0) return false;
+
+  // Initialize scanline address array
+  int i,addr,bpl = fbWidth * pfmt.PixelBytes;
+  for (i = 0, addr = 0; i < fbHeight; i++, addr += bpl)
+    LineAddress[i] = addr;
+
+  CreateDefaultFontCache ();
+
   SetClipRect (0, 0, fbWidth, fbHeight);
-  
-  if (!FullScreen && fitToWorkingArea)
-  {
-    int newWidth (vpWidth), newHeight (vpHeight);
-    if (FitSizeToWorkingArea (newWidth, newHeight))
-    {
-      bool oldResize (AllowResizing);
-      AllowResizing = true;
-      Resize (newWidth, newHeight);
-      AllowResizing = oldResize;
-    }
-  }
 
   return true;
 }
@@ -200,6 +301,8 @@ void csGraphics2D::Close ()
 {
   if (!is_open) return;
   is_open = false;
+  delete [] LineAddress;
+  LineAddress = 0;
   delete fontCache;
   fontCache = 0;
 }
@@ -210,24 +313,337 @@ bool csGraphics2D::BeginDraw ()
   return true;
 }
 
+// For iOffscreenCanvasCallback
+#include "csutil/deprecated_warn_off.h"
+
 void csGraphics2D::FinishDraw ()
 {
   if (FrameBufferLocked)
     FrameBufferLocked--;
+  if (ofscb) ofscb->FinishDraw (this);
 }
+
+#include "csutil/deprecated_warn_on.h"
 
 void csGraphics2D::Clear(int color)
 {
   DrawBox (0, 0, vpWidth, vpHeight, color);
 }
 
+bool csGraphics2D::DoubleBuffer (bool Enable)
+{
+  return !Enable;
+}
+
+bool csGraphics2D::GetDoubleBufferState ()
+{
+  return false;
+}
+
+int csGraphics2D::GetPage ()
+{
+  return 0;
+}
+
 void csGraphics2D::ClearAll (int color)
 {
-  if (!BeginDraw ())
+  int CurPage = GetPage ();
+  do
+  {
+    if (!BeginDraw ())
+      break;
+    Clear (color);
+    FinishDraw ();
+    Print ();
+  } while (GetPage () != CurPage);
+}
+
+#include "csplugincommon/canvas/draw_common.h"
+
+void csGraphics2D::DrawPixel8 (csGraphics2D *This, int x, int y, int color)
+{
+  if ((x >= This->ClipX1) && (x < This->ClipX2)
+   && (y >= This->ClipY1) && (y < This->ClipY2))
+  {
+    int realColor;
+    uint8 alpha;
+    SplitAlpha (color, realColor, alpha);
+    *(This->GetPixelAt (x, y)) = realColor;
+  }
+}
+
+void csGraphics2D::DrawPixel16 (csGraphics2D *This, int x, int y, int color)
+{
+  if ((x >= This->ClipX1) && (x < This->ClipX2)
+   && (y >= This->ClipY1) && (y < This->ClipY2))
+  {
+    int realColor;
+    uint8 alpha;
+    SplitAlpha (color, realColor, alpha);
+
+    if (alpha == 0)
+      return;
+    else if (alpha == 255)
+    {
+      *(uint16*)(This->GetPixelAt (x, y)) = realColor;
+    }
+    else
+    {
+      csPixMixerRGBA<uint16> mixer (This, realColor, alpha);
+      mixer.Mix (*(uint16*)(This->GetPixelAt (x, y)));
+    }
+  }
+}
+
+void csGraphics2D::DrawPixel32 (csGraphics2D *This, int x, int y, int color)
+{
+  if ((x >= This->ClipX1) && (x < This->ClipX2)
+   && (y >= This->ClipY1) && (y < This->ClipY2))
+  {
+    int realColor;
+    uint8 alpha;
+    SplitAlpha (color, realColor, alpha);
+
+    if (alpha == 0)
+      return;
+    else if (alpha == 255)
+    {
+      *(uint32*)(This->GetPixelAt (x, y)) = realColor;
+    }
+    else
+    {
+      csPixMixerRGBA<uint32> mixer (This, realColor, alpha);
+      mixer.Mix (*(uint32*)(This->GetPixelAt (x, y)));
+    }
+  }
+}
+
+void csGraphics2D::DrawPixels (
+  csPixelCoord const* pixels, int num_pixels, int color)
+{
+  while (num_pixels > 0)
+  {
+    DrawPixel (pixels->x, pixels->y, color);
+    pixels++;
+    num_pixels--;
+  }
+}
+
+void csGraphics2D::Blit (int x, int y, int w, int h,
+    unsigned char const* data)
+{
+  bool hor_clip_needed = false;
+  bool ver_clip_needed = false;
+  int orig_x = x;
+  int orig_y = y;
+  int orig_w = w;
+  if ((x > ClipX2) || (y > ClipY2))
     return;
-  Clear (color);
-  FinishDraw ();
-  Print ();
+  if (x < ClipX1)
+    { w -= (ClipX1 - x), x = ClipX1; hor_clip_needed = true; }
+  if (y < ClipY1)
+    { h -= (ClipY1 - y), y = ClipY1; ver_clip_needed = true; }
+  if (x + w > ClipX2)
+    { w = ClipX2 - x; hor_clip_needed = true; }
+  if (y + h > ClipY2)
+    { h = ClipY2 - y; }
+  if ((w <= 0) || (h <= 0))
+    return;
+
+  // If vertical clipping is needed we skip the initial part.
+  if (ver_clip_needed)
+    data += 4*w*(y-orig_y);
+  // Same for horizontal clipping.
+  if (hor_clip_needed)
+    data += 4*(x-orig_x);
+
+  int r, g, b, a, realColor;
+  uint8 alpha;
+  unsigned char const* d;
+  switch (pfmt.PixelBytes)
+  {
+    case 1:
+      while (h)
+      {
+	register uint8 *vram = GetPixelAt (x, y);
+	int w2 = w;
+	d = data;
+	while (w2 > 0)
+	{
+	  r = *d++; g = *d++; b = *d++; d++;
+	  *vram++ = FindRGB (r, g, b);
+	  w2--;
+	}
+        data += 4*orig_w;
+        y++; h--;
+      }
+      break;
+    case 2:
+      while (h)
+      {
+        register uint16 *vram = (uint16 *)GetPixelAt (x, y);
+	int w2 = w;
+	d = data;
+	while (w2 > 0)
+	{
+	  r = *d++; g = *d++; b = *d++; a = *d++;
+          SplitAlpha (FindRGB (r, g, b, a), realColor, alpha);
+          if (alpha == 0)
+            vram++;
+          else if (alpha == 255)
+            *vram++ = realColor;
+          else
+          {
+            csPixMixerRGBA<uint16> mixer (this, realColor, alpha);
+            mixer.Mix (*vram++);
+          }
+	  w2--;
+	}
+        data += 4*orig_w;
+        y++; h--;
+      } /* endwhile */
+      break;
+    case 4:
+      while (h)
+      {
+        register uint32 *vram = (uint32 *)GetPixelAt (x, y);
+	int w2 = w;
+	d = data;
+	while (w2 > 0)
+	{
+	  r = *d++; g = *d++; b = *d++; a = *d++;
+          SplitAlpha (FindRGB (r, g, b, a), realColor, alpha);
+          if (alpha == 0)
+            vram++;
+          else if (alpha == 255)
+            *vram++ = realColor;
+          else
+          {
+            csPixMixerRGBA<uint32> mixer (this, realColor, alpha);
+            mixer.Mix (*vram++);
+          }
+	  w2--;
+	}
+        data += 4*orig_w;
+        y++; h--;
+      } /* endwhile */
+      break;
+  } /* endswitch */
+}
+
+#ifndef NO_DRAWLINE
+
+#include "csplugincommon/canvas/draw_line.h"
+
+void csGraphics2D::DrawLine (float x1, float y1, float x2, float y2, int color)
+{
+  if (ClipLine (x1, y1, x2, y2, ClipX1, ClipY1, ClipX2, ClipY2))
+    return;
+
+  int realColor;
+  uint8 alpha;
+  SplitAlpha (color, realColor, alpha);
+
+  if (alpha == 0)
+    return;
+  else if (alpha == 255)
+  {
+    switch (pfmt.PixelBytes)
+    {
+      case 1:
+	csG2DDrawLine<uint8, csPixMixerCopy<uint8> >::DrawLine (this,
+	  vpLeft+x1, vpTop+y1, vpLeft+x2, vpTop+y2, realColor, alpha);
+	break;
+      case 2:
+	csG2DDrawLine<uint16, csPixMixerCopy<uint16> >::DrawLine (this,
+	  vpLeft+x1, vpTop+y1, vpLeft+x2, vpTop+y2, realColor, alpha);
+	break;
+      case 4:
+	csG2DDrawLine<uint32, csPixMixerCopy<uint32> >::DrawLine (this,
+	  vpLeft+x1, vpTop+y1, vpLeft+x2, vpTop+y2, realColor, alpha);
+	break;
+    }
+  }
+  else
+  {
+    switch (pfmt.PixelBytes)
+    {
+      case 1:
+	csG2DDrawLine<uint8, csPixMixerCopy<uint8> >::DrawLine (this,
+	  vpLeft+x1, vpTop+y1, vpLeft+x2, vpTop+y2, realColor, alpha);
+	break;
+      case 2:
+	csG2DDrawLine<uint16, csPixMixerRGBA<uint16> >::DrawLine (this,
+	  vpLeft+x1, vpTop+y1, vpLeft+x2, vpTop+y2, realColor, alpha);
+	break;
+      case 4:
+	csG2DDrawLine<uint32, csPixMixerRGBA<uint32> >::DrawLine (this,
+	  vpLeft+x1, vpTop+y1, vpLeft+x2, vpTop+y2, realColor, alpha);
+	break;
+    }
+  }
+}
+#endif
+
+#include "csplugincommon/canvas/draw_box.h"
+
+void csGraphics2D::DrawBox (int x, int y, int w, int h, int color)
+{
+  if ((x > ClipX2) || (y > ClipY2))
+    return;
+  if (x < ClipX1)
+    w -= (ClipX1 - x), x = ClipX1;
+  if (y < ClipY1)
+    h -= (ClipY1 - y), y = ClipY1;
+  if (x + w > ClipX2)
+    w = ClipX2 - x;
+  if (y + h > ClipY2)
+    h = ClipY2 - y;
+  if ((w <= 0) || (h <= 0))
+    return;
+
+  int realColor;
+  uint8 alpha;
+  SplitAlpha (color, realColor, alpha);
+
+  if (alpha == 0)
+    return;
+  else if (alpha == 255)
+  {
+    switch (pfmt.PixelBytes)
+    {
+      case 1:
+	csG2DDrawBox<uint8, csPixMixerCopy<uint8> >::DrawBox (this,
+	  vpLeft+x, vpTop+y, w, h, realColor, alpha);
+	break;
+      case 2:
+	csG2DDrawBox<uint16, csPixMixerCopy<uint16> >::DrawBox (this,
+	  vpLeft+x, vpTop+y, w, h, realColor, alpha);
+	break;
+      case 4:
+	csG2DDrawBox<uint32, csPixMixerCopy<uint32> >::DrawBox (this,
+	  vpLeft+x, vpTop+y, w, h, realColor, alpha);
+	break;
+    }
+  }
+  else
+  {
+    switch (pfmt.PixelBytes)
+    {
+      case 1:
+	csG2DDrawBox<uint8, csPixMixerCopy<uint8> >::DrawBox (this,
+	  x, y, w, h, realColor, alpha);
+	break;
+      case 2:
+	csG2DDrawBox<uint16, csPixMixerRGBA<uint16> >::DrawBox (this,
+	  x, y, w, h, realColor, alpha);
+	break;
+      case 4:
+	csG2DDrawBox<uint32, csPixMixerRGBA<uint32> >::DrawBox (this,
+	  x, y, w, h, realColor, alpha);
+	break;
+    }
+  }
 }
 
 void csGraphics2D::SetClipRect (int xmin, int ymin, int xmax, int ymax)
@@ -243,9 +659,8 @@ void csGraphics2D::SetClipRect (int xmin, int ymin, int xmax, int ymax)
   ClipX1 = xmin; ClipX2 = xmax;
   ClipY1 = ymin; ClipY2 = ymax;
   
-  if (fontCache)
-    fontCache->SetClipRect (vpLeft+ClipX1, vpTop+ClipY1,
-      vpLeft+ClipX2, vpTop+ClipY2);
+  fontCache->SetClipRect (vpLeft+ClipX1, vpTop+ClipY1,
+    vpLeft+ClipX2, vpTop+ClipY2);
 }
 
 void csGraphics2D::GetClipRect (int &xmin, int &ymin, int &xmax, int &ymax)
@@ -324,6 +739,103 @@ bool csGraphics2D::ClipLine (float &x0, float &y0, float &x1, float &y1,
     return !visible;
 }
 
+
+csImageArea *csGraphics2D::SaveArea (int x, int y, int w, int h)
+{
+  if (x < 0)
+  { w += x; x = 0; }
+  if (x + w > vpWidth)
+    w = vpWidth - x;
+  if (y < 0)
+  { h += y; y = 0; }
+  if (y + h > vpHeight)
+    h = vpHeight - y;
+  if ((w <= 0) || (h <= 0))
+    return 0;
+
+  csImageArea *Area = new csImageArea (x, y, w, h);
+  if (!Area)
+    return 0;
+  w *= pfmt.PixelBytes;
+  char *dest = Area->data = new char [w * h];
+  if (!dest)
+  {
+    delete Area;
+    return 0;
+  }
+  for (; h > 0; y++, h--)
+  {
+    unsigned char *VRAM = GetPixelAt (vpLeft+x, vpTop+y);
+    memcpy (dest, VRAM, w);
+    dest += w;
+  } /* endfor */
+  return Area;
+}
+
+void csGraphics2D::RestoreArea (csImageArea *Area, bool Free)
+{
+  if (Area)
+  {
+    char *dest = Area->data;
+    int x = Area->x, y = Area->y, w = Area->w, h = Area->h;
+    w *= pfmt.PixelBytes;
+    for (; h; y++, h--)
+    {
+      unsigned char *VRAM = GetPixelAt (vpLeft+x, vpTop+y);
+      memcpy (VRAM, dest, w);
+      dest += w;
+    } /* endfor */
+    if (Free)
+      FreeArea (Area);
+  } /* endif */
+}
+
+void csGraphics2D::FreeArea (csImageArea *Area)
+{
+  if (Area)
+  {
+    if (Area->data)
+      delete [] Area->data;
+    delete Area;
+  } /* endif */
+}
+
+// For iOffscreenCanvasCallback
+#include "csutil/deprecated_warn_off.h"
+
+void csGraphics2D::SetRGB (int i, int r, int g, int b)
+{
+  Palette[i].red = r;
+  Palette[i].green = g;
+  Palette[i].blue = b;
+  PaletteAlloc[i] = true;
+  if (ofscb) ofscb->SetRGB (this, i, r, g, b);
+}
+
+#include "csutil/deprecated_warn_on.h"
+
+void csGraphics2D::GetRGB (int color, int& r, int& g, int& b)
+{
+  if (Depth == 8)
+  {
+    r = Palette[color].red;
+    g = Palette[color].green;
+    b = Palette[color].blue;
+  }
+  else
+  {
+    r = (color & pfmt.RedMask) >> pfmt.RedShift;
+    g = (color & pfmt.GreenMask) >> pfmt.GreenShift;
+    b = (color & pfmt.BlueMask) >> pfmt.BlueShift;
+  }
+}
+
+void csGraphics2D::GetRGB (int color, int& r, int& g, int& b, int& a)
+{
+  a = 255 -  (color >> 24);
+  GetRGB (color & 0x00ffffff, r, g, b);
+}
+
 void csGraphics2D::Write (iFont *font, int x, int y, int fg, int bg, 
 			  const char *text, uint flags) 
 { 
@@ -336,6 +848,21 @@ void csGraphics2D::Write (iFont *font, int x, int y, int fg, int bg,
 { 
   if (!text || !*text) return;
   fontCache->WriteString (font, x, vpTop+y, fg, bg, text, true, flags);
+}
+
+unsigned char *csGraphics2D::GetPixelAt8 (csGraphics2D *This, int x, int y)
+{
+  return (This->Memory + (x + This->LineAddress[y]));
+}
+
+unsigned char *csGraphics2D::GetPixelAt16 (csGraphics2D *This, int x, int y)
+{
+  return (This->Memory + (x + x + This->LineAddress[y]));
+}
+
+unsigned char *csGraphics2D::GetPixelAt32 (csGraphics2D *This, int x, int y)
+{
+  return (This->Memory + ((x<<2) + This->LineAddress[y]));
 }
 
 bool csGraphics2D::PerformExtensionV (char const* command, va_list args)
@@ -351,6 +878,88 @@ bool csGraphics2D::PerformExtension (char const* command, ...)
   va_end (args);
   return rc;
 }
+
+void csGraphics2D::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB)
+{
+  oR = oG = oB = 0;
+
+  if (x < 0 || y < 0 
+      || x >= csMin (vpWidth, fbWidth - vpLeft)
+      || y >= csMin (vpHeight, fbHeight - vpTop))
+    return;
+
+  uint8 *vram = GetPixelAt (x+vpLeft, y+vpTop);
+  if (!vram)
+    return;
+
+  if (pfmt.PalEntries)
+  {
+    uint8 pix = *vram;
+    oR = Palette [pix].red;
+    oG = Palette [pix].green;
+    oB = Palette [pix].blue;
+  }
+  else
+  {
+    uint32 pix = 0;
+    switch (pfmt.PixelBytes)
+    {
+      case 1: pix = *vram; break;
+      case 2: pix = *(uint16 *)vram; break;
+      case 4: pix = *(uint32 *)vram; break;
+    }
+    oR = ((pix & pfmt.RedMask)   >> pfmt.RedShift)   << (8 - pfmt.RedBits);
+    oG = ((pix & pfmt.GreenMask) >> pfmt.GreenShift) << (8 - pfmt.GreenBits);
+    oB = ((pix & pfmt.BlueMask)  >> pfmt.BlueShift)  << (8 - pfmt.BlueBits);
+  }
+}
+
+void csGraphics2D::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB, uint8 &oA)
+{
+  oR = oG = oB = 0;
+  oA = 255;
+
+  if (x < 0 || y < 0 
+      || x >= csMin (vpWidth, fbWidth - vpLeft)
+      || y >= csMin (vpHeight, fbHeight - vpTop))
+    return;
+
+  uint8 *vram = GetPixelAt (x+vpLeft, y+vpTop);
+  if (!vram)
+    return;
+
+  if (pfmt.PalEntries)
+  {
+    uint8 pix = *vram;
+    oR = Palette [pix].red;
+    oG = Palette [pix].green;
+    oB = Palette [pix].blue;
+  }
+  else
+  {
+    uint32 pix = 0;
+    switch (pfmt.PixelBytes)
+    {
+      case 1: pix = *vram; break;
+      case 2: pix = *(uint16 *)vram; break;
+      case 4: pix = *(uint32 *)vram; break;
+    }
+    oR = ((pix & pfmt.RedMask)   >> pfmt.RedShift)   << (8 - pfmt.RedBits);
+    oG = ((pix & pfmt.GreenMask) >> pfmt.GreenShift) << (8 - pfmt.GreenBits);
+    oB = ((pix & pfmt.BlueMask)  >> pfmt.BlueShift)  << (8 - pfmt.BlueBits);
+    oA = ((pix & pfmt.AlphaMask) >> pfmt.AlphaShift) << (8 - pfmt.AlphaBits);
+  }
+}
+
+#include "csutil/custom_new_disable.h"
+csPtr<iImage> csGraphics2D::ScreenShot ()
+{
+  BeginDraw ();
+  csScreenShot *ss = new csScreenShot (this);
+  FinishDraw ();
+  return ss;
+}
+#include "csutil/custom_new_enable.h"
 
 void csGraphics2D::AlertV (int type, const char* title, const char* okMsg,
     const char* msg, va_list arg)
@@ -396,14 +1005,9 @@ void csGraphics2D::SetTitle (const char* title)
   win_title = title;
 }
 
-void csGraphics2D::SetIcon (iImage *image)
-{
-    
-}
-
 bool csGraphics2D::Resize (int w, int h)
 {
-  if (!is_open)
+  if (!LineAddress)
   {
     // Still in Initialization phase, configuring size of canvas
     vpWidth = fbWidth = w;
@@ -424,6 +1028,18 @@ bool csGraphics2D::Resize (int w, int h)
     }
     fbWidth = w;
     fbHeight = h;
+
+    delete [] LineAddress;
+    LineAddress = 0;
+
+    // Allocate buffer for address of each scan line to avoid multuplication
+    LineAddress = new int [fbHeight];
+    CS_ASSERT (LineAddress != 0);
+
+    // Initialize scanline address array
+    int i,addr,bpl = fbWidth * pfmt.PixelBytes;
+    for (i = 0, addr = 0; i < fbHeight; i++, addr += bpl)
+      LineAddress[i] = addr;
   }
   return true;
 }
@@ -457,54 +1073,85 @@ void csGraphics2D::SetViewport (int left, int top, int width, int height)
   fontCache->SetViewportOfs (left, top);
 }
 
+/**
+ * A nice observation about the properties of the human eye:
+ * Let's call the largest R or G or B component of a color "main".
+ * If some other color component is much smaller than the main component,
+ * we can change it in a large range without noting any change in
+ * the color itself. Examples:
+ * (128, 128, 128) - we note a change in color if we change any component
+ * by 4 or more.
+ * (192, 128, 128) - we should change of G or B components by 8 to note any
+ * change in color.
+ * (255, 128, 128) - we should change of G or B components by 16 to note any
+ * change in color.
+ * (255, 0, 0) - we can change any of G or B components by 32 and we
+ * won't note any change.
+ * Thus, we use this observation to create a palette that contains more
+ * useful colors. We implement here a function to evaluate the "distance"
+ * between two colors. tR,tG,tB define the color we are looking for (target);
+ * sR, sG, sB define the color we're examining (source).
+ */
+static inline int rgb_dist (int tR, int tG, int tB, int sR, int sG, int sB)
+{
+  register int max = MAX (tR, tG);
+  max = MAX (max, tB);
+
+  sR -= tR; sG -= tG; sB -= tB;
+
+  return R_COEF_SQ * sR * sR * (32 - ((max - tR) >> 3)) +
+         G_COEF_SQ * sG * sG * (32 - ((max - tG) >> 3)) +
+         B_COEF_SQ * sB * sB * (32 - ((max - tB) >> 3));
+}
+
+int csGraphics2D::FindRGBPalette (int r, int g, int b)
+{
+  // @@@ Not a very fast routine!
+  int i;
+  int best_dist = 1000000;
+  int best_idx = -1;
+  for (i = 0 ; i < 256 ; i++)
+    if (PaletteAlloc[i])
+    {
+      int dist = rgb_dist (r, g, b, Palette[i].red, Palette[i].green,
+        Palette[i].blue);
+      if (dist == 0) return i;
+      if (dist < best_dist)
+      {
+        best_dist = dist;
+    best_idx = i;
+      }
+    }
+  return best_idx;
+}
+
+// For iOffscreenCanvasCallback
+#include "csutil/deprecated_warn_off.h"
+
+#include "csutil/custom_new_disable.h"
+csPtr<iGraphics2D> csGraphics2D::CreateOffscreenCanvas (
+    void* memory, int width, int height, int depth,
+    iOffscreenCanvasCallback* ofscb)
+{
+  csGraphics2D* g2d = new csGraphics2D (0);
+  if (g2d->Initialize (object_reg, width, height, depth, memory,
+    ofscb) && g2d->Open ())
+  {
+    return csPtr<iGraphics2D> (g2d);
+  }
+  else
+  {
+    delete g2d;
+    return 0;
+  }
+}
+#include "csutil/custom_new_enable.h"
+
+#include "csutil/deprecated_warn_on.h"
+
 bool csGraphics2D::DebugCommand (const char* /*cmd*/)
 {
   return false;
-}
-
-bool csGraphics2D::GetWindowDecoration (WindowDecoration decoration)
-{
-  // Decorations that are commonly on
-  switch (decoration)
-  {
-  case decoCaption:
-    return !FullScreen;
-  default:
-    break;
-  }
-
-  // Everything else: assume off
-  return false;
-}
-
-bool csGraphics2D::GetWorkspaceDimensions (int& width, int& height)
-{
-  return false;
-}
-
-bool csGraphics2D::AddWindowFrameDimensions (int& width, int& height)
-{
-  return false;
-}
-
-bool csGraphics2D::FitSizeToWorkingArea (int& desiredWidth,
-                                         int& desiredHeight)
-{
-  int wswidth, wsheight;
-  if (!GetWorkspaceDimensions (wswidth, wsheight))
-    return false;
-  int framedWidth (desiredWidth), framedHeight (desiredHeight);
-  if (!AddWindowFrameDimensions (framedWidth, framedHeight))
-    return false;
-  if (framedWidth > wswidth)
-  {
-    desiredWidth -= (framedWidth - wswidth);
-  }
-  if (framedHeight > wsheight)
-  {
-    desiredHeight -= (framedHeight - wsheight);
-  }
-  return true;
 }
 
 //---------------------------------------------------------------------------
@@ -513,9 +1160,9 @@ bool csGraphics2D::FitSizeToWorkingArea (int& desiredWidth,
 
 static const csOptionDescription config_options [NUM_OPTIONS] =
 {
-  csOptionDescription( 0, "depth", "Display depth", CSVAR_LONG ),
-  csOptionDescription( 1, "fs", "Fullscreen if available", CSVAR_BOOL ),
-  csOptionDescription( 2, "mode", "Window size or resolution", CSVAR_STRING )
+  { 0, "depth", "Display depth", CSVAR_LONG },
+  { 1, "fs", "Fullscreen if available", CSVAR_BOOL },
+  { 2, "mode", "Window size or resolution", CSVAR_STRING },
 };
 
 bool csGraphics2D::SetOption (int id, csVariant* value)

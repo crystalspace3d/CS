@@ -87,11 +87,7 @@ enum csMouseButton
   /// Thumb button 1 (e.g. on 5-button mice)
   csmbExtra1 = 5,
   /// Thumb button 2 (e.g. on 5-button mice)
-  csmbExtra2 = 6,
-  /// Horizontal wheel was scrolled left
-  csmbHWheelLeft = 7,
-  /// Horizontal wheel was scrolled right
-  csmbHWheelRight = 8
+  csmbExtra2 = 6
 };
 
 /** @} */
@@ -180,9 +176,6 @@ typedef struct _csKeyModifiers
 #define CSMASK_NUMLOCK		(1 << csKeyModifierTypeNumLock)
 /// "ScrollLock" key mask
 #define CSMASK_SCROLLLOCK	(1 << csKeyModifierTypeScrollLock)
-/// All locks keys
-#define CSMASK_ALLLOCKS (CSMASK_CAPSLOCK | CSMASK_NUMLOCK | CSMASK_SCROLLLOCK)
-
 /// All modifiers, shift and lock types
 #define CSMASK_ALLMODIFIERS	(CSMASK_CAPSLOCK | CSMASK_NUMLOCK | \
 				 CSMASK_SCROLLLOCK | CSMASK_ALLSHIFTS)
@@ -409,7 +402,7 @@ typedef struct _csKeyModifiers
  * Both a modifier and a keypad key.
  */
 #define CSKEY_PADNUM \
-  (CSKEY_MODIFIER(csKeyModifierTypeNumLock,csKeyModifierNumAny) | CSKEY_PAD_FLAG)
+  CSKEY_MODIFIER(csKeyModifierTypeNumLock,csKeyModifierNumAny) | CSKEY_PAD_FLAG
 /// CapsLock key
 #define CSKEY_CAPSLOCK \
   CSKEY_MODIFIER(csKeyModifierTypeCapsLock,csKeyModifierNumAny)

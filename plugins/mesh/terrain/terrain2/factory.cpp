@@ -190,11 +190,6 @@ iTerrainFactoryCell* csTerrainFactory::AddCell()
   return cell;
 }
 
-void csTerrainFactory::RemoveCell (iTerrainFactoryCell* cell)
-{
-  cells.Delete (static_cast<csTerrainFactoryCell*>(cell));
-}
-
 void csTerrainFactory::SetMaxLoadedCells (size_t value)
 {
   maxLoadedCells = value;
@@ -234,8 +229,6 @@ csTerrainFactoryCell::csTerrainFactoryCell (const csTerrainFactoryCell& other)
   materialMapHeight (other.materialMapHeight),
   materialMapPersistent (other.materialMapPersistent),
   baseMaterial (other.baseMaterial),
-  splatBaseMaterial (other.splatBaseMaterial),
-  alphaSplatMaterial (other.alphaSplatMaterial),
   rendererProperties (other.rendererProperties->Clone()),
   colliderProperties (other.colliderProperties->Clone()),
   feederProperties (other.feederProperties->Clone())
@@ -260,8 +253,6 @@ csPtr<csTerrainCell> csTerrainFactoryCell::CreateCell (csTerrainSystem* terrain)
     renderProp, collProp, feederProp);
 
   cell->SetBaseMaterial (baseMaterial);
-  cell->SetAlphaSplatMaterial (alphaSplatMaterial);
-  cell->SetSplatBaseMaterial (splatBaseMaterial);
 
   return csPtr<csTerrainCell> (cell);
 }
@@ -286,15 +277,6 @@ void csTerrainFactoryCell::SetBaseMaterial (iMaterialWrapper* material)
   baseMaterial = material;
 }
 
-void csTerrainFactoryCell::SetAlphaSplatMaterial (iMaterialWrapper* material)
-{
-  alphaSplatMaterial = material;
-}
-
-void csTerrainFactoryCell::SetSplatBaseMaterial (iMaterialWrapper* material)
-{
-  splatBaseMaterial = material;
-}
 
 }
 CS_PLUGIN_NAMESPACE_END(Terrain2)

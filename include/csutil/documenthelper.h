@@ -356,32 +356,6 @@ namespace DocSystem
    * hashing.
    */
   CS_CRYSTALSPACE_EXPORT csString FlattenNode (iDocumentNode* node);
-  /**
-   * "Flatten" a document node structure into a string ignoring child nodes,
-   * \sa FlattenNode
-   */
-  CS_CRYSTALSPACE_EXPORT csString FlattenNodeShallow (iDocumentNode* node);
-  
-  /**
-   * Make a document changeable.
-   * Not all documents can be changed in-place. This helper function checks
-   * the document \a doc and either returns the original document, if
-   * changeable, or a newly created, changeable document from \a docsys
-   * with the same contents as \a doc.
-   */
-  CS_CRYSTALSPACE_EXPORT csPtr<iDocument> MakeChangeable (iDocument* doc,
-							  iDocumentSystem* docsys);
-
-  /**
-   * Set the contents of a document node.
-   * This is the converse of iDocumentNode::GetContentsValue(): if \a node
-   * has a child of type #CS_NODE_TEXT, the value of that child is changed
-   * to \a contents. If no such node exists one is created.
-   * Returns \c false if node couldn't be changed or a child created.
-   * (Typically if \a node was not of type #CS_NODE_ELEMENT.)
-   */
-  CS_CRYSTALSPACE_EXPORT bool SetContentsValue (iDocumentNode* node,
-						const char* contents);
 } // namespace DocSystem
 
 

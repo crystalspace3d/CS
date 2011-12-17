@@ -30,9 +30,8 @@
 #include "iutil/document.h"
 #include "iutil/plugin.h"
 #include "iutil/object.h"
-#include "iutil/stringarray.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 template<>
 class csHashComputer<iParticleEmitter*> : public csHashComputerIntegral<iParticleEmitter*> {};
@@ -382,7 +381,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
       case XMLTOKEN_EXTENT:
         if (!synldr->ParseVector (child, extent))
         {
-          return 0;
+          return false;
         }
         break;
       case XMLTOKEN_CONEANGLE:
@@ -766,36 +765,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
         }
       }
 
-    }
-    else if (!strcasecmp (effectorType, "light"))
-    {
-      csRef<iParticleBuiltinEffectorLight> lightEffector = 
-        factory->CreateLight ();
-      effector = lightEffector;
-
-      csRef<iDocumentNodeIterator> it = node->GetNodes ();
-      while (it->HasNext ())
-      {
-        csRef<iDocumentNode> child = it->Next ();
-
-        if (child->GetType () != CS_NODE_ELEMENT) 
-          continue;
-
-        const char* value = child->GetValue ();
-        csStringID id = xmltokens.Request (value);
-        switch(id)
-        {
-        case XMLTOKEN_CUTOFFDISTANCE:
-          {
-	    float distance = child->GetContentsValueAsFloat ();
-	    lightEffector->SetInitialCutoffDistance (distance);
-	  }
-          break;
-        default:
-          synldr->ReportBadToken (child);
-          return 0;
-        }
-      }
+      
     }
     else
     {
@@ -860,7 +830,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
           {
             synldr->ReportError (
               "crystalspace.genmeshfactoryloader.parse.unknownmaterial",
-              child, "Couldn't find material %s!", CS::Quote::Single (matname));
+              child, "Couldn't find material '%s'!", matname);
             return 0;
           }
           factoryObj->SetMaterialWrapper (mat);
@@ -909,12 +879,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
       case XMLTOKEN_FACTORY:
         {
           const char* factname = child->GetContentsValue ();
-          iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
+	  iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
 
-          if(!fact)
+          if (!fact)
           {
             synldr->ReportError ("crystalspace.particleloader.parsesystem",
-              child, "Could not find factory %s!", CS::Quote::Single (factname));
+              child, "Could not find factory '%s'!", factname);
+
             return 0;
           }
 
@@ -924,8 +895,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
           if (!particleSystem)
           {
             synldr->ReportError ("crystalspace.particleloader.parsesystem",
-              child, "Factory %s does not seem to be a particle system factory!", 
-              CS::Quote::Single (factname));
+              child, "Factory '%s' does not seem to be a particle system factory!", 
+              factname);
 
             return 0;
           }
@@ -950,7 +921,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
           {
             synldr->ReportError (
               "crystalspace.genmeshfactoryloader.parse.unknownmaterial",
-              child, "Couldn't find material %s!", CS::Quote::Single (matname));
+              child, "Couldn't find material '%s'!", matname);
             return 0;
           }
           meshObj->SetMaterialWrapper (mat);
@@ -1562,12 +1533,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
         CS_NODE_ELEMENT, 0);
       sizeNode->SetValue ("particlesize");
       synldr->WriteVector (sizeNode, partFact->GetParticleSize ());
-
-      csRef<iDocumentNode> mixmodeNode = paramsNode->CreateNodeBefore (
-        CS_NODE_ELEMENT, 0);
-      mixmodeNode->SetValue ("mixmode");
-      synldr->WriteMixmode (mixmodeNode, meshFact->GetMixMode (),
-	  true);
 
       // Write emitters
       for (size_t i = 0; i < partFact->GetEmitterCount (); i++)

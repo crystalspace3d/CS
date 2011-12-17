@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 2.1.0: 4.20.2 Creating an External MSVC 7, 7.1, 8 or 9 Application</title>
+<title>Crystal Space 1.4.1: 4.20.2 Creating an External MSVC 7, 7.1, 8 or 9 Application</title>
 
-<meta name="description" content="Crystal Space 2.1.0: 4.20.2 Creating an External MSVC 7, 7.1, 8 or 9 Application">
-<meta name="keywords" content="Crystal Space 2.1.0: 4.20.2 Creating an External MSVC 7, 7.1, 8 or 9 Application">
+<meta name="description" content="Crystal Space 1.4.1: 4.20.2 Creating an External MSVC 7, 7.1, 8 or 9 Application">
+<meta name="keywords" content="Crystal Space 1.4.1: 4.20.2 Creating an External MSVC 7, 7.1, 8 or 9 Application">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -62,20 +62,21 @@ ul.toc {list-style: none}
 <h3 class="subsection"> 4.20.2 Creating an External <small>MSVC</small> 7, 7.1, 8 or 9 Application </h3>
 
 
-<p>Originally written by Philip Wyett <a href="mailto:philswyett@gmx.co.uk">philswyett@gmx.co.uk</a>.
+<p>Originally written by Philip Wyett <a href="mailto:philwyett@gmx.com">philwyett@gmx.com</a>.
 
-<em>Last updated September 2009.</em>
+<em>Last updated January 2008.</em>
 </p>
 <p>This <small>HOWTO</small> is a step by step guide for creating a basic Crystal Space
-application with <small>MSVC</small> 8 (<small>.NET</small> 2005) or
+application with <small>MSVC</small> 7 (<small>.NET</small> 2002), 7.1 (<small>.NET</small> 2003), 8 (<small>.NET</small> 2005) or
 9 (<small>.NET</small> 2008) outside the Crystal Space source tree. 
 </p>
-<p><em>Note:</em> This text was initially written for an older version of <small>MSVC</small>, 
-consequently, the screenshots are from that version. However, versions 8 and 9,
-while looking somewhat different, have the same options as relevant to this
-<small>HOWTO</small>. Hence the instructions herein should be easily applicable to the
-current versions as well. If there is a setting that needs to be different for
-different <small>MSVC</small> versions, the text will explicitly state that.
+<p><em>Note:</em> This text was initially written with only <small>MSVC</small> 7 in mind, 
+consequently, the screenshots are from that version. However, its successors, 
+versions 7.1 and 8, are, in the aspects relevant to this <small>HOWTO</small>, very
+similar to version 7. Hence, the instructions herein should be easily
+applicable to those versions as well. If there is a setting that needs to be
+different for different <small>MSVC</small> versions, the text will explicitly state 
+that.
 </p>
 <p><small>IMPORTANT</small>: This tutorial assumes you have a basic familiarity with
 <small>MSVC</small> and it's inner workings. This tutorial also assumes you have a fully
@@ -196,11 +197,15 @@ down menu, now select <em>Library files</em>.  Follow the same browse and
 selection procedure as you used when adding the <tt>&lsquo;include&rsquo;</tt> path, adding the
 following paths - adjusting for where you have Crystal Space located on your
 system as well as the <small>MSVC</small> version number you compiled with. For version 
-8 you need <tt>&lsquo;out\release8\libs\&rsquo;</tt> and <tt>&lsquo;out\debug8\libs\&rsquo;</tt>, 
-likewise for version 9 you need <tt>&lsquo;out\release9\libs\&rsquo;</tt> and <tt>&lsquo;out\debug9\libs\&rsquo;</tt>.
+7.1 you need to use <tt>&lsquo;out\release71\libs\&rsquo;</tt> and <tt>&lsquo;out\debug71\libs\&rsquo;</tt>, 
+likewise for version 8 you need <tt>&lsquo;out\release8\libs\&rsquo;</tt> and <tt>&lsquo;out\debug8\libs\&rsquo;</tt>.
+</p>
+<p>For version 9 use:-
+
+<tt>&lsquo;CS\out\release9\libs\&rsquo;</tt><br>
+<tt>&lsquo;CS\out\debug9\libs\&rsquo;</tt>
 </p>
 <p>See image below for an example of this set for version 7.
-(<em>Note: Outdated screenshot, version 7 is now unsupported.</em>)
 </p>
 <p><img src="usingcs/ownprojects/msvc7proj/snap9.jpg" alt="usingcs/ownprojects/msvc7proj/snap9">
 </p>
@@ -214,9 +219,8 @@ in-order to successfully compile and link your application.  They are:
 </p><ul>
 <li> <samp>&lsquo;CS_WIN32_CSCONFIG&rsquo;</samp>
 </li><li> <samp>&lsquo;__CRYSTAL_SPACE__&rsquo;</samp>
-</li><li> <samp>&lsquo;CS_USE_SHARED_LIBS&rsquo;</samp> if Crystal Space was built &ldquo;with DLLs&rdquo;
-(the default) or <samp>&lsquo;CS_USE_STATIC_LIBS&rsquo;</samp> if Crystal Space was built
-&ldquo;with static libs&rdquo;
+</li><li> <samp>&lsquo;CS_BUILD_SHARED_LIBS&rsquo;</samp> if Crystal Space was built &ldquo;with DLLs&rdquo;
+(the default)
 </li><li> <samp>&lsquo;CS_RELEASE&rsquo;</samp> or <samp>&lsquo;CS_DEBUG&rsquo;</samp>
 </li></ul>
 
@@ -239,7 +243,7 @@ the <em>Properties</em> dialog box, which can be seen in the image below.
 <p>Open the C/C++ folder and select <em>Preprocessor</em>.  Insert the appropriate
 definitions in the <em>Preprocessor Definitions</em> text box i.e.  for a debug
 build with Crystal Space built with DLLs 
-<samp>&lsquo;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_USE_SHARED_LIBS;CS_DEBUG&rsquo;</samp>,
+<samp>&lsquo;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_BUILD_SHARED_LIBS;CS_DEBUG&rsquo;</samp>,
 making sure to separate with semi-colons.  Alternatively, you can click the
 elipsis (<small class="dots">...</small>) button to pull up an easier view.  An example of the ones
 entered for a debug build can be seen in the image below.
@@ -250,7 +254,7 @@ entered for a debug build can be seen in the image below.
 <em>Preprocessor</em>.  Insert the appropriate definitions in the 
 <em>Preprocessor Definitions</em> text box i.e.  for a release build with 
 Crystal Space built with DLLs 
-<samp>&lsquo;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_USE_SHARED_LIBS;CS_RELEASE&rsquo;</samp>,
+<samp>&lsquo;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_BUILD_SHARED_LIBS;CS_RELEASE&rsquo;</samp>,
 making sure to separate with semi-colons.  Alternatively, you can click the
 elipsis (<small class="dots">...</small>) button to pull up an easier view.  An example the ones
 entered for a release build can be seen in the image below.

@@ -22,7 +22,6 @@
 #include "csqsqrt.h"
 
 #include "csgeom/matrix3.h"
-#include "csgeom/box.h"
 #include "csgeom/plane3.h"
 #include "csgeom/sphere.h"
 #include "csgeom/transfrm.h"
@@ -133,46 +132,6 @@ csSphere csTransform::Other2This (const csSphere &s) const
   return news;
 }
 
-csBox3 csTransform::Other2This (const csBox3& box) const
-{
-  if (m_o2t.IsIdentity())
-  {
-    csBox3 newBox (box);
-    newBox.SetCenter (Other2This (box.GetCenter()));
-    return newBox;
-  }
-  else
-  {  
-    const csVector3 minA = box.Min ();
-    const csVector3 maxA = box.Max ();
-
-    csVector3 minB (-m_o2t*v_o2t);
-    csVector3 maxB (minB);
-
-    for (size_t i = 0; i < 3; ++i)
-    {
-      const csVector3 row = m_o2t.Row (i);
-      for (size_t j = 0; j < 3; ++j)
-      {
-        float a = row[j] * minA[j];
-        float b = row[j] * maxA[j];
-        if (a < b)
-        {
-          minB[i] += a;
-          maxB[i] += b;
-        }
-        else
-        {
-          minB[i] += b;
-          maxB[i] += a;
-        }
-      }
-    }
-
-    return csBox3 (minB, maxB);
-  }
-}
-
 csVector3 operator * (const csVector3 &v, const csTransform &t)
 {
   return t.Other2This (v);
@@ -235,22 +194,6 @@ csSphere &operator*= (csSphere &p, const csTransform &t)
   return p;
 }
 
-csBox3 operator * (const csBox3 &p, const csTransform &t)
-{
-  return t.Other2This (p);
-}
-
-csBox3 operator * (const csTransform &t, const csBox3 &p)
-{
-  return t.Other2This (p);
-}
-
-csBox3 &operator*= (csBox3 &p, const csTransform &t)
-{
-  p = t.Other2This(p);
-  return p;
-}
-
 csMatrix3 operator * (const csMatrix3 &m, const csTransform &t)
 {
   return m * t.m_o2t;
@@ -308,46 +251,6 @@ csSphere csReversibleTransform::This2Other (const csSphere &s) const
   return news;
 }
 
-csBox3 csReversibleTransform::This2Other (const csBox3 &box) const
-{
-  if (m_t2o.IsIdentity())
-  {
-    csBox3 newBox (box);
-    newBox.SetCenter (This2Other (box.GetCenter()));
-    return newBox;
-  }
-  else
-  {
-    const csVector3 minA = box.Min ();
-    const csVector3 maxA = box.Max ();
-
-    csVector3 minB (v_o2t);
-    csVector3 maxB (v_o2t);
-
-    for (size_t i = 0; i < 3; ++i)
-    {
-      const csVector3 row = m_t2o.Row (i);
-      for (size_t j = 0; j < 3; ++j)
-      {
-        float a = row[j] * minA[j];
-        float b = row[j] * maxA[j];
-        if (a < b)
-        {
-          minB[i] += a;
-          maxB[i] += b;
-        }
-        else
-        {
-          minB[i] += b;
-          maxB[i] += a;
-        }
-      }
-    }
-
-    return csBox3 (minB, maxB);
-  }
-}
-
 csVector3 operator/ (const csVector3 &v, const csReversibleTransform &t)
 {
   return t.This2Other (v);
@@ -365,11 +268,6 @@ csPlane3 operator/ (const csPlane3 &p, const csReversibleTransform &t)
 }
 
 csSphere operator/ (const csSphere &p, const csReversibleTransform &t)
-{
-  return t.This2Other (p);
-}
-
-csBox3 operator/ (const csBox3 &p, const csReversibleTransform &t)
 {
   return t.This2Other (p);
 }
@@ -462,15 +360,13 @@ void csReversibleTransform::RotateThis (const csVector3 &v, float angle)
         u.z * omcauz + ca));
 }
 
-bool csReversibleTransform::LookAtGeneric (
+void csReversibleTransform::LookAt (
   const csVector3 &v,
-  const csVector3 &upNeg,
-  csVector3& w1,
-  csVector3& w2,
-  csVector3& w3)
+  const csVector3 &upNeg)
 {
+  csMatrix3 m;  /* initialized to be the identity matrix */
+  csVector3 w1, w2, w3 = v;
   csVector3 up = -upNeg;
-  w3 = v;
 
   float sqr;
   sqr = v * v;
@@ -492,159 +388,19 @@ bool csReversibleTransform::LookAtGeneric (
 
     w1 *= csQisqrt (sqr);
     w2 = w3 % w1;
-    return true;
+
+    m.m11 = w1.x;
+    m.m12 = w2.x;
+    m.m13 = w3.x;
+    m.m21 = w1.y;
+    m.m22 = w2.y;
+    m.m23 = w3.y;
+    m.m31 = w1.z;
+    m.m32 = w2.z;
+    m.m33 = w3.z;
   }
-  return false;
-}
-
-bool csReversibleTransform::LookAt (
-  const csVector3 &v,
-  const csVector3 &upNeg)
-{
-  if (!LookAtZUpY (v, upNeg))
-  {
-    SetT2O (csMatrix3 ());
-    return false;
-  }
-  return true;
-}
-
-bool csReversibleTransform::LookAtZUpY (
-  const csVector3 &v,
-  const csVector3 &upNeg)
-{
-  csMatrix3 m;  /* initialized to be the identity matrix */
-  csVector3 w1, w2, w3;
-  if (!LookAtGeneric (v, upNeg, w1, w2, w3))
-    return false;
-
-  m.m11 = w1.x;
-  m.m12 = w2.x;
-  m.m13 = w3.x;
-  m.m21 = w1.y;
-  m.m22 = w2.y;
-  m.m23 = w3.y;
-  m.m31 = w1.z;
-  m.m32 = w2.z;
-  m.m33 = w3.z;
 
   SetT2O (m);
-  return true;
-}
-
-bool csReversibleTransform::LookAtZUpX (
-  const csVector3 &v,
-  const csVector3 &upNeg)
-{
-  csMatrix3 m;  /* initialized to be the identity matrix */
-  csVector3 w1, w2, w3;
-  if (!LookAtGeneric (v, upNeg, w2, w1, w3))
-    return false;
-
-  m.m11 = w1.x;
-  m.m12 = w2.x;
-  m.m13 = w3.x;
-  m.m21 = w1.y;
-  m.m22 = w2.y;
-  m.m23 = w3.y;
-  m.m31 = w1.z;
-  m.m32 = w2.z;
-  m.m33 = w3.z;
-
-  SetT2O (m);
-  return true;
-}
-
-bool csReversibleTransform::LookAtXUpZ (
-  const csVector3 &v,
-  const csVector3 &upNeg)
-{
-  csMatrix3 m;  /* initialized to be the identity matrix */
-  csVector3 w1, w2, w3;
-  if (!LookAtGeneric (v, upNeg, w2, w3, w1))
-    return false;
-
-  m.m11 = w1.x;
-  m.m12 = w2.x;
-  m.m13 = w3.x;
-  m.m21 = w1.y;
-  m.m22 = w2.y;
-  m.m23 = w3.y;
-  m.m31 = w1.z;
-  m.m32 = w2.z;
-  m.m33 = w3.z;
-
-  SetT2O (m);
-  return true;
-}
-
-bool csReversibleTransform::LookAtXUpY (
-  const csVector3 &v,
-  const csVector3 &upNeg)
-{
-  csMatrix3 m;  /* initialized to be the identity matrix */
-  csVector3 w1, w2, w3;
-  if (!LookAtGeneric (v, upNeg, w3, w2, w1))
-    return false;
-
-  m.m11 = w1.x;
-  m.m12 = w2.x;
-  m.m13 = w3.x;
-  m.m21 = w1.y;
-  m.m22 = w2.y;
-  m.m23 = w3.y;
-  m.m31 = w1.z;
-  m.m32 = w2.z;
-  m.m33 = w3.z;
-
-  SetT2O (m);
-  return true;
-}
-
-bool csReversibleTransform::LookAtYUpX (
-  const csVector3 &v,
-  const csVector3 &upNeg)
-{
-  csMatrix3 m;  /* initialized to be the identity matrix */
-  csVector3 w1, w2, w3;
-  if (!LookAtGeneric (v, upNeg, w3, w1, w2))
-    return false;
-
-  m.m11 = w1.x;
-  m.m12 = w2.x;
-  m.m13 = w3.x;
-  m.m21 = w1.y;
-  m.m22 = w2.y;
-  m.m23 = w3.y;
-  m.m31 = w1.z;
-  m.m32 = w2.z;
-  m.m33 = w3.z;
-
-  SetT2O (m);
-  return true;
-}
-
-bool csReversibleTransform::LookAtYUpZ (
-  const csVector3 &v,
-  const csVector3 &upNeg)
-{
-  csMatrix3 m;  /* initialized to be the identity matrix */
-  csVector3 w1, w2, w3;
-  if (!LookAtGeneric (v, upNeg, w2, w1, w3))
-    return false;
-
-  m.m11 = w1.x;
-  m.m12 = w2.x;
-  m.m13 = w3.x;
-  m.m21 = w1.y;
-  m.m22 = w2.y;
-  m.m23 = w3.y;
-  m.m31 = w1.z;
-  m.m32 = w2.z;
-  m.m33 = w3.z;
-
-  SetT2O (m);
-  return true;
 }
 
 //---------------------------------------------------------------------------

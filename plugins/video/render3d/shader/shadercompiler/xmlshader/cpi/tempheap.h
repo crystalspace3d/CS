@@ -25,33 +25,6 @@
 #include "csutil/ref.h"
 #include "csutil/refcount.h"
 
-#include "csutil/custom_new_disable.h"
-
-#define DECLARE_STATIC_CLASSVAR_DIRECT(getterFunc,Type,Kill, InitParam)   \
-enum { _##getterFunc##StorageUnits = (sizeof (Type) + sizeof (void*) - 1)/sizeof (char) };   \
-static char _##getterFunc##Store[_##getterFunc##StorageUnits]; 	\
-static CS_FORCEINLINE_TEMPLATEMETHOD 			       	\
-char* getterFunc##GetStoreAligned()				\
-{								\
-  uintptr_t p = reinterpret_cast<uintptr_t> (_##getterFunc##Store); \
-  static const int align = sizeof(void*);			\
-  p = (p + align - 1) & ~(align - 1);				\
-  return reinterpret_cast<char*> (p);				\
-}								\
-static void getterFunc##Init()                                 	\
-{                                                              	\
-  new (getterFunc##GetStoreAligned()) Type InitParam;           \
-  csStaticVarCleanup (Kill);                                   	\
-}                                                              	\
-static CS_FORCEINLINE_TEMPLATEMETHOD Type& getterFunc()        	\
-{                                                              	\
-  return *reinterpret_cast<Type*> (getterFunc##GetStoreAligned());\
-}                                                              	\
-static void getterFunc ## _kill ();
-
-#define IMPLEMENT_STATIC_CLASSVAR_DIRECT(Class,getterFunc) \
-char Class::_##getterFunc##Store[Class::_##getterFunc##StorageUnits];
-
 CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 {
   /**
@@ -69,33 +42,43 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
    */
   class TempHeap
   {
-    DECLARE_STATIC_CLASSVAR_DIRECT(TheHeap,CS::Memory::Heap,HeapKill,);
-    
-    static void HeapKill()
+    class HeapRefCounted : public csRefCount, public CS::Memory::Heap
+    { };
+
+    CS_DECLARE_STATIC_CLASSVAR (theHeap,
+      TheHeap, csRef<HeapRefCounted>);
+
+    static inline HeapRefCounted* GetHeapPtr()
     {
-      TheHeap().~Heap();
+      csRef<HeapRefCounted>* hr = TheHeap();
+      if (!hr->IsValid()) hr->AttachNew (new HeapRefCounted);
+      return *hr;
     }
   public:
-    static void Init()
+    TempHeap()
     {
-      TheHeapInit();
+      GetHeapPtr()->IncRef();
     }
-  
+    ~TempHeap()
+    {
+      GetHeapPtr()->DecRef();
+    }
+
     static void* Alloc (const size_t n)
     {
-      return TheHeap().Alloc (n);
+      return GetHeapPtr()->Alloc (n);
     }
     static void Free (void* p)
     {
-      TheHeap().Free (p);
+      GetHeapPtr()->Free (p);
     }
     static void* Realloc (void* p, size_t newSize)
     {
-      return TheHeap().Realloc (p, newSize);
+      return GetHeapPtr()->Realloc (p, newSize);
     }
     static void Trim ()
     {
-      TheHeap().Trim ();
+      GetHeapPtr()->Trim ();
     }
   };
 
@@ -284,7 +267,5 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
   };
 }
 CS_PLUGIN_NAMESPACE_END(XMLShader)
-
-#include "csutil/custom_new_enable.h"
 
 #endif // __CS_TEMPHEAP_H__

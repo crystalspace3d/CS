@@ -31,13 +31,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
   {
     typedef CS::Memory::AllocatorMalloc Allocator;
     
-    typedef CS::Memory::FixedSizeAllocatorSafe<sizeof (csBitArrayStorageType) * 2,
+    typedef csFixedSizeAllocator<sizeof (csBitArrayStorageType) * 2, 
       Allocator> BitsAlloc2Type;
-    typedef CS::Memory::FixedSizeAllocatorSafe<sizeof (csBitArrayStorageType) * 4,
-      Allocator> BitsAlloc4Type;
-
     CS_DECLARE_STATIC_CLASSVAR_REF (bitsAlloc2,
       BitsAlloc2, BitsAlloc2Type);
+    
+    typedef csFixedSizeAllocator<sizeof (csBitArrayStorageType) * 4, 
+      Allocator> BitsAlloc4Type;
     CS_DECLARE_STATIC_CLASSVAR_REF (bitsAlloc4,
       BitsAlloc4, BitsAlloc4Type);
   public:
@@ -65,17 +65,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       BitsAlloc4().Compact();
     }
   };
-  class MyBitArrayAllocatorTemp : CS::Memory::AllocatorSafe<TempHeapAlloc>
+  class MyBitArrayAllocatorTemp : TempHeapAlloc
   {
     typedef TempHeapAlloc Allocator;
-
-    typedef CS::Memory::FixedSizeAllocatorSafe<sizeof (csBitArrayStorageType) * 2,
+    
+    typedef csFixedSizeAllocator<sizeof (csBitArrayStorageType) * 2, 
       Allocator> BitsAlloc2Type;
-    typedef CS::Memory::FixedSizeAllocatorSafe<sizeof (csBitArrayStorageType) * 4,
-      Allocator> BitsAlloc4Type;
-
     CS_DECLARE_STATIC_CLASSVAR_REF (bitsAlloc2,
       BitsAlloc2, BitsAlloc2Type);
+    
+    typedef csFixedSizeAllocator<sizeof (csBitArrayStorageType) * 4, 
+      Allocator> BitsAlloc4Type;
     CS_DECLARE_STATIC_CLASSVAR_REF (bitsAlloc4,
       BitsAlloc4, BitsAlloc4Type);
   public:
@@ -103,42 +103,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       BitsAlloc4().Compact();
     }
   };
-  
-  class MyBitArrayMalloc;
-  class MyBitArrayTemp;
 
   //@{
   /**
    * Specialized bit array that uses block allocation for smaller
    * sizes.
    */
-  class MyBitArrayMalloc : public csBitArrayTweakable<64, MyBitArrayAllocatorMalloc>
-  {
-    typedef csBitArrayTweakable<64, MyBitArrayAllocatorMalloc> Superclass;
-  public:
-    MyBitArrayMalloc () : Superclass () {}
-    MyBitArrayMalloc (size_t size) : Superclass (size) {}
-    MyBitArrayMalloc (const MyBitArrayTemp& other);
-  };
-  
-  class MyBitArrayTemp : public csBitArrayTweakable<64, MyBitArrayAllocatorTemp>
-  {
-    typedef csBitArrayTweakable<64, MyBitArrayAllocatorTemp> Superclass;
-    
-    friend class MyBitArrayMalloc;
-  public:
-    MyBitArrayTemp () : Superclass () {}
-    MyBitArrayTemp (size_t size) : Superclass (size) {}
-  };
+  typedef csBitArrayTweakable<64, MyBitArrayAllocatorMalloc> MyBitArrayMalloc;
+  typedef csBitArrayTweakable<64, MyBitArrayAllocatorTemp> MyBitArrayTemp;
   //@}
-  
-  inline MyBitArrayMalloc::MyBitArrayMalloc (const MyBitArrayTemp& other)
-   : Superclass (other.GetSize())
-  {
-    memcpy (GetStore(), other.GetStore(),
-      mLength * sizeof (csBitArrayStorageType));
-  }
-  
 }
 CS_PLUGIN_NAMESPACE_END(XMLShader)
 

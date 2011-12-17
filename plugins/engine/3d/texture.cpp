@@ -18,9 +18,6 @@
 
 #include "cssysdef.h"
 #include <math.h>
-
-#include "csutil/stringquote.h"
-
 #include "igraphic/image.h"
 #include "ivideo/txtmgr.h"
 
@@ -115,12 +112,10 @@ void csTextureWrapper::SetTextureHandle (iTextureHandle *tex)
 void csTextureWrapper::SetKeyColor (int red, int green, int blue)
 {
   if (handle)
-  {
     if (red >= 0)
       handle->SetKeyColor (red, green, blue);
     else
       handle->SetKeyColor (false);
-  }
   key_col_r = red;
   key_col_g = green;
   key_col_b = blue;
@@ -145,9 +140,9 @@ void csTextureWrapper::Register (iTextureManager *txtmgr)
 
     if (!csIsPowerOf2 (Width) || !csIsPowerOf2 (Height))
     {
-      engine->Warn ("Inefficient texture image %s dimensions!\n"
+      engine->Warn ("Inefficient texture image '%s' dimensions!\n"
         "The width (%d) and height (%d) should be a power of two.",
-        CS::Quote::Single (GetName ()), Width, Height);
+        GetName (), Width, Height);
     }
   }
 
@@ -193,7 +188,7 @@ const char* csTextureWrapper::GetTextureClass ()
 //------------------------------------------------------- csTextureList -----//
 
 csTextureList::csTextureList (csEngine* engine) : scfImplementationType (this),
-  csRefArrayObject<iTextureWrapper> (16), engine (engine)
+  csRefArrayObject<iTextureWrapper> (16, 16), engine (engine)
 {
 }
 
@@ -205,93 +200,54 @@ iTextureWrapper *csTextureList::NewTexture (iImage *image)
 {
   csRef<iTextureWrapper> tm;
   tm.AttachNew (new csTextureWrapper (engine, image));
-  CS::Threading::ScopedWriteLock lock(texLock);
   Push (tm);
   return tm;
 }
-
-csPtr<iTextureWrapper> csTextureList::CreateTexture (iImage *image)
-{
-  csRef<iTextureWrapper> tm;
-  tm.AttachNew (new csTextureWrapper (engine, image));
-  return csPtr<iTextureWrapper>(tm);
-}
-
 
 iTextureWrapper *csTextureList::NewTexture (iTextureHandle *ith)
 {
   csRef<iTextureWrapper> tm;
   tm.AttachNew (new csTextureWrapper (engine, ith));
-  CS::Threading::ScopedWriteLock lock(texLock);
   Push (tm);
   return tm;
 }
 
-csPtr<iTextureWrapper> csTextureList::CreateTexture (iTextureHandle *ith)
-{
-  csRef<iTextureWrapper> tm;
-  tm.AttachNew (new csTextureWrapper (engine, ith));
-  return csPtr<iTextureWrapper>(tm);
-}
-
 int csTextureList::GetCount () const
 {
-  CS::Threading::ScopedReadLock lock(texLock);
   return (int)this->GetSize ();
 }
 
 iTextureWrapper *csTextureList::Get (int n) const
 {
-  CS::Threading::ScopedReadLock lock(texLock);
   return csRefArrayObject<iTextureWrapper>::Get (n);
 }
 
 int csTextureList::Add (iTextureWrapper *obj)
 {
-  CS::Threading::ScopedWriteLock lock(texLock);
   return (int)this->Push (obj);
-}
-
-void csTextureList::AddBatch (csRef<iTextureLoaderIterator> itr, bool precache)
-{
-  CS::Threading::ScopedWriteLock lock(texLock);
-  while(itr->HasNext())
-  {
-    iTextureWrapper* tex = itr->Next();
-    Push(tex);
-    if(precache && tex->GetTextureHandle())
-    {
-      tex->GetTextureHandle()->Precache();
-    }
-  }
 }
 
 bool csTextureList::Remove (iTextureWrapper *obj)
 {
-  CS::Threading::ScopedWriteLock lock(texLock);
   return this->Delete (obj);
 }
 
 bool csTextureList::Remove (int n)
 {
-  CS::Threading::ScopedWriteLock lock(texLock);
   return this->DeleteIndex (n);
 }
 
 void csTextureList::RemoveAll ()
 {
-  CS::Threading::ScopedWriteLock lock(texLock);
   this->DeleteAll ();
 }
 
 int csTextureList::Find (iTextureWrapper *obj) const
 {
-  CS::Threading::ScopedReadLock lock(texLock);
   return (int)csRefArrayObject<iTextureWrapper>::Find (obj);
 }
 
 iTextureWrapper *csTextureList::FindByName (const char *Name) const
 {
-  CS::Threading::ScopedReadLock lock(texLock);
   return csRefArrayObject<iTextureWrapper>::FindByName (Name);
 }

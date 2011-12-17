@@ -248,68 +248,6 @@ void Primitives::GenerateBox (
   if (alloced) delete mapper;
 }
 
-void Primitives::GenerateCylinder (float l, float r, uint sides,
-      csDirtyAccessArray<csVector3>& mesh_vertices,
-      csDirtyAccessArray<csVector2>& mesh_texels,
-      csDirtyAccessArray<csVector3>& mesh_normals,
-      csDirtyAccessArray<csTriangle>& mesh_triangles,
-      TextureMapper* mapper)
-{
-  const uint n = sides * 4;
-  l *= 0.5;
-  float a = float(PI*2.0)/float(n);
-  float sa = (float) sin(a);
-  float ca = (float) cos(a);
-
-  mesh_normals.DeleteAll ();
-  mesh_texels.DeleteAll ();
-  mesh_triangles.DeleteAll ();
-  mesh_vertices.DeleteAll ();
-
-  mesh_normals.Push (csVector3 (1, 0, 0));
-  mesh_vertices.Push (csVector3 (l, 0, 0));
-  mesh_normals.Push (csVector3 (-1, 0, 0));
-  mesh_vertices.Push (csVector3 (-l, 0, 0));
-
-  // cylinder body
-  float ny = 1, nz = 0;
-  for (uint i = 0; i < n; i++)
-  {
-    mesh_normals.Push (csVector3 (0, ny, nz));
-    int v1 = int (mesh_vertices.Push (csVector3 (l, ny * r, nz * r)));
-    mesh_normals.Push (csVector3 (0, ny, nz));
-    int v2 = int (mesh_vertices.Push (csVector3 (-l, ny * r, nz * r)));
-
-    float tmp =  ca * ny - sa * nz;
-    nz = sa*ny + ca*nz;
-    ny = tmp;
-    
-    mesh_triangles.Push (csTriangle (v1, 0, v1 - 2));
-    mesh_triangles.Push (csTriangle (v2 - 2, 1, v2));
-
-    if (i > 0)
-    {
-      mesh_triangles.Push (csTriangle (v2, v1, v1 - 2));
-      mesh_triangles.Push (csTriangle (v1 - 2, v2 - 2, v2));
-
-      if (i == n - 1)
-      {
-        mesh_triangles.Push (csTriangle (2, 0, v1));
-	mesh_triangles.Push (csTriangle (v2, 1, 3));
-        mesh_triangles.Push (csTriangle (3, 2, v1));
-        mesh_triangles.Push (csTriangle (v1, v2, 3));
-      }
-    }
-  }
-
-  if (mapper)
-  {
-    size_t i;
-    for (i = 0 ; i < mesh_vertices.GetSize () ; i++)
-      mesh_texels.Push (mapper->Map (mesh_vertices[i], mesh_normals[i], i));
-  }
-}
-
 void Primitives::GenerateCapsule (float l, float r, uint sides,
       csDirtyAccessArray<csVector3>& mesh_vertices,
       csDirtyAccessArray<csVector2>& mesh_texels,
@@ -325,10 +263,11 @@ void Primitives::GenerateCapsule (float l, float r, uint sides,
 
   mesh_normals.DeleteAll ();
   mesh_texels.DeleteAll ();
+  mesh_normals.DeleteAll ();
   mesh_triangles.DeleteAll ();
   mesh_vertices.DeleteAll ();
 
-  // capsule body (ie cylinder part)
+  // cylinder body
   float ny = 1, nz = 0;
   for (uint i = 0; i < n; i++)
   {
@@ -344,12 +283,15 @@ void Primitives::GenerateCapsule (float l, float r, uint sides,
     if (i > 0)
     {
       mesh_triangles.Push (csTriangle (v2, v1, v1 - 2));
-      mesh_triangles.Push (csTriangle (v1 - 2, v2 - 2, v2));
-
+      mesh_triangles.Push (csTriangle (v1 - 1, v2, v1));
+      mesh_triangles.Push (csTriangle (v1 - 2, v1 -1, v2));
+      mesh_triangles.Push (csTriangle (v1, v1 - 2, v1 - 1));
       if (i == n - 1)
       {
-	mesh_triangles.Push (csTriangle (1, 0, v1));
+        mesh_triangles.Push (csTriangle (1, 0, v1));
+        mesh_triangles.Push (csTriangle (v2, 1, 0));
         mesh_triangles.Push (csTriangle (v1, v2, 1));
+        mesh_triangles.Push (csTriangle (0, v1, v2));
       }
     }
   }
@@ -380,7 +322,9 @@ void Primitives::GenerateCapsule (float l, float r, uint sides,
       if (i > 0)
       {
         mesh_triangles.Push (csTriangle (v2, v1, v1 - 2));
-        mesh_triangles.Push (csTriangle (v1 - 2, v2 - 2, v2));
+        mesh_triangles.Push (csTriangle (v1 - 1, v2, v1));
+        mesh_triangles.Push (csTriangle (v1 - 2, v1 -1, v2));
+        mesh_triangles.Push (csTriangle (v1, v1 - 2, v1 - 1));
       }
     }
     start_nx = start_nx2;
@@ -413,7 +357,9 @@ void Primitives::GenerateCapsule (float l, float r, uint sides,
       if (i > 0)
       {
         mesh_triangles.Push (csTriangle (v2, v1, v1 - 2));
-        mesh_triangles.Push (csTriangle (v1 - 2, v2 - 2, v2));
+        mesh_triangles.Push (csTriangle (v1 - 1, v2, v1));
+        mesh_triangles.Push (csTriangle (v1 - 2, v1 -1, v2));
+        mesh_triangles.Push (csTriangle (v1, v1 - 2, v1 - 1));
       }
     }
     start_nx = start_nx2;
@@ -423,58 +369,6 @@ void Primitives::GenerateCapsule (float l, float r, uint sides,
   {
     size_t i;
     for (i = 0 ; i < mesh_vertices.GetSize () ; i++)
-      mesh_texels.Push (mapper->Map (mesh_vertices[i], mesh_normals[i], i));
-  }
-}
-
-void Primitives::GenerateCone (float l, float r, uint sides,
-      csDirtyAccessArray<csVector3>& mesh_vertices,
-      csDirtyAccessArray<csVector2>& mesh_texels,
-      csDirtyAccessArray<csVector3>& mesh_normals,
-      csDirtyAccessArray<csTriangle>& mesh_triangles,
-      TextureMapper* mapper)
-{
-  /* Generates a cone aligned along the positive y-axis with the base 
-   * centered on the origin. */
-
-  // Make sure we have enough sides to actually make a cone.
-  sides = MAX(3, sides);
-
-  // The top-point.
-  mesh_vertices.Push (csVector3 (0, l, 0));
-  mesh_normals.Push (csVector3 (0, 1, 0));
-
-  // Generates the ring of verticies that defines the base.
-  float angle = 0.0f;
-  const float angleInc = TWO_PI / (float)sides;
-
-  for (uint i = 0; i < sides; i++)
-  {
-    float x = cos (angle);
-    float z = sin (angle);
-
-    mesh_vertices.Push (r * csVector3 (x, 0, z));
-    mesh_normals.Push (csVector3 (x, 0, z));
-
-    angle += angleInc;
-  }
-
-  // Creates the side and base triangles of the cone.
-  for (uint i = 0; i < sides; i++)
-  {
-    int a = i + 1;
-    int b = ((i + 1) % sides) + 1;
-
-    // Side triangle
-    mesh_triangles.Push (csTriangle (0, a, b));
-
-    // Base triangle
-    mesh_triangles.Push (csTriangle (1, b, a));
-  }
-
-  if (mapper)
-  {
-    for (size_t i = 0; i < mesh_vertices.GetSize (); i++)
       mesh_texels.Push (mapper->Map (mesh_vertices[i], mesh_normals[i], i));
   }
 }

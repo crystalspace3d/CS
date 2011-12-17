@@ -34,7 +34,6 @@
 #include "csutil/databuf.h"
 #include "csutil/cmdhelp.h"
 #include "csutil/getopt.h"
-#include "csutil/platformfile.h"
 #include "csutil/util.h"
 #include "igraphic/imageio.h"
 #include "iutil/comp.h"
@@ -156,8 +155,7 @@ static int display_help ()
   csPrintf ("  -C   --cube          Merge 6 images into a cubemap\n");
   csPrintf ("  -E   --split-image   Split image up into subimages (e.g. faces of a cubemap)\n");
   csPrintf ("  -M   --mime=#        Output file mime type (default: image/png)\n");
-  csPrintf ("  -O   --options=#     Optional output format options (e.g. %s)\n",
-	    CS::Quote::Double ("progressive"));
+  csPrintf ("  -O   --options=#     Optional output format options (e.g. \"progressive\")\n");
   csPrintf ("  -P   --prefix=#      Add prefix before output filename\n");
   csPrintf ("  -U   --suffix=#      Add suffix after output filename\n");
   csPrintf ("  -D   --display=#,#   Display the image in ASCII format :-)\n");
@@ -231,7 +229,7 @@ static bool output_picture (const char *fname, const char *suffix, iImage* ifile
   if (db)
   {
     const size_t size = db->GetSize ();
-    FILE *f = CS::Platform::File::Open (outname, "wb");
+    FILE *f = fopen (outname, "wb");
     if (f)
     {
       const size_t res = fwrite (db->GetData (), 1, size, f);
@@ -407,7 +405,7 @@ static csRef<iImage> open_file (const char *fname)
 {
   csPrintf ("Loading file %s\n", fname);
 
-  FILE *f = CS::Platform::File::Open (fname, "rb");
+  FILE *f = fopen (fname, "rb");
   if (!f)
   {
     csPrintf ("%s: cannot open file %s\n", programname, fname);
@@ -427,7 +425,6 @@ static csRef<iImage> open_file (const char *fname)
     if (fread (buffer, 1, fsize, f) < fsize)
     {
       csPrintf ("%s: unexpected EOF while reading file %s\n", programname, fname);
-      delete [] buffer;
       return 0;
     }
     buf.AttachNew (new csDataBuffer (buffer, fsize, true));
@@ -645,6 +642,8 @@ int gfxtest_main (iObjectRegistry* object_reg, int argc, char *argv[])
   {
     return display_help ();
   }
+
+  ImageLoader->SetDithering (opt.dither);
 
   if (opt.splitSubImg)
   {

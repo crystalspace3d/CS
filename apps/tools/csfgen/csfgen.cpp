@@ -24,7 +24,6 @@
 #include "csutil/csunicode.h"
 #include "csutil/getopt.h"
 #include "csutil/memfile.h"
-#include "csutil/platformfile.h"
 #include "csutil/util.h"
 #include "iutil/comp.h"
 #include "iutil/databuff.h"
@@ -462,7 +461,7 @@ static bool Convert (const char *fontfile)
   outfile.Format ("%s%d.%s", fontname, opt.fontsize, 
     opt.sourcecode ? "h" : "csf");
 
-  FILE *out = CS::Platform::File::Open (outfile, opt.sourcecode ? "w" : "wb");
+  FILE *out = fopen (outfile, opt.sourcecode ? "w" : "wb");
   if (!out)
   {
     csPrintf ("Could not open output file %s\n", outfile.GetData());

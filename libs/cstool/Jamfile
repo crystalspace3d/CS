@@ -1,5 +1,3 @@
 SubDir TOP libs cstool ;
 
 CsLibAddModule ;
-
-SubInclude TOP libs cstool noise ;

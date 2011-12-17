@@ -51,7 +51,7 @@ namespace Threading
   };
 
   /**
-   * Abstract base class for objects acting as executor in separate threads.
+   * Abstract base class for objects to be run in threads.
    * The lifetime of the Runnable object must at least be as long as the thread
    * object.
    */
@@ -64,14 +64,6 @@ namespace Threading
      * until it returns.
      */
     virtual void Run () = 0;
-
-    /**
-     * 
-     */
-    virtual const char* GetName () const
-    {
-      return "Unnamed thread";
-    }
   };
 
   /// OS specific thread identifier
@@ -101,13 +93,10 @@ namespace Threading
    * Object representing a separate execution thread.
    * Used to create, manage and control execution threads.
    */
-  class Thread : private CS::NonCopyable, 
+  class Thread : public csRefCount, private CS::NonCopyable, 
     private Implementation::ThreadBase
   {
   public:
-    using ThreadBase::IncRef;
-    using ThreadBase::DecRef;
-    using ThreadBase::GetRefCount;
 
     /**
      * Initialize a new thread object.

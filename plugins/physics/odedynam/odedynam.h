@@ -283,8 +283,6 @@ private:
   bool autodisable;
   bool correctInertiaWorkAround;
 
-  csVector3 physicsOrigin;
-
 public:
   csStringID GetBaseID () const { return base_id; }
   csStringID GetColldetID () const { return colldet_id; }
@@ -351,7 +349,6 @@ public:
   virtual void Step (float stepsize);
 
   virtual csPtr<iRigidBody> CreateBody ();
-  virtual void AddBody (iRigidBody* body) { /* TODO */ }
   virtual void RemoveBody (iRigidBody* body);
   virtual iRigidBody *FindBody (const char *name);
   iRigidBody *GetBody (unsigned int index);
@@ -361,7 +358,6 @@ public:
   virtual void RemoveGroup (iBodyGroup *group);
 
   virtual csPtr<iJoint> CreateJoint ();
-  virtual void AddJoint (iJoint* joint) { /* TODO */ }
   virtual csPtr<iODEBallJoint> CreateBallJoint ();
   virtual csPtr<iODEHingeJoint> CreateHingeJoint ();
   virtual csPtr<iODEHinge2Joint> CreateHinge2Joint ();
@@ -391,9 +387,6 @@ public:
   virtual bool AttachColliderCylinder (float length, float radius,
         const csOrthoTransform& trans, float friction, float elasticity,
 	float softness);
-  virtual bool AttachColliderCapsule (float length, float radius,
-        const csOrthoTransform& trans, float friction, float elasticity,
-	float softness);
   virtual bool AttachColliderBox (const csVector3 &size,
         const csOrthoTransform& trans, float friction, float elasticity,
 	float softness);
@@ -415,10 +408,6 @@ public:
   virtual bool DoFullInertiaRecalculation () const
   { return !correctInertiaWorkAround; }
   virtual void RecalculateFullInertia (csODECollider* thisCol) {/*Only static stuff, nothing to recalc*/}
-
-  // Not implemented!
-  virtual void SetPhysicsOrigin (const csVector3&) { }
-  virtual const csVector3& GetPhysicsOrigin () const { return physicsOrigin; }
 
 };
 
@@ -468,8 +457,10 @@ public:
   
   bool CreateSphereGeometry (const csSphere& sphere);
   bool CreatePlaneGeometry (const csPlane3& plane);
-  inline bool CreateConvexMeshGeometry (iMeshWrapper *mesh)
-  { return CreateMeshGeometry (mesh); }
+  bool CreateConvexMeshGeometry (iMeshWrapper *mesh)
+  {
+    return CreateMeshGeometry (mesh);
+  }
   bool CreateMeshGeometry (iMeshWrapper *mesh);
   bool CreateBoxGeometry (const csVector3& box_size);
   bool CreateCapsuleGeometry (float length, float radius); 
@@ -478,11 +469,6 @@ public:
   bool GetSphereGeometry (csSphere& sphere);
   bool GetPlaneGeometry (csPlane3& box); 
   bool GetCylinderGeometry (float& length, float& radius); 
-  bool GetCapsuleGeometry (float& length, float& radius);
-  bool GetMeshGeometry (csVector3*& vertices, size_t& vertexCount,
-			int*& indices, size_t& triangleCount);
-  bool GetConvexMeshGeometry (csVector3*& vertices, size_t& vertexCount,
-			      int*& indices, size_t& triangleCount);
 
   void SetCollisionCallback (iDynamicsColliderCollisionCallback* cb);
   void Collision (csODECollider* other, const csVector3& pos,
@@ -519,6 +505,8 @@ public:
 
 private:
 
+  inline void CS2ODEMatrix (const csMatrix3& csmat, dMatrix3& odemat);
+  inline void ODE2CSMatrix (const dReal* odemat, csMatrix3& csmat);
   void MassUpdate ();
   void ClearContents ();
   void KillGeoms ();
@@ -567,7 +555,6 @@ public:
   csODERigidBody (csODEDynamicSystem* sys);
   virtual ~csODERigidBody ();
 
-  using iObject::GetID;
   inline dBodyID GetID() { return bodyID; }
 
   iObject* QueryObject () { return this; }
@@ -594,9 +581,6 @@ public:
         const csOrthoTransform& trans, float friction, float density,
         float elasticity, float softness);
   bool AttachColliderCylinder (float length, float radius,
-        const csOrthoTransform& trans, float friction, float density,
-        float elasticity, float softness);
-  bool AttachColliderCapsule (float length, float radius,
         const csOrthoTransform& trans, float friction, float density,
         float elasticity, float softness);
   bool AttachColliderBox (const csVector3 &size,

@@ -55,6 +55,7 @@ typedef enum
 //   This interface provides these services for the sound system.
 struct iSndSysEventRecorder : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE (iSndSysEventRecorder, 1, 0, 0);
 
   /// Log an event with typical variable argument format.

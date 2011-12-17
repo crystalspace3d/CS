@@ -198,23 +198,22 @@ END;
 # optionally modified by `prefix' and `suffix' as described in the glue()
 # macro.  The actual list of arrays consulted is:
 #
-#    build.<tag>
-#    projtypes.projtype.<tag>
-#    my.doc.<tagkey><suffix>
+#    build.tag
+#    projtypes.projtype.tag
+#    my.doc.tagkey
 #
 # The above list assumes that a hash named `build' is in scope.  Typically,
 # this is a reference to an element of the global builds[] array
 # (control.tlib).  Furthermore, `projtype' is shorthand for my.doc.projtype.0,
 # which is assumed to exist globally, and is specific to the project being
-# generated.  `tagkey' is actually the value of the "${tag}key" key within the
-# `build' hash. Finally, `suffix' is the value of `platform.suffix'.
-# As a practical example, if generating a project file for a "plugin" and
-# emitting the "debug" configuration, given a `tag' of "cflags", generating for
-# x64, then the following arrays may be consulted:
+# generated.  Finally, `tagkey' is actually the value of the "${tag}key" key
+# within the `build' hash.  As a practical example, if generating a project
+# file for a "plugin" and emitting the "debug" configuration, given a `tag' of
+# "cflags", then the following arrays may be consulted:
 #
 #    build.cflags
 #    projtypes.plugin.cflags
-#    my.doc.cflagsdebug-x64
+#    my.doc.cflagsdebug
 #
 # In this example, the name "cflagsdebug" comes from the
 # builds['debug'].cflagskey property (control.tlib).
@@ -224,11 +223,10 @@ MACRO compose(tag, seed, delim, prefix, suffix) BLOCK;
     ? mutator.${my.doc.projtype.0} 
     : my.doc.projtype.0;
   
-  buildtag = ${"build.${tag}key"};
   p = [];
   p = p.merge(build.$tag).
     merge(projtypes.$projtype.$tag).
-    merge(my.doc.${"${buildtag}${platform.suffix}"}).
+    merge(my.doc.${${"build.${tag}key"}}).
     merge(seed);
   GET glue(p, delim, prefix, suffix);
 END;
@@ -303,22 +301,9 @@ END;
 #        "..\out\build\myapp", and workbuild(['myapp/test','.obj']) would
 #        return "..\out\build\myapp\test.obj".
 #------------------------------------------------------------------------------
-MACRO workroot
-  GET path([my.doc.buildroot.0, 'out', glue([build.tag, my.doc.msvcversion.0, platform.suffix])]);
+MACRO workroot GET path([my.doc.buildroot.0, 'out', glue([build.tag, my.doc.msvcversion.0])]);
 MACRO worklibout GET path([workroot, 'libs']);
 MACRO workbuild(tail)
   GET path([workroot, 'build', my.doc.project.0, tail.join('')]);
 
-#------------------------------------------------------------------------------
-# Get current target MSVC version as an easily comparable integer
-# (major version * 10 + minor version).
-#------------------------------------------------------------------------------
-MACRO comparable_msvc_version BLOCK;
-  IF my.doc.msvcversion.0 < 71;
-    GET my.doc.msvcversion.0 * 10;
-  ELSE;
-    GET my.doc.msvcversion.0;
-  END;
-END;
-  
 END %]

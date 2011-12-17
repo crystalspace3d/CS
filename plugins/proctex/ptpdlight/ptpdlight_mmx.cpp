@@ -25,7 +25,6 @@
 #include "csgeom/math.h"
 
 #include "ptpdlight.h"
-#include "ptpdlight_actual.h"
 
 #include <mmintrin.h>
 
@@ -35,10 +34,6 @@ CS_DECLARE_PROFILER_ZONE(ProctexPDLight_Animate_MMX_Blit)
 
 CS_PLUGIN_NAMESPACE_BEGIN(PTPDLight)
 {
-
-/* This file is always compiled on MSVC, but it does not support MMX on all
-   platforms */
-#ifdef CS_SUPPORTS_MMX
 
 struct Map_uint8
 {
@@ -127,17 +122,7 @@ struct PreApplyEMMS
   }
 };
 
-struct ProctexPDLight_MMX : public ProctexPDLight_Actual<ProctexPDLight_MMX>
-{
-  ProctexPDLight_MMX (ProctexPDLightLoader* loader, iImage* img)
-   : ProctexPDLight_Actual<ProctexPDLight_MMX> (loader, img) {}
-  ProctexPDLight_MMX (ProctexPDLightLoader* loader, int w, int h)
-   : ProctexPDLight_Actual<ProctexPDLight_MMX> (loader, w, h) {}
-   
-  void RealAnimate ();
-};
-
-void ProctexPDLight_MMX::RealAnimate ()
+void ProctexPDLight::Animate_MMX ()
 {
   BlitBufHelper<PreApplyEMMS> blitHelper (tex->GetTextureHandle ());
 
@@ -320,18 +305,6 @@ void ProctexPDLight_MMX::RealAnimate ()
   }
   _m_empty();
 }
-
-ProctexPDLight* NewProctexPDLight_MMX (ProctexPDLightLoader* loader, iImage* img)
-{
-  return new ProctexPDLight_MMX (loader, img);
-}
-
-ProctexPDLight* NewProctexPDLight_MMX (ProctexPDLightLoader* loader, int w, int h)
-{
-  return new ProctexPDLight_MMX (loader, w, h);
-}
-
-#endif // CS_SUPPORTS_MMX
 
 }
 CS_PLUGIN_NAMESPACE_END(PTPDLight)

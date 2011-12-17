@@ -66,16 +66,7 @@ namespace CS
           /// Position
           Position,
           /// Direction (surface normal, tangent/bitangent, light direction...)
-          Direction,
-          /// Fragment depth value
-          Depth,
-          /**
-           * Translation+scale values (first components are translation,
-           * last components scale)
-           */
-          TranslateScale,
-          /// Scale values
-	  Scale
+          Direction
         } semantics;
         /// Space of direction/position
         enum

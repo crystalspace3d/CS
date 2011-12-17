@@ -22,18 +22,8 @@
 #include "gl_render3d.h"
 #include "gl_txtmgr.h"
 #include "gl_r2t_ext_fb_o.h"
-#include "profilescope.h"
 
 #include "csplugincommon/opengl/glenum_identstrs.h"
-#include "csplugincommon/opengl/glhelper.h"
-
-//#define FBO_DEBUG
-
-#ifdef FBO_DEBUG
-  #define FBO_PRINTF csPrintf
-#else
-  #define FBO_PRINTF while(0) csPrintf
-#endif
 
 CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 {
@@ -55,6 +45,31 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 
   //-------------------------------------------------------------------------
 
+  static unsigned int HashCompute (char const* s, size_t n, uint startHash)
+  {
+    unsigned int h = startHash;
+    const char* end = s + n;
+    for(const char* c = s; c != end; ++c)
+      h = ((h << 5) + h) + *c;
+
+    return h;
+  }
+
+  void R2TAttachmentGroup::ComputeHash()
+  {
+    hash = 0;
+    for (int a = 0; a < rtaNumAttachments; a++)
+    {
+      hash = HashCompute ((char const*)(attachments + a), 
+	sizeof (csGLRender2TextureBackend::RTAttachment), hash);
+    }
+  #ifdef CS_DEBUG
+    hashComputed = true;
+  #endif
+  }
+
+  //-------------------------------------------------------------------------
+
   void FBOWrapper::FreeBuffers()
   {
     depthRB = 0;
@@ -69,7 +84,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
 	currentFB != (GLint)framebuffer);
   #endif
 
-      FBO_PRINTF ("Freeing FBO %u\n", framebuffer);
       ext->glDeleteFramebuffersEXT (1, &framebuffer);
       framebuffer = 0;
     }
@@ -83,40 +97,20 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
   {
     CS_ASSERT(boundFBO == framebuffer);
 
-    const R2TAttachmentGroup<>& attachments = this->attachments;
+    const R2TAttachmentGroup& attachments = this->attachments;
     // Bind textures
     static const GLenum fbAttachments[rtaNumAttachments] = 
     {
-      GL_DEPTH_ATTACHMENT_EXT, 
-      GL_COLOR_ATTACHMENT0_EXT,
-      GL_COLOR_ATTACHMENT1_EXT,
-      GL_COLOR_ATTACHMENT2_EXT,
-      GL_COLOR_ATTACHMENT3_EXT,
-      GL_COLOR_ATTACHMENT4_EXT,
-      GL_COLOR_ATTACHMENT5_EXT,
-      GL_COLOR_ATTACHMENT6_EXT,
-      GL_COLOR_ATTACHMENT7_EXT,
-      GL_COLOR_ATTACHMENT8_EXT,
-      GL_COLOR_ATTACHMENT9_EXT,
-      GL_COLOR_ATTACHMENT10_EXT,
-      GL_COLOR_ATTACHMENT11_EXT,
-      GL_COLOR_ATTACHMENT12_EXT,
-      GL_COLOR_ATTACHMENT13_EXT,
-      GL_COLOR_ATTACHMENT14_EXT,
-      GL_COLOR_ATTACHMENT15_EXT,
+      GL_DEPTH_ATTACHMENT_EXT, GL_COLOR_ATTACHMENT0_EXT
     };
-
-    initialAttachments = 0;
     for (int a = 0; a < rtaNumAttachments; a++)
     {
-      const WRTAG::RTA& attachment =
+      const csGLRender2TextureBackend::RTAttachment& attachment =
 	attachments.GetAttachment (csRenderTargetAttachment(a));
       if (!attachment.IsValid()) continue;
-      
-      initialAttachments |= 1 << a;
 
       csGLBasicTextureHandle* tex_mm = static_cast<csGLBasicTextureHandle*> (
-	(iTextureHandle*)attachment.texture);
+	attachment.texture->GetPrivateObject ());
       const GLenum texTarget = tex_mm->GetGLTextureTarget();
       const GLuint texHandle = tex_mm->GetHandle();
       switch (texTarget)
@@ -169,12 +163,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
   void FBOWrapper::Bind ()
   {
     if (framebuffer == 0)
-    {
       ext->glGenFramebuffersEXT (1, &framebuffer);
-      FBO_PRINTF ("Created FBO %u\n", framebuffer);
-    }
     ext->glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, framebuffer);
-    SetDrawBuffers();
   #ifdef CS_DEBUG
     boundFBO = framebuffer;
   #endif
@@ -188,69 +178,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(gl3d)
   #endif
   }
 
-  void FBOWrapper::SetDrawBuffers() const
-  {
-    static GLenum openGLColorAttachmentEnums[] = 
-    {
-      GL_COLOR_ATTACHMENT0_EXT,
-      GL_COLOR_ATTACHMENT1_EXT,
-      GL_COLOR_ATTACHMENT2_EXT,
-      GL_COLOR_ATTACHMENT3_EXT,
-      GL_COLOR_ATTACHMENT4_EXT,
-      GL_COLOR_ATTACHMENT5_EXT,
-      GL_COLOR_ATTACHMENT6_EXT,
-      GL_COLOR_ATTACHMENT7_EXT,
-      GL_COLOR_ATTACHMENT8_EXT,
-      GL_COLOR_ATTACHMENT9_EXT,
-      GL_COLOR_ATTACHMENT10_EXT,
-      GL_COLOR_ATTACHMENT11_EXT,
-      GL_COLOR_ATTACHMENT12_EXT,
-      GL_COLOR_ATTACHMENT13_EXT,
-      GL_COLOR_ATTACHMENT14_EXT,
-      GL_COLOR_ATTACHMENT15_EXT,
-    };
-
-    CS_ASSERT ((sizeof(openGLColorAttachmentEnums) / sizeof(GLenum)) == rtaNumColorAttachments);
-
-    // Builds the attachment array passed into glDrawBuffers.
-    GLint count = 0;
-    GLenum buffers[rtaNumColorAttachments] = { 0 };
-    
-    // NOTE: We assume that the color attachment enumerates increases as:
-    //  rtaColor0 = N where N is some constant >= 0
-    //  rtaColor1 = rtaColor0 + 1
-    //  rtaColor2 = rtaColor1 + 1
-    //   ... etc.
-
-    for (int i = 0; i < rtaNumColorAttachments; i++)
-    {
-      csRenderTargetAttachment attachment = (csRenderTargetAttachment)(rtaColor0 + i);
-
-      const WRTAG::RTA &rta = attachments.GetAttachment (attachment);
-      if (rta.IsValid ())
-      {
-        buffers[count] = openGLColorAttachmentEnums[i];
-        count++;
-      }
-    }
-
-    if (count > 0 && ext->glDrawBuffersARB)
-    {
-      ext->glDrawBuffersARB (count, buffers);
-    }
-  }
-
   //-------------------------------------------------------------------------
 
   csGLRender2TextureEXTfbo::csGLRender2TextureEXTfbo (csGLGraphics3D* G3D) :
     csGLRender2TextureBackend (G3D), enableFBO (true), currentFBO (0), 
-    viewportSet (false)
+    viewportSet (false), frameNum (0)
   {
     GLenum fbStatus = GL_FRAMEBUFFER_UNSUPPORTED_EXT;
-
-    /* Make sure we have access to glDrawBuffersARB for rendering to multiple 
-     * render targets. */
-    G3D->ext->InitGL_ARB_draw_buffers ();
 
     /* Try to determine a working depth, and if available, stencil buffer 
      * format.*/
@@ -332,7 +266,7 @@ bool csGLRender2TextureEXTfbo::SetRenderTarget (iTextureHandle* handle,
                                                 csRenderTargetAttachment attachment)
 {
   csGLBasicTextureHandle* tex_mm = 
-    static_cast<csGLBasicTextureHandle*> ((iTextureHandle*)handle);
+    static_cast<csGLBasicTextureHandle*> (handle->GetPrivateObject ());
   if (!tex_mm->IsWasRenderTarget())
   {
     tex_mm->SetupAutoMipping();
@@ -350,7 +284,6 @@ bool csGLRender2TextureEXTfbo::SetRenderTarget (iTextureHandle* handle,
   // @@@ Here, some initial validity checks could be made (e.g. dimension)
   currentAttachments.GetAttachment (attachment).Set (handle, persistent, 
     subtexture);
-  tex_mm->SetInFBO (true);
   return true;
 }
 
@@ -358,7 +291,7 @@ void csGLRender2TextureEXTfbo::UnsetRenderTargets ()
 {
   for (int a = 0; a < rtaNumAttachments; a++)
   {
-    const WRTAG::RTA& attachment =
+    const csGLRender2TextureBackend::RTAttachment& attachment =
 	currentAttachments.GetAttachment (csRenderTargetAttachment(a));
     if (!attachment.IsValid()) continue;
 
@@ -419,7 +352,7 @@ bool csGLRender2TextureEXTfbo::CanSetRenderTarget (const char* format,
 iTextureHandle* csGLRender2TextureEXTfbo::GetRenderTarget (csRenderTargetAttachment attachment,
                                                            int* subtexture) const
 {
-  const WRTAG::RTA& rtAttachment =
+  const csGLRender2TextureBackend::RTAttachment& rtAttachment =
     currentAttachments.GetAttachment (attachment);
   if (subtexture) *subtexture = rtAttachment.subtexture;
   return rtAttachment.texture;
@@ -450,38 +383,15 @@ void csGLRender2TextureEXTfbo::BeginDraw (int drawflags)
   SelectCurrentFBO ();
 }
 
-CS::Math::Matrix4 csGLRender2TextureEXTfbo::FixupProjection (
-    const CS::Math::Matrix4& projectionMatrix)
-{
-  CS::Math::Matrix4 flipY (
-      1, 0, 0, 0,
-      0, -1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1);
-  CS::Math::Matrix4 actual = flipY * projectionMatrix;
-  return actual;
-}
-
-void csGLRender2TextureEXTfbo::FinishDraw (bool readbackTargets)
+void csGLRender2TextureEXTfbo::SetupProjection ()
 {
   GLRENDER3D_OUTPUT_LOCATION_MARKER;
-  
-  if (readbackTargets)
-  {
-    ProfileScope _profile (G3D, "render target readback");
-      
-    for (int a = 0; a < rtaNumAttachments; a++)
-    {
-      const WRTAG::RTA& attachment =
-	currentAttachments.GetAttachment (csRenderTargetAttachment(a));
-      if (attachment.IsValid())
-      {
-	csGLBasicTextureHandle* tex_mm = 
-	  static_cast<csGLBasicTextureHandle*> ((iTextureHandle*)attachment.texture);
-	tex_mm->ReadbackFramebuffer();
-      }
-    }
-  }
+  G3D->SetGlOrtho (true);
+}
+
+void csGLRender2TextureEXTfbo::FinishDraw ()
+{
+  GLRENDER3D_OUTPUT_LOCATION_MARKER;
 
   currentFBO->Unbind();
   G3D->statecache->SetCullFace (GL_FRONT);
@@ -503,18 +413,13 @@ void csGLRender2TextureEXTfbo::SetupClipPortalDrawing ()
   glScalef (1, -1, 1);
 }
 
-void csGLRender2TextureEXTfbo::NextFrame (uint frameNum)
+void csGLRender2TextureEXTfbo::NextFrame()
 {
+  frameNum++;
+
   fboCache.AdvanceTime (frameNum);
   depthRBCache.AdvanceTime (frameNum);
   stencilRBCache.AdvanceTime (frameNum);
-  
-  fboCache.agedPurgeInterval = 60;
-}
-
-void csGLRender2TextureEXTfbo::CleanupFBOs()
-{
-  fboCache.agedPurgeInterval = 0;
 }
 
 void csGLRender2TextureEXTfbo::GetDepthStencilRBs (const Dimensions& fbSize, 
@@ -568,12 +473,12 @@ void csGLRender2TextureEXTfbo::GetDepthStencilRBs (const Dimensions& fbSize,
   }
 }
 
-void csGLRender2TextureEXTfbo::RegenerateTargetMipmaps (const WRTAG::RTA& target)
+void csGLRender2TextureEXTfbo::RegenerateTargetMipmaps (const RTAttachment& target)
 {
   if (!target.texture) return;
 
-  csGLBasicTextureHandle* tex_mm = static_cast<csGLBasicTextureHandle*> (
-	(iTextureHandle*)target.texture);
+  csGLBasicTextureHandle* tex_mm = 
+    static_cast<csGLBasicTextureHandle*> (target.texture->GetPrivateObject ());
   if (!(tex_mm->GetFlags() & CS_TEXTURE_NOMIPMAPS))
   {
     tex_mm->RegenerateMipmaps();
@@ -586,26 +491,6 @@ void csGLRender2TextureEXTfbo::SelectCurrentFBO ()
 
   currentAttachments.ComputeHash();
   currentFBO = fboCache.Query (currentAttachments, true);
-  
-  // Weak refs may got zeroed
-  if (currentFBO != 0)
-  {
-    const R2TAttachmentGroup<>& fboRTAG = currentFBO->attachments;
-    for (int a = 0; a < rtaNumAttachments; a++)
-    {
-      const RRTAG::RTA& attachment =
-	currentAttachments.GetAttachment (csRenderTargetAttachment(a));
-      const WRTAG::RTA& fboAttachment =
-	fboRTAG.GetAttachment (csRenderTargetAttachment(a));
-      if (attachment.IsValid() && !fboAttachment.IsValid())
-      {
-        fboCache.RemoveActive (currentFBO);
-        currentFBO = 0;
-        break;
-      }
-    }
-  }
-  
   if (currentFBO == 0)
   {
     // @@@ We can prolly get away with FB dimensions entirely
@@ -613,7 +498,7 @@ void csGLRender2TextureEXTfbo::SelectCurrentFBO ()
 
     for (int a = 0; a < rtaNumAttachments; a++)
     {
-      const WRTAG::RTA& attachment =
+      const csGLRender2TextureBackend::RTAttachment& attachment =
 	currentAttachments.GetAttachment (csRenderTargetAttachment(a));
       if (!attachment.IsValid()) continue;
 

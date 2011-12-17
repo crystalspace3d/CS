@@ -23,6 +23,8 @@
 
 #include "gifimage.h"
 
+CS_IMPLEMENT_PLUGIN
+
 CS_PLUGIN_NAMESPACE_BEGIN(GIFImageIO)
 {
 
@@ -59,6 +61,10 @@ csPtr<iImage> csGIFImageIO::Load (iDataBuffer* buf, int iFormat)
     return 0;
   }
   return csPtr<iImage> (i);
+}
+
+void csGIFImageIO::SetDithering (bool)
+{
 }
 
 csPtr<iDataBuffer> csGIFImageIO::Save (iImage* image, iImageIO::FileFormatDescription* format,

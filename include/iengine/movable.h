@@ -61,9 +61,9 @@ struct iMovableListener : public virtual iBase
 /**
  * This interface represents the position and orientation of an object
  * relative to its parent (this is the transformation between local object
- * space of the model and world space (ie where it is in the world)).
+ * space of the model and world space (i.e. where it is in the world)).
  * Movables are attached to objects (like meshes). For example, use
- * iMeshWrapper::GetMovable()) to get the movable belonging to some mesh.
+ * iMeshWrapper->GetMovable()) to get the movable belonging to some mesh.
  * 
  * The parent of an object can be null in which case it is positioned
  * relative to world space coordinates. The parent of an object can also
@@ -86,7 +86,7 @@ struct iMovableListener : public virtual iBase
  */
 struct iMovable : public virtual iBase
 {
-  SCF_INTERFACE(iMovable, 2,0,2);
+  SCF_INTERFACE(iMovable, 2,0,0);
 
   /**
    * Get the scene node that this movable belongs too.
@@ -120,7 +120,7 @@ struct iMovable : public virtual iBase
    * crosses a portal then you should in theory add every touched sector
    * to this list of sectors. If objects are small then you can get away
    * by not doing this. But it is possible that you will get render/clipping
-   * errors. There is a convenience function (iMeshWrapper::PlaceMesh())
+   * errors. There is a convenience function (iMeshWrapper->PlaceMesh())
    * which will attempt to find all sectors a mesh is in and update the
    * movable.
    * <p>
@@ -129,7 +129,7 @@ struct iMovable : public virtual iBase
   virtual iSectorList* GetSectors () = 0;
 
   /**
-   * Return true if we are placed in a sector (ie visible).
+   * Return true if we are placed in a sector (i.e. visible).
    */
   virtual bool InSector () const = 0;
 
@@ -182,7 +182,7 @@ struct iMovable : public virtual iBase
    * <b>WARNING:</b> Do not scale objects using the transform in the movable!
    * Several subsystems in Crystal Space (like collision detection and
    * visibility culling) don't work properly if you do that. Instead use
-   * iMeshWrapper or iMeshFactoryWrapper::HardTransform() to scale.
+   * iMeshWrapper or iMeshFactoryWrapper->HardTransform() to scale.
    * <p>
    * This function ignores the hierarchical transformation this movable
    * may be part off. If part of a hierarchical transformation this function
@@ -197,7 +197,7 @@ struct iMovable : public virtual iBase
    * <b>WARNING:</b> Do not scale objects using the transform in the movable!
    * Several subsystems in Crystal Space (like collision detection and
    * visibility culling) don't work properly if you do that. Instead use
-   * iMeshWrapper or iMeshFactoryWrapper::HardTransform() to scale.
+   * iMeshWrapper or iMeshFactoryWrapper->HardTransform() to scale.
    * <p>
    * This function ignores the hierarchical transformation this movable
    * may be part off. If part of a hierarchical transformation this function
@@ -305,7 +305,7 @@ struct iMovable : public virtual iBase
   virtual bool IsFullTransformIdentity () const = 0;
 
   /**
-   * Set the transform of this movable to the identity transform (ie
+   * Set the transform of this movable to the identity transform (i.e.
    * not moving at all). You have to call UpdateMove() after calling
    * this.
    * <p>
@@ -314,22 +314,6 @@ struct iMovable : public virtual iBase
    * will only set the local transform to identity.
    */
   virtual void TransformIdentity () = 0;
-
-  /**
-   * Set the world to object transformation. If there are no parent to this
-   * movable, then this method will be equivalent to SetTransform(). Otherwise,
-   * the relative transform between this movable and its parent will be updated
-   * in accordance with the given new full transform.
-   */
-  virtual void SetFullTransform (const csReversibleTransform& t) = 0;
-
-  /**
-   * Set the transformation vector for this object. If there are no parent to this
-   * movable, then this method will be equivalent to SetPosition(). Otherwise,
-   * the relative position between this movable and its parent will be updated
-   * in accordance with the given new full position.
-   */
-  virtual void SetFullPosition (const csVector3& v) = 0;
 };
 
 /** @} */

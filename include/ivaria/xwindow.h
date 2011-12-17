@@ -32,15 +32,13 @@
 #include "ivideo/cursor.h"
 #include "csgfx/rgbpixel.h"
 
-#include "csplugincommon/canvas/graph2d.h" // for csGraphics2D::HWMouseMode
-
 struct iGraphics2D;
 struct iImage;
 
 /// Document me! @@@
 struct iXWindow : public virtual iBase
 {
-  SCF_INTERFACE (iXWindow, 2, 0, 4);
+  SCF_INTERFACE (iXWindow, 1, 0, 0);
 
   // These should be inherited from csNativeWindow
   virtual bool Open () = 0;
@@ -52,12 +50,6 @@ struct iXWindow : public virtual iBase
   virtual void SetFullScreen (bool yesno) = 0;
 
   virtual void SetTitle (const char* title) = 0;
-
-  /** Sets the icon of this window with the provided one.
-   *
-   *  @param image the iImage to set as the icon of this window.
-   */
-  virtual void SetIcon (iImage *image) = 0;
   virtual void SetCanvas (iGraphics2D *canvas) = 0;
 
   // These are X specific
@@ -83,16 +75,6 @@ struct iXWindow : public virtual iBase
    */
   virtual bool AlertV (int type, const char* title, const char* okMsg,
         const char* msg, va_list arg) CS_GNUC_PRINTF (5, 0) = 0;
-	
-  virtual void SetHWMouseMode (csGraphics2D::HWMouseMode hwMouse) = 0;
-  
-  virtual bool SetWindowDecoration (iNativeWindow::WindowDecoration decoration, bool flag) = 0;
-  virtual bool GetWindowDecoration (iNativeWindow::WindowDecoration decoration, bool& result) = 0;
-  
-  virtual void Resize (int w, int h) = 0;
-
-  virtual bool GetWorkspaceDimensions (int& width, int& height) = 0;
-  virtual bool AddWindowFrameDimensions (int& width, int& height) = 0;
 };
 
 #endif // __CS_IVIDEO_XWINDOW_H__

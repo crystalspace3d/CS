@@ -133,12 +133,12 @@ public:
   }
 
   /**
-   * Test if this vector is inside the polygon. This assumes a convex polygon.
+   * Test if this vector is inside the polygon.
    */
   bool In (const csVector3& v) const;
 
   /**
-   * Test if a vector is inside the given polygon. This assumes a convex polygon.
+   * Test if a vector is inside the given polygon.
    */
   static bool In (csVector3* poly, size_t num_poly, const csVector3& v);
 

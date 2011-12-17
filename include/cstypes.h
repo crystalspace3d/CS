@@ -94,7 +94,7 @@ typedef uint64_t uint64;
 typedef int64_t int64;
 #endif
 
-#if defined(CS_HAVE_INT64_C) && defined(INT64_C)
+#ifdef CS_HAVE_INT64_C
 
 /**\def CONST_INT64
  * Specify a 64 bit integer constant.
@@ -110,7 +110,7 @@ typedef int64_t int64;
  */
 #define CONST_UINT64(x) UINT64_C(x)
 
-#else // defined(CS_HAVE_INT64_C) && defined(INT64_C)
+#else // CS_HAVE_INT64_C
 
 #if defined(CS_COMPILER_GCC)
 #define CONST_INT64(x)  x ## LL
@@ -228,14 +228,6 @@ typedef uint_least64_t ulonglong;
  * specifying intervals.
  */
 typedef unsigned int csTicks;
-
-/**
- * A time value measured in microseconds (1/1000000 of a second).  Ticks do not
- * represent wall clock time or any other Epoch-based time.  Instead, ticks are
- * useful only for measuring differences between points on a timeline, or for
- * specifying intervals.
- */
-typedef int64 csMicroTicks;
 
 /// Shortcut for default unsigned int.
 typedef unsigned int uint;

@@ -25,8 +25,7 @@
 #include "csutil/memheap.h"
 #include "csutil/refcount.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/threading/rwmutex.h"
-#include "csutil/threading/tls.h"
+#include "csutil/threading/mutex.h"
 #include "csutil/stringarray.h"
 #include "iutil/vfs.h"
 #include "iutil/eventh.h"
@@ -94,7 +93,7 @@ protected:
 
 struct HeapRefCounted :
   public CS::Memory::CustomAllocatedDerived<CS::Memory::Heap>,
-  public CS::Utility::AtomicRefCount
+  public CS::Utility::FastRefCount<HeapRefCounted>
 {
 };
 
@@ -129,7 +128,7 @@ private:
   friend class VfsNode;
 
   /// Mutex to make VFS thread-safe.
-  mutable CS::Threading::ReadWriteMutex mutex;
+  mutable CS::Threading::RecursiveMutex mutex;
 
   // A vector of VFS nodes
   class VfsVector : public csPDelArray<VfsNode>
@@ -137,20 +136,10 @@ private:
   public:
     static int Compare (VfsNode* const&, VfsNode* const&);
   } NodeList;
-  
-  struct VfsTls
-  {
-    // Current working directory (in fact, the automatically-added prefix path)
-    // NOTE: cwd ALWAYS ends in '/'!
-    csString cwd;
-    // Directory stack (used in PushDir () and PopDir ())
-    csStringArray dirstack;
-    
-    VfsTls();
-  };
 
-  // Thread-local values
-  CS::Threading::ThreadLocal<VfsTls> tls;
+  // Current working directory (in fact, the automatically-added prefix path)
+  // NOTE: cwd ALWAYS ends in '/'!
+  char *cwd;
   // The installation directory (the value of $@)
   char *basedir;
   // Full path of application's resource directory (the value of $*)
@@ -160,6 +149,8 @@ private:
   char *appdir;
   // The initialization file
   csConfigFile config;
+  // Directory stack (used in PushDir () and PopDir ())
+  csStringArray dirstack;
   // Reference to the object registry.
   iObjectRegistry *object_reg;
   // ChDirAuto() may need to generate unique temporary names for mount points.
@@ -192,7 +183,8 @@ public:
   /// Set current working directory
   virtual bool ChDir (const char *Path);
   /// Get current working directory
-  virtual const char *GetCwd ();
+  virtual const char *GetCwd () const
+  { return cwd; }
 
   /// Push current directory
   virtual void PushDir (char const* Path = 0);
@@ -205,13 +197,13 @@ public:
    * If IsDir is true, expanded path ends in an '/', otherwise no.
    */
   virtual csPtr<iDataBuffer> ExpandPath (
-  	const char *Path, bool IsDir = false);
+  	const char *Path, bool IsDir = false) const;
 
   /// Check whenever a file exists
-  virtual bool Exists (const char *Path);
+  virtual bool Exists (const char *Path) const;
 
   /// Find all files in a virtual directory and return an array of their names
-  virtual csPtr<iStringArray> FindFiles (const char *Path);
+  virtual csPtr<iStringArray> FindFiles (const char *Path) const;
   /// Replacement for standard fopen()
   virtual csPtr<iFile> Open (const char *FileName, int Mode);
   /**
@@ -256,7 +248,7 @@ public:
   virtual bool Initialize (iObjectRegistry *object_reg);
 
   /// Query file local date/time
-  virtual bool GetFileTime (const char *FileName, csFileTime &oTime);
+  virtual bool GetFileTime (const char *FileName, csFileTime &oTime) const;
   /// Set file local date/time
   virtual bool SetFileTime (const char *FileName, const csFileTime &iTime);
 
@@ -279,7 +271,7 @@ public:
 
 private:
   /// Same as ExpandPath() but with less overhead
-  char *_ExpandPath (const char *Path, bool IsDir = false);
+  char *_ExpandPath (const char *Path, bool IsDir = false) const;
 
   /// Read and set the VFS config file
   bool ReadConfig ();
@@ -289,11 +281,11 @@ private:
 
   /// Find the VFS node corresponding to given virtual path
   VfsNode *GetNode (const char *Path, char *NodePrefix,
-    size_t NodePrefixSize);
+    size_t NodePrefixSize) const;
 
   /// Common routine for many functions
   bool PreparePath (const char *Path, bool IsDir, VfsNode *&Node,
-    char *Suffix, size_t SuffixSize);
+    char *Suffix, size_t SuffixSize) const;
 
   /**
    * Check if a virtual path represents an actual physical mount point.  Note
@@ -310,7 +302,7 @@ private:
    * "/lib/textures" and "/lib/materials" are both valid and represented by
    * physical mount points, so true will be returned.
    */
-  bool CheckIfMounted(char const* virtual_path);
+  bool CheckIfMounted(char const* virtual_path) const;
 
   /**
    * Helper for ChDirAuto(). Checks if dir is mounted and invokes ChDir() if it

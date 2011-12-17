@@ -29,29 +29,18 @@
 class csDualQuaternion;
 
 /**\file
- * Skeleton interfaces for the CS::Mesh::iAnimatedMesh
+ * Skeleton2 interface files
  */
 
 struct iSceneNode;
 
-namespace CS {
-namespace Mesh {
+struct iSkeletonFactory2;
+struct iSkeleton2;
 
-struct iAnimatedMesh;
+class csSkeletalState2;
 
-} // namespace Mesh
-} // namespace CS
-
-namespace CS {
-namespace Animation {
-
-struct iSkeletonFactory;
-struct iSkeleton;
-
-class AnimatedMeshState;
-
-struct iSkeletonAnimPacketFactory;
-struct iSkeletonAnimPacket;
+struct iSkeletonAnimPacketFactory2;
+struct iSkeletonAnimPacket2;
 
 /**\addtogroup meshplugins
  * @{ */
@@ -61,7 +50,7 @@ struct iSkeletonAnimPacket;
 
 
 /// Identifier for single bone data
-typedef size_t BoneID;
+typedef unsigned int BoneID;
 
 /// ID for an invalid bone
 static const BoneID InvalidBoneID = (BoneID)~0;
@@ -70,19 +59,19 @@ static const BoneID InvalidBoneID = (BoneID)~0;
  * Skeletal system base object, representing the entire skeletal and
  * skeletal animation system.
  */
-struct iSkeletonManager : public virtual iBase
+struct iSkeletonManager2 : public virtual iBase
 {
-  SCF_INTERFACE(CS::Animation::iSkeletonManager, 1, 0, 0);
+  SCF_INTERFACE(iSkeletonManager2, 1, 0, 0);
 
   /**
    * Create a new empty skeleton factory
    */
-  virtual iSkeletonFactory* CreateSkeletonFactory (const char* name) = 0;
+  virtual iSkeletonFactory2* CreateSkeletonFactory (const char* name) = 0;
 
   /**
    * Find an already created skeleton factory
    */
-  virtual iSkeletonFactory* FindSkeletonFactory (const char* name) = 0;
+  virtual iSkeletonFactory2* FindSkeletonFactory (const char* name) = 0;
 
   /**
    * Remove all skeleton factories
@@ -92,12 +81,12 @@ struct iSkeletonManager : public virtual iBase
   /**
    * Create a new empty skeletal animation packet factory
    */
-  virtual iSkeletonAnimPacketFactory* CreateAnimPacketFactory (const char* name) = 0;
+  virtual iSkeletonAnimPacketFactory2* CreateAnimPacketFactory (const char* name) = 0;
 
   /**
    * Find a skeletal animation packet factory
    */
-  virtual iSkeletonAnimPacketFactory* FindAnimPacketFactory (const char* name) = 0;
+  virtual iSkeletonAnimPacketFactory2* FindAnimPacketFactory (const char* name) = 0;
 
   /**
    * Remove all animation packet factories
@@ -112,7 +101,7 @@ struct iSkeletonManager : public virtual iBase
 
 /**
  * A skeleton factory is an object defining the base pose and topology
- * from which CS::Animation::iSkeleton instances can be created.
+ * from which skeleton instances can be created.
  *
  * A note on coordinate spaces, cause there are a few to keep track of.
  * Within the skeleton factory there are two types coordinate spaces:
@@ -121,44 +110,42 @@ struct iSkeletonManager : public virtual iBase
  *   that is, the root bone(s) is defined in absolute space.
  * - Bone space. Bone space for every bone is defined by its parent.
  */
-struct iSkeletonFactory : public virtual iBase
+struct iSkeletonFactory2 : public virtual iBase
 {
-  SCF_INTERFACE(CS::Animation::iSkeletonFactory, 1, 0, 4);
+  SCF_INTERFACE(iSkeletonFactory2, 1, 0, 0);
 
   /**\name Bone handling
    * @{ */
 
   /**
-   * Create a new bone with the given parent bone
-   * \param parent bone The ID of the parent bone, or CS::Animation::InvalidBoneID if
-   * there are no parent (ie, this is one of the root bones). Theoritically, there can
-   * be more than one root bone, but this is not recommanded.
+   * Create a new bone with given parent
+   * \param parent bone id of parent or ~0 for no parent which creates a top
+   * level bone
    */
-  virtual BoneID CreateBone (BoneID parent = CS::Animation::InvalidBoneID) = 0;
+  virtual BoneID CreateBone (BoneID parent = InvalidBoneID) = 0;
 
-  /**
-   * Find the ID of a bone from its name
+  /*
+   * Find a bone id from its name
    * \param name bone name
    */
   virtual BoneID FindBone (const char *name) const = 0;
 
   /**
-   * Remove a bone from the skeleton. Any bones having the removed bone as parent
+   * Remove a bone from skeleton. Any bones having the removed bone as parent
    * will be reparented one step up the chain.
    * \param bone bone id of bone to remove
    */
   virtual void RemoveBone (BoneID bone) = 0;
 
   /**
-   * Get the ID of the parent of the given bone
-   * \return The ID of the parent on success. Non existing bones or bones without parent
-   * will return CS::Animation::InvalidBoneID.
-   * \param bone The ID of the bone
+   * Get the bone parent id
+   * \return parent id on success. Non existing bones will return ~0 as parent.
+   * \param bone bone Id
    */
   virtual BoneID GetBoneParent (BoneID bone) const = 0;
 
   /**
-   * Return true if the bone with the given ID exists within this skeleton factory
+   * Return true if bone with given id exists within skeleton factory
    */
   virtual bool HasBone (BoneID bone) const = 0;
 
@@ -178,38 +165,37 @@ struct iSkeletonFactory : public virtual iBase
   virtual BoneID GetTopBoneID () const = 0;
 
   /**
-   * Get the transform of the bone in bone space.
-   * \param bone The ID of the bone to get the transform for
-   * \param rot The rotation quaternion provided as a result
-   * \param offset The position offset provided as a result
+   * Get the bone transform in bone space.
+   * \param bone bone id to get the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void GetTransformBoneSpace (BoneID bone, csQuaternion& rot, 
     csVector3& offset) const = 0;
 
   /**
-   * Set the transform of the bone in bone space.
-   * \param bone The ID of the bone to set the transform for
-   * \param rot The rotation quaternion of the bone
-   * \param offset The position offset of the bone
+   * Set the bone transform in bone space.
+   * \param bone bone id to set the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void SetTransformBoneSpace (BoneID bone, const csQuaternion& rot, 
     const csVector3& offset) = 0;
 
   /**
-   * Get the transform of the bone in absolute space.
-   * \param bone The ID of the bone to get the transform for
-   * \param rot The rotation quaternion provided as a result
-   * \param offset The position offset provided as a result
+   * Get the bone transform in skeleton absolute space.
+   * \param bone bone id to get the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void GetTransformAbsSpace (BoneID bone, csQuaternion& rot, 
     csVector3& offset) const = 0;
 
   /**
-   * Set the transform of the bone in absolute space.
-   * \param bone The ID of the bone to set the transform for
-   * \param rot The rotation quaternion of the bone
-   * \param offset The position offset of the bone
-   * \warning The transform of the parent bones must have already been set.
+   * Set the bone transform in skeleton absolute space.
+   * \param bone bone id to set the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void SetTransformAbsSpace (BoneID bone, const csQuaternion& rot, 
     const csVector3& offset) = 0;
@@ -219,69 +205,35 @@ struct iSkeletonFactory : public virtual iBase
   /**
    * Create a skeleton instance from this skeleton factory.
    */
-  virtual csPtr<iSkeleton> CreateSkeleton () = 0;
+  virtual csPtr<iSkeleton2> CreateSkeleton () = 0;
 
   /**
    * Get the animation packet associated with this skeleton
    */
-  virtual iSkeletonAnimPacketFactory* GetAnimationPacket () const = 0;
+  virtual iSkeletonAnimPacketFactory2* GetAnimationPacket () const = 0;
 
   /**
    * Set the animation packet associated with this skeleton
    */
-  virtual void SetAnimationPacket (iSkeletonAnimPacketFactory* fact) = 0;
-
-  /**
-   * Set whether or not the skeleton should start its animation automatically
-   * after its initialization. Default value is true.
-   * \remarks The animation will be effectively started at the first frame
-   * subsequent to the creation of the CS::Mesh::iAnimatedMesh. You may therefore 
-   * still need to start manually the animation nodes, eg if you want to have the
-   * rigid bodies created directly by the ragdoll animation node.
-   */
-  virtual void SetAutoStart (bool autostart) = 0;
-
-  /**
-   * Set whether or not the skeleton should start its animation automatically
-   * after its initialization.
-   */
-  virtual bool GetAutoStart () = 0;
-
-  /**
-   * Return a textual representation of the bone tree of this skeleton factory
-   */
-  virtual csString Description () const = 0;
-
-  /**
-   * Return an ordered list of the bones. In this list, it is guaranteed that for a given bone,
-   * all children and sub-children bones are placed after the bone.
-   */
-  virtual const csArray<CS::Animation::BoneID>& GetBoneOrderList () = 0;
-
-  /**
-   * Get the name of the skeleton factory
-   */
-  virtual const char* GetName () const = 0;
+  virtual void SetAnimationPacket (iSkeletonAnimPacketFactory2* fact) = 0;
 };
 
 /**
- * A skeleton instance defines the state of a CS::Mesh::iAnimatedMesh. It is therefore a specific
- * copy of a skeleton, with the base pose and topology defined by the factory, but with the current
- * state defined internally. 
+ * A skeleton instance is a specific copy of a skeleton with base pose and
+ * topology defined by the factory but current state internally defined. 
  * 
- * The skeleton level introduces a third coordinate space, in addition to the absolute and bone
- * spaces defined for the CS::Animation::iSkeletonFactory. This new coordinate space is the bind
- * space, and is defined by the relative position compared to the default orientation (ie the bone
- * space).
+ * Skeleton instance adds one coordinate space per bone, the bind space.
+ * Bind space is defined by the skeleton factory, so bind space is relative
+ * transform compared to the default orientation.
  *
- * \sa CS::Animation::iSkeletonFactory for more information on the absolute and bone coordinate spaces.
+ * \sa iSkeletonFactory2 for more information on coordinate spaces
  */
-struct iSkeleton : public virtual iBase
+struct iSkeleton2 : public virtual iBase
 {
-  SCF_INTERFACE(CS::Animation::iSkeleton, 1, 0, 2);
+  SCF_INTERFACE(iSkeleton2, 1, 0, 0);
 
   /**
-   * Get the scene node associated with this skeleton
+   * Get the scene node associated with the skeleton
    */
   virtual iSceneNode* GetSceneNode () = 0;
 
@@ -289,154 +241,131 @@ struct iSkeleton : public virtual iBase
    * @{ */
 
   /**
-   * Get the transform of the bone in bone space.
-   * \param bone The ID of the bone to get the transform for
-   * \param rot The rotation quaternion provided as a result
-   * \param offset The position offset provided as a result
+   * Get the bone transform in bone space.
+   * \param bone bone id to get the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void GetTransformBoneSpace (BoneID bone, csQuaternion& rot, 
     csVector3& offset) const = 0;
 
   /**
-   * Set the transform of the bone in bone space.
-   * \param bone The ID of the bone to set the transform for
-   * \param rot The rotation quaternion of the bone
-   * \param offset The position offset of the bone
+   * Set the bone transform in bone space.
+   * \param bone bone id to set the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void SetTransformBoneSpace (BoneID bone, const csQuaternion& rot, 
     const csVector3& offset) = 0;
 
   /**
-   * Get the transform of the bone in absolute space.
-   * \param bone The ID of the bone to get the transform for
-   * \param rot The rotation quaternion provided as a result
-   * \param offset The position offset provided as a result
+   * Get the bone transform in skeleton absolute space.
+   * \param bone bone id to get the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void GetTransformAbsSpace (BoneID bone, csQuaternion& rot, 
     csVector3& offset) const = 0;
 
   /**
-   * Set the transform of the bone in absolute space.
-   * \param bone The ID of the bone to set the transform for
-   * \param rot The rotation quaternion of the bone
-   * \param offset The position offset of the bone
-   * \warning The transform of the parent bones must have already been set.
+   * Set the bone transform in skeleton absolute space.
+   * \param bone bone id to set the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void SetTransformAbsSpace (BoneID bone, const csQuaternion& rot, 
     const csVector3& offset) = 0;
   
   /**
-   * Get the transform of the bone in bind space.
-   * \param bone The ID of the bone to get the transform for
-   * \param rot The rotation quaternion provided as a result
-   * \param offset The position offset provided as a result
+   * Get the bone transform in bind space.
+   * \param bone bone id to get the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void GetTransformBindSpace (BoneID bone, csQuaternion& rot, 
     csVector3& offset) const = 0;
 
     
   /**
-   * Set the transform of the bone in bind space.
-   * \param bone The ID of the bone to set the transform for
-   * \param rot The rotation quaternion of the bone
-   * \param offset The position offset of the bone
-   * \warning The transform of the parent bones must have already been set.
+   * Set the bone transform in bind space.
+   * \param bone bone id to set the transform for
+   * \param rot rotation quaternion
+   * \param offset movement offset
    */
   virtual void SetTransformBindSpace (BoneID bone, const csQuaternion& rot, 
     const csVector3& offset) = 0;
   
   /**
-   * Get the state of the entire skeleton (ie all transforms) in absolute space
+   * Get the entire skeleton state (all transforms) in absolute space
    */
-  virtual csPtr<AnimatedMeshState> GetStateAbsSpace () = 0;
+  virtual csPtr<csSkeletalState2> GetStateAbsSpace () = 0;
 
   /**
-   * Get the state of the entire skeleton (ie all transforms) in bone space
+   * Get the entire skeleton state (all transforms) in bone space
    */
-  virtual csPtr<AnimatedMeshState> GetStateBoneSpace () = 0;
+  virtual csPtr<csSkeletalState2> GetStateBoneSpace () = 0;
 
   /**
-   * Get the state of the entire skeleton (ie all transforms) in bind space
+   * Get the entire skeleton state (all transforms) in bind space
    */
-  virtual csPtr<AnimatedMeshState> GetStateBindSpace () = 0;
+  virtual csPtr<csSkeletalState2> GetStateBindSpace () = 0;
 
   /** @} */
 
   /**
    * Get the factory used to create this skeleton instance
    */
-  virtual iSkeletonFactory* GetFactory () const = 0;
+  virtual iSkeletonFactory2* GetFactory () const = 0;
 
 
   /**
    * Get the animation packet associated with this skeleton
    */
-  virtual iSkeletonAnimPacket* GetAnimationPacket () const = 0;
+  virtual iSkeletonAnimPacket2* GetAnimationPacket () const = 0;
 
   /**
    * Set the animation packet associated with this skeleton
    */
-  virtual void SetAnimationPacket (iSkeletonAnimPacket* packet) = 0;
+  virtual void SetAnimationPacket (iSkeletonAnimPacket2* packet) = 0;
+
 
   /**
-   * Recreate the structure of the skeleton from the definition of the factory
+   * Recreate the skeleton structure from the factory
    */
   virtual void RecreateSkeleton () = 0;
 
   /**
-   * Update the state skeleton. The animation blending tree will be stepped with the given duration.
-   * \param dt The duration to step the animation, in seconds
-   * \sa CS::Animation::iSkeletonAnimNode::TickAnimation()
+   * Update the skeleton
    */
   virtual void UpdateSkeleton (float dt) = 0;
 
   /**
-   * Get the skeleton update version number. This number is incremented each time that a effective
-   * transformation has been made to the state of the skeleton.
+   * Get skeleton update version number
    */
   virtual unsigned int GetSkeletonStateVersion () const = 0;
-
-  /**
-   * Set the animated mesh associated with this skeleton
-   */
-  virtual void SetAnimatedMesh (CS::Mesh::iAnimatedMesh* animesh) = 0;
-
-  /**
-   * Get the animated mesh associated with this skeleton
-   */
-  virtual CS::Mesh::iAnimatedMesh* GetAnimatedMesh () = 0;
-
-  /**
-   * Reset the transform of all the bones of the skeleton to the ones of the
-   * skeleton factory.
-   */
-  virtual void ResetSkeletonState () = 0;
 };
 
 /**
- * Holds the state of an animesh skeleton for a frame, ie the position
- * and rotation of each bone of the skeleton. These transforms are in
- * bind space.
+ * 
  */
-class AnimatedMeshState : public csRefCount
+class csSkeletalState2 : public csRefCount
 {
 public:
 
-  /// Constructor
-  AnimatedMeshState ()
+  ///
+  csSkeletalState2 ()
     : boneVecs (0), boneQuats (0), numberOfBones (0)
   {}
 
-  /// Destructor
-  virtual inline ~AnimatedMeshState ()
+  //
+  virtual inline ~csSkeletalState2 ()
   {
     delete[] boneVecs;
     delete[] boneQuats;
   }
 
   /**
-   * Return the position vector of the given bone, in bone space.
-   * \param i The CS::Animation::BoneID of the bone.
+   * 
    */
   inline const csVector3& GetVector (size_t i) const
   {
@@ -444,8 +373,7 @@ public:
   }
 
   /**
-   * Return the position vector of the given bone, in bone space.
-   * \param i The CS::Animation::BoneID of the bone.
+   * 
    */
   inline csVector3& GetVector (size_t i) 
   {
@@ -454,8 +382,7 @@ public:
 
 
   /**
-   * Return the rotation quaternion of the given bone, in bone space.
-   * \param i The CS::Animation::BoneID of the bone.
+   * 
    */
   inline const csQuaternion& GetQuaternion (size_t i) const
   {
@@ -463,8 +390,7 @@ public:
   }
 
   /**
-   * Return the rotation quaternion of the given bone, in bone space.
-   * \param i The CS::Animation::BoneID of the bone.
+   * 
    */
   inline csQuaternion& GetQuaternion (size_t i) 
   {
@@ -472,9 +398,7 @@ public:
   }
 
   /**
-   * Return true if the position and rotation values have been set for
-   * the given bone, false otherwise (last position and rotation values
-   * which have been set for this bone will therefore be kept).
+   * 
    */
   inline bool IsBoneUsed (BoneID bone) const
   {
@@ -482,8 +406,7 @@ public:
   }
 
   /**
-   * Mark that the position and rotation values have been set for
-   * the given bone. Both position and rotation must therefore be set.
+   * 
    */
   inline void SetBoneUsed (BoneID bone)
   {
@@ -491,7 +414,7 @@ public:
   }
 
   /**
-   * Return the count of bones of this skeleton state
+   * 
    */
   inline size_t GetBoneCount () const
   {
@@ -499,8 +422,7 @@ public:
   }
 
   /**
-   * Initialize the skeleton state.
-   * \param numBones The count of bones of the animesh skeleton.
+   * 
    */
   inline void Setup (size_t numBones)
   {
@@ -517,14 +439,6 @@ public:
       boneVecs[i].Set (0,0,0);
   }
 
-  /**
-   * Mark all bones as not used
-   */
-  inline void Reset ()
-  {
-    bitSet.Clear ();
-  }
-
 protected:
   csBitArray bitSet;
   csVector3* boneVecs;
@@ -533,17 +447,6 @@ protected:
 };
 
 
-} // namespace Animation
-} // namespace CS
-
-CS_DEPRECATED_METHOD_MSG("Use CS::Animation::AnimatedMeshState instead")
-typedef CS::Animation::AnimatedMeshState csSkeletalState2;
-CS_DEPRECATED_METHOD_MSG("Use CS::Animation::iSkeleton instead")
-typedef CS::Animation::iSkeleton iSkeleton2;
-CS_DEPRECATED_METHOD_MSG("Use CS::Animation::iSkeletonFactory instead")
-typedef CS::Animation::iSkeletonFactory iSkeletonFactory2;
-CS_DEPRECATED_METHOD_MSG("Use CS::Animation::iSkeletonManager instead")
-typedef CS::Animation::iSkeletonManager iSkeletonManager2;
 
 /** @} */
 

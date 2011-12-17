@@ -83,17 +83,15 @@ public:
   };
 protected:
   Scheduler sched;
-  bool doMMX;
 
   bool ParseMap (iDocumentNode* node, ProctexPDLight* pt,
                  iLoader* LevelLoader);
 
   void Report (int severity, iDocumentNode* node, const char* msg, ...);
   bool HexToLightID (uint8* lightID, const char* lightIDHex);
-  
-  ProctexPDLight* NewProctexPDLight (iImage* img);
-  ProctexPDLight* NewProctexPDLight (int w, int h);
 public:
+  bool doMMX;
+
   ProctexPDLightLoader (iBase *p);
   virtual ~ProctexPDLightLoader ();
 
@@ -102,8 +100,6 @@ public:
   virtual csPtr<iBase> Parse (iDocumentNode* node,
   	iStreamSource*, iLoaderContext* ldr_context,
   	iBase* context);
-
-  virtual bool IsThreadSafe() { return true; }
 
   // PT update "scheduler"
   bool UpdatePT (ProctexPDLight* texture, csTicks time)

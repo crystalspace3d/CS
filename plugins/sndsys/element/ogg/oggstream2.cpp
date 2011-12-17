@@ -37,6 +37,8 @@
  */
 #define OGG_DECODE_BUFFER_SIZE 4096
 
+extern cs_ov_callbacks *GetCallbacks();
+
 SndSysOggSoundStream::SndSysOggSoundStream (csRef<SndSysOggSoundData> pData, 
 					    OggDataStore *pDataStore, csSndSysSoundFormat *pRenderFormat, 
               int Mode3D) :
@@ -58,7 +60,7 @@ SndSysOggSoundStream::SndSysOggSoundStream (csRef<SndSysOggSoundData> pData,
   // Initialize ogg file
   memset(&m_VorbisFile,0,sizeof(OggVorbis_File));
   ov_open_callbacks (&m_StreamData,&m_VorbisFile,0,0,
-    SndSysOggSoundData::ogg_callbacks);
+    *(ov_callbacks*)GetCallbacks());
 
   // Set to not a valid stream
   m_CurrentOggStream=-1;
@@ -95,22 +97,6 @@ size_t SndSysOggSoundStream::GetFrameCount()
 void SndSysOggSoundStream::AdvancePosition(size_t frame_delta)
 {
   size_t needed_bytes=0;
-  //if loop is enabled, end loop frame is different than zero and we are at the loop ending return to the
-  //start of the loop
-  if(m_bLooping && m_endLoopFrame != 0 && m_MostAdvancedReadPointer+frame_delta >= m_endLoopFrame)
-  {
-      //first advance the decoding of the exact bound we need to reach the endloopframe
-      AdvancePosition(m_endLoopFrame-m_MostAdvancedReadPointer-1);
-      //remove from frame_delta what we decoded already
-      frame_delta -= m_endLoopFrame-m_MostAdvancedReadPointer-1;
-      // Flush the prepared samples
-      m_PreparedDataBufferUsage=0;
-      m_PreparedDataBufferStart=0;
-
-      // Seek the ogg stream to the start loop position position for the rest of the advancement
-      ov_pcm_seek(&m_VorbisFile,m_startLoopFrame);
-  }
-
   if (m_NewPosition != InvalidPosition)
   {
     // Signal a full cyclic buffer flush
@@ -121,12 +107,12 @@ void SndSysOggSoundStream::AdvancePosition(size_t frame_delta)
     m_PreparedDataBufferStart=0;
 
     // Seek the ogg stream to the requested position
-    ov_pcm_seek(&m_VorbisFile,m_NewPosition);
+    ov_raw_seek(&m_VorbisFile,m_NewPosition);
 
     m_NewPosition = InvalidPosition;
     m_bPlaybackReadComplete=false;
   }
-  if (m_PauseState != CS_SNDSYS_STREAM_UNPAUSED || m_bPlaybackReadComplete || frame_delta==0)
+  if (m_bPaused || m_bPlaybackReadComplete || frame_delta==0)
     return;
 
  
@@ -179,8 +165,8 @@ void SndSysOggSoundStream::AdvancePosition(size_t frame_delta)
           return;
         }
 
-        // Loop by resetting the position to the start loop position and continuing
-        ov_pcm_seek(&m_VorbisFile,m_startLoopFrame);
+        // Loop by resetting the position to the beginning and continuing
+        ov_raw_seek(&m_VorbisFile,0);
       }
     }
 

@@ -35,11 +35,10 @@
 #include "iutil/object.h"
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
-#include "iutil/stringarray.h"
 
 #include "loader.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(Terrain2Loader)
 {
@@ -392,48 +391,15 @@ bool csTerrain2FactoryLoader::ParseCell (iDocumentNode *node,
       {
         const char* matname = child->GetContentsValue ();
         csRef<iMaterialWrapper> baseMaterial = ldr_ctx->FindMaterial (matname);
-
+        
         if (!baseMaterial)
         {
           synldr->ReportError (
             "crystalspace.terrain.object.loader.basematerial",
-            child, "Couldn't find material %s!", CS::Quote::Single (matname));
+            child, "Couldn't find material '%s'!", matname);
           return false;
         }
-
-        cell->SetBaseMaterial (baseMaterial);
-        break;
-      }
-    case XMLTOKEN_SPLATBASEMATERIAL:
-      {
-        const char* matname = child->GetContentsValue ();
-        csRef<iMaterialWrapper> baseMaterial = ldr_ctx->FindMaterial (matname);
-
-        if (!baseMaterial)
-        {
-          synldr->ReportError (
-            "crystalspace.terrain.object.loader.basematerial",
-            child, "Couldn't find material %s!", CS::Quote::Single (matname));
-          return false;
-        }
-
-        cell->SetSplatBaseMaterial (baseMaterial);
-        break;
-      }
-    case XMLTOKEN_ALPHASPLATMATERIAL:
-      {
-        const char* matname = child->GetContentsValue ();
-        csRef<iMaterialWrapper> alphaSplatMaterial = ldr_ctx->FindMaterial (matname);
-
-        if (!alphaSplatMaterial)
-        {
-          synldr->ReportError (
-            "crystalspace.terrain.object.loader.basematerial",
-            child, "Couldn't find material %s!", CS::Quote::Single (matname));
-          return false;
-        }
-
-        cell->SetAlphaSplatMaterial (alphaSplatMaterial);
+	cell->SetBaseMaterial (baseMaterial);
         break;
       }
     case XMLTOKEN_MATERIALMAPPERSISTENT:
@@ -516,14 +482,12 @@ csPtr<iBase> csTerrain2ObjectLoader::Parse (iDocumentNode* node,
         const char* factname = child->GetContentsValue ();
         csRef<iMeshFactoryWrapper> fact = ldr_context->FindMeshFactory (
           factname);
-
-        if(!fact)
+        if (!fact)
         {
           synldr->ReportError ("crystalspace.terrain.object.loader",
-            child, "Couldn't find factory %s!", CS::Quote::Single (factname));
+            child, "Couldn't find factory '%s'!", factname);
           return 0;
         }
-
         mesh = fact->GetMeshObjectFactory ()->NewInstance ();
         terrain = scfQueryInterface<iTerrainSystem> (mesh);
             
@@ -531,8 +495,8 @@ csPtr<iBase> csTerrain2ObjectLoader::Parse (iDocumentNode* node,
         {
           synldr->ReportError (
                     "crystalspace.terrain.parse.badfactory", child,
-                    "Factory %s doesn't appear to be a terrain factory!",
-                    CS::Quote::Single (factname));
+                    "Factory '%s' doesn't appear to be a terrain factory!",
+                    factname);
           return 0;
         }
             
@@ -559,7 +523,7 @@ csPtr<iBase> csTerrain2ObjectLoader::Parse (iDocumentNode* node,
               {
                 synldr->ReportError (
                   "crystalspace.terrain.object.loader.materialpalette",
-                  child, "Couldn't find material %s!", CS::Quote::Single (matname));
+                  child, "Couldn't find material '%s'!", matname);
                 return 0;
               }
               pal.Push (mat);
@@ -641,7 +605,7 @@ bool csTerrain2ObjectLoader::ParseCell (iDocumentNode* node,
   {
     synldr->ReportError (
       "crystalspace.terrain.object.loader.cell",
-      node, "Invalid cell name %s", CS::Quote::Single (cellName));
+      node, "Invalid cell name '%s'", cellName);
     return false;
   }
 

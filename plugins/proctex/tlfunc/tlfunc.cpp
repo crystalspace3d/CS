@@ -20,8 +20,8 @@
 #include "cssysdef.h"
 #include "csqint.h"
 
+#include "csutil/csmd5.h"
 #include "csutil/documenthelper.h"
-#include "csutil/md5.h"
 #include "csutil/ref.h"
 #include "csutil/scfarray.h"
 #include "csutil/scf.h"
@@ -46,7 +46,7 @@
 
 CS_LEAKGUARD_IMPLEMENT (csFuncTexLoader);
 
-
+CS_IMPLEMENT_PLUGIN
 
 SCF_IMPLEMENT_FACTORY(csFuncTexLoader)
 
@@ -160,8 +160,7 @@ csPtr<iBase> csFuncTexLoader::Parse (iDocumentNode* node,
   {
     csString flattened (CS::DocSystem::FlattenNode (exprNode));
 
-    CS::Utility::Checksum::MD5::Digest md5 (
-      CS::Utility::Checksum::MD5::Encode (flattened));
+    csMD5::Digest md5 (csMD5::Encode (flattened));
     cache_scope << md5.HexString ();
   }
 
@@ -183,29 +182,26 @@ csPtr<iBase> csFuncTexLoader::Parse (iDocumentNode* node,
 
     if (exprNode)
     {
-      csRef<iShaderVarStringSet> strings =
-        csQueryRegistryTagInterface<iShaderVarStringSet> (
-	 object_reg, "crystalspace.shader.variablenameset");
+      csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
+	object_reg, "crystalspace.shared.stringset");
 
       csShaderExpression expr (object_reg);
       
       csRef<iShaderVariableContext> context;
-      context.AttachNew (new csShaderVariableContext);
+      context.AttachNew (new csShaderVariableContext ());
       csRef<csShaderVariable> currentPos;
       currentPos.AttachNew (new csShaderVariable (
 	    strings->Request ("position")));
       context->AddVariable (currentPos);
-
+      
+      csRef<iShaderVarStack> stacks;
+      stacks.AttachNew (new scfArray<iShaderVarStack>);
+      context->PushVariables (stacks);
 
       if (expr.Parse (exprNode))
       {
-        csShaderVariableStack stack;
-        stack.Setup (strings->GetSize ());
-        
-        context->PushVariables (stack);
-
 	csRef<csShaderVariable> result;
-	result.AttachNew (new csShaderVariable (CS::InvalidShaderVarStringID));
+	result.AttachNew (new csShaderVariable (csInvalidStringID));
 	result->SetType (csShaderVariable::VECTOR4);
 	for (int y = 0; y < h; y++)
 	{
@@ -214,7 +210,7 @@ csPtr<iBase> csFuncTexLoader::Parse (iDocumentNode* node,
 	  for (int x = 0; x < w; x++)
 	  {
 	    currentPos->SetValue (csVector2 ((float)x / (float)w, fY));
-	    if (expr.Evaluate (result, stack))
+	    if (expr.Evaluate (result, stacks))
 	    {
 	      csVector4 v;
 	      result->GetValue (v);

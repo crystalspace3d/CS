@@ -43,17 +43,13 @@ struct iSndSysStream;
  */
 struct iSndSysData : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE(iSndSysData,0,2,0);
 
   /// Get the format of the sound data.
   virtual const csSndSysSoundFormat *GetFormat() = 0;
 
-  /**
-   * Get the count of frames of this sound data. The count of frames is
-   * equal to the actual duration of the sound, times its frequency. So, if
-   * you want to know the duration of the sound data, you should divide the
-   * return value of this method by the frequency of the sound data.
-   */
+  /// Get size of this sound in frames.
   virtual size_t GetFrameCount() = 0;
 
   /**

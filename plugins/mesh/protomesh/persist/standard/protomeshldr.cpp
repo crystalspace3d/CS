@@ -38,14 +38,13 @@
 #include "iutil/object.h"
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
-#include "iutil/stringarray.h"
 #include "ivaria/reporter.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/rndbuf.h"
 
 #include "protomeshldr.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 using namespace CS::Plugins::ProtoMeshLoader;
 
@@ -309,15 +308,13 @@ csPtr<iBase> csProtoMeshLoader::Parse (iDocumentNode* node,
 	{
 	  const char* factname = child->GetContentsValue ();
 	  iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
-
-    if(!fact)
-    {
-      synldr->ReportError (
-        "crystalspace.protomeshloader.parse.unknownfactory",
-        child, "Couldn't find factory %s!", CS::Quote::Single (factname));
-      return 0;
-    }
-
+	  if (!fact)
+	  {
+      	    synldr->ReportError (
+		"crystalspace.protomeshloader.parse.unknownfactory",
+		child, "Couldn't find factory '%s'!", factname);
+	    return 0;
+	  }
 	  mesh = fact->GetMeshObjectFactory ()->NewInstance ();
 	  CS_ASSERT (mesh != 0);
           meshstate = scfQueryInterface<iProtoMeshState> (mesh);
@@ -325,8 +322,8 @@ csPtr<iBase> csProtoMeshLoader::Parse (iDocumentNode* node,
 	  {
       	    synldr->ReportError (
 		"crystalspace.protomeshloader.parse.badfactory",
-		child, "Factory %s doesn't appear to be a protomesh factory!",
-		CS::Quote::Single (factname));
+		child, "Factory '%s' doesn't appear to be a protomesh factory!",
+		factname);
 	    return 0;
 	  }
 	}
@@ -339,7 +336,7 @@ csPtr<iBase> csProtoMeshLoader::Parse (iDocumentNode* node,
 	  {
       	    synldr->ReportError (
 		"crystalspace.protomeshloader.parse.unknownmaterial",
-		child, "Couldn't find material %s!", CS::Quote::Single (matname));
+		child, "Couldn't find material '%s'!", matname);
             return 0;
 	  }
 	  CHECK_MESH (mesh);

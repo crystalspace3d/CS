@@ -539,9 +539,8 @@ public:
   /**
    * Find all occurrences of \p search in this string and replace them with
    * \p replacement.
-   * \return Reference to itself.
    */
-  csStringBase& ReplaceAll (const char* search, const char* replacement);
+  void ReplaceAll (const char* search, const char* replacement);
 
   /**
    * Find all occurrences of \p search in this string and replace them with
@@ -978,11 +977,7 @@ protected:
     {
       NewSize++; // Plus one for implicit null byte.
       if (NewSize <= LEN)
-      {
-	// minibuff may still be wholly uninitialized, so ensure a null terminator
-	if (miniused == 0) minibuff[0] = 0;
 	miniused = NewSize;
-      }
       else
       {
 	CS_ASSERT(MaxSize == 0);
@@ -1033,12 +1028,6 @@ public:
   csStringFast (const char* src, size_t _length) : csStringBase(), miniused(0)
   { Append (src, _length); }
 
-  /// Create a csString object from a null-terminated wide string.
-  csStringFast (const wchar_t* src) : csStringBase (), miniused(0)
-  { Append (src); }
-  /// Create a csStringBase object from a wide string, given the length.
-  csStringFast (const wchar_t* src, size_t _length) : csStringBase (), miniused(0)
-  { Append (src, _length); }
   
   /// Create a csStringFast object from a single signed character.
   csStringFast (char c) : csStringBase(), miniused(0)
@@ -1115,8 +1104,6 @@ public:
   csStringFast (const char* src) : csStringBase(src) { }
   csStringFast (const char* src, size_t _length) : csStringBase(src, _length)
   { }
-  csStringFast (const wchar_t* src) : csStringBase (src) {}
-  csStringFast (const wchar_t* src, size_t _length) : csStringBase (src, _length) { }
   csStringFast (char c) : csStringBase(c) { }
   csStringFast (unsigned char c) : csStringBase(c) { }
   const csStringFast& operator = (const csStringBase& copy)
@@ -1155,9 +1142,9 @@ public:
 
 #ifndef SWIG
 /**
- * Superclass of csString; normally csStringFast.
+ * Superclass of csString; normally csStringFast<>.
  * \internal This is just an implementation detail to pacify Swig which
- *   otherwise complains that it does not know anything about csStringFast.
+ *   otherwise complains that it does not know anything about csStringFast<>.
  */
 typedef csStringFast<> csStringFastDefault;
 #else
@@ -1166,7 +1153,7 @@ typedef csStringFast<> csStringFastDefault;
 #endif
 
 /**
- * Thin wrapper around csStringFast with its default buffer size.
+ * Thin wrapper around csStringFast<> with its default buffer size.
  */
 class csString : public csStringFastDefault
 {
@@ -1188,11 +1175,6 @@ public:
   csString (const char* src) : csStringFast<> (src) { }
   /// Create a csString object from a C string, given the length.
   csString (const char* src, size_t _length) : csStringFast<> (src, _length) { }
-  /// Create a csString object from a null-terminated wide string.
-  csString (const wchar_t* src) : csStringFast<> (src) {}
-  /// Create a csStringBase object from a wide string, given the length.
-  csString (const wchar_t* src, size_t _length) : csStringFast<> (src, _length) { }
-
   /// Create a csString object from a single signed character.
   csString (char c) : csStringFast<> (c) { }
   /// Create a csString object from a single unsigned character.

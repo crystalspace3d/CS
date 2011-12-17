@@ -20,9 +20,6 @@
 #ifndef __CS_CSPLUGINCOMMON_SHADER_WEAVERCOMBINER_H__
 #define __CS_CSPLUGINCOMMON_SHADER_WEAVERCOMBINER_H__
 
-#include "iutil/document.h"
-#include "ivideo/graph3d.h"
-
 #include "csutil/scf.h"
 #include "csgeom/vector4.h"
 #include <limits.h>
@@ -33,7 +30,8 @@
 /**\addtogroup plugincommon
  * @{ */
 
-struct iString;
+struct iDocumentNode;
+struct iDocumentNodeIterator;
 
 namespace CS
 {
@@ -54,7 +52,7 @@ namespace CS
     
       struct iCombiner : public virtual iBase
       {
-        SCF_INTERFACE (iCombiner, 1, 0, 1);
+        SCF_INTERFACE (iCombiner, 0, 2, 0);
         
         /// Start addition of a new snippet.
         virtual void BeginSnippet (const char* annotation = 0) = 0;
@@ -96,8 +94,8 @@ namespace CS
         virtual void AddGlobal (const char* name, const char* type,
           const char* annotation = 0) = 0;
         /// Set output variable.
-        virtual void SetOutput (csRenderTargetAttachment target,
-          const char* name, const char* annotation = 0) = 0;
+        virtual void SetOutput (const char* name,
+          const char* annotation = 0) = 0;
         
         /**
          * Query a chain of coercions from a type to another.
@@ -134,17 +132,11 @@ namespace CS
          */
         virtual csRef<iString> QueryInputTag (const char* location, 
           iDocumentNode* blockNodes) = 0;
-	  
-	/**
-	 * Set a descriptive name of the program to be combined.
-	 * Emitted to the output, can be used to identify generated programs.
-	 */
-	virtual void SetDescription (const char* descr) = 0;
       };
       
       struct iCombinerLoader : public virtual iBase
       {
-        SCF_INTERFACE (iCombinerLoader, 0, 0, 4);
+        SCF_INTERFACE (iCombinerLoader, 0, 0, 2);
         
         virtual csPtr<iCombiner> GetCombiner (iDocumentNode* params) = 0;
 
@@ -155,19 +147,6 @@ namespace CS
           const char* locationPrefix, const char* svName, 
           const char* outputType, const char* outputName, 
           const char* uniqueTag) = 0;
-        virtual void GenerateBufferInputBlocks (iDocumentNode* node,
-          const char* locationPrefix, const char* bufName, 
-          const char* outputType, const char* outputName, 
-          const char* uniqueTag) = 0;
-
-	/**
-	 * A short string identifying the revision or some such of the combiner.
-	 * It is used to trigger regeneration of shaders if changed. Thus, a fix
-	 * or such that affects existing, cached shaders should result in a change
-	 * of this code in order to trigger the regeneration of the previously
-	 * cached shaders.
-	 */
-	virtual const char* GetCodeString() = 0;
       };
     } // namespace ShaderWeaver
   } // namespace PluginCommon

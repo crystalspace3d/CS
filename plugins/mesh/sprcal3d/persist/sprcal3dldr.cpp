@@ -40,7 +40,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "iutil/eventh.h"
 #include "iutil/comp.h"
 #include "iutil/document.h"
-#include "iutil/stringarray.h"
 #include "imap/ldrctxt.h"
 #include "sprcal3dldr.h"
 
@@ -52,7 +51,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <cal3d/loader.h>
 
-
+CS_IMPLEMENT_PLUGIN
 
 using namespace CS::Plugins::SprCal3dLoader;
 
@@ -111,7 +110,8 @@ bool csSpriteCal3DFactoryLoader::Initialize (iObjectRegistry* object_reg)
 
 
 csPtr<iBase> csSpriteCal3DFactoryLoader::Parse (iDocumentNode* node,
-						iStreamSource*,	iLoaderContext* ldr_context, 
+						iStreamSource*,
+						iLoaderContext* ldr_context, 
 						iBase* context)
 {
   csRef<iPluginManager> plugin_mgr (
@@ -157,7 +157,6 @@ csPtr<iBase> csSpriteCal3DFactoryLoader::Parse (iDocumentNode* node,
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   float scale = 0.0;
-  int loadFlags = LOADER_FLIP_WINDING;
 
   while (it->HasNext ())
   {
@@ -169,23 +168,13 @@ csPtr<iBase> csSpriteCal3DFactoryLoader::Parse (iDocumentNode* node,
     {
     case XMLTOKEN_OPTIONS:
       {
-	csRef<iDocumentAttribute> rotateAttr = child->GetAttribute ("rotate_x_axis");
-	if (rotateAttr)
-	{
-	  if (rotateAttr->GetValueAsBool())
-	    loadFlags |= LOADER_ROTATE_X_AXIS;
-	  else
-	    loadFlags &= ~LOADER_ROTATE_X_AXIS;
-	}
-	csRef<iDocumentAttribute> invertAttr = child->GetAttribute ("flip_textures");
-	if (invertAttr)
-	{
-	  if (invertAttr->GetValueAsBool())
-	    loadFlags |= LOADER_INVERT_V_COORD;
-	  else
-	    loadFlags &= ~LOADER_INVERT_V_COORD;
-	}
-	break;
+          bool rotate = child->GetAttributeValueAsBool("rotate_x_axis");
+          bool invert = child->GetAttributeValueAsBool("flip_textures");
+          //newspr->SetLoadFlags( rotate?LOADER_ROTATE_X_AXIS:0
+          //| invert?LOADER_INVERT_V_COORD:0 );          
+          newspr->SetLoadFlags( (rotate?LOADER_ROTATE_X_AXIS:0) 
+          | (invert?LOADER_INVERT_V_COORD:0) | LOADER_FLIP_WINDING );          
+          break;
       }
     case XMLTOKEN_PATH:
       {
@@ -235,7 +224,7 @@ csPtr<iBase> csSpriteCal3DFactoryLoader::Parse (iDocumentNode* node,
 	const char *file = child->GetAttributeValue("file");
 	if (file)
 	{
-	  if (!newspr->LoadCoreSkeleton(vfs, file, loadFlags))
+	  if (!newspr->LoadCoreSkeleton(vfs,file))
 	  {
 	    synldr->ReportError (
   	      "crystalspace.spritecal3dfactoryloader.parse.badfile",
@@ -301,7 +290,7 @@ csPtr<iBase> csSpriteCal3DFactoryLoader::Parse (iDocumentNode* node,
 	    max_vel,
             min_interval,
             max_interval,
-            idle_pct, lock, loadFlags);
+            idle_pct, lock);
 
 	  if (animID == -1)
 	  {
@@ -342,7 +331,7 @@ csPtr<iBase> csSpriteCal3DFactoryLoader::Parse (iDocumentNode* node,
 	  {
 	    mat = LoadMaterialTag(newspr,child,ldr_context,def_matl,def_matl);
 	  }
-	  int mesh_index = newspr->LoadCoreMesh(vfs,file,name,attach,mat, loadFlags);
+	  int mesh_index = newspr->LoadCoreMesh(vfs,file,name,attach,mat);
           if (mesh_index == -1)
 	  {
 	      synldr->ReportError (
@@ -368,7 +357,7 @@ csPtr<iBase> csSpriteCal3DFactoryLoader::Parse (iDocumentNode* node,
                 if (morph_file)
                 {
                   int morph_index = newspr->LoadCoreMorphTarget(
-		      vfs,mesh_index,morph_file,morph_name, loadFlags);
+		      vfs,mesh_index,morph_file,morph_name);
                   if (morph_index == -1)
                   {
                     newspr->ReportLastError();
@@ -489,7 +478,7 @@ iMaterialWrapper *csSpriteCal3DFactoryLoader::LoadMaterialTag(
     {
       synldr->ReportError (
 	"crystalspace.spritecal3dfactoryloader.parse.unknownmaterial",
-	child, "Couldn't find material named %s", CS::Quote::Single (name));
+	child, "Couldn't find material named '%s'", name);
       return 0;
     }
         
@@ -716,7 +705,8 @@ bool csSpriteCal3DLoader::Initialize (iObjectRegistry* object_reg)
 }
 
 csPtr<iBase> csSpriteCal3DLoader::Parse (iDocumentNode* node,
-					 iStreamSource*, iLoaderContext* ldr_context, iBase*)
+					 iStreamSource*,
+					 iLoaderContext* ldr_context, iBase*)
 {
   csRef<iMeshObject> mesh;
   csRef<iSpriteCal3DState> sprCal3dLook;
@@ -734,15 +724,13 @@ csPtr<iBase> csSpriteCal3DLoader::Parse (iDocumentNode* node,
       {
 	const char* factname = child->GetContentsValue ();
 	iMeshFactoryWrapper* fact = ldr_context->FindMeshFactory (factname);
-
-  if(!fact)
-  {
-    synldr->ReportError (
-      "crystalspace.spritecal3dloader.parse.unknownfactory",
-      child, "Couldn't find factory %s!", CS::Quote::Single (factname));
-    return 0;
-  }
-
+	if (!fact)
+	{
+	  synldr->ReportError (
+	    "crystalspace.spritecal3dloader.parse.unknownfactory",
+	    child, "Couldn't find factory '%s'!", factname);
+	  return 0;
+	}
 	mesh = fact->GetMeshObjectFactory ()->NewInstance ();
 	sprCal3dLook = scfQueryInterface<iSpriteCal3DState> (mesh);
       }
@@ -753,9 +741,7 @@ csPtr<iBase> csSpriteCal3DLoader::Parse (iDocumentNode* node,
 	synldr->ReportError (
 	  "crystalspace.spritecal3dloader.parse.motion.missingfactory",
 	  child,
-	  "No Factory! Please define %s before %s!",
-	  CS::Quote::Single ("factory"),
-	  CS::Quote::Single ("animcycle"));
+	  "No Factory! Please define 'factory' before 'animcycle'!");
 	return 0;
       }
       if (sprCal3dLook->FindAnim(child->GetContentsValue ()) != -1)
@@ -778,9 +764,7 @@ csPtr<iBase> csSpriteCal3DLoader::Parse (iDocumentNode* node,
 	synldr->ReportError (
 	  "crystalspace.spritecal3dloader.parse.motion.missingfactory",
 	  child,
-	  "No Factory! Please define %s before %s!",
-	  CS::Quote::Single ("factory"),
-	  CS::Quote::Single ("idleanim"));
+	  "No Factory! Please define 'factory' before 'idleanim'!");
 	return 0;
       }
       if (sprCal3dLook->FindAnim(child->GetContentsValue ()) != -1)
@@ -802,9 +786,7 @@ csPtr<iBase> csSpriteCal3DLoader::Parse (iDocumentNode* node,
 	synldr->ReportError (
 	  "crystalspace.spritecal3dloader.parse.motion.missingfactory",
 	  child,
-	  "No Factory! Please define %s before %s!",
-	  CS::Quote::Single ("factory"),
-	  CS::Quote::Single ("idle"));
+	  "No Factory! Please define 'factory' before 'idle'!");
 	return 0;
       }
       sprCal3dLook->SetVelocity(0);

@@ -19,125 +19,68 @@
 #ifndef __PHYSTUT_H__
 #define __PHYSTUT_H__
 
-#include "cstool/demoapplication.h"
-#include "ivaria/dynamics.h"
-#include "ivaria/bullet.h"
-#include "ivaria/ode.h"
-#include "ivaria/dynamicsdebug.h"
-#include "ivaria/softanim.h"
-#include "imesh/animesh.h"
-#include "imesh/animnode/ragdoll.h"
+#include <stdarg.h>
+#include <crystalspace.h>
+#include <ivaria/ode.h>
 
-class Simple : public CS::Utility::DemoApplication
+class Simple
 {
 private:
-  // Physics related
-  csRef<iDynamics> dynamics;
-  csRef<iDynamicSystem> dynamicSystem;
-  csRef<CS::Physics::Bullet::iDynamicSystem> bulletDynamicSystem;
-  csRef<CS::Debug::iDynamicsDebuggerManager> debuggerManager;
-  csRef<CS::Debug::iDynamicSystemDebugger> dynamicsDebugger;
-  csRef<CS::Animation::iSoftBodyAnimationControlFactory> softBodyAnimationFactory;
-  bool isSoftBodyWorld;
+  iObjectRegistry* object_reg;
+  csRef<iEngine> engine;
+  csRef<iLoader> loader;
+  csRef<iGraphics3D> g3d;
+  csRef<iGraphics2D> g2d;
+  csRef<iKeyboardDriver> kbd;
+  csRef<iVirtualClock> vc;
+  csRef<iView> view;
+  csRef<iCollideSystem> cdsys;
+  csRef<FramePrinter> printer;
+  iSector* room;
+  int objcnt;
+  int solver;
+  bool disable;
 
-  // Meshes
+  csString phys_engine_name;
+  int  phys_engine_id;
+
+  csRef<iDynamics> dyn;
+  csRef<iDynamicSystem> dynSys;
+  csRef<iBulletDynamicSystem> bullet_dynSys;
   csRef<iMeshFactoryWrapper> boxFact;
   csRef<iMeshFactoryWrapper> meshFact;
-
-  // Environments
-  int environment;
-  csRef<iMeshWrapper> walls;
-
-  // Configuration related
-  int solver;
-  bool autodisable;
-  csString phys_engine_name;
-  int phys_engine_id;
+  csRef<iFont> courierFont;
   bool do_bullet_debug;
-  float remainingStepDuration;
 
-  // Dynamic simulation related
-  bool debugMode;
-  bool allStatic;
-  bool pauseDynamic;
-  float dynamicSpeed;
-
-  // Camera related
-  int physicalCameraMode;
-  csRef<iRigidBody> cameraBody;
-
-  // Ragdoll related
-  csRef<CS::Animation::iSkeletonRagdollNodeManager> ragdollManager;
-  CS::Animation::StateID ragdollState;
-  csRef<iMeshWrapper> ragdollMesh;
-
-  // Dragging related
-  bool dragging;
-  bool softDragging;
-  csRef<CS::Physics::Bullet::iPivotJoint> dragJoint;
-  csRef<CS::Physics::Bullet::iSoftBody> draggedBody;
-  size_t draggedVertex;
-  float dragDistance;
-  float linearDampening, angularDampening;
-
-  // Cut & Paste related
-  csRef<iRigidBody> clipboardBody;
-  csRef<iMeshWrapper> clipboardMesh;
-
-  //-- csBaseEventHandler
-  void Frame ();
-  bool OnKeyboard (iEvent &event);
-  bool OnMouseDown (iEvent &event);
-  bool OnMouseUp (iEvent &event);
-
-  // Camera
-  void UpdateCameraMode ();
-
-  // Spawning objects
-  bool SpawnStarCollider ();
-  iRigidBody* SpawnBox ();
-  iRigidBody* SpawnSphere ();
-  iRigidBody* SpawnCylinder ();
-  iRigidBody* SpawnCapsule (float length = rand() % 3 / 50.f + .7f,
-			    float radius = rand() % 10 / 50.f + .2f);
-  iRigidBody* SpawnMesh ();
-  iRigidBody* SpawnConvexMesh ();
-  iRigidBody* SpawnCompound ();
-  iJoint* SpawnJointed ();
-  void SpawnChain ();
-  void LoadRagdoll ();
-  void SpawnRagdoll ();
-  void SpawnRope ();
-  void SpawnCloth ();
-  void SpawnSoftBody ();
-
+  static bool SimpleEventHandler (iEvent& ev);
+  bool HandleEvent (iEvent& ev);
+  void SetupFrame ();
+  void WriteShadow (int x,int y,int fg,const char *str,...);
+  void Write(int x,int y,int fg,int bg,const char *str,...);
+  
+  bool CreateStarCollider ();
+  iRigidBody* CreateBox ();
+  iRigidBody* CreateSphere ();
+  iRigidBody* CreateMesh ();
+  iJoint* CreateJointed ();
   void CreateWalls (const csVector3& radius);
-  void CreateTerrain ();
+  csRef<iMeshWrapper> walls;
+  csRef<iMeshWrapper> avatar;
+  csRef<iRigidBody> avatarbody;
+
+  CS_DECLARE_EVENT_SHORTCUTS;
+
+  csEventID KeyboardDown;
+  csEventID KeyboardUp;
 
 public:
-  Simple ();
+  Simple (iObjectRegistry *obj);
   ~Simple ();
 
-  //-- CS::Utility::DemoApplication
-  void PrintHelp ();
-  bool OnInitialize (int argc, char* argv[]);
-  bool Application ();
-
-  friend class MouseAnchorAnimationControl;
-  csRef<CS::Physics::Bullet::iAnchorAnimationControl> grabAnimationControl;
-};
-
-class MouseAnchorAnimationControl : public scfImplementation1
-<MouseAnchorAnimationControl, CS::Physics::Bullet::iAnchorAnimationControl>
-{
- public:
-  MouseAnchorAnimationControl (Simple* simple)
-    : scfImplementationType (this), simple (simple) {}
-
-  csVector3 GetAnchorPosition () const;
-
- private:
-  Simple* simple;
+  bool Initialize ();
+  void Start ();
+  void Shutdown ();
 };
 
 #endif // __PHYSTUT_H__
+

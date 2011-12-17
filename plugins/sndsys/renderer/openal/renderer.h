@@ -34,7 +34,6 @@
 #include "iutil/comp.h"
 
 #include "csutil/array.h"
-#include "csutil/hash.h"
 #include "csutil/refarr.h"
 
 #include "isndsys/ss_structs.h"
@@ -103,23 +102,18 @@ public:
    * iSndSysRendererOpenAL interface
    */
 public:
-  /** Requests the use of the renderer's OpenAL context.
+  /** Requests the use of the renderers OpenAL context.
    *
    * @note Should only be used internally by the OpenAL renderer.
    * @note Should be matched by a call to Release.
    */
   virtual bool LockWait();
 
-  /** Releases the use of the renderer's OpenAL context.
+  /** Releases the use of the renderers OpenAL context.
    *
    * @note Should only be used internally by the OpenAL renderer.
    */
   virtual void Release();
-
-  /** \name * OpenAL extension support.
-   * @{ */
-  bool extAL_EXT_MCFORMATS;
-  /** @} */
 
   /*
    * csSndSysRendererOpenAL implementation
@@ -133,9 +127,9 @@ private:
   CS::Threading::RecursiveMutex m_ContextLock;
 
   /// The unique listener object for this renderer
-  csRef<SndSysListenerOpenAL> m_Listener;
+  csRef< SndSysListenerOpenAL > m_Listener;
 
-  /// Local reference to the object registry.
+  /// Local reference to the object rgistery.
   iObjectRegistry *m_ObjectRegistry;
 
   /// Configuration access
@@ -160,16 +154,13 @@ private:
   void Report (int severity, const char* msg, ...);
 
   /// Update everything (renderer, sources, etc.)
-  void Update ();
+  void Update();
 
   /// Perform final initialization
-  void Open ();
+  void Open();
 
   /// Perform finalization
-  void Close ();
-
-  /// Queries available extensions
-  void QueryExtensions ();
+  void Close();
 };
 
 #endif // #ifndef SNDSYS_RENDERER_OPENAL_RENDERER_H

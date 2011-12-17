@@ -26,11 +26,6 @@
 #include "csutil/csstring.h"
 #include "imesh/skeleton2.h"
 
-namespace CS {
-namespace Animation {
-struct iBodyManager;
-}
-}
 
 CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2Ldr)
 {
@@ -48,56 +43,34 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2Ldr)
       iStreamSource* ssource, iLoaderContext* ldr_context,
       iBase* context);
 
-    virtual bool IsThreadSafe() { return true; }
-
     //-- iComponent
     virtual bool Initialize (iObjectRegistry*);
 
   private: 
     bool ParseSkeleton (iDocumentNode* node);
-    bool ParseBone (iDocumentNode* node, CS::Animation::iSkeletonFactory* factory, CS::Animation::BoneID parent);
+    bool ParseBone (iDocumentNode* node, iSkeletonFactory2* factory, BoneID parent);
 
     bool ParseAnimPacket (iDocumentNode* node);    
-    CS::Animation::iSkeletonAnimation* ParseAnimation (iDocumentNode* node, 
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
+    iSkeletonAnimation2* ParseAnimation (iDocumentNode* node, 
+      iSkeletonAnimPacketFactory2* packet);
 
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseAnimTreeNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
+    csPtr<iSkeletonAnimNodeFactory2> ParseAnimTreeNode (iDocumentNode* node,
+      iSkeletonAnimPacketFactory2* packet);
 
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseAnimationNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseBlendNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParsePriorityNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseRandomNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseFSMNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseDebugNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseIKNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    bool ParseIKCCDNode (iDocumentNode* node, CS::Animation::iSkeletonIKNodeFactory* factnode);
-    bool ParseIKPhysicalNode (iDocumentNode* node, CS::Animation::iSkeletonIKNodeFactory* factnode);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseLookAtNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseRagdollNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseRetargetNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-    csPtr<CS::Animation::iSkeletonAnimNodeFactory> ParseSpeedNode (iDocumentNode* node,
-      CS::Animation::iSkeletonAnimPacketFactory* packet);
-
-    bool ParseBoneMapping (iDocumentNode* node, CS::Animation::BoneMapping& mapping,
-			   CS::Animation::iSkeletonFactory* sourceSkeleton,
-			   CS::Animation::iSkeletonFactory* targetSkeleton);
-    bool ParseEffector (iDocumentNode* node, CS::Animation::iSkeletonIKNodeFactory* factory);
+    csPtr<iSkeletonAnimNodeFactory2> ParseAnimationNode (iDocumentNode* node,
+      iSkeletonAnimPacketFactory2* packet);
+    csPtr<iSkeletonAnimNodeFactory2> ParseBlendNode (iDocumentNode* node,
+      iSkeletonAnimPacketFactory2* packet);
+    csPtr<iSkeletonAnimNodeFactory2> ParsePriorityNode (iDocumentNode* node,
+      iSkeletonAnimPacketFactory2* packet);
+    csPtr<iSkeletonAnimNodeFactory2> ParseRandomNode (iDocumentNode* node,
+      iSkeletonAnimPacketFactory2* packet);
+    csPtr<iSkeletonAnimNodeFactory2> ParseFSMNode (iDocumentNode* node,
+      iSkeletonAnimPacketFactory2* packet);
 
     iObjectRegistry* object_reg;
     csRef<iSyntaxService> synldr;
-    csRef<CS::Animation::iSkeletonManager> skelManager;
-    csRef<CS::Animation::iBodyManager> bodyManager;
+    csRef<iSkeletonManager2> skelManager;
 
     csStringHash xmltokens;
 #define CS_TOKEN_ITEM_FILE \

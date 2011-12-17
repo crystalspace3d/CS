@@ -1,6 +1,6 @@
 /*
   Copyright (C) 2006 by Kapoulkine Arseny
-                2007-2008 by Marten Svanfeldt
+                2007 by Marten Svanfeldt
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -41,14 +41,11 @@ csTerrainCell::csTerrainCell (csTerrainSystem* terrain, const char* name, int gr
   iTerrainCellRenderProperties* renderProperties,
   iTerrainCellCollisionProperties* collisionProperties,
   iTerrainCellFeederProperties* feederProperties)
-  : scfImplementationType (this),
+  : scfImplementationType (this), 
   terrain (terrain), name (name), materialMapWidth (materialMapWidth), 
   materialMapHeight (materialMapHeight), position (position), size (size),
-  minHeight (-FLT_MAX*0.9f), maxHeight (FLT_MAX*0.9f),
   renderProperties (renderProperties), collisionProperties (collisionProperties),
-  feederProperties (feederProperties),
-  needTangentsUpdate (true),
-  loadState (NotLoaded),
+  feederProperties (feederProperties), loadState (NotLoaded),
   lruTicks (0)
 {
   // Here we do grid width/height correction. The height map will be a
@@ -64,12 +61,6 @@ csTerrainCell::csTerrainCell (csTerrainSystem* terrain, const char* name, int gr
   
   step_x = size.x / (this->gridWidth - 1);
   step_z = size.z / (this->gridHeight - 1);
-
-  const csVector3 size01 = size * 0.1f;
-  boundingBox.Set (position.x - size01.x, minHeight - size01.y, position.y - size01.z,
-    position.x + size.x + size01.x, maxHeight + size01.y, position.y + size.z + size01.z);
-
-  terrain->CellSizeUpdate (this);
 }
 
 csTerrainCell::~csTerrainCell ()
@@ -102,8 +93,6 @@ void csTerrainCell::SetLoadState(LoadState state)
         case PreLoaded:
         {
           heightmap.SetSize (gridWidth * gridHeight, 0);
-          normalmap.SetSize (gridWidth * gridHeight, 0);
-	  needTangentsUpdate = true;
 
           if (materialMapPersistent)
             materialmap.SetSize (materialMapWidth * materialMapHeight, 0);
@@ -121,8 +110,6 @@ void csTerrainCell::SetLoadState(LoadState state)
         case Loaded:
         {
           heightmap.SetSize (gridWidth * gridHeight);
-          normalmap.SetSize (gridWidth * gridHeight);
-	  needTangentsUpdate = true;
 
           if (materialMapPersistent)
             materialmap.SetSize (materialMapWidth * materialMapHeight, 0);
@@ -175,10 +162,7 @@ void csTerrainCell::SetLoadState(LoadState state)
           terrain->FireUnloadCallbacks (this);
 
           heightmap.DeleteAll ();
-          normalmap.DeleteAll ();
           materialmap.DeleteAll ();
-	  tangentmap.DeleteAll ();
-	  bitangentmap.DeleteAll ();
 
           renderData = 0;
           collisionData = 0;
@@ -200,8 +184,12 @@ void csTerrainCell::SetLoadState(LoadState state)
 }
 
 csBox3 csTerrainCell::GetBBox () const
-{  
-  return boundingBox;
+{
+  csBox3 box;
+  box.Set (position.x, 0, position.y,
+    position.x + size.x, size.y, position.y + size.z);
+
+  return box;
 }
 
 const char* csTerrainCell::GetName () const
@@ -266,110 +254,7 @@ void csTerrainCell::UnlockHeightData ()
 {
   Touch();
 
-  minHeight = FLT_MAX;
-  maxHeight = -FLT_MAX;
-
-  for (size_t i = 0; i < heightmap.GetSize (); ++i)
-  {
-    minHeight = csMin (minHeight, heightmap[i]);
-    maxHeight = csMax (maxHeight, heightmap[i]);
-  }
-
-  const csVector3 size01 = size * 0.1f;
-  boundingBox.Set (position.x - size01.x, minHeight - size01.y, position.y - size01.z,
-    position.x + size.x + size01.x, maxHeight + size01.y, position.y + size.z + size01.z);
-
-  terrain->CellSizeUpdate (this);
-
   terrain->FireHeightUpdateCallbacks (this, lockedHeightRect);
-}
-
-csLockedNormalData csTerrainCell::GetNormalData ()
-{
-  csLockedNormalData data;
-  data.data = normalmap.GetArray ();
-  data.pitch = gridWidth;
-
-  return data;
-}
-
-csLockedNormalData csTerrainCell::LockNormalData (const csRect& rectangle)
-{
-  csLockedNormalData data;
-
-  data.data = normalmap.GetArray () + gridWidth * rectangle.ymin +
-    rectangle.xmin;
-
-  data.pitch = gridWidth;
-
-  return data;
-}
-
-void csTerrainCell::UnlockNormalData ()
-{
-  Touch();
-  needTangentsUpdate = true;
-}
-
-void csTerrainCell::RecalculateNormalData ()
-{
-  csLockedNormalData cellNData = GetNormalData ();
-
-  for (int y = 0; y < gridWidth; ++y)
-  {
-    csVector3* nRow = cellNData.data + y * gridHeight;
-
-    for (int x = 0; x < gridHeight; ++x)
-    {
-      *nRow++ = GetNormal (x, y);
-    }
-  }
-  needTangentsUpdate = true;
-}
-
-csLockedNormalData csTerrainCell::GetTangentData ()
-{
-  RecalculateTangentData();
-  
-  csLockedNormalData data;
-  data.data = tangentmap.GetArray ();
-  data.pitch = gridWidth;
-
-  return data;
-}
-
-csLockedNormalData csTerrainCell::GetBitangentData ()
-{
-  RecalculateTangentData();
-  
-  csLockedNormalData data;
-  data.data = bitangentmap.GetArray ();
-  data.pitch = gridWidth;
-
-  return data;
-}
-
-void csTerrainCell::RecalculateTangentData ()
-{
-  if (!needTangentsUpdate) return;
-  needTangentsUpdate = false;
-  
-  tangentmap.SetSize (gridWidth * gridHeight);
-  bitangentmap.SetSize (gridWidth * gridHeight);
-  csVector3* tData = tangentmap.GetArray ();
-  csVector3* bData = bitangentmap.GetArray ();
-
-  for (int y = 0; y < gridWidth; ++y)
-  {
-    csVector3* tRow = tData + y * gridHeight;
-    csVector3* bRow = bData + y * gridHeight;
-
-    for (int x = 0; x < gridHeight; ++x)
-    {
-      *tRow++ = GetTangent (x, y);
-      *bRow++ = GetBinormal (x, y);
-    }
-  }
 }
 
 const csVector2& csTerrainCell::GetPosition () const
@@ -498,30 +383,6 @@ iMaterialWrapper* csTerrainCell::GetBaseMaterial () const
   return baseMaterial;
 }
 
-void csTerrainCell::SetAlphaSplatMaterial (iMaterialWrapper* material)
-{
-  Touch ();
-
-  alphaSplatMaterial = material;
-}
-
-iMaterialWrapper* csTerrainCell::GetAlphaSplatMaterial () const
-{
-  return alphaSplatMaterial;
-}
-
-void csTerrainCell::SetSplatBaseMaterial (iMaterialWrapper* material)
-{
-  Touch ();
-
-  splatBaseMaterial = material;
-}
-
-iMaterialWrapper* csTerrainCell::GetSplatBaseMaterial () const
-{
-  return splatBaseMaterial;
-}
-
 bool csTerrainCell::CollideSegment (const csVector3& start, 
   const csVector3& end, bool oneHit, iTerrainVector3Array* points)
 {
@@ -540,21 +401,12 @@ csTerrainColliderCollideSegmentResult csTerrainCell::CollideSegment (
 
   if (!collider || !collisionProperties->GetCollidable ()) 
   {
-    return csTerrainColliderCollideSegmentResult ();
+    csTerrainColliderCollideSegmentResult rc;
+    rc.hit = false;
+    return rc;
   }
 
   return collider->CollideSegment (this, start, end);
-}
-
-bool csTerrainCell::CollideSegment (const csVector3& start, const csVector3& end,
-				    csVector3& hitPoint)
-{
-  iTerrainCollider* collider = terrain->GetCollider ();
-
-  if (!collider || !collisionProperties->GetCollidable ()) 
-    return false;
-
-  return collider->CollideSegment (this, start, end, hitPoint);  
 }
 
 bool csTerrainCell::CollideTriangles (const csVector3* vertices,
@@ -632,25 +484,14 @@ static inline csVector3 Lerp (const csVector3& x, const csVector3& y,
   return x + (y - x) * t;
 }
 
-csVector3 csTerrainCell::GetTangentDN (int x, int y) const
+csVector3 csTerrainCell::GetTangent (int x, int y) const
 {
   //@@TODO! check if this is correct
   float center = GetHeight (x, y);
-  
-  float dfdx = 0;
-  if (x - 1 >= 0 && x + 1 < gridWidth)
-    dfdx = (GetHeight (x + 1, y) - GetHeight (x - 1, y)) / (2*step_x); 
-  else if (x - 1 >= 0)
-    dfdx = (center - GetHeight (x - 1, y)) / step_x;
-  else if (x + 1 < gridWidth)
-    dfdx = (GetHeight (x + 1, y) - center) / step_x;
+  float left = x == 0 ? center : GetHeight (x-1, y);
+  float right = x + 1 == gridWidth ? center : GetHeight (x+1, y);
 
-  return csVector3 (1, dfdx, 0);
-}
-
-csVector3 csTerrainCell::GetTangent (int x, int y) const
-{
-  return GetTangentDN (x, y).Unit ();
+  return csVector3(1.0f / gridWidth, right - left, 0);
 }
 
 csVector3 csTerrainCell::GetTangent (const csVector2& pos) const
@@ -661,31 +502,20 @@ csVector3 csTerrainCell::GetTangent (const csVector2& pos) const
 
   LerpHelper (pos, x1, x2, xfrac, y1, y2, yfrac);
 
-  csVector3 n1 = Lerp (GetTangentDN (x1, y1), GetTangentDN (x2, y1), xfrac);
-  csVector3 n2 = Lerp (GetTangentDN (x1, y2), GetTangentDN (x2, y2), xfrac);
+  csVector3 n1 = Lerp (GetTangent (x1, y1), GetTangent (x2, y1), xfrac);
+  csVector3 n2 = Lerp (GetTangent (x1, y2), GetTangent (x2, y2), xfrac);
 
   return Lerp (n1, n2, yfrac).Unit ();
 }
 
-csVector3 csTerrainCell::GetBinormalDN (int x, int y) const
+csVector3 csTerrainCell::GetBinormal (int x, int y) const
 {
   //@@TODO! check if this is correct
   float center = GetHeight (x, y);
-  
-  float dfdy = 0;
-  if (y - 1 >= 0 && y + 1 < gridHeight)
-    dfdy = (GetHeight (x, y + 1) - GetHeight (x, y - 1)) / (2*step_z); 
-  else if (y - 1 >= 0)
-    dfdy = (center - GetHeight (x, y - 1)) / step_z;
-  else if (y + 1 < gridHeight)
-    dfdy = (GetHeight (x, y + 1) - center) / step_z;
+  float up = y == 0 ? center : GetHeight (x, y-1);
+  float down = y + 1 == gridHeight ? center : GetHeight (x, y+1);
 
-  return csVector3(0, dfdy, -1);
-}
-
-csVector3 csTerrainCell::GetBinormal (int x, int y) const
-{
-  return GetBinormalDN (x, y).Unit ();
+  return csVector3(0, down - up, 1.0f / gridHeight);
 }
 
 csVector3 csTerrainCell::GetBinormal (const csVector2& pos) const
@@ -696,8 +526,8 @@ csVector3 csTerrainCell::GetBinormal (const csVector2& pos) const
 
   LerpHelper (pos, x1, x2, xfrac, y1, y2, yfrac);
 
-  csVector3 n1 = Lerp (GetBinormalDN (x1, y1), GetBinormalDN (x2, y1), xfrac);
-  csVector3 n2 = Lerp (GetBinormalDN (x1, y2), GetBinormalDN (x2, y2), xfrac);
+  csVector3 n1 = Lerp (GetBinormal (x1, y1), GetBinormal (x2, y1), xfrac);
+  csVector3 n2 = Lerp (GetBinormal (x1, y2), GetBinormal (x2, y2), xfrac);
 
   return Lerp (n1, n2, yfrac).Unit ();
 }

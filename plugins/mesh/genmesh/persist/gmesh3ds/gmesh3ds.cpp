@@ -61,7 +61,7 @@
 #include <lib3ds/vector.h>
 
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(Genmesh3DS)
 {
@@ -149,7 +149,7 @@ bool csGenmesh3DSFactoryLoader::LoadMeshObjectData (
     {
       ReportError (object_reg,
 		"crystalspace.genmesh3dsfactoryloader.load",
-		"Can't find material %s!", CS::Quote::Single (curFace->material));
+		"Can't find material '%s'!", curFace->material);
       return false;
     }
     size_t j;
@@ -160,7 +160,7 @@ bool csGenmesh3DSFactoryLoader::LoadMeshObjectData (
       if (mt.material == mat)
       {
         found = true;
-        mt.tris.Push ((uint)tri_idx);
+        mt.tris.Push (tri_idx);
         break;
       }
     }
@@ -168,7 +168,7 @@ bool csGenmesh3DSFactoryLoader::LoadMeshObjectData (
     {
       size_t ii = materials_and_tris.Push (csMatAndTris ());
       materials_and_tris[ii].material = mat;
-      materials_and_tris[ii].tris.Push ((uint)tri_idx);
+      materials_and_tris[ii].tris.Push (tri_idx);
     }
     curFace++;
   }
@@ -343,8 +343,9 @@ Lib3dsFile* csGenmesh3DSFactoryLoader::LoadFileData (uint8* pBuffer, size_t size
 }
 
 csPtr<iBase> csGenmesh3DSFactoryLoader::Parse (iDataBuffer* buf,
-				       iStreamSource*, iLoaderContext* ldr_context,
-				       iBase* context, iStringArray*)
+				       iStreamSource*,
+				       iLoaderContext* ldr_context,
+				       iBase* context)
 {
   materials_and_tris.Empty ();
 
@@ -422,14 +423,14 @@ iMeshFactoryWrapper* csGenmesh3DSFactoryLoader::Load (const char* factname,
   csRef<iMeshFactoryWrapper> ff = engine->CreateMeshFactory (
   	"crystalspace.mesh.object.genmesh", factname);
   csRef<iLoaderContext> ldr_context = engine->CreateLoaderContext ();
-  csRef<iBase> b = Parse (buffer, 0, ldr_context, ff->GetMeshObjectFactory (), 0);
+  csRef<iBase> b = Parse (buffer, 0, ldr_context, ff->GetMeshObjectFactory ());
   if (!b)
   {
     ReportError (object_reg,
 		"crystalspace.genmesh3dsfactoryloader.load",
 		filename
-			? "Error loading 3DS file %s!"
-			: "Error loading 3DS file!", CS::Quote::Single (filename));
+			? "Error loading 3DS file '%s'!"
+			: "Error loading 3DS file!", filename);
     return 0;
   }
   return ff;
@@ -450,7 +451,7 @@ iMeshFactoryWrapper* csGenmesh3DSFactoryLoader::Load (const char* factname,
   {
     ReportError (object_reg,
 		"crystalspace.genmesh3dsfactoryloader.load",
-		"Can't load file %s!", CS::Quote::Single (filename));
+		"Can't load file '%s'!", filename);
     return 0;
   }
   return Load (factname, filename, dbuf);

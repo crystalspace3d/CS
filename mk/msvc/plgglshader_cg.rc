@@ -18,7 +18,7 @@ FILEFLAGS 0x0
       VALUE "ProductName", "Crystal Space"
       VALUE "ProductVersion", CS_VERSION
       VALUE "FileVersion", CS_VERSION
-      VALUE "LegalCopyright", "Copyright (C)1998-2011 Jorrit Tyberghein and others"
+      VALUE "LegalCopyright", "Copyright (C)1998-2008 Jorrit Tyberghein and others"
       VALUE "FileDescription", "CG shader"
 #ifdef CS_DEBUG
       VALUE "Comments", "Debug build"
@@ -47,6 +47,11 @@ FILEFLAGS 0x0
   "        <name>crystalspace.graphics3d.shader.glcg</name>",
   "        <implementation>csGLShader_CG</implementation>",
   "        <description>OpenGL specific shaderprogram provider for Graphics3D</description>",
+  "      </class>",
+  "      <class>",
+  "        <name>crystalspace.graphics3d.shader.combiner.glcg</name>",
+  "        <implementation>ShaderCombinerLoaderCg</implementation>",
+  "        <description>Cg-specific combiner for shader snippets</description>",
   "      </class>",
   "    </classes>",
   "  </scf>",

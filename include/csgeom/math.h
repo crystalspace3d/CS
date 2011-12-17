@@ -122,159 +122,70 @@ T csSquare (const T& x)
   return x * x;
 }
 
-namespace CS
-{
-  /** \name Floating point utilities
-   * @{ */
-  /* IsNaN() is implemented by looking at the binary values directly
-     as using built-in functions turned out to be unreliable.
-     (Specifically, gcc's built-in isnan() always returns false if
-     -ffast-math is enabled.) */
-  /// Checks if a floating point value is not-a-number.
-  CS_FORCEINLINE bool IsNaN (float f)
-  {
-  #ifdef CS_IEEE_DOUBLE_FORMAT
-    const uint32 exponentMask = 0x7f800000;
-    const uint32 mantissaMask = 0x007fffff;
-    union
-    {
-      float f;
-      uint32 ui32;
-    } u;
-    u.f = f;
-    return ((u.ui32 & exponentMask) == exponentMask)
-	&& ((u.ui32 & mantissaMask) != 0);
-  #else
-    #error Do not know how to test for NaN
-  #endif
-  }
-  // External definition; used below as a workaround for __STRICT_ANSI__
-  CS_CRYSTALSPACE_EXPORT bool IsNaN_ext (double d);
-  /// Checks if a double-precision floating point value is not-a-number.
-  CS_FORCEINLINE bool IsNaN (double d)
-  {
-  #ifdef __STRICT_ANSI__
-    return IsNaN_ext (d);
-  #else
-  #ifdef CS_IEEE_DOUBLE_FORMAT
-    const uint64 exponentMask = CONST_UINT64(0x7ff0000000000000);
-    const uint64 mantissaMask = CONST_UINT64(0x000fffffffffffff);
-    union
-    {
-      double d;
-      uint64 ui64;
-    } u;
-    u.d = d;
-    return ((u.ui64 & exponentMask) == exponentMask)
-	&& ((u.ui64 & mantissaMask) != 0);
-  #else
-    #error Do not know how to test for NaN
-  #endif
-  #endif
-  }
-  
-  /// Checks if a floating point value is finite.
-  CS_FORCEINLINE bool IsFinite (float f)
-  {
-  #ifdef CS_IEEE_DOUBLE_FORMAT
-    const uint32 exponentMask = 0x7f800000;
-    union
-    {
-      float f;
-      uint32 ui32;
-    } u;
-    u.f = f;
-    return ((u.ui32 & exponentMask) != exponentMask);
-  #else
-    #error Do not know how to test for NaN
-  #endif
-  }
-  // External definition; used below as a workaround for __STRICT_ANSI__
-  CS_CRYSTALSPACE_EXPORT bool IsFinite_ext (double d);
-  /// Checks if a double-precision floating point value is finite.
-  CS_FORCEINLINE bool IsFinite (double d)
-  {
-  #ifdef __STRICT_ANSI__
-    return IsFinite_ext (d);
-  #else
-  #ifdef CS_IEEE_DOUBLE_FORMAT
-    const uint64 exponentMask = CONST_UINT64(0x7ff0000000000000);
-    union
-    {
-      double d;
-      uint64 ui64;
-    } u;
-    u.d = d;
-    return ((u.ui64 & exponentMask) != exponentMask);
-  #else
-    #error Do not know how to test for NaN
-  #endif
-  #endif
-  }
-  
-  /// Return Infinity.
-  CS_FORCEINLINE float Infinity()
-  {
-  #ifdef CS_IEEE_DOUBLE_FORMAT
-    union
-    {
-      uint32 ui32;
-      float f;
-    } u;
-    u.ui32 = 0x7f800000;
-    return u.f;
-  #else
-    return std::numeric_limits<float>::infinity();
-  #endif
-  }
-  /** @} */
-} // namespace CS
-
 //@{
-/**
- * Checks if a floating point value is finite.
- * \deprecated Deprecated in 1.9. Use CS::IsFinite() instead.
- */
-CS_DEPRECATED_METHOD_MSG("Use CS::IsFinite(x) instead")
+/// Checks if a floating point value is finite.
 CS_FORCEINLINE bool csFinite (float f)
 {
-  return CS::IsFinite (f);
+#if defined (CS_HAVE_FINITEF)
+  return finitef (f);
+#elif defined (CS_HAVE_STD__ISFINITE)
+  return std::isfinite (f);
+#elif defined(CS_HAVE_ISFINITE)
+  return isfinite (f);
+#elif defined (CS_HAVE_FINITE)
+  return finite (f);
+#elif defined (CS_HAVE__FINITE)
+  return _finite (f) != 0;
+#else
+#error Your platform has no isfinite()-alike function!
+#endif
 }
-/**
- * Checks if a double-precision floating point value is finite.
- * \deprecated Deprecated in 1.9. Use CS::IsFinite() instead.
- */
-CS_DEPRECATED_METHOD_MSG("Use CS::IsFinite(x) instead")
+/// Checks if a double-precision floating point value is finite.
 CS_FORCEINLINE bool csFinite (double d)
 {
-  return CS::IsFinite (d);
+#if defined (CS_HAVE_STD__ISFINITE)
+  return std::isfinite (d);
+#elif defined(CS_HAVE_ISFINITE)
+  return isfinite (d);
+#elif defined (CS_HAVE_FINITE)
+  return finite (d);
+#elif defined (CS_HAVE__FINITE)
+  return _finite (d) != 0;
+#else
+#error Your platform has no isfinite()-alike function!
+#endif
 }
 
-/**
- * Checks if a floating point value is not-a-number.
- * \deprecated Deprecated in 1.9. Use CS::IsNan() instead.
- */
-CS_DEPRECATED_METHOD_MSG("Use CS::IsNaN(x) instead")
+/// Checks if a floating point value is not-a-number.
 CS_FORCEINLINE bool csNaN (float f)
 {
-  return CS::IsNaN (f);
+#if defined (CS_HAVE_NANF)
+  return isnanf (f);
+#elif defined (CS_HAVE_STD__ISNAN)
+  return std::isnan (f);
+#elif defined(CS_HAVE_ISNAN)
+  return isnan (f);
+#elif defined (CS_HAVE__ISNAN)
+  return _isnan (f) != 0;
+#else
+#error Your platform has no isnan()-alike function!
+#endif
 }
-/**
- * Checks if a double-precision floating point value is not-a-number.
- * \deprecated Deprecated in 1.9. Use CS::IsNaN() instead.
- */
-CS_DEPRECATED_METHOD_MSG("Use CS::IsNaN(x) instead")
+/// Checks if a double-precision floating point value is not-a-number.
 CS_FORCEINLINE bool csNaN (double d)
 {
-  return CS::IsNaN (d);
+#if defined (CS_HAVE_STD__ISNAN)
+  return std::isnan (d);
+#elif defined(CS_HAVE_ISNAN)
+  return isnan (d);
+#elif defined (CS_HAVE__ISNAN)
+  return _isnan (d) != 0;
+#else
+#error Your platform has no isnan()-alike function!
+#endif
 }
 
-/**
- * Checks if a floating point value is normal (not infinite or nan).
- * \deprecated Deprecated in 1.9. Usage not recommended as results are
- *   inconsistent across platforms.
- */
-CS_DEPRECATED_METHOD_MSG("Usage not recommended, inconsistent results")
+/// Checks if a floating point value is normal (not infinite or nan).
 CS_FORCEINLINE bool csNormal (float f)
 {
 #if defined (CS_HAVE_NORMALF)
@@ -284,15 +195,10 @@ CS_FORCEINLINE bool csNormal (float f)
 #elif defined(CS_HAVE_ISNORMAL)
   return isnormal (f);
 #else
-  return CS::IsFinite(f) && !CS::IsNaN(f);
+  return csFinite(f) && !csNaN(f);
 #endif
 }
-/**
- * Checks if a double-precision floating point value is normal.
- * \deprecated Deprecated in 1.9. Usage not recommended as results are
- *   inconsistent across platforms.
- */
-CS_DEPRECATED_METHOD_MSG("Usage not recommended, inconsistent results")
+/// Checks if a double-precision floating point value is normal.
 CS_FORCEINLINE bool csNormal (double d)
 {
 #if defined (CS_HAVE_STD__ISNORMAL)
@@ -300,7 +206,7 @@ CS_FORCEINLINE bool csNormal (double d)
 #elif defined(CS_HAVE_ISNORMAL)
   return isnormal (d);
 #else
-  return CS::IsFinite(d) && !CS::IsNaN(d);
+  return csFinite(d) && !csNaN(d);
 #endif
 }
 //@}

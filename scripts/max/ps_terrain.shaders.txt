@@ -1,3 +1,4 @@
-    <shader><file>/shader/terrain/terrain.xml</file></shader>
-    <shader><file>/shader/terrain/splat.xml</file></shader>
-    <shader><file>/shader/terrain/multisplat.xml</file></shader>
+  <shaders>
+    <shader><file>/shader/terrain_fixed_base.xml</file></shader>
+    <shader><file>/shader/terrain_fixed_splatting.xml</file></shader>
+  </shaders>

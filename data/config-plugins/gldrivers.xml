@@ -41,13 +41,6 @@
   -->
 <gldriverdb>
   <configs>
-    <config name="slowzonly">
-      <RenderManager>
-	<ZOnly>
-	  <Enabled>false</Enabled>
-	</ZOnly>
-      </RenderManager>
-    </config>
     <config name="brokenstencil">
       <Video>
 	<OpenGL>
@@ -265,40 +258,14 @@
 	    <GL_ARB_fragment_program>no</GL_ARB_fragment_program>
 	  </UseExtension>
 	  <!-- Our GL ext disabling obviously doesn't apply to CgGL, so set
-	       the FP profile to the highest below AFP. -->
+	       the maximum FP profile to the highest below AFP. -->
 	  <Shader>
 	    <Cg>
-	      <Fake>
-		<Fragment>
-		  <Profile>ps_1_3</Profile>
-		</Fragment>
-	      </Fake>
+	      <MaxProfile>
+		<Fragment>ps_1_3</Fragment>
+	      </MaxProfile>
 	    </Cg>
 	  </Shader>
-	</OpenGL>
-      </Video>
-    </config>
-    <config name="novp40">
-      <Video>
-	<OpenGL>
-	  <Shader>
-	    <Cg>
-              <Fake>
-	        <Vertex>
-		  <Profile>arbvp1</Profile>
-		</Vertex>
-	      </Fake>
-	    </Cg>
-	  </Shader>
-	</OpenGL>
-      </Video>
-    </config>
-    <config name="noArbColorBufferFloat">
-      <Video>
-	<OpenGL>
-	  <UseExtension>
-	    <GL_ARB_color_buffer_float>no</GL_ARB_color_buffer_float>
-	  </UseExtension>
 	</OpenGL>
       </Video>
     </config>
@@ -318,22 +285,6 @@
 	    <GL_ARB_pixel_buffer_object>no</GL_ARB_pixel_buffer_object>
 	  </UseExtension>
 	</OpenGL>
-      </Video>
-    </config>
-    <config name="generateexcessmipmap">
-      <Video>
-	<OpenGL>
-	  <GenerateOneExcessMipMap>yes</GenerateOneExcessMipMap>
-	</OpenGL>
-      </Video>
-    </config>
-    <config name="disableSeamlessCubemaps">
-      <Video>
-       <OpenGL>
-         <UseExtension>
-           <GL_ARB_seamless_cube_map>no</GL_ARB_seamless_cube_map>
-         </UseExtension>
-       </OpenGL>
       </Video>
     </config>
   </configs>
@@ -521,21 +472,6 @@
       </applicable>
     </rule>
 
-    <!--
-      On Intel Graphics hardware it seems that the initial z-only pass gives
-      no benefit, only performance degradation. I thus disabled this feature for
-      *all* Intel Graphics. Needs to be tested to see if there exists Intel Graphics
-      hardware where the z-only pass is beneficial.
-      -->
-    <rule description="Intel Graphics: general slow features">
-      <conditions>
-	<regexp string="vendor" pattern="^Intel" />
-      </conditions>
-      <applicable>
-	<usecfg>slowzonly</usecfg>
-      </applicable>
-    </rule>
-
     <!-- 2008-02-13: texture compression is broken for Intel GMA 950 under OSX. As a result
             the OSX distribution of Planeshift to disable texture compression
             by default for all: http://hydlaa.com/smf/index.php?topic=29281.0
@@ -624,12 +560,9 @@
     <!-- 
       * 2006-11-25: A lot of crashes with NVIDIA hardware and RECT textures.
 		    Also see http://trac.crystalspace3d.org/trac/CS/wiki/RECT%20texture%20woes
-      * 2007-10-20: Driver version 6.14.10.9371 works on an GeForce 7800. 
-        Enabling for all later drivers.
       -->
     <rule description="NVidia: RECT texture extension apparently broken">
       <conditions fulfill="all">
-        <comparever version="glvendor" relation="lt 6.14.10.9371" />
         <regexp string="vendor" pattern="NVIDIA" />
       </conditions>
       <applicable>
@@ -637,45 +570,6 @@
       </applicable>
     </rule>
 
-    <!--
-	* 2008-05-01: GeForce 8800 GTS/PCI/SSE2, Linux 64-bit, 
-	              OpenGL 2.1.2 NVIDIA 169.12
-		      When setting a max LOD level for a texture and generating
-		      mipmaps with GL_GENERATE_MIPMAPS_SGIS, the last LOD
-		      level stays black.
-	-->
-    <rule description="NVidia: GENERATE_MIPMAPS does not generate last level">
-      <conditions>
-	<regexp	string="vendor" pattern="NVIDIA" />
-      </conditions>
-      <applicable>
-	<usecfg>generateexcessmipmap</usecfg>
-      </applicable>
-    </rule>
-    
-    <!--
-	* 2010-08-14: GeForce 8800M GTX/PCI/SSE2, Linux 64-bit, 
-	              OpenGL 3.3.0 NVIDIA 256.44
-		      Enabling seamless cube maps not reliable; instead of
-		      filtering across cube map faces, it looks like
-		      "clamp to border" wrapping is employed.
-	* 2011-01-07: GeForce 8800M GTX/PCI/SSE2, Linux 64-bit, 
-	              OpenGL 3.3.0 NVIDIA 260.19.29
-	              Issue is still present.
-        * 2011-06-25: GeForce 8800M GTX/PCI/SSE2, Linux 64-bit, 
-                      OpenGL 3.3.0 NVIDIA 270.41.06
-                      Issue is still present.
-	-->
-    <rule description="NVidia: ARB_seamless_cube_map broken">
-      <conditions>
-	<regexp	string="vendor" pattern="NVIDIA" />
-        <comparever version="glvendor" relation="le 270.41.06" />
-      </conditions>
-      <applicable>
-	<usecfg>disableSeamlessCubemaps</usecfg>
-      </applicable>
-    </rule>
-    
     <rule description="SiS: Text drawing only seems to work using the worst method">
       <conditions>
 	<regexp string="vendor" pattern="^SiS" />
@@ -741,13 +635,10 @@
                     OpenGL 2.0.6288
 		    Render targets are corrupted with GL_EXT_framebuffer_object.
 		    (See trac #261).
-      * 2007-10-12: GL_EXT_framebuffer_object seems to work fine with
-        an ATI Mobility Radeon x1600, win32 and 2.0.6174. Re-enabling
-        it on other ATI cards than the 9x000 series.
       -->
     <rule description="ATI: Work around EXT_framebuffer_object corruption">
       <conditions>
-	<regexp string="renderer" pattern="R\(ADEON\|adeon\) 9\(5\|6\|7\|8\).*" />
+	<regexp string="vendor" pattern="^ATI" />
 	<comparever version="gl" relation="le 2.0.6288" />
       </conditions>
       <applicable>
@@ -773,22 +664,6 @@
       <applicable>
 	<usecfg>nopbo</usecfg>
       </applicable>
-    </rule>
-    
-    <!--
-	* 2008-04-04: ATI Mobility Radeon HD 2600, Linux (32 bit),
-		      OpenGL 2.1.7281 Release
-		      Framebuffer objects don't work well: mipmap generation
-		      and readback seem to be broken.
-	-->
-    <rule description="ATI: Disable unsatisfactory framebuffer objects">
-	<conditions>
-		<regexp string="vendor" pattern="^ATI" />
-		<comparever version="gl" relation="le 2.1.7281" />
-	</conditions>
-	<applicable>
-		<usecfg>nofbo</usecfg>
-	</applicable>
     </rule>
     
     <rule description="Software GL tweaks">
@@ -901,35 +776,6 @@
       </applicable>
     </rule>
     -->
-    <!--
-      * 2009-11-20: Support for result.clip[0] variable in vp40
-                    causes compiler errors on Mac OS X Nvidia drivers.
-                    Occurred on 10.5 and 10.6.2. Bug #726.
-                    Driver version 2.1 NVIDIA-1.6.6
-      -->
-    <rule description="NVIDIA on OSX: Broken vp40 implementation">
-      <conditions fulfill="all">
-	<regexp string="platform" pattern="MacOS/X" />
-	<regexp	string="vendor" pattern="NVIDIA" />
-      </conditions>
-      <applicable>
-	<usecfg>novp40</usecfg>
-      </applicable>
-    </rule>
-    <!--
-     * 2009-11-20: Mac OS X does not support ARB_color_buffer_float.
-                   Even though this is advertised by the driver, if the
-		   extension is enabled, the app will crash in the OpenGL profiler.
-		   Additional info from http://lists.apple.com/archives/mac-opengl//2008/Jul/msg00060.html
-                   Driver version 2.1 NVIDIA-1.6.6. Tested on 10.6.2.
-     -->
-    <rule description="OSX: Broken ARB_color_buffer_float implementation">
-      <conditions fulfill="all">
-	<regexp string="platform" pattern="MacOS/X" />
-      </conditions>
-      <applicable>
-	<usecfg>noArbColorBufferFloat</usecfg>
-      </applicable>
-    </rule>
+
   </rules>
 </gldriverdb>

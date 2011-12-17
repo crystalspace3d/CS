@@ -86,7 +86,7 @@ public:
   virtual ~csFullScreenQuadRenderStep ();
 
   virtual void Perform (iRenderView* rview, iSector* sector,
-    csShaderVariableStack& stack);
+    iShaderVarStack* stacks);
 
   /*void SetMaterial (const char* m)
   { material = m; }
@@ -120,8 +120,6 @@ public:
   virtual csPtr<iBase> Parse (iDocumentNode* node, 
     iStreamSource*, iLoaderContext* ldr_context, 	
     iBase* context);
-
-  virtual bool IsThreadSafe() { return true; }
 };
 
 #endif // __CS_FULLSCREENQUAD_H__

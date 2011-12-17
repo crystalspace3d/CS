@@ -57,6 +57,7 @@ struct iSndSysRendererCallback;
  */
 struct iSndSysRenderer : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE(iSndSysRenderer,0,2,1);
 
   /// Set Volume (range 0.0 = silence 1.0 = as provided 2.0 = twice as loud)
@@ -100,6 +101,7 @@ struct iSndSysRenderer : public virtual iBase
  */
 struct iSndSysRendererCallback : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE(iSndSysRendererCallback,0,1,0);
 
   /// Called whenever a stream is added to the system
@@ -119,6 +121,7 @@ struct iSndSysRendererCallback : public virtual iBase
 /// Software renderer specific interface extensions
 struct iSndSysRendererSoftware : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE(iSndSysRendererSoftware,0,1,1);
 
   /// Add an output filter at the specified location.
@@ -142,6 +145,7 @@ struct iSndSysRendererSoftware : public virtual iBase
 /// OpenAL renderer specific interface extensions
 struct iSndSysRendererOpenAL : public virtual iBase
 {
+  /// SCF2006 - See http://www.crystalspace3d.org/cseps/csep-0010.html
   SCF_INTERFACE(iSndSysRendererOpenAL,0,1,1);
 
   /** Requests the use of the renderers OpenAL context.

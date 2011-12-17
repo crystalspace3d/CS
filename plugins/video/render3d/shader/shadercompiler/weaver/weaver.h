@@ -23,7 +23,6 @@
 #include "iutil/comp.h"
 #include "ivideo/shader/shader.h"
 
-#include "csutil/threading/tls.h"
 #include "csutil/weakref.h"
 #include "csutil/scf_implementation.h"
 
@@ -31,7 +30,6 @@ struct iSyntaxService;
 struct iLoaderContext;
 struct iVFS;
 struct iDocumentNode;
-struct iJobQueue;
 
 CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 {
@@ -67,14 +65,12 @@ public:
   /// Get a list of priorities for a given shader.
   virtual csPtr<iShaderPriorityList> GetPriorities (
 		  iDocumentNode* templ);
-		  
-  bool PrecacheShader(iDocumentNode*, iHierarchicalCache*, bool);
 
-  void Report (int severity, const char* msg, ...) const;
-  void Report (int severity, iDocumentNode* node, const char* msg, ...) const;
+  void Report (int severity, const char* msg, ...);
+  void Report (int severity, iDocumentNode* node, const char* msg, ...);
 
   csPtr<iDocumentNode> LoadDocumentFromFile (const char* filename,
-    iDocumentNode* node) const;
+    iDocumentNode* node);
 public:
   bool do_verbose;
   bool doDumpWeaved;
@@ -82,18 +78,13 @@ public:
   /// XML Token and management
   csStringHash xmltokens;
 
-  csRef<iDocumentSystem> binDocSys;
-  csRef<iDocumentSystem> xmlDocSys;
-
   //Standard vars
   iObjectRegistry* objectreg;
   csRef<iStringSet> strings;
-  csRef<iShaderVarStringSet> svstrings;
   csWeakRef<iGraphics3D> g3d;
   csRef<iSyntaxService> synldr;
   csRef<iVFS> vfs;
   csRef<iShaderCompiler> xmlshader;
-  csRef<iJobQueue> synthQueue;
 #define CS_TOKEN_ITEM_FILE \
   "plugins/video/render3d/shader/shadercompiler/weaver/weaver.tok"
 #include "cstool/tokenlist.h"
@@ -101,11 +92,9 @@ public:
   /* When loading a snippet, sometimes document nodes have to be created.
      These are created from this "auto document".
    */
-  CS::Threading::ThreadLocal<csRef<iDocumentNode> > autoDocRoot;
-  csRef<iDocumentNode> CreateAutoNode (csDocumentNodeType type) const;
-
-  /// Get the job queue used for shader technique synthesis
-  iJobQueue* GetSynthQueue();
+  csRef<iDocumentSystem> autoDocSys;
+  csRef<iDocumentNode> autoDocRoot;
+  csRef<iDocumentNode> CreateAutoNode (csDocumentNodeType type);
 };
 
 }

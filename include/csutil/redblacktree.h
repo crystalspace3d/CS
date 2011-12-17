@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2005 by Jorrit Tyberghein
-              (C) 2005-2010 by Frank Richter
+              (C) 2005 by Frank Richter
               (C) 2007-2008 by Marten Svanfeldt
 
     This library is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@
 #define __CS_UTIL_REDBLACKTREE_H__
 
 #include "csutil/blockallocator.h"
+#include "csutil/comparator.h"
 
 // hack: work around problems caused by #defining 'new'
 #if defined(CS_EXTENSIVE_MEMDEBUG) || defined(CS_MEMORY_TRACKER)
@@ -36,307 +37,68 @@
 /**\addtogroup util_containers
  * @{ */
 
-template <typename K, typename Allocator,
-  template<typename K, typename K2> class Ordering>
-class csRedBlackTree;
-
-template <typename K, typename T>
-class csRedBlackTreePayload;
-
-namespace CS
-{
-  namespace Container
-  {
-    /**\internal
-    * A node in a red black tree
-    */
-    template <typename K>
-    class RedBlackTreeNode
-    {
-    protected:
-      enum Color { Black = 0, Red = 1 };
-
-      template <typename _T, typename _A,
-	template<typename _K, typename _K2> class _O>
-      friend class csRedBlackTree;
-
-      RedBlackTreeNode* left;
-      RedBlackTreeNode* right;
-      uint8 key[sizeof(K)];
-
-      RedBlackTreeNode() : parent(0) {}
-      ~RedBlackTreeNode() { GetKey().~K(); }
-      inline RedBlackTreeNode* GetParent() const
-      { return (RedBlackTreeNode*)((uintptr_t)parent & (uintptr_t)~1); }
-      void SetParent(RedBlackTreeNode* p)
-      { parent = (RedBlackTreeNode*)(((uintptr_t)p & (uintptr_t)~1) | (uint)GetColor()); }
-      Color GetColor() const
-      { // Expression split over two statements to pacify some broken gcc's which
-	// barf saying "can't convert Node* to NodeColor".
-	uintptr_t const v = ((uintptr_t)parent & 1);
-	return (Color)v;
-      }
-      void SetColor (Color color)
-      { parent = (RedBlackTreeNode*)(((uintptr_t)parent & (uintptr_t)~1) | (uint)color); }
-    private:
-      /// Pointer to parent, but also stores color in LSB.
-      RedBlackTreeNode* parent;
-    public:
-      //@{
-      /// Accessor for node field.
-      inline RedBlackTreeNode* GetLeft() const { return left; }
-      inline RedBlackTreeNode* GetRight() const { return right; }
-      inline K& GetKey ()
-      {
-	/* Cast through 'void*' to avoid strict aliasing warning.
-	  'key' is not ever actually accessed through an uint8*, so the strict
-	  aliasing assumption practically still holds. */
-	void* p = &key;
-	return *(reinterpret_cast<K*> (p));
-      }
-      inline const K& GetKey () const
-      {
-	// See above
-	const void* p = &key;
-	return *(reinterpret_cast<const K*> (p));
-      }
-      //@}
-    };
-    
-    /// Default allocator for red black trees.
-    template <typename K>
-    struct DefaultRedBlackTreeAllocator :
-      public csFixedSizeAllocator<sizeof(RedBlackTreeNode<K>)>
-    {
-    };
-    
-    template<typename T> struct RedBlackExtractKey
-    {
-      typedef T Key;
-      const Key& key;
-      RedBlackExtractKey(const Key& a) : key(a) {}
-    };
-
-    template<typename T, typename U> struct RedBlackExtractKey<csRedBlackTreePayload<T, U> > : RedBlackExtractKey<T>
-    {
-      RedBlackExtractKey(const csRedBlackTreePayload<T, U>& a) : RedBlackExtractKey<T>(a.GetKey()) {}
-    };
-    
-    /**
-     * Strict weak ordering (http://en.wikipedia.org/wiki/Strict_weak_ordering)
-     * for red-black-trees.
-     * \par
-     * requires the key type to implement <tt>operator<()</tt> and <tt>operator==()</tt>
-     * \par
-     * the following axioms shall be true:
-     * !(a < a),
-     * a < b <=> !(b < a),
-     * a < b && b < c <=> a < c
-     */
-    template <typename K, typename K2>
-    class RedBlackTreeOrderingStrictWeak
-    {
-      const typename RedBlackExtractKey<K>::Key& a;
-      const typename RedBlackExtractKey<K2>::Key& b;
-    public:
-      RedBlackTreeOrderingStrictWeak (const K& a, const K2& b)
-       : a (RedBlackExtractKey<K>(a).key), b (RedBlackExtractKey<K2>(b).key) {}
-      
-      bool AeqB () const { return a == b; }
-      bool AleB () const { return a < b; }
-      bool BleA () const { return b < a; }
-    };
-    
-    /**
-     * Total ordering (http://en.wikipedia.org/wiki/Total_ordering) for red-black-trees.
-     * \par
-     * requires the key type to implement <tt>operator<=()</tt> and <tt>operator==()</tt>.
-     * \par
-     * the following axioms shall be true:
-     * a <= a,
-     * a <= b && b <= a <=> a == b,
-     * a <= b && b <= c => a <= c
-     */
-    template <typename K, typename K2>
-    class RedBlackTreeOrderingTotal
-    {
-      const typename RedBlackExtractKey<K>::Key& a;
-      const typename RedBlackExtractKey<K2>::Key& b;
-      bool lt;
-    public:
-      RedBlackTreeOrderingTotal (const K& a, const K2& b)
-       : a (RedBlackExtractKey<K>(a).key), b (RedBlackExtractKey<K2>(b).key), lt (this->a <= this->b) {}
-      
-      bool AeqB () const { return a == b; }
-      bool AleB () const { return lt; }
-      /* Note: For a total ordering, at least either AleB or BleA is always 
-       * true. BleA is only used by csRedBlackTree if AeqB and AleB are false;
-       * that the comparision here is actually 'b < a' instead of 'b <= a'
-       * - which the name suggests - has thus no errorneous consequences.
-       */
-      bool BleA () const { return !lt; }
-    };
-    
-    /**
-     * Partial ordering (http://en.wikipedia.org/wiki/Partial_order) for red-black-trees.
-     * Not that this will change the runtime characteristics. In the worst case - no key is
-     * comparable to the other - operations may take linear time instead of logarithmic as
-     * operations degenerate into an exhaustive search.
-     * \par
-     * requires the key type to implement <tt>operator<()</tt> and <tt>operator==()</tt>.
-     * \par
-     * the following axioms shall be true:
-     * a <= a,
-     * a <= b && b <= a <=> a == b,
-     * a <= b && b <= c <=> a <= c,
-     * !(a <= b) && !(b <= a) <=> a and b are incomparable
-     */
-    template <typename K, typename K2>
-    class RedBlackTreeOrderingPartial
-    {
-      const typename RedBlackExtractKey<K>::Key& a;
-      const typename RedBlackExtractKey<K2>::Key& b;
-    public:
-      RedBlackTreeOrderingPartial (const K& a, const K2& b)
-       : a (RedBlackExtractKey<K>(a).key), b (RedBlackExtractKey<K2>(b).key) {}
-      
-      bool AeqB () const { return a == b; }
-      bool AleB () const { return a <= b; }
-      bool BleA () const { return b <= a; }
-    };
-  } // namespace Container
-} // namespace CS
-
 /**
  * A red-black-tree.
- * \par Uniqueness of keys
- * Keys do <em>not</em> need to be unique. However, searching for a non-unique
- * key Find() will return an <em>equivalent</em> key, not necessarily the
- * <em>identical</em> key.
- *
- * \par
- * The ordering of the key is controlled by changing the \a Ordering template
- * parameter which defaults to total ordering. Total ordering is selected by
- * CS::Container::RedBlackTreeOrderingTotal. Partial ordering is selected
- * by CS::Container::RedBlackTreeOrderingPartial. Strict Weak ordering is
- * selected by CS::Container::RedBlackTreeOrderingStrictWeak.
- *
- * \par
- * The various "Find" methods can take keys of an alternative type (designated
- * \a K2). Operators available must cover the comparisons of the ordering parameter.
- * The ordering of \a K2 should, sensibly, be the same as that of \a K.
- *
- * \remark The key has to fullfill the requirements made by the Ordering class.
- * \remark Only stores keys. If you need a key-value-map, look at
+ * \remark Does not allow duplicate keys.
+ * \remark Uses csComparator<> for key comparisons.
+ * \remark Only stores keys. If you need a key-value-map, look at 
  *  csRedBlackTreeMap.
- * \remark The allocator has to return memory blocks at least aligned to
- *  two byte boundaries. (This is usually already the case.)
- * \remark Allocation requests to the allocator have a size of
- *  <tt>csRedBlackTree<K>::allocationUnitSize</tt>.
  */
-template <typename K,
-          typename Allocator =
-	    CS::Container::DefaultRedBlackTreeAllocator<K>,
-	  template<typename K, typename K2> class Ordering =
-	    CS::Container::RedBlackTreeOrderingTotal>
+template <typename K>
 class csRedBlackTree
 {
 protected:
-  typedef CS::Container::RedBlackTreeNode<K> Node;
-public:
-  enum { allocationUnitSize = sizeof (Node) };
-protected:
-  CS::Memory::AllocatorPointerWrapper<Node, Allocator> root;
-
-  Node* AllocNode ()
+  enum NodeColor { Black = 0, Red = 1 };
+  /// A node in the tree
+  struct Node
   {
-    Node* p = (Node*)root.Alloc (allocationUnitSize);
-    CS_ASSERT_MSG("Allocator returned block that is not 2-byte-aligned",
-      (uintptr_t(p) & 1) == 0);
-    new (p) Node;
-    return p;
-  }
-
-  void FreeNode (Node* p)
-  {
-    p->~Node();
-    root.Free (p);
-  }
-
-  /// Create a new tree node
-  Node* CreateNode (Node* parent, const K& key)
-  {
-    Node* node;
-    node = AllocNode();
-    node->SetParent (parent);
-    node->left = node->right = 0;
-    new ((K*)&node->key) K (key);
-    node->SetColor (Node::Red);
-    return node;
-  }
-
-  struct InsertCandidate
-  {
+  private:
+    /// Pointer to parent, but also stores color in LSB.
     Node* parent;
-    Node** node;
-    uint depth;
+  public:
+    Node* left;
+    Node* right;
+    uint8 key[sizeof(K)];
     
-    InsertCandidate() : parent (0), node (0), depth ((uint)~0) {}
+    Node() : parent(0) {}
+    ~Node() { ((K*)&key)->~K(); }
+    inline Node* GetParent() const
+    { return (Node*)((uintptr_t)parent & (uintptr_t)~1); }
+    void SetParent(Node* p)
+    { parent = (Node*)(((uintptr_t)p & (uintptr_t)~1) | (uint)GetColor()); }
+    NodeColor GetColor() const
+    { // Expression split over two statements to pacify some broken gcc's which
+      // barf saying "can't convert Node* to NodeColor".
+      uintptr_t const v = ((uintptr_t)parent & 1); 
+      return (NodeColor)v;
+    }
+    void SetColor (NodeColor color)
+    { parent = (Node*)(((uintptr_t)parent & (uintptr_t)~1) | (uint)color); }
   };
+  csBlockAllocator<Node, CS::Memory::AllocatorAlign<2> > nodeAlloc;
+  
+  Node* root;
+  
   /// Locate the place where a new node needs to be inserted.
-  Node* RecursiveFindInsertCandidate (Node* parent, Node*& node, 
-				      const K& key, uint depth,
-				      InsertCandidate& candidate)
+  Node* RecursiveInsert (Node* parent, Node*& node, const K& key)
   {
     if (node == 0)
     {
-      if (depth < candidate.depth)
-      {
-	candidate.parent = parent;
-	candidate.node = &node;
-	candidate.depth = depth;
-      }
-      return 0;
+      node = nodeAlloc.Alloc();
+      node->SetParent (parent);
+      node->left = node->right = 0;
+      new ((K*)&node->key) K (key);
+      node->SetColor (Red);
+      return node;
     }
-    
-    Ordering<K, K> _o (node->GetKey(), key);
-    if (_o.AleB())
+    else
     {
-      // New node _must_ be inserted somewhere in the left tree
-      InsertCandidate newCandidate;
-      Node* n = RecursiveFindInsertCandidate (node, node->left, key, depth+1,
-					      newCandidate);
-      if (n == 0)
-      {
-	n = *newCandidate.node = CreateNode (newCandidate.parent, key);
-      }
-      return n;
+      int r = csComparator<K, K>::Compare (key, *((K*)&node->key));
+      if (r < 0)
+	return RecursiveInsert (node, node->left, key);
+      else
+	return RecursiveInsert (node, node->right, key);
     }
-    
-    if (_o.BleA())
-    {
-      // New node _must_ be inserted somewhere in the right tree
-      InsertCandidate newCandidate;
-      Node* n = RecursiveFindInsertCandidate (node, node->right, key, depth+1,
-					      newCandidate);
-      if (n == 0)
-      {
-	n = *newCandidate.node = CreateNode (newCandidate.parent, key);
-      }
-      return n;
-    }
-    /* Left or right tree, doesn't matter. Try to find a place with a 
-       small depth to keep the tree as balanced as possible. */
-    Node* n = RecursiveFindInsertCandidate (node, node->left, key, depth+1,
-					    candidate);
-    if (n == 0)
-      n = RecursiveFindInsertCandidate (node, node->right, key, depth+1,
-					candidate);
-    if (n == 0)
-    {
-      n = *candidate.node = CreateNode (candidate.parent, key);
-    }
-    return n;
   }
   /// Left-rotate subtree around 'pivot'.
   void RotateLeft (Node* pivot)
@@ -347,7 +109,7 @@ protected:
       pivotReplace->left->SetParent (pivot);
     pivotReplace->SetParent (pivot->GetParent());
     if (pivot->GetParent() == 0)
-      root.p = pivotReplace;
+      root = pivotReplace;
     else
     {
       if (pivot == pivot->GetParent()->left)
@@ -367,7 +129,7 @@ protected:
       pivotReplace->right->SetParent (pivot);
     pivotReplace->SetParent (pivot->GetParent());
     if (pivot->GetParent() == 0)
-      root.p = pivotReplace;
+      root = pivotReplace;
     else
     {
       if (pivot == pivot->GetParent()->left)
@@ -380,10 +142,10 @@ protected:
   }
   /// Check whether a node is black. Note that 0 nodes are by definition black.
   bool IsBlack (Node* node) const
-  { return (node == 0) || (node->GetColor() == Node::Black); }
+  { return (node == 0) || (node->GetColor() == Black); }
   /// Check whether a node is red.
   bool IsRed (Node* node) const
-  { return (node != 0) && (node->GetColor() == Node::Red); }
+  { return (node != 0) && (node->GetColor() == Red); }
   /// Fix up the RB tree after an insert.
   void InsertFixup (Node* node)
   {
@@ -398,12 +160,12 @@ protected:
 	if (IsRed (y))
 	{
 	  // Uncle of 'node' is red
-	  p->SetColor (Node::Black);
-	  y->SetColor (Node::Black);
-	  pp->SetColor (Node::Red);
+	  p->SetColor (Black);
+	  y->SetColor (Black);
+	  pp->SetColor (Red);
 	  node = pp;
 	}
-	else
+	else 
 	{
 	  if (node == p->right)
 	  {
@@ -414,8 +176,8 @@ protected:
 	    pp = p->GetParent();
 	  }
 	  // Uncle of 'node' is black, node is left child
-	  p->SetColor (Node::Black);
-	  pp->SetColor (Node::Red);
+	  p->SetColor (Black);
+	  pp->SetColor (Red);
 	  RotateRight (pp);
 	}
       }
@@ -425,12 +187,12 @@ protected:
 	if (IsRed (y))
 	{
 	  // Uncle of 'node' is red
-	  p->SetColor (Node::Black);
-	  y->SetColor (Node::Black);
-	  pp->SetColor (Node::Red);
+	  p->SetColor (Black);
+	  y->SetColor (Black);
+	  pp->SetColor (Red);
 	  node = pp;
 	}
-	else
+	else 
 	{
 	  if (node == p->left)
 	  {
@@ -441,15 +203,15 @@ protected:
 	    pp = p->GetParent();
 	  }
 	  // Uncle of 'node' is black, node is right child
-	  p->SetColor (Node::Black);
-	  pp->SetColor (Node::Red);
+	  p->SetColor (Black);
+	  pp->SetColor (Red);
 	  RotateLeft (pp);
 	}
       }
     }
-    root.p->SetColor (Node::Black);
+    root->SetColor (Black);
   }
-
+  
   /// Delete a node from the tree.
   void DeleteNode (Node* node)
   {
@@ -457,19 +219,19 @@ protected:
     if ((node->left == 0) || (node->right == 0))
       y = node;
     else
-      y = Predecessor (node);
+      y = Successor (node);
     Node* x;
     if (y->left != 0)
       x = y->left;
     else
       x = y->right;
     Node* nilParent = 0;
-    if (x != 0)
+    if (x != 0) 
       x->SetParent (y->GetParent());
     else
       nilParent = y->GetParent();
     if (y->GetParent() == 0)
-      root.p = x;
+      root = x;
     else
     {
       if (y == y->GetParent()->left)
@@ -480,16 +242,16 @@ protected:
     if (y != node)
     {
       // Copy key
-      node->GetKey() = y->GetKey();
+      *((K*)&node->key) = *((K*)&y->key);
     }
-    if (y->GetColor() == Node::Black)
+    if (y->GetColor() == Black)
       DeleteFixup (x, nilParent);
-    FreeNode (y);
+    nodeAlloc.Free (y);
   }
   /// Fix up the RB tree after a deletion.
   void DeleteFixup (Node* node, Node* nilParent)
   {
-    while ((node != root.p) && IsBlack (node))
+    while ((node != root) && IsBlack (node))
     {
       Node* p = node ? node->GetParent() : nilParent;
       if (node == p->left)
@@ -497,32 +259,32 @@ protected:
 	Node* w = p->right;
 	if (IsRed (w))
 	{
-	  w->SetColor (Node::Black);
-	  p->SetColor (Node::Red);
+	  w->SetColor (Black);
+	  p->SetColor (Red);
 	  RotateLeft (p);
 	  p = node ? node->GetParent() : nilParent;
 	  w = p->right;
 	}
 	if (IsBlack (w->left) && IsBlack (w->right))
 	{
-	  w->SetColor (Node::Red);
+	  w->SetColor (Red);
 	  node = p;
 	}
 	else
 	{
 	  if (IsBlack (w->right))
 	  {
-	    w->left->SetColor (Node::Red);
-	    w->SetColor (Node::Red);
+	    w->left->SetColor (Red);
+	    w->SetColor (Red);
 	    RotateRight (w);
 	    p = node ? node->GetParent() : nilParent;
 	    w = p->right;
 	  }
 	  w->SetColor (p->GetColor ());
-	  p->SetColor (Node::Black);
-	  w->right->SetColor (Node::Black);
+	  p->SetColor (Black);
+	  w->right->SetColor (Black);
 	  RotateLeft (p);
-	  node = root.p;
+	  node = root;
 	}
       }
       else
@@ -530,79 +292,68 @@ protected:
 	Node* w = p->left;
 	if (IsRed (w))
 	{
-	  w->SetColor (Node::Black);
-	  p->SetColor (Node::Red);
+	  w->SetColor (Black);
+	  p->SetColor (Red);
 	  RotateRight (p);
 	  p = node ? node->GetParent() : nilParent;
 	  w = p->left;
 	}
 	if (IsBlack (w->left) && IsBlack (w->right))
 	{
-	  w->SetColor (Node::Red);
+	  w->SetColor (Red);
 	  node = p;
 	}
 	else
 	{
 	  if (IsBlack (w->left))
 	  {
-	    w->right->SetColor (Node::Red);
-	    w->SetColor (Node::Red);
+	    w->right->SetColor (Red);
+	    w->SetColor (Red);
 	    RotateLeft (w);
 	    p = node ? node->GetParent() : nilParent;
 	    w = p->left;
 	  }
 	  w->SetColor (p->GetColor ());
-	  p->SetColor (Node::Black);
-	  w->left->SetColor (Node::Black);
+	  p->SetColor (Black);
+	  w->left->SetColor (Black);
 	  RotateRight (p);
-	  node = root.p;
+	  node = root;
 	}
       }
     }
-    if (node != 0) node->SetColor (Node::Black);
+    if (node != 0) node->SetColor (Black);
   }
-  /// Find a node for a key.
-  template<typename K2>
-  Node* LocateNode (Node* node, const K2& other) const
+  /// Find the node for a key.
+  Node* LocateNode (Node* node, const K& key) const
   {
     if (node == 0) return 0;
-
-    Ordering<K, K2> _o (node->GetKey(), other);
-    if (_o.AeqB())
+      
+    int r = csComparator<K, K>::Compare (key, *((K*)&node->key));
+    if (r == 0) 
       return node;
-    Node* n = 0;
-    // key <= other, node with 'other' must be in left subtree
-    bool leftTree = _o.AleB();
-    // other <= key, node with 'other' must be in right subtree
-    bool rightTree = _o.BleA();
-    // (!leftTree && !rightTree) => node can be in either subtree
-    if (leftTree || (!leftTree && !rightTree))
-      n = LocateNode<K2> (node->left, other);
-    if ((n == 0) && (rightTree || (!leftTree && !rightTree)))
-      n = LocateNode<K2> (node->right, other);
-    return n;
+    else if (r < 0)
+      return LocateNode (node->left, key);
+    else
+      return LocateNode (node->right, key);
   }
   /// Find the node which has a given instance of a key
   Node* LocateNodeExact (Node* node, const K* key) const
   {
     if (node == 0) return 0;
-
-    if (&(node->GetKey()) == key) return node;
-
-    Ordering<K, K> _o (node->GetKey(), *key);
-    Node* n = 0;
-    // key <= other, node with 'other' must be in left subtree
-    bool leftTree = _o.AleB();
-    // other <= key, node with 'other' must be in right subtree
-    bool rightTree = _o.BleA();
-    // (!leftTree && !rightTree) => node can be in either subtree
-    if (leftTree || (!leftTree && !rightTree))
-      n = LocateNodeExact (node->left, key);
-    /* @@@ Go down right node if key equals node value as sometimes
-       the node we look for ended up in the right subtree. */
-    if ((n == 0) && (rightTree || (!leftTree && !rightTree) || _o.AeqB()))
-      n = LocateNodeExact (node->right, key);
-    return n;
+      
+    if (key == (K*)&node->key) return node;
+    int r = csComparator<K, K>::Compare (*key, *((K*)&node->key));
+    if (r == 0)
+    {
+      // @@@ Should that be really necessary?
+      Node* n = LocateNodeExact (node->left, key);
+      if (n != 0) return n;
+      return LocateNodeExact (node->right, key);
+    }
+    else if (r < 0)
+      return LocateNodeExact (node->left, key);
+    else
+      return LocateNodeExact (node->right, key);
   }
   /// Return smallest node with a key greater than 'node's.
   static Node* Successor (const Node* node)
@@ -640,169 +391,182 @@ protected:
     }
     return y;
   }
-
   //@{
-  /// Locate greatest key that is smaller or equal to 'other'.
+  /// Locate key that is equal to 'other'.
   template<typename K2>
-  Node* RecursiveFindGSE (Node* node, const K2& other) const
+  const K* RecursiveFind (Node* node, const K2& other) const
   {
     if (node == 0) return 0;
-    Ordering<K, K2> _o (node->GetKey (), other);
-    if (_o.AeqB())
-      return node;
-    Node* n = 0;
-    // key <= other, node with 'other' must be in left subtree
-    bool leftTree = _o.AleB();
-    // other <= key, node with 'other' must be in right subtree
-    bool rightTree = _o.BleA();
-    // (!leftTree && !rightTree) => node can be in either subtree
-    if (leftTree || (!leftTree && !rightTree))
-    {
-      n = RecursiveFindGSE<K2> (node->left, other);
-      /* This node is currently the smallest known greater or equal to
-       * 'other', so return that if a search in the left subtree did
-       * not give a result */
-      if (leftTree && (n == 0)) n = node;
-    }
-    if (n == 0)
-    {
-      n = RecursiveFindGSE<K2> (node->right, other);
-    }
-    return n;
+    int r = csComparator<K2, K>::Compare (other, *((K*)&node->key));
+    if (r == 0)
+      return ((K*)&node->key);
+    else if (r < 0)
+      return RecursiveFind<K2> (node->left, other);
+    else
+      return RecursiveFind<K2> (node->right, other);
   }
-  //@}
-
-  //@{
-  /// Locate smallest key that is greater or equal to 'other'.
   template<typename K2>
-  Node* RecursiveFindSGE (Node* node, const K2& other) const
+  K* RecursiveFind (Node* node, const K2& other)
   {
     if (node == 0) return 0;
-    Ordering<K, K2> _o (node->GetKey (), other);
-    if (_o.AeqB())
-      return node;
-    Node* n = 0;
-    // key <= other, node with 'other' must be in left subtree
-    bool leftTree = _o.AleB();
-    // other <= key, node with 'other' must be in right subtree
-    bool rightTree = _o.BleA();
-    // (!leftTree && !rightTree) => node can be in either subtree
-    if (rightTree || (!leftTree && !rightTree))
-    {
-      n = RecursiveFindSGE<K2> (node->right, other);
-      /* This node is currently the smallest known greater or equal to
-       * 'other', so return that if a search in the right subtree did
-       * not give a result */
-      if (rightTree && (n == 0)) n = node;
-    }
-    if (n == 0)
-    {
-      n = RecursiveFindSGE<K2> (node->left, other);
-    }
-    return n;
+    int r = csComparator<K2, K>::Compare (other, *((K*)&node->key));
+    if (r == 0)
+      return ((K*)&node->key);
+    else if (r < 0)
+      return RecursiveFind<K2> (node->left, other);
+    else
+      return RecursiveFind<K2> (node->right, other);
+  }
+  template<typename K2>
+  const K& RecursiveFind (Node* node, const K2& other, const K& fallback) const
+  {
+    if (node == 0) return fallback;
+    int r = csComparator<K2, K>::Compare (other, *((K*)&node->key));
+    if (r == 0)
+      return *((K*)&node->key);
+    else if (r < 0)
+      return RecursiveFind<K2> (node->left, other, fallback);
+    else
+      return RecursiveFind<K2> (node->right, other, fallback);
+  }
+  template<typename K2>
+  K& RecursiveFind (Node* node, const K2& other, K& fallback)
+  {
+    if (node == 0) return fallback;
+    int r = csComparator<K2, K>::Compare (other, *((K*)&node->key));
+    if (r == 0)
+      return *((K*)&node->key);
+    else if (r < 0)
+      return RecursiveFind (node->left, other, fallback);
+    else
+      return RecursiveFind (node->right, other, fallback);
   }
   //@}
-
+  
+  //@{
+  /// Locate key that is equal to 'other'.
+  template<typename K2>
+  const K* RecursiveFindSGE (Node* node, const K2& other) const
+  {
+    if (node == 0) return 0;
+    int r = csComparator<K2, K>::Compare (other, *((K*)&node->key));
+    if (r == 0)
+      return ((K*)&node->key);
+    if (r < 0)
+    {
+      const K* x = RecursiveFindSGE<K2> (node->left, other);
+      /* This node is currently the smallest known greater or equal to
+       * 'other', so return that if a search in the left subtree does
+       * not give a result */
+      return x ? x : ((K*)&node->key);
+    }
+    else
+      return RecursiveFindSGE<K2> (node->right, other);
+  }
+  template<typename K2>
+  const K& RecursiveFindSGE (Node* node, const K2& other, const K& fallback) const
+  {
+    if (node == 0) return 0;
+    int r = csComparator<K2, K>::Compare (other, *((K*)&node->key));
+    if (r == 0)
+      return *((K*)&node->key);
+    if (r < 0)
+    {
+      const K& x = RecursiveFindSGE<K2> (node->left, other);
+      /* This node is currently the smallest known greater or equal to
+       * 'other', so return that if a search in the left subtree does
+       * not give a result */
+      return x ? x : *((K*)&node->key);
+    }
+    else
+      return RecursiveFindSGE<K2> (node->right, other);
+  }
+  //@}
+  
   /// Traverse tree.
   template <typename CB>
   void RecursiveTraverseInOrder (Node* node, CB& callback) const
   {
-    if (node->right != 0) RecursiveTraverseInOrder (node->right, callback);
-    callback (node->GetKey());
     if (node->left != 0) RecursiveTraverseInOrder (node->left, callback);
+    callback.Process (*((K*)&node->key));
+    if (node->right != 0) RecursiveTraverseInOrder (node->right, callback);
   }
+
+  //@{
+  /// Locate key that is equal to 'other'
+  template<typename K2>
+  K* Find (const K2& other)
+  {
+    return RecursiveFind<K2> (root, other);
+  }
+  template<typename K2>
+  K& Find (const K2& other, K& fallback)
+  {
+    return RecursiveFind<K2> (root, other, fallback);
+  }
+  //@}
 
   /// Duplicate a subtree
   void RecursiveCopy (Node*& to, Node* parent, const Node* from)
   {
     if (from == 0)
     {
-      to = 0;
+      to = 0; 
       return;
     }
-    to = AllocNode ();
+    to = nodeAlloc.Alloc();
     to->SetParent (parent);
     to->SetColor (from->GetColor());
-    new ((K*)&to->key) K (from->GetKey());
+    new ((K*)&to->key) K (*((K*)&from->key));
     RecursiveCopy (to->left, to, from->left);
     RecursiveCopy (to->right, to, from->right);
   }
-
-  /// Recursively delete a subtree
-  void RecursiveDelete (Node* node)
-  {
-    if (node == 0) return;
-    RecursiveDelete (node->left);
-    RecursiveDelete (node->right);
-    FreeNode (node);
-  }
-
-  //@{
-  /// Locate key that is equal to \a other
-  template<typename K2>
-  K* FindInternal (const K2& other)
-  {
-    Node* n = LocateNode<K2> (root.p, other);
-    return n ? &(n->GetKey()) : 0;
-  }
-  template<typename K2>
-  K& FindInternal (const K2& other, K& fallback)
-  {
-    Node* n = LocateNode<K2> (root.p, other);
-    if(n)
-      return n->GetKey();
-    else
-      return fallback;
-  }
-  //@}
-
 public:
   /**
    * Construct a new tree.
    * \param allocatorBlockSize Block size in bytes used by the internal block
    *  allocator for nodes.
    */
-  csRedBlackTree (const Allocator& alloc = Allocator()) : root(alloc, 0) { }
-  csRedBlackTree (const csRedBlackTree& other) : root (other.root, 0)
+  csRedBlackTree (size_t allocatorBlockSize = 4096) : 
+    nodeAlloc (allocatorBlockSize / sizeof(Node)), root(0) { }
+  csRedBlackTree (const csRedBlackTree& other) : 
+    nodeAlloc (other.nodeAlloc.GetBlockElements())
   {
-    RecursiveCopy (root.p, 0, other.root.p);
+    RecursiveCopy (root, 0, other.root);
   }
-  /// Destroy the tree
-  ~csRedBlackTree() { RecursiveDelete (root.p); }
 
   /**
    * Insert a key.
-   * \return A pointer to the copy of the key stored in the tree.
+   * \return A pointer to the copy of the key stored in the tree, or 0 if the
+   *  key already exists.
    */
   const K* Insert (const K& key)
   {
-    InsertCandidate newCandidate;
-    Node* n = RecursiveFindInsertCandidate (0, root.p, key, 0, newCandidate);
-    if (n == 0)
-      n = *newCandidate.node = CreateNode (newCandidate.parent, key);
+    Node* n = RecursiveInsert (0, root, key);
+    if (n == 0) return 0;
     InsertFixup (n);
-    return &(n->GetKey());
+    return (K*)&n->key;
   }
   /**
    * Delete a key.
-   * \return Whether the deletion was successful. Fails if the key is not
+   * \return Whether the deletion was successful. Fails if the key is not 
    *  in the tree.
    */
   bool Delete (const K& key)
   {
-    Node* n = LocateNode<K> (root.p, key);
+    Node* n = LocateNode (root, key);
     if (n == 0) return false;
     DeleteNode (n);
     return true;
   }
   /**
    * Delete a specific instance of a key.
-   * \return Whether the deletion was successful. Fails if the key is not
+   * \return Whether the deletion was successful. Fails if the key is not 
    *  in the tree.
    */
   bool DeleteExact (const K* key)
   {
-    Node* n = LocateNodeExact (root.p, key);
+    Node* n = LocateNodeExact (root, key);
     if (n == 0) return false;
     DeleteNode (n);
     return true;
@@ -810,7 +574,7 @@ public:
   /// Check whether a key is in the tree.
   bool In (const K& key) const
   {
-    return (LocateNode<K> (root.p, key) != 0);
+    return (LocateNode (root, key) != 0);
   }
   /**
    * Check whether a key is in the tree.
@@ -818,77 +582,53 @@ public:
    *   considered more idiomatic by some.
    */
   bool Contains (const K& key) const { return In (key); }
-
+  
   //@{
   /// Locate key that is equal to \a other
   template<typename K2>
   const K* Find (const K2& other) const
   {
-    Node* n = LocateNode<K2> (root.p, other);
-    return n ? &(n->GetKey()) : 0;
+    return RecursiveFind<K2> (root, other);
   }
   template<typename K2>
   const K& Find (const K2& other, const K& fallback) const
   {
-    Node* n = LocateNode<K2> (root.p, other);
-    if(n)
-      return n->GetKey();
-    else
-      return fallback;
+    return RecursiveFind<K2>  (root, other, fallback);
   }
   //@}
-
+  
   //@{
   /// Locate smallest key greater or equal to \a other
   template<typename K2>
   const K* FindSmallestGreaterEqual (const K2& other) const
   {
-    Node* n = RecursiveFindSGE<K2> (root.p, other);
-    return n ? &(n->GetKey()) : 0;
+    return RecursiveFindSGE<K2> (root, other);
   }
   template<typename K2>
-  const K& FindSmallestGreaterEqual (const K2& other,
+  const K& FindSmallestGreaterEqual (const K2& other, 
                                      const K& fallback) const
   {
-    Node* n = RecursiveFindSGE<K2> (root.p, other);
-    return n ? n->GetKey() : fallback;
+    return RecursiveFindSGE<K2>  (root, other, fallback);
   }
   //@}
-
-  //@{
-  /// Locate greatest key smaller or equal to \a other
-  template<typename K2>
-  const K* FindGreatestSmallerEqual (const K2& other) const
-  {
-    Node* n = RecursiveFindGSE<K2> (root.p, other);
-    return n ? &(n->GetKey()) : 0;
-  }
-  template<typename K2>
-  const K& FindGreatestSmallerEqual (const K2& other,
-                                     const K& fallback) const
-  {
-    Node* n = RecursiveFindGSE<K2> (root.p, other);
-    return n ? n->GetKey() : fallback;
-  }
-  //@}
-
+  
   /// Delete all keys.
   void DeleteAll()
   {
-    RecursiveDelete (root.p);
-    root.p = 0;
+    nodeAlloc.Empty();
+    root = 0;
   }
   /// Delete all the keys. (Idiomatic alias for DeleteAll().)
   void Empty() { DeleteAll(); }
   /// Returns whether this tree has no nodes.
-  bool IsEmpty() const { return (root.p == 0); }
+  bool IsEmpty() const { return (root == 0); }
 
   //@{
   /// Traverse tree.
   template <typename CB>
   void TraverseInOrder (CB& callback) const
   {
-    if (root.p != 0) RecursiveTraverseInOrder (root.p, callback);
+    if (root != 0) RecursiveTraverseInOrder (root, callback);
   }
   //@}
 
@@ -906,22 +646,22 @@ public:
     /// Get the next element's value.
     const K& Next ()
     {
-      const K& ret = currentNode->GetKey();
-      currentNode = Predecessor (currentNode);
+      const K& ret = *((const K*)&currentNode->key);
+      currentNode = Successor (currentNode);
       return ret;
     }
 
   protected:
     friend class csRedBlackTree;
-    ConstIterator (const csRedBlackTree<K, Allocator, Ordering>* tree)
-      : currentNode (tree->root.p)
+    ConstIterator (const csRedBlackTree<K>* tree)
+      : currentNode (tree->root)
     {
-      while (currentNode && currentNode->right != 0)
-        currentNode = currentNode->right;
+      while (currentNode && currentNode->left != 0)
+        currentNode = currentNode->left;
     }
 
   private:
-    const typename csRedBlackTree<K, Allocator, Ordering>::Node *currentNode;
+    const typename csRedBlackTree<K>::Node *currentNode;
   };
   friend class ConstIterator;
 
@@ -938,22 +678,22 @@ public:
     /// Get the next element's value.
     const K& Next ()
     {
-      const K& ret = currentNode->GetKey();
-      currentNode = Successor (currentNode);
+      const K& ret = *((const K*)&currentNode->key);
+      currentNode = Predecessor (currentNode);
       return ret;
     }
 
   protected:
     friend class csRedBlackTree;
-    ConstReverseIterator (const csRedBlackTree<K, Allocator, Ordering>* tree)
-      : currentNode (tree->root.p)
+    ConstReverseIterator (const csRedBlackTree<K>* tree)
+      : currentNode (tree->root)
     {
-      while (currentNode && currentNode->left != 0)
-        currentNode = currentNode->left;
+      while (currentNode && currentNode->right != 0)
+        currentNode = currentNode->right;
     }
 
   private:
-    const typename csRedBlackTree<K, Allocator, Ordering>::Node *currentNode;
+    const typename csRedBlackTree<K>::Node *currentNode;
   };
   friend class ConstReverseIterator;
 
@@ -968,13 +708,13 @@ public:
   /**
    * Get an iterator for iterating over the entire tree
    */
-  ConstReverseIterator GetReverseIterator () const
+  ConstReverseIterator GetReverseIterator ()
   {
     return ConstReverseIterator (this);
   }
 
   //@{
-  /// Iterator for tree
+  /// Const iterator for tree
   class Iterator
   {
   public:
@@ -985,30 +725,30 @@ public:
     }
 
     /// Get the next element's value without advancing the iterator.
-    K& PeekNext ()
+    const K& PeekNext ()
     {
-      K& ret = currentNode->GetKey();
+      const K& ret = *((const K*)&currentNode->key);
       return ret;
     }
 
     /// Get the next element's value.
-    K& Next ()
+    const K& Next ()
     {
-      K& ret = currentNode->GetKey();
-      currentNode = Predecessor (currentNode);
+      const K& ret = *((const K*)&currentNode->key);
+      currentNode = Successor (currentNode);
       return ret;
     }
 
   protected:
     friend class csRedBlackTree;
-    Iterator (csRedBlackTree<K, Allocator, Ordering>* tree) : currentNode (tree->root.p)
+    Iterator (csRedBlackTree<K>* tree) : currentNode (tree->root)
     {
-      while (currentNode && currentNode->GetRight() != 0)
-        currentNode = currentNode->GetRight();
+      while (currentNode && currentNode->left != 0)
+        currentNode = currentNode->left;
     }
 
   private:
-    typename csRedBlackTree<K, Allocator, Ordering>::Node *currentNode;
+    typename csRedBlackTree<K>::Node *currentNode;
   };
   friend class Iterator;
 
@@ -1019,7 +759,7 @@ public:
   {
     return Iterator (this);
   }
-
+  
   /**
    * Delete the 'next' element pointed at by the iterator.
    * \remarks Will repoint the iterator to the following element.
@@ -1028,70 +768,23 @@ public:
   {
     Node* n = it.currentNode;
     if (n == 0) return;
-    Node* nSucc = Successor (n);
+    Node* nPred = Predecessor (n);
     DeleteNode (n);
     Node* newNode;
-    if (nSucc == 0)
+    if (nPred == 0)
     {
-      newNode = root.p;
+      newNode = root;
       if (newNode != 0)
       {
-        while (newNode->GetRight() != 0)
-	  newNode = newNode->GetRight();
+        while (newNode->left != 0) newNode = newNode->left;
       }
     }
     else
-      newNode = Predecessor (nSucc);
+      newNode = Successor (nPred);
     it.currentNode = newNode;
   }
 
   //@}
-  
-  /// Reverse iterator for tree
-  class ReverseIterator
-  {
-  public:
-    /// Returns a boolean indicating whether or not the tree has more elements.
-    bool HasNext () const
-    {
-      return currentNode != 0;
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    K& PeekNext ()
-    {
-      K& ret = currentNode->GetKey();
-      return ret;
-    }
-
-    /// Get the next element's value.
-    K& Next ()
-    {
-      K& ret = currentNode->GetKey();
-      currentNode = Successor (currentNode);
-      return ret;
-    }
-
-  protected:
-    friend class csRedBlackTree;
-    ReverseIterator (csRedBlackTree<K, Allocator, Ordering>* tree) : currentNode (tree->root.p)
-    {
-      while (currentNode && currentNode->left != 0)
-        currentNode = currentNode->left;
-    }
-
-  private:
-    typename csRedBlackTree<K, Allocator, Ordering>::Node *currentNode;
-  };
-  friend class ReverseIterator;
-
-  /**
-   * Get an iterator for iterating over the entire tree
-   */
-  ReverseIterator GetReverseIterator ()
-  {
-    return ReverseIterator (this);
-  }
 };
 
 /**
@@ -1105,12 +798,24 @@ class csRedBlackTreePayload
   T value;
 public:
   csRedBlackTreePayload (const K& k, const T& v) : key(k), value(v) {}
-  csRedBlackTreePayload (const csRedBlackTreePayload& other) :
+  csRedBlackTreePayload (const csRedBlackTreePayload& other) : 
     key(other.key), value(other.value) {}
 
   const K& GetKey() const { return key; }
   const T& GetValue() const { return value; }
   T& GetValue() { return value; }
+  bool operator < (const csRedBlackTreePayload& other) const
+  {
+    return (csComparator<K, K>::Compare (key, other.key) < 0);
+  }
+  bool operator < (const K& other) const
+  {
+    return (csComparator<K, K>::Compare (key, other) < 0);
+  }
+  friend bool operator < (const K& k1, const csRedBlackTreePayload& k2)
+  {
+    return (csComparator<K, K>::Compare (k1, k2.key) < 0);
+  }
   operator const T&() const { return value; }
   operator T&() { return value; }
 };
@@ -1119,16 +824,10 @@ public:
  * Key-value-map, backed by csRedBlackTree.
  * \remark As with csRedBlackTree, every key must be unique.
  */
-template <typename K, typename T,
-          typename Allocator =
-            csFixedSizeAllocator<
-              sizeof(CS::Container::RedBlackTreeNode<
-                      csRedBlackTreePayload<K, T> >)>,
-          template<typename K1, typename K2> class Ordering =
-            CS::Container::RedBlackTreeOrderingTotal >
-class csRedBlackTreeMap : protected csRedBlackTree<csRedBlackTreePayload<K, T>, Allocator, Ordering>
+template <typename K, typename T>
+class csRedBlackTreeMap : protected csRedBlackTree<csRedBlackTreePayload<K, T> >
 {
-  typedef csRedBlackTree<csRedBlackTreePayload<K, T>, Allocator, Ordering > supahclass;
+  typedef csRedBlackTree<csRedBlackTreePayload<K, T> > supahclass;
 
   template<typename CB>
   class TraverseCB
@@ -1136,17 +835,12 @@ class csRedBlackTreeMap : protected csRedBlackTree<csRedBlackTreePayload<K, T>, 
     CB callback;
   public:
     TraverseCB (const CB& callback) : callback(callback) {}
-    void operator() (csRedBlackTreePayload<K, T>& value)
+    void Process (csRedBlackTreePayload<K, T>& value)
     {
-      callback (value.GetKey(), value.GetValue());
+      callback.Process (value.GetKey(), value.GetValue());
     }
   };
 public:
-  enum { allocationUnitSize = supahclass::allocationUnitSize };
-
-  csRedBlackTreeMap (const Allocator& alloc = Allocator())
-   : supahclass (alloc) {}
-
   /**
    * Add element to map,
    * \return A pointer to the copy of the value stored in the tree, or 0 if the
@@ -1165,24 +859,24 @@ public:
    */
   bool Delete (const K& key)
   {
-    csRedBlackTreePayload<K, T>* payload = FindInternal (key);
+    csRedBlackTreePayload<K, T>* payload = Find (key);
     if (payload == 0) return false;
-    return supahclass::DeleteExact (payload);
+    return supahclass::Delete (*payload);
   }
   //@{
   /**
-   * Get a pointer to the element matching the given key, or 0 if there is
+   * Get a pointer to the element matching the given key, or 0 if there is 
    * none.
    */
   const T* GetElementPointer (const K& key) const
   {
-    const csRedBlackTreePayload<K, T>* payload = Find (key);
+    csRedBlackTreePayload<K, T>* payload = Find (key);
     if (payload == 0) return 0;
     return &payload->GetValue();
   }
   T* GetElementPointer (const K& key)
   {
-    csRedBlackTreePayload<K, T>* payload = FindInternal (key);
+    csRedBlackTreePayload<K, T>* payload = Find (key);
     if (payload == 0) return 0;
     return &payload->GetValue();
   }
@@ -1200,7 +894,7 @@ public:
   }
   T& Get (const K& key, T& fallback)
   {
-    csRedBlackTreePayload<K, T>* payload = FindInternal (key);
+    csRedBlackTreePayload<K, T>* payload = Find (key);
     if (payload == 0) return fallback;
     return payload->GetValue();
   }
@@ -1230,28 +924,14 @@ public:
     /// Returns a boolean indicating whether or not the map has more elements.
     bool HasNext () const
     {
-      return treeIter.HasNext();
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    const T& PeekNext (K& key)
-    {
-      csRedBlackTreePayload<K, T>& d = treeIter.PeekNext();
-      key = d.GetKey ();
-      return d.GetValue ();
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    const T& PeekNext ()
-    {
-      csRedBlackTreePayload<K, T>& d = treeIter.PeekNext();
-      return d.GetValue ();
+      return currentNode != 0;
     }
 
     /// Get the next element's value.
     const T& Next (K& key)
     {
-      const csRedBlackTreePayload<K, T>& d = treeIter.Next();
+      const csRedBlackTreePayload<K, T>& d = *((const csRedBlackTreePayload<K, T>*)&currentNode->key);
+      currentNode = Successor (currentNode);
       key = d.GetKey ();
       return d.GetValue ();
     }
@@ -1259,17 +939,22 @@ public:
     /// Get the next element's value.
     const T& Next ()
     {
-      const csRedBlackTreePayload<K, T>& d = treeIter.Next();
+      const csRedBlackTreePayload<K, T>& d = *((const csRedBlackTreePayload<K, T>*)&currentNode->key);
+      currentNode = Successor (currentNode);      
       return d.GetValue ();
     }
 
   protected:
     friend class csRedBlackTreeMap;
-    typename supahclass::ConstIterator treeIter;
-    ConstIterator (const csRedBlackTreeMap* map)
-      : treeIter (static_cast<const supahclass*> (map)->GetIterator())
+    ConstIterator (const csRedBlackTreeMap<K, T>* tree)
+      : currentNode (tree->root)
     {
+      while (currentNode && currentNode->left != 0)
+        currentNode = currentNode->left;
     }
+
+  private:
+    const typename csRedBlackTreeMap<K, T>::Node *currentNode;
   };
   friend class ConstIterator;
 
@@ -1280,45 +965,36 @@ public:
     /// Returns a boolean indicating whether or not the map has more elements.
     bool HasNext () const
     {
-      return treeIter.HasNext();
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    T& PeekNext (K& key)
-    {
-      csRedBlackTreePayload<K, T>& d = treeIter.PeekNext();
-      key = d.GetKey ();
-      return d.GetValue ();
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    T& PeekNext ()
-    {
-      csRedBlackTreePayload<K, T>& d = treeIter.PeekNext();
-      return d.GetValue ();
+      return currentNode != 0;
     }
 
     /// Get the next element's value.
     T& Next (K& key)
     {
-      csRedBlackTreePayload<K, T>& d = treeIter.Next();
+      csRedBlackTreePayload<K, T>& d = *((csRedBlackTreePayload<K, T>*)&currentNode->key);
+      currentNode = Successor (currentNode);
       key = d.GetKey ();
       return d.GetValue ();
     }
 
     T& Next ()
     {
-      csRedBlackTreePayload<K, T>& d = treeIter.Next();
+      csRedBlackTreePayload<K, T>& d = *((csRedBlackTreePayload<K, T>*)&currentNode->key);
+      currentNode = Successor (currentNode);
       return d.GetValue ();
     }
 
   protected:
     friend class csRedBlackTreeMap;
-    typename supahclass::Iterator treeIter;
-    Iterator (csRedBlackTreeMap* map)
-      : treeIter (static_cast<supahclass*> (map)->GetIterator())
+    Iterator (csRedBlackTreeMap<K, T>* tree)
+      : currentNode (tree->root)
     {
+      while (currentNode && currentNode->left != 0)
+        currentNode = currentNode->left;
     }
+
+  private:
+    typename csRedBlackTreeMap<K, T>::Node *currentNode;
   };
   friend class Iterator;
 
@@ -1329,28 +1005,14 @@ public:
     /// Returns a boolean indicating whether or not the map has more elements.
     bool HasNext () const
     {
-      return treeIter.HasNext();
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    const T& PeekNext (K& key)
-    {
-      csRedBlackTreePayload<K, T>& d = treeIter.PeekNext();
-      key = d.GetKey ();
-      return d.GetValue ();
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    const T& PeekNext ()
-    {
-      csRedBlackTreePayload<K, T>& d = treeIter.PeekNext();
-      return d.GetValue ();
+      return currentNode != 0;
     }
 
     /// Get the next element's value.
     const T& Next (K& key)
     {
-      const csRedBlackTreePayload<K, T>& d = treeIter.Next();;
+      const csRedBlackTreePayload<K, T>& d = *((const csRedBlackTreePayload<K, T>*)&currentNode->key);
+      currentNode = Predecessor (currentNode);
       key = d.GetKey ();
       return d.GetValue ();
     }
@@ -1358,17 +1020,22 @@ public:
     /// Get the next element's value.
     const T& Next ()
     {
-      const csRedBlackTreePayload<K, T>& d = treeIter.Next();;
+      const csRedBlackTreePayload<K, T>& d = *((const csRedBlackTreePayload<K, T>*)&currentNode->key);
+      currentNode = Predecessor (currentNode);      
       return d.GetValue ();
     }
 
   protected:
     friend class csRedBlackTreeMap;
-    typename supahclass::ConstReverseIterator treeIter;
-    ConstReverseIterator (const csRedBlackTreeMap* map)
-      : treeIter (static_cast<const supahclass*> (map)->GetReverseIterator())
+    ConstReverseIterator (const csRedBlackTreeMap<K, T>* tree)
+      : currentNode (tree->root)
     {
+      while (currentNode->right != 0)
+        currentNode = currentNode->right;
     }
+
+  private:
+    const typename csRedBlackTreeMap<K, T>::Node *currentNode;
   };
   friend class ConstReverseIterator;
 
@@ -1379,45 +1046,36 @@ public:
     /// Returns a boolean indicating whether or not the map has more elements.
     bool HasNext () const
     {
-      return treeIter.HasNext();
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    T& PeekNext (K& key)
-    {
-      csRedBlackTreePayload<K, T>& d = treeIter.PeekNext();
-      key = d.GetKey ();
-      return d.GetValue ();
-    }
-
-    /// Get the next element's value without advancing the iterator.
-    T& PeekNext ()
-    {
-      csRedBlackTreePayload<K, T>& d = treeIter.PeekNext();
-      return d.GetValue ();
+      return currentNode != 0;
     }
 
     /// Get the next element's value.
     T& Next (K& key)
     {
-      csRedBlackTreePayload<K, T>& d = treeIter.Next();;
+      csRedBlackTreePayload<K, T>& d = *((csRedBlackTreePayload<K, T>*)&currentNode->key);
+      currentNode = Predecessor (currentNode);
       key = d.GetKey ();
       return d.GetValue ();
     }
 
     T& Next ()
     {
-      csRedBlackTreePayload<K, T>& d = treeIter.Next();;
+      csRedBlackTreePayload<K, T>& d = *((csRedBlackTreePayload<K, T>*)&currentNode->key);
+      currentNode = Predecessor (currentNode);
       return d.GetValue ();
     }
 
   protected:
     friend class csRedBlackTreeMap;
-    typename supahclass::ReverseIterator treeIter;
-    ReverseIterator (csRedBlackTreeMap* map)
-      : treeIter (static_cast<supahclass*> (map)->GetReverseIterator())
+    ReverseIterator (csRedBlackTreeMap<K, T>* tree)
+      : currentNode (tree->root)
     {
+      while (currentNode && currentNode->right != 0)
+        currentNode = currentNode->right;
     }
+
+  private:
+    typename csRedBlackTreeMap<K, T>::Node *currentNode;
   };
   friend class ReverseIterator;
 
@@ -1453,15 +1111,6 @@ public:
     return ReverseIterator (this);
   }
   //@}
-
-  /**
-   * Delete the 'next' element pointed at by the iterator.
-   * \remarks Will repoint the iterator to the following element.
-   */
-  void Delete (Iterator& it)
-  {
-    supahclass::Delete (it.treeIter);
-  }
 };
 
 /** @} */

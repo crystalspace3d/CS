@@ -37,7 +37,6 @@ class csMatrix3;
 /**
  * Class for a quaternion.
  * A SE3 rotation represented as a normalized quaternion
- * \sa csDualQuaternion
  */
 class CS_CRYSTALSPACE_EXPORT csQuaternion
 {
@@ -290,12 +289,12 @@ public:
   csQuaternion SLerp (const csQuaternion& q2, float t) const;
 
   /**
-   * Get the logarithm of this quaternion
+   * Get quaternion log
    */
   csQuaternion Log () const;
 
   /**
-   * Get the exponential of this quaternion
+   * Get quaternion exp
    */
   csQuaternion Exp () const;
 
@@ -307,10 +306,8 @@ public:
   csQuaternion Squad (const csQuaternion & t1, const csQuaternion & t2,
     const csQuaternion & q, float t) const;
 
-  /// x, y and z components of the quaternion
+  // Data
   csVector3 v;
-
-  /// w component of the quaternion
   float w;
 };
 

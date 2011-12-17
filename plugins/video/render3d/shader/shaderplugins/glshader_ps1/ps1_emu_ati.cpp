@@ -54,7 +54,7 @@ void csShaderGLPS1_ATI::Deactivate()
 
 void csShaderGLPS1_ATI::SetupState (const CS::Graphics::RenderMesh* /*mesh*/, 
                                     CS::Graphics::RenderMeshModes& /*modes*/,
-	                            const csShaderVariableStack& stack)
+	                            const iShaderVarStack* stacks)
 {
   csGLExtensionManager *ext = shaderPlug->ext;
   // set variables
@@ -62,7 +62,7 @@ void csShaderGLPS1_ATI::SetupState (const CS::Graphics::RenderMesh* /*mesh*/,
   {
     csRef<csShaderVariable> var;
 
-    var = csGetShaderVariableFromStack (stack, constantRegs[i].name);
+    var = csGetShaderVariableFromStack (stacks, constantRegs[i].name);
     if (!var.IsValid ())
       var = constantRegs[i].var;
 
@@ -260,8 +260,17 @@ bool csShaderGLPS1_ATI::GetATIShaderCommand (const csPixelShaderParser& parser,
 #undef CHECKED_CALL
 }
 
-bool csShaderGLPS1_ATI::LoadProgramStringToGL (const csPixelShaderParser& parser)
+bool csShaderGLPS1_ATI::LoadProgramStringToGL ()
 {
+  if (!programBuffer.IsValid())
+    programBuffer = GetProgramData();
+  if(!programBuffer.IsValid())
+    return false;
+
+  csPixelShaderParser parser (shaderPlug->object_reg);
+
+  if(!parser.ParseProgram (programBuffer)) return false;
+
   const csArray<csPSConstant> &constants = parser.GetConstants ();
 
   size_t i;
@@ -270,7 +279,7 @@ bool csShaderGLPS1_ATI::LoadProgramStringToGL (const csPixelShaderParser& parser
   {
     const csPSConstant& constant = constants.Get (i);
 
-    constantRegs[constant.reg].var.AttachNew (new csShaderVariable (CS::InvalidShaderVarStringID));
+    constantRegs[constant.reg].var.AttachNew (new csShaderVariable (csInvalidStringID));
     constantRegs[constant.reg].var->SetValue (constant.value);
     constantRegs[constant.reg].valid = true;
   }

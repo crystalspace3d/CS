@@ -34,9 +34,8 @@
 #include "ivideo/graph3d.h"
 #include "ivideo/rendermesh.h"
 
-#include "imesh/object.h"
-
 struct iCamera;
+struct iLightingInfo;
 struct iLODControl;
 struct iMeshFactoryList;
 struct iMeshFactoryWrapper;
@@ -49,6 +48,8 @@ struct iObject;
 struct iPortalContainer;
 struct iRenderView;
 struct iShaderVariableContext;
+struct iShadowCaster;
+struct iShadowReceiver;
 struct iSharedVariable;
 struct iSceneNode;
 struct iMaterialWrapper;
@@ -75,7 +76,7 @@ class csReversibleTransform;
  * is useful for skyboxes or skydomes. Important note! When you
  * use an object with this flag you should also add this object to
  * a render priority that also has the camera flag set (see
- * iEngine::SetRenderPriorityCamera()).
+ * iEngine->SetRenderPriorityCamera()).
  */
 #define CS_ENTITY_CAMERA 4
 
@@ -97,12 +98,11 @@ class csReversibleTransform;
 #define CS_ENTITY_INVISIBLE (CS_ENTITY_INVISIBLEMESH+CS_ENTITY_NOHITBEAM)
 
 /**
- * If CS_ENTITY_NOSHADOWCAST is set then this mesh will not cast
+ * If CS_ENTITY_NOSHADOWS is set then this thing will not cast
  * shadows. Lighting will still be calculated for it though. Use the
  * CS_ENTITY_NOLIGHTING flag to disable that.
  */
-#define CS_ENTITY_NOSHADOWCAST 16
-#define CS_ENTITY_NOSHADOWS   CS_ENTITY_NOSHADOWCAST
+#define CS_ENTITY_NOSHADOWS 16
 
 /**
  * If CS_ENTITY_NOLIGHTING is set then this thing will not be lit.
@@ -138,22 +138,25 @@ class csReversibleTransform;
  */
 #define CS_ENTITY_STATICLIT 512
 
-/**
- * If CS_ENTITY_NOSHADOWRECEIVE is set then this mesh will not receive
- * shadows. 
- */
-#define CS_ENTITY_NOSHADOWRECEIVE 1024
+/** @} */
+
+/** \name SetLightingUpdate flags
+ * @{ */
 
 /**
- * Mark a mesh as a shadow caster if a render managers allows limiting shadow
- * casting limited to select meshes.
+ * This is a flag for iMeshWrapper->SetLightingUpdate(). If this
+ * flag is set then only the 'N' most relevant lights will be returned
+ * to the object. If not set then 'N' random lights will be returned.
  */
-#define CS_ENTITY_LIMITEDSHADOWCAST 2048
+#define CS_LIGHTINGUPDATE_SORTRELEVANCE 1
 
 /**
- * Mark a mesh as always visible for occlusion culling purposes.
+ * If this flag for iMeshWrapper->SetLightingUpdate() is set then
+ * the set of relevant lights will be recalculated every time.
+ * Otherwise the lights are only recalculated when the object moves or
+ * when one of the affected lights changes (default).
  */
-#define CS_ENTITY_ALWAYSVISIBLE 4096
+#define CS_LIGHTINGUPDATE_ALWAYSUPDATE 2
 
 /** @} */
 
@@ -180,8 +183,7 @@ struct iMeshDrawCallback : public virtual iBase
 };
 
 /**
- * Return structure for the iMeshWrapper::HitBeam() routines.
- * \sa csSectorHitBeamResult CS::Physics::Bullet::HitBeamResult
+ * Return structure for the iMeshWrapper->HitBeam() routines.
  */
 struct csHitBeamResult
 {
@@ -196,7 +198,7 @@ struct csHitBeamResult
   int polygon_idx;
   /**
    * Only for HitBeamObject and HitBeam: the material that was hit. Can be 0
-   * in the case that the meshobject doesn't support getting the material.
+   * in case the meshobject doesn't support getting the material.
    */
   iMaterialWrapper* material;
   /**
@@ -215,7 +217,7 @@ struct csHitBeamResult
 };
 
 /**
- * Return structure for iMeshWrapper::GetScreenBoundingBox().
+ * Return structure for iMeshWrapper->GetScreenBoundingBox().
  */
 struct csScreenBoxResult
 {
@@ -262,7 +264,7 @@ struct csScreenBoxResult
  */
 struct iMeshWrapper : public virtual iBase
 {
-  SCF_INTERFACE(iMeshWrapper, 5, 0, 0);
+  SCF_INTERFACE(iMeshWrapper, 2, 3, 0);
 
   /**
    * Get the iObject for this mesh object. This can be used to get the
@@ -281,14 +283,62 @@ struct iMeshWrapper : public virtual iBase
    */
   virtual iPortalContainer* GetPortalContainer () const = 0;
 
+  /**
+   * Get the optional lighting information that is implemented
+   * by this mesh object. If the mesh object doesn't implement it
+   * then this will return 0. This is similar (but more efficient)
+   * to calling scfQueryInterface<iLightingInfo> on the mesh object.
+   */
+  virtual iLightingInfo* GetLightingInfo () const = 0;
+
+  /**
+   * Get the optional shadow receiver that is implemented
+   * by this mesh object. If the mesh object doesn't implement it
+   * then this will return 0. This is similar (but more efficient)
+   * to calling scfQueryInterface<iShadowReceiver> on the mesh object.
+   * <p>
+   * Note! If the mesh is a static lod mesh (i.e. a parent of a mesh
+   * hierarchy that is used for static lod) then this will return
+   * a shadow receiver that automatically multiplexes the receiving shadows
+   * to all child meshes.
+   */
+  virtual iShadowReceiver* GetShadowReceiver () = 0;
+
+  /**
+   * Get the optional shadow caster that is implemented
+   * by this mesh object. If the mesh object doesn't implement it
+   * then this will return 0. This is similar (but more efficient)
+   * to calling scfQueryInterface<iShadowCaster> on the mesh object.
+   * <p>
+   * Note! If the mesh is a static lod mesh (i.e. a parent of a mesh
+   * hierarchy that is used for static lod) then this will return a
+   * shadow caster that gets shadows from the highest detail objects.
+   */
+  virtual iShadowCaster* GetShadowCaster () = 0;
+
   /// Get the parent factory.
   virtual iMeshFactoryWrapper *GetFactory () const = 0;
   /// Set the parent factory (this only sets a pointer).
   virtual void SetFactory (iMeshFactoryWrapper* factory) = 0;
 
   /**
+   * Control how lighting updates should take place.
+   * 'num_lights' is the number of lights that will be given to the
+   * mesh object at maximum (default is 8). 'flags' can be a combination
+   * of one of the following:
+   * - #CS_LIGHTINGUPDATE_SORTRELEVANCE (default on).
+   * - #CS_LIGHTINGUPDATE_ALWAYSUPDATE (default off).
+   *
+   * Note that this function has no effect on thing
+   * mesh objects as they use another lighting system (lightmaps).
+   * Also some genmesh objects can optionally also use the other lighting
+   * system in which nothing will happen either.
+   */
+  virtual void SetLightingUpdate (int flags, int num_lights) = 0;
+
+  /**
    * Get the movable instance for this object.
-   * It is very important to call GetMovable()::UpdateMove()
+   * It is very important to call GetMovable()->UpdateMove()
    * after doing any kind of modification to this movable
    * to make sure that internal data structures are
    * correctly updated.
@@ -365,8 +415,7 @@ struct iMeshWrapper : public virtual iBase
    * This version can also return the material that was hit (this will
    * only happen if 'do_material' is true). This is not
    * supported by all meshes so this can return 0 even if there was a hit.
-   * \sa csHitBeamResult iSector::HitBeam() iSector::HitBeamPortals()
-   * CS::Physics::Bullet::iDynamicSystem::HitBeam()
+   * \sa csHitBeamResult
    */
   virtual csHitBeamResult HitBeam (const csVector3& start,
   	const csVector3& end, bool do_material = false) = 0;
@@ -487,7 +536,7 @@ struct iMeshWrapper : public virtual iBase
    * only the position.
    * <p>
    * Note also that some mesh objects don't support HardTransform. You
-   * can find out by calling iMeshObject::SupportsHardTransform().
+   * can find out by calling iMeshObject->SupportsHardTransform().
    * In that case you can sometimes still call HardTransform() on the
    * factory.
    */
@@ -610,63 +659,42 @@ struct iMeshWrapper : public virtual iBase
   virtual iShaderVariableContext* GetSVContext() = 0;
 
   /**
-   * Get the render mesh list for this mesh wrapper and given view
-   */
-  virtual csRenderMesh** GetRenderMeshes (int& num, iRenderView* rview,
-    uint32 frustum_mask) = 0;
-
-  /**
    * Adds a render mesh to the list of extra render meshes.
-   * This list is used for special cases (like decals or lines) where additional
+   * This list is used for special cases (like decals) where additional
    * things need to be renderered for the mesh in an abstract way.
-   * \warning: you must keep the memory ownership of the render mesh, ie you must call
-   * \a delete on the object once you have done using it.
    */
-  virtual size_t AddExtraRenderMesh (CS::Graphics::RenderMesh* renderMesh) = 0;
-
-  /**
-   * Adds a render mesh to the list of extra render meshes.
-   * This list is used for special cases (like decals or lines) where additional
-   * things need to be renderered for the mesh in an abstract way.
-   * \warning: you must keep the memory ownership of the render mesh, ie you must do
-   * \a delete on the object once you don't use it anymore.
-   * \deprecated Deprecated in 2.1. Pass zbuf mode in render mesh
-   */
-  CS_DEPRECATED_METHOD_MSG("Pass zbuf mode in render mesh")
-  virtual size_t AddExtraRenderMesh (CS::Graphics::RenderMesh* renderMesh, 
+  virtual size_t AddExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh, 
     csZBufMode zBufMode) = 0;
+  /// \deprecated Deprecated in 1.3. Pass render priority in render mesh
+  CS_DEPRECATED_METHOD_MSG("Pass render priority in render mesh")
+  virtual void AddExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh, 
+    CS::Graphics::RenderPriority priority, csZBufMode zBufMode) = 0;
           
   /// Get a specific extra render mesh.
   virtual CS::Graphics::RenderMesh* GetExtraRenderMesh (size_t idx) const = 0;
 
-  /// Get the number of extra render meshes.
+  /// Get number of extra render meshes.
   virtual size_t GetExtraRenderMeshCount () const = 0;
+
+  /** 
+   * Gets the priority of a specific extra rendermesh.
+   * \deprecated Deprecated in 1.3. Obtain render priority from render mesh
+   */
+  CS_DEPRECATED_METHOD_MSG("Obtain render priority from render mesh")
+  virtual CS::Graphics::RenderPriority GetExtraRenderMeshPriority(size_t idx) const = 0;
 
   /**
    * Gets the z-buffer mode of a specific extra rendermesh
-   * \deprecated Deprecated in 2.1. Obtain zbuf mode from render mesh
    */
-  CS_DEPRECATED_METHOD_MSG("Obtain zbuf mode from render mesh")
-  virtual csZBufMode GetExtraRenderMeshZBufMode (size_t idx) const = 0;
+  virtual csZBufMode GetExtraRenderMeshZBufMode(size_t idx) const = 0;
 
   //@{
   /**
    * Deletes a specific extra rendermesh
    */
-  virtual void RemoveExtraRenderMesh (CS::Graphics::RenderMesh* renderMesh) = 0;
-  virtual void RemoveExtraRenderMesh (size_t idx) = 0;
+  virtual void RemoveExtraRenderMesh(CS::Graphics::RenderMesh* renderMesh) = 0;
+  virtual void RemoveExtraRenderMesh(size_t idx) = 0;
   //@}
-
-  /**
-   * Adds a (pseudo-)instance at the given position.
-   * Returns the instance transform shadervar.
-   */
-  virtual csShaderVariable* AddInstance (csVector3& position, csMatrix3& rotation) = 0;
-
-  /**
-   * Removes a (pseudo-)instance of the mesh.
-   */
-  virtual void RemoveInstance (csShaderVariable* instance) = 0;
 };
 
 /**
@@ -696,7 +724,7 @@ struct iMeshWrapper : public virtual iBase
  */
 struct iMeshFactoryWrapper : public virtual iBase
 {
-  SCF_INTERFACE(iMeshFactoryWrapper, 3, 0, 1);
+  SCF_INTERFACE(iMeshFactoryWrapper, 2,0,0);
   /// Get the iObject for this mesh factory.
   virtual iObject *QueryObject () = 0;
   /// Get the iMeshObjectFactory.
@@ -847,65 +875,22 @@ struct iMeshFactoryWrapper : public virtual iBase
    *   using some other transparency system are rendered after that. They
    *   are usually rendered using ZTEST.
    */
-  virtual void SetRenderPriority (CS::Graphics::RenderPriority rp) = 0;
+  virtual void SetRenderPriority (long rp) = 0;
   /**
    * Get the render priority.
    */
-  virtual CS::Graphics::RenderPriority GetRenderPriority () const = 0;
+  virtual long GetRenderPriority () const = 0;
 
   /**
    * Same as SetRenderPriority() but this version will recursively set
    * render priority for the children too.
    */
-  virtual void SetRenderPriorityRecursive (CS::Graphics::RenderPriority rp) = 0;
+  virtual void SetRenderPriorityRecursive (long rp) = 0;
 
   /**
    * Get the shader variable context of the mesh factory.
    */
   virtual iShaderVariableContext* GetSVContext() = 0;
-
-  /**
-   * Sets the instance factory.
-   */
-  virtual void SetInstanceFactory(iMeshFactoryWrapper* meshfact) = 0;
-
-  /**
-   * Returns the instance factory.
-   */
-  virtual iMeshFactoryWrapper* GetInstanceFactory() const = 0;
-
-  /**
-   * Adds a (pseudo-)instance of the instance factory at the given position.
-   */
-  virtual void AddInstance(csVector3& position, csMatrix3& rotation) = 0;
-
-  /**
-   * Returns the instancing transforms array shadervar.
-   */
-  virtual csShaderVariable* GetInstances() const = 0;
-
-  /**
-   * Adds a render mesh to the list of extra render meshes.
-   * This list is used for special cases (like decals or lines) where additional
-   * things need to be renderered for the mesh in an abstract way.
-   * \warning: the factory will take the memory ownership of the render mesh, ie you cannot
-   * call \a delete anymore on the object.
-   */
-  virtual size_t AddExtraRenderMesh (CS::Graphics::RenderMesh* renderMesh) = 0;
-
-  /// Get a specific extra render mesh.
-  virtual CS::Graphics::RenderMesh* GetExtraRenderMesh (size_t idx) const = 0;
-
-  /// Get the number of extra render meshes.
-  virtual size_t GetExtraRenderMeshCount () const = 0;
-
-  //@{
-  /**
-   * Deletes a specific extra rendermesh
-   */
-  virtual void RemoveExtraRenderMesh (CS::Graphics::RenderMesh* renderMesh) = 0;
-  virtual void RemoveExtraRenderMesh (size_t idx) = 0;
-  //@}
 };
 
 /**
@@ -989,27 +974,7 @@ struct iMeshFactoryList : public virtual iBase
 };
 
 /**
- * This is an iterator mesh factory wrappers.
- *
- * Main ways to get pointers to this interface:
- *   - iEngine::GetNearbyMeshes()
- *   - iEngine::GetVisibleMeshes()
- */
-struct iMeshFactoryWrapperIterator : public virtual iBase
-{
-  SCF_INTERFACE(iMeshFactoryWrapperIterator,1,0,0);
-  /// Move forward.
-  virtual iMeshFactoryWrapper* Next () = 0;
-
-  /// Reset the iterator to the beginning.
-  virtual void Reset () = 0;
-
-  /// Check if we have any more meshes.
-  virtual bool HasNext () const = 0;
-};
-
-/**
- * This is an iterator of mesh wrappers.
+ * This is an iterator mesh wrappers.
  *
  * Main ways to get pointers to this interface:
  *   - iEngine::GetNearbyMeshes()

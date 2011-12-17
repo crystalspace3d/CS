@@ -22,13 +22,11 @@
  * subdirectory of the top Crystal Space include directory.
  */
 #include "cssysdef.h"
-#include "iutil/allocator.h"
 #include "iutil/array.h"
 #include "iutil/binder.h"
 #include "iutil/cache.h"
 #include "iutil/cfgfile.h"
 #include "iutil/cfgmgr.h"
-#include "iutil/cfgnotifier.h"
 #include "iutil/cmdline.h"
 #include "iutil/comp.h"
 #include "iutil/csinput.h"
@@ -41,7 +39,6 @@
 #include "iutil/eventhandlers.h"
 #include "iutil/eventnames.h"
 #include "iutil/eventq.h"
-#include "iutil/hiercache.h"
 #include "iutil/job.h"
 #include "iutil/kitchensink.h"
 #include "iutil/memdebug.h"
@@ -55,11 +52,9 @@
 #include "iutil/stringarray.h"
 #include "iutil/strset.h"
 #include "iutil/systemopenmanager.h"
-#include "iutil/threadmanager.h"
 #include "iutil/timer.h"
 #include "iutil/verbositymanager.h"
 #include "iutil/vfs.h"
 #include "iutil/virtclk.h"
-#include "iutil/visualdebug.h"
 #endif /* __IUTIL_H__ */
 

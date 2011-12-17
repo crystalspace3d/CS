@@ -24,12 +24,9 @@
 #include "imesh/particles.h"
 #include "iutil/comp.h"
 
-struct iLight;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 {
-
-  //------------------------------------------------------------------------
 
   class ParticleEffectorFactory : public 
     scfImplementation2<ParticleEffectorFactory,
@@ -44,11 +41,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     //-- iParticleBuiltinEffectorFactory
     virtual csPtr<iParticleBuiltinEffectorForce> CreateForce () const;
-    virtual csPtr<iParticleBuiltinEffectorLinear> CreateLinear () const;
     virtual csPtr<iParticleBuiltinEffectorLinColor> CreateLinColor () const;
+    virtual csPtr<iParticleBuiltinEffectorLinear> CreateLinear () const;
     virtual csPtr<iParticleBuiltinEffectorVelocityField> 
       CreateVelocityField () const;
-    virtual csPtr<iParticleBuiltinEffectorLight> CreateLight () const;
 
     //-- iComponent
     virtual bool Initialize (iObjectRegistry*)
@@ -57,7 +53,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
   };
 
-  //------------------------------------------------------------------------
 
   class ParticleEffectorForce : public 
     scfImplementation2<ParticleEffectorForce,
@@ -120,8 +115,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     bool do_randomAcceleration;
   };
 
-  //------------------------------------------------------------------------
-
   class ParticleEffectorLinColor : public
     scfImplementation2<ParticleEffectorLinColor,
                        iParticleBuiltinEffectorLinColor,
@@ -140,11 +133,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     //-- iParticleBuiltinEffectorLinColor
     virtual size_t AddColor (const csColor4& color, float maxTTL);
-    virtual void RemoveColor (size_t index);
-    virtual void Clear ();
 
     virtual void SetColor (size_t index, const csColor4& color);
-    virtual void SetEndTTL (size_t index, float ttl);
 
     virtual void GetColor (size_t index, csColor4& color, float& maxTTL) const
     {
@@ -153,14 +143,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
       color = colorList[index].color;
       maxTTL = colorList[index].maxTTL;
-    }
-    virtual const csColor4& GetColor (size_t index) const
-    {
-      return colorList[index].color;
-    }
-    virtual float GetEndTTL (size_t index) const
-    {
-      return colorList[index].maxTTL;
     }
 
     virtual size_t GetColorCount () const
@@ -190,8 +172,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     csArray<PrecalcEntry> precalcList;
   };
 
-  //------------------------------------------------------------------------
-
   class ParticleEffectorLinear : public
     scfImplementation2<ParticleEffectorLinear,
                        iParticleBuiltinEffectorLinear,
@@ -219,10 +199,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     virtual size_t AddParameterSet (const csParticleParameterSet& param, float endTTL);
-    virtual void RemoveParameterSet (size_t index);
-    virtual void Clear ();
     virtual void SetParameterSet (size_t index, const csParticleParameterSet& param);
-    virtual void SetEndTTL (size_t index, float ttl);
     virtual void GetParameterSet (size_t index, csParticleParameterSet& param, float& maxTTL) const
     {
       if (index >= paramList.GetSize ())
@@ -230,14 +207,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
       param = paramList[index].param;
       maxTTL = paramList[index].maxTTL;
-    }
-    virtual const csParticleParameterSet& GetParameterSet (size_t index) const
-    {
-      return paramList[index].param;
-    }
-    virtual float GetEndTTL (size_t index) const
-    {
-      return paramList[index].maxTTL;
     }
 
     virtual size_t GetParameterSetCount () const
@@ -268,8 +237,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     bool precalcInvalid;
     csArray<PrecalcEntry> precalcList;
   };
-
-  //------------------------------------------------------------------------
 
   class ParticleEffectorVelocityField : public 
     scfImplementation2<ParticleEffectorVelocityField,
@@ -318,16 +285,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return fparams.GetSize ();
     }
 
-    virtual void AddFParameter(float value)
-    {
-      fparams.Push(value);
-    }
-
-    virtual void RemoveFParameter(size_t index)
-    {
-      fparams.DeleteIndex(index);
-    }
-
     virtual void SetVParameter (size_t parameterNumber, const csVector3& value)
     {
       vparams.Put (parameterNumber, value);
@@ -346,52 +303,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return vparams.GetSize ();
     }
 
-    virtual void AddVParameter(const csVector3& value)
-    {
-      vparams.Push(value);
-    }
-
-    virtual void RemoveVParameter(size_t index)
-    {
-      vparams.DeleteIndex(index);
-    }
-
   private:
     csParticleBuiltinEffectorVFType type;
     csArray<csVector3> vparams;
     csArray<float> fparams;
   };
-
-  //------------------------------------------------------------------------
-
-  class ParticleEffectorLight : public
-    scfImplementation2<ParticleEffectorLight,
-                       iParticleBuiltinEffectorLight,
-                       scfFakeInterface<iParticleEffector> >
-  {
-  public:
-    //-- ParticleEffectorLight
-    ParticleEffectorLight ();
-    ~ParticleEffectorLight ();
-
-    //-- iParticleEffector
-    virtual csPtr<iParticleEffector> Clone () const;
-
-    virtual void EffectParticles (iParticleSystemBase* system,
-      const csParticleBuffer& particleBuffer, float dt, float totalTime);
-
-    //-- iParticleBuiltinEffectorLight
-    virtual void SetInitialCutoffDistance (float distance);
-    virtual float GetInitialCutoffDistance () const;
-
-  private:
-    float cutoffDistance;
-
-    csRef<iEngine> engine;
-    csRefArray<iLight> lights;
-    csRefArray<iLight> allocatedLights;
-  };
-
 }
 CS_PLUGIN_NAMESPACE_END(Particles)
 

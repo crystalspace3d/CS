@@ -35,14 +35,14 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "glshader_afp.h"
 #include "glshader_arb.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_LEAKGUARD_IMPLEMENT (csGLShader_ARB);
 
 SCF_IMPLEMENT_FACTORY (csGLShader_ARB)
 
 csGLShader_ARB::csGLShader_ARB(iBase* parent) : 
-  scfImplementationType (this, parent), ext (0)
+  scfImplementationType (this, parent)
 {
   enable = false;
   isOpen = false;
@@ -102,7 +102,7 @@ bool csGLShader_ARB::Initialize(iObjectRegistry* reg)
 
   csRef<iGraphics3D> r = csQueryRegistry<iGraphics3D> (object_reg);
 
-  csRef<iFactory> f = scfQueryInterfaceSafe<iFactory> (r);
+  csRef<iFactory> f = scfQueryInterface<iFactory> (r);
   if (f != 0 && strcmp ("crystalspace.graphics3d.opengl", 
       f->QueryClassID ()) == 0)
     enable = true;

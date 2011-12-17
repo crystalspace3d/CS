@@ -41,7 +41,7 @@
 
 #include "loader.h"
 
-
+CS_IMPLEMENT_PLUGIN
 
 namespace cspluginPagingFormerLoader
 {
@@ -155,8 +155,7 @@ csPtr<iBase> csPagingFormerLoader::Parse (iDocumentNode* node,
         if (map == 0)
         {
           synldr->ReportError ("crystalspace.terraformer.simple.loader",
-            child, "Error reading in image file for intmap %s",
-	    CS::Quote::Single (image));
+            child, "Error reading in image file for intmap '%s'", image);
           return 0;
         }
         int scale = child->GetAttributeValueAsInt ("scale");
@@ -176,8 +175,7 @@ csPtr<iBase> csPagingFormerLoader::Parse (iDocumentNode* node,
         if (map == 0)
         {
           synldr->ReportError ("crystalspace.terraformer.simple.loader",
-            child, "Error reading in image file for floatmap %s",
-	    CS::Quote::Single (image));
+            child, "Error reading in image file for floatmap '%s'", image);
           return 0;
         }
         float scale = child->GetAttributeValueAsFloat ("scale");

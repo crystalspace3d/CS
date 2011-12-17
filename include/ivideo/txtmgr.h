@@ -38,6 +38,7 @@ class csRect;
 
 struct csRGBcolor;
 struct csRGBpixel;
+struct csLightMapMapping;
 struct iImage;
 struct iTextureHandle;
 struct iMaterial;
@@ -108,26 +109,44 @@ struct iString;
  *   will decide whether a dimension is scaled up or down.
  */
 #define CS_TEXTURE_SCALE_DOWN		0x00000100
-/**
- * Create cleared texture.
- * When creating a texture with iTextureManager::CreateTexture() its contents
- * are by default undefined. Setting this flag will clear the texture.
- * It only has an effect when used with iTextureManager::CreateTexture().
- */
-#define CS_TEXTURE_CREATE_CLEAR		0x00000200
-/**
- * Disable filtering across edges for a cubemap.
- * By default, cubemaps are seamless (when filtering near an edge of a face,
- * pixels from neighboring faces are sampled as well). However, this may be
- * undesireable in certain cases (e.g. lookup textures). In that case,
- * seamless filtering can be selectively disabled.
- * \remarks Seamless filtering is subject to hardware/driver support.
- *   On some hardware/drivers, seamless filtering is a global flag. "Disable
- *   seamless" takes precedence, so if one texture with seamless disabled
- *   is used, seamless filtering is disabled globally.
- */
-#define CS_TEXTURE_CUBEMAP_DISABLE_SEAMLESS	0x00000400
 /** @} */
+
+/**
+ * A lightmap registered with a renderer.
+ */
+struct iRendererLightmap : public virtual iBase
+{
+  SCF_INTERFACE (iRendererLightmap, 2, 1, 0);
+
+  /**
+   * Retrieve the coordinates of this lightmap in the superlightmap, in the
+   * 'absolute' system used by iSuperLightmap::RegisterLightmap().
+   */
+  virtual void GetSLMCoords (int& left, int& top, 
+    int& width, int& height) = 0;
+    
+  /// Set the image data of this lightmap.
+  virtual void SetData (csRGBcolor* data) = 0;
+  
+  virtual void SetLightCellSize (int size) = 0;
+};
+
+/**
+ * A super light map.
+ */
+struct iSuperLightmap : public virtual iBase
+{
+  SCF_INTERFACE (iSuperLightmap, 2, 0, 0);
+
+  /// Add a lightmap to this SLM.
+  virtual csPtr<iRendererLightmap> RegisterLightmap (int left, int top, 
+    int width, int height) = 0;
+    
+  /// Retrieve an image of the whole SLM (for debugging purposes)
+  virtual csPtr<iImage> Dump () = 0;
+
+  virtual iTextureHandle* GetTexture () = 0;
+};
 
 /**
  * This is the standard texture manager interface.
@@ -147,7 +166,7 @@ struct iString;
  */
 struct iTextureManager : public virtual iBase
 {
-  SCF_INTERFACE(iTextureManager, 4,0,0);
+  SCF_INTERFACE(iTextureManager, 3,2,0);
   /**
    * Register a texture. The given input image is IncRef'd and DecRef'ed
    * later when no longer needed. If you want to keep the input image
@@ -211,30 +230,15 @@ struct iTextureManager : public virtual iBase
   virtual int GetTextureFormat () = 0;
   
   /**
+   * Create a new super lightmap with the specified dimensions.
+   */
+  virtual csPtr<iSuperLightmap> CreateSuperLightmap (int width, 
+    int height) = 0;
+
+  /**
    * Request maximum texture dimensions.
    */
   virtual void GetMaxTextureSize (int& w, int& h, int& aspect) = 0;
-
-  /**
-   * Create a new texture with the given texture format.
-   * 
-   * \param w Horizontal size of the texture.
-   * \param h Vertical size of the texture.
-   * \param d Depth size of the texture (for 3D textures).
-   * \param imagetype Type of the image.
-   * \param format A texture format string.
-   * \param flags Contains one or several of CS_TEXTURE_XXX flags OR'ed
-   *  together. They define the mode texture is going to be used in.
-   * \param fail_reason An optional string which will be filled with
-   *  the reason for failure if there was a failure.
-   * \return A new texture handle or 0 if the texture couldn't be
-   *  created for some reason. The reason will be put in the optional
-   *  \a fail_reason parameter.
-   * \sa \ref TextureFormatStrings 
-   */
-  virtual csPtr<iTextureHandle> CreateTexture (int w, int h, int d,
-      csImageType imagetype, const char* format, int flags,
-      iString* fail_reason = 0) = 0;
 };
 
 /** @} */

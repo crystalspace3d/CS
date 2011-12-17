@@ -42,15 +42,15 @@ struct iParticleSystemBase;
  * @{ */
 
 /**
- * Sorting modes to be used by the particle renderer
+ * Sorting modes for particle renderer
  */
 enum csParticleSortMode
 {
   /// No sorting at all
   CS_PARTICLE_SORT_NONE,
-  /// Sort by the distance to the camera
+  /// Sort by distance to camera
   CS_PARTICLE_SORT_DISTANCE,
-  /// Sort by the dot product of the normalized camera vector and the particle direction
+  /// Sort by dot product of normalized camera vector and particle direction
   CS_PARTICLE_SORT_DOT
 };
 
@@ -96,15 +96,15 @@ enum csParticleRenderOrientation
    * The billboard will be aligned so that the normal is along the z axis
    * and the particle in the xy plane of the base specified.
    */
-  CS_PARTICLE_ORIENT_SELF,
-  /**
-   * Orient the particles according to their internal rotation.
-   * The billboard will be aligned so that the normal is along the z axis
-   * and the particle in the xy plane of the base specified.
-   * This differs from CS_PARTICLE_ORIENT_SELF in the sense that the particles
-   * will always have their "forward" side towards the camera
-   */
-  CS_PARTICLE_ORIENT_SELF_FORWARD
+   CS_PARTICLE_ORIENT_SELF,
+   /**
+    * Orient the particles according to their internal rotation.
+    * The billboard will be aligned so that the normal is along the z axis
+    * and the particle in the xy plane of the base specified.
+    * This differs from CS_PARTICLE_ORIENT_SELF in the sense that the particles
+    * will always have their "forward" side towards the camera
+    */
+    CS_PARTICLE_ORIENT_SELF_FORWARD
 };
 
 /**
@@ -249,21 +249,20 @@ struct csParticleBuffer
 
 /**
  * A particle emitter.
- * The particle emitters are responsible for adding new particles and
- * setting up their initial state.
+ * The particle emitters are responsible for adding new particles 
  */
 struct iParticleEmitter : public virtual iBase
 {
   SCF_INTERFACE(iParticleEmitter,1,0,0);
 
   /**
-   * Set whether or not this emitter is enabled. 
-   * The emitter will emit particles only if it is enabled.
+   * Set emitters enabled state. 
+   * The emitter will only emit particles if enabled.
    */
   virtual void SetEnabled (bool enabled) = 0;
 
   /**
-   * Get whether or not this emitter is enabled. 
+   * Get emitters enabled state
    */
   virtual bool GetEnabled () const = 0;
 
@@ -281,7 +280,7 @@ struct iParticleEmitter : public virtual iBase
   virtual float GetStartTime () const = 0;
 
   /**
-   * Set the duration (in seconds) for this emitter.
+   * Set duration (in seconds) for this emitter.
    * By default emitters will emit particles infinitely, but by setting this
    * you can make them stop a given number of seconds after they initiated
    * emission.
@@ -290,39 +289,39 @@ struct iParticleEmitter : public virtual iBase
   virtual void SetDuration (float time) = 0;
 
   /**
-   * Get the duration (in seconds) for this emitter.
+   * Get duration (in seconds) for this emitter.
    */
   virtual float GetDuration () const = 0;
 
   /**
-   * Set the emission rate, in particles per second.
+   * Set emission rate in particles per second.
    */
   virtual void SetEmissionRate (float particlesPerSecond) = 0;
 
   /**
-   * Get the emission rate, in particles per second.
+   * Get emission rate in particles per second.
    */
   virtual float GetEmissionRate () const = 0;
 
   /**
-   * Set the initial time-to-live span of the particles emitted.
+   * Set initial time-to-live span.
    * The emitter will assign a time-to-live in the range specified.
    */
   virtual void SetInitialTTL (float min, float max) = 0;
 
   /**
-   * Get the initial time-to-live span of the particles emitted.
+   * Get initial time-to-live span.
    */
   virtual void GetInitialTTL (float& min, float& max) const= 0;
 
   /**
-   * Set the initial mass of the new particles.
+   * Set initial mass for new particles.
    * The emitter will assign a mass in the range specified.
    */
   virtual void SetInitialMass (float min, float max) = 0;
 
   /**
-   * Get the initial mass of the new particles.   
+   * Get initial mass for new particles.   
    */
   virtual void GetInitialMass (float& min, float& max) const = 0;
 
@@ -332,30 +331,13 @@ struct iParticleEmitter : public virtual iBase
   virtual csPtr<iParticleEmitter> Clone () const = 0;
 
   /**
-   * Get the number of particles this emitter wants to emit
-   * \param system The particle system for which particles may be emitted
-   * \param dt The time step during which some particles may be emitted,
-   * in seconds (the number of particles emitted should be equal to this,
-   * times the emission rate).
-   * \param totalTime The total time since the particle system has started
-   * emitting, in seconds and including \a dt.
+   * Get number of particles this emitter wants to emit
    */
   virtual size_t ParticlesToEmit (iParticleSystemBase* system,
     float dt, float totalTime) = 0;
 
   /**
-   * Spawn some new particles. The number of particles to be emitted has
-   * be defined through the last call to ParticlesToEmit().
-   * \param system The particle system for which particles may be emitted
-   * \param particleBuffer The storage place for the data of the new
-   * particles to be emitted
-   * \param dt The time step during which some particles may be emitted,
-   * in seconds (the number of particles emitted should be equal to this,
-   * times the emission rate).
-   * \param totalTime The total time since the particle system has started
-   * emitting, in seconds and including \a dt.
-   * \param emitterToParticle A local transform to apply on the position
-   * of the new particles emitted
+   * Spawn new particles.
    */
   virtual void EmitParticles (iParticleSystemBase* system,
     const csParticleBuffer& particleBuffer, float dt, float totalTime,
@@ -364,7 +346,7 @@ struct iParticleEmitter : public virtual iBase
 };
 
 /**
- * Base interface for particle effectors.
+ * Base interface for particle effector.
  * A particle effector is an object which affects the movement and lifetime
  * of particles, such as simple forces (gravity), 
  */
@@ -489,7 +471,7 @@ struct iParticleSystemFactory : public iParticleSystemBase
    */
   virtual void SetDeepCreation (bool deep) = 0;
 
-  /// Get whether or not deep copy should be used
+  /// Get if deep copy chould be used
   virtual bool GetDeepCreation () const = 0;
 };
 
@@ -507,16 +489,14 @@ struct iParticleSystem : public iParticleSystemBase
   /// Get a specific particle
   virtual csParticle* GetParticle (size_t index) = 0;
 
-  /// Get the auxiliary data of a specific particle
+  /// Get aux-data for a specific particle
   virtual csParticleAux* GetParticleAux (size_t index) = 0;
 
   /**
-   * Lock the particles and take external control over them. The particle system
-   * will no more use the emitters and effectors, so the particles have to be
-   * animated manually.
+   * Lock the particles and take external control over them.
    * \param maxParticles Amount of particles for which memory is allocated in
-   * the returned particles buffer. (The actual number of provided particles 
-   * must be set there; obviously it can't exceed \a maxParticles.)
+   *   the returned particles buffer. (The actual number of provided particles 
+   *   must be set there; obviously it can't exceed \a maxParticles.)
    */
   virtual csParticleBuffer* LockForExternalControl (size_t maxParticles) = 0;
   
@@ -524,8 +504,8 @@ struct iParticleSystem : public iParticleSystemBase
    * Advance the time of the particle system object by the given duration.
    * This is useful to "fill" a particle system after its initial creation.
    * \remarks Internally, the time is advanced in multiple steps of a smaller
-   * duration. This means that the run time needed to advance a particle
-   * system grows proportionally with the time to advance!
+   *  duration. This means that the run time needed to advance a particle
+   *  system grows proportionally with the time to advance!
    */
   virtual void Advance (csTicks time) = 0;
 };
@@ -546,31 +526,28 @@ enum csParticleBuiltinEmitterPlacement
   CS_PARTICLE_BUILTIN_SURFACE
 };
 
-/**
- * Base interface for the emitters already built-in.
- */
 struct iParticleBuiltinEmitterBase : public iParticleEmitter
 {
   SCF_INTERFACE(iParticleBuiltinEmitterBase,1,0,0);
 
   /**
-   * Set the position of the emitter.
+   * Set position of emitter.
    *
    * \sa iParticleSystemBase::SetLocalMode
    */
   virtual void SetPosition (const csVector3& position) = 0;
 
-  /// Get the position of the emitter
+  /// Get position
   virtual const csVector3& GetPosition () const = 0;
 
-  /// Set the initial particle placement
+  /// Set particle placement
   virtual void SetParticlePlacement (csParticleBuiltinEmitterPlacement place) = 0;
 
-  /// Get the initial particle placement
+  /// Get particle placement
   virtual csParticleBuiltinEmitterPlacement GetParticlePlacement () const = 0;
 
   /**
-   * Set the initial velocity assignment strategy. 
+   * Set initial velocity assignment strategy. 
    *
    * Uniform velocity means that direction is always "outward pushing" 
    * (exactly what that is depends on the shape of the emitter, for example
@@ -583,21 +560,18 @@ struct iParticleBuiltinEmitterBase : public iParticleEmitter
    */
   virtual void SetUniformVelocity (bool uniform) = 0;
 
-  /// Get the initial velocity strategy
+  /// Get initial velocity strategy
   virtual bool GetUniformVelocity () const = 0;
 
-  /// Set the initial velocity/magnitude of the emitted particles
+  /// Set velocity/magnitude for emitted particles
   virtual void SetInitialVelocity (const csVector3& linear, 
     const csVector3& angular) = 0;
 
-  /// Get the initial velocity/magnitude of the emitted particles
+  /// Get velocity for emitted particles
   virtual void GetInitialVelocity (csVector3& linear, 
     csVector3& angular) const = 0;
 };
 
-/**
- * An emitter spawning the new particles around a sphere geometry
- */
 struct iParticleBuiltinEmitterSphere : public iParticleBuiltinEmitterBase
 {
   SCF_INTERFACE(iParticleBuiltinEmitterSphere,1,0,0);
@@ -609,9 +583,6 @@ struct iParticleBuiltinEmitterSphere : public iParticleBuiltinEmitterBase
   virtual float GetRadius () const = 0;
 };
 
-/**
- * An emitter spawning the new particles around a cone geometry
- */
 struct iParticleBuiltinEmitterCone : public iParticleBuiltinEmitterBase
 {
   SCF_INTERFACE(iParticleBuiltinEmitterCone,1,0,0);
@@ -632,9 +603,6 @@ struct iParticleBuiltinEmitterCone : public iParticleBuiltinEmitterBase
   virtual float GetConeAngle () const = 0;
 };
 
-/**
- * An emitter spawning the new particles around a box geometry
- */
 struct iParticleBuiltinEmitterBox : public iParticleBuiltinEmitterBase
 {
   SCF_INTERFACE(iParticleBuiltinEmitterBox,1,0,0);
@@ -646,9 +614,6 @@ struct iParticleBuiltinEmitterBox : public iParticleBuiltinEmitterBase
   virtual const csOBB& GetBox () const = 0;
 };
 
-/**
- * An emitter spawning the new particles around a cylinder geometry
- */
 struct iParticleBuiltinEmitterCylinder : public iParticleBuiltinEmitterBase
 {
   SCF_INTERFACE(iParticleBuiltinEmitterCylinder,1,0,0);
@@ -667,22 +632,15 @@ struct iParticleBuiltinEmitterCylinder : public iParticleBuiltinEmitterBase
 };
 
 /**
- * Factory for built-in emitters
+ * Factory for builtin emitter-types
  */
 struct iParticleBuiltinEmitterFactory : public virtual iBase
 {
   SCF_INTERFACE(iParticleBuiltinEmitterFactory,1,0,0);
 
-  /// Create a 'sphere' particle emitter
   virtual csPtr<iParticleBuiltinEmitterSphere> CreateSphere () const = 0;
-
-  /// Create a 'cone' particle emitter
   virtual csPtr<iParticleBuiltinEmitterCone> CreateCone () const = 0;
-
-  /// Create a 'box' particle emitter
   virtual csPtr<iParticleBuiltinEmitterBox> CreateBox () const = 0;
-
-  /// Create a 'cylinder' particle emitter
   virtual csPtr<iParticleBuiltinEmitterCylinder> CreateCylinder () const = 0;
 };
 
@@ -737,7 +695,7 @@ struct iParticleBuiltinEffectorForce : public iParticleEffector
  */
 struct iParticleBuiltinEffectorLinColor : public iParticleEffector
 {
-  SCF_INTERFACE(iParticleBuiltinEffectorLinColor,1,1,0);
+  SCF_INTERFACE(iParticleBuiltinEffectorLinColor,1,0,0);
 
   /** 
    * Add color to list of colors to interpolate between.
@@ -746,38 +704,14 @@ struct iParticleBuiltinEffectorLinColor : public iParticleEffector
   virtual size_t AddColor (const csColor4& color, float endTTL) = 0;
 
   /**
-   * Remove a specific entry.
-   */
-  virtual void RemoveColor (size_t index) = 0;
-
-  /**
-   * Remove all entries.
-   */
-  virtual void Clear () = 0;
-
-  /**
    * Set the color of an already existing entry
    */
   virtual void SetColor (size_t index, const csColor4& color) = 0;
 
   /**
-   * Set the TTL for an already existing entry.
-   */
-  virtual void SetEndTTL (size_t index, float ttl) = 0;
-
-  /**
    * Get color and time
    */
   virtual void GetColor (size_t index, csColor4& color, float& endTTL) const = 0;
-
-  /**
-   * Get color.
-   */
-  virtual const csColor4& GetColor (size_t index) const = 0;
-  /**
-   * Get TTL.
-   */
-  virtual float GetEndTTL (size_t index) const = 0;
 
   /**
    * Get number of color entries
@@ -823,7 +757,7 @@ enum csParticleBuiltinEffectorVFType
  */
 struct iParticleBuiltinEffectorVelocityField : public iParticleEffector
 {
-  SCF_INTERFACE(iParticleBuiltinEffectorVelocityField,2,0,0);
+  SCF_INTERFACE(iParticleBuiltinEffectorVelocityField,1,0,0);
 
   /**
    * Set force field type
@@ -851,16 +785,6 @@ struct iParticleBuiltinEffectorVelocityField : public iParticleEffector
   virtual size_t GetFParameterCount () const = 0;
 
   /**
-   * Add an F parameter.
-   */
-  virtual void AddFParameter(float value) = 0;
-
-  /**
-   * Remove an F parameter.
-   */
-  virtual void RemoveFParameter(size_t index) = 0;
-
-  /**
    * Set vector parameter
    */
   virtual void SetVParameter (size_t parameterNumber, const csVector3& value) = 0;
@@ -874,17 +798,6 @@ struct iParticleBuiltinEffectorVelocityField : public iParticleEffector
    * Get the number of set vector parameters
    */
   virtual size_t GetVParameterCount () const = 0;
-
-  /**
-   * Add a V parameter.
-   */
-  virtual void AddVParameter(const csVector3& value) = 0;
-
-  /**
-   * Remove a V parameter.
-   */
-  virtual void RemoveVParameter(size_t index) = 0;
-
 };
 
 /**
@@ -893,18 +806,12 @@ struct iParticleBuiltinEffectorVelocityField : public iParticleEffector
  */
 enum csParticleParameterMask
 {
-  /// Mass
   CS_PARTICLE_MASK_MASS = 1,
-  /// Linear velocity
   CS_PARTICLE_MASK_LINEARVELOCITY = 2,
-  /// Angular velocity
   CS_PARTICLE_MASK_ANGULARVELOCITY = 4,
-  /// Color
   CS_PARTICLE_MASK_COLOR = 8,
-  /// Particle size
   CS_PARTICLE_MASK_PARTICLESIZE = 16,
 
-  /// All parameters
   CS_PARTICLE_MASK_ALL = CS_PARTICLE_MASK_MASS | CS_PARTICLE_MASK_LINEARVELOCITY |
     CS_PARTICLE_MASK_ANGULARVELOCITY | CS_PARTICLE_MASK_COLOR | CS_PARTICLE_MASK_PARTICLESIZE
 };
@@ -915,15 +822,10 @@ enum csParticleParameterMask
  */
 struct csParticleParameterSet
 {
-  /// Mass
   float mass;
-  /// Linear velocity
   csVector3 linearVelocity;
-  /// Angular velocity
   csVector3 angularVelocity;
-  /// Color
   csColor4 color;
-  /// Particle size
   csVector2 particleSize;
 
   csParticleParameterSet ()
@@ -931,7 +833,6 @@ struct csParticleParameterSet
     Clear ();
   }
 
-  /// Set all parameters to 0.
   void Clear ()
   {
     mass = 0.0;
@@ -952,11 +853,11 @@ struct csParticleParameterSet
  */
 struct iParticleBuiltinEffectorLinear : public iParticleEffector
 {
-  SCF_INTERFACE(iParticleBuiltinEffectorLinear,1,1,0);
+  SCF_INTERFACE(iParticleBuiltinEffectorLinear,1,0,0);
 
   /**
    * Set the mask to influence which parameters we will interpolate. By default
-   * this will be set to #CS_PARTICLE_MASK_ALL.
+   * this will be set to CS_PARTICLE_MASK_ALL.
    */
   virtual void SetMask (int mask) = 0;
 
@@ -972,39 +873,14 @@ struct iParticleBuiltinEffectorLinear : public iParticleEffector
   virtual size_t AddParameterSet (const csParticleParameterSet& param, float endTTL) = 0;
 
   /**
-   * Remove a specific entry.
-   */
-  virtual void RemoveParameterSet (size_t index) = 0;
-
-  /**
-   * Remove all entries.
-   */
-  virtual void Clear () = 0;
-
-  /**
    * Overwrite the parameter set of an already existing entry
    */
   virtual void SetParameterSet (size_t index, const csParticleParameterSet& param) = 0;
 
   /**
-   * Set the TTL for an index.
-   */
-  virtual void SetEndTTL (size_t index, float ttl) = 0;
-
-  /**
    * Get parameter set and time
    */
   virtual void GetParameterSet (size_t index, csParticleParameterSet& param, float& endTTL) const = 0;
-
-  /**
-   * Get parameter set and time
-   */
-  virtual const csParticleParameterSet& GetParameterSet (size_t index) const = 0;
-
-  /**
-   * Get TTL.
-   */
-  virtual float GetEndTTL (size_t index) const = 0;
 
   /**
    * Get number of parameter set entries
@@ -1013,49 +889,16 @@ struct iParticleBuiltinEffectorLinear : public iParticleEffector
 };
 
 /**
- * This effector will create and attach a iLight to each particle of the
- * system.
- *
- * The position, orientation, base and specular colors of each light
- * will be copied from the particle it is attached to, while its cutoff
- * distance will be modified by the alpha value of the particle's color.
- */
-struct iParticleBuiltinEffectorLight : public iParticleEffector
-{
-  SCF_INTERFACE(iParticleBuiltinEffectorLight,1,0,0);
-
-  /**
-   * Set the initial cutoff distance of the lights. The actual value for
-   * each light will be the value given here, times the alpha component of
-   * the particle's color. The initial value is 5.0f.
-   */
-  virtual void SetInitialCutoffDistance (float distance) = 0;
-
-  /// Get the initial cutoff distance of the lights.
-  virtual float GetInitialCutoffDistance () const = 0;
-};
-
-/**
  * Factory for builtin effectors
  */
 struct iParticleBuiltinEffectorFactory : public virtual iBase
 {
-  SCF_INTERFACE(iParticleBuiltinEffectorFactory,1,0,2);
+  SCF_INTERFACE(iParticleBuiltinEffectorFactory,1,0,1);
 
-  /// Create a 'force' particle effector
   virtual csPtr<iParticleBuiltinEffectorForce> CreateForce () const = 0;
-
-  /// Create a 'linear color' particle effector
   virtual csPtr<iParticleBuiltinEffectorLinColor> CreateLinColor () const = 0;
-
-  /// Create a 'velocity field' particle effector
   virtual csPtr<iParticleBuiltinEffectorVelocityField> CreateVelocityField () const = 0;
-
-  /// Create a 'linear' particle effector
   virtual csPtr<iParticleBuiltinEffectorLinear> CreateLinear () const = 0;
-
-  /// Create a 'light' particle effector
-  virtual csPtr<iParticleBuiltinEffectorLight> CreateLight () const = 0;
 };
 
 /** @} */

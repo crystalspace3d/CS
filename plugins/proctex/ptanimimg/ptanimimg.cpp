@@ -39,7 +39,7 @@
 
 // Plugin stuff
 
-
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(PTAnimImg)
 {
@@ -66,7 +66,8 @@ bool csAnimateProctexLoader::Initialize(iObjectRegistry *object_reg)
 }
 
 csPtr<iBase> csAnimateProctexLoader::Parse (iDocumentNode* node, 
-					    iStreamSource*, iLoaderContext* /*ldr_context*/,
+					    iStreamSource*,
+					    iLoaderContext* /*ldr_context*/,
   					    iBase* context)
 {
   csRef<iTextureLoaderContext> ctx;
@@ -112,7 +113,7 @@ csPtr<iBase> csAnimateProctexLoader::Parse (iDocumentNode* node,
     if (!img) 
     {
       Report (CS_REPORTER_SEVERITY_WARNING, file, 
-	"Couldn't load image %s", CS::Quote::Single (fname));
+	"Couldn't load image '%s'", fname);
       return 0;
     }
   }

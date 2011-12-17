@@ -20,21 +20,19 @@
 #define __TUI_H__
 
 #include "csutil/scf_implementation.h"
-#include "csutil/threadmanager.h"
 
 #include "ivaria/reporter.h"
 
 namespace lighter
 {
   /// Text-mode User Interface
-  class TUI : public ThreadedCallable<TUI>,
-              public scfImplementation1<TUI, iReporterListener>
+  class TUI : public scfImplementation1<TUI, iReporterListener>
   {
   public:
     TUI ();
 
     // Setup
-    void Initialize (iObjectRegistry* objReg);
+    void Initialize ();
 
     enum RedrawFlag
     {
@@ -43,10 +41,9 @@ namespace lighter
       TUI_DRAW_PROGRESS = (1<<3),
       TUI_DRAW_MESSAGES = (1<<4),
       TUI_DRAW_RAYCORE = (1<<5),
-      TUI_DRAW_PMCORE = (1<<6),
-      TUI_DRAW_SETTINGS = (1<<7),
-      TUI_DRAW_STATS = (1<<8),
-      TUI_DRAW_SWAPCACHE = (1<<9),
+      TUI_DRAW_SETTINGS = (1<<6),
+      TUI_DRAW_STATS = (1<<7),
+      TUI_DRAW_SWAPCACHE = (1<<8),
       TUI_DRAW_ALL = 0xFFFFFFFF
     };
 
@@ -58,8 +55,8 @@ namespace lighter
     void FinishDraw ();
 
     /// iReporterListener
-    THREADED_CALLABLE_DECL4(TUI, Report, csThreadReturn, iReporter*, reporter,
-      int, severity, const char*, msgId, const char*, description, HIGH, true, false);
+    virtual bool Report (iReporter* reporter, int severity, const char* msgId,
+      const char* description);
   private:
     csString GetProgressBar (uint percent) const;
 
@@ -74,9 +71,6 @@ namespace lighter
 
     //Draw raytracer stats
     void DrawRayCore () const;
-
-    //Draw photonmapper stats
-    void DrawPMCore () const;
 
     //Draw settings
     void DrawSettings () const;
@@ -104,9 +98,6 @@ namespace lighter
 
     // Last printed task
     csString lastTask; float lastTaskProgress;
-
-    iObjectRegistry* GetObjectRegistry() const { return object_reg; }
-    iObjectRegistry* object_reg;
   };
 
   extern TUI globalTUI;

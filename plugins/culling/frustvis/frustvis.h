@@ -32,6 +32,7 @@
 #include "imesh/objmodel.h"
 #include "iengine/viscull.h"
 #include "iengine/movable.h"
+#include "iengine/shadcast.h"
 #include "iengine/mesh.h"
 
 class csKDTree;
@@ -58,6 +59,7 @@ public:
 
   // Optional data for shadows. Both fields can be 0.
   csRef<iMeshWrapper> mesh;
+  csRef<iShadowCaster> caster;
 
   csFrustVisObjectWrapper (csFrustumVis* frustvis) :
     scfImplementationType(this), frustvis(frustvis) { }
@@ -71,8 +73,6 @@ public:
   virtual void MovableDestroyed (iMovable*) { }
 };
 
-#include "csutil/deprecated_warn_off.h"
-
 /**
  * A simple frustum based visisibility culling system.
  */
@@ -82,10 +82,7 @@ class csFrustumVis :
 {
 public:
   // List of objects to iterate over (after VisTest()).
-  typedef csArray<iVisibilityObject*, csArrayElementHandler<iVisibilityObject*>,
-    CS::Container::ArrayAllocDefault, csArrayCapacityFixedGrow<256> >
-    VistestObjectsArray;
-  VistestObjectsArray vistest_objects;
+  csArray<iVisibilityObject*> vistest_objects;
   bool vistest_objects_inuse;	// If true the vector is in use.
 
 private:
@@ -97,8 +94,7 @@ private:
   // This puts an upper limit of all boxes in the kdtree itself because
   // those go off to infinity.
   csBox3 kdtree_box;
-  csRefArray<csFrustVisObjectWrapper, CS::Container::ArrayAllocDefault, 
-    csArrayCapacityFixedGrow<256> > visobj_vector;
+  csRefArray<csFrustVisObjectWrapper> visobj_vector;
   int scr_width, scr_height;	// Screen dimensions.
   uint32 current_vistest_nr;
 
@@ -152,8 +148,8 @@ public:
   virtual void RegisterVisObject (iVisibilityObject* visobj);
   virtual void UnregisterVisObject (iVisibilityObject* visobj);
   virtual bool VisTest (iRenderView* rview, 
-    iVisibilityCullerListener* viscallback, int w = 0, int h = 0);
-  virtual void PrecacheCulling () { BeginPrecacheCulling (); }
+    iVisibilityCullerListener* viscallback);
+  virtual void PrecacheCulling () { VisTest ((iRenderView*)0, 0); }
   virtual csPtr<iVisibilityObjectIterator> VisTest (const csBox3& box);
   virtual csPtr<iVisibilityObjectIterator> VisTest (const csSphere& sphere);
   virtual void VisTest (const csSphere& sphere, 
@@ -170,18 +166,14 @@ public:
     const csVector3& end, csVector3& isect, float* pr = 0,
     iMeshWrapper** p_mesh = 0, int* poly_idx = 0,
     bool accurate = true);
+  virtual void CastShadows (iFrustumView* fview);
   virtual const char* ParseCullerParameters (iDocumentNode*) { return 0; }
-  virtual void RenderViscull (iRenderView* rview, iShaderVariableContext* shaders) {}
-  virtual void BeginPrecacheCulling () { VisTest ((iRenderView*)0, 0); }
-  virtual void EndPrecacheCulling () {}
 
   bool HandleEvent (iEvent& ev);
 
   CS_EVENTHANDLER_NAMES("crystalspace.frustvis")
   CS_EVENTHANDLER_NIL_CONSTRAINTS
 };
-
-#include "csutil/deprecated_warn_on.h"
 
 #endif // __CS_FRUSTVIS_H__
 

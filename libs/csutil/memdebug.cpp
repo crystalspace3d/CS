@@ -277,7 +277,7 @@ static void ShowBlockInfo (csMemTrackerEntry& me)
   csPrintf ("BLOCK: start=%08p size=%zu freed=%d\n", me.start,
         me.size, (int)me.freed);
 # ifdef CS_EXTENSIVE_MEMDEBUG_IMPLEMENT
-  csPrintf ("       alloced at %s %d\n", CS::Quote::Single (me.alloc_file), me.alloc_line);
+  csPrintf ("       alloced at '%s' %d\n", me.alloc_file, me.alloc_line);
 # endif
 }
 
@@ -998,8 +998,7 @@ namespace CS
 	{
 	  if (!iSCF::SCF)
 	  {
-	    csPrintf ("%s for %s: iSCF::SCF not set yet!\n",
-	      CS_FUNCTION_NAME, Class);
+	    csPrintf ("iSCF::SCF not set yet!\n");
 	    return;
 	  }
 	
@@ -1069,14 +1068,6 @@ namespace CS
 	    mti->totalAllocCount++;
 	  else if (dcount < 0)
 	    mti->totalDeallocCount++;
-	}
-	const char* GetInfo (csMemTrackerModule* m, void* p)
-	{
-	  if (!m) return 0;
-	  csMemTrackerModule::BlockInfo* bi =
-	    m->blockSizes.GetElementPointer (p);
-	  if (!bi) return 0;
-	  return bi->info;
 	}
       } // namespace Impl
     } // namespace MemTracker

@@ -115,7 +115,6 @@ public:
   void OccupySpace (const RoomCoordinate& rc);
   bool IsSpaceFree (const RoomCoordinate& rc) const;
 
-  bool CreateMaterials ();
   bool CreateGeometry ();
   bool CreateWallOrPortal (iGeneralFactoryState* factory_state,
   	const csVector3& v1, const csVector3& v2,
@@ -127,8 +126,8 @@ public:
   bool CreateRoom (iMaterialWrapper* wall_material,
   	int x, int y, int z,
 	const char* portals);
-  iLight* CreateLight (const csColor& color,
-  	int x, int y, int z, float radius = ROOM_DIMENSION * 1.2);
+  bool CreateLight (const csColor& color,
+  	int x, int y, int z);
 };
 
 class Player
@@ -163,7 +162,6 @@ private:
   csWeakRef<iMeshWrapper> mesh;
   RoomCoordinate current_location;
   AppMazing* app;
-  iLight* light;
 
   bool moving;
   csVector3 start, end;
@@ -173,12 +171,11 @@ public:
   SCF_INTERFACE(Adversary, 1, 0, 0);
 
   Adversary (AppMazing* app, iMeshWrapper* mesh, const RoomCoordinate& rc);
-  virtual ~Adversary ();
+  virtual ~Adversary () {}
 
   void ThinkAndMove (float elapsed_seconds);
 
   iMeshWrapper* GetMesh () const { return mesh; }
-  void SetLight (iLight* light) { Adversary::light = light; }
 };
 
 class Explosion

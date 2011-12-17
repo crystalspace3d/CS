@@ -17,9 +17,6 @@
 */
 
 #include "cssysdef.h"
-
-#include "syntxldr.h"
-
 #include <stdarg.h>
 #include <ctype.h>
 #include <limits.h>
@@ -29,10 +26,13 @@
 #include "csgeom/plane3.h"
 #include "csgeom/vector2.h"
 #include "csgfx/gradient.h"
+#include "csgfx/shaderexp.h"
+#include "csgfx/shaderexpaccessor.h"
+#include "csgfx/shadervar.h"
 #include "cstool/keyval.h"
+#include "cstool/vfsdirchange.h"
 #include "csutil/cscolor.h"
 #include "csutil/scfstr.h"
-#include "csutil/stringquote.h"
 
 #include "iengine/engine.h"
 #include "iengine/portal.h"
@@ -42,10 +42,15 @@
 #include "iutil/vfs.h"
 #include "ivaria/reporter.h"
 #include "ivideo/material.h"
+#include "ivideo/shader/shader.h"
+
+#include "syntxldr.h"
 
 // Only used for unit-testing. The parser does not otherwise
 // depend on any specific XML parser.
 #include "csutil/xmltiny.h"
+
+CS_IMPLEMENT_PLUGIN
 
 CS_PLUGIN_NAMESPACE_BEGIN(SyntaxService)
 {
@@ -75,8 +80,8 @@ bool csTextSyntaxService::Initialize (iObjectRegistry* object_reg)
 
   InitTokenTable (xmltokens);
 
-  strings = csQueryRegistryTagInterface<iShaderVarStringSet> (
-    object_reg, "crystalspace.shader.variablenameset");
+  strings = csQueryRegistryTagInterface<iStringSet> (
+    object_reg, "crystalspace.shared.stringset");
 
   return true;
 }
@@ -86,11 +91,10 @@ bool csTextSyntaxService::ParseBoolAttribute (iDocumentNode* node,
 {
   csRef<iDocumentAttribute> attr = node->GetAttribute (attrname);
   if (!attr)
-  {
     if (required)
     {
       ReportError ("crystalspace.syntax.boolean", node,
-        "Boolean attribute %s is missing!", CS::Quote::Single (attrname));
+        "Boolean attribute '%s' is missing!", attrname);
       return false;
     }
     else
@@ -98,8 +102,6 @@ bool csTextSyntaxService::ParseBoolAttribute (iDocumentNode* node,
       result = def_result;
       return true;
     }
-  }
-
   const char* v = attr->GetValue ();
   if (!v) { result = def_result; return true; }
   if (!strcasecmp (v, "1"))     { result = true; return true; }
@@ -111,8 +113,7 @@ bool csTextSyntaxService::ParseBoolAttribute (iDocumentNode* node,
   if (!strcasecmp (v, "on"))    { result = true; return true; }
   if (!strcasecmp (v, "off"))   { result = false; return true; }
   ReportError ("crystalspace.syntax.boolean", node,
-    "Bad boolean value %s for attribute %s!",
-    CS::Quote::Single (v), CS::Quote::Single (attrname));
+    "Bad boolean value '%s' for attribute '%s'!", v, attrname);
   return false;
 }
 
@@ -130,7 +131,7 @@ bool csTextSyntaxService::ParseBool (iDocumentNode* node, bool& result,
   if (!strcasecmp (v, "on"))    { result = true; return true; }
   if (!strcasecmp (v, "off"))   { result = false; return true; }
   ReportError ("crystalspace.syntax.boolean", node,
-    "Bad boolean value %s!", CS::Quote::Single (v));
+    "Bad boolean value '%s'!", v);
   return false;
 }
 
@@ -299,41 +300,6 @@ bool csTextSyntaxService::ParseMatrix (iDocumentNode* node, csMatrix3 &m)
   return true;
 }
 
-bool csTextSyntaxService::ParseMatrix (iDocumentNode* node, CS::Math::Matrix4& m)
-{
-  csRef<iDocumentNodeIterator> it = node->GetNodes ();
-  while (it->HasNext ())
-  {
-    csRef<iDocumentNode> child = it->Next ();
-    if (child->GetType () != CS_NODE_ELEMENT) continue;
-    const char* value = child->GetValue ();
-    csStringID id = xmltokens.Request (value);
-    switch (id)
-    {
-      case XMLTOKEN_M11: m.m11 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M12: m.m12 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M13: m.m13 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M14: m.m14 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M21: m.m21 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M22: m.m22 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M23: m.m23 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M24: m.m24 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M31: m.m31 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M32: m.m32 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M33: m.m33 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M34: m.m34 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M41: m.m31 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M42: m.m32 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M43: m.m33 = child->GetContentsValueAsFloat (); break;
-      case XMLTOKEN_M44: m.m34 = child->GetContentsValueAsFloat (); break;
-      default:
-        ReportBadToken (child);
-        return false;
-    }
-  }
-  return true;
-}
-
 bool csTextSyntaxService::WriteMatrix (iDocumentNode* node, const csMatrix3& m)
 {
   csRef<iDocumentNode> m11Node = node->CreateNodeBefore(CS_NODE_ELEMENT, 0);
@@ -382,7 +348,7 @@ bool csTextSyntaxService::ParseBox (iDocumentNode* node, csBox3 &v)
   if (!minnode)
   {
     ReportError ("crystalspace.syntax.box", node,
-      "Expected %s node!",CS::Quote::Single ("min"));
+      "Expected 'min' node!");
     return false;
   }
   miv.x = minnode->GetAttributeValueAsFloat ("x");
@@ -392,7 +358,7 @@ bool csTextSyntaxService::ParseBox (iDocumentNode* node, csBox3 &v)
   if (!maxnode)
   {
     ReportError ("crystalspace.syntax.box", node,
-      "Expected %s node!", CS::Quote::Single ("max"));
+      "Expected 'max' node!");
     return false;
   }
   mav.x = maxnode->GetAttributeValueAsFloat ("x");
@@ -427,8 +393,7 @@ bool csTextSyntaxService::ParseBox (iDocumentNode* node, csOBB &b)
     //Try to parse ourselves as a box node
     if (!ParseBox (node, (csBox3&)b))
     {
-      ReportError ("crystalspace.syntax.box", node, "Expected %s node!",
-		   CS::Quote::Single ("box"));
+      ReportError ("crystalspace.syntax.box", node, "Expected 'box' node!");
       return false;
     }
     return true;
@@ -935,8 +900,7 @@ bool csTextSyntaxService::ParseGradientShade (iDocumentNode* node,
 	      "crystalspace.syntax.gradient.shade",
 	      CS_REPORTER_SEVERITY_WARNING,
 	      child,
-	      "%s overrides previously specified %s.",
-	      CS::Quote::Single ("color"), CS::Quote::Single ("left"));
+	      "'color' overrides previously specified 'left'.");
 	  }
 	  else if (has_right)
 	  {
@@ -944,8 +908,7 @@ bool csTextSyntaxService::ParseGradientShade (iDocumentNode* node,
 	      "crystalspace.syntax.gradient.shade",
 	      CS_REPORTER_SEVERITY_WARNING,
 	      child,
-	      "%s overrides previously specified %s.",
-	      CS::Quote::Single ("color"), CS::Quote::Single ("right"));
+	      "'color' overrides previously specified 'right'.");
 	  }
 	  else if (has_color)
 	  {
@@ -953,8 +916,7 @@ bool csTextSyntaxService::ParseGradientShade (iDocumentNode* node,
 	      "crystalspace.syntax.gradient.shade",
 	      CS_REPORTER_SEVERITY_WARNING,
 	      child,
-	      "%s overrides previously specified %s.",
-	      CS::Quote::Single ("color"), CS::Quote::Single ("color"));
+	      "'color' overrides previously specified 'color'.");
 	  }
 	  csColor c;
 	  if (!ParseColor (child, c))
@@ -977,8 +939,7 @@ bool csTextSyntaxService::ParseGradientShade (iDocumentNode* node,
 	      "crystalspace.syntax.gradient.shade",
 	      CS_REPORTER_SEVERITY_WARNING,
 	      child,
-	      "%s overrides previously specified %s.",
-	      CS::Quote::Single ("left"), CS::Quote::Single ("color"));
+	      "'left' overrides previously specified 'color'.");
 	  }
 	  if (!ParseColor (child, shade.left))
 	  {
@@ -998,8 +959,7 @@ bool csTextSyntaxService::ParseGradientShade (iDocumentNode* node,
 	      "crystalspace.syntax.gradient.shade",
 	      CS_REPORTER_SEVERITY_WARNING,
 	      child,
-	      "%s overrides previously specified %s.",
-	      CS::Quote::Single ("right"), CS::Quote::Single ("color"));
+	      "'right' overrides previously specified 'color'.");
 	  }
 	  if (!ParseColor (child, shade.right))
 	  {
@@ -1027,8 +987,7 @@ bool csTextSyntaxService::ParseGradientShade (iDocumentNode* node,
       "crystalspace.syntax.gradient.shade",
       CS_REPORTER_SEVERITY_WARNING,
       node,
-      "Only one of %s or %s specified.",
-      CS::Quote::Single ("left"), CS::Quote::Single ("right"));
+      "Only one of 'left' or 'right' specified.");
   }
   if (!has_color && !has_left && !has_right)
   {
@@ -1121,6 +1080,255 @@ bool csTextSyntaxService::WriteGradient (iDocumentNode* node,
     WriteGradientShade (child, shade);
   }
 
+  return true;
+}
+
+bool csTextSyntaxService::ParseShaderVar (iLoaderContext* ldr_context,
+    	iDocumentNode* node, csShaderVariable& var)
+{
+  const char *name = node->GetAttributeValue("name");
+  if (name != 0)
+  {
+    var.SetName (strings->Request (name));
+  }
+  const char *type = node->GetAttributeValue("type");
+  if (!type)
+  {
+    Report (
+      "crystalspace.syntax.shadervariable",
+      CS_REPORTER_SEVERITY_WARNING,
+      node,
+      "Invalid shadervar type specified.");
+    return false;
+  }
+  csStringID idtype = xmltokens.Request (type);
+  switch (idtype)
+  {
+    case XMLTOKEN_INTEGER:
+      var.SetValue (node->GetContentsValueAsInt ());
+      break;
+    case XMLTOKEN_FLOAT:
+      var.SetValue (node->GetContentsValueAsFloat ());
+      break;
+    case XMLTOKEN_VECTOR2:
+      {
+        const char* def = node->GetContentsValue ();
+        csVector2 v (0.0f, 0.0f);
+        sscanf (def, "%f,%f", &v.x, &v.y);
+        var.SetValue (v);
+      }
+      break;
+    case XMLTOKEN_VECTOR3:
+      {
+        const char* def = node->GetContentsValue ();
+        csVector3 v (0);
+        sscanf (def, "%f,%f,%f", &v.x, &v.y, &v.z);
+        var.SetValue (v);
+      }
+      break;
+    case XMLTOKEN_VECTOR4:
+      {
+        const char* def = node->GetContentsValue ();
+        csVector4 v (0);
+        sscanf (def, "%f,%f,%f,%f", &v.x, &v.y, &v.z, &v.w);
+        var.SetValue (v);
+      }
+      break;
+    case XMLTOKEN_TEXTURE:
+      {
+	csRef<iTextureWrapper> tex;
+        // @@@ This should be done in a better way...
+	//  @@@ E.g. lazy retrieval of the texture with an accessor?
+        const char* texname = node->GetContentsValue ();
+        tex = ldr_context->FindTexture (texname);
+        if (!tex)
+	{
+          Report (
+              "crystalspace.syntax.shadervariable",
+              CS_REPORTER_SEVERITY_WARNING,
+              node,
+              "Texture '%s' not found.", texname);
+        }
+        var.SetValue (tex);
+      }
+      break;
+    case XMLTOKEN_LIBEXPR:
+      {
+	const char* exprname = node->GetAttributeValue ("exprname");
+	if (!exprname)
+	{
+	  Report ("crystalspace.syntax.shadervariable.expression",
+		CS_REPORTER_SEVERITY_ERROR,
+		node, "'exprname' attribute missing for shader expression!");
+	  return false;
+	}
+	csRef<iShaderManager> shmgr = csQueryRegistry<iShaderManager> (
+		object_reg);
+	if (shmgr)
+	{
+          iShaderVariableAccessor* acc = shmgr->GetShaderVariableAccessor (
+	    exprname);
+	  if (!acc)
+	  {
+	    Report ("crystalspace.syntax.shadervariable.expression",
+		  CS_REPORTER_SEVERITY_ERROR,
+		  node, "Can't find expression with name %s!", exprname);
+	    return false;
+	  }
+	  var.SetAccessor (acc);
+	}
+      }
+      break;
+    case XMLTOKEN_EXPR:
+    case XMLTOKEN_EXPRESSION:
+      {
+	csRef<iShaderVariableAccessor> acc = ParseShaderVarExpr (node);
+	if (!acc.IsValid())
+	  return false;
+	var.SetAccessor (acc);
+      }
+      break;
+    case XMLTOKEN_ARRAY:
+      {
+        csRef<iDocumentNodeIterator> varNodes = node->GetNodes ("shadervar");
+
+        int varCount = 0;
+        while (varNodes->HasNext ()) 
+        {
+          varCount++;
+          varNodes->Next ();
+        }
+
+        var.SetType (csShaderVariable::ARRAY);
+        var.SetArraySize (varCount);
+
+        varCount = 0;
+        varNodes = node->GetNodes ("shadervar");
+        while (varNodes->HasNext ()) 
+        {
+          csRef<iDocumentNode> varNode = varNodes->Next ();
+          csRef<csShaderVariable> elementVar = 
+            csPtr<csShaderVariable> (new csShaderVariable (csInvalidStringID));
+          var.SetArrayElement (varCount, elementVar);
+          ParseShaderVar (ldr_context, varNode, *elementVar);
+          varCount++;
+        }
+      }
+      break;
+    default:
+      Report (
+        "crystalspace.syntax.shadervariable",
+        CS_REPORTER_SEVERITY_WARNING,
+        node,
+	"Invalid shadervar type '%s'.", type);
+      return false;
+  }
+
+  return true;
+}
+
+csRef<iShaderVariableAccessor> csTextSyntaxService::ParseShaderVarExpr (
+  iDocumentNode* node)
+{
+  csRef<iDocumentNode> exprNode;
+  csRef<iDocumentNodeIterator> nodeIt = node->GetNodes();
+  while (nodeIt->HasNext())
+  {
+    csRef<iDocumentNode> child = nodeIt->Next();
+    if (child->GetType() != CS_NODE_ELEMENT) continue;
+    exprNode = child;
+    break;
+  }
+
+  if (!exprNode)
+  {
+    Report ("crystalspace.syntax.shadervariable.expression",
+      CS_REPORTER_SEVERITY_WARNING,
+      node, "Can't find expression node");
+    return 0;
+  }
+
+  csShaderExpression* expression = new csShaderExpression (object_reg);
+  if (!expression->Parse (exprNode))
+  {
+    Report ("crystalspace.syntax.shadervariable.expression",
+      CS_REPORTER_SEVERITY_WARNING,
+      node, "Error parsing expression: %s", expression->GetError());
+    delete expression;
+    return 0;
+  }
+  csRef<csShaderVariable> var;
+  var.AttachNew (new csShaderVariable (csInvalidStringID));
+  csRef<csShaderExpressionAccessor> acc;
+  acc.AttachNew (new csShaderExpressionAccessor (object_reg, expression));
+  return acc;
+}
+
+bool csTextSyntaxService::WriteShaderVar (iDocumentNode* node,
+					  csShaderVariable& var)
+{
+  const char* name = strings->Request (var.GetName ());
+  if (name != 0) node->SetAttribute ("name", name);
+  switch (var.GetType ())
+  {
+    case csShaderVariable::INT:
+      {
+        node->SetAttribute ("type", "integer");
+        int val;
+        var.GetValue (val);
+        node->CreateNodeBefore (CS_NODE_TEXT, 0)->SetValueAsInt (val);
+      }
+      break;
+    case csShaderVariable::FLOAT:
+      {
+        node->SetAttribute ("type", "float");
+        float val;
+        var.GetValue (val);
+        node->CreateNodeBefore (CS_NODE_TEXT, 0)->SetValueAsFloat (val);
+      }
+      break;
+    case csShaderVariable::VECTOR2:
+      {
+        node->SetAttribute ("type", "vector2");
+        csString val;
+        csVector2 vec;
+        var.GetValue (vec);
+        val.Format ("%f,%f", vec.x, vec.y);
+        node->CreateNodeBefore (CS_NODE_TEXT, 0)->SetValue (val);
+      }
+      break;
+    case csShaderVariable::VECTOR3:
+      {
+        node->SetAttribute ("type", "vector3");
+        csString val;
+        csVector3 vec;
+        var.GetValue (vec);
+        val.Format ("%f,%f,%f", vec.x, vec.y, vec.z);
+        node->CreateNodeBefore (CS_NODE_TEXT, 0)->SetValue (val);
+      }
+      break;
+    case csShaderVariable::VECTOR4:
+      {
+        node->SetAttribute ("type", "vector4");
+        csString val;
+        csVector4 vec;
+        var.GetValue (vec);
+        val.Format ("%f,%f,%f,%f", vec.x, vec.y, vec.z, vec.w);
+        node->CreateNodeBefore (CS_NODE_TEXT, 0)->SetValue (val);
+      }
+      break;
+    case csShaderVariable::TEXTURE:
+      {
+        node->SetAttribute ("type", "texture");
+        iTextureWrapper* val;
+        var.GetValue (val);
+        if (val)
+          node->CreateNodeBefore (CS_NODE_TEXT, 0)->SetValue (val->QueryObject ()->GetName ());
+      }
+      break;
+    default:
+      break;
+  };
   return true;
 }
 
@@ -1321,8 +1529,7 @@ csPtr<iKeyValuePair> csTextSyntaxService::ParseKey (iDocumentNode* node)
   if (!name)
   {
     ReportError ("crystalspace.syntax.key",
-    	         node, "Missing %s attribute for %s!",
-		 CS::Quote::Single ("name"), CS::Quote::Single ("key"));
+    	        node, "Missing 'name' attribute for 'key'!");
     return 0;
   }
   csRef<csKeyValuePair> cskvp;
@@ -1342,6 +1549,15 @@ csPtr<iKeyValuePair> csTextSyntaxService::ParseKey (iDocumentNode* node)
   return scfQueryInterface<iKeyValuePair> (cskvp);
 }
 
+bool csTextSyntaxService::ParseKey (iDocumentNode *node, iKeyValuePair* &keyvalue)
+{
+  csRef<iKeyValuePair> kvp = ParseKey (node);
+  if (!kvp.IsValid()) return false;
+  keyvalue = kvp;
+  keyvalue->IncRef();
+  return true;
+}
+
 bool csTextSyntaxService::WriteKey (iDocumentNode *node, iKeyValuePair *keyvalue)
 {
   node->SetAttribute ("name", keyvalue->GetKey ());
@@ -1354,6 +1570,85 @@ bool csTextSyntaxService::WriteKey (iDocumentNode *node, iKeyValuePair *keyvalue
     node->SetAttribute (name, keyvalue->GetValue (name));
   }
   return true;
+}
+
+csRef<iShader> csTextSyntaxService::ParseShaderRef (
+    iLoaderContext* ldr_context, iDocumentNode* node)
+{
+  // @@@ FIXME: unify with csLoader::ParseShader()?
+  static const char* msgid = "crystalspace.syntax.shaderref";
+
+  const char* shaderName = node->GetAttributeValue ("name");
+  if (shaderName == 0)
+  {
+    ReportError (msgid, node, "no 'name' attribute");
+    return 0;
+  }
+
+  csRef<iShaderManager> shmgr = csQueryRegistry<iShaderManager> (object_reg);
+  csRef<iShader> shader = shmgr->GetShader (shaderName);
+  if (shader.IsValid()) return shader;
+
+  const char* shaderFileName = node->GetAttributeValue ("file");
+  if (shaderFileName != 0)
+  {
+    csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
+    csVfsDirectoryChanger dirChanger (vfs);
+    csString filename (shaderFileName);
+    csRef<iFile> shaderFile = vfs->Open (filename, VFS_FILE_READ);
+
+    if(!shaderFile)
+    {
+      Report (msgid, CS_REPORTER_SEVERITY_WARNING, node,
+	"Unable to open shader file '%s'!", shaderFileName);
+      return 0;
+    }
+
+    csRef<iDocumentSystem> docsys =
+      csQueryRegistry<iDocumentSystem> (object_reg);
+    if (docsys == 0)
+      docsys.AttachNew (new csTinyDocumentSystem ());
+    csRef<iDocument> shaderDoc = docsys->CreateDocument ();
+    const char* err = shaderDoc->Parse (shaderFile, false);
+    if (err != 0)
+    {
+      Report (msgid, CS_REPORTER_SEVERITY_WARNING, node,
+	"Could not parse shader file '%s': %s",
+	shaderFileName, err);
+      return 0;
+    }
+    csRef<iDocumentNode> shaderNode = 
+      shaderDoc->GetRoot ()->GetNode ("shader");
+    dirChanger.ChangeTo (filename);
+
+    const char* type = shaderNode->GetAttributeValue ("compiler");
+    if (type == 0)
+      type = shaderNode->GetAttributeValue ("type");
+    if (type == 0)
+    {
+      ReportError (msgid, shaderNode,
+	"%s: 'compiler' attribute is missing!", shaderFileName);
+      return 0;
+    }
+    csRef<iShaderCompiler> shcom = shmgr->GetCompiler (type);
+    if (!shcom.IsValid()) 
+    {
+      ReportError (msgid, shaderNode,
+        "Could not get shader compiler '%s'", type);
+      return false;
+    }
+    shader = shcom->CompileShader (ldr_context, shaderNode);
+    if (shader && (strcmp (shader->QueryObject()->GetName(), shaderName) == 0))
+    {
+      shader->SetFileName (shaderFileName);
+      shmgr->RegisterShader (shader);
+    }
+    else 
+      return 0;
+    return shader;
+  }
+
+  return 0;
 }
 
 void csTextSyntaxService::ReportError (const char* msgid,
@@ -1445,8 +1740,8 @@ void csTextSyntaxService::ReportBadToken (iDocumentNode* badtokennode)
 {
   Report ("crystalspace.syntax.badtoken",
         CS_REPORTER_SEVERITY_ERROR,
-  	badtokennode, "Unexpected token %s!",
-	CS::Quote::Single (badtokennode->GetValue ()));
+  	badtokennode, "Unexpected token '%s'!",
+	badtokennode->GetValue ());
 }
 
 

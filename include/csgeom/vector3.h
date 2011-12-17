@@ -210,19 +210,19 @@ public:
   inline friend bool operator< (const csVector3& v, float f)
   { return ABS(v.x)<f && ABS(v.y)<f && ABS(v.z)<f; }
 
-  /// Test if each component of a vector is greater than a small epsilon value.
+  /// Test if each component of a vector is less than a small epsilon value.
   inline friend bool operator> (float f, const csVector3& v)
-  { return f>ABS(v.x) && f>ABS(v.y) && f>ABS(v.z); }
+  { return ABS(v.x)<f && ABS(v.y)<f && ABS(v.z)<f; }
 
   /// Returns n-th component of the vector.
-#if defined( __STRICT_ANSI__) || defined(SWIG)
+#ifdef __STRICT_ANSI__
   inline float operator[] (size_t n) const { return !n?x:n&1?y:z; }
 #else
   inline float operator[] (size_t n) const { return m[n]; }
 #endif
 
   /// Returns n-th component of the vector.
-#if defined( __STRICT_ANSI__) || defined(SWIG)
+#ifdef __STRICT_ANSI__
   inline float & operator[] (size_t n) { return !n?x:n&1?y:z; }
 #else
   inline float & operator[] (size_t n) { return m[n]; }
@@ -275,15 +275,11 @@ public:
   inline void Set (float v) { x = y = z = v; }
 
   /// Get the value of this vector.
-  inline void Get (float* v) const { v[0] = x; v[1] = y; v[2] = z; }
+  inline void Get (float* v) { v[0] = x; v[1] = y; v[2] = z; }
 
   /// Returns the norm of this vector.
   inline float Norm () const
-  { return csQsqrt(SquaredNorm()); }
-
-  /// Returns the inverse norm (1/Norm()) of this vector.
-  inline float InverseNorm () const
-  { return csQisqrt(SquaredNorm()); }
+  { return csQsqrt (x * x + y * y + z * z); }
 
   /// Return the squared norm (magnitude) of this vector.
   inline float SquaredNorm () const
@@ -295,7 +291,7 @@ public:
    * zero error.  This is as it should be... fix the calling code.
    */
   inline csVector3 Unit () const 
-  { return (*this)*(this->InverseNorm()); }
+  { return (*this)/(this->Norm()); }
 
   /// Returns the norm (magnitude) of a vector.
   inline static float Norm (const csVector3& v) 
@@ -308,7 +304,7 @@ public:
   /// Scale this vector to length = 1.0;
   inline void Normalize ()
   {
-    float sqlen = SquaredNorm();
+    float sqlen = x * x + y * y + z * z;
     if (sqlen < SMALL_EPSILON) return ;
 
     float invlen = csQisqrt (sqlen);

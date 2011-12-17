@@ -25,9 +25,6 @@
 #include "plugins/engine/3d/meshobj.h"
 #include "plugins/engine/3d/camera.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(Engine)
-{
-
 //---------------------------------------------------------------------------
 csMovableSectorList::csMovableSectorList ()
   : scfImplementationType (this)
@@ -127,22 +124,6 @@ void csMovable::SetTransform (const csMatrix3 &matrix)
   obj.SetT2O (matrix);
 }
 
-void csMovable::SetFullTransform (const csReversibleTransform& t)
-{
-  if (parent == (csMovable*)nullptr)
-    obj = t;
-  else
-    obj = t * parent->GetFullTransform ().GetInverse ();
-}
-
-void csMovable::SetFullPosition (const csVector3& v)
-{
-  if (parent == (csMovable*)nullptr)
-    obj.SetOrigin (v);
-  else
-    obj.SetOrigin (parent->GetFullTransform ().Other2This (v));
-}
-
 void csMovable::MovePosition (const csVector3 &rel)
 {
   obj.Translate (rel);
@@ -211,5 +192,3 @@ iSceneNode* csMovable::GetSceneNode ()
   return 0;
 }
 
-}
-CS_PLUGIN_NAMESPACE_END(Engine)

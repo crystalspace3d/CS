@@ -33,6 +33,24 @@
 CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 {
 
+#if defined(CS_IEEE_DOUBLE_FORMAT)
+  namespace 
+  { 
+    struct UI32ToFloat
+    {
+      union
+      {
+	uint32 ui32;
+	float f;
+      };
+      UI32ToFloat (uint32 ui32) : ui32 (ui32) {}
+    };
+  }
+#define CS_INFINITY	  (UI32ToFloat (0x7f800000).f)
+#else
+#define CS_INFINITY	  std::numeric_limits<float>::infinity()
+#endif
+  
   /**
    * A set of values, stored as a number of interval.
    */
@@ -56,7 +74,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       public:
       
 	Side (bool negInf, bool inclusive) : flags (inclusive ? Inclusive : 0),
-          value (negInf ? -CS::Infinity() : CS::Infinity()) {}
+          value (negInf ? -CS_INFINITY : CS_INFINITY) {}
 	Side (float v, bool inclusive) : 
           flags (Finite | (inclusive ? Inclusive : 0)), value (v) {}
       
@@ -71,7 +89,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
         {
           if (flags & FiniteDirty)
           {
-            if (CS::IsFinite (value))
+            if (csFinite (value))
             {
               flags = (flags & ~FiniteDirty) | Finite;
               return true;
@@ -154,7 +172,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       bool IsEmpty() const;
       bool IsSingleValue() const
       {
-        return ((left == right) && CS::IsFinite (left.GetValue()));
+        return ((left == right) && csFinite (left.GetValue()));
       }
 
       friend bool operator== (const Interval& a, const Interval& b)
@@ -302,78 +320,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       }
     }
   };
-  
-  CS_ALIGNED_STRUCT(class, 1) ValueSetBool
-  {
-    enum { flagTrue = 1, flagFalse = 2 };
-    uint8 flags;
-    
-    explicit ValueSetBool (uint8 flags) : flags (flags) {}
-  public:
-    ValueSetBool () : flags (flagTrue | flagFalse) {}
-    ValueSetBool (const bool b) : flags (b ? flagTrue : flagFalse) {}
-    
-    bool Overlaps (const ValueSetBool& other) const
-    {
-      return (flags & other.flags) != 0;
-    }
-    
-    bool IsSingleValue() const
-    {
-      return (flags == flagTrue) || (flags == flagFalse);
-    }
-    bool GetSingleValue() const
-    {
-      switch (flags)
-      {
-        case flagTrue:  return true;
-        default: 
-        case flagFalse: return false;
-      }
-    }
-    
-    ValueSetBool operator!() const
-    { return ValueSetBool (uint8 (flags ^ (flagTrue | flagFalse))); }
-    friend ValueSetBool operator& (const ValueSetBool& a, const ValueSetBool& b)
-    { return ValueSetBool (uint8 (a.flags & b.flags)); }
-    ValueSetBool& operator&= (const ValueSetBool& other)
-    { flags &= other.flags; return *this; }
-    friend ValueSetBool operator| (const ValueSetBool& a, const ValueSetBool& b)
-    { return ValueSetBool (uint8 (a.flags | b.flags)); }
-    ValueSetBool& operator|= (const ValueSetBool& other)
-    { flags |= other.flags; return *this; }
-    friend bool operator== (const ValueSetBool& a, const ValueSetBool& b)
-    { return a.flags == b.flags; }
 
-    operator Logic3() const
-    {
-      switch (flags)
-      {
-        case flagTrue:  return Logic3::Truth;
-        case flagFalse: return Logic3::Lie;
-        default: return Logic3::Uncertain;
-      }
-    }
-
-    void Dump (csString& str) const
-    {
-      switch (flags)
-      {
-        case 0:
-          str = "[] ";
-          break;
-        case flagTrue:
-          str = "[true] ";
-          break;
-        case flagFalse:
-          str = "[false] ";
-          break;
-        case flagTrue | flagFalse:
-          str = "[true, false] ";
-          break;
-      }
-    }
-  };
+#undef CS_INFINITY
 
 }
 CS_PLUGIN_NAMESPACE_END(XMLShader)

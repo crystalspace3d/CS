@@ -66,9 +66,6 @@ public:
   /// This routine should be called when you finished drawing
   virtual void FinishDraw ();
 
-  virtual void AlertV (int type, const char* title, const char* okMsg,
-    const char* msg, va_list args);
-
   void Report (int severity, const char* msg, ...);
 
   virtual void Print (csRect const* area = 0);
@@ -80,16 +77,14 @@ public:
   virtual void SetTitle (const char* title)
   { }
 
-  virtual void SetIcon (iImage *image)
-  { }
-
   virtual void SetFullScreen (bool yesno);
 
   virtual bool GetFullScreen ()
   { return false; }
   /// Set mouse position.
   // should be the window manager
-  virtual bool SetMousePosition (int x, int y);
+  virtual bool SetMousePosition (int x, int y)
+  { return false; }
 
   /// Set mouse cursor shape
   // should be the window manager

@@ -17,86 +17,79 @@
 */
 
 #include "cssysdef.h"
+
 #include "iutil/databuff.h"
 #include "iutil/objreg.h"
-#include "ceguiimports.h"
+
 #include "ceguiscriptmodule.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(cegui)
+csCEGUIScriptModule::csCEGUIScriptModule (iScript* script, iObjectRegistry* reg)
 {
-  //----------------------------------------------------------------------------//
-  CEGUIScriptModule::CEGUIScriptModule (iScript* script, iObjectRegistry* reg)
-  {
-    d_identifierString = "Crystal Space iScript Scripting Module";
+  d_identifierString = "Crystal Space iScript Scripting Module";
 
-    obj_reg = reg;
-    vfs = csQueryRegistry<iVFS> (obj_reg);
-    scripting = script;
+  obj_reg = reg;
+  vfs = csQueryRegistry<iVFS> (obj_reg);
+  scripting = script;
+}
+
+void csCEGUIScriptModule::executeScriptFile (
+  const CEGUI::String &filename,
+  const CEGUI::String &resourceGroup)
+{
+  csRef<iDataBuffer> buffer = vfs->ReadFile (filename.c_str());
+
+  // Reading failed
+  if (!buffer.IsValid ())
+  {
+    CEGUI::String msg= (uint8*)"csCEGUIScriptModule::executeScriptFile - "
+      "Filename supplied for script execution must be valid";
+    msg += (uint8*)" ["+filename+(uint8*)"]";
+    throw CEGUI::InvalidRequestException(msg);
   }
 
-  //----------------------------------------------------------------------------//
-  void CEGUIScriptModule::executeScriptFile (const CEGUI::String &filename,
-                                               const CEGUI::String &resourceGroup)
-  {
-    csRef<iDataBuffer> buffer = vfs->ReadFile (filename.c_str());
+  scripting->RunText (buffer->GetData ());
+}
 
-    // Reading failed
-    if (!buffer.IsValid ())
-    {
-      CEGUI::String msg= (uint8*)"CEGUIScriptModule::executeScriptFile - "
-        "Filename supplied for script execution must be valid";
-      msg += (uint8*)" ["+filename+(uint8*)"]";
-      throw CEGUI::InvalidRequestException(msg);
-    }
+int csCEGUIScriptModule::executeScriptGlobal (
+  const CEGUI::String &function_name)
+{
+  int ret;
+  scripting->Call (function_name.c_str() , ret, " ");
+  return ret;
+}
 
-    scripting->RunText (buffer->GetData ());
-  }
+bool csCEGUIScriptModule::executeScriptedEventHandler (
+  const CEGUI::String & /*handler_name*/,
+  const CEGUI::EventArgs & /*e*/)
+{
+  // @@@: Not implemented
 
-  //----------------------------------------------------------------------------//
-  int CEGUIScriptModule::executeScriptGlobal (
-    const CEGUI::String &function_name)
-  {
-    csRef<iScriptValue> ret = scripting->Call (function_name.c_str());
-    return ret->GetInt();
-  }
+  /*
+  csRef<iScriptObject> obj = scripting->NewObject ("CEGUI::EventArgs", " ");
+  return scripting->Call (handler_name.c_str() , "%p", (iScriptObject*) obj);
+  */
+  return false;
+}
 
-  //----------------------------------------------------------------------------//
-  bool CEGUIScriptModule::executeScriptedEventHandler (
-    const CEGUI::String & /*handler_name*/,
-    const CEGUI::EventArgs & /*e*/)
-  {
-    // @@@: Not implemented
+/// Execute script code contained in the given CEGUI::String object.
+void csCEGUIScriptModule::executeString (const CEGUI::String &str)
+{
+  scripting->RunText (str.c_str ());
+}
 
-    /*
-    csRef<iScriptObject> obj = scripting->NewObject ("CEGUI::EventArgs", " ");
-    return scripting->Call (handler_name.c_str() , "%p", (iScriptObject*) obj);
-    */
-    return false;
-  }
+CEGUI::Event::Connection csCEGUIScriptModule::subscribeEvent(
+  CEGUI::EventSet* target, const CEGUI::String& name,
+  const CEGUI::String& subscriber_name)
+{
+  // @@@: Not implemented
+  return 0;
+}
 
-  //----------------------------------------------------------------------------//
-  void CEGUIScriptModule::executeString (const CEGUI::String &str)
-  {
-    scripting->RunText (str.c_str ());
-  }
-
-  //----------------------------------------------------------------------------//
-  CEGUI::Event::Connection CEGUIScriptModule::subscribeEvent(
-    CEGUI::EventSet* target, const CEGUI::String& name,
-    const CEGUI::String& subscriber_name)
-  {
-    // @@@: Not implemented
-    return 0;
-  }
-
-  //----------------------------------------------------------------------------//
-  CEGUI::Event::Connection CEGUIScriptModule::subscribeEvent(
-    CEGUI::EventSet* target,
-    const CEGUI::String& name, CEGUI::Event::Group group,
-    const CEGUI::String& subscriber_name)
-  {
-    // @@@: Not implemented
-    return 0;
-  }
-
-} CS_PLUGIN_NAMESPACE_END(cegui)
+CEGUI::Event::Connection csCEGUIScriptModule::subscribeEvent(
+  CEGUI::EventSet* target,
+  const CEGUI::String& name, CEGUI::Event::Group group,
+  const CEGUI::String& subscriber_name)
+{
+  // @@@: Not implemented
+  return 0;
+}

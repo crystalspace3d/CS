@@ -37,7 +37,6 @@
 #include "csutil/scfstr.h"
 #include "csutil/scfstringarray.h"
 #include "csutil/strhash.h"
-#include "csutil/stringquote.h"
 #include "csutil/util.h"
 #include "csutil/xmltiny.h"
 #include "iutil/document.h"
@@ -85,9 +84,8 @@ csLibraryHandle csLoadLibrary (const char* iName)
    GetEnvironmentVariable("PATH", OLD_PATH, 4096);
    if (cygwin_conv_to_win32_path ("/bin/",DLLDIR))
    {
-     ErrorMessages.Push(csString().Format (
-       "LoadLibraryEx() %s Cygwin/Win32 path conversion failed.",
-       CS::Quote::Single ("/bin/"));
+     ErrorMessages.Push(
+       "LoadLibraryEx() '/bin/' Cygwin/Win32 path conversion failed.");
      delete[] DLLDIR;
      delete[] OLD_PATH;
      return 0;
@@ -118,7 +116,7 @@ csLibraryHandle csLoadLibrary (const char* iName)
   if (!get_plugin_compiler)
   {
     csString s;
-    s << dllPath << ": DLL does not export "  << CS::Quote::Double ("plugin_compiler") << ".";
+    s << dllPath << ": DLL does not export \"plugin_compiler\".";
     ErrorMessages.Push (s);
     FreeLibrary ((HMODULE)handle);
     return 0;
@@ -222,8 +220,8 @@ static csRef<iString> InternalGetPluginMetadata (const char* fullPath,
 	  else			// Parse failed.
 	  {
 	    csString errstr;
-	    errstr.Format ("Error parsing metadata from %s: %s",
-	      CS::Quote::Single (fullPath), errmsg);
+	    errstr.Format ("Error parsing metadata from '%s': %s",
+	      fullPath, errmsg);
 	    result.AttachNew(new scfString (errstr));
 	  }
 	}
@@ -285,9 +283,9 @@ csRef<iString> csGetPluginMetadata (const char* fullPath,
       if (metadata.IsValid())
       {
 	csString errstr;
-	errstr.Format ("%s contains embedded metadata, "
-	  "but external %s exists as well. Ignoring the latter.",
-	  CS::Quote::Single (dllPath), CS::Quote::Single (fullPath));
+	errstr.Format ("'%s' contains embedded metadata, "
+	  "but external '%s' exists as well. Ignoring the latter.",
+	  dllPath, fullPath);
 	result.AttachNew (new scfString (errstr));
       }
       else
@@ -302,8 +300,8 @@ csRef<iString> csGetPluginMetadata (const char* fullPath,
 	else			// Parse failed.
 	{
 	  csString errstr;
-	  errstr.Format ("Error parsing metadata from %s: %s",
-	    CS::Quote::Single (fullPath), errmsg);
+	  errstr.Format ("Error parsing metadata from '%s': %s",
+	    fullPath, errmsg);
 	  result.AttachNew (new scfString (errstr));
 	}
       }
@@ -505,8 +503,8 @@ csRef<iStringArray> csScanPluginDirs (csPathsList* dirs,
     if (dirMessages != 0)
     {
       csString tmp;
-      tmp.Format ("The following issue(s) came up while scanning %s:",
-	CS::Quote::Single ((*dirs)[i].path.GetData()));
+      tmp.Format ("The following issue(s) came up while scanning '%s':",
+	(*dirs)[i].path.GetData());
 
       AppendStrVecString (messages, tmp);
 

@@ -35,6 +35,8 @@
 
 #include "gmeshskelanim.h"
 
+CS_IMPLEMENT_PLUGIN
+
 SCF_IMPLEMENT_FACTORY (csGenmeshSkelAnimationControlType)
 
 //-------------------------------------------------------------------------
@@ -78,9 +80,8 @@ csGenmeshSkelAnimationControl::csGenmeshSkelAnimationControl (
   tangents_mapped = false;
   bitangents_mapped = false;
 
-  csRef<iShaderVarStringSet> strings =
-    csQueryRegistryTagInterface<iShaderVarStringSet> (object_reg,
-      "crystalspace.shader.variablenameset");
+  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> 
+    (object_reg, "crystalspace.shared.stringset");
 
 
   bones_name = strings->Request ("bones");
@@ -171,7 +172,7 @@ void csGenmeshSkelAnimationControl::UpdateVertNormArrays (int /*num_norms*/)
 {
 }
 
-void csGenmeshSkelAnimationControl::Update (csTicks current, int, uint32)
+void csGenmeshSkelAnimationControl::Update (csTicks current)
 {
   if (last_update_time != current)
   {
@@ -182,7 +183,7 @@ void csGenmeshSkelAnimationControl::Update (csTicks current, int, uint32)
     return;
   }
 
-  if (!mesh_obj->GetMeshWrapper() || !skeleton)
+  if (!mesh_obj->GetMeshWrapper())
   {
     return;
   }
@@ -224,12 +225,12 @@ void csGenmeshSkelAnimationControl::Update (csTicks current, int, uint32)
         skeleton->GetBone(bone_idx)->GetFullTransform();
 
       csRef<csShaderVariable> boneQuat;
-      boneQuat.AttachNew(new csShaderVariable(CS::InvalidShaderVarStringID));
+      boneQuat.AttachNew(new csShaderVariable(csInvalidStringID));
       _bones->SetArrayElement (i*2+0, boneQuat);
       boneQuat->SetValue(csVector4 (0, 0, 0, 1));
 
       csRef<csShaderVariable> boneOffs;
-       boneOffs.AttachNew(new csShaderVariable(CS::InvalidShaderVarStringID));
+       boneOffs.AttachNew(new csShaderVariable(csInvalidStringID));
       _bones->SetArrayElement (i*2+1, boneOffs);
       csVector3 offset_pos = offset_tr.GetOrigin();
       boneOffs->SetValue(csVector4(offset_pos.x, offset_pos.y, offset_pos.z, 0));
@@ -398,7 +399,7 @@ const char* csGenmeshSkelAnimationControlFactory::Load (iDocumentNode* node)
 	else
 	{
           error_buf.Format (
-            "Can't load skeleton file %s!", CS::Quote::Single (filename));
+            "Can't load skeleton file '%s'!", filename);
           return error_buf;
 	}
       }
@@ -433,8 +434,8 @@ const char* csGenmeshSkelAnimationControlFactory::Load (iDocumentNode* node)
       break;
     default:
       error_buf.Format (
-        "Don't recognize token %s in anim control!",
-        CS::Quote::Single (value));
+        "Don't recognize token '%s' in anim control!",
+        value);
       return error_buf;
     }
   }

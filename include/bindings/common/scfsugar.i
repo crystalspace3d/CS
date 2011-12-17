@@ -81,9 +81,7 @@
   {
     printf("CS_LOAD_PLUGIN_ALWAYS is deprecated, use \
 csLoadPluginAlways instead\n");
-    csRef<iComponent> c (csLoadPluginAlways(p,i));
-    csRef<iBase> b ((iBase*)c);
-    return csPtr<iBase> (b);
+    return csLoadPluginAlways(p,i);
   }
 %}
 

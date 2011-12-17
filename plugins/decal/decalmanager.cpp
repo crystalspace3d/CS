@@ -17,7 +17,6 @@
 */
 
 #include "cssysdef.h"
-#include "csqsqrt.h"
 #include "decal.h"
 #include "decaltemplate.h"
 #include "iutil/objreg.h"
@@ -38,17 +37,18 @@
 #include "csutil/eventhandlers.h"
 #include "decalmanager.h"
 
+CS_IMPLEMENT_PLUGIN
+SCF_IMPLEMENT_FACTORY(csDecalManager)
 
-SCF_IMPLEMENT_FACTORY (csDecalManager)
-
-csDecalManager::csDecalManager (iBase * parent)
-  : scfImplementationType (this, parent), objectReg (0)
+csDecalManager::csDecalManager(iBase * parent)
+              : scfImplementationType(this, parent), 
+                objectReg(0)
 {
 }
 
-csDecalManager::~csDecalManager ()
+csDecalManager::~csDecalManager()
 {
-  size_t a = decals.GetSize ();
+  size_t a = decals.GetSize();
   while (a)
   {
     --a;
@@ -57,13 +57,13 @@ csDecalManager::~csDecalManager ()
 
   if (objectReg)
   {
-    csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (objectReg));
+    csRef<iEventQueue> q(csQueryRegistry<iEventQueue> (objectReg));
     if (q)
       CS::RemoveWeakListener (q, weakEventHandler);
   }
 }
 
-bool csDecalManager::Initialize (iObjectRegistry * objectReg)
+bool csDecalManager::Initialize(iObjectRegistry * objectReg)
 {
   this->objectReg = objectReg;
   vc = csQueryRegistry<iVirtualClock> (objectReg);
@@ -71,178 +71,114 @@ bool csDecalManager::Initialize (iObjectRegistry * objectReg)
   CS_INITIALIZE_EVENT_SHORTCUTS (objectReg);
   csRef<iEventQueue> q(csQueryRegistry<iEventQueue> (objectReg));
   if (q)
-    CS::RegisterWeakListener (q, this, Frame, weakEventHandler);
+    CS::RegisterWeakListener(q, this, Frame, weakEventHandler);
   return true;
 }
 
-iDecal * csDecalManager::CreateDecal (iDecalTemplate * decalTemplate, 
-  iSector * sector, const csVector3 & pos, const csVector3 & up, 
-  const csVector3 & normal, float width, float height, iDecal * oldDecal)
+iDecal * csDecalManager::CreateDecal(iDecalTemplate * decalTemplate, 
+    iSector * sector, const csVector3 & pos, const csVector3 & up, 
+    const csVector3 & normal, float width, float height,
+    iDecal * oldDecal)
 {
-  CS_ASSERT(decalTemplate && sector);
-
   // compute the maximum distance the decal can reach
-  float radius = csQsqrt (width * width + height * height) * 0.5f;
+  float radius = sqrt(width*width + height*height) * 2.0f;
 
-  if (!EnsureEngineReference ())
+  if (!EnsureEngineReference())
     return 0;
 
   // get all meshes that could be affected by this decal
-  csRef<iMeshWrapperIterator> meshIter = engine->GetNearbyMeshes (sector, pos, 
-    radius, true);
-  if (!meshIter->HasNext ())
+  csRef<iMeshWrapperIterator> it = engine->GetNearbyMeshes(sector, pos, 
+                                                           radius, true);
+  if (!it->HasNext())
       return 0;
 
   // calculate a valid orientation for the decal
-  csVector3 n = normal.Unit ();
-  csVector3 u = up.Unit ();
+  csVector3 n = normal.Unit();
+  csVector3 u = up.Unit();
   csVector3 right = n % u;
   csVector3 correctUp = right % n;
 
-  // find a reference to the previous decal or create a new one
+  // create the decal and fill it with mesh geometry
   csDecal * decal = 0;
   if (oldDecal)
   {
-    const size_t len = decals.GetSize ();
-    for (size_t a = 0; a < len; ++a)
+    // we must ensure that this decal is actually active
+    const size_t len = decals.GetSize();
+    for (size_t a=0; a<len; ++a)
     {
       if (decals[a] != oldDecal)
-	    continue;
+	continue;
 
       decal = decals[a];
-      decals.DeleteIndexFast (a);
+      decals.DeleteIndexFast(a);
       break;
     }
   }
   if (!decal)
-    decal = new csDecal (objectReg, this);
+    decal = new csDecal(objectReg, this);
 
-  // initialize the decal
-  decal->Initialize (decalTemplate, n, pos, correctUp, right, width, height);
-  decals.Push (decal);
+  csVector3 relPos;
 
-  // fill the decal with the geometry of the meshes
-  while (meshIter->HasNext ())
-  {
-    iMeshWrapper* mesh = meshIter->Next ();
-    if (mesh->GetFlags ().Check (CS_ENTITY_NODECAL))
-      continue;
-
-    csVector3 relPos = 
-      mesh->GetMovable ()->GetFullTransform ().Other2This (pos);
-
-    decal->BeginMesh (mesh);
-    mesh->GetMeshObject ()->BuildDecal (&relPos, radius, (iDecalBuilder*)decal);
-    decal->EndMesh ();
-  }
+  decal->Initialize(decalTemplate, n, pos, correctUp, right, width, height);
+  decals.Push(decal);
+  FillDecal(decal, it, pos, radius);
 
   return decal;
 }
 
-iDecal * csDecalManager::CreateDecal (iDecalTemplate * decalTemplate, 
-  iMeshWrapper * mesh, const csVector3 & pos, const csVector3 & up, 
-  const csVector3 & normal, float width, float height, iDecal * oldDecal)
-{
-  CS_ASSERT(decalTemplate && mesh);
-
-  if (mesh->GetFlags ().Check (CS_ENTITY_NODECAL))
-    return 0;
-
-  // compute the maximum distance the decal can reach
-  float radius = csQsqrt (width * width + height * height) * 0.5f;
-
-  // calculate a valid orientation for the decal
-  csVector3 n = normal.Unit ();
-  csVector3 u = up.Unit ();
-  csVector3 right = n % u;
-  csVector3 correctUp = right % n;
-
-  // find a reference to the previous decal or create a new one
-  csDecal * decal = 0;
-  if (oldDecal)
-  {
-    const size_t len = decals.GetSize ();
-    for (size_t a = 0; a < len; ++a)
-    {
-      if (decals[a] != oldDecal)
-	    continue;
-
-      decal = decals[a];
-      decals.DeleteIndexFast (a);
-      break;
-    }
-  }
-  if (!decal)
-    decal = new csDecal (objectReg, this);
-
-  // initialize the decal
-  decal->Initialize (decalTemplate, n, pos, correctUp, right, width, height);
-  decals.Push (decal);
-
-  // fill the decal with the geometry of the mesh
-  csVector3 relPos = 
-    mesh->GetMovable ()->GetFullTransform ().Other2This (pos);
-
-  decal->BeginMesh (mesh);
-  mesh->GetMeshObject ()->BuildDecal (&relPos, radius, (iDecalBuilder*)decal);
-  decal->EndMesh ();
-
-  return decal;
-}
-
-csRef<iDecalTemplate> csDecalManager::CreateDecalTemplate (
-  iMaterialWrapper* pMaterial)
+csRef<iDecalTemplate> csDecalManager::CreateDecalTemplate(
+        iMaterialWrapper* pMaterial)
 {
   csRef<iDecalTemplate> ret;
 
-  if (!EnsureEngineReference ())
-    return (iDecalTemplate*)nullptr;
+  if (!EnsureEngineReference())
+    return false;
 
-  ret.AttachNew (new csDecalTemplate);
-  ret->SetMaterialWrapper (pMaterial);
-  ret->SetRenderPriority (engine->GetAlphaRenderPriority ());
+  ret.AttachNew(new csDecalTemplate);
+  ret->SetMaterialWrapper(pMaterial);
+  ret->SetRenderPriority(engine->GetAlphaRenderPriority());
   return ret;
 }
 
-void csDecalManager::DeleteDecal (const iDecal * decal)
+void csDecalManager::DeleteDecal(const iDecal * decal)
 {
   // we must ensure that this decal is actually active
-  const size_t len = decals.GetSize ();
-  for (size_t a = 0; a < len; ++a)
+  const size_t len = decals.GetSize();
+  for (size_t a=0; a<len; ++a)
   {
     if (decals[a] != decal)
       continue;
 
     delete decals[a];
-    decals.DeleteIndexFast (a);
+    decals.DeleteIndexFast(a);
     return;
   }
 }
 
-size_t csDecalManager::GetDecalCount () const
+size_t csDecalManager::GetDecalCount() const
 {
-  return decals.GetSize ();
+  return decals.GetSize();
 }
 
-iDecal * csDecalManager::GetDecal (size_t idx) const
+iDecal * csDecalManager::GetDecal(size_t idx) const
 {
   return decals[idx];
 }
 
-bool csDecalManager::HandleEvent (iEvent & ev)
+bool csDecalManager::HandleEvent(iEvent & ev)
 {
   if (ev.Name != Frame)
     return false;
 
-  csTicks elapsed = vc->GetElapsedTicks ();
+  csTicks elapsed = vc->GetElapsedTicks();
   size_t a=0;
 
-  while (a < decals.GetSize ())
+  while (a < decals.GetSize())
   {
-    if (!decals[a]->Age (elapsed))
+    if (!decals[a]->Age(elapsed))
     {
       delete decals[a];
-      decals.DeleteIndexFast (a);
+      decals.DeleteIndexFast(a);
     }
     else
       ++a;
@@ -250,26 +186,46 @@ bool csDecalManager::HandleEvent (iEvent & ev)
   return true;
 }
 
-bool csDecalManager::EnsureEngineReference ()
+bool csDecalManager::EnsureEngineReference()
 {
   if (!engine)
   {
-    engine = csQueryRegistry<iEngine> (objectReg);
+    engine = csQueryRegistry<iEngine>(objectReg);
     if (!engine)
     {
-      csReport (objectReg, CS_REPORTER_SEVERITY_ERROR, 
-        "crystalspace.decal", "Couldn't query engine");
+      csReport(objectReg, CS_REPORTER_SEVERITY_ERROR, 
+	  "crystalspace.decal", "Couldn't query engine");
       return false;
     }
   }
   return true;
 }
 
-void csDecalManager::RemoveDecalFromList (csDecal * decal)
+void csDecalManager::FillDecal(csDecal * decal, 
+    iMeshWrapperIterator * meshIter, const csVector3 & pos, float radius)
 {
-  size_t idx = decals.Find (decal);
+  while (meshIter->HasNext())
+  {
+    iMeshWrapper* mesh = meshIter->Next();
+    if (mesh->GetFlags().Check(CS_ENTITY_NODECAL))
+      continue;
+
+    csVector3 relPos = 
+        mesh->GetMovable()->GetFullTransform().Other2This(pos);
+
+    decal->BeginMesh(mesh);
+    mesh->GetMeshObject()->BuildDecal(&relPos, radius, 
+            (iDecalBuilder*)decal);
+    decal->EndMesh();
+  }
+}
+
+void csDecalManager::RemoveDecalFromList(csDecal * decal)
+{
+  size_t idx = decals.Find(decal);
   if (idx == csArrayItemNotFound)
     return;
 
-  decals.DeleteIndexFast (idx);
+  decals.DeleteIndexFast(idx);
 }
+

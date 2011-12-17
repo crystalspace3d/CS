@@ -87,28 +87,19 @@ SubInclude TOP libs csplugincommon ;
 
 SubDir TOP libs ;
 
+if [ Property build : projgen ] = msvc
+{
+  IncludeDir  $(CSLIB.ROOT) csutil ptmalloc sysdeps win32 : crystalspace ;
+}
+
 Description crystalspace : "Crystal Space library" ;
 Library crystalspace : $(CSLIB.SOURCES) : shared notest ;
 UnitTest crystalspace : $(CSLIB.TESTS) ;
 CFlags crystalspace : [ FDefines CS_CRYSTALSPACE_LIB ] ;
-MsvcDefine crystalspace : CS_CRYSTALSPACE_LIB ;
-MsvcDefine crystalspace :
-  CS_COMPILER_NAME_AND_VERSION : "\"VC_$(MSVC_VERSION)\"" ;
-{
-  local def ;
-  for def in $(CSLIB.MSVC_DEFINES)
-  {
-    MsvcDefine crystalspace : $(def) ;
-  }
-}
+MsvcDefine crystalspace : CS_CRYSTALSPACE_LIB $(CSLIB.MSVC_DEFINES) ;
 if $(CSLIB.CFLAGS)
 {
   CFlags crystalspace : $(CSLIB.CFLAGS) ;
-}
-if [ Property build : projgen ] != msvc
-{
-  CFlags crystalspace :
-    [ FDefines "CS_COMPILER_NAME_AND_VERSION='\"$(CS_COMPILER_NAME_AND_VERSION)\"'" ] ;
 }
 if $(CSLIB.DEPENDS)
 {
@@ -117,11 +108,6 @@ if $(CSLIB.DEPENDS)
 if $(CSLIB.EXTERNAL_LIBS)
 {
   ExternalLibs crystalspace : $(CSLIB.EXTERNAL_LIBS) ;
-}
-
-if [ Property build : projgen ] = msvc
-{
-  IncludeDir  csutil ptmalloc sysdeps win32 : crystalspace ;
 }
 
 # NOTE: Currently shared libs require that the "Library" statements appear in

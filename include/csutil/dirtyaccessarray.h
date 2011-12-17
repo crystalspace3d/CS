@@ -44,8 +44,8 @@
  */
 template <class T,
 	  class ElementHandler = csArrayElementHandler<T>,
-          class MemoryAllocator = CS::Container::ArrayAllocDefault,
-          class CapacityHandler = CS::Container::ArrayCapacityDefault>
+          class MemoryAllocator = CS::Memory::AllocatorMalloc,
+          class CapacityHandler = csArrayCapacityDefault>
 class csDirtyAccessArray : 
   public csArray<T, ElementHandler, MemoryAllocator, CapacityHandler>
 {
@@ -95,21 +95,6 @@ public:
     else
       return 0;
   }
-  
-  /**
-   * Get the pointer to the start of the array and set internal array
-   * pointer to null and size and capacity to 0.
-   * After the data is detached it's up to you to destroy all elements
-   * and free the memory!
-   */
-  T* Detach ()
-  {
-    T* ptr = GetArray ();
-    this->SetDataVeryUnsafe (nullptr);
-    this->SetSizeVeryUnsafe (0);
-    this->SetCapacityVeryUnsafe (0);
-    return ptr;
-  }
 };
 
 /**
@@ -117,20 +102,15 @@ public:
  * when the reference count of the array drops to 0, it's contents are deleted
  * (however, not the array object itself).
  */
-template <class T, class ElementHandler = csArrayElementHandler<T>,
-          class MemoryAllocator = CS::Container::ArrayAllocDefault,
-          class CapacityHandler = CS::Container::ArrayCapacityDefault>
+template <class T, class ElementHandler = csArrayElementHandler<T> >
 class csDirtyAccessArrayRefCounted : 
-  public csDirtyAccessArray<T, ElementHandler, MemoryAllocator, 
-                            CapacityHandler>
+  public csDirtyAccessArray<T, ElementHandler>
 {
 private:
   int RefCount;
 public:
-  csDirtyAccessArrayRefCounted (int ilimit = 0,
-    const CapacityHandler& ch = CapacityHandler())
-    : csDirtyAccessArray<T, ElementHandler, MemoryAllocator, 
-                         CapacityHandler> (ilimit, ch), RefCount (0)
+  csDirtyAccessArrayRefCounted (int ilimit = 0, int ithreshold = 0) : 
+    csDirtyAccessArray<T, ElementHandler> (ilimit, ithreshold), RefCount (0)
   { }
 
   /// Reference counting.

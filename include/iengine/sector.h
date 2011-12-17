@@ -28,28 +28,24 @@
  * \addtogroup engine3d
  * @{ */
 
-#include "ivideo/rendermesh.h"
-
 #include "csutil/cscolor.h"
 #include "csutil/scf.h"
 #include "csutil/set.h"
 #include "csgeom/vector3.h"
-#include "csgeom/aabbtree.h"
-
-#include "iutil/threadmanager.h"
 
 struct iMeshWrapper;
 struct iMeshGenerator;
 struct iMeshList;
 struct iLightList;
 struct iLight;
-struct iPortal;
 struct iVisibilityCuller;
+struct iLightSectorInfluence;
 
 struct iObject;
 
 struct iRenderView;
 struct iRenderLoop;
+struct iFrustumView;
 struct iSector;
 struct iDocumentNode;
 
@@ -59,7 +55,6 @@ class csBox3;
 class csRenderMeshList;
 class csReversibleTransform;
 class csVector3;
-
 
 enum csFogMode
 {
@@ -94,7 +89,7 @@ struct csFog
 
 /**
  * Set a callback which is called when this sector is traversed.
- * The given context will be either an instance of iRenderView
+ * The given context will be either an instance of iRenderView, iFrustumView,
  * or else 0.
  *
  * This callback is used by:
@@ -149,12 +144,11 @@ struct iLightVisibleCallback : public virtual iBase
 };
 
 /**
- * Return structure for the iSector::HitBeam() and iSector::HitBeamPortals() routines.
- * \sa csHitBeamResult CS::Physics::Bullet::HitBeamResult
+ * Return structure for the iSector->HitBeam() routines.
  */
 struct csSectorHitBeamResult
 {
-  /// The resulting mesh that was hit, or 0 if no mesh was hit.
+  /// The resulting mesh that we hit.
   iMeshWrapper* mesh;
 
   /// Intersection point in world space.
@@ -165,22 +159,9 @@ struct csSectorHitBeamResult
 
   /**
    * The final sector for the end point.
-   * Only for iSector::HitBeamPortals().
+   * Only for iSector->HitBeamPortals().
    */
   iSector* final_sector;
-};
-
-/**
- * Container for render meshes for one mesh wrapper
- */
-struct csSectorVisibleRenderMeshes
-{
-  /// The mesh wrapper which is the source of the render meshes
-  iMeshWrapper* imesh;
-  /// Number of render meshes
-  int num;
-  /// Render meshes
-  csRenderMesh** rmeshes;
 };
 
 /**
@@ -208,7 +189,7 @@ struct csSectorVisibleRenderMeshes
  */
 struct iSector : public virtual iBase
 {
-  SCF_INTERFACE(iSector,4,1,0);
+  SCF_INTERFACE(iSector,2,2,0);
   /// Get the iObject for this sector.
   virtual iObject *QueryObject () = 0;
 
@@ -283,7 +264,7 @@ struct iSector : public virtual iBase
    * Set the renderloop to use for this sector. If this is not set then
    * the default engine renderloop will be used.
    */
-  THREADED_INTERFACE1(SetRenderLoop, iRenderLoop* rl);
+  virtual void SetRenderLoop (iRenderLoop* rl) = 0;
 
   /**
    * Get the renderloop for this sector. If this returns 0 then it
@@ -321,11 +302,6 @@ struct iSector : public virtual iBase
   virtual void RemoveMeshGenerator (size_t idx) = 0;
 
   /**
-   * Remove a mesh generator.
-   */
-  virtual void RemoveMeshGenerator (const char* name) = 0;
-
-  /**
    * Remove all mesh generators.
    */
   virtual void RemoveMeshGenerators () = 0;
@@ -352,10 +328,10 @@ struct iSector : public virtual iBase
    */
   virtual iLightList* GetLights () = 0;
 
-  /**
-   * Add a light to the light lists in the main thread.
-   */
-  THREADED_INTERFACE1(AddLight, csRef<iLight> light);
+  /// Calculate lighting for all objects in this sector
+  virtual void ShineLights () = 0;
+  /// Version of ShineLights() which only affects one mesh object.
+  virtual void ShineLights (iMeshWrapper*) = 0;
 
   /**
    * Sets dynamic ambient light this sector. This works in addition
@@ -385,10 +361,8 @@ struct iSector : public virtual iBase
 
   /**
    * Use the specified plugin as the visibility culler for
-   * this sector.
-   * Pass NULL as plugin name to set the default culler.
-   * Returns false if the culler could not be loaded for some
-   * reason.
+   * this sector. Returns false if the culler could not be
+   * loaded for some reason.
    * The optional culler parameters will be given to the new
    * visibility culler.
    */
@@ -402,14 +376,19 @@ struct iSector : public virtual iBase
   virtual iVisibilityCuller* GetVisibilityCuller () = 0;
 
   /**
+   * Check visibility in a frustum way for all things and polygons in
+   * this sector and possibly traverse through portals to other sectors.
+   */
+  virtual void CheckFrustum (iFrustumView* lview) = 0;  
+
+  /**
    * Follow a beam from start to end and return the first polygon that
    * is hit. This function correctly traverse portals and space warping
    * portals. Normally the sector you call this on should be the sector
    * containing the 'start' point. 'isect' will be the intersection point
    * if a polygon is returned. This function returns -1 if no polygon
    * was hit or the polygon index otherwise.
-   * \sa csSectorHitBeamResult HitBeam() iMeshWrapper::HitBeam()
-   * CS::Physics::Bullet::iDynamicSystem::HitBeam()
+   * \sa csSectorHitBeamResult
    */
   virtual csSectorHitBeamResult HitBeamPortals (const csVector3& start,
   	const csVector3& end) = 0;
@@ -420,8 +399,7 @@ struct iSector : public virtual iBase
    * filled with the indices of the polygon that was hit.
    * If polygon_idx is null then the polygon will not be filled in.
    * This function doesn't support portals.
-   * \sa csSectorHitBeamResult HitBeamPortals() iMeshWrapper::HitBeam()
-   * CS::Physics::Bullet::iDynamicSystem::HitBeam()
+   * \sa csSectorHitBeamResult
    */
   virtual csSectorHitBeamResult HitBeam (const csVector3& start,
   	const csVector3& end, bool accurate = false) = 0;
@@ -436,36 +414,16 @@ struct iSector : public virtual iBase
    * These should be used as the new camera transformation when you decide to
    * really go to the new position.<p>
    *
-   * This function returns the resulting sector, and \a new_position will be set
+   * This function returns the resulting sector and new_position will be set
    * to the last position that you can go to before hitting a wall.<p>
    *
-   * If \a only_portals is true then only portals will be checked. This
+   * If only_portals is true then only portals will be checked. This
    * means that intersection with normal polygons is not checked. This
    * is a lot faster but it does mean that you need to use another
    * collision detection system to test with walls.
-   *
-   * \param t The transform to the start of the segment
-   * \param new_position The end of the segment, in world coordinates
-   * \param mirror Unused parameter...
-   * \param only_portals Whether the collision has to be checked only with the portals, or also
-   * with all meshes
-   * \param crossed_portals The list where will be stored all portals that are crossed during
-   * the following of this segment
-   * \param portal_meshes The list where will be stored the portal container of all the portals
-   * that are crossed during the following of this segment
-   * \param firstIndex The starting index where the portals will be stored in the
-   * \a crossed_portals and \a portal_meshes lists.
-   * \param lastIndex The place where will be stored the index of the last portal crossed
-   *
-   * \warning The \a crossed_portals and \a portal_meshes arrays must be allocated to a
-   * sufficient size
-   * \warning The \a crossed_portals and \a portal_meshes arrays won't be filled with crossed
-   * portals if \a lastIndex is not provided
    */
   virtual iSector* FollowSegment (csReversibleTransform& t,
-      csVector3& new_position, bool& mirror, bool only_portals = false,
-      iPortal** crossed_portals = 0, iMeshWrapper** portal_meshes = 0,
-      int firstIndex = 0, int* lastIndex = 0) = 0;
+    csVector3& new_position, bool& mirror, bool only_portals = false) = 0;
   /** @} */
 
   /**\name Sector callbacks
@@ -474,12 +432,12 @@ struct iSector : public virtual iBase
    * Set the sector callback. This will call IncRef() on the callback
    * So make sure you call DecRef() to release your own reference.
    */
-  THREADED_INTERFACE1(SetSectorCallback, csRef<iSectorCallback> cb);
+  virtual void SetSectorCallback (iSectorCallback* cb) = 0;
 
   /**
    * Remove a sector callback.
    */
-  THREADED_INTERFACE1(RemoveSectorCallback, csRef<iSectorCallback> cb);
+  virtual void RemoveSectorCallback (iSectorCallback* cb) = 0;
 
   /// Get the number of sector callbacks.
   virtual int GetSectorCallbackCount () const = 0;
@@ -520,17 +478,6 @@ struct iSector : public virtual iBase
    * with this sector visible. This will speed up later rendering.
    */
   virtual void PrecacheDraw () = 0;
-
-  /**
-   * Call all the sector callback functions
-   */
-  virtual void CallSectorCallbacks (iRenderView* rview) = 0;
-
-  /**
-   * Get the render meshes for a specific mesh wrapper. Also processes LOD.
-   */
-  virtual csSectorVisibleRenderMeshes* GetVisibleRenderMeshes (int& num,
-    iMeshWrapper* mesh, iRenderView *rview, uint32 frustum_mask) = 0;
 };
 
 
@@ -550,41 +497,25 @@ struct iSectorList : public virtual iBase
   /// Return the number of sectors in this list.
   virtual int GetCount () const = 0;
 
-  /// Return the sector at the given index.
+  /// Return a sector by index.
   virtual iSector *Get (int n) const = 0;
 
-  /**
-   * Add a sector.
-   * \return The index of the newly added sector.
-   */
+  /// Add a sector.
   virtual int Add (iSector *obj) = 0;
 
-  /**
-   * Remove a sector.
-   * \return True if the sector has been found and deleted, false otherwise.
-   */
+  /// Remove a sector.
   virtual bool Remove (iSector *obj) = 0;
 
-  /**
-   * Remove the sector at the given index.
-   * \return True if the given index was valid, false otherwise.
-   */
+  /// Remove the nth sector.
   virtual bool Remove (int n) = 0;
 
   /// Remove all sectors.
   virtual void RemoveAll () = 0;
 
-  /**
-   * Find a sector and return its index.
-   * \return The index of the sector, or csArrayItemNotFound if the sector was
-   * not found
-   */
+  /// Find a sector and return its index.
   virtual int Find (iSector *obj) const = 0;
 
-  /**
-   * Find a sector by its name.
-   * \return The sector with the given name, or 0 if the name was not found.
-   */
+  /// Find a sector by name.
   virtual iSector *FindByName (const char *Name) const = 0;
 };
 
@@ -602,10 +533,7 @@ struct iSectorIterator : public virtual iBase
   /// Return true if there are more elements.
   virtual bool HasNext () const = 0;
 
-  /**
-   * Return the next sector in the list and increment the iterator. Return
-   * 0 at the end.
-   */
+  /// Get sector from iterator. Return 0 at end.
   virtual iSector* Next () = 0;
 
   /**
@@ -614,7 +542,7 @@ struct iSectorIterator : public virtual iBase
    */
   virtual const csVector3& GetLastPosition () const = 0;
 
-  /// Reset the iterator to the first element.
+  /// Restart iterator.
   virtual void Reset () = 0;
 };
 

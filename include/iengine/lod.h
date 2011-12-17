@@ -20,7 +20,7 @@
 #define __CS_IENGINE_LOD_H__
 
 /**\file
- * Level Of Detail (LOD) interfaces
+ * Level of detail interfaces
  */
 /**
  * \addtogroup engine3d_meshes
@@ -32,38 +32,36 @@ struct iSharedVariable;
 
 /**
  * The iLODControl interface represents an object that has controllable
- * Level Of Detail (LOD) features. The LOD manager can work with this.
+ * LOD features. The LOD manager can work with this.
  */
 struct iLODControl : public virtual iBase
 {
   SCF_INTERFACE(iLODControl, 2,0,1);
-
   /**
-   * Set the parameters of the function used to compute the LOD of the mesh
-   * depending on the distance to the camera. The function is as follows:
+   * Set a parameters for a function to compute LOD for the given
+   * LOD control. The function is as follows:
    * <pre>
    *    float lod = m * distance + a;
    * </pre>
-   * The result of this function will be capped to the [0,1] range, with
+   * The result of this function will be capped to the [0,1] range with
    * 0 meaning worst quality possible (highest speed) and 1 highest
    * quality.
    */
   virtual void SetLOD (float m, float a) = 0;
 
   /**
-   * Get the current parameters of the LOD function.
+   * Get the current LOD function.
    */
   virtual void GetLOD (float& m, float& a) const = 0;
 
   /**
-   * Set the parameters of the LOD function using shared variables.
+   * Set LOD using variables.
    */
   virtual void SetLOD (iSharedVariable* varm, iSharedVariable* vara) = 0;
 
   /**
-   * Return the parameters of the LOD function as shared variables. If the
-   * parameters were not set using shared variables then varm and vara will be
-   * set to 0.
+   * Return the variables used by lod. If lod was not set using variables
+   * then varm and vara will be set to 0.
    */
   virtual void GetLOD (iSharedVariable*& varm, iSharedVariable*& vara)
   	const = 0;
@@ -77,25 +75,9 @@ struct iLODControl : public virtual iBase
   virtual int GetLODPolygonCount (float lod) const = 0;
 
   // @@@ Poke res for docs
-  /**
-   * Set the fading factor to be used while transitioning from one LOD to another.
-   */
   virtual void SetLODFade (float f) = 0;
-
-  /**
-   * Get the fading factor to be used while transitioning from one LOD to another.
-   */
   virtual void GetLODFade (float& f) const = 0;
-
-  /**
-   * Set the fading factor as a shared variable.
-   */
   virtual void SetLODFade (iSharedVariable* varf) = 0;
-
-  /**
-   * Set the fading factor as a shared variable. If this factor was not previsouly 
-   * set using shared variables then varf will be set to 0.
-   */
   virtual void GetLODFade (iSharedVariable*& varf) const = 0;
 };
 

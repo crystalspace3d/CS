@@ -33,9 +33,6 @@
  */
 class EventTest : public csApplicationFramework, public csBaseEventHandler
 {
-  // Stuff for displaying the info message
-  csRef<iGraphics3D> g3d;
-  csRef<iFont> font;
 public:
   bool OnKeyboard (iEvent&);
   bool HandleEvent (iEvent &);
@@ -66,9 +63,6 @@ public:
    * Only when the program exits this function will return.
    */
   bool Application ();
-  
-  void Frame ();
-  bool SetupModules ();
   
   // Declare the name of this event handler.
   CS_EVENTHANDLER_NAMES("application.eventtest")

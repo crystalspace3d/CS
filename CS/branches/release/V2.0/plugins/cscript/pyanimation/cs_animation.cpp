@@ -8830,6 +8830,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_iSkeletonAnimPacketFactory_GetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  CS::Animation::iSkeletonAnimPacketFactory *arg1 = (CS::Animation::iSkeletonAnimPacketFactory *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSkeletonAnimPacketFactory_GetName",1,1,&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_CS__Animation__iSkeletonAnimPacketFactory, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSkeletonAnimPacketFactory_GetName" "', argument " "1"" of type '" "CS::Animation::iSkeletonAnimPacketFactory const *""'"); 
+  }
+  arg1 = reinterpret_cast< CS::Animation::iSkeletonAnimPacketFactory * >(argp1);
+  result = (char *)((CS::Animation::iSkeletonAnimPacketFactory const *)arg1)->GetName();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_iSkeletonAnimPacketFactory_scfGetVersion(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   int result;
@@ -15129,6 +15151,72 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_iSkeletonLookAtNodeFactory_SetDirection(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  CS::Animation::iSkeletonLookAtNodeFactory *arg1 = (CS::Animation::iSkeletonLookAtNodeFactory *) 0 ;
+  csMatrix3 *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSkeletonLookAtNodeFactory_SetDirection",2,2,&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_CS__Animation__iSkeletonLookAtNodeFactory, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSkeletonLookAtNodeFactory_SetDirection" "', argument " "1"" of type '" "CS::Animation::iSkeletonLookAtNodeFactory *""'"); 
+  }
+  arg1 = reinterpret_cast< CS::Animation::iSkeletonLookAtNodeFactory * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_csMatrix3,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iSkeletonLookAtNodeFactory_SetDirection" "', argument " "2"" of type '" "csMatrix3 const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "iSkeletonLookAtNodeFactory_SetDirection" "', argument " "2"" of type '" "csMatrix3 const &""'"); 
+  }
+  arg2 = reinterpret_cast< csMatrix3 * >(argp2);
+  (arg1)->SetDirection((csMatrix3 const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iSkeletonLookAtNodeFactory_GetDirection(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  CS::Animation::iSkeletonLookAtNodeFactory *arg1 = (CS::Animation::iSkeletonLookAtNodeFactory *) 0 ;
+  csMatrix3 *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iSkeletonLookAtNodeFactory_GetDirection",2,2,&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_CS__Animation__iSkeletonLookAtNodeFactory, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iSkeletonLookAtNodeFactory_GetDirection" "', argument " "1"" of type '" "CS::Animation::iSkeletonLookAtNodeFactory const *""'"); 
+  }
+  arg1 = reinterpret_cast< CS::Animation::iSkeletonLookAtNodeFactory * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_csMatrix3,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iSkeletonLookAtNodeFactory_GetDirection" "', argument " "2"" of type '" "csMatrix3 &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "iSkeletonLookAtNodeFactory_GetDirection" "', argument " "2"" of type '" "csMatrix3 &""'"); 
+  }
+  arg2 = reinterpret_cast< csMatrix3 * >(argp2);
+  ((CS::Animation::iSkeletonLookAtNodeFactory const *)arg1)->GetDirection(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_iSkeletonLookAtNodeFactory_scfGetVersion(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   int result;
@@ -17740,6 +17828,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"iSkeletonAnimPacketFactory_CreateFSMNode", _wrap_iSkeletonAnimPacketFactory_CreateFSMNode, METH_VARARGS, NULL},
 	 { (char *)"iSkeletonAnimPacketFactory_RemoveAnimation", _wrap_iSkeletonAnimPacketFactory_RemoveAnimation, METH_VARARGS, NULL},
 	 { (char *)"iSkeletonAnimPacketFactory_FindAnimationIndex", _wrap_iSkeletonAnimPacketFactory_FindAnimationIndex, METH_VARARGS, NULL},
+	 { (char *)"iSkeletonAnimPacketFactory_GetName", _wrap_iSkeletonAnimPacketFactory_GetName, METH_VARARGS, NULL},
 	 { (char *)"iSkeletonAnimPacketFactory_scfGetVersion", _wrap_iSkeletonAnimPacketFactory_scfGetVersion, METH_VARARGS, NULL},
 	 { (char *)"delete_iSkeletonAnimPacketFactory", _wrap_delete_iSkeletonAnimPacketFactory, METH_VARARGS, NULL},
 	 { (char *)"iSkeletonAnimPacketFactory_swigregister", iSkeletonAnimPacketFactory_swigregister, METH_VARARGS, NULL},
@@ -17969,6 +18058,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"iSkeletonLookAtNodeFactory_SetListenerDelay", _wrap_iSkeletonLookAtNodeFactory_SetListenerDelay, METH_VARARGS, NULL},
 	 { (char *)"iSkeletonLookAtNodeFactory_SetChildNode", _wrap_iSkeletonLookAtNodeFactory_SetChildNode, METH_VARARGS, NULL},
 	 { (char *)"iSkeletonLookAtNodeFactory_GetChildNode", _wrap_iSkeletonLookAtNodeFactory_GetChildNode, METH_VARARGS, NULL},
+	 { (char *)"iSkeletonLookAtNodeFactory_SetDirection", _wrap_iSkeletonLookAtNodeFactory_SetDirection, METH_VARARGS, NULL},
+	 { (char *)"iSkeletonLookAtNodeFactory_GetDirection", _wrap_iSkeletonLookAtNodeFactory_GetDirection, METH_VARARGS, NULL},
 	 { (char *)"iSkeletonLookAtNodeFactory_scfGetVersion", _wrap_iSkeletonLookAtNodeFactory_scfGetVersion, METH_VARARGS, NULL},
 	 { (char *)"delete_iSkeletonLookAtNodeFactory", _wrap_delete_iSkeletonLookAtNodeFactory, METH_VARARGS, NULL},
 	 { (char *)"iSkeletonLookAtNodeFactory_swigregister", iSkeletonLookAtNodeFactory_swigregister, METH_VARARGS, NULL},

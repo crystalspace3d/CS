@@ -70,7 +70,7 @@ private:
   {
   public:
     /// The plugin itself
-    csWeakRef<iComponent> Plugin;
+    csRef<iComponent> Plugin;
     /// The class ID of the plugin
     csString ClassID;
 
@@ -92,14 +92,14 @@ private:
    */
   class CS_CRYSTALSPACE_EXPORT csPluginsVector :
     public csArray<csPlugin, 
-                   csArraySafeCopyElementHandler<csPlugin>,
+                   csArrayElementHandler<csPlugin>,
                    CS::Container::ArrayAllocDefault,
                    csArrayCapacityFixedGrow<8> >
   {
   public:
     /// Create the vector
     csPluginsVector (int l) : csArray<csPlugin, 
-      csArraySafeCopyElementHandler<csPlugin>, CS::Container::ArrayAllocDefault,
+      csArrayElementHandler<csPlugin>, CS::Container::ArrayAllocDefault,
       csArrayCapacityFixedGrow<8> > (l) {}
     /// Find a plugin by its address
     static int CompareAddress (csPlugin const& Item, iComponent* const& Key)

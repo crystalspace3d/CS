@@ -26,7 +26,6 @@
 #include "imesh/animnode/debug.h"
 #include "imesh/animnode/ik.h"
 #include "imesh/animnode/lookat.h"
-#include "imesh/animnode/noise.h"
 #include "imesh/animnode/ragdoll.h"
 #include "imesh/animnode/retarget.h"
 #include "imesh/animnode/skeleton2anim.h"

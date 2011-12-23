@@ -31,7 +31,6 @@ WALKALL.PLUGINLIST =
   csopcode
   csparser
   cssynldr
-  cstgaimg
   decal
   dsplex
   dynavis
@@ -53,7 +52,6 @@ WALKALL.PLUGINLIST =
   skeleton2
   skeleton2ldr
   skelldr
-  slcombiner
   vproc_std
   haze
   hazeldr

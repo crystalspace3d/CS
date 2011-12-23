@@ -23,7 +23,6 @@
  */
 #include "cssysdef.h"
 #include "igraphic/animimg.h"
-#include "igraphic/dxtcompress.h"
 #include "igraphic/image.h"
 #include "igraphic/imageio.h"
 #endif /* __IGRAPHIC_H__ */

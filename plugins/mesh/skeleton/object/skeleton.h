@@ -668,7 +668,7 @@ class csSkeletonFactory :
 {
 private:
   csString name;
-  csRef<csSkeletonGraveyard> graveyard;
+  csSkeletonGraveyard* graveyard;
   iObjectRegistry* object_reg;
   csStringArray autorun_scripts;
 

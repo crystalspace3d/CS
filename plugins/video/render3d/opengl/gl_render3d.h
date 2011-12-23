@@ -496,9 +496,6 @@ private:
   GLuint drawPixmapProgram;
   
   void ComputeProjectionMatrix();
-
-  /// Whether to perform rendering using patch primitives for tessellation
-  bool use_patches;
 public:
   static csGLStateCache* statecache;
   static csGLExtensionManager* ext;
@@ -788,9 +785,6 @@ public:
 
   virtual void DrawMeshBasic(const CS::Graphics::CoreRenderMesh* mymesh,
 							const CS::Graphics::RenderMeshModes& modes);
-
-  virtual void SetTessellation (bool flag) { use_patches = flag; }
-  virtual bool GetTessellation () { return use_patches; }
 
   //=========================================================================
 

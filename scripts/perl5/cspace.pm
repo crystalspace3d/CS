@@ -53,9 +53,6 @@ package cspace;
 *scfRegisterStaticClass = *cspacec::scfRegisterStaticClass;
 *scfRegisterStaticClasses = *cspacec::scfRegisterStaticClasses;
 *scfRegisterStaticFactoryFunc = *cspacec::scfRegisterStaticFactoryFunc;
-*Union = *cspacec::Union;
-*Intersect = *cspacec::Intersect;
-*Subtract = *cspacec::Subtract;
 *csDefaultRunLoop = *cspacec::csDefaultRunLoop;
 *csPlatformStartup = *cspacec::csPlatformStartup;
 *csPlatformShutdown = *cspacec::csPlatformShutdown;
@@ -1413,9 +1410,6 @@ sub new {
 *DeleteAll = *cspacec::csStringIDSet_DeleteAll;
 *Empty = *cspacec::csStringIDSet_Empty;
 *Delete = *cspacec::csStringIDSet_Delete;
-*Union = *cspacec::csStringIDSet_Union;
-*TestIntersect = *cspacec::csStringIDSet_TestIntersect;
-*Subtract = *cspacec::csStringIDSet_Subtract;
 *GetSize = *cspacec::csStringIDSet_GetSize;
 *IsEmpty = *cspacec::csStringIDSet_IsEmpty;
 sub DESTROY {
@@ -2106,7 +2100,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *GetPos = *cspacec::iFile_GetPos;
 *SetPos = *cspacec::iFile_SetPos;
 *GetAllData = *cspacec::iFile_GetAllData;
-*GetPartialView = *cspacec::iFile_GetPartialView;
 *scfGetVersion = *cspacec::iFile_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -2388,9 +2381,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *Resume = *cspacec::iVirtualClock_Resume;
 *GetElapsedTicks = *cspacec::iVirtualClock_GetElapsedTicks;
 *GetCurrentTicks = *cspacec::iVirtualClock_GetCurrentTicks;
-*GetElapsedMicroTicks = *cspacec::iVirtualClock_GetElapsedMicroTicks;
-*GetElapsedSeconds = *cspacec::iVirtualClock_GetElapsedSeconds;
-*GetCurrentMicroTicks = *cspacec::iVirtualClock_GetCurrentMicroTicks;
 *scfGetVersion = *cspacec::iVirtualClock_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -3927,7 +3917,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *Insert = *cspacec::iStringArray_Insert;
 *Empty = *cspacec::iStringArray_Empty;
 *IsEmpty = *cspacec::iStringArray_IsEmpty;
-*Put = *cspacec::iStringArray_Put;
 *scfGetVersion = *cspacec::iStringArray_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -6700,8 +6689,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *GetHeight = *cspacec::iView_GetHeight;
 *SetWidth = *cspacec::iView_SetWidth;
 *SetHeight = *cspacec::iView_SetHeight;
-*NormalizedToScreen = *cspacec::iView_NormalizedToScreen;
-*ScreenToNormalized = *cspacec::iView_ScreenToNormalized;
 *scfGetVersion = *cspacec::iView_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -7219,8 +7206,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *AttachColliderCapsule = *cspacec::iDynamicSystem_AttachColliderCapsule;
 *AddBody = *cspacec::iDynamicSystem_AddBody;
 *AddJoint = *cspacec::iDynamicSystem_AddJoint;
-*SetPhysicsOrigin = *cspacec::iDynamicSystem_SetPhysicsOrigin;
-*GetPhysicsOrigin = *cspacec::iDynamicSystem_GetPhysicsOrigin;
 *scfGetVersion = *cspacec::iDynamicSystem_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -10188,8 +10173,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *DrawMeshBasic = *cspacec::iGraphics3D_DrawMeshBasic;
 *SetEdgeDrawing = *cspacec::iGraphics3D_SetEdgeDrawing;
 *GetEdgeDrawing = *cspacec::iGraphics3D_GetEdgeDrawing;
-*SetTessellation = *cspacec::iGraphics3D_SetTessellation;
-*GetTessellation = *cspacec::iGraphics3D_GetTessellation;
 *scfGetVersion = *cspacec::iGraphics3D_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -10263,7 +10246,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *decoClientFrame = *cspacec::iNativeWindow_decoClientFrame;
 *SetWindowDecoration = *cspacec::iNativeWindow_SetWindowDecoration;
 *GetWindowDecoration = *cspacec::iNativeWindow_GetWindowDecoration;
-*FitSizeToWorkingArea = *cspacec::iNativeWindow_FitSizeToWorkingArea;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
     my $self = tied(%{$_[0]});
@@ -11876,21 +11858,13 @@ sub new {
 
 *Description = *cspacec::csMatrix3_Description;
 *Row1 = *cspacec::csMatrix3_Row1;
-*SetRow1 = *cspacec::csMatrix3_SetRow1;
 *Row2 = *cspacec::csMatrix3_Row2;
-*SetRow2 = *cspacec::csMatrix3_SetRow2;
 *Row3 = *cspacec::csMatrix3_Row3;
-*SetRow3 = *cspacec::csMatrix3_SetRow3;
 *Row = *cspacec::csMatrix3_Row;
-*SetRow = *cspacec::csMatrix3_SetRow;
 *Col1 = *cspacec::csMatrix3_Col1;
-*SetCol1 = *cspacec::csMatrix3_SetCol1;
 *Col2 = *cspacec::csMatrix3_Col2;
-*SetCol2 = *cspacec::csMatrix3_SetCol2;
 *Col3 = *cspacec::csMatrix3_Col3;
-*SetCol3 = *cspacec::csMatrix3_SetCol3;
 *Col = *cspacec::csMatrix3_Col;
-*SetCol = *cspacec::csMatrix3_SetCol;
 *Set = *cspacec::csMatrix3_Set;
 *__iadd__ = *cspacec::csMatrix3___iadd__;
 *__isub__ = *cspacec::csMatrix3___isub__;
@@ -12197,11 +12171,8 @@ sub new {
 *Other2This = *cspacec::csTransform_Other2This;
 *GetReflect = *cspacec::csTransform_GetReflect;
 *GetFront = *cspacec::csTransform_GetFront;
-*SetFront = *cspacec::csTransform_SetFront;
 *GetUp = *cspacec::csTransform_GetUp;
-*SetUp = *cspacec::csTransform_SetUp;
 *GetRight = *cspacec::csTransform_GetRight;
-*SetRight = *cspacec::csTransform_SetRight;
 *__mul__ = *cspacec::csTransform___mul__;
 sub DISOWN {
     my $self = shift;
@@ -12244,12 +12215,6 @@ sub new {
 *RotateOther = *cspacec::csReversibleTransform_RotateOther;
 *RotateThis = *cspacec::csReversibleTransform_RotateThis;
 *LookAt = *cspacec::csReversibleTransform_LookAt;
-*LookAtZUpY = *cspacec::csReversibleTransform_LookAtZUpY;
-*LookAtZUpX = *cspacec::csReversibleTransform_LookAtZUpX;
-*LookAtYUpZ = *cspacec::csReversibleTransform_LookAtYUpZ;
-*LookAtYUpX = *cspacec::csReversibleTransform_LookAtYUpX;
-*LookAtXUpZ = *cspacec::csReversibleTransform_LookAtXUpZ;
-*LookAtXUpY = *cspacec::csReversibleTransform_LookAtXUpY;
 *__mul__ = *cspacec::csReversibleTransform___mul__;
 *__div__ = *cspacec::csReversibleTransform___div__;
 sub DESTROY {
@@ -13312,7 +13277,6 @@ sub DESTROY {
     }
 }
 
-*Setup = *cspacec::csSpline_Setup;
 *GetDimensionCount = *cspacec::csSpline_GetDimensionCount;
 *GetPointCount = *cspacec::csSpline_GetPointCount;
 *InsertPoint = *cspacec::csSpline_InsertPoint;
@@ -13367,7 +13331,6 @@ sub DESTROY {
     }
 }
 
-*Setup = *cspacec::csCubicSpline_Setup;
 *Calculate = *cspacec::csCubicSpline_Calculate;
 *GetInterpolatedDimension = *cspacec::csCubicSpline_GetInterpolatedDimension;
 sub DISOWN {
@@ -13831,7 +13794,6 @@ sub new {
     bless $self, $pkg if defined($self);
 }
 
-*Setup = *cspacec::csPath_Setup;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
     my $self = tied(%{$_[0]});
@@ -15712,14 +15674,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *GetSocket = *cspacec::iAnimatedMeshFactory_GetSocket;
 *FindSocket = *cspacec::iAnimatedMeshFactory_FindSocket;
 *ComputeTangents = *cspacec::iAnimatedMeshFactory_ComputeTangents;
-*SetBoneBoundingBox = *cspacec::iAnimatedMeshFactory_SetBoneBoundingBox;
-*GetBoneBoundingBox = *cspacec::iAnimatedMeshFactory_GetBoneBoundingBox;
-*AddSubset = *cspacec::iAnimatedMeshFactory_AddSubset;
-*AddSubsetVertex = *cspacec::iAnimatedMeshFactory_AddSubsetVertex;
-*GetSubsetVertex = *cspacec::iAnimatedMeshFactory_GetSubsetVertex;
-*GetSubsetVertexCount = *cspacec::iAnimatedMeshFactory_GetSubsetVertexCount;
-*GetSubsetCount = *cspacec::iAnimatedMeshFactory_GetSubsetCount;
-*ClearSubsets = *cspacec::iAnimatedMeshFactory_ClearSubsets;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -15780,10 +15734,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *GetSocket = *cspacec::iAnimatedMesh_GetSocket;
 *GetAnimatedMeshFactory = *cspacec::iAnimatedMesh_GetAnimatedMeshFactory;
 *GetRenderBufferAccessor = *cspacec::iAnimatedMesh_GetRenderBufferAccessor;
-*SetBoneBoundingBox = *cspacec::iAnimatedMesh_SetBoneBoundingBox;
-*GetBoneBoundingBox = *cspacec::iAnimatedMesh_GetBoneBoundingBox;
-*UnsetObjectBoundingBox = *cspacec::iAnimatedMesh_UnsetObjectBoundingBox;
-*ClearMorphTargetWeights = *cspacec::iAnimatedMesh_ClearMorphTargetWeights;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -15832,9 +15782,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *GetVertexOffsets = *cspacec::iAnimatedMeshMorphTarget_GetVertexOffsets;
 *Invalidate = *cspacec::iAnimatedMeshMorphTarget_Invalidate;
 *GetName = *cspacec::iAnimatedMeshMorphTarget_GetName;
-*AddSubset = *cspacec::iAnimatedMeshMorphTarget_AddSubset;
-*GetSubset = *cspacec::iAnimatedMeshMorphTarget_GetSubset;
-*GetSubsetCount = *cspacec::iAnimatedMeshMorphTarget_GetSubsetCount;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -18598,39 +18545,6 @@ sub ACQUIRE {
 }
 
 
-############# Class : cspace::iParticleBuiltinEffectorLight ##############
-
-package cspace::iParticleBuiltinEffectorLight;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace::iParticleEffector cspace );
-%OWNER = ();
-%ITERATORS = ();
-*SetInitialCutoffDistance = *cspacec::iParticleBuiltinEffectorLight_SetInitialCutoffDistance;
-*GetInitialCutoffDistance = *cspacec::iParticleBuiltinEffectorLight_GetInitialCutoffDistance;
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        cspacec::delete_iParticleBuiltinEffectorLight($self);
-        delete $OWNER{$self};
-    }
-}
-
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
 ############# Class : cspace::iParticleBuiltinEffectorFactory ##############
 
 package cspace::iParticleBuiltinEffectorFactory;
@@ -18642,7 +18556,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *CreateLinColor = *cspacec::iParticleBuiltinEffectorFactory_CreateLinColor;
 *CreateVelocityField = *cspacec::iParticleBuiltinEffectorFactory_CreateVelocityField;
 *CreateLinear = *cspacec::iParticleBuiltinEffectorFactory_CreateLinear;
-*CreateLight = *cspacec::iParticleBuiltinEffectorFactory_CreateLight;
 *scfGetVersion = *cspacec::iParticleBuiltinEffectorFactory_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -19430,8 +19343,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *SyncEngineLists = *cspacec::iEngine_SyncEngineLists;
 *SyncEngineListsWait = *cspacec::iEngine_SyncEngineListsWait;
 *SyncEngineListsNow = *cspacec::iEngine_SyncEngineListsNow;
-*GetDefaultNearClipDistance = *cspacec::iEngine_GetDefaultNearClipDistance;
-*SetDefaultNearClipDistance = *cspacec::iEngine_SetDefaultNearClipDistance;
 *scfGetVersion = *cspacec::iEngine_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -19643,8 +19554,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *GetShiftX = *cspacec::iPerspectiveCamera_GetShiftX;
 *GetShiftY = *cspacec::iPerspectiveCamera_GetShiftY;
 *SetPerspectiveCenter = *cspacec::iPerspectiveCamera_SetPerspectiveCenter;
-*GetNearClipDistance = *cspacec::iPerspectiveCamera_GetNearClipDistance;
-*SetNearClipDistance = *cspacec::iPerspectiveCamera_SetNearClipDistance;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
     my $self = tied(%{$_[0]});
@@ -21511,6 +21420,7 @@ sub new {
 *SetOnGround = *cspacec::csColliderActor_SetOnGround;
 *HasCD = *cspacec::csColliderActor_HasCD;
 *SetCD = *cspacec::csColliderActor_SetCD;
+*CheckRevertMove = *cspacec::csColliderActor_CheckRevertMove;
 *EnableHitMeshes = *cspacec::csColliderActor_EnableHitMeshes;
 *CheckHitMeshes = *cspacec::csColliderActor_CheckHitMeshes;
 *GetHitMeshes = *cspacec::csColliderActor_GetHitMeshes;
@@ -21615,8 +21525,6 @@ sub DESTROY {
 *GetHeight = *cspacec::csView_GetHeight;
 *SetWidth = *cspacec::csView_SetWidth;
 *SetHeight = *cspacec::csView_SetHeight;
-*NormalizedToScreen = *cspacec::csView_NormalizedToScreen;
-*ScreenToNormalized = *cspacec::csView_ScreenToNormalized;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -22349,116 +22257,34 @@ sub ACQUIRE {
 }
 
 
-############# Class : cspace::csPenCoordinate ##############
+############# Class : cspace::iPen ##############
 
-package cspace::csPenCoordinate;
+package cspace::iPen;
 use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 @ISA = qw( cspace );
 %OWNER = ();
-%ITERATORS = ();
-*swig_x_get = *cspacec::csPenCoordinate_x_get;
-*swig_x_set = *cspacec::csPenCoordinate_x_set;
-*swig_y_get = *cspacec::csPenCoordinate_y_get;
-*swig_y_set = *cspacec::csPenCoordinate_y_set;
-sub new {
-    my $pkg = shift;
-    my $self = cspacec::new_csPenCoordinate(@_);
-    bless $self, $pkg if defined($self);
-}
-
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        cspacec::delete_csPenCoordinate($self);
-        delete $OWNER{$self};
-    }
-}
-
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
-############# Class : cspace::csPenCoordinatePair ##############
-
-package cspace::csPenCoordinatePair;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace );
-%OWNER = ();
-%ITERATORS = ();
-*swig_c1_get = *cspacec::csPenCoordinatePair_c1_get;
-*swig_c1_set = *cspacec::csPenCoordinatePair_c1_set;
-*swig_c2_get = *cspacec::csPenCoordinatePair_c2_get;
-*swig_c2_set = *cspacec::csPenCoordinatePair_c2_set;
-sub new {
-    my $pkg = shift;
-    my $self = cspacec::new_csPenCoordinatePair(@_);
-    bless $self, $pkg if defined($self);
-}
-
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        cspacec::delete_csPenCoordinatePair($self);
-        delete $OWNER{$self};
-    }
-}
-
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
-############# Class : cspace::csPenCache ##############
-
-package cspace::csPenCache;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace );
-%OWNER = ();
-%ITERATORS = ();
-*PushMesh = *cspacec::csPenCache_PushMesh;
-*Render = *cspacec::csPenCache_Render;
-*Clear = *cspacec::csPenCache_Clear;
-*SetTransform = *cspacec::csPenCache_SetTransform;
-sub new {
-    my $pkg = shift;
-    my $self = cspacec::new_csPenCache(@_);
-    bless $self, $pkg if defined($self);
-}
-
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        cspacec::delete_csPenCache($self);
-        delete $OWNER{$self};
-    }
-}
-
+*SetFlag = *cspacec::iPen_SetFlag;
+*ClearFlag = *cspacec::iPen_ClearFlag;
+*SetMixMode = *cspacec::iPen_SetMixMode;
+*SetColor = *cspacec::iPen_SetColor;
+*SetTexture = *cspacec::iPen_SetTexture;
+*SwapColors = *cspacec::iPen_SwapColors;
+*SetPenWidth = *cspacec::iPen_SetPenWidth;
+*ClearTransform = *cspacec::iPen_ClearTransform;
+*PushTransform = *cspacec::iPen_PushTransform;
+*PopTransform = *cspacec::iPen_PopTransform;
+*SetOrigin = *cspacec::iPen_SetOrigin;
+*Translate = *cspacec::iPen_Translate;
+*DrawLine = *cspacec::iPen_DrawLine;
+*DrawPoint = *cspacec::iPen_DrawPoint;
+*DrawRect = *cspacec::iPen_DrawRect;
+*DrawMiteredRect = *cspacec::iPen_DrawMiteredRect;
+*DrawRoundedRect = *cspacec::iPen_DrawRoundedRect;
+*DrawArc = *cspacec::iPen_DrawArc;
+*DrawTriangle = *cspacec::iPen_DrawTriangle;
+*Write = *cspacec::iPen_Write;
+*WriteBoxed = *cspacec::iPen_WriteBoxed;
+*_Rotate = *cspacec::iPen__Rotate;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -22476,7 +22302,7 @@ sub ACQUIRE {
 
 package cspace::csPen;
 use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace );
+@ISA = qw( cspace::iPen cspace );
 %OWNER = ();
 %ITERATORS = ();
 sub new {
@@ -22496,7 +22322,6 @@ sub DESTROY {
     }
 }
 
-*SetActiveCache = *cspacec::csPen_SetActiveCache;
 *SetFlag = *cspacec::csPen_SetFlag;
 *ClearFlag = *cspacec::csPen_ClearFlag;
 *SetMixMode = *cspacec::csPen_SetMixMode;
@@ -22509,11 +22334,8 @@ sub DESTROY {
 *PopTransform = *cspacec::csPen_PopTransform;
 *SetOrigin = *cspacec::csPen_SetOrigin;
 *Translate = *cspacec::csPen_Translate;
-*SetTransform = *cspacec::csPen_SetTransform;
 *DrawLine = *cspacec::csPen_DrawLine;
 *DrawThickLine = *cspacec::csPen_DrawThickLine;
-*DrawLines = *cspacec::csPen_DrawLines;
-*DrawThickLines = *cspacec::csPen_DrawThickLines;
 *DrawPoint = *cspacec::csPen_DrawPoint;
 *DrawRect = *cspacec::csPen_DrawRect;
 *DrawMiteredRect = *cspacec::csPen_DrawMiteredRect;
@@ -22521,9 +22343,7 @@ sub DESTROY {
 *DrawArc = *cspacec::csPen_DrawArc;
 *DrawTriangle = *cspacec::csPen_DrawTriangle;
 *Write = *cspacec::csPen_Write;
-*WriteLines = *cspacec::csPen_WriteLines;
 *WriteBoxed = *cspacec::csPen_WriteBoxed;
-*WriteLinesBoxed = *cspacec::csPen_WriteLinesBoxed;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -22537,20 +22357,16 @@ sub ACQUIRE {
 }
 
 
-############# Class : cspace::csPen3DCoordinatePair ##############
+############# Class : cspace::csMemoryPen ##############
 
-package cspace::csPen3DCoordinatePair;
+package cspace::csMemoryPen;
 use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace );
+@ISA = qw( cspace::iPen cspace );
 %OWNER = ();
 %ITERATORS = ();
-*swig_c1_get = *cspacec::csPen3DCoordinatePair_c1_get;
-*swig_c1_set = *cspacec::csPen3DCoordinatePair_c1_set;
-*swig_c2_get = *cspacec::csPen3DCoordinatePair_c2_get;
-*swig_c2_set = *cspacec::csPen3DCoordinatePair_c2_set;
 sub new {
     my $pkg = shift;
-    my $self = cspacec::new_csPen3DCoordinatePair(@_);
+    my $self = cspacec::new_csMemoryPen(@_);
     bless $self, $pkg if defined($self);
 }
 
@@ -22560,179 +22376,34 @@ sub DESTROY {
     return unless defined $self;
     delete $ITERATORS{$self};
     if (exists $OWNER{$self}) {
-        cspacec::delete_csPen3DCoordinatePair($self);
+        cspacec::delete_csMemoryPen($self);
         delete $OWNER{$self};
     }
 }
 
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
-############# Class : cspace::csPen3D ##############
-
-package cspace::csPen3D;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace );
-%OWNER = ();
-%ITERATORS = ();
-sub new {
-    my $pkg = shift;
-    my $self = cspacec::new_csPen3D(@_);
-    bless $self, $pkg if defined($self);
-}
-
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        cspacec::delete_csPen3D($self);
-        delete $OWNER{$self};
-    }
-}
-
-*SetActiveCache = *cspacec::csPen3D_SetActiveCache;
-*SetMixMode = *cspacec::csPen3D_SetMixMode;
-*SetColor = *cspacec::csPen3D_SetColor;
-*SetTransform = *cspacec::csPen3D_SetTransform;
-*DrawLine = *cspacec::csPen3D_DrawLine;
-*DrawLines = *cspacec::csPen3D_DrawLines;
-*DrawBox = *cspacec::csPen3D_DrawBox;
-*DrawArc = *cspacec::csPen3D_DrawArc;
-*DrawCylinder = *cspacec::csPen3D_DrawCylinder;
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
-############# Class : cspace::scfProcTexture ##############
-
-package cspace::scfProcTexture;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace::csObject cspace::iTextureWrapper cspace::iProcTexture cspace );
-%OWNER = ();
-*IncRef = *cspacec::scfProcTexture_IncRef;
-*DecRef = *cspacec::scfProcTexture_DecRef;
-*GetRefCount = *cspacec::scfProcTexture_GetRefCount;
-*QueryInterface = *cspacec::scfProcTexture_QueryInterface;
-*AddRefOwner = *cspacec::scfProcTexture_AddRefOwner;
-*RemoveRefOwner = *cspacec::scfProcTexture_RemoveRefOwner;
-*GetInterfaceMetadata = *cspacec::scfProcTexture_GetInterfaceMetadata;
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
-############# Class : cspace::csThreadManager ##############
-
-package cspace::csThreadManager;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace );
-%OWNER = ();
-%ITERATORS = ();
-sub new {
-    my $pkg = shift;
-    my $self = cspacec::new_csThreadManager(@_);
-    bless $self, $pkg if defined($self);
-}
-
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        cspacec::delete_csThreadManager($self);
-        delete $OWNER{$self};
-    }
-}
-
-*Init = *cspacec::csThreadManager_Init;
-*Process = *cspacec::csThreadManager_Process;
-*Wait = *cspacec::csThreadManager_Wait;
-*ProcessAll = *cspacec::csThreadManager_ProcessAll;
-*PushToQueue = *cspacec::csThreadManager_PushToQueue;
-*RunNow = *cspacec::csThreadManager_RunNow;
-*GetThreadCount = *cspacec::csThreadManager_GetThreadCount;
-*SetAlwaysRunNow = *cspacec::csThreadManager_SetAlwaysRunNow;
-*GetAlwaysRunNow = *cspacec::csThreadManager_GetAlwaysRunNow;
-*Exiting = *cspacec::csThreadManager_Exiting;
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
-############# Class : cspace::csThreadReturn ##############
-
-package cspace::csThreadReturn;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace );
-%OWNER = ();
-%ITERATORS = ();
-sub new {
-    my $pkg = shift;
-    my $self = cspacec::new_csThreadReturn(@_);
-    bless $self, $pkg if defined($self);
-}
-
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        cspacec::delete_csThreadReturn($self);
-        delete $OWNER{$self};
-    }
-}
-
-*IsFinished = *cspacec::csThreadReturn_IsFinished;
-*WasSuccessful = *cspacec::csThreadReturn_WasSuccessful;
-*GetResultPtr = *cspacec::csThreadReturn_GetResultPtr;
-*GetResultRefPtr = *cspacec::csThreadReturn_GetResultRefPtr;
-*MarkFinished = *cspacec::csThreadReturn_MarkFinished;
-*MarkSuccessful = *cspacec::csThreadReturn_MarkSuccessful;
-*SetResult = *cspacec::csThreadReturn_SetResult;
-*Copy = *cspacec::csThreadReturn_Copy;
-*Wait = *cspacec::csThreadReturn_Wait;
-*SetWaitPtrs = *cspacec::csThreadReturn_SetWaitPtrs;
-*SetJob = *cspacec::csThreadReturn_SetJob;
-*GetJob = *cspacec::csThreadReturn_GetJob;
+*Clear = *cspacec::csMemoryPen_Clear;
+*Draw = *cspacec::csMemoryPen_Draw;
+*SetFlag = *cspacec::csMemoryPen_SetFlag;
+*ClearFlag = *cspacec::csMemoryPen_ClearFlag;
+*SetMixMode = *cspacec::csMemoryPen_SetMixMode;
+*SetColor = *cspacec::csMemoryPen_SetColor;
+*SetTexture = *cspacec::csMemoryPen_SetTexture;
+*SwapColors = *cspacec::csMemoryPen_SwapColors;
+*SetPenWidth = *cspacec::csMemoryPen_SetPenWidth;
+*ClearTransform = *cspacec::csMemoryPen_ClearTransform;
+*PushTransform = *cspacec::csMemoryPen_PushTransform;
+*PopTransform = *cspacec::csMemoryPen_PopTransform;
+*SetOrigin = *cspacec::csMemoryPen_SetOrigin;
+*Translate = *cspacec::csMemoryPen_Translate;
+*DrawLine = *cspacec::csMemoryPen_DrawLine;
+*DrawPoint = *cspacec::csMemoryPen_DrawPoint;
+*DrawRect = *cspacec::csMemoryPen_DrawRect;
+*DrawMiteredRect = *cspacec::csMemoryPen_DrawMiteredRect;
+*DrawRoundedRect = *cspacec::csMemoryPen_DrawRoundedRect;
+*DrawArc = *cspacec::csMemoryPen_DrawArc;
+*DrawTriangle = *cspacec::csMemoryPen_DrawTriangle;
+*Write = *cspacec::csMemoryPen_Write;
+*WriteBoxed = *cspacec::csMemoryPen_WriteBoxed;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -22782,7 +22453,7 @@ sub ACQUIRE {
 
 package cspace::csProcTexture;
 use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( cspace::scfProcTexture cspace );
+@ISA = qw( cspace );
 %OWNER = ();
 %ITERATORS = ();
 *swig_last_cur_time_get = *cspacec::csProcTexture_last_cur_time_get;
@@ -23084,7 +22755,6 @@ sub CSSNDSYS_SAMPLE_BIG_ENDIAN () { $cspacec::CSSNDSYS_SAMPLE_BIG_ENDIAN }
 sub CSSNDSYS_SAMPLE_ENDIAN_MASK () { $cspacec::CSSNDSYS_SAMPLE_ENDIAN_MASK }
 sub CS_SNDSYS_STREAM_PAUSED () { $cspacec::CS_SNDSYS_STREAM_PAUSED }
 sub CS_SNDSYS_STREAM_UNPAUSED () { $cspacec::CS_SNDSYS_STREAM_UNPAUSED }
-sub CS_SNDSYS_STREAM_COMPLETED () { $cspacec::CS_SNDSYS_STREAM_COMPLETED }
 sub CS_SNDSYS_STREAM_DONTLOOP () { $cspacec::CS_SNDSYS_STREAM_DONTLOOP }
 sub CS_SNDSYS_STREAM_LOOP () { $cspacec::CS_SNDSYS_STREAM_LOOP }
 sub CS_SND3D_DISABLE () { $cspacec::CS_SND3D_DISABLE }
@@ -23315,6 +22985,7 @@ sub CS_TEXTURE_SCALE_UP () { $cspacec::CS_TEXTURE_SCALE_UP }
 sub CS_TEXTURE_SCALE_DOWN () { $cspacec::CS_TEXTURE_SCALE_DOWN }
 sub CS_TEXTURE_CREATE_CLEAR () { $cspacec::CS_TEXTURE_CREATE_CLEAR }
 sub CS_TEXTURE_CUBEMAP_DISABLE_SEAMLESS () { $cspacec::CS_TEXTURE_CUBEMAP_DISABLE_SEAMLESS }
+sub CS_MATERIAL_VARNAME_FLATCOLOR () { $cspacec::CS_MATERIAL_VARNAME_FLATCOLOR }
 sub CS_MATERIAL_TEXTURE_DIFFUSE () { $cspacec::CS_MATERIAL_TEXTURE_DIFFUSE }
 sub CS_AXIS_NONE () { $cspacec::CS_AXIS_NONE }
 sub CS_AXIS_X () { $cspacec::CS_AXIS_X }

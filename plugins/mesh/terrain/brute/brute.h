@@ -494,7 +494,7 @@ class csTerrainFactory :
 private:
   iMeshFactoryWrapper* logparent;
 
-  csRef<iMeshObjectType> brute_type;
+  iMeshObjectType* brute_type;
 
   csFlags flags;
   csBox3 obj_bbox;

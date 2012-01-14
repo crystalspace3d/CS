@@ -29,7 +29,7 @@ if $(X11.AVAILABLE) = "yes"
   }
   if $(XAW.AVAILABLE) = "yes"
   {
-    RelayLibs xwin : XAW : Xaw7 Xaw ;
+    RelayLibs xwin : XAW : Xaw7 ;
     CFlags xwin : [ FDefines HAVE_XAW ] ;
   }
   if $(GTK.AVAILABLE) = "yes"

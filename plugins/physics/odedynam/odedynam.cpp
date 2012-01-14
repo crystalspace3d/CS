@@ -636,7 +636,6 @@ csODEDynamicSystem::csODEDynamicSystem (iObjectRegistry* object_reg,
   colldet_id = strings->Request ("colldet");
 
   dWorldSetGravity (worldID, 0.0f, -9.81f, 0.0f);
-  physicsOrigin.Set (0, 0, 0);
 }
 
 csODEDynamicSystem::~csODEDynamicSystem ()
@@ -1581,7 +1580,7 @@ void csODECollider::FillWithColliderGeometry (csRef<iGeneralFactoryState> genmes
       csRef<iMeshObjectFactory> collider_fact = 
         scfQueryInterface<iMeshObjectFactory> (genmesh_fact);
       collider_fact->HardTransform (
-        csReversibleTransform (csYRotMatrix3 (HALF_PI), csVector3 (0)));
+        csReversibleTransform (csYRotMatrix3 (PI/2), csVector3 (0)));
     }
     break;
   case PLANE_COLLIDER_GEOMETRY:

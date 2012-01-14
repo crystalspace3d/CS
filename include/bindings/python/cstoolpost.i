@@ -1,10 +1,10 @@
 #if defined(SWIGPYTHON)
-%extend csPen {
+%extend iPen {
         void _Rotate(float a)
         { self->Rotate(a); }
     %pythoncode %{
     def Rotate(self,a):
-         return _cspace.csPen__Rotate(a)
+         return _cspace.iPen__Rotate(a)
     %}
 }
 #endif

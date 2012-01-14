@@ -422,8 +422,6 @@ class iGraphics3D(core.iBase):
     def DrawMeshBasic(*args): return _ivideo.iGraphics3D_DrawMeshBasic(*args)
     def SetEdgeDrawing(*args): return _ivideo.iGraphics3D_SetEdgeDrawing(*args)
     def GetEdgeDrawing(*args): return _ivideo.iGraphics3D_GetEdgeDrawing(*args)
-    def SetTessellation(*args): return _ivideo.iGraphics3D_SetTessellation(*args)
-    def GetTessellation(*args): return _ivideo.iGraphics3D_GetTessellation(*args)
     scfGetVersion = staticmethod(_ivideo.iGraphics3D_scfGetVersion)
     __swig_destroy__ = _ivideo.delete_iGraphics3D
     __del__ = lambda self : None;
@@ -985,6 +983,7 @@ iTextureManager_swigregister = _ivideo.iTextureManager_swigregister
 iTextureManager_swigregister(iTextureManager)
 iTextureManager_scfGetVersion = _ivideo.iTextureManager_scfGetVersion
 
+CS_MATERIAL_VARNAME_FLATCOLOR = _ivideo.CS_MATERIAL_VARNAME_FLATCOLOR
 CS_MATERIAL_TEXTURE_DIFFUSE = _ivideo.CS_MATERIAL_TEXTURE_DIFFUSE
 class iMaterial(iShaderVariableContext):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')

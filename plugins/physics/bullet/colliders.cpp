@@ -671,8 +671,8 @@ HeightMapCollider::HeightMapCollider (csBulletDynamicsSystem* dynSys,
 
       if (needExtremum)
 	{
-	  minimumHeight = csMin (minimumHeight, height);
-	  maximumHeight = csMax (maximumHeight, height);
+	  minimumHeight = MIN (minimumHeight, height);
+	  maximumHeight = MAX (maximumHeight, height);
 	}
     }
 

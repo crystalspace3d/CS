@@ -321,78 +321,74 @@ bool csShaderProgram::ParseCommon (iDocumentNode* child)
   csStringID id = commonTokens.Request (value);
   switch (id)
   {
-  case XMLTOKEN_VARIABLEMAP:
-    {
-      //@@ REWRITE
-      const char* destname = child->GetAttributeValue ("destination");
-      if (!destname)
+    case XMLTOKEN_VARIABLEMAP:
       {
-        synsrv->Report ("crystalspace.graphics3d.shader.common",
-          CS_REPORTER_SEVERITY_WARNING, child,
-          "<variablemap> has no %s attribute",
-          CS::Quote::Single ("destination"));
-        return false;
-      }
+        //@@ REWRITE
+	const char* destname = child->GetAttributeValue ("destination");
+	if (!destname)
+	{
+	  synsrv->Report ("crystalspace.graphics3d.shader.common",
+	    CS_REPORTER_SEVERITY_WARNING, child,
+	    "<variablemap> has no %s attribute",
+	    CS::Quote::Single ("destination"));
+	  return false;
+	}
 
-      const char* varname = child->GetAttributeValue ("variable");
-      if (!varname)
-      {
-        // "New style" variable mapping
-        VariableMapEntry vme (CS::InvalidShaderVarStringID, destname);
-        if (!ParseProgramParam (child, vme.mappingParam,
-          ParamInt | ParamFloat | ParamVector2 | ParamVector3 | ParamVector4))
-          return false;
-        variablemap.Push (vme);
+	const char* varname = child->GetAttributeValue ("variable");
+	if (!varname)
+	{
+	  // "New style" variable mapping
+	  VariableMapEntry vme (CS::InvalidShaderVarStringID, destname);
+	  if (!ParseProgramParam (child, vme.mappingParam,
+	    ParamFloat | ParamVector2 | ParamVector3 | ParamVector4))
+	    return false;
+	  variablemap.Push (vme);
+	}
+	else
+	{
+	  // "Classic" variable mapping
+	  CS::Graphics::ShaderVarNameParser nameParse (varname);
+	  VariableMapEntry vme (
+	    stringsSvName->Request (nameParse.GetShaderVarName()),
+	    destname);
+	  for (size_t n = 0; n < nameParse.GetIndexNum(); n++)
+	  {
+	    vme.mappingParam.indices.Push (nameParse.GetIndexValue (n));
+	  }
+	  variablemap.Push (vme);
+	}
       }
-      else
+      break;
+    case XMLTOKEN_PROGRAM:
       {
-        // "Classic" variable mapping
-        CS::Graphics::ShaderVarNameParser nameParse (varname);
-        VariableMapEntry vme (
-          stringsSvName->Request (nameParse.GetShaderVarName()),
-          destname);
-        for (size_t n = 0; n < nameParse.GetIndexNum(); n++)
-        {
-          vme.mappingParam.indices.Push (nameParse.GetIndexValue (n));
-        }
-        variablemap.Push (vme);
-      }
-    }
-    break;
-  case XMLTOKEN_PROGRAM:
-    {
-      const char* filename = child->GetAttributeValue ("file");
-      if (filename != 0)
-      {
-        programFileName = filename;
+	const char* filename = child->GetAttributeValue ("file");
+	if (filename != 0)
+	{
+	  programFileName = filename;
 
-        csRef<iVFS> vfs = csQueryRegistry<iVFS> (objectReg);
-        csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
-        if (!file.IsValid())
-        {
-          synsrv->Report ("crystalspace.graphics3d.shader.common",
-            CS_REPORTER_SEVERITY_WARNING, child,
-            "Could not open %s", CS::Quote::Single (filename));
-          return false;
-        }
+	  csRef<iVFS> vfs = csQueryRegistry<iVFS> (objectReg);
+	  csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
+	  if (!file.IsValid())
+	  {
+	    synsrv->Report ("crystalspace.graphics3d.shader.common",
+	      CS_REPORTER_SEVERITY_WARNING, child,
+	      "Could not open %s", CS::Quote::Single (filename));
+	    return false;
+	  }
 
-        programFile = file;
-        programNode.Invalidate ();
+	  programFile = file;
+	}
+	else
+	  programNode = child;
       }
-      else
-      {
-        programNode = child;
-        programFile.Invalidate ();
-      }
-    }
-    break;
+      break;
 
-  case XMLTOKEN_DESCRIPTION:
-    description = child->GetContentsValue();
-    break;
-  default:
-    synsrv->ReportBadToken (child);
-    return false;
+    case XMLTOKEN_DESCRIPTION:
+      description = child->GetContentsValue();
+      break;
+    default:
+      synsrv->ReportBadToken (child);
+      return false;
   }
   return true;
 }

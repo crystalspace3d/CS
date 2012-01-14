@@ -199,7 +199,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Ragdoll)
       bones.Put (boneData.boneID, boneData);
 
       // update the max bone ID
-      maxBoneID = csMax (maxBoneID, boneData.boneID);
+      maxBoneID = MAX (maxBoneID, boneData.boneID);
     }
 
     // update state of children nodes

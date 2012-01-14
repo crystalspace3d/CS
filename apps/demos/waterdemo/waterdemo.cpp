@@ -234,11 +234,11 @@ bool csWaterDemo::HandleEvent (iEvent& ev)
       break;
     case '1':
       WaveSpeed -= 0.01f;
-      WaveSpeed = csMax (WaveSpeed,0.f);
+      WaveSpeed = MAX(WaveSpeed,0);
       break;
     case '2':
       WaveSpeed += 0.01f;
-      WaveSpeed = csMin (WaveSpeed,0.5f);
+      WaveSpeed = MIN(WaveSpeed,0.5f);
       break;
     case '3':
       TimeDelta -= 0.01f;
@@ -673,26 +673,26 @@ void csWaterDemo::pushDownPoint (float x, float z, float depth)
   zn = (int)floorf (z);
   zu = (int)ceilf (z);
 
-  xn = csMax (xn,0);
-  xu = csMin (xu,Height);
+  xn = MAX(xn,0);
+  xu = MIN(xu,Height);
   
-  zn = csMax (zn,0);
-  zu = csMin (zu,Width);
+  zn = MAX(zn,0);
+  zu = MIN(zu,Width);
 
   dist = sqrtf((x-xn)*(x-xn)+(z-zn)*(z-zn));
-  power = csMax (1-dist,0.f);
+  power = MAX(1-dist,0);
   water[xn*Width+zn] += depth*power;
 
   dist = sqrtf((x-xn)*(x-xn)+(z-zu)*(z-zu));
-  power = csMax (1-dist,0.f);
+  power = MAX(1-dist,0);
   water[xn*Width+zu] += depth*power;
   
   dist = sqrtf((x-xu)*(x-xu)+(z-zn)*(z-zn));
-  power = csMax (1-dist,0.f);
+  power = MAX(1-dist,0);
   water[xu*Width+zn] += depth*power;
 
   dist = sqrtf((x-xu)*(x-xu)+(z-zu)*(z-zu));
-  power = csMax (1-dist,0.f);
+  power = MAX(1-dist,0);
   water[xu*Width+zu] += depth*power;
 }
 

@@ -41,6 +41,17 @@
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
+#ifdef CS_HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+
+#ifndef MIN
+  #define MIN(a,b) ((a)<(b)?(a):(b))
+#endif
+
+#ifndef MAX
+  #define MAX(a,b) ((a)>(b)?(a):(b))
+#endif
 
 #ifndef ABS
  #define ABS(x) ((x)<0?-(x):(x))
@@ -55,9 +66,6 @@
 #endif
 #ifndef HALF_PI
   #define HALF_PI (PI / 2.0f)
-#endif
-#ifndef QUARTER_PI
-  #define QUARTER_PI (PI / 4.0f)
 #endif
 #ifndef TWO_PI
   #define TWO_PI (PI * 2.0f)

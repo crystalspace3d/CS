@@ -396,7 +396,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
 	}
 	else if (minimumAngle.y < maximumAngle.y)
 	{
-	  if (minimumAngle.y > -HALF_PI)
+	  if (minimumAngle.y > -PI * 0.5f)
 	  {
 	    if (targetYaw < minimumAngle.y
 		|| targetYaw > PI)
@@ -405,12 +405,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
 	      targetYaw = minimumAngle.y;
 	    }
 	  }
-	  else if (minimumAngle.y <= -HALF_PI
+	  else if (minimumAngle.y <= -PI * 0.5f
 		   && targetYaw > PI
-		   && targetYaw < TWO_PI + minimumAngle.y)
+		   && targetYaw < 2.0f * PI + minimumAngle.y)
 	  {
 	    wasConstrained = true;
-	    targetYaw = TWO_PI + minimumAngle.y;
+	    targetYaw = 2.0f * PI + minimumAngle.y;
 	  }
 
 	  if (targetYaw < PI && targetYaw > maximumAngle.y)
@@ -486,10 +486,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
 	  targetRoll = previousRoll + deltaRoll * ratio;
 
 	  // constraint yaw between -PI/2 and 3*PI/2
-	  if (targetYaw < -HALF_PI)
-	    targetYaw = TWO_PI - targetYaw;
+	  if (targetYaw < -PI * 0.5f)
+	    targetYaw = 2.0f * PI - targetYaw;
 	  else if (targetYaw > PI * 1.5f)
-	    targetYaw = targetYaw - TWO_PI;
+	    targetYaw = targetYaw - 2.0f * PI;
 
 	  wasConstrained = true;
 	}

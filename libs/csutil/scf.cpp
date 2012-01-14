@@ -346,23 +346,8 @@ protected:
   /* SCF goop, this class cannot use scfImplementation1 due to its special 
     ref-counting usage */
   int scfRefCount;
-  struct WeakRefOwner
-  {
-    void** ownerObj;
-    CS::Threading::Mutex* ownerObjMutex;
-    
-    WeakRefOwner (void** p, CS::Threading::Mutex* mutex)
-      : ownerObj (p), ownerObjMutex (mutex) {}
-      
-    bool operator<(const WeakRefOwner& other) const
-    { return ownerObj < other.ownerObj; }
-    bool operator<(void** other) const
-    { return ownerObj < other; }
-    friend bool operator<(void** o1, const WeakRefOwner& o2)
-    { return o1 < o2.ownerObj; }
-  };
-  typedef csArray<WeakRefOwner,
-    csArrayElementHandler<WeakRefOwner>,
+  typedef csArray<void**,
+    csArrayElementHandler<void**>,
     CS::Memory::AllocatorMalloc,
     csArrayCapacityLinear<csArrayThresholdFixed<4> > > WeakRefOwnerArray;
   WeakRefOwnerArray* scfWeakRefOwners;
@@ -370,7 +355,7 @@ protected:
   virtual void IncRef ();
   virtual void DecRef ();
   virtual int GetRefCount ();
-  virtual void AddRefOwner (void** ref_owner, CS::Threading::Mutex* mutex);
+  virtual void AddRefOwner (void** ref_owner);
   virtual void RemoveRefOwner (void** ref_owner);
   scfInterfaceMetadataList* GetInterfaceMetadata () { return 0; }
   virtual void *QueryInterface (scfInterfaceID iInterfaceID, int iVersion);
@@ -445,8 +430,7 @@ scfFactory::~scfFactory ()
   {
     for (size_t i = 0; i < scfWeakRefOwners->GetSize (); i++)
     {
-      const WeakRefOwner& wro ((*scfWeakRefOwners)[i]);
-      void** p = wro.ownerObj;
+      void** p = (*scfWeakRefOwners)[i];
       *p = 0;
     }
     delete scfWeakRefOwners;
@@ -520,11 +504,11 @@ void scfFactory::DecRef ()
   }
 }
 
-void scfFactory::AddRefOwner (void** ref_owner, CS::Threading::Mutex* mutex)
+void scfFactory::AddRefOwner (void** ref_owner)
 {
   if (!scfWeakRefOwners)						
     scfWeakRefOwners = new WeakRefOwnerArray (0, 4);			
-  scfWeakRefOwners->InsertSorted (WeakRefOwner (ref_owner, mutex));				
+  scfWeakRefOwners->InsertSorted (ref_owner);				
 }
 
 void scfFactory::RemoveRefOwner (void** ref_owner)
@@ -532,7 +516,7 @@ void scfFactory::RemoveRefOwner (void** ref_owner)
   if (!scfWeakRefOwners)						
     return;
   size_t index = scfWeakRefOwners->FindSortedKey (			
-    csArrayCmp<WeakRefOwner, void**> (ref_owner)); 				
+    csArrayCmp<void**, void**> (ref_owner)); 				
   if (index != csArrayItemNotFound) scfWeakRefOwners->DeleteIndex (	
     index); 								
 }
@@ -1014,11 +998,7 @@ iBase *csSCF::CreateInstance (const char *iClassID)
  
   } /* endif */
 
-  /* Aggressively unload modules in debug mode, as this can trigger crashes
-   * when a plugin is released too early. */
-#ifdef CS_DEBUG
   UnloadUnusedModules ();
-#endif
 
   return object;
 }

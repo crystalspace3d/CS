@@ -118,6 +118,15 @@ bool SelfShadowDemo::OnKeyboard (iEvent &ev)
     // Load next scene
     else if (csKeyEventHelper::GetCookedCode (&ev) == 'n')
     {
+      // manually clear engine - not removing mesh factories
+      engine->GetMeshes()->RemoveAll();
+      engine->GetCameraPositions()->RemoveAll();
+      engine->GetSectors()->RemoveAll();
+      engine->GetMaterialList()->RemoveAll();
+      engine->GetTextureList()->RemoveAll();
+      engine->GetVariableList()->RemoveAll();
+      engine->QueryObject()->ObjRemoveAll ();
+
       sceneNumber = ( sceneNumber + 1 ) % numberOfScenes;
       CreateScene();
       return true;
@@ -232,13 +241,13 @@ bool SelfShadowDemo::CreateScene ()
     return false;
   }
   // Available scenes
-  char *worlds[] = {"world_krystal", "world", "world_tree", 
-    "world_grass", "world_grass_small", "world_grass_big"};
+  char *worlds[] = {"world_krystal", "world", "world_tree", "world_grass", 
+    "world_grass_small", "world_grass_big", "world_hair", "world_fur"};
 
   // Load scene
   printf ("Loading level...\n");
   vfs->ChDir ("/lev/selfshadow");
-  if (!loader->LoadMapFile (worlds[sceneNumber]))
+  if (!loader->LoadMapFile (worlds[sceneNumber], false))
     ReportError("Error couldn't load level!");
 
   // Load krystal

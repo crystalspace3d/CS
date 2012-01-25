@@ -680,7 +680,7 @@ struct iJoint : public virtual iBase
  * A callback to be implemented when you are using kinematic bodies. If no
  * callback are provided then the dynamic system will use a default one which
  * will update the transform of the body from the position of the attached
- * movable (see iRigidBody::AttachMovable()).
+ * movable (see iCollisionObject::SetAttachedMovable()).
  * \sa CS::Physics2::iRigidBody::SetKinematicCallback()
  */
 struct iKinematicCallback : public virtual iBase

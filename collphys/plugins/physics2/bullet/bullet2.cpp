@@ -1309,7 +1309,7 @@ void csBulletSector::UpdateCollisionPortals ()
         csVector3 orien1 = newPosition - portals[i]->portal->GetWorldSphere ().GetCenter ();
         csVector3 orien2 = oldPosition - portals[i]->portal->GetWorldSphere ().GetCenter ();
         float a = orien1 * portals[i]->portal->GetWorldPlane ().GetNormal ();
-        float b = orien2 * portals[i]->portal->GetWorldPlane ().GetNormal ();
+        //float b = orien2 * portals[i]->portal->GetWorldPlane ().GetNormal ();
         if ( a >= 0)
         {
           transform = transform * portals[i]->warpTrans;

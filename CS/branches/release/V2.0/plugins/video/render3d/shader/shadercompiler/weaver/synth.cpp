@@ -252,7 +252,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       
         csSet<csString> techConditions;
 	TagNodesHelper techTags;
-	bool aPassSucceeded = false;
+	bool allPassesSucceeded = false;
 	csRef<iDocumentNode> firstTechNode;
 	for (size_t p = 0; p < synthTechs[t].GetSize(); p++)
 	{
@@ -291,12 +291,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	#else
 	  synthTech->Run();
 	#endif
-	  if (!synthTech->GetStatus())
+	  if (!synthTech->GetStatus().status)
+          {
 	    techniqueNode->RemoveNode (passNode);
+            if (compiler->annotateCombined && !synthTech->GetStatus().message.IsEmpty())
+            {
+              csRef<iDocumentNode> messageNode (
+                shaderNode->CreateNodeBefore (CS_NODE_COMMENT));
+              messageNode->SetValue (synthTech->GetStatus().message);
+            }
+            allPassesSucceeded = false;
+          }
 	  else
 	  {
 	    synthTech->WriteToPass (passNode);
-	    aPassSucceeded = true;
+            if (p == 0)
+              allPassesSucceeded = true;
 	    
 	    const char* techCond = synthTech->GetTechniqueConditions();
 	    if (techCond && *techCond)
@@ -304,7 +314,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	    techTags.Merge (synthTech->GetTags());
 	  }
 	}
-	if (!aPassSucceeded)
+	if (!allPassesSucceeded)
 	  shaderNode->RemoveNode (techniqueNode);
 	else
 	{
@@ -348,7 +358,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
     }
   }
   
-  bool Synthesizer::SynthesizeTechnique::operator() (
+  Synthesizer::SynthesizeTechnique::Result Synthesizer::SynthesizeTechnique::operator() (
     ShaderVarNodesHelper& shaderVarNodes, iDocumentNode* errorNode,
     const Snippet* snippet, const TechniqueGraph& techGraph)
   {
@@ -480,6 +490,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
      *
      * (1) "Suitable" means a coercion exists.
      */
+    Result synthResult (true);
     {
       typedef csHash<size_t, csString> TaggedInputHash;
       csArray<EmittedInput> emitInputs;
@@ -879,7 +890,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
         GetAnnotation ("Map depth output"));
     }
     
-    return true;
+    return synthResult;
   }
   
   bool Synthesizer::SynthesizeTechnique::FindOutput (const TechniqueGraph& graph,

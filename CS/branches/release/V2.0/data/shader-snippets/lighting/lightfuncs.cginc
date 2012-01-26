@@ -205,7 +205,7 @@ struct LightDirectional : Light
   half GetAttenuation() { return 1; }
 };
 
-// Directional light
+// Point light
 struct LightPoint : Light
 {
   half3 dir;
@@ -218,7 +218,7 @@ struct LightPoint : Light
   half GetAttenuation() { return 1; }
 };
 
-// Directional light
+// Spot light
 struct LightSpot : Light
 {
   half3 dir;

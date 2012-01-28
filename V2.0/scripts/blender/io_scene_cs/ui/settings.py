@@ -83,8 +83,7 @@ class B2CS_OT_export_run(bpy.types.Operator):
 
 @rnaType
 class RENDER_PT_csSettingsPanel(csSettingsPanel, bpy.types.Panel):
-  bl_label = "Crystal Space scene"
-  bl_options = {'HIDE_HEADER'}
+  bl_label = "Crystal Space Export"
   
   def draw(self, context):
     layout = self.layout
@@ -108,7 +107,7 @@ class RENDER_PT_csSettingsPanel(csSettingsPanel, bpy.types.Panel):
       row = layout.row()
       row.prop(B2CS.properties, "silent")
     else:
-      row.label(text="Walktest isn't available!")
+      row.label(text="'walktest' isn't available!")
       
         
 default_path = os.environ.get("TEMP")
@@ -125,13 +124,13 @@ B2CS.StringProperty( attr="exportPath",
         description="Export path", default=default_path, subtype='DIR_PATH')
         
 B2CS.BoolProperty( attr="console",
-        name="console",
-        description="Enable console", default=True)
+        name="Console",
+        description="Enable the '-console' flag of 'walktest'", default=True)
         
 B2CS.BoolProperty( attr="verbose",
-        name="verbose",
-        description="Enable verbose", default=True)
-        
+        name="Verbose",
+        description="Enable the '-verbose=-scf' flag of 'walktest'", default=True)
+
 B2CS.BoolProperty( attr="silent",
-        name="silent",
-        description="Enable silent", default=True)
+        name="Silent",
+        description="Enable the '-silent' flag of 'walktest'", default=True)

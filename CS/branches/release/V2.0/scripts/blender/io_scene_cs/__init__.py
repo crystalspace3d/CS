@@ -1,16 +1,16 @@
-__all__ = ["ui", "oi", "utilities", "B2CS"]
+__all__ = ["ui", "oi", "utilities"]
 
 bl_info = {
     "name": "Export Crystal Space 3D format",
     "description": "Export meshes, scenes and animations",
-    "author": "Crystal Space team",
+    "author": "The Crystal Space team",
     "version": (1, 0),
     "blender": (2, 5, 9),
     "api": 36079,   # TODO
     "location": "The main panel is in 'Properties > Render'",
     "warning": "",
     "wiki_url": "http://www.crystalspace3d.org/docs/online/manual/Blender.html",  # TODO
-    "tracker_url": "http://crystalspace3d.org/trac/CS/report"
+    "tracker_url": "http://crystalspace3d.org/trac/CS/report",
     "category": "Import-Export"}
 
 import bpy

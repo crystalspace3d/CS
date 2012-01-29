@@ -6,13 +6,38 @@
 This section documents the major changes between versions 1.4 and 2.0 of
 Crystal Space.
 
-@menu
-* Api2_0 Static Build Plugin Scanning:: Plugin scanning in static builds changes
-@end menu
+Version 2.0 is a major release. As such, not all changes are documented.  Below
+details the major changes since the last release.
 
-@node Api2_0 Static Build Plugin Scanning, , Release Notes 2_0, Release Notes 2_0
-@subsection Plugin scanning in static builds changes
+@strong{API changes:}
 
+@itemize @bullet
+
+@item
+xxx
+@end itemize
+
+@strong{New features:}
+
+@itemize @bullet
+
+@item
+xxx
+@end itemize
+
+@strong{Fixes that apply to tickets in Trac:}
+
+@itemize @bullet
+
+@item
+xxx
+@end itemize
+
+@strong{Other changes:}
+
+@itemize @bullet
+
+@item
 When building an application with ``statically linked plugins'' (usually by
 utilizing the @samp{LinkStaticPlugins} Jam rule) @sc{scf}'s automatic scanning
 for plugins was ``magically'' inhibited. This behaviour has been abandoned; now,
@@ -20,3 +45,4 @@ by default plugin scanning is always performed independently of whether
 statically linked plugins are used or not. Plugin scanning can be inhibited by
 calling @code{scfInitialize} manually (see the API documentation for details
 how).
+@end itemize

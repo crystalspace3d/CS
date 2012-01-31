@@ -19,6 +19,12 @@ indices).
 
 @item
 Removed CS_CONST_METHOD and CS_PURE_METHOD. pure and const specifiers have very strong semantics that almost never is warranted, and to avoid problems and bugs caused by them remove them totally.
+
+@item
+Addition new SimpleStaticLighter class. This is a conveniance class that
+calculates simple static vertex lighting (similar to what lighter2 would do)
+for individual meshes. This is useful for statically lighting dynamically
+created geometry or for updating vertex lighting on an object that has moved.
 @end itemize
 
 @strong{New features/Enhancements:}
@@ -52,11 +58,18 @@ blends between two states or state and transition animation.
 
 @item
 Added state transitions animations to the skeleton2 loader.
+
+@item
+Added [no]compact option to optimisedata, to put all data into one file
+(or split into many).
 @end itemize
 
 @strong{Removals:}
 
 @itemize @bullet
+
+@item
+Completed removal of software renderer.
 
 @item
 Completed removal of old event system.
@@ -72,6 +85,15 @@ Completed removal of deprecated world attributes from tree.
 
 @item
 @file{simpvs} and @file{csdemo} have been removed.
+
+@item
+Large cleanup of lighting code which has resulted in removal of both
+interfaces and other methods. A result was a complete rework of lighting
+code.
+
+@item
+Removal of instmesh and bezier meshes as they are really not that useful
+and instmesh isn't working that well either.
 @end itemize
 
 @strong{Fixes that apply to tickets in Trac:}
@@ -94,6 +116,13 @@ render manager, renderers and shaders. These are too numerous to mention.
 @item
 There has been many additions, fixes and other work performed on the configure
 system. Too numerous to mention.
+
+@item
+There have been many fixes and updates for platform support. Too numerous
+to mention.
+
+@item
+@file{perl} and @file{java} plugins are now disabled by default.
 
 @item
 When building an application with ``statically linked plugins'' (usually by

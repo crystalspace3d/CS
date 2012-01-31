@@ -17,17 +17,40 @@ details the major changes since the last release.
 xxx
 @end itemize
 
-@strong{New features:}
+@strong{New features/Enhancements:}
 
 @itemize @bullet
 
 @item
-xxx
+Made memory blocks dump more useful in ptmalloc.
+
+@item
+Addition of leak guarding to animesh.
+
+@item
+Added copy constructors to csRefCount/FastRefCount that properly set the
+refcount to 1.
+
+@item
+Made generic render step provide inverse object to world TF as a SV.
+
+@item
+Extended csFIFO with a Top() method that peeks into the fifo without removing
+anything. Agumented the FSM node with possibility to specify transition
+animations between two states as well as the possibility to do smooth cross
+blends between two states or state and transition animation.
+
+@item
+Added state transitions animations to the skeleton2 loader.
 @end itemize
 
 @strong{Fixes that apply to tickets in Trac:}
 
 @itemize @bullet
+
+@item
+Changed XMLshader to expand all templates before retaining nodes for later
+parsing. Should help with #486.
 
 @item
 xxx
@@ -45,4 +68,22 @@ by default plugin scanning is always performed independently of whether
 statically linked plugins are used or not. Plugin scanning can be inhibited by
 calling @code{scfInitialize} manually (see the API documentation for details
 how).
+
+@item
+Mixmode fixes.
+
+@item
+parallaxAtt moved to 'shader-old'.
+
+@item
+Added a check to the legacy renderbuffer so that it removes the CS_BUFFER_COLOR user renderbuffer if colors are not set.
+
+@item
+Changed to unshadowed render manager as default.
+
+@item
+Disabled high DPI scaling on Windows Vista.
+
+@item
+Un-inline most 'csPathsList' methods to avoid cross-module memory allocs/frees.
 @end itemize

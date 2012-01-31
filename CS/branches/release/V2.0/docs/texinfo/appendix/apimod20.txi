@@ -32,6 +32,14 @@ created geometry or for updating vertex lighting on an object that has moved.
 @itemize @bullet
 
 @item
+New apps added. @file{csbias}, @file{deferreddemo}, @file{island},
+@file{waterdemo2}, @file{shadertut}. Please look for others in the
+@file{apps} directory.
+
+@item
+New level and data added. Please look within the @file{data} directory.
+
+@item
 Threading has been extended and improved.
 
 @item
@@ -123,6 +131,10 @@ to mention.
 
 @item
 @file{perl} and @file{java} plugins are now disabled by default.
+
+@item
+There has been many updates and fixes to the documentation. Too numerous
+to mention.
 
 @item
 When building an application with ``statically linked plugins'' (usually by

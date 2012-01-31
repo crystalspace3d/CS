@@ -92,6 +92,10 @@ Added state transitions animations to the @file{skeleton2} loader.
 @item
 Added [no]compact option to @file{optimisedata}, to put all data into
 one file (or split into many).
+
+@item
+Added new blender 2.6 export scripts. These are under development and
+all feedback will be appreciated.
 @end itemize
 
 @strong{Removals:}

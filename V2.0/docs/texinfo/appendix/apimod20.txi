@@ -14,12 +14,22 @@ details the major changes since the last release.
 @itemize @bullet
 
 @item
-xxx
+Added csBitArray::IsBitSetTolerant() (does not assert for out of bound
+indices).
+
+@item
+Removed CS_CONST_METHOD and CS_PURE_METHOD. pure and const specifiers have very strong semantics that almost never is warranted, and to avoid problems and bugs caused by them remove them totally.
 @end itemize
 
 @strong{New features/Enhancements:}
 
 @itemize @bullet
+
+@item
+Threading has been extended and improved.
+
+@item
+Transition to preferred @file{bullet} for physics plugin underway.
 
 @item
 Made memory blocks dump more useful in ptmalloc.
@@ -44,6 +54,26 @@ blends between two states or state and transition animation.
 Added state transitions animations to the skeleton2 loader.
 @end itemize
 
+@strong{Removals:}
+
+@itemize @bullet
+
+@item
+Completed removal of old event system.
+
+@item
+Completed removal of thing plugin.
+
+@item
+Completed removal of old sound system.
+
+@item
+Completed removal of deprecated world attributes from tree.
+
+@item
+@file{simpvs} and @file{csdemo} have been removed.
+@end itemize
+
 @strong{Fixes that apply to tickets in Trac:}
 
 @itemize @bullet
@@ -51,9 +81,6 @@ Added state transitions animations to the skeleton2 loader.
 @item
 Changed XMLshader to expand all templates before retaining nodes for later
 parsing. Should help with #486.
-
-@item
-xxx
 @end itemize
 
 @strong{Other changes:}
@@ -61,16 +88,21 @@ xxx
 @itemize @bullet
 
 @item
+There has been many additions, fixes and other work performed on the
+render manager, renderers and shaders. These are too numerous to mention.
+
+@item
+There has been many additions, fixes and other work performed on the configure
+system. Too numerous to mention.
+
+@item
 When building an application with ``statically linked plugins'' (usually by
 utilizing the @samp{LinkStaticPlugins} Jam rule) @sc{scf}'s automatic scanning
-for plugins was ``magically'' inhibited. This behaviour has been abandoned; now,
-by default plugin scanning is always performed independently of whether
+for plugins was ``magically'' inhibited. This behaviour has been abandoned;
+now, by default plugin scanning is always performed independently of whether
 statically linked plugins are used or not. Plugin scanning can be inhibited by
 calling @code{scfInitialize} manually (see the API documentation for details
 how).
-
-@item
-Mixmode fixes.
 
 @item
 parallaxAtt moved to 'shader-old'.
@@ -86,4 +118,19 @@ Disabled high DPI scaling on Windows Vista.
 
 @item
 Un-inline most 'csPathsList' methods to avoid cross-module memory allocs/frees.
+
+@item
+Add a 'used SV' traverser that gives the set of used SVs (instead of individual SV names).
+
+@item
+Extensive removal of dead and old code.
+
+@item
+Optimisation @file{lighter2} by not doing transparency-computation of shadowrays if path is fully unoccluded or fully occluded.
+
+@item
+Support for (properly hardware-accelerated) clip planes.
+
+@item
+Packaging scripts have been moved from the scripts directory into a sub packaging directory.
 @end itemize

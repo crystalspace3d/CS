@@ -47,6 +47,15 @@ namespace CS
     CS_IMPLEMENT_STATIC_VAR(GetStrings, CS::Threading::ThreadLocal<QuoteStrings>, );
   } // anonymous namespace
   
+  // Helper function to get a string to store returned strings
+  static csStringBase& GetReturnString()
+  {
+    QuoteStrings& retStrings = *(GetStrings());
+    csStringBase& outStr = retStrings.strings[retStrings.n];
+    retStrings.n = (retStrings.n + 1) % numStrings;
+    return outStr;
+  }
+  
   void Quote::Single (csStringBase& out, const char* str)
   {
     out.Replace (LSQUO);
@@ -56,10 +65,34 @@ namespace CS
   
   const char* Quote::Single (const char* str)
   {
-    QuoteStrings& retStrings = *(GetStrings());
-    csStringBase& outStr = retStrings.strings[retStrings.n];
-    retStrings.n = (retStrings.n + 1) % numStrings;
+    csStringBase& outStr (GetReturnString());
     Single (outStr, str);
+    return outStr;
+  }
+  
+  void Quote::SingleLeft (csStringBase& out, const char* str)
+  {
+    out.Replace (LSQUO);
+    out.Append (str);
+  }
+  
+  const char* Quote::SingleLeft (const char* str)
+  {
+    csStringBase& outStr (GetReturnString());
+    SingleLeft (outStr, str);
+    return outStr;
+  }
+  
+  void Quote::SingleRight (csStringBase& out, const char* str)
+  {
+    out.Replace (str);
+    out.Append (RSQUO);
+  }
+  
+  const char* Quote::SingleRight (const char* str)
+  {
+    csStringBase& outStr (GetReturnString());
+    SingleRight (outStr, str);
     return outStr;
   }
   
@@ -72,10 +105,34 @@ namespace CS
   
   const char* Quote::Double (const char* str)
   {
-    QuoteStrings& retStrings = *(GetStrings());
-    csStringBase& outStr = retStrings.strings[retStrings.n];
-    retStrings.n = (retStrings.n + 1) % numStrings;
+    csStringBase& outStr (GetReturnString());
     Double (outStr, str);
+    return outStr;
+  }
+  
+  void Quote::DoubleLeft (csStringBase& out, const char* str)
+  {
+    out.Replace (LDQUO);
+    out.Append (str);
+  }
+  
+  const char* Quote::DoubleLeft (const char* str)
+  {
+    csStringBase& outStr (GetReturnString());
+    DoubleLeft (outStr, str);
+    return outStr;
+  }
+  
+  void Quote::DoubleRight (csStringBase& out, const char* str)
+  {
+    out.Replace (str);
+    out.Append (RDQUO);
+  }
+  
+  const char* Quote::DoubleRight (const char* str)
+  {
+    csStringBase& outStr (GetReturnString());
+    DoubleRight (outStr, str);
     return outStr;
   }
   

@@ -19,27 +19,18 @@
     <texture name="IntentionallyNotFound">
       <file>/appdata/defaultmap/textures/inexistentfile.jpg</file>
     </texture>
-    <texture name="red">
-      <color red="1" green="0" blue="0" />
-    </texture>
-    <texture name="green">
-      <color red="0" green="1" blue="0" />
-    </texture>
-    <texture name="blue">
-      <color red="0" green="0" blue="1" />
-    </texture>
   </textures>
 
   <materials>
-    <!-- Single color materials based on single color textures -->
+    <!-- Simple materials based on colors, which don't need textures -->
     <material name="red">
-      <texture>red</texture>
+      <color red="1" green="0" blue="0" />
     </material>
     <material name="green">
-      <texture>green</texture>
+      <color red="0" green="1" blue="0" />
     </material>
     <material name="blue">
-      <texture>blue</texture>
+      <color red="0" green="0" blue="1" />
     </material>
 
     <!-- Example material using texture file defined above -->

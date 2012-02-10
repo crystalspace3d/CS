@@ -2,12 +2,8 @@ import os
 
 import bpy
 
-#from io_scene_cs import B2CS
-
 from io_scene_cs.utilities import rnaType, rnaOperator, B2CS
-
 from io_scene_cs.utilities import RemovePanels, RestorePanels 
-
 from io_scene_cs.io import Export
 
 
@@ -89,25 +85,23 @@ class RENDER_PT_csSettingsPanel(csSettingsPanel, bpy.types.Panel):
     layout = self.layout
     
     row = layout.row()
-    
+    row.prop(B2CS.properties, "library")
     row = layout.row()
-    #row.prop(io_scene_cs.B2CS.properties, "exportPath")
     row.prop(B2CS.properties, "exportPath")
       
     row = layout.row()
     row.operator("io_scene_cs.export", text="Export")
       
     row = layout.row()
-    if HasCrystalSpace():
-      row.operator("io_scene_cs.export_run", text="Export and Run")
-      row = layout.row()
-      row.prop(B2CS.properties, "console")
-      row = layout.row()
-      row.prop(B2CS.properties, "verbose")
-      row = layout.row()
-      row.prop(B2CS.properties, "silent")
-    else:
-      row.label(text="'walktest' isn't available!")
+    if not B2CS.properties.library:
+      if HasCrystalSpace():
+        row.operator("io_scene_cs.export_run", text="Export and Run")
+        row = layout.row()
+        row.prop(B2CS.properties, "console")
+        row.prop(B2CS.properties, "verbose")
+        row.prop(B2CS.properties, "silent")
+      else:
+        row.label(text="'walktest' isn't available!")
       
         
 default_path = os.environ.get("TEMP")
@@ -134,3 +128,7 @@ B2CS.BoolProperty( attr="verbose",
 B2CS.BoolProperty( attr="silent",
         name="Silent",
         description="Enable the '-silent' flag of 'walktest'", default=True)
+
+B2CS.BoolProperty( attr="library",
+        name="Export as a CS library",
+        description="Export all mesh factories in a unique CS library file", default=False)

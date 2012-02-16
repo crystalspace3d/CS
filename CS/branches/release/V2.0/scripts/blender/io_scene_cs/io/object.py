@@ -177,14 +177,18 @@ class Hierarchy:
             meshData.append(obCpy)
             # Generate mapping buffers
             mapVert, mapBuf = ob.data.GetCSMappingBuffer()
-            numCSVertices = len(mapVert)
+            numCSVertices = 2*len(mapVert) if ob.data.show_double_sided else len(mapVert)
             # Generate submeshes
             subMeshess.append(ob.data.GetSubMeshes(ob.name,mapBuf,indexV))
             mappingBuffers.append(mapBuf)
             mappingVertices.append(mapVert)
-            print('number of CS vertices for mesh "%s" = %s'%(ob.name,numCSVertices))
             if animesh:
               indexV += numCSVertices
+
+            warning = "(WARNING: double sided mesh implies duplication of its vertices)" \
+                 if ob.data.show_double_sided else ""
+            print('number of CS vertices for mesh "%s" = %s  %s'%(ob.name,numCSVertices,warning))
+
         total += numCSVertices + Gets(children, indexV)
       return total
 
@@ -304,7 +308,7 @@ class Hierarchy:
 
       # Export sockets
       bones = self.object.data.bones
-      for boneName in socketList:
+      for boneName in socketList.keys():
         for socketObject in socketList[boneName]:
           bone = bones[boneName]
           bone.AsCSSocket(func, depth+4, socketObject, self.object)
@@ -383,13 +387,17 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
     name = kwargs['name']+':'+name
 
   if self.type == 'MESH':
-    func(' '*depth +'<meshref name="%s_object">'%(self.name))
-    func(' '*depth +'  <factory>%s</factory>'%(self.name))
-    matrix = self.relative_matrix
-    if 'transform' in kwargs:
-      matrix =  matrix * kwargs['transform']
-    MatrixAsCS(matrix, func, depth+2)
-    func(' '*depth +'</meshref>')
+    if len(self.data.vertices)!=0 and len(self.data.faces)!=0:
+      func(' '*depth +'<meshref name="%s_object">'%(self.name))
+      func(' '*depth +'  <factory>%s</factory>'%(self.name))
+      if self.parent and self.parent_type == 'BONE':
+        matrix = self.matrix_world
+      else:
+        matrix = self.relative_matrix
+        if 'transform' in kwargs:
+          matrix =  matrix * kwargs['transform']
+      MatrixAsCS(matrix, func, depth+2)
+      func(' '*depth +'</meshref>')
 
   elif self.type == 'ARMATURE':
     func(' '*depth +'<meshref name="%s_object">'%(name))

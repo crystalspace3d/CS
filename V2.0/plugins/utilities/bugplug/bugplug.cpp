@@ -1588,19 +1588,20 @@ static inline void DrawBox3D (iGraphics3D* G3D,
   csVector3 vXyZ = tr * box.GetCorner (CS_BOX_CORNER_XyZ);
   csVector3 vxYZ = tr * box.GetCorner (CS_BOX_CORNER_xYZ);
   csVector3 vXYZ = tr * box.GetCorner (CS_BOX_CORNER_XYZ);
-  float fov = G3D->GetPerspectiveAspect ();
-  G3D->DrawLine (vxyz, vXyz, fov, color);
-  G3D->DrawLine (vXyz, vXYz, fov, color);
-  G3D->DrawLine (vXYz, vxYz, fov, color);
-  G3D->DrawLine (vxYz, vxyz, fov, color);
-  G3D->DrawLine (vxyZ, vXyZ, fov, color);
-  G3D->DrawLine (vXyZ, vXYZ, fov, color);
-  G3D->DrawLine (vXYZ, vxYZ, fov, color);
-  G3D->DrawLine (vxYZ, vxyZ, fov, color);
-  G3D->DrawLine (vxyz, vxyZ, fov, color);
-  G3D->DrawLine (vxYz, vxYZ, fov, color);
-  G3D->DrawLine (vXyz, vXyZ, fov, color);
-  G3D->DrawLine (vXYz, vXYZ, fov, color);
+  const CS::Math::Matrix4& projection (G3D->GetProjectionMatrix ());
+  iGraphics2D* G2D = G3D->GetDriver2D ();
+  G2D->DrawLineProjected (vxyz, vXyz, projection, color);
+  G2D->DrawLineProjected (vXyz, vXYz, projection, color);
+  G2D->DrawLineProjected (vXYz, vxYz, projection, color);
+  G2D->DrawLineProjected (vxYz, vxyz, projection, color);
+  G2D->DrawLineProjected (vxyZ, vXyZ, projection, color);
+  G2D->DrawLineProjected (vXyZ, vXYZ, projection, color);
+  G2D->DrawLineProjected (vXYZ, vxYZ, projection, color);
+  G2D->DrawLineProjected (vxYZ, vxyZ, projection, color);
+  G2D->DrawLineProjected (vxyz, vxyZ, projection, color);
+  G2D->DrawLineProjected (vxYz, vxYZ, projection, color);
+  G2D->DrawLineProjected (vXyz, vXyZ, projection, color);
+  G2D->DrawLineProjected (vXYz, vXYZ, projection, color);
 }
 
 bool csBugPlug::HandleFrame (iEvent& /*event*/)
@@ -1684,7 +1685,7 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
     iRenderView* rview = shadow->GetView();
     iCamera* cam = rview->GetOriginalCamera();
     csTransform tr_w2c = cam->GetTransform ();
-    float fov = G3D->GetPerspectiveAspect ();
+    const CS::Math::Matrix4& projection (cam->GetProjectionMatrix ());
     bool do_bbox, do_rad, do_norm, do_skel;
     shadow->GetShowOptions (do_bbox, do_rad, do_norm, do_skel);
     G3D->BeginDraw (CSDRAW_2DGRAPHICS);
@@ -1722,13 +1723,12 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
         csVector3 r, center;
         selected_meshes[k]->GetMeshObject ()->GetObjectModel ()
 		->GetRadius (radius,center);
-        csVector3 trans_o = tr_o2c * center;
         r.Set (radius, 0, 0);
-        G3D->DrawLine (trans_o-r, trans_o+r, fov, rad_color);
+        G2D->DrawLineProjected (tr_o2c * (center-r), tr_o2c * (center+r), projection, rad_color);
         r.Set (0, radius, 0);
-        G3D->DrawLine (trans_o-r, trans_o+r, fov, rad_color);
+        G2D->DrawLineProjected (tr_o2c * (center-r), tr_o2c * (center+r), projection, rad_color);
         r.Set (0, 0, radius);
-        G3D->DrawLine (trans_o-r, trans_o+r, fov, rad_color);
+        G2D->DrawLineProjected (tr_o2c * (center-r), tr_o2c * (center+r), projection, rad_color);
       }
       if (do_norm)
       {
@@ -1792,16 +1792,16 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
                   (fabsf (n.Norm() - 1.0f) < EPSILON) ? norm_color : denorm_color;
                 // @@@ FIXME: Should perhaps be configurable
                 const float normScale = 0.5f; 
-                G3D->DrawLine (p, p+n*normScale, fov, color);
+                G2D->DrawLineProjected (p, p+n*normScale, projection, color);
                 if (tangents != 0)
                 {
                   csVector3 tng = tr_o2c.Other2ThisRelative ((*tangents)[tri[t]]);
-                  G3D->DrawLine (p, p+tng*normScale, fov, tang_color);
+                  G2D->DrawLineProjected (p, p+tng*normScale, projection, tang_color);
                 }
                 if (bitangents != 0)
                 {
                   csVector3 bit = tr_o2c.Other2ThisRelative ((*bitangents)[tri[t]]);
-                  G3D->DrawLine (p, p+bit*normScale, fov, bitang_color);
+                  G2D->DrawLineProjected (p, p+bit*normScale, projection, bitang_color);
                 }
               }
             }
@@ -1877,7 +1877,7 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
           csVector3 endGlobal = v + q.Rotate (endLocal);
           csVector3 ge = tr_o2c * endGlobal;
 
-          G3D->DrawLine (gs, ge, fov, bone_color);
+          G2D->DrawLineProjected (gs, ge, projection, bone_color);
         }
       }
       if (show_polymesh != BUGPLUG_POLYMESH_NO)
@@ -1937,9 +1937,9 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
 	  for (i = 0 ; i < pocount ; i++)
 	  {
 	    csTriangle& tri = po[i];
-            G3D->DrawLine (vtt[tri.a], vtt[tri.c], fov, pm_color);
-            G3D->DrawLine (vtt[tri.b], vtt[tri.a], fov, pm_color);
-            G3D->DrawLine (vtt[tri.c], vtt[tri.b], fov, pm_color);
+            G2D->DrawLineProjected (vtt[tri.a], vtt[tri.c], projection, pm_color);
+            G2D->DrawLineProjected (vtt[tri.b], vtt[tri.a], projection, pm_color);
+            G2D->DrawLineProjected (vtt[tri.c], vtt[tri.b], projection, pm_color);
 	  }
           delete[] vtt;
         }

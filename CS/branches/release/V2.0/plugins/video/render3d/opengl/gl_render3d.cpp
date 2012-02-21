@@ -1704,43 +1704,8 @@ void csGLGraphics3D::DrawLine (const csVector3 & v1, const csVector3 & v2,
 	float fov, int color)
 {
   SwapIfNeeded();
-
-  if (v1.z < SMALL_Z && v2.z < SMALL_Z)
-    return;
-
-  float x1 = v1.x, y1 = v1.y, z1 = v1.z;
-  float x2 = v2.x, y2 = v2.y, z2 = v2.z;
-
-  if (z1 < SMALL_Z)
-  {
-    // x = t*(x2-x1)+x1;
-    // y = t*(y2-y1)+y1;
-    // z = t*(z2-z1)+z1;
-    float t = (SMALL_Z - z1) / (z2 - z1);
-    x1 = t * (x2 - x1) + x1;
-    y1 = t * (y2 - y1) + y1;
-    z1 = SMALL_Z;
-  }
-  else if (z2 < SMALL_Z)
-  {
-    // x = t*(x2-x1)+x1;
-    // y = t*(y2-y1)+y1;
-    // z = t*(z2-z1)+z1;
-    float t = (SMALL_Z - z1) / (z2 - z1);
-    x2 = t * (x2 - x1) + x1;
-    y2 = t * (y2 - y1) + y1;
-    z2 = SMALL_Z;
-  }
-  float iz1 = fov / z1;
-  int px1 = csQint (x1 * iz1 + (viewwidth / 2));
-  int py1 = viewheight - 1 - csQint (y1 * iz1 + (viewheight / 2));
-  float iz2 = fov / z2;
-  int px2 = csQint (x2 * iz2 + (viewwidth / 2));
-  int py2 = viewheight - 1 - csQint (y2 * iz2 + (viewheight / 2));
-
-  G2D->DrawLine (px1, py1, px2, py2, color);
+  G2D->DrawLineProjected (v1, v2, fov, color);
 }
-
 
 bool csGLGraphics3D::ActivateBuffers (csRenderBufferHolder *holder, 
                                       csRenderBufferName mapping[CS_VATTRIB_SPECIFIC_LAST+1])

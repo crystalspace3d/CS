@@ -17,6 +17,8 @@ def SceneDependencies(self):
   dependencies = EmptyDependencies()
 
   for ob in self.objects:
+    if not ob.IsExportable():
+      continue
     merge = False
     for group in ob.users_group:
       if group.doMerge:
@@ -34,7 +36,7 @@ bpy.types.Scene.GetDependencies = SceneDependencies
 def SceneAsCS(self, func, depth=0):
   """ Write an xml decription of this scene: it is exported as a CS sector
       with a reference to all mesh, armature, group, lamp and portal objects
-      contained in this scene
+      contained in this scene (no reference to cameras and socket objects)
   """
   func(' '*depth +'<sector name="%s">'%(self.uname))
 
@@ -42,8 +44,9 @@ def SceneAsCS(self, func, depth=0):
   objects = self.PortalsAsCS(func, depth)
 
   # Export lamps and objects (as instancies of factories)
-  for ob in [o for o in self.objects if o.type != 'CAMERA']:    
-    if not ob.parent or (ob.parent and ob.parent_type == 'BONE'):
+  for ob in [o for o in self.objects \
+               if o.type!='CAMERA' and o.parent_type!='BONE']:
+    if ob.IsExportable():
       if ob not in objects:
         group = ob.hasMergingGroup()
         if group:
@@ -83,6 +86,10 @@ def PortalsAsCS(self, func, depth=0):
   portals = []
   for ob in [o for o in self.objects if o.type=='MESH' and o.data.portal]:
     portals.append(ob)
+    # Check if the portal is visible
+    if ob.hide:
+      continue
+
     # Check if the portal defines vertices
     if len(ob.data.vertices) == 0:
       print("\nWARNING: portal '%s' not exported: this mesh has no vertex"%(ob.name))
@@ -147,11 +154,11 @@ bpy.types.Scene.PortalsAsCS = PortalsAsCS
 
 
 def GetCameras(self):
-  """ Get a list of all cameras of this scene
+  """ Get a list of all visible cameras of this scene
   """
   cameras = {}
   for ob in self.objects:
-    if ob.type == 'CAMERA':
+    if ob.type == 'CAMERA' and not ob.hide:
       cameras[ob.uname] = {'scene': self, 'camera': ob}
   return cameras
 

@@ -6,6 +6,7 @@ from .transform import *
 from .renderbuffer import *
 from .morphtarget import *
 from .material import *
+from io_scene_cs.utilities import B2CS
 
 
 class Hierarchy:
@@ -32,9 +33,8 @@ class Hierarchy:
     return "hier" + str(self.id)
 
   def AsCSRef(self, func, depth=0, dirName='factories/'):
-    if self.object.type == 'ARMATURE' and self.object.data.bones:
-      func(' '*depth +'<library>%s%s_rig</library>'%(dirName,self.object.name))
-    func(' '*depth +'<library>%s%s</library>'%(dirName,self.object.name))
+    if self.object.parent_type != 'BONE':
+      func(' '*depth +'<library>%s%s</library>'%(dirName,self.object.name))
 
   def GetDependencies(self):
     dependencies = EmptyDependencies()
@@ -148,6 +148,7 @@ class Hierarchy:
     subMeshess = []
     mappingBuffers = []
     mappingVertices = []
+    mappingNormals = []
     scales = []
     objects = self.Get()
 
@@ -170,23 +171,26 @@ class Hierarchy:
                and ob.parent_type != 'BONE':
               # If the mesh is child of another object (i.e. an armature in case of 
               # animesh export and a mesh in case of genmesh export), transform the 
-              # copied object to its world position
+              # copied object relatively to its parent
               obCpy = ob.GetTransformedCopy(ob.relative_matrix)
             else:
               obCpy = ob.GetTransformedCopy()
             meshData.append(obCpy)
             # Generate mapping buffers
-            mapVert, mapBuf = ob.data.GetCSMappingBuffer()
-            numCSVertices = 2*len(mapVert) if ob.data.show_double_sided else len(mapVert)
+            mapVert, mapBuf, norBuf = ob.data.GetCSMappingBuffers()
+            numCSVertices = len(mapVert)
+            if B2CS.properties.enableDoublesided and ob.data.show_double_sided:
+              numCSVertices = 2*len(mapVert)
             # Generate submeshes
             subMeshess.append(ob.data.GetSubMeshes(ob.name,mapBuf,indexV))
             mappingBuffers.append(mapBuf)
             mappingVertices.append(mapVert)
+            mappingNormals.append(norBuf)
             if animesh:
               indexV += numCSVertices
 
             warning = "(WARNING: double sided mesh implies duplication of its vertices)" \
-                 if ob.data.show_double_sided else ""
+                if B2CS.properties.enableDoublesided and ob.data.show_double_sided else ""
             print('number of CS vertices for mesh "%s" = %s  %s'%(ob.name,numCSVertices,warning))
 
         total += numCSVertices + Gets(children, indexV)
@@ -200,20 +204,24 @@ class Hierarchy:
     if not animesh:
       def Export(objs, d):
         for ob, children in objs:
-          indexObject = find(lambda obCpy: obCpy.name[:-4] == ob.name[:len(obCpy.name[:-4])], meshData)
-          lib = "from library '%s'"%(bpy.path.abspath(ob.library.filepath)) if ob.library else ''
-          print('EXPORT factory "%s" %s'%(ob.name, lib))
-          args = copy.deepcopy(kwargs)
-          args['meshData'] = [meshData[indexObject]]
-          args['subMeshes'] = subMeshess[indexObject]
-          args['mappingBuffers'] = [mappingBuffers[indexObject]]
-          args['mappingVertices'] = [mappingVertices[indexObject]]
-          args['scales'] = [scales[indexObject]]
-          args['dontClose'] = True
-          ob.AsCSGenmeshLib(func, d, **args)
+          export = (ob.type == 'MESH' and not ob.hide)
+          if export:
+            indexObject = find(lambda obCpy: obCpy.name[:-4] == ob.name[:len(obCpy.name[:-4])], meshData)
+            lib = "from library '%s'"%(bpy.path.abspath(ob.library.filepath)) if ob.library else ''
+            print('EXPORT mesh "%s" %s'%(ob.name, lib))
+            args = copy.deepcopy(kwargs)
+            args['meshData'] = [meshData[indexObject]]
+            args['subMeshes'] = subMeshess[indexObject]
+            args['mappingBuffers'] = [mappingBuffers[indexObject]]
+            args['mappingVertices'] = [mappingVertices[indexObject]]
+            args['mappingNormals'] = [mappingNormals[indexObject]]
+            args['scales'] = [scales[indexObject]]
+            args['dontClose'] = True
+            ob.AsCSGenmeshLib(func, d, **args)
           Export(children, d+2)
-          func(" "*d + "</meshfact>")
-
+          if export:
+            func(" "*d + "</meshfact>")
+          
       Export([objects], depth)
 
     # Export meshes as a CS animated mesh factory
@@ -223,6 +231,7 @@ class Hierarchy:
       args['subMeshess'] = subMeshess
       args['mappingBuffers'] = mappingBuffers
       args['mappingVertices'] = mappingVertices
+      args['mappingNormals'] = mappingNormals
       args['scales'] = scales
       self.AsCSAnimeshLib(func, depth, totalVertices, dontClose, **args)
 
@@ -428,12 +437,82 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
 
     #Handle children: translate to top level.
     for obj in self.children:
-      obj.AsCS(func, depth, transform=self.relative_matrix, name=self.uname)
+      if not obj.hide:
+        obj.AsCS(func, depth, transform=self.relative_matrix, name=self.uname)
 
   elif self.type != 'CAMERA':
     print('\nWARNING: Object "%s" of type "%s" is not supported!'%(self.name, self.type))
 
 bpy.types.Object.AsCS = ObjectAsCS
+
+
+def IsExportable(self):
+  """ Check if this object can be exported
+  """
+  # Hidden objects are never exported
+  # (except for empty objects, which are composed of other objects)
+  if self.hide and self.type != 'EMPTY':
+    return False
+
+  # Armature objects are exported if at least one of 
+  # its child meshes is visible
+  if self.type == 'ARMATURE':
+    for child in self.children:
+      if child.parent_type != 'BONE' and not child.hide:
+        return True
+    return False
+
+  # Mesh objects are exported as individual mesh factories if 
+  # - they are not submeshes of a visible armature,
+  # - they are not submeshes of a visible mesh,
+  # - they are not portals, 
+  # - they have a non null number of vertices and faces,
+  # - they are socket objects
+  if self.type == 'MESH':
+    def IsChildOfExportedFactory(ob):
+      ''' Test if ob is child of a visible mesh or armature
+          (and not linked by a socket to a bone)
+      '''
+      if ob.parent_type=='BONE' and ob.parent_bone:
+        return False
+      if ob.parent:
+        return (ob.parent.type=='ARMATURE' and not ob.parent.hide) or \
+               (ob.parent.type=='MESH' and not ob.parent.hide)
+      return False
+
+    if not IsChildOfExportedFactory(self) and not self.data.portal \
+          and len(self.data.vertices)!=0 and len(self.data.faces)!=0:
+      return True
+    return False      
+
+  # The export of Empty objects depends of their componants
+  if self.type == 'EMPTY':
+    # Groups of objects are exported if the group itself and 
+    # all its composing elements are visible
+    if self.dupli_type=='GROUP' and self.dupli_group:
+      if self.hide or not self.dupli_group.CheckVisibility():
+        return False
+
+      # Check if this group is part of a merging group
+      mergingGroup = self.hasMergingGroup()
+      if mergingGroup:
+        # This group is exported only if all objects of the
+        # merging group are visible
+        for gr in mergingGroup.objects:
+          if gr != self:
+            if gr.hide:
+              return False
+            if not gr.dupli_group.CheckVisibility():
+              return False
+    else:
+      # Empty objects which are not groups are not exported
+      # (notice that each of their componants can be individually exported)
+      return False
+
+  # All other types of objects are always exportable (if they are visible)
+  return True
+
+bpy.types.Object.IsExportable = IsExportable
 
 
 def ObjectDependencies(self, empty=None):
@@ -448,36 +527,20 @@ def ObjectDependencies(self, empty=None):
       hier = Hierarchy(self, empty)
       print('ObjectDependencies: ', hier.uname, '-', self.name)
       dependencies['A'][hier.uname] = hier
-      for child in self.children:
-        if child.parent_type != 'BONE':
-          MergeDependencies(dependencies, child.GetDependencies())
+      MergeDependencies(dependencies, self.GetMaterialDependencies())
 
   elif self.type == 'MESH':
-    def IsAnimeshSubmesh(ob):
-      ''' Test if ob is child of an armature
-          (and not linked by a socket to a bone)
-      '''
-      if ob.parent_type=='BONE' and ob.parent_bone:
-        return False
-      if ob.parent:
-        return IsAnimeshSubmesh(ob.parent)
-      return ob.type=='ARMATURE'
-
-    # Mesh without any vertex or face and submesh of animesh
-    # will not be exported as individual mesh factory
-    if not IsAnimeshSubmesh(self) and not self.data.portal \
-          and len(self.data.vertices)!=0 and len(self.data.faces)!=0:
-      if self.data.shape_keys:
-        # Mesh with morph targets ==> 'A' type (animesh)
-        hier = Hierarchy(self, empty)
-        print('ObjectDependencies: ', hier.uname, '-', self.name)
-        dependencies['A'][hier.uname] = hier      
-      else:
-        # Mesh without skeleton neither morph target 
-        # or child of a bone (attached by socket) ==> 'F' type (genmesh)
-        hier = Hierarchy(self, empty)
-        print('ObjectDependencies: ', hier.uname, '-', self.name)
-        dependencies['F'][hier.uname] = hier
+    if self.data.shape_keys:
+      # Mesh with morph targets ==> 'A' type (animesh)
+      hier = Hierarchy(self, empty)
+      print('ObjectDependencies: ', hier.uname, '-', self.name)
+      dependencies['A'][hier.uname] = hier
+    else:
+      # Mesh without skeleton neither morph target 
+      # or child of a bone (attached by socket) ==> 'F' type (genmesh)
+      hier = Hierarchy(self, empty)
+      print('ObjectDependencies: ', hier.uname, '-', self.name)
+      dependencies['F'][hier.uname] = hier
 
     # Material of the mesh ==> 'M' type
     # Associated textures  ==> 'T' type
@@ -502,24 +565,25 @@ def GetMaterialDeps(self):
   """ Get materials and textures associated with this object
   """
   dependencies = EmptyDependencies()
-  foundDiffuseTexture = False
-  for mat in self.materials:
+  if self.type == 'MESH':
+    foundDiffuseTexture = False
     # Material of the mesh ==> 'M' type
     # and associated textures ==> 'T' type
-    dependencies['M'][mat.uname] = mat
-    MergeDependencies(dependencies, mat.GetDependencies())
-    foundDiffuseTexture = foundDiffuseTexture or mat.HasDiffuseTexture() 
-  # Search for a diffuse texture if none is defined among the materials
-  if not foundDiffuseTexture:
-    if self.data and self.data.uv_textures and self.data.uv_textures.active:
-      # UV texture of the mesh ==> 'T' type
-      for index, facedata in enumerate(self.data.uv_textures.active.data):
-        if facedata.image and facedata.image.uname not in dependencies['T'].keys():
-          dependencies['T'][facedata.image.uname] = facedata.image
-          self.data.uv_texture = facedata.image.uname
-          material = self.data.GetMaterial(self.data.faces[index].material_index)
-          if material:
-            material.uv_texture = facedata.image.uname
+    for mat in self.materials:
+      dependencies['M'][mat.uname] = mat
+      MergeDependencies(dependencies, mat.GetDependencies())
+      foundDiffuseTexture = foundDiffuseTexture or mat.HasDiffuseTexture() 
+    # Search for a diffuse texture if none is defined among the materials
+    if not foundDiffuseTexture:
+      if self.data and self.data.uv_textures and self.data.uv_textures.active:
+        # UV texture of the mesh ==> 'T' type
+        for index, facedata in enumerate(self.data.uv_textures.active.data):
+          if facedata.image and facedata.image.uname not in dependencies['T'].keys():
+            dependencies['T'][facedata.image.uname] = facedata.image
+            self.data.uv_texture = facedata.image.uname
+            material = self.data.GetMaterial(self.data.faces[index].material_index)
+            if material:
+              material.uv_texture = facedata.image.uname
   return dependencies
 
 bpy.types.Object.GetMaterialDeps = GetMaterialDeps
@@ -531,7 +595,8 @@ def GetMaterialDependencies(self):
   """
   dependencies = self.GetMaterialDeps()
   for child in self.children:
-    MergeDependencies(dependencies, child.GetMaterialDeps())
+    if child.type == 'MESH' and child.parent_type != 'BONE':
+      MergeDependencies(dependencies, child.GetMaterialDependencies())
   return dependencies
 
 bpy.types.Object.GetMaterialDependencies = GetMaterialDependencies
@@ -555,7 +620,11 @@ bpy.types.Object.HasImposter = HasImposter
 def GetScale(self):
   """ Get object scale
   """
-  if self.parent and self.parent.type == 'ARMATURE' and self.parent_type != 'BONE':
+  if self.parent and self.parent_type == 'BONE':
+    pscale = self.parent.scale    
+    oscale = self.scale
+    scale = Vector((pscale[0]*oscale[0], pscale[1]*oscale[1], pscale[2]*oscale[2]))
+  elif self.parent and self.parent.type == 'ARMATURE':
     scale = self.parent.scale
   else:
     scale = self.scale
@@ -575,6 +644,7 @@ def GetTransformedCopy(self, matrix = None):
   # Transform the copied object
   if matrix:
     obCpy.data.transform(matrix)
+    obCpy.data.calc_normals()
 
   return obCpy
 

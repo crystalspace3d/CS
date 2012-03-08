@@ -88,6 +88,7 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
   subMeshess = []
   mappingBuffers = []
   mappingVertices = []
+  mappingNormals = []
   indexV = 0
 
   for m, ob in self.allObjects():
@@ -108,16 +109,19 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
         obCpy = ob.GetTransformedCopy(matrix)
       meshData.append(obCpy)
       # Generate mapping buffers
-      mapVert, mapBuf = ob.data.GetCSMappingBuffer()
-      numCSVertices = 2*len(mapVert) if ob.data.show_double_sided else len(mapVert)
+      mapVert, mapBuf, norBuf = ob.data.GetCSMappingBuffers()
+      numCSVertices = len(mapVert)
+      if B2CS.properties.enableDoublesided and ob.data.show_double_sided:
+        numCSVertices = 2*len(mapVert)
       # Generate submeshes
       subMeshess.append(ob.data.GetSubMeshes(ob.name,mapBuf,indexV))
       mappingBuffers.append(mapBuf)
       mappingVertices.append(mapVert)
+      mappingNormals.append(norBuf)
       indexV += numCSVertices
 
       warning = "(WARNING: double sided mesh implies duplication of its vertices)" \
-          if ob.data.show_double_sided else ""
+          if B2CS.properties.enableDoublesided and ob.data.show_double_sided else ""
       print('number of CS vertices for mesh "%s" = %s  %s'%(ob.name,numCSVertices,warning))
 
   # Export the group of objects as a general mesh factory
@@ -147,6 +151,7 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
     args['meshData'] = [meshData[indexObject]]
     args['mappingBuffers'] = [mappingBuffers[indexObject]]
     args['mappingVertices'] = [mappingVertices[indexObject]]
+    args['mappingNormals'] = [mappingNormals[indexObject]]
     for buf in GetRenderBuffers(**args):
       buf.AsCS(func, depth+8)   
 
@@ -224,6 +229,7 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
     args['meshData'] = meshData
     args['mappingBuffers'] = mappingBuffers
     args['mappingVertices'] = mappingVertices
+    args['mappingNormals'] = mappingNormals
     for buf in GetRenderBuffers(**args):
       buf.AsCS(func, depth+4)
     
@@ -255,6 +261,21 @@ def HasImposter(self):
   return False
 
 bpy.types.Group.HasImposter = HasImposter
+
+
+def CheckVisibility(self):
+  """ Return True if all objects composing the group are visible;
+      False otherwise
+  """
+  for ob in self.objects:
+    if ob.hide:
+      # There is only one visibility factor for all objects 
+      # composing a group => if one of them is hidden,
+      # they are all hidden
+      return False
+  return True
+
+bpy.types.Group.CheckVisibility = CheckVisibility
 
 
 def GroupDependencies(self):

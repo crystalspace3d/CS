@@ -1,3 +1,6 @@
+from io_scene_cs.utilities import B2CS
+
+
 class RenderBuffer:
   def __init__(self, mesh, **kwargs):
     self.me = mesh
@@ -114,6 +117,9 @@ class RenderBuffers:
     self.mappingVertices = []
     if 'mappingVertices' in kwargs:
       self.mappingVertices = kwargs['mappingVertices']
+    self.mappingNormals = []
+    if 'mappingNormals' in kwargs:
+      self.mappingNormals = kwargs['mappingNormals']
     self.scales = []
     if 'scales' in kwargs:
       self.scales = kwargs['scales']
@@ -130,20 +136,22 @@ class RenderBuffers:
     """
     # For each mesh composing the object
     for i, ob in enumerate(self.meshData):
-      doubleSided = ob.data.show_double_sided
+      doubleSided = B2CS.properties.enableDoublesided and ob.data.show_double_sided
 
       # Get the active UV texture and vertex colors
       tface = ob.data.uv_textures.active.data if ob.data.uv_textures.active else None
       cface = ob.data.vertex_colors.active.data if ob.data.vertex_colors.active else None
 
+      # Get object's scale
+      if self.scales:
+        scale = self.scales[i]
+      else:
+        scale = ob.scale
+
       # For each vertex of this mesh
       for indexCS, indexBlender in enumerate(self.mappingVertices[i]):
         # Add the vertex coordinates to the CS position buffer
         pos = ob.data.vertices[indexBlender].co
-        if self.scales:
-          scale = self.scales[i]
-        else:
-          scale = ob.scale
         self.positionBuffer.AddElement(tuple(map(lambda j: scale[j]*pos[j], range(3))))
         if doubleSided:
           # Duplicate the vertex coordinates in case of a double sided mesh
@@ -151,10 +159,10 @@ class RenderBuffers:
 
         # Add the vertex normal to the CS normal buffer
         # Flip Y and Z axis.
-        self.normalBuffer.AddElement(tuple(ob.data.vertices[indexBlender].normal))
+        self.normalBuffer.AddElement(tuple(self.mappingNormals[i][indexCS]))
         if doubleSided:
           # Duplicate and inverse the vertex normal in case of a double sided mesh
-          nor = ob.data.vertices[indexBlender].normal
+          nor = self.mappingNormals[i][indexCS]
           self.normalBuffer.AddElement((-nor[0],-nor[1],-nor[2]))
         
         def findFace(csVertices, csIndex):

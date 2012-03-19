@@ -1643,7 +1643,8 @@ CS_CHECK_LIB_WITH([wx],
 	#endif
 	]],
 	[[wxWindow* p = 0; int w,h; p->GetClientSize(&w,&h);]])],
-    [], [C++])
+    [], [C++], [], [],
+    [], [$cs_cv_libjpeg_lflags], [$cs_cv_libjpeg_libs])
     
 AS_IF([test $cs_cv_libwx = yes],
     [AS_IF([test $cs_host_family = windows],

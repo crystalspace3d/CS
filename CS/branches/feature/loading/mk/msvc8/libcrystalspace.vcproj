@@ -3216,6 +3216,9 @@
 				RelativePath="..\..\libs\..\include\csutil\measuretime.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\memcache.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\memdebug.h">
 			</File>
 			<File
@@ -3325,6 +3328,12 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\regexp.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\resource.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\resourcemapper.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\rootedhiercache.h">
@@ -3454,6 +3463,12 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\condition.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\future.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\future_impl.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\mutex.h">

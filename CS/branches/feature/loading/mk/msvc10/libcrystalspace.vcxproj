@@ -1736,6 +1736,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\list.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\md5.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\measuretime.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\memcache.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\memdebug.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\memfile.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\memheap.h" />
@@ -1773,6 +1774,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\refcount.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\reftrackeraccess.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\regexp.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\resource.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\resourcemapper.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\rootedhiercache.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\scanstr.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\scf.h" />
@@ -1816,6 +1819,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\threading\atomicops_sparc.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\barrier.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\condition.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\threading\future.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\threading\future_impl.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\mutex.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\pthread_tls.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\rwmutex.h" />

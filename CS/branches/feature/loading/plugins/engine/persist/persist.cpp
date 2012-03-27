@@ -63,7 +63,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Engine)
     Resource::TypeID typeID = Resource::GetTypeID (node->GetValue ());
 
     if (typeID == Resource::GetTypeID ("library"))
-      return csPtr<iResource> (LoadLibrary (node));
+      return csPtr<iResource> (nullptr);//LoadLibrary (node));
     if (typeID == Resource::GetTypeID ("image"))
       return csPtr<iResource> (LoadImage (node));
 

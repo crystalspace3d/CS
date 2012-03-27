@@ -52,7 +52,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Engine)
     virtual csPtr<iDataBuffer> Save (iResource* resource);
 
   protected:
-    csPtr<iResource> LoadLibrary (iDocumentNode* node);
+    // TODO: the implementation of those methods is missing
+    //csPtr<iResource> LoadLibrary (iDocumentNode* node);
 
     csPtr<iResource> LoadImage (iDocumentNode* node);
     csPtr<iResource> LoadImage (iDataBuffer* buf);

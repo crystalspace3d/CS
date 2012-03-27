@@ -145,7 +145,7 @@ wxString KeyBindingsList::OnGetItemText(long item, long column) const
 }
 
 KeyBindingDialog::KeyBindingDialog(wxWindow *parent, KeyBindingsList* m_listCtrl, const std::string& action, std::string& shortcut)
-             : wxDialog(parent, wxID_ANY, _T("Grab key")), m_listCtrl(m_listCtrl), binding(0), shortcut(shortcut)
+  : wxDialog(parent, wxID_ANY, _T("Grab key"), wxDefaultPosition), m_listCtrl(m_listCtrl), binding(0), shortcut(shortcut)
 {
    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );   
    wxString string = wxString::Format(_T("Press the combination of keys you which to use for '%s'"), wxString(action.c_str(), wxConvUTF8).c_str());

@@ -62,7 +62,7 @@ public:
   virtual bool Initialize (iObjectRegistry* obj_reg);
 
   // iResourceManager
-  virtual csRef<iLoadingResource> Get (CS::Resource::TypeID type, const char* name);
+  virtual csPtr<iLoadingResource> Get (CS::Resource::TypeID type, const char* name);
   
   virtual void Add (iResource* resource) {}
   virtual void Remove (iResource* resource) {}

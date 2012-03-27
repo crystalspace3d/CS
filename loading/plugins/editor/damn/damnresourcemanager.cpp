@@ -122,7 +122,7 @@ void DAMNResourceManager::ToBeProccessed (csRef<iLoadingResource> res)
   toBeProccessed.Push(res);
 }
 
-csRef<iLoadingResource> DAMNResourceManager::Get (CS::Resource::TypeID type, const char* name)
+csPtr<iLoadingResource> DAMNResourceManager::Get (CS::Resource::TypeID type, const char* name)
 {
   csRef<iLoadingResource> res = cache->Get(type, name);
   if (!res.IsValid())
@@ -144,7 +144,7 @@ csRef<iLoadingResource> DAMNResourceManager::Get (CS::Resource::TypeID type, con
     Callback(job, bind(&DAMNResourceManager::ToBeProccessed, this, t));
   }
 
-  return res;
+  return csPtr<iLoadingResource> (res);
 }
 
 

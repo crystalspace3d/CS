@@ -83,7 +83,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{12B2D9F8-41D5-052C-D85E-71F68C602539}</ProjectGuid>
+    <ProjectGuid>{B318F162-9A2A-0F66-B62B-7EBE4775F975}</ProjectGuid>
     <SccProjectName />
     <SccLocalPath />
   </PropertyGroup>
@@ -144,103 +144,103 @@
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">..\..\out\release10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">..\..\out\release10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">..\..\out\release10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">..\..\out\release10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">..\..\out\debug10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">..\..\out\debug10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">..\..\out\debug10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">..\..\out\debug10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">..\..\out\debug10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">..\..\out\debug10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">..\..\out\debug10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">..\..\out\debug10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">..\..\out\debug10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">..\..\out\debug10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">..\..\out\debug10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">..\..\out\debug10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">..\..\out\debug10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">..\..\out\debug10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">..\..\out\debug10\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">..\..\out\debug10\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">..\..\out\release10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">..\..\out\release10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">..\..\out\release10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">..\..\out\release10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">..\..\out\debug10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">..\..\out\debug10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">..\..\out\debug10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">..\..\out\debug10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">..\..\out\debug10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">..\..\out\debug10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">..\..\out\debug10-x64\build\plgcseditorcore\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">cseditorcore</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">..\..\out\debug10-x64\build\plgenginepersist\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">enginepersist</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">true</IgnoreImportLibrary>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">
@@ -250,13 +250,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\release10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -268,12 +268,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\release10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10.lib;wxmsw28u_core-vc10.lib;wxmsw28u_gl-vc10.lib;wxmsw28u_xrc-vc10.lib;wxmsw28u_html-vc10.lib;wxmsw28u_xml-vc10.lib;wxmsw28u_adv-vc10.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -289,8 +289,8 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -301,13 +301,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\release10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -319,12 +319,12 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\release10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10.lib;wxmsw28u_core-vc10.lib;wxmsw28u_gl-vc10.lib;wxmsw28u_xrc-vc10.lib;wxmsw28u_html-vc10.lib;wxmsw28u_xml-vc10.lib;wxmsw28u_adv-vc10.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -340,8 +340,8 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -351,13 +351,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -367,12 +367,12 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -388,8 +388,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -399,13 +399,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -415,12 +415,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -436,8 +436,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -447,13 +447,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -463,12 +463,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -484,8 +484,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -495,13 +495,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -511,12 +511,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -532,8 +532,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -543,13 +543,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -559,12 +559,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -580,8 +580,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -591,13 +591,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -607,12 +607,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -628,8 +628,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -639,13 +639,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -655,12 +655,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -676,8 +676,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -687,13 +687,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -703,12 +703,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcseditorcore\Win32\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\plgenginepersist\Win32\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcseditorcore\Win32\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10\build\plgenginepersist\Win32\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -724,8 +724,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -736,13 +736,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -754,12 +754,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\release10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10.lib;wxmsw28u_core-vc10.lib;wxmsw28u_gl-vc10.lib;wxmsw28u_xrc-vc10.lib;wxmsw28u_html-vc10.lib;wxmsw28u_xml-vc10.lib;wxmsw28u_adv-vc10.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -775,8 +775,8 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -787,13 +787,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -805,12 +805,12 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\release10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10.lib;wxmsw28u_core-vc10.lib;wxmsw28u_gl-vc10.lib;wxmsw28u_xrc-vc10.lib;wxmsw28u_html-vc10.lib;wxmsw28u_xml-vc10.lib;wxmsw28u_adv-vc10.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -826,8 +826,8 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -837,13 +837,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -853,12 +853,12 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -874,8 +874,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -885,13 +885,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -901,12 +901,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -922,8 +922,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -933,13 +933,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -949,12 +949,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -970,8 +970,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -981,13 +981,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -997,12 +997,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1018,8 +1018,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1029,13 +1029,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1045,12 +1045,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1066,8 +1066,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1077,13 +1077,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1093,12 +1093,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1114,8 +1114,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1125,13 +1125,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1141,12 +1141,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1162,8 +1162,8 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1173,13 +1173,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcseditorcore\plgcseditorcore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcseditorcore\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcseditorcore\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgenginepersist\plgenginepersist.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgenginepersist\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\plgenginepersist\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1189,12 +1189,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cseditorcore.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcseditorcore\x64\cseditorcore.pdb</ProgramDatabaseFile>
+      <OutputFile>..\..\enginepersist.dll</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgenginepersist\x64\enginepersist.pdb</ProgramDatabaseFile>
       <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcseditorcore\x64\plgcseditorcore.lib</ImportLibrary>
+      <ImportLibrary>..\..\out\debug10-x64\build\plgenginepersist\x64\plgenginepersist.lib</ImportLibrary>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxmsw28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1210,47 +1210,25 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\editor\core;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\plugins\engine\persist;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\actionmanager.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\context.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\core.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\editor.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\layouts.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\mainframe.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\menubar.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\operatormanager.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\settingsmanager.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\spacemanager.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\statusbar.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\vfsfiledialog.cpp" />
-    <ClCompile Include="..\..\plugins\editor\core\window.cpp" />
+    <ClCompile Include="..\..\plugins\engine\persist\image.cpp" />
+    <ClCompile Include="..\..\plugins\engine\persist\persist.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\plugins\editor\core\actionmanager.h" />
-    <ClInclude Include="..\..\plugins\editor\core\context.h" />
-    <ClInclude Include="..\..\plugins\editor\core\dataobject.h" />
-    <ClInclude Include="..\..\plugins\editor\core\editor.h" />
-    <ClInclude Include="..\..\plugins\editor\core\layouts.h" />
-    <ClInclude Include="..\..\plugins\editor\core\mainframe.h" />
-    <ClInclude Include="..\..\plugins\editor\core\menubar.h" />
-    <ClInclude Include="..\..\plugins\editor\core\operatormanager.h" />
-    <ClInclude Include="..\..\plugins\editor\core\settingsmanager.h" />
-    <ClInclude Include="..\..\plugins\editor\core\spacemanager.h" />
-    <ClInclude Include="..\..\plugins\editor\core\statusbar.h" />
-    <ClInclude Include="..\..\plugins\editor\core\vfsfiledialog.h" />
-    <ClInclude Include="..\..\plugins\editor\core\window.h" />
+    <ClInclude Include="..\..\plugins\engine\persist\image.h" />
+    <ClInclude Include="..\..\plugins\engine\persist\persist.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\mk\msvc\plgcseditorcore.rc" />
+    <ResourceCompile Include="..\..\mk\msvc\plgenginepersist.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\plugins\editor\core\cseditorcore.csplugin" />
+    <None Include="..\..\plugins\engine\persist\enginepersist.csplugin" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libcrystalspace.vcxproj">

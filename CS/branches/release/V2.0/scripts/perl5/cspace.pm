@@ -9874,6 +9874,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *GetHWRenderer = *cspacec::iGraphics2D_GetHWRenderer;
 *GetHWGLVersion = *cspacec::iGraphics2D_GetHWGLVersion;
 *GetHWVendor = *cspacec::iGraphics2D_GetHWVendor;
+*DrawLineProjected = *cspacec::iGraphics2D_DrawLineProjected;
 *scfGetVersion = *cspacec::iGraphics2D_scfGetVersion;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
@@ -22360,7 +22361,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *PopTransform = *cspacec::iPen_PopTransform;
 *SetOrigin = *cspacec::iPen_SetOrigin;
 *Translate = *cspacec::iPen_Translate;
-*Rotate = *cspacec::iPen_Rotate;
 *DrawLine = *cspacec::iPen_DrawLine;
 *DrawPoint = *cspacec::iPen_DrawPoint;
 *DrawRect = *cspacec::iPen_DrawRect;
@@ -22422,7 +22422,6 @@ sub DESTROY {
 *PopTransform = *cspacec::csPen_PopTransform;
 *SetOrigin = *cspacec::csPen_SetOrigin;
 *Translate = *cspacec::csPen_Translate;
-*Rotate = *cspacec::csPen_Rotate;
 *DrawLine = *cspacec::csPen_DrawLine;
 *DrawThickLine = *cspacec::csPen_DrawThickLine;
 *DrawPoint = *cspacec::csPen_DrawPoint;

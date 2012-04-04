@@ -41949,7 +41949,7 @@ SWIGINTERN PyObject *_wrap_iClipper2D_Clip__SWIG_0(PyObject *SWIGUNUSEDPARM(self
   arg1 = reinterpret_cast< iClipper2D * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_csVector2, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iClipper2D_Clip" "', argument " "2"" of type '" "csVector2 *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iClipper2D_Clip" "', argument " "2"" of type '" "csVector2 const *""'"); 
   }
   arg2 = reinterpret_cast< csVector2 * >(argp2);
   ecode3 = SWIG_AsVal_size_t(obj2, &val3);
@@ -41970,7 +41970,7 @@ SWIGINTERN PyObject *_wrap_iClipper2D_Clip__SWIG_0(PyObject *SWIGUNUSEDPARM(self
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "iClipper2D_Clip" "', argument " "5"" of type '" "size_t &""'"); 
   }
   arg5 = reinterpret_cast< size_t * >(argp5);
-  result = (arg1)->Clip(arg2,arg3,arg4,*arg5);
+  result = (arg1)->Clip((csVector2 const *)arg2,arg3,arg4,*arg5);
   resultobj = SWIG_NewPointerObj((new uint8(static_cast< const uint8& >(result))), SWIGTYPE_p_uint8_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
@@ -42014,7 +42014,7 @@ SWIGINTERN PyObject *_wrap_iClipper2D_Clip__SWIG_1(PyObject *SWIGUNUSEDPARM(self
   arg1 = reinterpret_cast< iClipper2D * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_csVector2, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iClipper2D_Clip" "', argument " "2"" of type '" "csVector2 *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iClipper2D_Clip" "', argument " "2"" of type '" "csVector2 const *""'"); 
   }
   arg2 = reinterpret_cast< csVector2 * >(argp2);
   ecode3 = SWIG_AsVal_size_t(obj2, &val3);
@@ -42043,7 +42043,7 @@ SWIGINTERN PyObject *_wrap_iClipper2D_Clip__SWIG_1(PyObject *SWIGUNUSEDPARM(self
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "iClipper2D_Clip" "', argument " "6"" of type '" "csBox2 &""'"); 
   }
   arg6 = reinterpret_cast< csBox2 * >(argp6);
-  result = (arg1)->Clip(arg2,arg3,arg4,*arg5,*arg6);
+  result = (arg1)->Clip((csVector2 const *)arg2,arg3,arg4,*arg5,*arg6);
   resultobj = SWIG_NewPointerObj((new uint8(static_cast< const uint8& >(result))), SWIGTYPE_p_uint8_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
@@ -42087,7 +42087,7 @@ SWIGINTERN PyObject *_wrap_iClipper2D_Clip__SWIG_2(PyObject *SWIGUNUSEDPARM(self
   arg1 = reinterpret_cast< iClipper2D * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_csVector2, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iClipper2D_Clip" "', argument " "2"" of type '" "csVector2 *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "iClipper2D_Clip" "', argument " "2"" of type '" "csVector2 const *""'"); 
   }
   arg2 = reinterpret_cast< csVector2 * >(argp2);
   ecode3 = SWIG_AsVal_size_t(obj2, &val3);
@@ -42113,7 +42113,7 @@ SWIGINTERN PyObject *_wrap_iClipper2D_Clip__SWIG_2(PyObject *SWIGUNUSEDPARM(self
     SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "iClipper2D_Clip" "', argument " "6"" of type '" "csVertexStatus *""'"); 
   }
   arg6 = reinterpret_cast< csVertexStatus * >(argp6);
-  result = (arg1)->Clip(arg2,arg3,arg4,*arg5,arg6);
+  result = (arg1)->Clip((csVector2 const *)arg2,arg3,arg4,*arg5,arg6);
   resultobj = SWIG_NewPointerObj((new uint8(static_cast< const uint8& >(result))), SWIGTYPE_p_uint8_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
@@ -42235,9 +42235,9 @@ SWIGINTERN PyObject *_wrap_iClipper2D_Clip(PyObject *self, PyObject *args) {
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number of arguments for overloaded function 'iClipper2D_Clip'.\n"
     "  Possible C/C++ prototypes are:\n"
-    "    Clip(iClipper2D *,csVector2 *,size_t,csVector2 *,size_t &)\n"
-    "    Clip(iClipper2D *,csVector2 *,size_t,csVector2 *,size_t &,csBox2 &)\n"
-    "    Clip(iClipper2D *,csVector2 *,size_t,csVector2 *,size_t &,csVertexStatus *)\n");
+    "    Clip(iClipper2D *,csVector2 const *,size_t,csVector2 *,size_t &)\n"
+    "    Clip(iClipper2D *,csVector2 const *,size_t,csVector2 *,size_t &,csBox2 &)\n"
+    "    Clip(iClipper2D *,csVector2 const *,size_t,csVector2 *,size_t &,csVertexStatus *)\n");
   return NULL;
 }
 

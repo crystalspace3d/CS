@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 2.0.0: 5.5.5 Exporting Animated Meshes</title>
+<title>Crystal Space 2.0.0: 5.8.5 Exporting Animated Meshes</title>
 
-<meta name="description" content="Crystal Space 2.0.0: 5.5.5 Exporting Animated Meshes">
-<meta name="keywords" content="Crystal Space 2.0.0: 5.5.5 Exporting Animated Meshes">
+<meta name="description" content="Crystal Space 2.0.0: 5.8.5 Exporting Animated Meshes">
+<meta name="keywords" content="Crystal Space 2.0.0: 5.8.5 Exporting Animated Meshes">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -44,7 +44,7 @@ ul.toc {list-style: none}
 <a name="0"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="io_005fscene_005fcs-Export-Genmesh.html#0" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="io_005fscene_005fcs-ToDo.html#0" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="io_005fscene_005fcs-Portals.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="Blender.html#0" title="Up section"> Up </a>]</td>
@@ -59,7 +59,7 @@ ul.toc {list-style: none}
 <td valign="middle" align="left">[<a href="cs_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <hr size="1">
-<h3 class="subsection"> 5.5.5 Exporting Animated Meshes </h3>
+<h3 class="subsection"> 5.8.5 Exporting Animated Meshes </h3>
 
 <p>If a Blender mesh object contains either an armature or any shape keys, then it will be
 exported as an <a href="MeshObject-Animesh.html#0">Animesh Mesh Object</a>. In the other case, then it
@@ -78,6 +78,9 @@ the skeleton factory and the animations, in a file of the same name than the Ble
 plus the <samp>&lsquo;_rig&rsquo;</samp> postfix.
 </li></ul>
 
+<p>Similarly to the <a href="io_005fscene_005fcs-Export-Genmesh.html#0">static meshes</a>, it is possible to define
+an Animesh as <samp>&lsquo;Double Sided&rsquo;</samp>.
+</p>
 <a name="1"></a>
 <h4 class="subsubheading"> Submeshes </h4>
 
@@ -119,7 +122,7 @@ sure to disable any constraint first (in the <samp>&lsquo;Object Constraints&rsq
 <a name="5"></a>
 <h4 class="subsubheading"> Sockets </h4>
 
-<p>You can attach external meshes to the bone of an animated mesh, in order fo them to
+<p>You can attach external meshes to the bone of an animated mesh, in order for them to
 follow the motion of the bone, whatever its animation. This is made through Crystal
 Space socket objects (<code>CS::Mesh::iAnimatedMeshSocket</code>).
 </p>
@@ -151,10 +154,18 @@ press <samp>&lsquo;CTRL-P&rsquo;</samp> then select <samp>&lsquo;Bone&rsquo;</sa
 
 <p>There are no restrictions on the number of sockets.
 </p>
+<a name="6"></a>
+<h4 class="subsubheading"> Warning on socket objects attached to scaled armatures </h4>
+
+<p>If you're planning to change the default scale of the armature used to attach some objects, 
+you must first define the socket on the armature with its default scale of 1. Afterwards, 
+you can change the armature's scale: in the same way as Blender, the exported socket object 
+will be scaled proportionally to the armature.
+</p>
 <hr size="1">
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="io_005fscene_005fcs-Export-Genmesh.html#0" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="io_005fscene_005fcs-ToDo.html#0" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="io_005fscene_005fcs-Portals.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="Blender.html#0" title="Up section"> Up </a>]</td>

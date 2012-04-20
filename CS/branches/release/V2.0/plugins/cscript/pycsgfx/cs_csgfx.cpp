@@ -3049,6 +3049,7 @@ SWIG_AsVal_unsigned_SS_long (PyObject *obj, unsigned long *val)
 }
 
 SWIGINTERN int iImage_scfGetVersion(){ return scfInterfaceTraits<iImage>::GetVersion(); }
+SWIGINTERN char const *iImage_scfGetName(){ return scfInterfaceTraits<iImage>::GetName(); }
 SWIGINTERN void delete_iImage(iImage *self){ if (self) self->DecRef (); }
 
 SWIGINTERNINLINE int
@@ -3126,6 +3127,7 @@ SWIG_AsVal_int (PyObject * obj, int *val)
 }
 
 SWIGINTERN int iImageIO_scfGetVersion(){ return scfInterfaceTraits<iImageIO>::GetVersion(); }
+SWIGINTERN char const *iImageIO_scfGetName(){ return scfInterfaceTraits<iImageIO>::GetName(); }
 SWIGINTERN void delete_iImageIO(iImageIO *self){ if (self) self->DecRef (); }
 
 SWIGINTERN int
@@ -3144,6 +3146,7 @@ SWIG_AsVal_unsigned_SS_int (PyObject * obj, unsigned int *val)
 }
 
 SWIGINTERN int iAnimatedImage_scfGetVersion(){ return scfInterfaceTraits<iAnimatedImage>::GetVersion(); }
+SWIGINTERN char const *iAnimatedImage_scfGetName(){ return scfInterfaceTraits<iAnimatedImage>::GetName(); }
 SWIGINTERN void delete_iAnimatedImage(iAnimatedImage *self){ if (self) self->DecRef (); }
 
 SWIGINTERN int
@@ -3180,6 +3183,7 @@ SWIG_From_unsigned_SS_char  (unsigned char value)
 }
 
 SWIGINTERN int iShaderVarStringSet_scfGetVersion(){ return scfInterfaceTraits<iShaderVarStringSet>::GetVersion(); }
+SWIGINTERN char const *iShaderVarStringSet_scfGetName(){ return scfInterfaceTraits<iShaderVarStringSet>::GetName(); }
 SWIGINTERN void delete_iShaderVarStringSet(iShaderVarStringSet *self){ if (self) self->DecRef (); }
 
 SWIGINTERN int
@@ -4293,6 +4297,19 @@ SWIGINTERN PyObject *_wrap_iImage_scfGetVersion(PyObject *SWIGUNUSEDPARM(self), 
   if(!PyArg_UnpackTuple(args,(char *)"iImage_scfGetVersion",0,0)) SWIG_fail;
   result = (int)iImage_scfGetVersion();
   resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iImage_scfGetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iImage_scfGetName",0,0)) SWIG_fail;
+  result = (char *)iImage_scfGetName();
+  resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
   return NULL;
@@ -5974,6 +5991,19 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_iImageIO_scfGetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iImageIO_scfGetName",0,0)) SWIG_fail;
+  result = (char *)iImageIO_scfGetName();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_delete_iImageIO(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   iImageIO *arg1 = (iImageIO *) 0 ;
@@ -6157,6 +6187,19 @@ SWIGINTERN PyObject *_wrap_iAnimatedImage_scfGetVersion(PyObject *SWIGUNUSEDPARM
   if(!PyArg_UnpackTuple(args,(char *)"iAnimatedImage_scfGetVersion",0,0)) SWIG_fail;
   result = (int)iAnimatedImage_scfGetVersion();
   resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iAnimatedImage_scfGetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iAnimatedImage_scfGetName",0,0)) SWIG_fail;
+  result = (char *)iAnimatedImage_scfGetName();
+  resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
   return NULL;
@@ -7924,6 +7967,19 @@ SWIGINTERN PyObject *_wrap_iShaderVarStringSet_scfGetVersion(PyObject *SWIGUNUSE
   if(!PyArg_UnpackTuple(args,(char *)"iShaderVarStringSet_scfGetVersion",0,0)) SWIG_fail;
   result = (int)iShaderVarStringSet_scfGetVersion();
   resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_iShaderVarStringSet_scfGetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if(!PyArg_UnpackTuple(args,(char *)"iShaderVarStringSet_scfGetName",0,0)) SWIG_fail;
+  result = (char *)iShaderVarStringSet_scfGetName();
+  resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
   return NULL;
@@ -14838,6 +14894,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"iImage_GetCookedImageFormat", _wrap_iImage_GetCookedImageFormat, METH_VARARGS, NULL},
 	 { (char *)"iImage_GetCookedImageData", _wrap_iImage_GetCookedImageData, METH_VARARGS, NULL},
 	 { (char *)"iImage_scfGetVersion", _wrap_iImage_scfGetVersion, METH_VARARGS, NULL},
+	 { (char *)"iImage_scfGetName", _wrap_iImage_scfGetName, METH_VARARGS, NULL},
 	 { (char *)"delete_iImage", _wrap_delete_iImage, METH_VARARGS, NULL},
 	 { (char *)"iImage_swigregister", iImage_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_csImageIOFileFormatDescriptions", _wrap_delete_csImageIOFileFormatDescriptions, METH_VARARGS, NULL},
@@ -14875,11 +14932,13 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"iImageIO_Load", _wrap_iImageIO_Load, METH_VARARGS, NULL},
 	 { (char *)"iImageIO_Save", _wrap_iImageIO_Save, METH_VARARGS, NULL},
 	 { (char *)"iImageIO_scfGetVersion", _wrap_iImageIO_scfGetVersion, METH_VARARGS, NULL},
+	 { (char *)"iImageIO_scfGetName", _wrap_iImageIO_scfGetName, METH_VARARGS, NULL},
 	 { (char *)"delete_iImageIO", _wrap_delete_iImageIO, METH_VARARGS, NULL},
 	 { (char *)"iImageIO_swigregister", iImageIO_swigregister, METH_VARARGS, NULL},
 	 { (char *)"iAnimatedImage_Animate", _wrap_iAnimatedImage_Animate, METH_VARARGS, NULL},
 	 { (char *)"iAnimatedImage_IsAnimated", _wrap_iAnimatedImage_IsAnimated, METH_VARARGS, NULL},
 	 { (char *)"iAnimatedImage_scfGetVersion", _wrap_iAnimatedImage_scfGetVersion, METH_VARARGS, NULL},
+	 { (char *)"iAnimatedImage_scfGetName", _wrap_iAnimatedImage_scfGetName, METH_VARARGS, NULL},
 	 { (char *)"delete_iAnimatedImage", _wrap_delete_iAnimatedImage, METH_VARARGS, NULL},
 	 { (char *)"iAnimatedImage_swigregister", iAnimatedImage_swigregister, METH_VARARGS, NULL},
 	 { (char *)"iProcTexture_GetAlwaysAnimate", _wrap_iProcTexture_GetAlwaysAnimate, METH_VARARGS, NULL},
@@ -14923,6 +14982,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_csRGBpixel", _wrap_delete_csRGBpixel, METH_VARARGS, NULL},
 	 { (char *)"csRGBpixel_swigregister", csRGBpixel_swigregister, METH_VARARGS, NULL},
 	 { (char *)"iShaderVarStringSet_scfGetVersion", _wrap_iShaderVarStringSet_scfGetVersion, METH_VARARGS, NULL},
+	 { (char *)"iShaderVarStringSet_scfGetName", _wrap_iShaderVarStringSet_scfGetName, METH_VARARGS, NULL},
 	 { (char *)"delete_iShaderVarStringSet", _wrap_delete_iShaderVarStringSet, METH_VARARGS, NULL},
 	 { (char *)"iShaderVarStringSet_swigregister", iShaderVarStringSet_swigregister, METH_VARARGS, NULL},
 	 { (char *)"iShaderVariableAccessor_PreGetValue", _wrap_iShaderVariableAccessor_PreGetValue, METH_VARARGS, NULL},

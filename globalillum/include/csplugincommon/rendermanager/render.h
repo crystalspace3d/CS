@@ -88,7 +88,7 @@ namespace RenderManager
         if ((csRenderTargetAttachment (a) == rtaColor0)
             && (context.postEffects.IsValid()))
         {
-          context.postEffects->SetEffectsOutputTarget (
+          context.postEffects->SetOutputTarget (
             context.renderTargets[a].texHandle);
 	  g3d->SetRenderTarget (
 	    context.postEffects->GetScreenTarget (), false,
@@ -398,7 +398,7 @@ namespace RenderManager
       contextStack.Empty ();
       
       if (context->postEffects.IsValid())
-        context->postEffects->DrawPostEffects (context->owner);
+        context->postEffects->DrawPostEffect (context->owner);
     }
 
     void RenderGroupedByLayer (RenderView* rview, size_t firstContext, size_t lastContext)

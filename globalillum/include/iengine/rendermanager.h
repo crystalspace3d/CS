@@ -21,6 +21,8 @@
 
 #include "csutil/scf_interface.h"
 #include "ivaria/view.h"
+#include "csplugincommon/rendermanager/posteffects.h"
+#include "csplugincommon/rendermanager/rendertree.h"
 
 struct iTextureHandle;
 struct iVisibilityCuller;
@@ -93,16 +95,68 @@ struct iRenderManagerTargets : public virtual iBase
   virtual void MarkAsUsed (iTextureHandle* target) = 0;
 };
 
+using namespace CS::RenderManager;
+
 /**
- * Interface to add post-effects layers
+ * Interface to add post-effects.
  */
 struct iRenderManagerPostEffects : public virtual iBase
 {
   SCF_INTERFACE(iRenderManagerPostEffects,1,0,0);
 
+  // DEPRECATED
   virtual void ClearLayers() = 0;
   virtual bool AddLayersFromDocument (iDocumentNode* node) = 0;
   virtual bool AddLayersFromFile (const char* filename) = 0;
+
+  // New methods:
+  /// Add an effect at the end of the chain of effects.
+  virtual void AddPostEffect (iPostEffect* effect) = 0;
+  /// Insert an effect before the effect at position \a index.
+  virtual bool InsertPostEffect (iPostEffect* effect, size_t index) = 0;  
+
+  /// Remove the effect at the given position.
+  virtual bool RemovePostEffect (size_t index) = 0;
+
+  /// Get the total number of effects.
+  virtual size_t GetPostEffectCount () const = 0;
+  /// Get the effect at the given position.
+  virtual iPostEffect* GetPostEffect (size_t index) = 0;
+
+  /// Returns true if there is any effect in the chain.
+  virtual bool HasPostEffects() = 0;
+
+  /// Discard (and thus cause recreation of) all intermediate textures.      
+  virtual void ClearIntermediates() = 0;
+
+  /// Get the texture to render a scene to for post processing.
+  virtual iTextureHandle* GetScreenTarget () = 0;
+
+  /// Draw all the effects in the chain of effects.
+  virtual void DrawPostEffects (RenderTreeBase& renderTree) = 0;
+
+  /// Set the render target used to ultimatively render to.
+  virtual void SetEffectsOutputTarget (iTextureHandle* tex) = 0;
+  
+  /// Get the render target used to ultimatively render to.
+  virtual iTextureHandle* GetEffectsOutputTarget () const = 0;
+    
+  /**
+    * Set up post processing manager for a view.
+    * \returns Whether the manager has changed. If \c true some values,
+    *   such as the screen texture, must be reobtained from the manager.
+    *   \a perspectiveFixup returns a matrix that should be applied
+    *   after the normal perspective matrix (this is needed as the
+    *   screen texture may be larger than the desired viewport and thus
+    *   the projection must be corrected for that).
+    */
+  virtual bool SetupView (iView* view, CS::Math::Matrix4& perspectiveFixup) = 0;
+
+  /**
+    * Returns whether the screen space is flipped in Y direction. This usually
+    * happens when rendering to a texture due post effects.
+    */
+  virtual bool ScreenSpaceYFlipped () = 0;
 };
 
 /**

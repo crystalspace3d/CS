@@ -27,6 +27,7 @@
 #include "imap/loader.h"
 
 #include "csplugincommon/rendermanager/posteffects.h"
+#include "csplugincommon/rendermanager/posteffectssupport.h"
 
 struct iConfigFile;
 
@@ -81,6 +82,8 @@ namespace CS
         qualFloat32
       };
     
+      ~HDRHelper ();
+
       /**
        * Set up a post processing effects manager for rendering to HDR 
        * textures.
@@ -90,38 +93,47 @@ namespace CS
        *   Typical values are 16 for qualInt16 and 4 for qualInt8.
        *   When a HDR exposure control is used this range may change
        *   dynamically.
+       * \param postEffectSupport TODO
        * \return Whether the setup succeeded.
        * \remarks By default a simple linear tone mapping to the screen
        *   color space is used. This can be changed with SetMappingShader().
        */
       bool Setup (iObjectRegistry* objectReg, 
-        Quality quality, int colorRange);
+		  Quality quality, int colorRange,
+		  PostEffectsSupport* postEffectSupport);
 
       /// Get the post processing effects manager which applies HDR tone mapping.
-      PostEffectManager& GetHDRPostEffects() { return postEffects; }
+      iPostEffect* GetHDRPostEffects () { return postEffect; }
 
       /// Set the shader used for tonemapping the final image.
       void SetMappingShader (iShader* shader);
       /// Get the shader used for tonemapping the final image.
       iShader* GetMappingShader ();
       /// Get the shader variable context for the tonemapping stage.
-      iShaderVariableContext* GetMappingShaderVarContext();
+      iShaderVariableContext* GetMappingShaderVarContext ();
       
       /**
        * Get the post processing effects layer that can be used for measuring
        * image colors (before tonemapping).
        */
-      PostEffectManager::Layer* GetMeasureLayer() const
+      iPostEffectLayer* GetMeasureLayer () const
       { return measureLayer; }
       
-      bool IsRangeLimited() const
+      bool IsRangeLimited () const
       { return (quality == qualInt8) || (quality == qualInt10)
           || (quality == qualInt16); }
+
+      PostEffectsSupport* GetPostEffectsSupport ()
+      {
+	return postEffectSupport;
+      }
+
     private:
       Quality quality;
-      PostEffectManager postEffects;
-      PostEffectManager::Layer* measureLayer;
-      PostEffectManager::Layer* mappingLayer;
+      PostEffectsSupport* postEffectSupport;
+      csRef<iPostEffect> postEffect;
+      iPostEffectLayer* measureLayer;
+      iPostEffectLayer* mappingLayer;
     };
   
     /// Read HDR settings from a config file

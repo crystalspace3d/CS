@@ -19,6 +19,7 @@
 #include "cssysdef.h"
 
 #include "csplugincommon/rendermanager/posteffects.h"
+#include "csplugincommon/rendermanager/posteffectssupport.h"
 #include "csplugincommon/rendermanager/shadow_common.h"
 
 #include "imap/loader.h"
@@ -47,7 +48,7 @@ namespace CS
       if (defaultShader != 0)
       {
 	csRef<iLoader> loader (csQueryRegistry<iLoader> (objReg));
-  shadowDefaultShader = loader->LoadShader (defaultShader);
+	shadowDefaultShader = loader->LoadShader (defaultShader);
       }
       
       const char* postEffectsLayers = cfg->GetStr (
@@ -55,10 +56,14 @@ namespace CS
         0);
       if (postEffectsLayers != 0)
       {
-	postEffects.AttachNew (new PostEffectManager);
+      // TODO: get/create post effect 
+
+/*
+	postEffects.AttachNew (new PostEffectLayerOptions);
 	postEffects->Initialize (objReg);
 	PostEffectLayersParser layerParser (objReg);
 	layerParser.AddLayersFromFile (postEffectsLayers, *postEffects);
+*/
       }
             
       csRef<iShaderManager> shaderManager =

@@ -48,8 +48,8 @@ namespace CS
       }
   
       void RRBPD::Initialize (iObjectRegistry* objReg,
-				RenderTreeBase::DebugPersistent& dbgPersist,
-				PostEffectManager* postEffects)
+			      RenderTreeBase::DebugPersistent& dbgPersist,
+			      iPostEffect* postEffects)
       {
 	dbgReflRefrTex = dbgPersist.RegisterDebugFlag ("textures.reflrefr");
       

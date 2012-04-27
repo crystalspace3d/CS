@@ -79,7 +79,7 @@ namespace CS
 	  * manager, if any, or 0.
 	  */
 	  void Initialize (iObjectRegistry* objReg,
-			  PostEffectManager* postEffects);
+			   iPostEffect* postEffects);
 	  
 	  iTextureHandle* GetFramebufferTex (size_t n, int width, int height);
 	

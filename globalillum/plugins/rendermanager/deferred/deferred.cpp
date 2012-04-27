@@ -46,15 +46,15 @@
 
 using namespace CS::RenderManager;
 
-CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
+CS_PLUGIN_NAMESPACE_BEGIN (RMDeferred)
 {
 
-SCF_IMPLEMENT_FACTORY(RMDeferred);
+SCF_IMPLEMENT_FACTORY (RMDeferred);
 
 /**
  * Draws the given texture over the contents of the entire screen.
  */
-void DrawFullscreenTexture(iTextureHandle *tex, iGraphics3D *graphics3D)
+void DrawFullscreenTexture (iTextureHandle *tex, iGraphics3D *graphics3D)
 {
   iGraphics2D *graphics2D = graphics3D->GetDriver2D ();
 
@@ -83,27 +83,27 @@ public:
   typedef StandardContextSetup<RenderTreeType, LayerConfigType> ThisType;
   typedef StandardPortalSetup<RenderTreeType, ThisType> PortalSetupType;
 
-  StandardContextSetup(RMDeferred *rmanager, const LayerConfigType &layerConfig)
+  StandardContextSetup (RMDeferred *rmanager, const LayerConfigType &layerConfig)
     : 
-  rmanager(rmanager), 
-  layerConfig(layerConfig),
-  recurseCount(0), 
-  deferredLayer(rmanager->deferredLayer),
-  zonlyLayer(rmanager->zonlyLayer),
-  maxPortalRecurse(rmanager->maxPortalRecurse)
+  rmanager (rmanager), 
+  layerConfig (layerConfig),
+  recurseCount (0), 
+  deferredLayer (rmanager->deferredLayer),
+  zonlyLayer (rmanager->zonlyLayer),
+  maxPortalRecurse (rmanager->maxPortalRecurse)
   {}
   
   StandardContextSetup (const StandardContextSetup &other, const LayerConfigType &layerConfig)
     :
-  rmanager(other.rmanager), 
-  layerConfig(layerConfig),
-  recurseCount(other.recurseCount),
-  deferredLayer(other.deferredLayer),
-  zonlyLayer(other.zonlyLayer),
-  maxPortalRecurse(other.maxPortalRecurse)
+  rmanager (other.rmanager), 
+  layerConfig (layerConfig),
+  recurseCount (other.recurseCount),
+  deferredLayer (other.deferredLayer),
+  zonlyLayer (other.zonlyLayer),
+  maxPortalRecurse (other.maxPortalRecurse)
   {}
 
-  void operator()(typename RenderTreeType::ContextNode &context, 
+  void operator ()(typename RenderTreeType::ContextNode &context, 
     typename PortalSetupType::ContextSetupData &portalSetupData,
     bool recursePortals = true)
   {
@@ -184,16 +184,16 @@ private:
 };
 
 //----------------------------------------------------------------------
-RMDeferred::RMDeferred(iBase *parent) : 
+RMDeferred::RMDeferred (iBase *parent) : 
   scfImplementationType (this, parent),
   portalPersistent (CS::RenderManager::TextureCache::tcacheExactSizeMatch),
-  isHDREnabled (false), doHDRExposure (false), hasPostEffects (false)
+  isHDREnabled (false), doHDRExposure (false)
 {
   SetTreePersistent (treePersistent);
 }
 
 //----------------------------------------------------------------------
-bool RMDeferred::Initialize(iObjectRegistry *registry)
+bool RMDeferred::Initialize (iObjectRegistry *registry)
 {
   messageID = "crystalspace.rendermanager.deferred";
 
@@ -205,15 +205,15 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   shaderManager = csQueryRegistry<iShaderManager> (objRegistry);
   lightManager = csQueryRegistry<iLightManager> (objRegistry);
   stringSet = csQueryRegistryTagInterface<iStringSet> (objRegistry, "crystalspace.shared.stringset");
-  svStringSet = shaderManager->GetSVNameStringset();
+  svStringSet = shaderManager->GetSVNameStringset ();
 
   treePersistent.Initialize (shaderManager);
   portalPersistent.Initialize (shaderManager, graphics3D, treePersistent.debugPersist);
   lightPersistent.Initialize (registry, treePersistent.debugPersist);
   lightRenderPersistent.Initialize (registry);
   
-  PostEffectsSupport::Initialize (registry, "RenderManager.Deferred");
-  LoadDebugShader();
+  PostEffectsSupport::Initialize (registry/*, "RenderManager.Deferred"*/);
+  LoadDebugShader ();
 
   // Initialize the extra data in the persistent tree data.
   RenderTreeType::TreeTraitsType::Initialize (treePersistent, registry);
@@ -237,7 +237,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
     
     if (!layersValid) 
     {
-      renderLayer.Clear();
+      renderLayer.Clear ();
     }
     else
     {
@@ -299,7 +299,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
 
   if (!accumBuffer)
   {
-    csReport(objRegistry, CS_REPORTER_SEVERITY_ERROR, messageID, 
+    csReport (objRegistry, CS_REPORTER_SEVERITY_ERROR, messageID, 
       "Could not create accumulation buffer: %s!", errStr.GetCsString ().GetDataSafe ());
     return false;
   }
@@ -316,12 +316,12 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   desc.height = graphics2D->GetHeight ();
   desc.colorBufferFormat = gbufferFmt;
 
-  if (!gbuffer.Initialize (desc, graphics3D, shaderManager->GetSVNameStringset(), objRegistry))
+  if (!gbuffer.Initialize (desc, graphics3D, shaderManager->GetSVNameStringset (), objRegistry))
   {
     return false;
   }
 
-  if (!globalIllum.Initialize (graphics3D, objRegistry, &gbuffer) || !CreateDirectLightBuffer())
+  if (!globalIllum.Initialize (graphics3D, objRegistry, &gbuffer) || !CreateDirectLightBuffer ())
   {
     csReport (objRegistry, CS_REPORTER_SEVERITY_NOTIFY, messageID,
           "Dynamic global illumination is disabled");
@@ -343,28 +343,27 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   RMViscullCommon::Initialize (objRegistry, "RenderManager.Deferred");
 
   HDRSettings hdrSettings (cfg, "RenderManager.Deferred");
-  isHDREnabled = hdrSettings.IsEnabled();
-  if (hdrSettings.IsEnabled())
+  isHDREnabled = hdrSettings.IsEnabled ();
+  if (hdrSettings.IsEnabled ())
   {
     doHDRExposure = true;
     
-    hdr.Setup (objRegistry, hdrSettings.GetQuality(), hdrSettings.GetColorRange());   
-    postEffects.SetChainedOutput (hdr.GetHDRPostEffects());
-  
+    hdr.Setup (objRegistry, hdrSettings.GetQuality (),
+	       hdrSettings.GetColorRange (), this);   
     hdrExposure.Initialize (objRegistry, hdr, hdrSettings);
-  }  
+  }
   
   return true;
 }
 
 //----------------------------------------------------------------------
-bool RMDeferred::CreateDirectLightBuffer()
+bool RMDeferred::CreateDirectLightBuffer ()
 {
   scfString errStr;
-  iGraphics2D *graphics2D = graphics3D->GetDriver2D();
+  iGraphics2D *graphics2D = graphics3D->GetDriver2D ();
   int flags = CS_TEXTURE_2D | CS_TEXTURE_NOMIPMAPS | CS_TEXTURE_CLAMP | CS_TEXTURE_NPOTS;
-  directLightBuffer = graphics3D->GetTextureManager()->CreateTexture (graphics2D->GetWidth(),
-      graphics2D->GetHeight(), csimg2D, accumFmt, flags, &errStr);
+  directLightBuffer = graphics3D->GetTextureManager ()->CreateTexture (graphics2D->GetWidth (),
+      graphics2D->GetHeight (), csimg2D, accumFmt, flags, &errStr);
 
   if (!directLightBuffer)
   {
@@ -377,7 +376,7 @@ bool RMDeferred::CreateDirectLightBuffer()
 }
 
 //----------------------------------------------------------------------
-bool RMDeferred::RenderView(iView *view, bool recursePortals)
+bool RMDeferred::RenderView (iView *view, bool recursePortals)
 {
   iGraphics3D *graphics3D = view->GetContext ();
   iGraphics2D *graphics2D = graphics3D->GetDriver2D ();
@@ -421,29 +420,28 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
     ShowGBuffer (renderTree);
 
   // Add global shader variable with viewport dimensions
-  csShaderVariable *viewportSizeSV = shaderManager->GetVariableAdd (svStringSet->Request("viewport size"));
-  viewportSizeSV->SetValue (csVector4 (graphics2D->GetWidth(), graphics2D->GetHeight(), 
-    1.0f / graphics2D->GetWidth(), 1.0f / graphics2D->GetHeight()));
+  csShaderVariable *viewportSizeSV = shaderManager->GetVariableAdd (svStringSet->Request ("viewport size"));
+  viewportSizeSV->SetValue (csVector4 (graphics2D->GetWidth (), graphics2D->GetHeight (), 
+    1.0f / graphics2D->GetWidth (), 1.0f / graphics2D->GetHeight ()));
     
   // Add global shader variable with distance from near to far clip plane
-  csShaderVariable *farPlaneSV = shaderManager->GetVariableAdd (svStringSet->Request("far clip distance"));
-  float farPlaneDistance = rview->GetCamera()->GetFarPlane()->D();
-  float nearPlaneDistance = camera->GetNearClipDistance();
+  csShaderVariable *farPlaneSV = shaderManager->GetVariableAdd (svStringSet->Request ("far clip distance"));
+  float farPlaneDistance = rview->GetCamera ()->GetFarPlane ()->D ();
+  float nearPlaneDistance = camera->GetNearClipDistance ();
   farPlaneSV->SetValue ((float) fabs (farPlaneDistance - nearPlaneDistance));
 
   CS::Math::Matrix4 perspectiveFixup;
-  postEffects.SetupView (view, perspectiveFixup);
-
-  hasPostEffects = (postEffects.GetScreenTarget () != (iTextureHandle*)nullptr);
-
+  if (HasPostEffects ())    
+    PostEffectsSupport::SetupView (view, perspectiveFixup);  
+  
   // Setup the main context
   {
     ContextSetupType contextSetup (this, renderLayer);
     ContextSetupType::PortalSetupType::ContextSetupData portalData (startContext);
 
-    if (hasPostEffects)
+    if (HasPostEffects ())
     {
-      startContext->renderTargets[rtaColor0].texHandle = postEffects.GetScreenTarget ();
+      startContext->renderTargets[rtaColor0].texHandle = PostEffectsSupport::GetScreenTarget ();
       startContext->perspectiveFixup = perspectiveFixup;
     }
     else
@@ -473,14 +471,14 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
 
   if (isDebugActive)
   {
-    DrawDebugBuffer();
+    DrawDebugBuffer ();
     DrawFullscreenTexture (accumBuffer, graphics3D);
   }
   else
   {
-    if (hasPostEffects)
+    if (HasPostEffects ())
     {
-      postEffects.DrawPostEffects (renderTree);
+      DrawPostEffects (renderTree);
 
       if (doHDRExposure)
         hdrExposure.ApplyExposure (renderTree, view);
@@ -497,27 +495,29 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
   return true;
 }
 
-bool RMDeferred::RenderView(iView *view)
+bool RMDeferred::RenderView (iView *view)
 {
   return RenderView (view, true);
 }
 
 //----------------------------------------------------------------------
-bool RMDeferred::PrecacheView(iView *view)
+bool RMDeferred::PrecacheView (iView *view)
 {
-  return RenderView (view, false);
+  if (!RenderView (view, false)) return false;
 
-  postEffects.ClearIntermediates ();
-  hdr.GetHDRPostEffects().ClearIntermediates();
+  PostEffectsSupport::ClearIntermediates ();
+  hdr.GetHDRPostEffects ()->ClearIntermediates ();
+
+  return true;
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::LoadDebugShader()
+void RMDeferred::LoadDebugShader ()
 {
   const char *messageID = "crystalspace.rendermanager.deferred";
 
   csRef<iLoader> loader = csQueryRegistry<iLoader> (objRegistry);
-  if (!loader->LoadShader("shader/deferred/debug.xml"))
+  if (!loader->LoadShader ("shader/deferred/debug.xml"))
   {
     csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
       messageID, "Could not load debug shader");
@@ -527,7 +527,7 @@ void RMDeferred::LoadDebugShader()
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::UpdateDebugBufferSV()
+void RMDeferred::UpdateDebugBufferSV ()
 {
   if (!isDebugActive)
   {
@@ -540,7 +540,7 @@ void RMDeferred::UpdateDebugBufferSV()
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer)
+void RMDeferred::AddDeferredLayer (CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer)
 {
   const char *messageID = "crystalspace.rendermanager.deferred";
 
@@ -555,7 +555,7 @@ void RMDeferred::AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers
   iShader *shader = shaderManager->GetShader ("fill_gbuffer");
 
   SingleRenderLayer baseLayer (shader, 0, 0);
-  baseLayer.AddShaderType (stringSet->Request("gbuffer fill"));
+  baseLayer.AddShaderType (stringSet->Request ("gbuffer fill"));
 
   renderLayer.AddLayers (baseLayer);
 
@@ -563,7 +563,7 @@ void RMDeferred::AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer)
+void RMDeferred::AddZOnlyLayer (CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer)
 {
   const char *messageID = "crystalspace.rendermanager.deferred";
 
@@ -578,7 +578,7 @@ void RMDeferred::AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, i
   iShader *shader = shaderManager->GetShader ("z_only");
 
   SingleRenderLayer baseLayer (shader, 0, 0);
-  baseLayer.AddShaderType (stringSet->Request("depthwrite"));
+  baseLayer.AddShaderType (stringSet->Request ("depthwrite"));
 
   renderLayer.AddLayers (baseLayer);
 
@@ -586,19 +586,19 @@ void RMDeferred::AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, i
 }
 
 //----------------------------------------------------------------------
-int RMDeferred::LocateDeferredLayer(const CS::RenderManager::MultipleRenderLayer &layers)
+int RMDeferred::LocateDeferredLayer (const CS::RenderManager::MultipleRenderLayer &layers)
 {
-  return LocateLayer (layers, stringSet->Request("gbuffer fill"));
+  return LocateLayer (layers, stringSet->Request ("gbuffer fill"));
 }
 
 //----------------------------------------------------------------------
-int RMDeferred::LocateZOnlyLayer(const CS::RenderManager::MultipleRenderLayer &layers)
+int RMDeferred::LocateZOnlyLayer (const CS::RenderManager::MultipleRenderLayer &layers)
 {
-  return LocateLayer (layers, stringSet->Request("depthwrite"));
+  return LocateLayer (layers, stringSet->Request ("depthwrite"));
 }
 
 //----------------------------------------------------------------------
-int RMDeferred::LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
+int RMDeferred::LocateLayer (const CS::RenderManager::MultipleRenderLayer &layers,
                             csStringID shaderType)
 {
   size_t count = renderLayer.GetLayerCount ();
@@ -619,7 +619,7 @@ int RMDeferred::LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::ShowGBuffer(RenderTreeType &tree)
+void RMDeferred::ShowGBuffer (RenderTreeType &tree)
 {
   size_t count = gbuffer.GetColorBufferCount ();
   if (count > 0)
@@ -641,7 +641,7 @@ void RMDeferred::ShowGBuffer(RenderTreeType &tree)
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::DrawDebugBuffer()
+void RMDeferred::DrawDebugBuffer ()
 {
   float w = graphics3D->GetDriver2D ()->GetWidth ();
   float h = graphics3D->GetDriver2D ()->GetHeight ();
@@ -653,7 +653,7 @@ void RMDeferred::DrawDebugBuffer()
   quadVerts[3] = csVector3 (   w, 0.0f, 0.0f);
 
   csSimpleRenderMesh quadMesh;
-  uint mixModeNoBlending = CS_MIXMODE_BLEND(ONE, ZERO) | CS_MIXMODE_ALPHATEST_DISABLE;  
+  uint mixModeNoBlending = CS_MIXMODE_BLEND (ONE, ZERO) | CS_MIXMODE_ALPHATEST_DISABLE;  
   quadMesh.meshtype = CS_MESHTYPE_TRIANGLEFAN;
   quadMesh.vertices = quadVerts;
   quadMesh.vertexCount = 4;
@@ -680,13 +680,13 @@ void RMDeferred::DrawDebugBuffer()
   graphics3D->SetWorldToCamera (oldView);
   graphics3D->SetProjectionMatrix (oldProj);
 
-  graphics3D->FinishDraw();
-  graphics3D->UnsetRenderTargets();
+  graphics3D->FinishDraw ();
+  graphics3D->UnsetRenderTargets ();
 }
 
 
 //----------------------------------------------------------------------
-bool RMDeferred::DebugCommand(const char *cmd)
+bool RMDeferred::DebugCommand (const char *cmd)
 {
   if (strcmp (cmd, "toggle_visualize_gbuffer") == 0)
   {
@@ -700,19 +700,19 @@ bool RMDeferred::DebugCommand(const char *cmd)
   }
   else if (strcmp (cmd, "toggle_visualize_ambient_occlusion") == 0)
   {
-    if (debugBuffer != CS_AMBOCC_BUFFER && globalIllum.IsEnabled())
+    if (debugBuffer != CS_AMBOCC_BUFFER && globalIllum.IsEnabled ())
     {
       debugBuffer = CS_AMBOCC_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
     return true;
   }
   else if (strcmp (cmd, "toggle_visualize_color_bleeding") == 0)
   {
-    if (debugBuffer != CS_INDLIGHT_BUFFER && globalIllum.IsEnabled())
+    if (debugBuffer != CS_INDLIGHT_BUFFER && globalIllum.IsEnabled ())
     {
       debugBuffer = CS_INDLIGHT_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
 
     return true;
@@ -722,7 +722,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     if (debugBuffer != CS_DIFFUSE_BUFFER)
     {
       debugBuffer = CS_DIFFUSE_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
     return true;
   }
@@ -731,7 +731,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     if (debugBuffer != CS_NORMAL_BUFFER)
     {
       debugBuffer = CS_NORMAL_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
     return true;
   }
@@ -740,7 +740,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     if (debugBuffer != CS_AMBIENT_BUFFER)
     {
       debugBuffer = CS_AMBIENT_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
     return true;
   }
@@ -749,7 +749,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     if (debugBuffer != CS_DEPTH_BUFFER)
     {
       debugBuffer = CS_DEPTH_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
     return true;
   }
@@ -758,7 +758,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     if (debugBuffer != CS_SPECULAR_BUFFER)
     {
       debugBuffer = CS_SPECULAR_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
     return true;
   }
@@ -774,7 +774,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     if (debugBuffer != CS_VERTEX_NORMALS_BUFFER)
     {
       debugBuffer = CS_VERTEX_NORMALS_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
     return true;
   }
@@ -783,7 +783,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     if (debugBuffer != CS_LINEAR_DEPTH_BUFFER)
     {
       debugBuffer = CS_LINEAR_DEPTH_BUFFER;
-      UpdateDebugBufferSV();
+      UpdateDebugBufferSV ();
     }
     return true;
   }
@@ -796,28 +796,28 @@ void RMDeferred::EnableGlobalIllumination (bool enable)
 {
   if (enable)
   {
-    if (globalIllum.IsEnabled())
+    if (globalIllum.IsEnabled ())
       return;
 
     globalIllum.SetEnabled (true);
 
-    if (globalIllum.IsInitialized())
+    if (globalIllum.IsInitialized ())
       return;
   
     csRef<iGraphics3D> graphics3D = csQueryRegistry<iGraphics3D> (objRegistry);
     globalIllum.Initialize (graphics3D, objRegistry, &gbuffer, false);
 
     if (!directLightBuffer)
-      CreateDirectLightBuffer();    
+      CreateDirectLightBuffer ();    
   }
   else
   {
-    if (globalIllum.IsEnabled())
+    if (globalIllum.IsEnabled ())
       globalIllum.SetEnabled (false);
   }
 }
 
-void RMDeferred::ChangeBufferResolution(const char *bufferResolution)
+void RMDeferred::ChangeBufferResolution (const char *bufferResolution)
 {
   globalIllum.ChangeBufferResolution (bufferResolution);
 }
@@ -832,31 +832,31 @@ void RMDeferred::ChangeNormalsAndDepthResolution (const char *resolution)
   globalIllum.SetNormalsAndDepthResolution (resolution);
 }
 
-csShaderVariable* RMDeferred::GetGlobalIllumVariableAdd(const char *svName)
+csShaderVariable* RMDeferred::GetGlobalIllumVariableAdd (const char *svName)
 {
   if (!svName) 
     return nullptr;
-  if (!globalIllum.GetGlobalIllumShader())
+  if (!globalIllum.GetGlobalIllumShader ())
     return nullptr;
 
-  return globalIllum.GetGlobalIllumShader()->GetVariableAdd (svStringSet->Request (svName));  
+  return globalIllum.GetGlobalIllumShader ()->GetVariableAdd (svStringSet->Request (svName));  
 }
 
-csShaderVariable* RMDeferred::GetBlurVariableAdd(const char *svName)
+csShaderVariable* RMDeferred::GetBlurVariableAdd (const char *svName)
 {
   if (!svName) return nullptr;
   return shaderManager->GetVariableAdd (svStringSet->Request (svName));
 }
 
-csShaderVariable* RMDeferred::GetCompositionVariableAdd(const char *svName)
+csShaderVariable* RMDeferred::GetCompositionVariableAdd (const char *svName)
 {
   if (!svName) 
     return nullptr;
-  if (!globalIllum.GetLightCompositionShader())
+  if (!globalIllum.GetLightCompositionShader ())
     return nullptr;
 
-  return globalIllum.GetLightCompositionShader()->GetVariableAdd (svStringSet->Request (svName));
+  return globalIllum.GetLightCompositionShader ()->GetVariableAdd (svStringSet->Request (svName));
 }
 
 }
-CS_PLUGIN_NAMESPACE_END(RMDeferred)
+CS_PLUGIN_NAMESPACE_END (RMDeferred)

@@ -26,10 +26,21 @@ namespace CS
 {
   namespace RenderManager
   {
-    bool HDRHelper::Setup (iObjectRegistry* objectReg, 
-      Quality quality, int colorRange)
+    HDRHelper::~HDRHelper ()
     {
-      postEffects.Initialize (objectReg);
+      if (postEffectSupport && postEffect)
+	postEffectSupport->RemovePostEffect (postEffect);
+    }
+
+    bool HDRHelper::Setup (iObjectRegistry* objectReg,
+			   Quality quality, int colorRange,
+			   PostEffectsSupport* postEffectSupport)
+    {
+      this->postEffectSupport = postEffectSupport;
+      postEffect = postEffectSupport->CreatePostEffect ("hdr");
+      CS_ASSERT (postEffect);
+      if (!postEffect) return false;
+      postEffectSupport->AddPostEffect (postEffect);
 
       const char* textureFmt;
       switch (quality)
@@ -54,7 +65,7 @@ namespace CS
 	case qualFloat32: textureFmt = "bgr32_f"; break;
 	default: return false;
       }
-      postEffects.SetIntermediateTargetFormat (textureFmt);
+      postEffect->SetIntermediateTargetFormat (textureFmt);
       this->quality = quality;
       
       csRef<iShaderManager> shaderManager =
@@ -78,8 +89,8 @@ namespace CS
       if (!loader) return false;
       csRef<iShader> map = loader->LoadShader ("/shader/postproc/hdr/default-map.xml");
       if (!map) return false;
-      measureLayer = postEffects.GetLastLayer();
-      mappingLayer = postEffects.AddLayer (map);
+      measureLayer = postEffect->GetLastLayer();
+      mappingLayer = postEffect->AddLayer (map);
     
       return true;
     }

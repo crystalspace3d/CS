@@ -38,7 +38,7 @@ namespace CS
 	  
 	  const char* intermediateTextureFormat;
 	  CS::StructuredTextureFormat readbackFmt;
-	  PostEffectManager::Layer* measureLayer;
+	  iPostEffectLayer* measureLayer;
 	  HDRHelper* hdr;
 	  csRef<iGraphics3D> graphics3D;
 	  csRef<iShaderVarStringSet> svNameStringSet;
@@ -48,7 +48,7 @@ namespace CS
 	  csRef<iShader> computeShaderN;
 	  struct LuminanceComputeStage
 	  {
-	    csArray<PostEffectManager::Layer*> layers;
+	    csArray<iPostEffectLayer*> layers;
 	    csRef<csShaderVariable> svInput;
 	    csRef<csShaderVariable> svWeightCoeff;
 	    csRef<iTextureHandle> target;
@@ -57,7 +57,7 @@ namespace CS
 	    LuminanceComputeStage() {}
 	  };
 	  csArray<LuminanceComputeStage> computeStages;
-	  PostEffectManager computeFX;
+	  csRef<iPostEffect> computeFX;
 	  
 	  int lastTargetW, lastTargetH;
 	  csRef<iDataBuffer> lastData;
@@ -71,10 +71,12 @@ namespace CS
 	    readbackFmt (CS::TextureFormatStrings::ConvertStructured (outputTextureFormat)),
 	    measureLayer (0), hdr (0), lastMeasureTex (0) {}
 	   
+	  ~BaseHierarchical ();
+
 	  /// Set up HDR exposure control for a post effects manager
 	  void Initialize (iObjectRegistry* objReg,
-	    HDRHelper& hdr,
-	    const char* firstShader, const char* stepShader);
+			   HDRHelper& hdr,
+			   const char* firstShader, const char* stepShader);
 	    
 	  /// Obtain rendered image
 	  csPtr<iDataBuffer> GetResultData (RenderTreeBase& renderTree, 
@@ -101,7 +103,7 @@ namespace CS
           Average() : BaseHierarchical ("argb8", "argb8") {}
         
 	  void Initialize (iObjectRegistry* objReg,
-	    HDRHelper& hdr);
+			   HDRHelper& hdr);
 	    
 	  bool ComputeLuminance (RenderTreeBase& renderTree, iView* view,
 	    float& averageLuminance, float& maxLuminance,
@@ -116,7 +118,7 @@ namespace CS
           {}
         
 	  void Initialize (iObjectRegistry* objReg,
-	    HDRHelper& hdr);
+			   HDRHelper& hdr);
 	    
 	  bool ComputeLuminance (RenderTreeBase& renderTree, iView* view,
 	    float& averageLuminance, float& maxLuminance, float& maxComp,

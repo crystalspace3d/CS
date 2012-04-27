@@ -37,7 +37,7 @@ namespace CS
 {
 namespace RenderManager
 {
-  class PostEffectManager;
+  struct iPostEffect;
   
   /**
    * Helper class containing stuff which doesn't require any of the template
@@ -428,7 +428,7 @@ namespace RenderManager
       CS::RenderPriorityGrouping renderGrouping;
       
       /// Post processing effects to apply after rendering the context
-      csRef<PostEffectManager> postEffects;
+      csRef<iPostEffect> postEffects;
 
       /// Sub-tree of mesh nodes
       MeshNodeTreeType meshNodes;

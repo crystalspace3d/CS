@@ -22,6 +22,7 @@
 #include "csgfx/textureformatstrings.h"
 #include "csplugincommon/rendermanager/hdrexposure_luminance.h"
 #include "csplugincommon/rendermanager/hdrhelper.h"
+#include "csplugincommon/rendermanager/posteffectssupport.h"
 #include "csplugincommon/rendermanager/posteffects.h"
 #include "csutil/ref.h"
 
@@ -68,7 +69,7 @@ namespace CS
 	
 	  /// Set up HDR exposure control for a post effects manager
 	  void Initialize (iObjectRegistry* objReg,
-	    HDRHelper& hdr);
+			   HDRHelper& hdr);
 	  
 	  /// Obtain rendered image and apply exposure correction
 	  void ApplyExposure (RenderTreeBase& renderTree, iView* view);

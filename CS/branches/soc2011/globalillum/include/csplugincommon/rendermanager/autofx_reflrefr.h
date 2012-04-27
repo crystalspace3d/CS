@@ -117,7 +117,7 @@ namespace CS
 	  */
 	  void Initialize (iObjectRegistry* objReg,
 			  RenderTreeBase::DebugPersistent& dbgPersist,
-			  PostEffectManager* postEffects);
+			  iPostEffect* postEffects);
 	
 	  /**
 	  * Do per-frame house keeping - \b MUST be called every frame/

@@ -55,9 +55,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                                                scfFakeInterface<iRenderManagerPostEffects>,
                                                iRenderManagerGlobalIllum,
                                                scfFakeInterface<iDebugHelper> >,
-                     public CS::RenderManager::RMDebugCommon<RenderTreeType>,
-		     public CS::RenderManager::PostEffectsSupport,
-		     public CS::RenderManager::RMViscullCommon
+                                               public CS::RenderManager::RMDebugCommon<RenderTreeType>,
+                                               public CS::RenderManager::PostEffectsSupport,
+                                               public CS::RenderManager::RMViscullCommon
   {
   public:
 
@@ -156,7 +156,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     int zonlyLayer;
     int maxPortalRecurse;
 
-    bool hasPostEffects;
     bool showGBuffer;
     bool drawLightVolumes;
     

@@ -270,14 +270,14 @@ bool RMUnshadowed::RenderView (iView* view, bool recursePortals)
     return false;
 
   CS::Math::Matrix4 perspectiveFixup;
-  postEffects.SetupView (view, perspectiveFixup);
+  PostEffectsSupport::SetupView (view, perspectiveFixup);
 
   // Pre-setup culling graph
   RenderTreeType renderTree (treePersistent);
 
   RenderTreeType::ContextNode* startContext = renderTree.CreateContext (rview);
   startContext->drawFlags |= (CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER);
-  startContext->renderTargets[rtaColor0].texHandle = postEffects.GetScreenTarget ();
+  startContext->renderTargets[rtaColor0].texHandle = PostEffectsSupport::GetScreenTarget ();
   startContext->perspectiveFixup = perspectiveFixup;
 
   // Setup the main context
@@ -311,7 +311,7 @@ bool RMUnshadowed::RenderView (iView* view, bool recursePortals)
     ForEachContextReverse (renderTree, render);
   }
 
-  postEffects.DrawPostEffects (renderTree);
+  PostEffectsSupport::DrawPostEffects (renderTree);
   
   if (doHDRExposure) hdrExposure.ApplyExposure (renderTree, view);
   
@@ -329,8 +329,7 @@ bool RMUnshadowed::PrecacheView (iView* view)
 {
   if (!RenderView (view, false)) return false;
 
-  postEffects.ClearIntermediates();
-  hdr.GetHDRPostEffects().ClearIntermediates();
+  PostEffectsSupport::ClearIntermediates ();
 
   /* @@@ Other ideas for precache drawing:
     - No frame advancement?
@@ -450,28 +449,31 @@ bool RMUnshadowed::Initialize(iObjectRegistry* objectReg)
   dbgFlagClipPlanes =
     treePersistent.debugPersist.RegisterDebugFlag ("draw.clipplanes.view");
     
-  PostEffectsSupport::Initialize (objectReg, "RenderManager.Unshadowed");
+  PostEffectsSupport::Initialize (objectReg/*, "RenderManager.Unshadowed"*/);
   
   HDRSettings hdrSettings (cfg, "RenderManager.Unshadowed");
   if (hdrSettings.IsEnabled())
   {
+    printf ("unshadowed: HDR enbaled\n");
     doHDRExposure = true;
     
     hdr.Setup (objectReg, 
       hdrSettings.GetQuality(), 
-      hdrSettings.GetColorRange());
-    postEffects.SetChainedOutput (hdr.GetHDRPostEffects());
-  
+      hdrSettings.GetColorRange(),
+      this);
     hdrExposure.Initialize (objectReg, hdr, hdrSettings);
   }
+  else printf ("unshadowed: HDR NOT enbaled\n");
   
   portalPersistent.Initialize (shaderManager, g3d,
     treePersistent.debugPersist);
   lightPersistent.Initialize (objectReg, treePersistent.debugPersist);
   reflectRefractPersistent.Initialize (objectReg, treePersistent.debugPersist,
-    &postEffects);
+				       PostEffectsSupport::HasPostEffects () ?
+				       PostEffectsSupport::GetPostEffect (0) : nullptr);
   framebufferTexPersistent.Initialize (objectReg,
-    &postEffects);
+				       PostEffectsSupport::HasPostEffects () ?
+				       PostEffectsSupport::GetPostEffect (0) : nullptr);
   
   RMViscullCommon::Initialize (objectReg, "RenderManager.Unshadowed");
   

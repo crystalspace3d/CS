@@ -30,7 +30,7 @@
 #include "ivideo/shader/shader.h"
 #include "deferredrender.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
+CS_PLUGIN_NAMESPACE_BEGIN (RMDeferred)
 {
   /**
    * Implements the SSDO screen-space global illumination technique
@@ -39,18 +39,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
   {
   public:
 
-  csGlobalIllumRenderer()
+  csGlobalIllumRenderer ()
     : isInitialized (false), enabled (true)
     {
     }
     
-    ~csGlobalIllumRenderer() 
+    ~csGlobalIllumRenderer () 
     {
       CS_ASSERT (!isGlobalIllumBufferAttached && !isIntermediateBufferAttached
                  && !isDepthNormalBufferAttached);
     }
     
-    bool Initialize(iGraphics3D *g3D, iObjectRegistry *objRegistry, GBuffer *gbuffer, 
+    bool Initialize (iGraphics3D *g3D, iObjectRegistry *objRegistry, GBuffer *gbuffer, 
         bool readEnableKeyFromConfig = true)
     {
       reporterMessageID = "crystalspace.rendermanager.globalillum";
@@ -112,7 +112,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       else
         depthNormalsBufferScale = 1.0f;
 
-      if (!InitRenderTargets())
+      if (!InitRenderTargets ())
       {
         enabled = false;
         return false;
@@ -177,7 +177,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       return true;
     }
 
-    void RenderGlobalIllum(iTextureHandle *accumBuffer)
+    void RenderGlobalIllum (iTextureHandle *accumBuffer)
     {
       if (!enabled || !accumBuffer)
         return;
@@ -185,42 +185,42 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if (depthNormalsBufferScale < 1.0f)
       {
         // Downsample buffer with normals and depth
-        AttachDepthNormalBuffer();
+        AttachDepthNormalBuffer ();
         {
           graphics3D->SetZMode (CS_ZBUF_MESH);
 
           DrawFullscreenQuad (downsampleShader);
         }
-        DetachDepthNormalBuffer();
+        DetachDepthNormalBuffer ();
       }
 
       // Render ambient occlusion + indirect light
-      AttachGlobalIllumBuffer();
+      AttachGlobalIllumBuffer ();
       {
         graphics3D->SetZMode (CS_ZBUF_MESH);        
 
         DrawFullscreenQuad (globalIllumShader);
       }
-      DetachGlobalIllumBuffer();
+      DetachGlobalIllumBuffer ();
 
       // Apply edge-aware blur
       if (applyBlur)
       {
-        AttachIntermediateBuffer();
+        AttachIntermediateBuffer ();
         {
           graphics3D->SetZMode (CS_ZBUF_MESH);
 
           DrawFullscreenQuad (horizontalBlurShader);
         }
-        DetachIntermediateBuffer();
+        DetachIntermediateBuffer ();
 	          
-        AttachGlobalIllumBuffer();
+        AttachGlobalIllumBuffer ();
         {
           graphics3D->SetZMode (CS_ZBUF_MESH);
 
-		      DrawFullscreenQuad (verticalBlurShader);
+	  DrawFullscreenQuad (verticalBlurShader);
         }
-        DetachGlobalIllumBuffer();
+        DetachGlobalIllumBuffer ();
       }
       
       // Upsample and combine with direct light
@@ -230,10 +230,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         
         DrawFullscreenQuad (lightCompositionShader);
       }
-      graphics3D->UnsetRenderTargets();
+      graphics3D->UnsetRenderTargets ();
     }
 
-    void ChangeBufferResolution(const char *bufferResolution)
+    void ChangeBufferResolution (const char *bufferResolution)
     {
       if (!enabled || !bufferResolution)
         return;
@@ -258,15 +258,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       {
         bufferDownscaleFactor = resolutionFactor;
 
-        DestroyIntermediateBuffers();
-        InitRenderTargets();
+        DestroyIntermediateBuffers ();
+        InitRenderTargets ();
 
         globalIllumBufferSV->SetValue (globalIllumBuffer);
         intermediateBufferSV->SetValue (intermediateBuffer);
       }
     }    
 
-    bool AttachGlobalIllumBuffer(bool useGBufferDepth = false)
+    bool AttachGlobalIllumBuffer (bool useGBufferDepth = false)
     {
       if (!enabled || isGlobalIllumBufferAttached)
         return false;
@@ -274,29 +274,29 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if (!graphics3D->SetRenderTarget (globalIllumBuffer, false, 0, rtaColor0))
           return false;
 
-	    if (useGBufferDepth && gbuffer->HasDepthBuffer())
+	    if (useGBufferDepth && gbuffer->HasDepthBuffer ())
       {
-        if (!graphics3D->SetRenderTarget (gbuffer->GetDepthBuffer(), false, 0, rtaDepth))
+        if (!graphics3D->SetRenderTarget (gbuffer->GetDepthBuffer (), false, 0, rtaDepth))
           return false;
       }
 
-      if (!graphics3D->ValidateRenderTargets())
+      if (!graphics3D->ValidateRenderTargets ())
         return false;
 
       isGlobalIllumBufferAttached = true;
       return true;
     }
 
-    void DetachGlobalIllumBuffer()
+    void DetachGlobalIllumBuffer ()
     {
       if (enabled && isGlobalIllumBufferAttached)
       {
-        graphics3D->UnsetRenderTargets();
+        graphics3D->UnsetRenderTargets ();
         isGlobalIllumBufferAttached = false;
       }      
     }
 
-    bool AttachIntermediateBuffer(bool useGBufferDepth = false)
+    bool AttachIntermediateBuffer (bool useGBufferDepth = false)
     {
       if (!enabled || isIntermediateBufferAttached)
         return false;
@@ -304,29 +304,29 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if (!graphics3D->SetRenderTarget (intermediateBuffer, false, 0, rtaColor0))
           return false;
 
-      if (useGBufferDepth && gbuffer->HasDepthBuffer())
+      if (useGBufferDepth && gbuffer->HasDepthBuffer ())
       {
-        if (!graphics3D->SetRenderTarget (gbuffer->GetDepthBuffer(), false, 0, rtaDepth))
+        if (!graphics3D->SetRenderTarget (gbuffer->GetDepthBuffer (), false, 0, rtaDepth))
           return false;
       }
 
-      if (!graphics3D->ValidateRenderTargets())
+      if (!graphics3D->ValidateRenderTargets ())
         return false;
 
       isIntermediateBufferAttached = true;
       return true;
     }
 
-    void DetachIntermediateBuffer()
+    void DetachIntermediateBuffer ()
     {
       if (enabled && isIntermediateBufferAttached)
       {
-        graphics3D->UnsetRenderTargets();
+        graphics3D->UnsetRenderTargets ();
         isIntermediateBufferAttached = false;
       }      
     }
 
-    bool AttachDepthNormalBuffer()
+    bool AttachDepthNormalBuffer ()
     {
       if (!enabled || isDepthNormalBufferAttached)
         return false;
@@ -334,53 +334,53 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if (!graphics3D->SetRenderTarget (depthNormalBuffer, false, 0, rtaColor0))
           return false;      
 
-      if (!graphics3D->ValidateRenderTargets())
+      if (!graphics3D->ValidateRenderTargets ())
         return false;
 
       isDepthNormalBufferAttached = true;
       return true;
     }
 
-    void DetachDepthNormalBuffer()
+    void DetachDepthNormalBuffer ()
     {
       if (enabled && isDepthNormalBufferAttached)
       {
-        graphics3D->UnsetRenderTargets();
+        graphics3D->UnsetRenderTargets ();
         isDepthNormalBufferAttached = false;
       }      
     }
 
-    iTextureHandle *GetGlobalIllumBuffer()
+    iTextureHandle *GetGlobalIllumBuffer ()
     {
       return globalIllumBuffer;
     }
 
-    iTextureHandle *GetIntermediateBuffer()
+    iTextureHandle *GetIntermediateBuffer ()
     {
       return intermediateBuffer;
     }
 
-    bool IsInitialized()
+    bool IsInitialized ()
     {
       return isInitialized;
     }
 
-    bool IsEnabled() 
+    bool IsEnabled () 
     { 
       return this->enabled;
     }
 
-    void SetEnabled(bool value)
+    void SetEnabled (bool value)
     {
       this->enabled = value;
     }
 
-    bool GetShowAmbientOcclusion()
+    bool GetShowAmbientOcclusion ()
     {
       return showAmbientOcclusion;
     }
 
-    void SetShowAmbientOcclusion(bool showAO)
+    void SetShowAmbientOcclusion (bool showAO)
     {
       if (showAmbientOcclusion == showAO)
         return;      
@@ -391,12 +391,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         svStringSet->Request ("debug show ambocc"))->SetValue ((int)showAmbientOcclusion);
     }
 
-    bool GetShowColorBleeding()
+    bool GetShowColorBleeding ()
     {
       return showGlobalIllumination;
     }
 
-    void SetShowColorBleeding(bool showCB)
+    void SetShowColorBleeding (bool showCB)
     {
       if (showGlobalIllumination == showCB)
         return;
@@ -407,17 +407,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         svStringSet->Request ("debug show globalillum"))->SetValue ((int)showGlobalIllumination);
     }
 
-    bool GetApplyBlur()
+    bool GetApplyBlur ()
     {
       return applyBlur;
     }
 
-    void SetApplyBlur(bool applyBlur)
+    void SetApplyBlur (bool applyBlur)
     {
       this->applyBlur = applyBlur;
     }
 
-    const char* GetNormalsAndDepthResolution()
+    const char* GetNormalsAndDepthResolution ()
     {
       return depthNormalsResolution;
     }
@@ -432,14 +432,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if (depthNormalsResolution.CompareNoCase ("full"))
       {
         // Use full resolution depth and normals from gbuffer
-        DetachDepthNormalBuffer();
-        depthNormalBufferSV->SetValue (gbuffer->GetColorBuffer(3));
+        DetachDepthNormalBuffer ();
+        depthNormalBufferSV->SetValue (gbuffer->GetColorBuffer (3));
         depthNormalsBufferScale = 1.0f;
         depthNormalBuffer = nullptr;
         return;
       }
 
-      iGraphics2D *g2D = graphics3D->GetDriver2D();
+      iGraphics2D *g2D = graphics3D->GetDriver2D ();
 
       depthNormalsBufferScale = 0.5f;
       if (depthNormalsResolution.CompareNoCase ("quarter"))
@@ -452,25 +452,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         int bufwidth = 0, bufheight = 0;
         depthNormalBuffer->GetRendererDimensions (bufwidth, bufheight);
 
-        changeRes = !(fabs (depthNormalsBufferScale * g2D->GetWidth() - (float)bufwidth) < EPSILON) ||
-                    !(fabs (depthNormalsBufferScale * g2D->GetHeight() - (float)bufheight) < EPSILON);
+        changeRes = !(fabs (depthNormalsBufferScale * g2D->GetWidth () - (float)bufwidth) < EPSILON) ||
+                    !(fabs (depthNormalsBufferScale * g2D->GetHeight () - (float)bufheight) < EPSILON);
       }
 
       if (changeRes)
       {
         const int flags = CS_TEXTURE_2D | CS_TEXTURE_NOMIPMAPS | CS_TEXTURE_CLAMP | CS_TEXTURE_NPOTS;
         scfString errString;
-        depthNormalBuffer = graphics3D->GetTextureManager()->CreateTexture (
-          g2D->GetWidth() * depthNormalsBufferScale, g2D->GetHeight() * depthNormalsBufferScale,
-          csimg2D, gbuffer->GetColorBufferFormat(), flags, &errString);
+        depthNormalBuffer = graphics3D->GetTextureManager ()->CreateTexture (
+          g2D->GetWidth () * depthNormalsBufferScale, g2D->GetHeight () * depthNormalsBufferScale,
+          csimg2D, gbuffer->GetColorBufferFormat (), flags, &errString);
 
         if (!depthNormalBuffer)
         {
           csReport (objectRegistry, CS_REPORTER_SEVERITY_WARNING, reporterMessageID, 
-            "Could not create depth and normals buffer! %s", errString.GetCsString().GetDataSafe());
+            "Could not create depth and normals buffer! %s", errString.GetCsString ().GetDataSafe ());
           // Can't use downsampled buffer -> use full resolution depth and normals from gbuffer
-          DetachDepthNormalBuffer();
-          depthNormalBufferSV->SetValue (gbuffer->GetColorBuffer(3));
+          DetachDepthNormalBuffer ();
+          depthNormalBufferSV->SetValue (gbuffer->GetColorBuffer (3));
           depthNormalsResolution = csString ("full");
           depthNormalsBufferScale = 1.0f;
           return;
@@ -481,62 +481,62 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       depthNormalBufferSV->SetValue (depthNormalBuffer);      
     }
 
-    iShader* GetGlobalIllumShader()
+    iShader* GetGlobalIllumShader ()
     {
       return globalIllumShader;
     }    
 
-    iShader* GetLightCompositionShader()
+    iShader* GetLightCompositionShader ()
     {
       return lightCompositionShader;
     }    
 
   private:
 
-    bool InitRenderTargets()
+    bool InitRenderTargets ()
     {
       const int flags = CS_TEXTURE_2D | CS_TEXTURE_NOMIPMAPS | CS_TEXTURE_CLAMP | CS_TEXTURE_NPOTS;
       scfString errString;
-      iGraphics2D *g2D = graphics3D->GetDriver2D();
+      iGraphics2D *g2D = graphics3D->GetDriver2D ();
 
       if (!globalIllumBuffer)
       {
-        globalIllumBuffer = graphics3D->GetTextureManager()->CreateTexture (
-          g2D->GetWidth() * bufferDownscaleFactor, g2D->GetHeight() * bufferDownscaleFactor, 
+        globalIllumBuffer = graphics3D->GetTextureManager ()->CreateTexture (
+          g2D->GetWidth () * bufferDownscaleFactor, g2D->GetHeight () * bufferDownscaleFactor, 
           csimg2D, globalIllumBufferFormat, flags, &errString);
 
         if (!globalIllumBuffer)
         {
           csReport (objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
-            "Could not create global illumination buffer! %s", errString.GetCsString().GetDataSafe());
+            "Could not create global illumination buffer! %s", errString.GetCsString ().GetDataSafe ());
           return false;
         }
       }
 
       if (!intermediateBuffer)
       {
-        intermediateBuffer = graphics3D->GetTextureManager()->CreateTexture (
-          g2D->GetWidth() * bufferDownscaleFactor, g2D->GetHeight() * bufferDownscaleFactor, 
+        intermediateBuffer = graphics3D->GetTextureManager ()->CreateTexture (
+          g2D->GetWidth () * bufferDownscaleFactor, g2D->GetHeight () * bufferDownscaleFactor, 
           csimg2D, globalIllumBufferFormat, flags, &errString);
 
         if (!intermediateBuffer)
         {
           csReport (objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
-            "Could not create intermediate buffer! %s", errString.GetCsString().GetDataSafe());        
+            "Could not create intermediate buffer! %s", errString.GetCsString ().GetDataSafe ());        
           return false;
         }
       }      
 
       if (depthNormalsBufferScale < 1.0f && !depthNormalBuffer)
       {
-        depthNormalBuffer = graphics3D->GetTextureManager()->CreateTexture (
-          g2D->GetWidth() * depthNormalsBufferScale, g2D->GetHeight() * depthNormalsBufferScale,
-          csimg2D, gbuffer->GetColorBufferFormat(), flags, &errString);
+        depthNormalBuffer = graphics3D->GetTextureManager ()->CreateTexture (
+          g2D->GetWidth () * depthNormalsBufferScale, g2D->GetHeight () * depthNormalsBufferScale,
+          csimg2D, gbuffer->GetColorBufferFormat (), flags, &errString);
 
         if (!depthNormalBuffer)
         {
           csReport (objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
-            "Could not create depth and normals buffer! %s", errString.GetCsString().GetDataSafe());        
+            "Could not create depth and normals buffer! %s", errString.GetCsString ().GetDataSafe ());        
           return false;
         }
       }
@@ -544,72 +544,72 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       // Test if the buffer formats are supported. Only when initializing for the first time.
       if (!isInitialized)
       {
-        if (!AttachGlobalIllumBuffer())
+        if (!AttachGlobalIllumBuffer ())
         {
-          csReport(objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
+          csReport (objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
               "Failed to attach global illumination buffer to the device!");
           return false;
         }
 
-        if (!graphics3D->ValidateRenderTargets())
+        if (!graphics3D->ValidateRenderTargets ())
         {
-          DetachGlobalIllumBuffer();
-          csReport(objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
+          DetachGlobalIllumBuffer ();
+          csReport (objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
               "Global illumination buffer format is not supported by the device!");
           return false;
         }
-        DetachGlobalIllumBuffer();
+        DetachGlobalIllumBuffer ();
 
-        if (!AttachIntermediateBuffer())
+        if (!AttachIntermediateBuffer ())
         {
-          csReport(objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
+          csReport (objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
               "Failed to attach intermediate buffer to the device!");
           return false;
         }
 
-        if (!graphics3D->ValidateRenderTargets())
+        if (!graphics3D->ValidateRenderTargets ())
         {
-          DetachIntermediateBuffer();
-          csReport(objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
+          DetachIntermediateBuffer ();
+          csReport (objectRegistry, CS_REPORTER_SEVERITY_ERROR, reporterMessageID, 
               "Intermediate buffer format is not supported by the device!");
           return false;
         }
-        DetachIntermediateBuffer();
+        DetachIntermediateBuffer ();
       }
 
       return true;
     }
 
-    bool AttachBuffer(iTextureHandle *buffer)
+    bool AttachBuffer (iTextureHandle *buffer)
     {
       if (!graphics3D->SetRenderTarget (buffer, false, 0, rtaColor0))
           return false;
 
-      if (!graphics3D->ValidateRenderTargets())
+      if (!graphics3D->ValidateRenderTargets ())
         return false;
 
       return true;
     }
 
-    void DestroyIntermediateBuffers()
+    void DestroyIntermediateBuffers ()
     {
-      graphics3D->UnsetRenderTargets();
+      graphics3D->UnsetRenderTargets ();
       isGlobalIllumBufferAttached = isIntermediateBufferAttached = false;
 
       if (globalIllumBuffer)
       {
         //delete globalIllumBuffer;
-        globalIllumBuffer.Invalidate();
+        globalIllumBuffer.Invalidate ();
       }
 
       if (intermediateBuffer)
       {
         //delete intermediateBuffer;
-        intermediateBuffer.Invalidate();
+        intermediateBuffer.Invalidate ();
       }
     }
 
-    void SetupShaderVars(csConfigAccess &cfg)
+    void SetupShaderVars (csConfigAccess &cfg)
     {       
       globalIllumBufferSV = shaderManager->GetVariableAdd (
           svStringSet->Request ("tex global illumination"));
@@ -624,7 +624,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if (depthNormalsBufferScale < 1.0f)
         depthNormalBufferSV->SetValue (depthNormalBuffer); 
       else
-        depthNormalBufferSV->SetValue (gbuffer->GetColorBuffer(3));
+        depthNormalBufferSV->SetValue (gbuffer->GetColorBuffer (3));
       
       csRef<csShaderVariable> shaderVar = globalIllumShader->GetVariableAdd (
           svStringSet->Request ("tex random normals"));      
@@ -705,7 +705,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       shaderVar->SetValue ((int)showGlobalIllumination);
     }    
 
-    void LoadRandomNormalsTexture(iLoader *loader, iGraphics3D *graphics3D, csConfigAccess &cfg)
+    void LoadRandomNormalsTexture (iLoader *loader, iGraphics3D *graphics3D, csConfigAccess &cfg)
     {
       csRef<iImage> image;
       int flags = CS_TEXTURE_2D | CS_TEXTURE_NOMIPMAPS;
@@ -715,7 +715,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         //"/data/InterleavedSphereJittered4x4.png");
 
       randomNormalsTexture = loader->LoadTexture (randomNormalsFilePath, flags, 
-        graphics3D->GetTextureManager(), &image);
+        graphics3D->GetTextureManager (), &image);
       if (!randomNormalsTexture)
       {
         csReport (objectRegistry, CS_REPORTER_SEVERITY_WARNING, reporterMessageID, 
@@ -723,7 +723,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       }
     }    
 
-    void CreateFullscreenQuad()
+    void CreateFullscreenQuad ()
     {
       float w = graphics3D->GetDriver2D ()->GetWidth ();
       float h = graphics3D->GetDriver2D ()->GetHeight ();
@@ -733,7 +733,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       quadVerts[2] = csVector3 (   w,    h, 0.0f);
       quadVerts[3] = csVector3 (   w, 0.0f, 0.0f);
 
-      uint mixModeNoBlending = CS_MIXMODE_BLEND(ONE, ZERO) | CS_MIXMODE_ALPHATEST_DISABLE;
+      uint mixModeNoBlending = CS_MIXMODE_BLEND (ONE, ZERO) | CS_MIXMODE_ALPHATEST_DISABLE;
 
       quadMesh.meshtype = CS_MESHTYPE_TRIANGLEFAN;
       quadMesh.vertices = quadVerts;
@@ -744,7 +744,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       quadMesh.alphaType.alphaType = csAlphaMode::alphaNone;
     }
 
-    void DrawFullscreenQuad(iShader *shader)
+    void DrawFullscreenQuad (iShader *shader)
     {
       // Switches to using orthographic projection. 
       csReversibleTransform oldView = graphics3D->GetWorldToCamera ();
@@ -808,6 +808,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     csRef<csShaderVariable> depthNormalBufferSV;
   };
 }
-CS_PLUGIN_NAMESPACE_END(RMDeferred)
+CS_PLUGIN_NAMESPACE_END (RMDeferred)
 
 #endif //__GLOBALILLUM_H__

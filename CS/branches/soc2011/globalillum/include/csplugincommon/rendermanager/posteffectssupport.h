@@ -24,7 +24,6 @@
  */
 
 #include "iengine/rendermanager.h"
-
 #include "csplugincommon/rendermanager/posteffects.h"
 
 namespace CS
@@ -41,30 +40,62 @@ namespace CS
      * - Access to the post processing effects manager is available via the member
      *   `postEffects'.
      */
+    // TODO: merge into iPostEffectManager?
     class CS_CRYSTALSPACE_EXPORT PostEffectsSupport : public virtual iRenderManagerPostEffects
     {
-      CS::RenderManager::PostEffectLayersParser* postEffectsParser;
     protected:
-      CS::RenderManager::PostEffectManager       postEffects;
+      // PostEffectLayersParser* postEffectsParser;
+      csRef<iPostEffectManager> postEffectManager;
+      csRefArray<iPostEffect> postEffects;
+    
     public:
-      PostEffectsSupport();
-      virtual ~PostEffectsSupport();
+      PostEffectsSupport ();
+      virtual ~PostEffectsSupport ();
       
       /**
        * Initialize post processing effects support.
-       * \param objectReg Object registry.
-       * \param configKey Configuration key for initial effects to load.
-       *   Will read a file name for a post effects layers file from the config
-       *   key <tt>&lt;configKey&gt;.Effects</tt>.
+       * \param objectReg Object registry. 
        */
-      void Initialize (iObjectRegistry* objectReg, const char* configKey);
+      // TODO: remove?
+      void Initialize (iObjectRegistry* objectReg/*, const char* configKey*/);
     
       /**\name iRenderManagerPostEffects implementation
       * @{ */
-      void ClearLayers() { postEffects.ClearLayers(); }
+      // DEPRECATED
+      void ClearLayers () { /*postEffects.ClearLayers ();*/ }
       bool AddLayersFromDocument (iDocumentNode* node);
       bool AddLayersFromFile (const char* filename);
+         
+      // New methods:
+      csPtr<iPostEffect> CreatePostEffect (const char* name) const;
+      void AddPostEffect (iPostEffect* effect);      
+      bool InsertPostEffect (iPostEffect* effect, size_t index);
+
+      size_t FindPostEffect (const char* name);
+
+      bool RemovePostEffect (size_t index);
+      bool RemovePostEffect (iPostEffect* effect);
+
+      size_t GetPostEffectCount () const;
+      iPostEffect* GetPostEffect (size_t index);
+
+      // TODO: what from root interface?
+      bool HasPostEffects ();
+
+      iTextureHandle* GetScreenTarget ();
+      void SetEffectsOutputTarget (iTextureHandle* tex);  
+      iTextureHandle* GetEffectsOutputTarget () const;
+
+      void ClearIntermediates ();
+      void DrawPostEffects (RenderTreeBase& renderTree);
+
+      bool SetupView (iView* view, CS::Math::Matrix4& perspectiveFixup);
+
+      bool ScreenSpaceYFlipped ();
       /** @} */
+
+    private:
+      bool SetupView (uint width, uint height, CS::Math::Matrix4& perspectiveFixup);
     };
     
   } // namespace RenderManager

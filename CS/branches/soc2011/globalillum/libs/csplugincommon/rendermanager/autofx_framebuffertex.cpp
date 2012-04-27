@@ -48,7 +48,7 @@ namespace CS
       }
   
       void FTBPD::Initialize (iObjectRegistry* objReg,
-				PostEffectManager* postEffects)
+			      iPostEffect* postEffects)
       {
 	csRef<iShaderManager> shaderManager =
 	  csQueryRegistry<iShaderManager> (objReg);

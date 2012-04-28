@@ -17,6 +17,7 @@
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+
 #include "cssysdef.h"
 
 #include "csutil/syspath.h"
@@ -36,7 +37,11 @@ static inline int CS_stat (const char* path, struct stat* buf)
   CS_ALLOC_STACK_ARRAY(wchar_t, pathW, pathWlen);
   csUnicodeTransform::UTF8toWC (pathW, pathWlen,
                                 (utf8_char*)path, pathLen);
-  return _wstat (pathW, buf);
+  /* Note: the cast works as struct stat and struct _stat64i32 effectively
+     have the same layout */
+  // return _wstat64i32 (pathW, reinterpret_cast<struct _stat64i32*> (buf));     // This works too
+
+  return _wstat (pathW, reinterpret_cast<struct _stat64i32*> (buf) );
 #endif
 }
 

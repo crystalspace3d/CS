@@ -52,7 +52,7 @@ void csBulletRigidBody::AddCollider (CS::Collisions::iCollider* collider,
 {
   csRef<csBulletCollider> coll (dynamic_cast<csBulletCollider*>(collider));
 
-  CS::Collisions::ColliderType type = collider->GetGeometryType ();
+  CS::Collisions::ColliderType type = collider->GetType ();
   if (type == CS::Collisions::COLLIDER_CONCAVE_MESH
     ||type == CS::Collisions::COLLIDER_CONCAVE_MESH_SCALED
     ||type == CS::Collisions::COLLIDER_PLANE)
@@ -94,7 +94,7 @@ void csBulletRigidBody::RemoveCollider (size_t index)
 {
   if (index >= colliders.GetSize ())
     return;
-  CS::Collisions::ColliderType type = colliders[index]->GetGeometryType ();
+  CS::Collisions::ColliderType type = colliders[index]->GetType ();
   if (type == CS::Collisions::COLLIDER_CONCAVE_MESH
     ||type == CS::Collisions::COLLIDER_CONCAVE_MESH_SCALED
     ||type == CS::Collisions::COLLIDER_PLANE)

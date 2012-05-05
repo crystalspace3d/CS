@@ -56,8 +56,8 @@ public:
   virtual CS::Collisions::iCollisionObject* QueryCollisionObject () {return dynamic_cast<iCollisionObject*> (this);}
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return NULL;}
 
-  virtual void SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true);
-  virtual CS::Collisions::CollisionObjectType GetObjectType () {return type;}
+  virtual void SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true);
+  virtual CS::Collisions::CollisionObjectType GetType () {return type;}
 
   virtual void SetAttachedMovable (iMovable* movable){this->movable = movable;}
   virtual iMovable* GetAttachedMovable (){return movable;}

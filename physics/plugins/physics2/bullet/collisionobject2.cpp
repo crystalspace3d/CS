@@ -34,8 +34,8 @@ csBulletCollisionObject::~csBulletCollisionObject ()
     delete motionState;
 }
 
-void csBulletCollisionObject::SetObjectType (CS::Collisions::CollisionObjectType type,
-                                             bool forceRebuild /* = true */)
+void csBulletCollisionObject::SetType (CS::Collisions::CollisionObjectType type,
+				       bool forceRebuild /* = true */)
 {
   //many many constraints.
   if (type == CS::Collisions::COLLISION_OBJECT_ACTOR || type == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
@@ -141,7 +141,7 @@ void csBulletCollisionObject::AddCollider (CS::Collisions::iCollider* collider,
 {
   csRef<csBulletCollider> coll (dynamic_cast<csBulletCollider*>(collider));
 
-  CS::Collisions::ColliderType type = collider->GetGeometryType ();
+  CS::Collisions::ColliderType type = collider->GetType ();
   if (type == CS::Collisions::COLLIDER_CONCAVE_MESH
     ||type == CS::Collisions::COLLIDER_CONCAVE_MESH_SCALED
     ||type == CS::Collisions::COLLIDER_PLANE)
@@ -185,7 +185,7 @@ void csBulletCollisionObject::RemoveCollider (size_t index)
     if (isTerrain && index == 0)
       isTerrain = false;
 
-    CS::Collisions::ColliderType type = colliders[index]->GetGeometryType ();
+    CS::Collisions::ColliderType type = colliders[index]->GetType ();
     if (type == CS::Collisions::COLLIDER_CONCAVE_MESH
       ||type == CS::Collisions::COLLIDER_CONCAVE_MESH_SCALED
       ||type == CS::Collisions::COLLIDER_PLANE)

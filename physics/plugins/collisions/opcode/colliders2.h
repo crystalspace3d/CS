@@ -47,7 +47,7 @@ private:
 public:
   csOpcodeCollider (iMeshWrapper* mesh, csOpcodeCollisionSystem* sys);
   virtual ~csOpcodeCollider();
-  virtual CS::Collisions::ColliderType GetGeometryType () const {return CS::Collisions::COLLIDER_CONCAVE_MESH;}
+  virtual CS::Collisions::ColliderType GetType () const {return CS::Collisions::COLLIDER_CONCAVE_MESH;}
   virtual iMeshWrapper* GetMesh () {return mesh;}
   virtual void SetLocalScale (const csVector3& scale) {}
   virtual const csVector3& GetLocalScale () const {return scale;}
@@ -93,7 +93,7 @@ class csOpcodeColliderTerrain:
 public:
   csOpcodeColliderTerrain(iTerrainSystem* terrain, csOpcodeCollisionSystem* sys);
   virtual ~csOpcodeColliderTerrain();
-  virtual CS::Collisions::ColliderType GetGeometryType() const {return CS::Collisions::COLLIDER_TERRAIN;}
+  virtual CS::Collisions::ColliderType GetType() const {return CS::Collisions::COLLIDER_TERRAIN;}
   virtual iTerrainSystem* GetTerrain() const {return terrainSystem;}
   virtual void SetLocalScale (const csVector3& scale) {}
   virtual const csVector3& GetLocalScale () const {return scale;}

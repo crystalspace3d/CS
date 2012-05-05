@@ -35,7 +35,7 @@ csOpcodeCollisionObject::~csOpcodeCollisionObject ()
 
 }
 
-void csOpcodeCollisionObject::SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild)
+void csOpcodeCollisionObject::SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild)
 {
 }
 
@@ -60,7 +60,7 @@ csOrthoTransform csOpcodeCollisionObject::GetTransform ()
 void csOpcodeCollisionObject::AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans)
 {
   this->collider = collider;
-  if (collider->GetGeometryType () == CS::Collisions::COLLIDER_TERRAIN)
+  if (collider->GetType () == CS::Collisions::COLLIDER_TERRAIN)
     isTerrain = true;
 }
 

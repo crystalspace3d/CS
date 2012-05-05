@@ -62,8 +62,8 @@ public:
   virtual iObject* QueryObject (void) { return (iObject*) this; }
   //iCollisionObject
 
-  virtual void SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true) {}
-  virtual CS::Collisions::CollisionObjectType GetObjectType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
+  virtual void SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true) {}
+  virtual CS::Collisions::CollisionObjectType GetType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
 
   virtual void SetAttachedMovable (iMovable* movable) {csBulletCollisionObject::SetAttachedMovable (movable);}
   virtual iMovable* GetAttachedMovable () {return csBulletCollisionObject::GetAttachedMovable ();}
@@ -105,9 +105,9 @@ public:
 
   //iPhysicalBody
 
-  virtual CS::Physics::PhysicalBodyType GetBodyType () const {return CS::Physics::BODY_RIGID;}
-  virtual iRigidBody* QueryRigidBody () {return dynamic_cast<iRigidBody*>(this);}
-  virtual iSoftBody* QuerySoftBody () {return NULL;}
+  virtual CS::Physics::PhysicalBodyType GetType () const {return CS::Physics::BODY_RIGID;}
+  virtual iRigidBody* QueryRigidBody () {return dynamic_cast<iRigidBody*> (this);}
+  virtual iSoftBody* QuerySoftBody () {return dynamic_cast<iSoftBody*> (this);}
 
   virtual void SetMass (btScalar mass);
   virtual btScalar GetMass () const;

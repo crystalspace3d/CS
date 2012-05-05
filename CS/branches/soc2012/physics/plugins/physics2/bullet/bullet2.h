@@ -23,15 +23,22 @@
 #include "csutil/scf.h"
 #include "csutil/nobjvec.h"
 #include "csutil/scf_implementation.h"
+#include "ivaria/reporter.h"
 #include "ivaria/collisions.h"
 #include "ivaria/physics.h"
 #include "ivaria/bullet2.h"
 #include "ivaria/view.h"
 #include "iengine/sector.h"
 #include "iengine/movable.h"
+#include "iengine/portal.h"
 #include "csutil/csobject.h"
 
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
+
+// new csRef: 
+//  CollisionPortal ->  portal, desSector, ghostPortal
+//  csBulletSector ->   sys, hitPortal, (debugDraw, bulletWorld, dispatcher, configuration, solver, broadphase, softWorldInfo)
+//  csBulletSystem ->   
 
 struct iSector;
 class btCollisionObject;
@@ -47,6 +54,12 @@ struct btSoftBodyWorldInfo;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+/**
+ * Determines floating point precision of the bullet2 plugin
+ */
+typedef float Real;
+
+
 class csBulletSystem;
 class csBulletSector;
 class csBulletDebugDraw;
@@ -62,11 +75,11 @@ struct CollisionPortal
   csOrthoTransform warpTrans;
   csRefArray<csBulletCollisionObject> objects;
   csArray<csOrthoTransform> oldTrans;
-  iPortal* portal;
+  csRef<iPortal> portal;
   csBulletSector*  desSector;
   btGhostObject* ghostPortal;
 
-  CollisionPortal (iPortal* portal) : portal (portal), desSector (NULL), ghostPortal (NULL) {}
+  CollisionPortal (csRef<iPortal> portal) : portal (portal), desSector (NULL), ghostPortal (NULL) {}
   ~CollisionPortal ();
   void AddObject (csRef<csBulletCollisionObject> object) {objects.Push (object);}
 };
@@ -103,7 +116,7 @@ class csBulletSector : public scfImplementationExt3<
     }
   };
 
-  csBulletSystem* sys;
+  csRef<csBulletSystem> sys;
 
   bool isSoftWorld;
   csVector3 gravity;
@@ -340,6 +353,8 @@ public:
       const csOrthoTransform& bodyTransform);
   float getInverseInternalScale() {return inverseInternalScale;}
   float getInternalScale() {return internalScale;}
+
+  void ReportWarning (const char* msg, ...);
 };
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

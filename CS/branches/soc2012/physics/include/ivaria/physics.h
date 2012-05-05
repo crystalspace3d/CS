@@ -119,7 +119,7 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual void SetMass (float mass) = 0;
 
   /// Get the mass of this body.
-  virtual float GetMass () = 0;
+  virtual float GetMass () const = 0;
 
   /// Get the density of the body.
   virtual float GetDensity () const = 0;
@@ -136,7 +136,7 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual void SetDensity (float density) = 0;
 
   /// Return the volume of this body.
-  virtual float GetVolume () = 0;
+  virtual float GetVolume () const = 0;
   
   /// Add a force to the whole body.
   virtual void AddForce (const csVector3& force) = 0;
@@ -151,7 +151,7 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual void SetFriction (float friction) = 0;
 
   /// Get the friction of this body.
-  virtual float GetFriction () = 0;
+  virtual float GetFriction () const = 0;
 };
 
 /**

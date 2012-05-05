@@ -16,7 +16,10 @@ private:
   csRef<CS::Collisions::iCollisionSector> collisionSector;
   csRef<CS::Physics::iPhysicalSector> physicalSector;
   csRef<CS::Physics::Bullet2::iPhysicalSector> bulletSector;
-  csRef<CS::Physics::iSoftBodyAnimationControlFactory> softBodyAnimationFactory;
+
+  csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
+
+  csRef<iGenMeshAnimationControlFactory> softBodyAnimationFactory;
   csRefArray<CS::Physics::iRigidBody> dynamicBodies;
   bool isSoftBodyWorld;
 

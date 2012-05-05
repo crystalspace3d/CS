@@ -637,7 +637,7 @@ struct iSkeletonBoneRagdollInfo : public virtual iBase
   virtual csVector3 &GetGeomDimensions() = 0;
 
   virtual void SetFriction(float friction) = 0;
-  virtual float GetFriction() = 0;
+  virtual float GetFriction() const = 0;
   virtual void SetElasticity(float elasticity) = 0;
   virtual float GetElasticity() = 0;
   virtual void SetSoftness(float softness) = 0;

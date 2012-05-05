@@ -224,7 +224,7 @@ void csBulletCollisionObject::RebuildObject ()
       for (size_t i = 0; i < terrainColl->bodies.GetSize (); i++)
       {
         btRigidBody* body = terrainColl->GetBulletObject (i);
-        body->setUserPointer (this);
+        body->setUserPointer (static_cast<CS::Collisions::iCollisionObject*>(this));
       }
     }
 

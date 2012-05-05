@@ -17,6 +17,7 @@
 */
 
 #include "cssysdef.h"
+//#include "ivaria/reporter.h"
 #include "ivaria/softanim.h"
 #include "imesh/animesh.h"
 #include "iengine/scenenode.h"
@@ -167,12 +168,18 @@ csBulletSector::~csBulletSector ()
   collisionActor = NULL;
   
   delete bulletWorld;
-  delete debugDraw;
   delete dispatcher;
   delete configuration;
   delete solver;
   delete broadphase;
-  delete softWorldInfo;
+  if (debugDraw)
+  {
+    delete debugDraw;
+  }
+  if (softWorldInfo)
+  {
+    delete softWorldInfo;
+  }
 }
 
 void csBulletSector::SetGravity (const csVector3& v)
@@ -292,9 +299,13 @@ void csBulletSector::RemovePortal (iPortal* portal)
     if (portals[i]->portal == portal)
     {
       for (size_t j = 0; j < portals[i]->objects.GetSize (); j++)
-        portals[i]->desSector->RemoveCollisionObject (portals[i]->objects[j]->objectCopy);
+      {
+        if (portals[i]->objects[j]->objectCopy)
+        {
+          portals[i]->desSector->RemoveCollisionObject (portals[i]->objects[j]->objectCopy);
+        }
+      }
       bulletWorld->removeCollisionObject (portals[i]->ghostPortal);
-      delete portals[i];
       portals.DeleteIndexFast (i);
       return;
     }
@@ -796,16 +807,16 @@ void csBulletSector::SetAutoDisableParams (float linear, float angular,
 
 void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
 {
-  csRef<csBulletRigidBody> btBody (dynamic_cast<csBulletRigidBody*>(body));
-  rigidBodies.Push (btBody);
+  csRef<csBulletRigidBody> bulletBody (dynamic_cast<csBulletRigidBody*>(body));
+  rigidBodies.Push (bulletBody);
 
-  btBody->sector = this;
-  btBody->collGroup = collGroups[0]; // Default Group.
-  btBody->linearDampening = linearDampening;
-  btBody->angularDampening = angularDampening;
-  btBody->AddBulletObject ();
-  btBody->btBody->setSleepingThresholds (linearDisableThreshold, angularDisableThreshold);
-  btBody->btBody->setDeactivationTime (timeDisableThreshold);
+  bulletBody->sector = this;
+  bulletBody->collGroup = collGroups[0]; // Default Group.
+  bulletBody->SetLinearDampener(linearDampening);
+  bulletBody->SetRollingDampener(angularDampening);
+  bulletBody->AddBulletObject ();
+  bulletBody->btBody->setSleepingThresholds (linearDisableThreshold, angularDisableThreshold);
+  bulletBody->btBody->setDeactivationTime (timeDisableThreshold);
 
   AddMovableToSector (body);
 }
@@ -866,8 +877,8 @@ void csBulletSector::RemoveSoftBody (CS::Physics::iSoftBody* body)
   bool removed = btBody->RemoveBulletObject ();
   if (removed)
   {
-    softBodies.Delete (btBody);
     RemoveMovableFromSector (body);
+    softBodies.Delete (btBody);
   }
 }
 
@@ -944,7 +955,12 @@ void csBulletSector::SetSoftBodyEnabled (bool enabled)
     dispatcher = new btCollisionDispatcher (configuration);
     bulletWorld = new btDiscreteDynamicsWorld
       (dispatcher, broadphase, solver, configuration);
-    delete softWorldInfo;
+
+    if (softWorldInfo)
+    {
+        delete softWorldInfo;
+        softWorldInfo = NULL;
+    }
   }
 
   bulletWorld->setGravity (gra);
@@ -995,7 +1011,7 @@ void csBulletSector::DebugDraw (iView* rview)
 
 void csBulletSector::SetDebugMode (CS::Physics::Bullet2::DebugMode mode)
 {
-  if (!debugDraw)
+  if (!debugDraw && mode)
   {
     debugDraw = new csBulletDebugDraw (sys->getInverseInternalScale ());
     bulletWorld->setDebugDrawer (debugDraw);
@@ -1104,16 +1120,8 @@ void csBulletSector::CheckCollisions ()
       btCollisionObject* obB =
         static_cast<btCollisionObject*> (contactManifold->getBody1 ());
 
-      CS::Collisions::iCollisionObject* cs_obA = 
-        static_cast<CS::Collisions::iCollisionObject*> (obA->getUserPointer ());
-      CS::Collisions::iCollisionObject* cs_obB = 
-        static_cast<CS::Collisions::iCollisionObject*> (obB->getUserPointer ());
-
-      if (!cs_obA || !cs_obB)
-        continue;
-      
-      csBulletCollisionObject* csCOA = dynamic_cast<csBulletCollisionObject*> (cs_obA);
-      csBulletCollisionObject* csCOB = dynamic_cast<csBulletCollisionObject*> (cs_obB);
+      csBulletCollisionObject* csCOA = dynamic_cast <csBulletCollisionObject*> (static_cast<CS::Collisions::iCollisionObject*>(obA->getUserPointer ()));
+      csBulletCollisionObject* csCOB = dynamic_cast <csBulletCollisionObject*> (static_cast<CS::Collisions::iCollisionObject*>(obB->getUserPointer ()));
 
       if (csCOA->GetObjectType () == CS::Collisions::COLLISION_OBJECT_BASE
         || csCOA->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
@@ -1208,7 +1216,7 @@ void csBulletSector::UpdateCollisionPortals ()
             size_t head, end;
             head = 0;
             end = 1;
-            rbs.Push (firstBody);
+            rbs.Push ((csPhysicalBody*)firstBody);
 
             csBox3 box;
             while (head < end)
@@ -1366,15 +1374,19 @@ void csBulletSector::UpdateCollisionPortals ()
           CS::Physics::iPhysicalBody* pb = csObj->QueryPhysicalBody ();
           if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
           {
-            csRef<CS::Physics::iRigidBody> nb = sys->CreateRigidBody ();
-            csBulletRigidBody* newBody = dynamic_cast<csBulletRigidBody*> ((CS::Physics::iRigidBody*)nb);
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
-            
-            for (size_t k = 0; k < rb->GetColliderCount (); k++)
-              newBody->AddCollider (rb->GetCollider (k), rb->relaTransforms[k]);
+            csRef<CS::Physics::iRigidBody> nb = sys->CreateRigidBody ();
+            nb->AddCollider(rb->GetCollider (0), rb->relaTransforms[0]);
 
-            newBody->SetFriction (rb->friction);
-            newBody->SetElasticity (rb->elasticity);
+            csBulletRigidBody* newBody = dynamic_cast<csBulletRigidBody*> ((CS::Physics::iRigidBody*)nb);
+            
+            for (size_t k = 1; k < rb->GetColliderCount (); k++)
+            {
+              newBody->AddCollider (rb->GetCollider (k), rb->relaTransforms[k]);
+            }
+
+            newBody->SetFriction (rb->GetFriction());
+            newBody->SetElasticity (rb->GetElasticity());
             
             newBody->SetState (rb->GetState ());
             newBody->RebuildObject ();
@@ -1386,7 +1398,8 @@ void csBulletSector::UpdateCollisionPortals ()
             // Don't know if it's right. The desSector may don't have a floor in the position of this copy.
             newBody->btBody->setGravity (btVector3 (0.0,0.0,0.0));
             newObject = newBody;
-
+            
+            CS_ASSERT (!rb->objectCopy);
             rb->objectCopy = newBody;
             newBody->objectOrigin = rb;
           }
@@ -1409,7 +1422,8 @@ void csBulletSector::UpdateCollisionPortals ()
           portals[i]->desSector->AddCollisionObject (co);
 
           newObject->SetCollisionGroup ("Portal");
-
+          
+          CS_ASSERT (!csBulletObj->objectCopy);
           csBulletObj->objectCopy = newObject;
           newObject->objectOrigin = csBulletObj;
         }
@@ -1533,6 +1547,7 @@ csBulletSystem::~csBulletSystem ()
 void csBulletSystem::SetInternalScale (float scale)
 {
   // update parameters
+  // TODO: Update all objects
   internalScale = scale;
   inverseInternalScale = 1.0f / scale;
 }
@@ -1658,8 +1673,11 @@ csRef<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor ()
 }
 csRef<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
 {
+  csRef<csBulletSystem> system;
+  system.AttachNew(this);
+  
   csRef<csBulletSector> collSector;
-  collSector.AttachNew (new csBulletSector (this));
+  collSector.AttachNew (new csBulletSector (system));
 
   collSectors.Push (collSector);
   return collSector;
@@ -1803,15 +1821,13 @@ void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollisionObject* obj
     relaTransform = BulletToCS (trans, inverseInternalScale);
     btCollObject->AddCollider (collider, relaTransform);
   }
-
-  //RebuildObject? or let user do it?
 }
 
 csRef<CS::Physics::iRigidBody> csBulletSystem::CreateRigidBody ()
 {
   csRef<csBulletRigidBody> body;
   body.AttachNew (new csBulletRigidBody (this));
-
+  
   //rigidBodies.Push (body);
   return body;
 }
@@ -2097,6 +2113,16 @@ csRef<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (csVector3* vertice
 
   //softBodies.Push (csBody);
   return csBody;
+}
+
+void csBulletSystem::ReportWarning (const char* msg, ...)
+{
+  va_list arg;
+  va_start (arg, msg);
+  csReportV (object_reg, CS_REPORTER_SEVERITY_WARNING,
+	     "crystalspace.dynamics.bullet2",
+	     msg, arg);
+  va_end (arg);
 }
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

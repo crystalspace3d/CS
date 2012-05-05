@@ -548,7 +548,7 @@ void csBulletColliderTerrain::LoadCellToCollider (iTerrainCell *cell)
   if (collSector)
     collSector->bulletWorld->addRigidBody (body);
   if (collBody)
-    body->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*> (collBody));
+    body->setUserPointer (static_cast<CS::Collisions::iCollisionObject*> (collBody));
   bodies.Push (body);
 }
 
@@ -571,7 +571,7 @@ void csBulletColliderTerrain::AddRigidBodies (csBulletSector* sector, csBulletCo
     iTerrainCell* cell = terrainSystem->GetCell (i);
     if (cell->GetLoadState () != iTerrainCell::Loaded)
       continue;
-    bodies[i]->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*> (body));
+    bodies[i]->setUserPointer (static_cast<CS::Collisions::iCollisionObject*> (body));
     sector->bulletWorld->addRigidBody (bodies[i], body->collGroup.value, body->collGroup.mask);
   }
 }

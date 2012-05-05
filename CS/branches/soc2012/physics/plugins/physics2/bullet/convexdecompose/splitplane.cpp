@@ -45,7 +45,6 @@
 #include "ConvexDecomposition.h"
 #include "cd_vector.h"
 #include "cd_hull.h"
-#include "cd_wavefront.h"
 #include "bestfit.h"
 #include "planetri.h"
 #include "vlookup.h"

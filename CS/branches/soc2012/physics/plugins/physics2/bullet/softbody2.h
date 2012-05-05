@@ -21,7 +21,7 @@
 
 #include "bullet2.h"
 #include "common2.h"
-#include "collisionobject2.h"
+#include "physicalbody.h"
 
 class btSoftBody;
 
@@ -29,14 +29,22 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 
 class csBulletSoftBody : public scfImplementationExt2<csBulletSoftBody, 
-  csBulletCollisionObject, CS::Physics::iSoftBody,
+  csPhysicalBody, CS::Physics::iSoftBody,
   CS::Physics::Bullet2::iSoftBody>
 {
   friend class csBulletRigidBody;
   friend class csBulletJoint;
   friend class csBulletSector;
-private:
+  
+  using csBulletCollisionObject::QueryCollisionObject;
 
+  using csPhysicalBody::Enable;
+  using csPhysicalBody::Disable;
+  using csPhysicalBody::IsEnabled;
+  using csPhysicalBody::GetLinearVelocity;
+  using csPhysicalBody::SetLinearVelocity;
+
+private:
   struct AnimatedAnchor
   {
     AnimatedAnchor (size_t vertexIndex, CS::Physics::iAnchorAnimationControl* controller)
@@ -48,9 +56,6 @@ private:
   };
 
   btSoftBody* btBody;
-  float friction;
-  float density;
-  float totalMass;
   short anchorCount;
   csArray<AnimatedAnchor> animatedAnchors;
 
@@ -60,12 +65,9 @@ public:
 
   virtual iObject* QueryObject (void) { return (iObject*) this; }
   //iCollisionObject
-  virtual CS::Collisions::iCollisionObject* QueryCollisionObject () {return dynamic_cast<csBulletCollisionObject*> (this);}  
-  virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return this;}
 
   virtual void SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true) {}
-  virtual CS::Collisions::CollisionObjectType GetObjectType ()
-  {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
+  virtual CS::Collisions::CollisionObjectType GetObjectType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
 
   virtual void SetAttachedMovable (iMovable* movable) {csBulletCollisionObject::SetAttachedMovable (movable);}
   virtual iMovable* GetAttachedMovable () {return csBulletCollisionObject::GetAttachedMovable ();}
@@ -110,26 +112,19 @@ public:
   virtual CS::Physics::iRigidBody* QueryRigidBody () {return NULL;}
   virtual CS::Physics::iSoftBody* QuerySoftBody () {return dynamic_cast<CS::Physics::iSoftBody*>(this);}
 
-  virtual bool Disable ();
-  virtual bool Enable ();
-  virtual bool IsEnabled ();
-
-  virtual void SetMass (float mass);
-  virtual float GetMass ();
-
-  virtual float GetDensity () const {return density;}
-  virtual void SetDensity (float density);
-
-  virtual float GetVolume ();
-
   virtual void AddForce (const csVector3& force);
 
-  virtual csVector3 GetLinearVelocity (size_t index = 0) const;
+  virtual void SetAngularVelocity (const csVector3& vel) { /* does nothing for now */ }
+  virtual csVector3 GetAngularVelocity () const { /* does nothing for now */ return csVector3(0, 0, 0); }
+
+  virtual void SetMass (float mass);
+  virtual float GetMass () const;
 
   virtual void SetFriction (float friction);
-  virtual float GetFriction () {return friction;}
+  virtual void SetDensity (float density);
+  
+  virtual float GetVolume () const;
 
-  //iSoftBody
   virtual void SetVertexMass (float mass, size_t index);
   virtual float GetVertexMass (size_t index);
 
@@ -138,20 +133,22 @@ public:
 
   virtual void AnchorVertex (size_t vertexIndex);
   virtual void AnchorVertex (size_t vertexIndex,
-    CS::Physics::iRigidBody* body);
+      CS::Physics::iRigidBody* body);
   virtual void AnchorVertex (size_t vertexIndex,
-    CS::Physics::iAnchorAnimationControl* controller);
+      CS::Physics::iAnchorAnimationControl* controller);
 
   virtual void UpdateAnchor (size_t vertexIndex,
-    csVector3& position);
+      csVector3& position);
   virtual void RemoveAnchor (size_t vertexIndex);
 
   virtual float GetRigidity ();
   virtual void SetRigidity (float rigidity);
-
+  
+  virtual csVector3 GetLinearVelocity () const;
   virtual void SetLinearVelocity (const csVector3& vel);
-  virtual void SetLinearVelocity (const csVector3& velocity,
-    size_t vertexIndex);
+  
+  virtual csVector3 GetLinearVelocity (size_t vertexIndex) const;
+  virtual void SetLinearVelocity (const csVector3& velocity, size_t vertexIndex);
 
   virtual void SetWindVelocity (const csVector3& velocity);
   virtual const csVector3 GetWindVelocity () const;

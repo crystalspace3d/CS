@@ -10,7 +10,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
 //struct CS::Physics::iPhysicalBody;
 
-class csBulletCollisionObject: public scfImplementationExt1<
+class csBulletCollisionObject: public scfVirtImplementationExt1<
   csBulletCollisionObject, csObject, CS::Collisions::iCollisionObject>
 {
   friend class csBulletSector;
@@ -54,8 +54,7 @@ public:
   virtual ~csBulletCollisionObject ();
 
   virtual iObject* QueryObject (void) { return (iObject*) this; }
-  virtual CS::Collisions::iCollisionObject* QueryCollisionObject () {
-    return dynamic_cast<CS::Collisions::iCollisionObject*> (this);}
+  virtual CS::Collisions::iCollisionObject* QueryCollisionObject () { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return NULL;}
 
   virtual void SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true);
@@ -93,9 +92,11 @@ public:
   virtual CS::Collisions::iCollisionObject* GetContactObject (size_t index);
 
   btCollisionObject* GetBulletCollisionPointer () {return btObject;}
+  virtual void CreateBulletObject() {}
   virtual bool RemoveBulletObject ();
   virtual bool AddBulletObject ();
-  void RemoveObjectCopy () {
+  void RemoveObjectCopy () 
+  {
     csBulletSector* sec = objectCopy->sector;
     sec->RemoveCollisionObject (objectCopy);
     objectCopy = NULL;

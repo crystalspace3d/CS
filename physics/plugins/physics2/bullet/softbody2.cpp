@@ -37,9 +37,10 @@
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 csBulletSoftBody::csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body)
-  :scfImplementationType (this, phySys), btBody (body), friction (5.0f),
-  density (0.1f), anchorCount (0)
+  :scfImplementationType (this, phySys), btBody (body), anchorCount (0)
 {
+  density = btScalar(.1);
+  // friction = 0.5f;
   btObject = body;
   btBody->setUserPointer (dynamic_cast<iPhysicalBody*> (this));
   this->type = CS::Collisions::COLLISION_OBJECT_PHYSICAL;
@@ -156,35 +157,13 @@ bool csBulletSoftBody::AddBulletObject ()
   return true;
 }
 
-bool csBulletSoftBody::Disable ()
-{
-  SetLinearVelocity (csVector3 (0.0f));
-  CS_ASSERT (btBody);
-  btBody->setActivationState (ISLAND_SLEEPING);
-  return true;
-}
-
-bool csBulletSoftBody::Enable ()
-{
-  CS_ASSERT (btBody);
-  btBody->setActivationState (ACTIVE_TAG);
-  return true;
-}
-
-bool csBulletSoftBody::IsEnabled ()
-{
- CS_ASSERT (btBody);
- return btBody->isActive ();
-}
-
 void csBulletSoftBody::SetMass (float mass)
 {
   CS_ASSERT (btBody);
-  this->totalMass = mass;
   btBody->setTotalMass (mass);
 }
 
-float csBulletSoftBody::GetMass ()
+float csBulletSoftBody::GetMass () const
 {
   CS_ASSERT (btBody);
   return btBody->getTotalMass ();
@@ -197,7 +176,7 @@ void csBulletSoftBody::SetDensity (float density)
   btBody->setTotalDensity (density);
 }
 
-float csBulletSoftBody::GetVolume ()
+float csBulletSoftBody::GetVolume () const
 {
   CS_ASSERT (btBody);
   return btBody->getVolume ();
@@ -215,18 +194,32 @@ void csBulletSoftBody::SetLinearVelocity (const csVector3& vel)
   btBody->setVelocity (CSToBullet (vel, system->getInternalScale ()));
 }
 
+csVector3 csBulletSoftBody::GetLinearVelocity () const
+{
+  CS_ASSERT ( btBody );
+
+  // Weighted sum of of all node velocities
+  btVector3 vel = btVector3(0, 0, 0);
+  for (size_t i = 0; i < btBody->m_nodes.size(); ++i)
+  {
+    vel += btBody->m_nodes[i].m_v * btBody->getMass(i);
+  }
+  return BulletToCS (vel, system->getInverseInternalScale ());
+}
+
 csVector3 csBulletSoftBody::GetLinearVelocity (size_t index /* = 0 */) const
 {
   CS_ASSERT ( btBody && index < (size_t) btBody->m_nodes.size ());
+
   return BulletToCS (btBody->m_nodes[int (index)].m_v, system->getInverseInternalScale ());
 }
 
 void csBulletSoftBody::SetFriction (float friction)
 {
   CS_ASSERT (btBody);
-  this->friction = friction;
-  if (friction >= 0.0f && friction <= 1.0f)
-    btBody->m_cfg.kDF = friction;
+  CS_ASSERT (friction >= 0.0f && friction <= 1.0f);
+  
+  btBody->m_cfg.kDF = friction;
 }
 
 void csBulletSoftBody::SetVertexMass (float mass, size_t index)
@@ -262,7 +255,7 @@ void csBulletSoftBody::AnchorVertex (size_t vertexIndex)
 
 void csBulletSoftBody::AnchorVertex (size_t vertexIndex, iRigidBody* body)
 {
-  csBulletRigidBody* rigidBody = static_cast<csBulletRigidBody*> (body);
+  csBulletRigidBody* rigidBody = dynamic_cast<csBulletRigidBody*> (body);
   CS_ASSERT(rigidBody
     && vertexIndex < (size_t) this->btBody->m_nodes.size ()
     && rigidBody->btBody);

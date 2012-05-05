@@ -19,9 +19,8 @@
 #ifndef __CS_BULLET_RIGIDBODY_H__
 #define __CS_BULLET_RIGIDBODY_H__
 
-#include "bullet2.h"
 #include "common2.h"
-#include "collisionobject2.h"
+#include "physicalbody.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
@@ -32,29 +31,29 @@ using CS::Physics::iPhysicalBody;
 using CS::Physics::iRigidBody;
 using CS::Physics::iSoftBody;
 
-class csBulletRigidBody : public scfImplementationExt1<
-  csBulletRigidBody, csBulletCollisionObject, 
-  CS::Physics::iRigidBody>
+class csBulletRigidBody : public scfImplementationExt1<csBulletRigidBody, 
+    csPhysicalBody, CS::Physics::iRigidBody>
 {
-  friend class csBulletKinematicMotionState;
-  friend class csBulletSoftBody;
-  friend class csBulletJoint;
-  friend class csBulletSector;
+friend class csBulletKinematicMotionState;
+friend class csBulletSoftBody;
+friend class csBulletJoint;
+friend class csBulletSector;
+  
+using csBulletCollisionObject::QueryCollisionObject;
+using csPhysicalBody::GetFriction;
+using csPhysicalBody::SetFriction;
+  
+using csPhysicalBody::Enable;
+using csPhysicalBody::Disable;
+using csPhysicalBody::IsEnabled;
+
 private:
   // TODO: remove as much as possible of these fields and store them in the btRigidBody instead
   btRigidBody* btBody;
   CS::Physics::RigidBodyState physicalState;
-  float density;
-  float totalMass;
-  float friction;
-  float softness;
-  float elasticity;
-  float linearDampening;
-  float angularDampening;
-  csVector3 linearVelocity;
-  csVector3 angularVelocity;
   short anchorCount;
   csRef<CS::Physics::iKinematicCallback> kinematicCb;
+  bool tempAddedColliders;    // we want to get rid of this as soon as possible
 
 public:
   csBulletRigidBody (csBulletSystem* phySys);
@@ -62,8 +61,6 @@ public:
 
   virtual iObject* QueryObject (void) { return (iObject*) this; }
   //iCollisionObject
-  virtual iCollisionObject* QueryCollisionObject () {return dynamic_cast<csBulletCollisionObject*> (this);}
-  virtual iPhysicalBody* QueryPhysicalBody () {return this;}
 
   virtual void SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true) {}
   virtual CS::Collisions::CollisionObjectType GetObjectType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
@@ -77,7 +74,7 @@ public:
   virtual void SetTransform (const csOrthoTransform& trans) {csBulletCollisionObject::SetTransform (trans);}
   virtual csOrthoTransform GetTransform () {return csBulletCollisionObject::GetTransform ();}
 
-  virtual void RebuildObject () {csBulletCollisionObject::RebuildObject ();}
+  virtual void RebuildObject ();
 
   virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans
     = csOrthoTransform (csMatrix3 (), csVector3 (0)));
@@ -102,6 +99,7 @@ public:
     return csBulletCollisionObject::GetContactObject (index);}
 
   btRigidBody* GetBulletRigidPointer () {return btBody;}
+  virtual void CreateBulletObject();
   virtual bool RemoveBulletObject ();
   virtual bool AddBulletObject ();
 
@@ -111,33 +109,26 @@ public:
   virtual iRigidBody* QueryRigidBody () {return dynamic_cast<iRigidBody*>(this);}
   virtual iSoftBody* QuerySoftBody () {return NULL;}
 
-  virtual bool Disable ();
-  virtual bool Enable ();
-  virtual bool IsEnabled ();
+  virtual void SetMass (btScalar mass);
+  virtual btScalar GetMass () const;
 
-  virtual void SetMass (float mass);
-  virtual float GetMass ();
+  virtual btScalar GetDensity () const {return density;}
+  virtual void SetDensity (btScalar density);
 
-  virtual float GetDensity () const {return density;}
-  virtual void SetDensity (float density);
-
-  virtual float GetVolume ();
+  virtual btScalar GetVolume () const;
 
   virtual void AddForce (const csVector3& force);
 
   virtual csVector3 GetLinearVelocity (size_t index = 0) const;
-
-  virtual void SetFriction (float friction);
-  virtual float GetFriction () {return friction;}
+  virtual void SetLinearVelocity (const csVector3& vel);
 
   //iRigidBody
   virtual CS::Physics::RigidBodyState GetState () {return physicalState;}
   virtual bool SetState (CS::Physics::RigidBodyState state);
 
   virtual void SetElasticity (float elasticity);
-  virtual float GetElasticity () {return elasticity;}
+  virtual float GetElasticity ();
 
-  virtual void SetLinearVelocity (const csVector3& vel);
 
   virtual void SetAngularVelocity (const csVector3& vel);
   virtual csVector3 GetAngularVelocity () const;
@@ -162,12 +153,12 @@ public:
 
   virtual void SetKinematicCallback (CS::Physics::iKinematicCallback* cb) {kinematicCb = cb;}
   virtual CS::Physics::iKinematicCallback* GetKinematicCallback () {return kinematicCb;}
-
-  virtual void SetLinearDampener (float d);
-  virtual float GetLinearDampener () {return linearDampening;}
-
-  virtual void SetRollingDampener (float d);
-  virtual float GetRollingDampener () {return angularDampening;}
+  
+  virtual btScalar GetLinearDampener();
+  virtual void SetLinearDampener(btScalar d);
+  
+  virtual btScalar GetRollingDampener();
+  virtual void SetRollingDampener(btScalar d);
 };
 
 class csBulletDefaultKinematicCallback : public scfImplementation1<

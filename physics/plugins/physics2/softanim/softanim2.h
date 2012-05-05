@@ -78,7 +78,7 @@ class SoftBodyControl : public scfImplementation2<SoftBodyControl,
 public:
   CS_LEAKGUARD_DECLARE(CS::Physics::iSoftBodyAnimationControl);
 
-  SoftBodyControl (SoftBodyControlFactory* factory, iMeshObject* mesh);
+  SoftBodyControl (iMeshObject* mesh);
 
   //-- CS::Animation::iSoftBodyAnimationControl
   virtual void SetSoftBody (CS::Physics::iSoftBody* body, bool doubleSided = false);
@@ -113,7 +113,6 @@ public:
   virtual const csBox3* UpdateBoundingBoxes (csTicks current, uint32 version_id);
 
 private:
-  SoftBodyControlFactory* factory;
   csWeakRef<iMeshObject> mesh;
   csRef<CS::Physics::iSoftBody> softBody;
   bool doubleSided;

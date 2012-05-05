@@ -273,7 +273,7 @@ public:
   
   virtual void SetFriction(float friction)
   { csSkeletonBoneRagdollInfo::friction = friction; }
-  virtual float GetFriction()
+  virtual float GetFriction() const
   { return friction; }
   virtual void SetElasticity(float elasticity)
   { csSkeletonBoneRagdollInfo::elasticity = elasticity; }

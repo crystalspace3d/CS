@@ -85,7 +85,7 @@ SoftBodyControlFactory::SoftBodyControlFactory (SoftBodyControlType* type)
 csPtr<iGenMeshAnimationControl> SoftBodyControlFactory::CreateAnimationControl
   (iMeshObject* mesh)
 {
-  SoftBodyControl* control = new SoftBodyControl (this, mesh);
+  SoftBodyControl* control = new SoftBodyControl (mesh);
   return csPtr<iGenMeshAnimationControl> (control);
 }
 
@@ -103,8 +103,8 @@ const char* SoftBodyControlFactory::Save (iDocumentNode* parent)
 
 CS_LEAKGUARD_IMPLEMENT(SoftBodyControl);
 
-SoftBodyControl::SoftBodyControl (SoftBodyControlFactory* factory, iMeshObject* mesh)
-  : scfImplementationType (this), factory (factory), mesh (mesh), lastTicks (0),
+SoftBodyControl::SoftBodyControl (iMeshObject* mesh)
+  : scfImplementationType (this), mesh (mesh), lastTicks (0),
   meshPosition (0.0f)
 {
   // Initialize the bounding boxes and the radius

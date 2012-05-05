@@ -45,7 +45,7 @@ public:
 
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return this;}
 
-  virtual CS::Physics::PhysicalBodyType GetBodyType () const = 0;
+  virtual CS::Physics::PhysicalBodyType GetType () const = 0;
 
   virtual CS::Physics::iRigidBody* QueryRigidBody () = 0;
   virtual CS::Physics::iSoftBody* QuerySoftBody () = 0;

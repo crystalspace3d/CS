@@ -196,10 +196,10 @@ void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* objec
 {
   csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*>(object));
 
-  if (obj->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+  if (obj->GetType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
   {
     iPhysicalBody* phyBody = obj->QueryPhysicalBody ();
-    if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
+    if (phyBody->GetType () == CS::Physics::BODY_RIGID)
       AddRigidBody (phyBody->QueryRigidBody ());
     else
       AddSoftBody (phyBody->QuerySoftBody ());
@@ -221,10 +221,10 @@ void csBulletSector::RemoveCollisionObject (CS::Collisions::iCollisionObject* ob
   if (!collObject)
     return;
 
-  if (collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+  if (collObject->GetType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
   {
     iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
-    if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
+    if (phyBody->GetType () == CS::Physics::BODY_RIGID)
       RemoveRigidBody (phyBody->QueryRigidBody ());
     else
       RemoveSoftBody (phyBody->QuerySoftBody ());
@@ -530,8 +530,8 @@ bool csBulletSector::CollisionTest (CS::Collisions::iCollisionObject* object,
   PointContactResult result(sys, collisions);
 
   csBulletCollisionObject* collObject = dynamic_cast<csBulletCollisionObject*> (object);
-  if (collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_BASE
-    || collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+  if (collObject->GetType () == CS::Collisions::COLLISION_OBJECT_BASE
+    || collObject->GetType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
   {
     if (collObject->isTerrain)
     {
@@ -1123,13 +1123,13 @@ void csBulletSector::CheckCollisions ()
       csBulletCollisionObject* csCOA = dynamic_cast <csBulletCollisionObject*> (static_cast<CS::Collisions::iCollisionObject*>(obA->getUserPointer ()));
       csBulletCollisionObject* csCOB = dynamic_cast <csBulletCollisionObject*> (static_cast<CS::Collisions::iCollisionObject*>(obB->getUserPointer ()));
 
-      if (csCOA->GetObjectType () == CS::Collisions::COLLISION_OBJECT_BASE
-        || csCOA->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+      if (csCOA->GetType () == CS::Collisions::COLLISION_OBJECT_BASE
+        || csCOA->GetType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
         if (csCOA->contactObjects.Contains (csCOB) == csArrayItemNotFound)
           csCOA->contactObjects.Push (csCOB);
 
-      if (csCOB->GetObjectType () == CS::Collisions::COLLISION_OBJECT_BASE
-        || csCOB->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+      if (csCOB->GetType () == CS::Collisions::COLLISION_OBJECT_BASE
+        || csCOB->GetType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
         if (csCOB->contactObjects.Contains (csCOA) == csArrayItemNotFound)
           csCOB->contactObjects.Push (csCOA);
     }
@@ -1159,13 +1159,13 @@ void csBulletSector::UpdateCollisionPortals ()
       csBulletCollisionObject* newObject;
 
       // Collide with static object?
-      if (csBulletObj->GetObjectType () == CS::Collisions::COLLISION_OBJECT_BASE)
+      if (csBulletObj->GetType () == CS::Collisions::COLLISION_OBJECT_BASE)
         continue;
 
-      if (csBulletObj->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+      if (csBulletObj->GetType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
       {
         CS::Physics::iPhysicalBody* pb = csObj->QueryPhysicalBody ();
-        if (pb->GetBodyType () == CS::Physics::BODY_SOFT)
+        if (pb->GetType () == CS::Physics::BODY_SOFT)
         {
           //use AABB
           btVector3 aabbMin, aabbMax;
@@ -1227,7 +1227,7 @@ void csBulletSector::UpdateCollisionPortals ()
                 doTrans = false;
                 break;
               }
-              else if (rbs[head]->GetBodyType () == CS::Physics::BODY_SOFT)
+              else if (rbs[head]->GetType () == CS::Physics::BODY_SOFT)
               {
                 // Soft joint should not be transmitted.
                 doTrans = false;
@@ -1338,10 +1338,10 @@ void csBulletSector::UpdateCollisionPortals ()
             RemoveCollisionObject (csObj);
             portals[i]->desSector->AddCollisionObject (csObj);
           }
-          if (csObj->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+          if (csObj->GetType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
           {
             CS::Physics::iPhysicalBody* pb = csObj->QueryPhysicalBody ();
-            if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
+            if (pb->GetType () == CS::Physics::BODY_RIGID)
             {
               csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
               if (rb->GetState () == CS::Physics::STATE_DYNAMIC)
@@ -1368,11 +1368,11 @@ void csBulletSector::UpdateCollisionPortals ()
       else
       {
         portals[i]->AddObject (csBulletObj);
-        if (csObj->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+        if (csObj->GetType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
         {
           btVector3 localInertia (0.0f, 0.0f, 0.0f);
           CS::Physics::iPhysicalBody* pb = csObj->QueryPhysicalBody ();
-          if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
+          if (pb->GetType () == CS::Physics::BODY_RIGID)
           {
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
             csRef<CS::Physics::iRigidBody> nb = sys->CreateRigidBody ();
@@ -1408,12 +1408,12 @@ void csBulletSector::UpdateCollisionPortals ()
             
           }
         }
-        else if (csObj->GetObjectType () == CS::Collisions::COLLISION_OBJECT_GHOST
-          || csObj->GetObjectType () == CS::Collisions::COLLISION_OBJECT_ACTOR)
+        else if (csObj->GetType () == CS::Collisions::COLLISION_OBJECT_GHOST
+          || csObj->GetType () == CS::Collisions::COLLISION_OBJECT_ACTOR)
         {
           csRef<CS::Collisions::iCollisionObject> co = sys->CreateCollisionObject ();
           newObject = dynamic_cast<csBulletCollisionObject*> ((CS::Collisions::iCollisionObject*)co);
-          newObject->SetObjectType (CS::Collisions::COLLISION_OBJECT_GHOST, false);
+          newObject->SetType (CS::Collisions::COLLISION_OBJECT_GHOST, false);
 
           for (size_t k = 0; k < csBulletObj->GetColliderCount (); k++)
             newObject->AddCollider (csBulletObj->GetCollider (k), csBulletObj->relaTransforms[k]);
@@ -1461,7 +1461,7 @@ void csBulletSector::SetInformationToCopy (csBulletCollisionObject* obj,
   if (obj->type == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
   {
     CS::Physics::iPhysicalBody* pb = obj->QueryPhysicalBody ();
-    if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
+    if (pb->GetType () == CS::Physics::BODY_RIGID)
     {
       csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
       csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
@@ -1495,7 +1495,7 @@ void csBulletSector::GetInformationFromCopy (csBulletCollisionObject* obj,
   if (obj->type == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
   {
     CS::Physics::iPhysicalBody* pb = obj->QueryPhysicalBody ();
-    if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
+    if (pb->GetType () == CS::Physics::BODY_RIGID)
     {
       csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
       csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());

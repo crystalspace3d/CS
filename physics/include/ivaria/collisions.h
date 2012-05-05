@@ -190,8 +190,8 @@ struct iCollider : public virtual iBase
 {
   SCF_INTERFACE (CS::Collisions::iCollider, 1, 0, 0);
 
-  /// Get the geometry type of this collider. 
-  virtual ColliderType GetGeometryType () const = 0;
+  /// Get the type of this collider. 
+  virtual ColliderType GetType () const = 0;
 
   /// Set the scale of the collider shape on X/Y/Z axis.
   virtual void SetLocalScale (const csVector3& scale) = 0;
@@ -433,10 +433,10 @@ struct iCollisionObject : public virtual iBase
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () = 0;
 
   /// Set the type of the collision object.
-  virtual void SetObjectType (CollisionObjectType type, bool forceRebuild = true) = 0;
+  virtual void SetType (CollisionObjectType type, bool forceRebuild = true) = 0;
 
   /// Return the type of the collision object.
-  virtual CollisionObjectType GetObjectType () = 0;
+  virtual CollisionObjectType GetType () = 0;
 
   /**
    * Set the movable attached to this collision object. Its position will be updated

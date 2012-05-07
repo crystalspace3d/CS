@@ -26,7 +26,10 @@
 #include "csplugincommon/rendermanager/rendertree.h"
 #include "csplugincommon/rendermanager/debugcommon.h"
 #include "csplugincommon/rendermanager/renderlayers.h"
+#include "csplugincommon/rendermanager/autofx_framebuffertex.h"
+#include "csplugincommon/rendermanager/autofx_reflrefr.h"
 #include "csplugincommon/rendermanager/posteffectssupport.h"
+#include "csplugincommon/rendermanager/hdrexposure.h"
 #include "csplugincommon/rendermanager/viscullcommon.h"
 
 #include "iutil/comp.h"
@@ -97,6 +100,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     typedef CS::RenderManager::DependentTargetManager<RenderTreeType, RMDeferred>
       TargetManagerType;
 
+    typedef CS::RenderManager::AutoFX::ReflectRefract<RenderTreeType, 
+      ContextSetupType> AutoReflectRefractType;
+
+    typedef CS::RenderManager::AutoFX::FramebufferTex<RenderTreeType>
+      AutoFramebufferTexType;
+
     //---- iDebugHelper Interface ----
     virtual bool DebugCommand(const char *cmd);
 
@@ -117,12 +126,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     void AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer);
     void AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer);
 
-    int LocateDeferredLayer(const CS::RenderManager::MultipleRenderLayer &layers);
-    int LocateZOnlyLayer(const CS::RenderManager::MultipleRenderLayer &layers);
     int LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
                     csStringID shaderType);
 
-    void ShowGBuffer(RenderTreeType &tree);
+    void ShowGBuffer(RenderTreeType &tree, GBuffer* buffer);
 
     iObjectRegistry *objRegistry;
 
@@ -130,6 +137,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     PortalSetupType::PersistentData portalPersistent;
     LightSetupType::PersistentData lightPersistent;
     DeferredLightRenderer::PersistentData lightRenderPersistent;
+
+    AutoReflectRefractType::PersistentData reflectRefractPersistent;
+    AutoFramebufferTexType::PersistentData framebufferTexPersistent;
+
+    CS::RenderManager::HDRHelper hdr;
+    CS::RenderManager::HDR::Exposure::Configurable hdrExposure;
+    bool doHDRExposure;
 
     CS::RenderManager::MultipleRenderLayer renderLayer;
 
@@ -140,17 +154,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     TargetManagerType targets;
     csSet<RenderTreeType::ContextNode*> contextsScannedForTargets;
 
-    csRef<iTextureHandle> accumBuffer;
-
     GBuffer gbuffer;
     GBuffer::Description gbufferDescription;
 
     int deferredLayer;
+    int lightingLayer;
     int zonlyLayer;
     int maxPortalRecurse;
 
     bool showGBuffer;
     bool drawLightVolumes;
+
+    uint dbgFlagClipPlanes;
   };
 }
 CS_PLUGIN_NAMESPACE_END(RMDeferred)

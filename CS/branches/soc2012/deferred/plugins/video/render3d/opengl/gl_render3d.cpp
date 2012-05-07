@@ -266,6 +266,7 @@ csZBufMode csGLGraphics3D::GetZModePass2 (csZBufMode mode)
   {
     case CS_ZBUF_NONE:
     case CS_ZBUF_TEST:
+    case CS_ZBUF_INVERT:
     case CS_ZBUF_EQUAL:
       return mode;
     case CS_ZBUF_FILL:
@@ -1520,6 +1521,12 @@ bool csGLGraphics3D::BeginDraw (int drawflags)
   int i = 0;
   for (i = numImageUnits; i-- > 0;)
     DeactivateTexture (i);
+
+  /* If render attachments are set, but no depth attachment is given
+   * (ie default depth is used), implicitly clear the depth buffer. */
+  if ((currentAttachments != 0)
+      && ((currentAttachments & (1 << rtaDepth)) == 0))
+    drawflags |= CSDRAW_CLEARZBUFFER;
 
   // if 2D graphics is not locked, lock it
   if ((drawflags & (CSDRAW_2DGRAPHICS | CSDRAW_3DGRAPHICS))
@@ -4325,6 +4332,7 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
   }
 
   // Based on the kind of clipping we need we set or clip mask.
+  // @@@ TODO: use clip values
   int clip_mask, clip_value;
   if (clipportal_floating)
   {

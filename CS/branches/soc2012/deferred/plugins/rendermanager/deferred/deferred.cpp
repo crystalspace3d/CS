@@ -51,30 +51,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 SCF_IMPLEMENT_FACTORY(RMDeferred);
 
-/**
- * Draws the given texture over the contents of the entire screen.
- */
-void DrawFullscreenTexture(iTextureHandle *tex, iGraphics3D *graphics3D)
-{
-  iGraphics2D *graphics2D = graphics3D->GetDriver2D ();
-
-  int w, h;
-  tex->GetRendererDimensions (w, h);
-
-  graphics3D->SetZMode (CS_ZBUF_NONE);
-  graphics3D->BeginDraw (CSDRAW_2DGRAPHICS | CSDRAW_CLEARSCREEN);
-  graphics3D->DrawPixmap (tex, 
-                          0, 
-                          0,
-                          graphics2D->GetWidth (),
-                          graphics2D->GetHeight (),
-                          0,
-                          0,
-                          w,
-                          h,
-                          0);
-}
-
 //----------------------------------------------------------------------
 template<typename RenderTreeType, typename LayerConfigType>
 class StandardContextSetup
@@ -83,13 +59,13 @@ public:
   typedef StandardContextSetup<RenderTreeType, LayerConfigType> ThisType;
   typedef StandardPortalSetup<RenderTreeType, ThisType> PortalSetupType;
 
-  StandardContextSetup(RMDeferred *rmanager, const LayerConfigType &layerConfig, GBuffer* gbuffer)
+  StandardContextSetup(RMDeferred *rmanager, const LayerConfigType &layerConfig)
     : 
   rmanager(rmanager),
-  gbuffer(gbuffer), 
   layerConfig(layerConfig),
   recurseCount(0), 
   deferredLayer(rmanager->deferredLayer),
+  lightingLayer(rmanager->lightingLayer),
   zonlyLayer(rmanager->zonlyLayer),
   maxPortalRecurse(rmanager->maxPortalRecurse)
   {}
@@ -97,10 +73,10 @@ public:
   StandardContextSetup (const StandardContextSetup &other, const LayerConfigType &layerConfig)
     :
   rmanager(other.rmanager), 
-  gbuffer(other.gbuffer),
   layerConfig(layerConfig),
   recurseCount(other.recurseCount),
   deferredLayer(other.deferredLayer),
+  lightingLayer(other.lightingLayer),
   zonlyLayer(other.zonlyLayer),
   maxPortalRecurse(other.maxPortalRecurse)
   {}
@@ -109,13 +85,10 @@ public:
     typename PortalSetupType::ContextSetupData &portalSetupData,
     bool recursePortals = true)
   {
-    // set custom gbuffer if there is one
-    context.gbuffer = gbuffer;
+    if (recurseCount > maxPortalRecurse) return;
 
     CS::RenderManager::RenderView* rview = context.renderView;
     iSector* sector = rview->GetThisSector ();
-
-    if (recurseCount > maxPortalRecurse) return;
     
     iShaderManager* shaderManager = rmanager->shaderManager;
 
@@ -127,6 +100,11 @@ public:
     // Do the culling
     iVisibilityCuller *culler = sector->GetVisibilityCuller ();
     Viscull<RenderTreeType> (context, rview, culler);
+
+    // setup gbuffer transform.
+    // @@@TODO: we should check all renderTargets here, not just rtaColor0
+    // @@@TODO: we shouldn't have to recalculate this for all contexts - it only changes if the attachment changes
+    SetupTarget(context.renderTargets[rtaColor0].texHandle, context.gbufferFixup, context.texScale);
 
     // Set up all portals
     if (recursePortals)
@@ -161,7 +139,7 @@ public:
     }
 
     // Setup shaders and tickets
-    DeferredSetupShader (context, shaderManager, layerConfig, deferredLayer, zonlyLayer);
+    DeferredSetupShader (context, shaderManager, layerConfig, deferredLayer, lightingLayer, zonlyLayer);
 
     // Setup lighting (only needed for transparent objects)
     RMDeferred::LightSetupType::ShadowParamType shadowParam;
@@ -173,18 +151,91 @@ public:
 
     ForEachForwardMeshNode (context, lightSetup);
 
+    // Setup shaders and tickets
     SetupStandardTicket (context, shaderManager, lightSetup.GetPostLightingLayers ());
+
+    {
+      ThisType ctxRefl (*this, layerConfig);
+      ThisType ctxRefr (*this, layerConfig);
+      RMDeferred::AutoReflectRefractType fxRR (
+        rmanager->reflectRefractPersistent, ctxRefl, ctxRefr);
+        
+      RMDeferred::AutoFramebufferTexType fxFB (
+        rmanager->framebufferTexPersistent);
+      
+      // Set up a functor that combines the AutoFX functors
+      typedef CS::Meta::CompositeFunctorType2<
+        RMDeferred::AutoReflectRefractType,
+        RMDeferred::AutoFramebufferTexType> FXFunctor;
+      FXFunctor fxf (fxRR, fxFB);
+      
+      typedef TraverseUsedSVSets<RenderTreeType,
+        FXFunctor> SVTraverseType;
+      SVTraverseType svTraverser
+        (fxf, shaderManager->GetSVNameStringset ()->GetSize (),
+	 fxRR.svUserFlags | fxFB.svUserFlags);
+      // And do the iteration
+      ForEachMeshNode (context, svTraverser);
+    }
+  }
+
+  // Called by AutoReflectRefractType
+  void operator() (typename RenderTreeType::ContextNode& context)
+  {
+    typename PortalSetupType::ContextSetupData portalData (&context);
+
+    operator() (context, portalData);
   }
 
 private:
 
+  void SetupTarget(iTextureHandle* target, CS::Math::Matrix4& m, csVector4& v)
+  {
+    // init to identity
+    m = CS::Math::Matrix4();
+    if (target)
+    {
+      int width, height;
+      rmanager->gbuffer.GetDimensions(width,height);
+      int targetW, targetH;
+      target->GetRendererDimensions (targetW, targetH);
+
+      if(width != targetW || height != targetH)
+      {
+	// calculate perspective fixup for gbuffer pass.
+	float scaleX = csMin(float(targetW)/float (width),1.0f);
+	float scaleY = csMin(float(targetH)/float (height),1.0f);
+	m = CS::Math::Matrix4 (
+	  scaleX, 0, 0, scaleX-1.0f,
+	  0, scaleY, 0, scaleY-1.0f,
+	  0, 0, 1, 0,
+	  0, 0, 0, 1);
+
+	// calculate texture scale xform for gbuffer reads
+        float scaleXTex = scaleX/2;
+        float scaleYTex = scaleY/2;
+        v = csVector4(scaleXTex, scaleYTex, scaleXTex, 1-scaleYTex);
+      }
+      else
+      {
+        // matching sizes and no flipped y.
+        v = csVector4(0.5,0.5,0.5,0.5);
+      }
+    }
+    else
+    {
+      // we're rendering to the screen, so we have flipped y during lookups.
+      v = csVector4(0.5,-0.5,0.5,0.5);
+    }
+  }
+
   RMDeferred *rmanager;
-  csRef<GBuffer> gbuffer;
 
   const LayerConfigType &layerConfig;
 
   int recurseCount;
   int deferredLayer;
+  int lightingLayer;
   int zonlyLayer;
   int maxPortalRecurse;
 };
@@ -194,6 +245,7 @@ RMDeferred::RMDeferred(iBase *parent)
   : 
 scfImplementationType(this, parent),
 portalPersistent(CS::RenderManager::TextureCache::tcacheExactSizeMatch),
+doHDRExposure (false),
 targets (*this)
 {
   SetTreePersistent (treePersistent);
@@ -213,13 +265,6 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   lightManager = csQueryRegistry<iLightManager> (objRegistry);
   stringSet = csQueryRegistryTagInterface<iStringSet> (objRegistry, "crystalspace.shared.stringset");
 
-  treePersistent.Initialize (shaderManager);
-  portalPersistent.Initialize (shaderManager, graphics3D, treePersistent.debugPersist);
-  lightPersistent.Initialize (registry, treePersistent.debugPersist);
-  lightRenderPersistent.Initialize (registry);
-
-  PostEffectsSupport::Initialize (registry, "RenderManager.Deferred");
-
   // Initialize the extra data in the persistent tree data.
   RenderTreeType::TreeTraitsType::Initialize (treePersistent, registry);
   
@@ -229,6 +274,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   showGBuffer = false;
   drawLightVolumes = false;
 
+  // load render layers
   bool layersValid = false;
   const char *layersFile = cfg->GetStr ("RenderManager.Deferred.Layers", nullptr);
   if (layersFile)
@@ -245,7 +291,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
     else
     {
       // Locates the deferred shading layer.
-      deferredLayer = LocateDeferredLayer (renderLayer);
+      deferredLayer = LocateLayer (renderLayer, stringSet->Request("gbuffer fill"));
       if (deferredLayer < 0)
       {
         csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
@@ -256,17 +302,14 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
         AddDeferredLayer (renderLayer, deferredLayer);
       }
 
-      // Locates the zonly shading layer.
-      zonlyLayer = LocateZOnlyLayer (renderLayer);
-      if (zonlyLayer < 0)
-      {
-        csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
-          messageID, "The render layers file %s does not contain a %s layer.",
-	  CS::Quote::Single (layersFile),
-	  CS::Quote::Single ("depthwrite"));
+      // locate the final lighting layer if there's any
+      lightingLayer = LocateLayer (renderLayer, stringSet->Request("gbuffer use"));
+      csReport (objRegistry, CS_REPORTER_SEVERITY_NOTIFY,
+        messageID, "Using deferred %s.",
+	(lightingLayer < 0) ? "shading" : "lighting");
 
-        AddZOnlyLayer (renderLayer, zonlyLayer);
-      }
+      // Locates the zonly shading layer.
+      zonlyLayer = LocateLayer (renderLayer, stringSet->Request("depthwrite"));
     }
   }
   
@@ -288,35 +331,18 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
     CS::RenderManager::AddDefaultBaseLayers (objRegistry, renderLayer);
   }
 
-  // Creates the accumulation buffer.
-  int flags = CS_TEXTURE_2D | CS_TEXTURE_NOMIPMAPS | CS_TEXTURE_CLAMP | CS_TEXTURE_NPOTS;
-  const char *accumFmt = cfg->GetStr ("RenderManager.Deferred.AccumBufferFormat", "rgb16_f");
-
-  scfString errStr;
-  accumBuffer = graphics3D->GetTextureManager ()->CreateTexture (graphics2D->GetWidth (),
-    graphics2D->GetHeight (),
-    csimg2D,
-    accumFmt,
-    flags,
-    &errStr);
-
-  if (!accumBuffer)
-  {
-    csReport(objRegistry, CS_REPORTER_SEVERITY_ERROR, messageID, 
-      "Could not create accumulation buffer: %s!", errStr.GetCsString ().GetDataSafe ());
-    return false;
-  }
-
   // Create GBuffer
   const char *gbufferFmt = cfg->GetStr ("RenderManager.Deferred.GBuffer.BufferFormat", "rgba16_f");
-  int bufferCount = cfg->GetInt ("RenderManager.Deferred.GBuffer.BufferCount", 3);
-  bool hasDepthBuffer = cfg->GetBool ("RenderManager.Deferred.GBuffer.DepthBuffer", true);
+  const char *accumFmt = cfg->GetStr ("RenderManager.Deferred.GBuffer.AccumBufferFormat", "rgb16_f");
+  int bufferCount = cfg->GetInt ("RenderManager.Deferred.GBuffer.BufferCount", 1);
+  int accumCount = cfg->GetInt ("RenderManager.Deferred.GBuffer.AccumBufferCount", 2);
 
   gbufferDescription.colorBufferCount = bufferCount;
-  gbufferDescription.hasDepthBuffer = hasDepthBuffer;
+  gbufferDescription.accumBufferCount = accumCount;
   gbufferDescription.width = graphics2D->GetWidth ();
   gbufferDescription.height = graphics2D->GetHeight ();
   gbufferDescription.colorBufferFormat = gbufferFmt;
+  gbufferDescription.accumBufferFormat = accumFmt;
 
   if (!gbuffer.Initialize (gbufferDescription, 
                            graphics3D, 
@@ -326,13 +352,32 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
     return false;
   }
 
-  // Fix portal texture cache to only query textures that match the gbuffer dimensions.
-  portalPersistent.fixedTexCacheWidth = gbufferDescription.width;
-  portalPersistent.fixedTexCacheHeight = gbufferDescription.height;
+  treePersistent.Initialize (shaderManager);
+  portalPersistent.Initialize (shaderManager, graphics3D, treePersistent.debugPersist);
+  lightPersistent.Initialize (registry, treePersistent.debugPersist);
+  lightRenderPersistent.Initialize (registry);
 
-  // Make sure the texture cache creates matching texture buffers.
-  portalPersistent.texCache.SetFormat (accumFmt);
-  portalPersistent.texCache.SetFlags (flags);
+  // initialize post-effects
+  PostEffectsSupport::Initialize (registry, "RenderManager.Deferred");
+
+  // initialize hdr
+  HDRSettings hdrSettings (cfg, "RenderManager.Deferred");
+  if (hdrSettings.IsEnabled())
+  {
+    doHDRExposure = true;
+    
+    hdr.Setup (registry, 
+      hdrSettings.GetQuality(), 
+      hdrSettings.GetColorRange());
+    postEffects.SetChainedOutput (hdr.GetHDRPostEffects());
+  
+    hdrExposure.Initialize (registry, hdr, hdrSettings);
+  }
+
+  // initialize reflect/refract
+  dbgFlagClipPlanes = treePersistent.debugPersist.RegisterDebugFlag ("draw.clipplanes.view");
+  reflectRefractPersistent.Initialize (registry, treePersistent.debugPersist, &postEffects);
+  framebufferTexPersistent.Initialize (registry, &postEffects);
 
   RMViscullCommon::Initialize (objRegistry, "RenderManager.Deferred");
   
@@ -367,6 +412,8 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
   contextsScannedForTargets.Empty ();
   portalPersistent.UpdateNewFrame ();
   lightPersistent.UpdateNewFrame ();
+  reflectRefractPersistent.UpdateNewFrame ();
+  framebufferTexPersistent.UpdateNewFrame ();
 
   iEngine *engine = view->GetEngine ();
   engine->UpdateNewFrame ();  
@@ -378,31 +425,18 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
 
   RenderTreeType renderTree (treePersistent);
   RenderTreeType::ContextNode *startContext = renderTree.CreateContext (rview);
-  startContext->drawFlags |= (CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER);
+  startContext->drawFlags |= CSDRAW_CLEARSCREEN;
 
   // Add gbuffer textures to be visualized.
   if (showGBuffer)
-    ShowGBuffer (renderTree);
+    ShowGBuffer (renderTree, &gbuffer);
 
-  CS::Math::Matrix4 perspectiveFixup;
-  postEffects.SetupView (view, perspectiveFixup);
-
-  bool hasPostEffects = (postEffects.GetScreenTarget () != (iTextureHandle*)nullptr);
-
-  if (hasPostEffects)
-  {
-    startContext->renderTargets[rtaColor0].texHandle = postEffects.GetScreenTarget ();
-    startContext->perspectiveFixup = perspectiveFixup;
-  }
-  else
-  {
-    startContext->renderTargets[rtaColor0].texHandle = accumBuffer;
-    startContext->renderTargets[rtaColor0].subtexture = 0;
-  }
+  startContext->renderTargets[rtaColor0].texHandle = postEffects.GetScreenTarget ();
+  postEffects.SetupView (view, startContext->perspectiveFixup);
 
   // Setup the main context
   {
-    ContextSetupType contextSetup (this, renderLayer, &gbuffer);
+    ContextSetupType contextSetup (this, renderLayer);
     ContextSetupType::PortalSetupType::ContextSetupData portalData (startContext);
 
     contextSetup (*startContext, portalData, recursePortals);
@@ -428,25 +462,18 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
                                                  shaderManager,
                                                  stringSet,
                                                  lightRenderPersistent,
+						 gbuffer,
                                                  deferredLayer,
+						 lightingLayer,
                                                  zonlyLayer,
                                                  drawLightVolumes);
 
     ForEachContextReverse (renderTree, render);
-
-    // clear clipper
-    graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
   }
 
-  if (hasPostEffects)
-  {
-    postEffects.DrawPostEffects (renderTree);
-  }
-  else
-  {
-    // Output the final result to the backbuffer.
-    DrawFullscreenTexture (accumBuffer, graphics3D);
-  }
+  postEffects.DrawPostEffects (renderTree);
+
+  if (doHDRExposure) hdrExposure.ApplyExposure (renderTree, view);
 
   DebugFrameRender (rview, renderTree);
 
@@ -464,8 +491,10 @@ bool RMDeferred::PrecacheView(iView *view)
   return RenderView (view, false);
 
   postEffects.ClearIntermediates ();
+  hdr.GetHDRPostEffects().ClearIntermediates();
 }
 
+//----------------------------------------------------------------------
 bool RMDeferred::HandleTarget (RenderTreeType& renderTree,
                                const TargetManagerType::TargetSettings& settings,
                                bool recursePortals, iGraphics3D* g3d)
@@ -486,19 +515,7 @@ bool RMDeferred::HandleTarget (RenderTreeType& renderTree,
   startContext->renderTargets[rtaColor0].subtexture = settings.targetSubTexture;
   startContext->drawFlags = settings.drawFlags;
 
-  settings.target->GetRendererDimensions(gbufferDescription.width, gbufferDescription.height);
-  csRef<GBuffer> buffer;
-  buffer.AttachNew(new GBuffer);
-
-  if (!buffer->Initialize (gbufferDescription, 
-                           g3d, 
-                           shaderManager->GetSVNameStringset (), 
-                           objRegistry))
-  {
-    return false;
-  }
-
-  ContextSetupType contextSetup (this, renderLayer, buffer);
+  ContextSetupType contextSetup (this, renderLayer);
   ContextSetupType::PortalSetupType::ContextSetupData portalData (startContext);
 
   contextSetup (*startContext, portalData, recursePortals);
@@ -555,18 +572,6 @@ void RMDeferred::AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, i
 }
 
 //----------------------------------------------------------------------
-int RMDeferred::LocateDeferredLayer(const CS::RenderManager::MultipleRenderLayer &layers)
-{
-  return LocateLayer (layers, stringSet->Request("gbuffer fill"));
-}
-
-//----------------------------------------------------------------------
-int RMDeferred::LocateZOnlyLayer(const CS::RenderManager::MultipleRenderLayer &layers)
-{
-  return LocateLayer (layers, stringSet->Request("depthwrite"));
-}
-
-//----------------------------------------------------------------------
 int RMDeferred::LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
                             csStringID shaderType)
 {
@@ -588,24 +593,22 @@ int RMDeferred::LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::ShowGBuffer(RenderTreeType &tree)
+void RMDeferred::ShowGBuffer(RenderTreeType &tree, GBuffer* buffer)
 {
-  size_t count = gbuffer.GetColorBufferCount ();
-  if (count > 0)
+  int w, h;
+  buffer->GetColorBuffer (0)->GetRendererDimensions (w, h);
+  float aspect = (float)w / h;
+
+  for (size_t i = 0; i < buffer->GetColorBufferCount(); i++)
   {
-    int w, h;
-    gbuffer.GetColorBuffer (0)->GetRendererDimensions (w, h);
-    float aspect = (float)w / h;
+    tree.AddDebugTexture (buffer->GetColorBuffer (i), aspect);
+  }
 
-    for (size_t i = 0; i < count; i++)
-    {
-      tree.AddDebugTexture (gbuffer.GetColorBuffer (i), aspect);
-    }
+  tree.AddDebugTexture (buffer->GetDepthBuffer (), aspect);
 
-    if (gbuffer.GetDepthBuffer ())
-    {
-      tree.AddDebugTexture (gbuffer.GetDepthBuffer (), aspect);
-    }
+  for (size_t i = 0; i < buffer->GetAccumulationBufferCount(); ++i)
+  {
+    tree.AddDebugTexture (buffer->GetAccumulationBuffer(i), aspect);
   }
 }
 

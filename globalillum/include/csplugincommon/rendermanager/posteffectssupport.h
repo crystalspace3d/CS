@@ -40,11 +40,10 @@ namespace CS
      * - Access to the post processing effects manager is available via the member
      *   `postEffects'.
      */
-    // TODO: merge into iPostEffectManager?
     class CS_CRYSTALSPACE_EXPORT PostEffectsSupport : public virtual iRenderManagerPostEffects
     {
     protected:
-      // PostEffectLayersParser* postEffectsParser;
+      PostEffectLayersParser* postEffectParser;
       csRef<iPostEffectManager> postEffectManager;
       csRefArray<iPostEffect> postEffects;
     
@@ -55,23 +54,21 @@ namespace CS
       /**
        * Initialize post processing effects support.
        * \param objectReg Object registry. 
+       * \param configKey Render manager configuration key. 
        */
-      // TODO: remove?
-      void Initialize (iObjectRegistry* objectReg/*, const char* configKey*/);
+      void Initialize (iObjectRegistry* objectReg, const char* configKey);
     
       /**\name iRenderManagerPostEffects implementation
       * @{ */
-      // DEPRECATED
-      void ClearLayers () { /*postEffects.ClearLayers ();*/ }
+      void ClearLayers ();
       bool AddLayersFromDocument (iDocumentNode* node);
       bool AddLayersFromFile (const char* filename);
          
-      // New methods:
       csPtr<iPostEffect> CreatePostEffect (const char* name) const;
       void AddPostEffect (iPostEffect* effect);      
       bool InsertPostEffect (iPostEffect* effect, size_t index);
 
-      size_t FindPostEffect (const char* name);
+      size_t FindPostEffect (const char* name) const;
 
       bool RemovePostEffect (size_t index);
       bool RemovePostEffect (iPostEffect* effect);
@@ -79,10 +76,7 @@ namespace CS
       size_t GetPostEffectCount () const;
       iPostEffect* GetPostEffect (size_t index);
 
-      // TODO: what from root interface?
-      bool HasPostEffects ();
-
-      iTextureHandle* GetScreenTarget ();
+      iTextureHandle* GetScreenTarget () const;
       void SetEffectsOutputTarget (iTextureHandle* tex);  
       iTextureHandle* GetEffectsOutputTarget () const;
 
@@ -91,7 +85,7 @@ namespace CS
 
       bool SetupView (iView* view, CS::Math::Matrix4& perspectiveFixup);
 
-      bool ScreenSpaceYFlipped ();
+      bool ScreenSpaceYFlipped () const;
       /** @} */
 
     private:

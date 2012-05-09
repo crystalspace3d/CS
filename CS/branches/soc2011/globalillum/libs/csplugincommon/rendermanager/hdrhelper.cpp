@@ -20,6 +20,7 @@
 
 #include "csplugincommon/rendermanager/hdrhelper.h"
 
+#include "iengine/rendermanager.h"
 #include "iutil/cfgfile.h"
 
 namespace CS
@@ -28,19 +29,18 @@ namespace CS
   {
     HDRHelper::~HDRHelper ()
     {
-      if (postEffectSupport && postEffect)
-	postEffectSupport->RemovePostEffect (postEffect);
+      if (postEffectManager && postEffect)
+	postEffectManager->RemovePostEffect (postEffect);
     }
 
     bool HDRHelper::Setup (iObjectRegistry* objectReg,
 			   Quality quality, int colorRange,
-			   PostEffectsSupport* postEffectSupport)
+			   iRenderManagerPostEffects* postEffectManager)
     {
-      this->postEffectSupport = postEffectSupport;
-      postEffect = postEffectSupport->CreatePostEffect ("hdr");
-      CS_ASSERT (postEffect);
+      this->postEffectManager = postEffectManager;
+      postEffect = postEffectManager->CreatePostEffect ("hdr");
       if (!postEffect) return false;
-      postEffectSupport->AddPostEffect (postEffect);
+      postEffectManager->AddPostEffect (postEffect);
 
       const char* textureFmt;
       switch (quality)

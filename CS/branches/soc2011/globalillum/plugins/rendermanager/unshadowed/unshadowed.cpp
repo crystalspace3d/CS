@@ -449,12 +449,11 @@ bool RMUnshadowed::Initialize(iObjectRegistry* objectReg)
   dbgFlagClipPlanes =
     treePersistent.debugPersist.RegisterDebugFlag ("draw.clipplanes.view");
     
-  PostEffectsSupport::Initialize (objectReg/*, "RenderManager.Unshadowed"*/);
+  PostEffectsSupport::Initialize (objectReg, "RenderManager.Unshadowed");
   
   HDRSettings hdrSettings (cfg, "RenderManager.Unshadowed");
   if (hdrSettings.IsEnabled())
   {
-    printf ("unshadowed: HDR enbaled\n");
     doHDRExposure = true;
     
     hdr.Setup (objectReg, 
@@ -463,17 +462,12 @@ bool RMUnshadowed::Initialize(iObjectRegistry* objectReg)
       this);
     hdrExposure.Initialize (objectReg, hdr, hdrSettings);
   }
-  else printf ("unshadowed: HDR NOT enbaled\n");
   
   portalPersistent.Initialize (shaderManager, g3d,
     treePersistent.debugPersist);
   lightPersistent.Initialize (objectReg, treePersistent.debugPersist);
-  reflectRefractPersistent.Initialize (objectReg, treePersistent.debugPersist,
-				       PostEffectsSupport::HasPostEffects () ?
-				       PostEffectsSupport::GetPostEffect (0) : nullptr);
-  framebufferTexPersistent.Initialize (objectReg,
-				       PostEffectsSupport::HasPostEffects () ?
-				       PostEffectsSupport::GetPostEffect (0) : nullptr);
+  reflectRefractPersistent.Initialize (objectReg, treePersistent.debugPersist, this);
+  framebufferTexPersistent.Initialize (objectReg, this);
   
   RMViscullCommon::Initialize (objectReg, "RenderManager.Unshadowed");
   

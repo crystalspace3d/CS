@@ -112,12 +112,12 @@ namespace CS
 	  * Initialize helper. Fetches various required values from objects in
 	  * the object registry and reads configuration settings. Must be called
 	  * when the RenderManager plugin is initialized.
-	  * \a postEffects must be the post effects manager used by the render
-	  * manager, if any, or 0.
+	  * \a postEffectManager must be the post effects manager used by the render
+	  * manager.
 	  */
 	  void Initialize (iObjectRegistry* objReg,
-			  RenderTreeBase::DebugPersistent& dbgPersist,
-			  iPostEffect* postEffects);
+			   RenderTreeBase::DebugPersistent& dbgPersist,
+			   iRenderManagerPostEffects* postEffectManager);
 	
 	  /**
 	  * Do per-frame house keeping - \b MUST be called every frame/

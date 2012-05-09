@@ -28,16 +28,16 @@ namespace CS
 {
   namespace RenderManager
   {
-    PostEffectsSupport::PostEffectsSupport () //: postEffectsParser (nullptr)
+    PostEffectsSupport::PostEffectsSupport () : postEffectParser (nullptr)
     {
     }
     
     PostEffectsSupport::~PostEffectsSupport ()
     {
-      //delete postEffectsParser;
+      delete postEffectParser;
     }
     
-    void PostEffectsSupport::Initialize (iObjectRegistry* objectReg/*, const char* configKey*/)
+    void PostEffectsSupport::Initialize (iObjectRegistry* objectReg, const char* configKey)
     {
       csRef<iPluginManager> pluginManager = 
 	csQueryRegistry<iPluginManager> (objectReg);
@@ -45,36 +45,44 @@ namespace CS
       postEffectManager = csLoadPlugin<iPostEffectManager>
 	(pluginManager, "crystalspace.rendermanager.posteffect");
 
+      postEffectParser = new PostEffectLayersParser (objectReg);
 
-      /*CS_ASSERT (!postEffectsParser);
-      postEffectsParser = new PostEffectLayersParser (objectReg);
-      
-      postEffects.Initialize (objectReg);
-      
+      // Check for a post-effect to be applied
       if (configKey)
       {
-	      csString realConfigKey (configKey);
-	      realConfigKey.Append (".Effects");
-	      csConfigAccess cfg (objectReg);
- 	      const char* effectsFile = cfg->GetStr (realConfigKey, nullptr);
-	      if (effectsFile)
-	      {
-	        postEffectsParser->AddLayersFromFile (effectsFile, postEffects);
-	      }
-      }*/
+	csString realConfigKey (configKey);
+	realConfigKey.Append (".Effects");
+	csConfigAccess cfg (objectReg);
+	const char* effectsFile = cfg->GetStr (realConfigKey, nullptr);
+
+	if (effectsFile)
+	{
+	  csRef<iPostEffect> effect = CreatePostEffect (effectsFile);
+	  if (postEffectParser->AddLayersFromFile (effectsFile, effect))
+	    AddPostEffect (effect);
+	}
+      }
     }
     
+    void PostEffectsSupport::ClearLayers ()
+    {
+      if (postEffects.GetSize ())
+	postEffects[0]->ClearLayers ();
+    }
+
     bool PostEffectsSupport::AddLayersFromDocument (iDocumentNode* node)
     {
-      //CS_ASSERT (postEffectsParser);
-      //return postEffectsParser->AddLayersFromDocument (node, postEffects);
+      if (postEffects.GetSize ())
+	return postEffectParser->AddLayersFromDocument (node, postEffects[0]);
+
       return false;
     }
     
     bool PostEffectsSupport::AddLayersFromFile (const char* filename)
     {
-      //CS_ASSERT (postEffectsParser);
-      //return postEffectsParser->AddLayersFromFile (filename, postEffects);
+      if (postEffects.GetSize ())
+	return postEffectParser->AddLayersFromFile (filename, postEffects[0]);
+
       return false;
     }
     
@@ -115,7 +123,7 @@ namespace CS
       return result;
     }
 
-    size_t PostEffectsSupport::FindPostEffect (const char* name)
+    size_t PostEffectsSupport::FindPostEffect (const char* name) const
     {
       for (size_t i = 0; i < postEffects.GetSize (); i++)
 	if (strcmp (postEffects[i]->GetName (), name) == 0)
@@ -134,11 +142,6 @@ namespace CS
       return postEffects.DeleteIndex (index);
     }
     
-    bool PostEffectsSupport::HasPostEffects ()
-    {
-      return !postEffects.IsEmpty ();
-    }
-    
     size_t PostEffectsSupport::GetPostEffectCount () const
     {
       return postEffects.GetSize ();
@@ -149,7 +152,7 @@ namespace CS
       return postEffects.Get (index);
     }
 
-    iTextureHandle* PostEffectsSupport::GetScreenTarget ()
+    iTextureHandle* PostEffectsSupport::GetScreenTarget () const
     {
       if (postEffects.IsEmpty ())
         return nullptr;
@@ -238,7 +241,7 @@ namespace CS
       return effectsDataChanged;
     }
 
-    bool PostEffectsSupport::ScreenSpaceYFlipped ()
+    bool PostEffectsSupport::ScreenSpaceYFlipped () const
     {
       for (size_t i = 0; i < postEffects.GetSize (); i++)
       {

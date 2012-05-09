@@ -26,6 +26,7 @@
 #include "iutil/objreg.h"
 
 #include "csutil/cfgacc.h"
+#include "csutil/plugmgr.h"
 
 namespace CS
 {
@@ -51,19 +52,24 @@ namespace CS
 	shadowDefaultShader = loader->LoadShader (defaultShader);
       }
       
-      const char* postEffectsLayers = cfg->GetStr (
+      const char* postEffectLayers = cfg->GetStr (
         csString().Format ("RenderManager.Shadows.%s.PostProcess", shadowType),
         0);
-      if (postEffectsLayers != 0)
+      if (postEffectLayers != 0)
       {
-      // TODO: get/create post effect 
+	// Create a new post-effect
+	csRef<iPluginManager> pluginManager = 
+	  csQueryRegistry<iPluginManager> (objReg);
 
-/*
-	postEffects.AttachNew (new PostEffectLayerOptions);
-	postEffects->Initialize (objReg);
-	PostEffectLayersParser layerParser (objReg);
-	layerParser.AddLayersFromFile (postEffectsLayers, *postEffects);
-*/
+	csRef<iPostEffectManager> postEffectManager = csLoadPlugin<iPostEffectManager>
+	  (pluginManager, "crystalspace.rendermanager.posteffect");
+
+	if (postEffectManager)
+	{
+	  postEffect = postEffectManager->CreatePostEffect (postEffectLayers);
+	  PostEffectLayersParser layerParser (objReg);
+	  layerParser.AddLayersFromFile (postEffectLayers, postEffect);
+	}
       }
             
       csRef<iShaderManager> shaderManager =
@@ -129,11 +135,11 @@ namespace CS
             else
               return false;
               
-            if (postEffects.IsValid())
+            if (postEffect.IsValid())
             {
               if (attachment == rtaColor0)
               {
-                postEffects->SetIntermediateTargetFormat (formatStr);
+                postEffect->SetIntermediateTargetFormat (formatStr);
               }
             }
               

@@ -20,6 +20,7 @@
 
 #include "csplugincommon/rendermanager/hdrexposure_luminance.h"
 
+#include "iengine/rendermanager.h"
 #include "iutil/string.h"
 #include "ivaria/profile.h"
 #include "csutil/fifo.h"
@@ -40,7 +41,7 @@ namespace CS
 	BaseHierarchical::~BaseHierarchical ()
 	{
 	  if (computeFX)
-	    hdr->GetPostEffectsSupport ()->RemovePostEffect (computeFX);
+	    hdr->GetPostEffectManager ()->RemovePostEffect (computeFX);
 	}
 
 	void BaseHierarchical::Initialize (iObjectRegistry* objReg,
@@ -65,11 +66,10 @@ namespace CS
 	  shaderManager = csQueryRegistry<iShaderManager> (objReg);
 	  CS_ASSERT (shaderManager);
 
-	  PostEffectsSupport* postEffectSupport = hdr.GetPostEffectsSupport ();
-	  if (!postEffectSupport) return;
-	  computeFX = postEffectSupport->CreatePostEffect ("hdr_luminance");
+	  iRenderManagerPostEffects* postEffectManager = hdr.GetPostEffectManager ();
+	  if (!postEffectManager) return;
+	  computeFX = postEffectManager->CreatePostEffect ("hdr_luminance");
 	  if (!computeFX) return;
-	  //postEffectSupport->AddPostEffect (computeFX);
 
 	  computeFX->SetIntermediateTargetFormat (intermediateTextureFormat);
 	
@@ -89,7 +89,7 @@ namespace CS
 	  CS_PROFILER_ZONE(HDRLuminance_GetResultData);
 	  
 	  iTextureHandle* measureTex =
-	    hdr->GetHDRPostEffects()->GetLayerOutput (measureLayer);
+	    hdr->GetHDRPostEffect ()->GetLayerOutput (measureLayer);
 
 	  // (Re-)create computeTarget if not created/view dimensions changed
 	  if ((computeStages.GetSize() == 0)

@@ -212,7 +212,7 @@ bool RMDeferred::Initialize (iObjectRegistry *registry)
   lightPersistent.Initialize (registry, treePersistent.debugPersist);
   lightRenderPersistent.Initialize (registry);
   
-  PostEffectsSupport::Initialize (registry/*, "RenderManager.Deferred"*/);
+  PostEffectsSupport::Initialize (registry, "RenderManager.Deferred");
   LoadDebugShader ();
 
   // Initialize the extra data in the persistent tree data.
@@ -426,12 +426,15 @@ bool RMDeferred::RenderView (iView *view, bool recursePortals)
     
   // Add global shader variable with distance from near to far clip plane
   csShaderVariable *farPlaneSV = shaderManager->GetVariableAdd (svStringSet->Request ("far clip distance"));
-  float farPlaneDistance = rview->GetCamera ()->GetFarPlane ()->D ();
+  csRef<iCamera> cameraBase = scfQueryInterface<iCamera> (camera);
+  csPlane3 *farPlane = cameraBase->GetFarPlane ();
+  if (!farPlane) farPlane = new csPlane3 (0, 0, -1, 100);
+  float farPlaneDistance = farPlane->D ();
   float nearPlaneDistance = camera->GetNearClipDistance ();
   farPlaneSV->SetValue ((float) fabs (farPlaneDistance - nearPlaneDistance));
 
   CS::Math::Matrix4 perspectiveFixup;
-  if (HasPostEffects ())    
+  if (GetPostEffectCount ())    
     PostEffectsSupport::SetupView (view, perspectiveFixup);  
   
   // Setup the main context
@@ -439,7 +442,7 @@ bool RMDeferred::RenderView (iView *view, bool recursePortals)
     ContextSetupType contextSetup (this, renderLayer);
     ContextSetupType::PortalSetupType::ContextSetupData portalData (startContext);
 
-    if (HasPostEffects ())
+    if (GetPostEffectCount ())
     {
       startContext->renderTargets[rtaColor0].texHandle = PostEffectsSupport::GetScreenTarget ();
       startContext->perspectiveFixup = perspectiveFixup;
@@ -476,7 +479,7 @@ bool RMDeferred::RenderView (iView *view, bool recursePortals)
   }
   else
   {
-    if (HasPostEffects ())
+    if (GetPostEffectCount ())
     {
       DrawPostEffects (renderTree);
 
@@ -506,7 +509,6 @@ bool RMDeferred::PrecacheView (iView *view)
   if (!RenderView (view, false)) return false;
 
   PostEffectsSupport::ClearIntermediates ();
-  hdr.GetHDRPostEffects ()->ClearIntermediates ();
 
   return true;
 }

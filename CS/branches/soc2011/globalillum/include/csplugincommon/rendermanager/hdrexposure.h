@@ -22,7 +22,6 @@
 #include "csgfx/textureformatstrings.h"
 #include "csplugincommon/rendermanager/hdrexposure_luminance.h"
 #include "csplugincommon/rendermanager/hdrhelper.h"
-#include "csplugincommon/rendermanager/posteffectssupport.h"
 #include "csplugincommon/rendermanager/posteffects.h"
 #include "csutil/ref.h"
 

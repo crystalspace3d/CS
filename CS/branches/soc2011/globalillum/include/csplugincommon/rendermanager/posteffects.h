@@ -51,7 +51,7 @@ namespace RenderManager
   struct iPostEffectLayer;
 
   /**
-    * Options for a postprocessing layer
+    * Options for a post processing layer
     */
   struct PostEffectLayerOptions
   {
@@ -100,7 +100,7 @@ namespace RenderManager
     }
   };
 
-  /// Custom input mapping for a layer
+  /// Custom input mapping for a post processing layer
   struct PostEffectLayerInputMap
   {
     /**
@@ -159,6 +159,60 @@ namespace RenderManager
 
   /**
    * Interface for post processing effects.
+   *
+   * Post processing effects provide a simple way to render the screen to a texture
+   * and then use a number of full screen passes with settable shader to get the desired
+   * effect.
+   *
+   * To use post processing effects, rendering of the main context has to be
+   * redirected to a target managed by the post processing manager. After
+   * drawing the scene another call applies the effects.
+   * Example:
+   * \code
+   * // Set up post processing manager for the given view
+   * postEffect->SetupView (renderView);
+   *
+   * // Set up start context,
+   * RenderTreeType::ContextNode* startContext = renderTree.CreateContext (renderView);
+   * // render to a target for later postprocessing
+   * startContext->renderTargets[rtaColor0].texHandle = postEffect->GetScreenTarget ();
+   *
+   * // ... draw stuff ...
+   *
+   * // Apply post processing effects
+   * postEffect->DrawPostEffect ();
+   * \endcode
+   *
+   * Post processing setups are a graph of effects (with nodes called "layers"
+   * for historic reasons). Each node has one output and multiple inputs.
+   * Inputs can be the output of another node or the render of the current
+   * scene.
+   *
+   * Post processing setups are usually read from an external source
+   * by using PostEffectLayersParser.
+   * Example:
+   * \code
+   * const char* effectsFile = cfg->GetStr ("MyRenderManager.Effects", 0);
+   * if (effectsFile)
+   * {
+   *   PostEffectLayersParser postEffectParser (objectReg);
+   *   postEffectParser.AddLayersFromFile (effectsFile, postEffect);
+   * }
+   * \endcode
+   * A setup is not required to use a post processing manager. If no setup is
+   * provided the scene will just be drawn to the screen.
+   *
+   * Post processing managers can be "chained" which means the output of a
+   * manager serves as the input of the following, "chained" post processing
+   * manager instead of the normal rendered scene. Notably, using HDR exposure
+   * effects involved chaining a post processing manager for HDR to
+   * another post processing manager. Example:
+   * \code
+   * hdr.Setup (...);
+   * // Chain HDR post processing effects to normal effects
+   * postEffect->SetChainedOutput (hdr.GetHDRPostEffect ());
+   * // Just use postEffect as usual, chained effects are applied transparently
+   * \endcode
    */
   struct iPostEffect : public virtual iBase
   {
@@ -174,7 +228,7 @@ namespace RenderManager
     virtual const char* GetIntermediateTargetFormat () = 0;
         
     /**
-      * Set up post processing manager for a view.
+      * Set up the post processing management for a view.
       * \returns Whether the manager has changed. If \c true some values,
       *   such as the screen texture, must be reobtained from the manager.
       */
@@ -244,13 +298,56 @@ namespace RenderManager
   /**
    * Factory for post-effects.
    */
+  // TODO: iPostEffectFactory/System/Component
   struct iPostEffectManager : public virtual iBase
   {
     SCF_INTERFACE (iPostEffectManager, 1, 0, 0);
 
     virtual csPtr<iPostEffect> CreatePostEffect (const char* name) = 0;
   };
-}
-}
+
+  // @@@ TODO: give a simple example
+  /// Helper class to parse post processing effect configurations.
+  class CS_CRYSTALSPACE_EXPORT PostEffectLayersParser :
+    public CS::Memory::CustomAllocated
+  {
+    csStringHash xmltokens;
+    iObjectRegistry* objReg;
+    csRef<iSyntaxService> synldr;
+    
+    typedef csHash<iPostEffectLayer*, csString> ParsedLayers;
+    typedef csDirtyAccessArray<PostEffectLayerInputMap> InputsArray;
+    typedef csHash<csRef<iShader>, csString> ShadersLayers;
+    
+    bool ParseInputs (iDocumentNode* node, iPostEffect* effect,
+                      ParsedLayers& layers, ShadersLayers& shaders,
+                      InputsArray& inputs) const;
+    bool ParseLayer (iDocumentNode* node, iPostEffect* effect,
+                     ParsedLayers& layers, ShadersLayers& shaders) const;
+  public:
+    /// Create.
+    PostEffectLayersParser (iObjectRegistry* objReg);
+    ~PostEffectLayersParser();
+  
+    /**
+     * Parse the post-effect layers from the given document node, and add them to
+     * the given post effect.
+     * \param node The document node to parse the layers from.
+     * \param effect The post-effect where the layers will be added
+     */
+    bool AddLayersFromDocument (iDocumentNode* node, iPostEffect* effect) const;
+
+    /**
+     * Parse the post-effect layers from the given XML file, and add them to
+     * the given post effect.
+     * \param filename A VFS path to the XML file containing the definition of the
+     * post effect layers. The XML root node of the file must be "posteffect".
+     * \param effect The post-effect where the layers will be added
+     */
+    bool AddLayersFromFile (const char* filename, iPostEffect* effect) const;
+  };
+
+} // namespace RenderManager
+} // namespace CS
 
 #endif

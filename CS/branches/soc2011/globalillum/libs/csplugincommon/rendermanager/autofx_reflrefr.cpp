@@ -22,6 +22,7 @@
 
 #include "csutil/cfgacc.h"
 #include "csutil/objreg.h"
+#include "iengine/rendermanager.h"
 #include "imap/loader.h"
 
 namespace CS
@@ -49,7 +50,7 @@ namespace CS
   
       void RRBPD::Initialize (iObjectRegistry* objReg,
 			      RenderTreeBase::DebugPersistent& dbgPersist,
-			      iPostEffect* postEffects)
+			      iRenderManagerPostEffects* postEffectManager)
       {
 	dbgReflRefrTex = dbgPersist.RegisterDebugFlag ("textures.reflrefr");
       
@@ -83,8 +84,14 @@ namespace CS
 	reflXformSV.AttachNew (new csShaderVariable (svReflXform));
 	svRefrXform = strings->Request ("refraction coord xform");
 	refrXformSV.AttachNew (new csShaderVariable (svRefrXform));
-	screenFlipped = postEffects ? postEffects->ScreenSpaceYFlipped() : false;
-	  
+
+	if (postEffectManager->GetPostEffectCount ())
+	{
+	  iPostEffect* effect = postEffectManager->GetPostEffect (0);
+	  screenFlipped = effect->ScreenSpaceYFlipped ();
+	}
+	else screenFlipped = false;
+
 	csRef<iGraphics3D> g3d = csQueryRegistry<iGraphics3D> (objReg);
 	texCache.SetG3D (g3d);
 	texCacheDepth.SetG3D (g3d);

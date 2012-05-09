@@ -27,7 +27,6 @@
 #include "imap/loader.h"
 
 #include "csplugincommon/rendermanager/posteffects.h"
-#include "csplugincommon/rendermanager/posteffectssupport.h"
 
 struct iConfigFile;
 
@@ -42,7 +41,7 @@ namespace CS
      * - The rendermanager must have an instance member for the HDR helper.
      * - The Setup() method must be called.
      * - The HDR helper owns a post effects manager, retrievable with
-     *	 GetHDRPostEffects(). It should be chained to the post effects manager
+     *	 GetHDRPostEffect(). It should be chained to the post effects manager
      *   set up by the render manager. (Or, if the RM does not have a post
      *	 effects manager, properly driven like an RM one would.)
      */
@@ -100,10 +99,10 @@ namespace CS
        */
       bool Setup (iObjectRegistry* objectReg, 
 		  Quality quality, int colorRange,
-		  PostEffectsSupport* postEffectSupport);
+		  iRenderManagerPostEffects* postEffectManager);
 
       /// Get the post processing effects manager which applies HDR tone mapping.
-      iPostEffect* GetHDRPostEffects () { return postEffect; }
+      iPostEffect* GetHDRPostEffect () { return postEffect; }
 
       /// Set the shader used for tonemapping the final image.
       void SetMappingShader (iShader* shader);
@@ -123,14 +122,14 @@ namespace CS
       { return (quality == qualInt8) || (quality == qualInt10)
           || (quality == qualInt16); }
 
-      PostEffectsSupport* GetPostEffectsSupport ()
+      iRenderManagerPostEffects* GetPostEffectManager ()
       {
-	return postEffectSupport;
+	return postEffectManager;
       }
 
     private:
       Quality quality;
-      PostEffectsSupport* postEffectSupport;
+      iRenderManagerPostEffects* postEffectManager;
       csRef<iPostEffect> postEffect;
       iPostEffectLayer* measureLayer;
       iPostEffectLayer* mappingLayer;

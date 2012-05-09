@@ -737,17 +737,18 @@ namespace RenderManager
 		  texHandles[t];
 	    }
 	    shadowMapCtx->drawFlags = CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;
-	    shadowMapCtx->postEffects = persist.settings.postEffects;
+	    shadowMapCtx->postEffect = persist.settings.postEffect;
 	    
 	    /* @@@ FIXME: This will break as soon as the shadowmaps have
 	      different resolutions!
 	      Probably the post effects manager should be changed to handle
 	      changing resolutions well */
-	    if (shadowMapCtx->postEffects.IsValid())
+	    if (shadowMapCtx->postEffect.IsValid())
 	    {
   	      CS::Math::Matrix4 perspectiveFixup;
-	      shadowMapCtx->postEffects->SetupView (shadowMapSize, shadowMapSize,
-		perspectiveFixup);
+	      //shadowMapCtx->postEffect->SetupView (shadowMapSize, shadowMapSize,
+	      //perspectiveFixup);
+	      shadowMapCtx->postEffect->SetupView (shadowMapSize, shadowMapSize);
 	      shadowMapCtx->perspectiveFixup = perspectiveFixup;
 	    }
     

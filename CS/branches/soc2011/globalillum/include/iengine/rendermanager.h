@@ -32,7 +32,7 @@ struct iVisibilityCuller;
  */
 struct iRenderManager : public virtual iBase
 {
-  SCF_INTERFACE(iRenderManager,2,0,1);
+  SCF_INTERFACE (iRenderManager,2,0,1);
 
   /// Render the given view into the framebuffer.
   virtual bool RenderView (iView* view) = 0;
@@ -40,7 +40,7 @@ struct iRenderManager : public virtual iBase
   /**
    * Render the given view into the framebuffer (special precache variant).
    * This method is used by the engine for a precache draw. Usually it's
-   * behaviour differs from RenderView() and is thus unsuitable for normal
+   * behaviour differs from RenderView () and is thus unsuitable for normal
    * drawing.
    */
   virtual bool PrecacheView (iView* view) = 0;
@@ -52,7 +52,7 @@ struct iRenderManager : public virtual iBase
  */
 struct iRenderManagerTargets : public virtual iBase
 {
-  SCF_INTERFACE(iRenderManagerTargets,1,0,1);
+  SCF_INTERFACE (iRenderManagerTargets,1,0,1);
 
   /// Flags for target registration
   enum TargetFlags
@@ -63,7 +63,7 @@ struct iRenderManagerTargets : public virtual iBase
      * Assumes the target is used every frame - means it is rendered to
      * every frame.
      * \remark If this flag is set, but the texture is actually not used,
-     *   this is a waste of cycles. Consider manual marking with MarkAsUsed()
+     *   this is a waste of cycles. Consider manual marking with MarkAsUsed ()
      *   if the texture is only used some times.
      */
     assumeAlwaysUsed = 2,
@@ -102,14 +102,35 @@ using namespace CS::RenderManager;
  */
 struct iRenderManagerPostEffects : public virtual iBase
 {
-  SCF_INTERFACE(iRenderManagerPostEffects,1,0,0);
+  SCF_INTERFACE (iRenderManagerPostEffects,1,0,0);
 
-  // DEPRECATED
-  virtual void ClearLayers() = 0;
+  /**
+   * Clear all layers from the first post effect in the chain, if any.
+   * \deprecated Deprecated in 2.1. Use Cs::RenderManager::iPostEffect::ClearLayers() instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use CS::RenderManager::iPostEffect::ClearLayers() instead.")
+  virtual void ClearLayers () = 0;
+
+  /**
+   * Parse the layers and add them to the first post effect in the chain, if any.
+   * \deprecated Deprecated in 2.1. Use Cs::RenderManager::PostEffectLayersParser instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use CS::RenderManager::iPostEffect::PostEffectLayersParser instead.")
   virtual bool AddLayersFromDocument (iDocumentNode* node) = 0;
+
+  /**
+   * Parse the layers and add them to the first post effect in the chain, if any.
+   * \deprecated Deprecated in 2.1. Use Cs::RenderManager::iPostEffect::PostEffectLayersParser instead.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use CS::RenderManager::iPostEffect::PostEffectLayersParser instead.")
   virtual bool AddLayersFromFile (const char* filename) = 0;
 
-  // New methods:
+  /**
+   * Create a new post effect. You must still add it to the chain of effects
+   * through AddPostEffect() or InsertPostEffect().
+   */
+  virtual csPtr<iPostEffect> CreatePostEffect (const char* name) const = 0;
+
   /// Add an effect at the end of the chain of effects.
   virtual void AddPostEffect (iPostEffect* effect) = 0;
   /// Insert an effect before the effect at position \a index.
@@ -118,19 +139,25 @@ struct iRenderManagerPostEffects : public virtual iBase
   /// Remove the effect at the given position.
   virtual bool RemovePostEffect (size_t index) = 0;
 
+  /// Remove the given effect from the chain of effects.
+  virtual bool RemovePostEffect (iPostEffect* effect) = 0;
+
+  /**
+   * Find the index of the post effect with the given name, or (size_t) ~0
+   * if it is not found.
+   */
+  size_t FindPostEffect (const char* name) const;
+
   /// Get the total number of effects.
   virtual size_t GetPostEffectCount () const = 0;
   /// Get the effect at the given position.
   virtual iPostEffect* GetPostEffect (size_t index) = 0;
 
-  /// Returns true if there is any effect in the chain.
-  virtual bool HasPostEffects() = 0;
-
   /// Discard (and thus cause recreation of) all intermediate textures.      
-  virtual void ClearIntermediates() = 0;
+  virtual void ClearIntermediates () = 0;
 
   /// Get the texture to render a scene to for post processing.
-  virtual iTextureHandle* GetScreenTarget () = 0;
+  virtual iTextureHandle* GetScreenTarget () const = 0;
 
   /// Draw all the effects in the chain of effects.
   virtual void DrawPostEffects (RenderTreeBase& renderTree) = 0;
@@ -144,11 +171,11 @@ struct iRenderManagerPostEffects : public virtual iBase
   /**
     * Set up post processing manager for a view.
     * \returns Whether the manager has changed. If \c true some values,
-    *   such as the screen texture, must be reobtained from the manager.
-    *   \a perspectiveFixup returns a matrix that should be applied
-    *   after the normal perspective matrix (this is needed as the
-    *   screen texture may be larger than the desired viewport and thus
-    *   the projection must be corrected for that).
+    * such as the screen texture, must be reobtained from the manager.
+    * \a perspectiveFixup returns a matrix that should be applied
+    * after the normal perspective matrix (this is needed as the
+    * screen texture may be larger than the desired viewport and thus
+    * the projection must be corrected for that).
     */
   virtual bool SetupView (iView* view, CS::Math::Matrix4& perspectiveFixup) = 0;
 
@@ -156,7 +183,7 @@ struct iRenderManagerPostEffects : public virtual iBase
     * Returns whether the screen space is flipped in Y direction. This usually
     * happens when rendering to a texture due post effects.
     */
-  virtual bool ScreenSpaceYFlipped () = 0;
+  virtual bool ScreenSpaceYFlipped () const = 0;
 };
 
 /**
@@ -164,7 +191,7 @@ struct iRenderManagerPostEffects : public virtual iBase
  */
 struct iRenderManagerVisCull : public virtual iBase
 {
-  SCF_INTERFACE(iRenderManagerVisCull,1,0,0);
+  SCF_INTERFACE (iRenderManagerVisCull,1,0,0);
 
   virtual csPtr<iVisibilityCuller> GetVisCuller () = 0;
 };
@@ -175,7 +202,7 @@ struct iRenderManagerVisCull : public virtual iBase
   */
 struct iRenderManagerGlobalIllum : public virtual iBase
 {
-  SCF_INTERFACE(iRenderManagerGlobalIllum, 1, 0, 0);
+  SCF_INTERFACE (iRenderManagerGlobalIllum, 1, 0, 0);
     
   virtual void EnableGlobalIllumination (bool enable) = 0;
 
@@ -185,11 +212,11 @@ struct iRenderManagerGlobalIllum : public virtual iBase
 
   virtual void ChangeNormalsAndDepthResolution (const char *resolution) = 0;
 
-  virtual csShaderVariable* GetGlobalIllumVariableAdd(const char *svName) = 0;
+  virtual csShaderVariable* GetGlobalIllumVariableAdd (const char *svName) = 0;
 
-  virtual csShaderVariable* GetBlurVariableAdd(const char *svName) = 0;
+  virtual csShaderVariable* GetBlurVariableAdd (const char *svName) = 0;
 
-  virtual csShaderVariable* GetCompositionVariableAdd(const char *svName) = 0;
+  virtual csShaderVariable* GetCompositionVariableAdd (const char *svName) = 0;
 
 };
 

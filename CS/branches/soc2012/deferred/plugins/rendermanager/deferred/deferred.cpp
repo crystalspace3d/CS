@@ -102,9 +102,8 @@ public:
     Viscull<RenderTreeType> (context, rview, culler);
 
     // setup gbuffer transform.
-    // @@@TODO: we should check all renderTargets here, not just rtaColor0
     // @@@TODO: we shouldn't have to recalculate this for all contexts - it only changes if the attachment changes
-    SetupTarget(context.renderTargets[rtaColor0].texHandle, context.gbufferFixup, context.texScale);
+    SetupTarget(context.renderTargets, context.gbufferFixup, context.texScale);
 
     // Set up all portals
     if (recursePortals)
@@ -189,8 +188,20 @@ public:
 
 private:
 
-  void SetupTarget(iTextureHandle* target, CS::Math::Matrix4& m, csVector4& v)
+  void SetupTarget(typename RenderTreeType::ContextNode::TargetTexture* targets, CS::Math::Matrix4& m, csVector4& v)
   {
+    // find a target if there is any
+    // MRTs are required to be of equal size, so one is enough
+    iTextureHandle* target = nullptr;
+    for(int i = 0; i < rtaNumAttachments; ++i)
+    {
+      if(targets[i].texHandle)
+      {
+	target = targets[i].texHandle;
+	break;
+      }
+    }
+
     // init to identity
     m = CS::Math::Matrix4();
     if (target)

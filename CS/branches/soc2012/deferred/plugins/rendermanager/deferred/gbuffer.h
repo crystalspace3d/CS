@@ -303,7 +303,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     }
 
   private:
-    size_t width, height;
+    int width, height;
 
     csRefArray<iTextureHandle> colorBuffers;
     csRefArray<iTextureHandle> accumBuffers;

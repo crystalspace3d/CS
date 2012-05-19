@@ -1,0 +1,8 @@
+SubDir TOP apps awstut ;
+
+if $(STL.AVAILABLE) = yes
+{
+  Description awstut : "Alternate Windowing System Tutorial" ;
+  Application awstut : [ Wildcard *.cpp *.h ] : noinstall ;
+  ExternalLibs awstut : CRYSTAL ;
+}

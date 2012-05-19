@@ -1,0 +1,5 @@
+SubDir TOP apps cloudtest ;
+
+Description cloudtest : "cloud rendering test" ;
+Application cloudtest : [ Wildcard *.cpp *.h ] ;
+ExternalLibs cloudtest : CRYSTAL ;

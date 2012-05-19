@@ -1,0 +1,8 @@
+SubDir TOP apps partedit ;
+
+Description partedit : "particle system editor" ;
+
+Application partedit
+	: [ Wildcard *.cpp *.h ]
+;
+ExternalLibs partedit : CRYSTAL ;

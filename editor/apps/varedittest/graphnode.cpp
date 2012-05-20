@@ -41,7 +41,7 @@ MyGraphNode1 :: MyGraphNode1 (GraphNodeFactory* _factory):GraphNode (_factory)
       GetParameter (5)->SetVector2(csVector2(1.0f, 0.96f));
       GetParameter (6)->SetVector3(csVector3(1.0f, 0.3f,0.8f));
       GetParameter (7)->SetVector4(csVector4(0.2f,0.3f,0.8f,0.10f));
-      GetParameter (8)->SetVFSPath("home");
+      // GetParameter (8)->SetVFSPath("home");
       SetName("bouton1");
 
  }
@@ -51,24 +51,30 @@ void PrintVariant (csVariant* variant)
 	
   switch (variant->GetType ())
     {
+      /*
     case CSVAR_LONG:
       printf ("[variant type: long value: %li]", variant->GetLong ());
       break;
+      */
     case CSVAR_FLOAT:
       printf ("[variant type: float value: %f]", variant->GetFloat ());
       break;
     case CSVAR_BOOL:
       printf ("[variant type: bool value: %i]", variant->GetBool ());
       break;
+      /*
     case CSVAR_CMD:
       printf ("[variant type: command]");
       break;
+      */
     case CSVAR_STRING:
       printf ("[variant type: string value: %s]", variant->GetString ());
       break;
+      /*
     case CSVAR_VFSPATH:
       printf ("[variant type: vfspath value: %s]", variant->GetVFSPath ());
       break;
+      */
     case CSVAR_VECTOR3 :
       printf ("[variant type: vector3 value: %f ; %f ; %f]", variant->GetVector3 ().x,variant->GetVector3 ().y,variant->GetVector3 ().z);
       break;

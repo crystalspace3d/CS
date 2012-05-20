@@ -36,14 +36,8 @@
 /// Type of the values that can be contained within a csVariant.
 enum csVariantType
 {
-  // Signed 32-bit int (long)
-  CSVAR_INT32,
-  // Unsigned 32-bit int (unsigned long)
-  CSVAR_UINT32,
-  /// Signed 64-bit int (long long)
-  CSVAR_INT64,
-  /// Unsigned 64-bit int (unsigned long long)
-  CSVAR_UINT64,
+  // Signed 32-bit integer (long)
+  CSVAR_LONG,
   /// Boolean type
   CSVAR_BOOL,
   /// A command. A command has no value, it is just a flag which can be set or not.
@@ -51,7 +45,7 @@ enum csVariantType
   /// Float type
   CSVAR_FLOAT,
   /// Double-precision floating point number
-  CSVAR_DOUBLE,
+  //CSVAR_DOUBLE,
   /// String type
   CSVAR_STRING,
   /// csColor type
@@ -69,7 +63,7 @@ enum csVariantType
   /// A list of key-value pairs, such as a hashmap
   CSVAR_KEYVALLIST,
   /// A VFS path
-  CSVAR_VFSPATH,
+  //CSVAR_VFSPATH,
   /// csMatrix3 type
   CSVAR_MATRIX3,
   /// csTransform type
@@ -99,24 +93,26 @@ private:
     iString* s;
     csMatrix3* m;
     csTransform* t;
+    iBase* ib;
   } val;
 
   void Clear()
   {
     // TODO: arrays, keyvals, keyvallist, ibase will need decref
 
-    if ((type == CSVAR_STRING
-	 || type == CSVAR_VFSPATH)
+    if ((type == CSVAR_STRING)
 	&& (val.s != 0)) val.s->DecRef();
     else if ((type == CSVAR_MATRIX3) && (val.m != 0))
       delete val.m;
     else if ((type == CSVAR_TRANSFORM) && (val.t != 0))
       delete val.t;
+    else if ((type == CSVAR_IBASE) && (val.ib != 0))
+      val.ib->DecRef();
   }
 
 public:
   /// Constructor initialized with a value of type CSVAR_CMD
-  csVariant () { type = CSVAR_CMD; memset (&val, 0, sizeof (val)); }
+  //csVariant () { type = CSVAR_CMD; memset (&val, 0, sizeof (val)); }
   /// Constructor initialized with a value of type CSVAR_LONG
   csVariant (int i) { type = CSVAR_LONG; val.l = i; }
   /// Constructor initialized with a value of type CSVAR_LONG
@@ -137,12 +133,18 @@ public:
   csVariant (csVector3& v) { type = CSVAR_VECTOR3; val.f[0] = v[0]; val.f[1] = v[1]; val.f[2] = v[2]; }
   /// Constructor initialized with a value of type CSVAR_VECTOR4
   csVariant (csVector4& v) { type = CSVAR_VECTOR4; val.f[0] = v[0]; val.f[1] = v[1]; val.f[2] = v[2]; val.f[3] = v[3]; }
+  /// Constructor initialized with a key-value pair
+  // TODO
+  /// Constructor initialized with a key-value list
+  // TODO
   /// Constructor initialized with a value of type CSVAR_MATRIX3
   csVariant (csMatrix3& m) { type = CSVAR_MATRIX3; val.m = new csMatrix3 (m); }
   /// Constructor initialized with a value of type CSVAR_TRANSFORM
   csVariant (csTransform& t) { type = CSVAR_TRANSFORM; val.t = new csTransform (t); }
-
-  // TODO: rest of constructors
+  /// Constructor initialized with a csArray
+  // TODO
+  /// Constructor initialized with an iBase
+  // TODO
 
   /// Copy constructor.
   csVariant (const csVariant& var)
@@ -151,9 +153,11 @@ public:
     
     type = var.type;
     val = var.val;
-    if ((type == CSVAR_STRING
-	 || type == CSVAR_VFSPATH)
+    if ((type == CSVAR_STRING)
 	&& (val.s != 0)) val.s->IncRef(); 
+
+    if ((type == CSVAR_IBASE)
+      && (val.ib != 0)) val.ib->IncRef();
   }
 
   ~csVariant () { Clear(); }
@@ -164,9 +168,12 @@ public:
     Clear ();
     type = var.type;
     val = var.val;
-    if ((type == CSVAR_STRING
-	 || type == CSVAR_VFSPATH)
+    if ((type == CSVAR_STRING)
 	&& (val.s != 0)) val.s->IncRef ();
+
+    if ((type == CSVAR_IBASE)
+      && (val.ib != 0)) val.ib->IncRef();
+
     return var;
   }
   
@@ -200,12 +207,6 @@ public:
       val.s = new scfString (s);
     else
       val.s = 0;
-  }
-  /// Assign a command. A command has no value, it is just a flag which can be set or not.
-  void SetCommand ()
-  {
-    Clear();
-    type = CSVAR_CMD;
   }
   /// Assign a csColor
   void SetColor (const csColor& c)
@@ -254,6 +255,7 @@ public:
     val.f[3] = v[3];
   }
   /// Assign a VFS path
+  /*
   void SetVFSPath (const char* s)
   {
     Clear();
@@ -263,6 +265,11 @@ public:
     else
       val.s = 0;
   }
+  */
+  /// Assign a key-value pair
+  // TODO
+  /// Assign a list of key-value pairs
+  // TODO
   /// Assign a csMatrix3
   void SetMatrix3 (const csMatrix3& m)
   {
@@ -277,6 +284,10 @@ public:
     type = CSVAR_TRANSFORM;
     val.t = new csTransform (t);
   }
+  /// Assign an iBase
+  // TODO
+  /// Assign a csArray
+  // TODO
 
   /// Retrieve a long
   long GetLong () const
@@ -333,11 +344,16 @@ public:
     return csVector4 (val.f[0], val.f[1], val.f[2], val.f[3]);
   }
   /// Retrieve a VFS path
+  /*
   const char* GetVFSPath () const
   {
     CS_ASSERT (type == CSVAR_VFSPATH);
     return val.s->GetData();
-  }
+  }*/
+  /// Retrieve a key-value pair
+  // TODO
+  /// Retrieve a list of key-value pairs
+  // TODO
   /// Retrieve a csMatrix3
   csMatrix3 GetMatrix3 () const
   {
@@ -350,6 +366,10 @@ public:
     CS_ASSERT (type == CSVAR_TRANSFORM);
     return *val.t;
   }
+  /// Retrieve an iBase
+  // TODO
+  /// Retrieve a csArray
+  // TODO
 
   /// Get the type of the contained value. The default value is CSVAR_CMD.
   csVariantType GetType () const { return type; }

@@ -495,7 +495,7 @@ void Graph_behaviourFrame::Populate ()
       }
       break;
 				
-	
+	/*
       case CSVAR_VFSPATH :
       {
 	wxString pathDescription (option->description, wxConvUTF8);
@@ -508,6 +508,8 @@ void Graph_behaviourFrame::Populate ()
 	page->SetPropertyHelpString(pathName,pathDescription );
 
       }
+      */
+
       default:
 	pgMan->SetDescription(wxT("Page Manager :"), wxT("Select a property to add a new value"));
       }
@@ -533,7 +535,7 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
   const csOptionDescription* compareValue = nodeFactory->GetParameterDescription (index);
   csVariantType compareType = compareValue->type;
   csVariant oldValue = *variant;
-  csVariant valueVar;
+  csVariant valueVar = new csVariant(oldValue);
 
   if (compareType == CSVAR_STRING)
   {
@@ -602,13 +604,14 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
     node->UpdateParameter (index, &oldValue, &valueVar);
 				
   }
+  /*
   else if (compareType == CSVAR_VFSPATH)
   {
 
     valueVar.SetVFSPath (newValue.GetString ().mb_str ());
     node->UpdateParameter (index, &oldValue, &valueVar);
 	
-  }
+  }*/
   else
   {
     pgMan->SetDescription (wxT ("Page Manager :"), wxT ("Message test"));

@@ -85,11 +85,12 @@ bool Graph_behaviourApp::OnInit()
 	description.type = CSVAR_VECTOR4;
 	factory1->AddParameter (description);
 	
+  /*
 	description.name = "parameter9";
 	description.description = "This is the description of parameter9 (type: VFSPath)";
 	description.type = CSVAR_VFSPATH;
 	factory1->AddParameter (description);
-
+  */
 	
 
     	

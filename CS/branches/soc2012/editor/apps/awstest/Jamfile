@@ -1,8 +1,0 @@
-SubDir TOP apps awstest ;
-
-if $(STL.AVAILABLE) = yes
-{
-  Description awstest : "Alternate Windowing System test" ;
-  Application awstest : [ Wildcard *.cpp *.h ] : noinstall ;
-  ExternalLibs awstest : CRYSTAL ;
-}

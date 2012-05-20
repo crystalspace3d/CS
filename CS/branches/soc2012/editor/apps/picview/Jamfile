@@ -1,5 +1,0 @@
-SubDir TOP apps picview ;
-
-Description picview : "Picture Viewer" ;
-Application picview : [ Wildcard *.cpp *.h ] : noinstall ;
-ExternalLibs picview : CRYSTAL ;

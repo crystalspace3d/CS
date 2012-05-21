@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <!--
-  Copyright (C) 2007-2008 by Frank Richter
-	    (C) 2007 by Jorrit Tyberghein
+  Copyright (C) 2012 by Matthieu Kraus
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -21,57 +20,18 @@
   <technique priority="200">
     <combiner plugin="crystalspace.graphics3d.shader.combiner.glcg" />
 
-    <!--
-	Weak aliases.
-	"Weak" means they do _not_ override aliases specified above this
-	snippet; instead, the weak alias applies only if an alias with the
-	given has not been specified yet.
-	The practical effect is that this allows to use aliased snippets,
-	but also provide "default" snippets and thus does not require users
-	of this snippets to provide all aliases.
-      -->
     <alias name="use_buffer" weak="yes" file="/shader-snippets/deferred/use_gbuffer.xml" />
-    <alias name="ambient_modulate" weak="yes" file="/shader-snippets/lighting/ambient-null.xml" />
     <alias name="apply_alpha_end" weak="yes" file="/shader-snippets/surface/alpha-nochange.xml" />
 
-    <!--
-	Snippets - the building blocks of this shader.
-	Their order influence what happens if not all features of the shader
-	are supported; for earlier appearing snippets higher techniques
-	are preferred. Basically, order snippets by 'importance' of the eye
-	candy they produce: in this case, we consider good ambient (which
-	does static normal mapped light mapping) and static specular more
-	important than a parallax effect.
-    -->
     <snippet id="position" file="/shader-snippets/position.xml" />
     <snippet id="use_buffer" filealias="use_buffer" />
-    <snippet id="ambient_modulate" filealias="ambient_modulate" />
-    <snippet id="modulate" file="/shader-snippets/modulate.xml" />
     <snippet id="add" file="/shader-snippets/add.xml" />
-    <snippet id="lighting" filealias="lighting" />
-    <snippet id="apply_lighting" file="/shader-snippets/lighting/apply-lighting.xml" />
+    <snippet id="apply_lighting" file="/shader-snippets/deferred/apply-lighting.xml" />
     <snippet id="sectorfog" file="/shader-snippets/fog/fog-sector.xml" />
     <snippet id="apply_alpha_end" filealias="apply_alpha_end" />
     <snippet id="hdrscale" file="/shader-snippets/hdr-postscale.xml" />
-    <!-- "connections" describe what snippets take input from what other
-	  snippets (ie the "data flow" is modeled). The exact resolution of
-	  what output is linked to what input is done automatically. -->
+
     <connection from="position" to="use_buffer" />
-    <connection from="use_buffer" to="lighting" />
-    <connection from="use_buffer" to="lighting" />
-    <connection from="lighting" to="apply_lighting">
-      <explicit from="specularColor" to="lightSpecular" />
-      <explicit from="diffuseColor" to="lightDiffuse" />
-    </connection>
-    <connection from="use_buffer" to="modulate">
-      <explicit from="ambient" to="a" />
-    </connection>
-    <connection from="ambient_modulate" to="modulate">
-      <explicit from="ambient" to="b" />
-    </connection>
-    <connection from="modulate" to="apply_lighting">
-      <explicit from="result" to="ambient" />
-    </connection>
     <connection from="use_buffer" to="apply_lighting">
       <explicit from="diffuse" to="surfaceDiffuse" />
       <explicit from="specular" to="surfaceSpecular" />

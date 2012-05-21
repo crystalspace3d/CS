@@ -150,13 +150,21 @@ bool csGraphics2DGLCommon::Open ()
 	        "OpenGL >= 1.1 is required, but only %d.%d is present.",
 	        vMajor, vMinor);
       }
-      if ((vMajor >= 1) || ((vMajor == 1) && (vMinor >= 2)))
+      if ((vMajor > 1) || ((vMajor == 1) && (vMinor >= 2)))
       {
 	      //ext.InitGL_version_1_2 ();
       }
-      if ((vMajor >= 1) || ((vMajor == 1) && (vMinor >= 3)))
+      if ((vMajor > 1) || ((vMajor == 1) && (vMinor >= 3)))
       {
 	      //ext.InitGL_version_1_3 ();
+      }
+      if ((vMajor > 2) || ((vMajor == 2) && (vMinor >= 0)))
+      {
+              ext.InitGL_version_2_0 ();
+      }
+      if ((vMajor > 2) || ((vMajor == 2) && (vMinor >= 1)))
+      {
+              ext.InitGL_version_2_1 ();
       }
     }
   }

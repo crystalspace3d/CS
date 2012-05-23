@@ -1,5 +1,5 @@
 /**
- * WARNING - This file is automagically generated
+ * WARNING - This file is automagically generated from scripts/glextgen/glextgen.py
  */
 
 /*
@@ -1726,6 +1726,30 @@ typedef GLvoid (csAPIENTRY* csGLSTENCILOPSEPARATE) (GLenum face, GLenum sfail, G
  * This is not a real OpenGL extension. The OpenGL canvases will 'initialize'
  * this extension when the appropriate GL version was detected. 
  * @{ */
+#ifndef GL_FLOAT_MAT2x3
+#define GL_FLOAT_MAT2x3                                              0x8B65
+#endif
+
+#ifndef GL_FLOAT_MAT2x4
+#define GL_FLOAT_MAT2x4                                              0x8B66
+#endif
+
+#ifndef GL_FLOAT_MAT3x2
+#define GL_FLOAT_MAT3x2                                              0x8B67
+#endif
+
+#ifndef GL_FLOAT_MAT3x4
+#define GL_FLOAT_MAT3x4                                              0x8B68
+#endif
+
+#ifndef GL_FLOAT_MAT4x2
+#define GL_FLOAT_MAT4x2                                              0x8B69
+#endif
+
+#ifndef GL_FLOAT_MAT4x3
+#define GL_FLOAT_MAT4x3                                              0x8B6A
+#endif
+
 #ifndef GL_PIXEL_PACK_BUFFER
 #define GL_PIXEL_PACK_BUFFER                                         0x88EB
 #endif

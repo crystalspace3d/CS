@@ -426,7 +426,10 @@ csBulletColliderTerrain::csBulletColliderTerrain (iTerrainSystem* terrain, float
 {
   collSystem = sys;
   unload = true;
+
   terrain->AddCellLoadListener (this);
+  terrain->AddCellHeightUpdateListener(this);
+
   // Find the transform of the terrain
   csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (terrain);
   terrainTransform = mesh->GetMeshWrapper ()->GetMovable ()->GetFullTransform ();
@@ -550,6 +553,11 @@ void csBulletColliderTerrain::LoadCellToCollider (iTerrainCell *cell)
   if (collBody)
     body->setUserPointer (static_cast<CS::Collisions::iCollisionObject*> (collBody));
   bodies.Push (body);
+}
+
+void csBulletColliderTerrain::OnHeightUpdate (iTerrainCell* cell, const csRect& rectangle) 
+{
+
 }
 
 void csBulletColliderTerrain::RemoveRigidBodies ()

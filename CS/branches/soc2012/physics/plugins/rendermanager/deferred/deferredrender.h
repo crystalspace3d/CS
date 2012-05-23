@@ -38,10 +38,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
   {
   public:
 
-    ForwardMeshTreeRenderer(iGraphics3D* g3d, iShaderManager *shaderMgr, int deferredLayer, int zonlyLayer)
+    ForwardMeshTreeRenderer(iGraphics3D* g3d, iShaderManager *shaderMgr, int deferredLayer, int lightingLayer, int zonlyLayer)
       : 
     meshRender(g3d, shaderMgr),
     deferredLayer(deferredLayer),
+    lightingLayer(lightingLayer),
     zonlyLayer(zonlyLayer)
     {}
 
@@ -55,7 +56,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       size_t layerCount = context->svArrays.GetNumLayers ();
       for (size_t layer = 0; layer < layerCount; ++layer)
       {
-        if ((int)layer == deferredLayer || (int)layer == zonlyLayer)
+        if ((int)layer == deferredLayer || (int)layer == lightingLayer
+	  || (int)layer == zonlyLayer)
           continue;
 
         meshRender.SetLayer (layer);
@@ -68,6 +70,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     CS::RenderManager::SimpleContextRender<RenderTree> meshRender;
 
     int deferredLayer;
+    int lightingLayer;
     int zonlyLayer;
   };
 
@@ -99,7 +102,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                          iShaderManager *shaderMgr,
                          iStringSet *stringSet,
                          DeferredLightRenderer::PersistentData &lightRenderPersistent,
+			 GBuffer& gbuffer,
                          int deferredLayer,
+			 int lightingLayer,
                          int zonlyLayer,
                          bool drawLightVolumes)
       : 
@@ -108,7 +113,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     shaderMgr(shaderMgr),
     stringSet(stringSet),
     lightRenderPersistent(lightRenderPersistent),
+    gbuffer(gbuffer),
     deferredLayer(deferredLayer),
+    lightingLayer(lightingLayer),
     zonlyLayer(zonlyLayer),
     lastAccumBuf(nullptr),
     lastSubTex(-1),
@@ -150,42 +157,160 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       
       typename RenderTree::ContextNode *context = contextStack[0];
 
+      // obtain some variables we'll need
       CS::RenderManager::RenderView *rview = context->renderView;
-
-      GBuffer* gbuffer = context->gbuffer;
       iCamera *cam = rview->GetCamera ();
-      iClipper2D *clipper = rview->GetClipper ();
 
-      // Assume that the accumulation texture matches the gbuffer dimensions.
-  #if CS_DEBUG
-      int subTex;
-      iTextureHandle* buf = GetAccumBuffer(context, subTex);
-      CS_ASSERT(buf);
+      // seriously, we need those
+      CS_ASSERT(rview);
+      CS_ASSERT(cam);
 
-      int w, h;
-      int bufW, bufH;
-      gbuffer->GetDimensions (w, h);
-      buf->GetRendererDimensions (bufW, bufH);
+      // filter out zbuffer draw flags - they'll most certainly break the rendering
+      context->drawFlags &= ~CSDRAW_CLEARZBUFFER;
 
-      CS_ASSERT (w == bufW && h == bufH);
-  #endif
+      // create the light render here as we'll use it a lot
+      DeferredLightRenderer lightRender (graphics3D,
+                                         shaderMgr,
+                                         stringSet,
+                                         rview,
+                                         gbuffer,
+                                         lightRenderPersistent);
+
+      // check whether we're rendering off-screen (and hence have flipped y in the end)
+      iTextureHandle* target = nullptr;
+      for(int i = 0; i < rtaNumAttachments; ++i)
+      {
+	if(context->renderTargets[i].texHandle != (iTextureHandle*)nullptr)
+	{
+	  target = context->renderTargets[i].texHandle;
+	  break;
+      }
+      }
+
+      // set tex scale to default
+      lightRenderPersistent.scale->SetValue(csVector4(0.5,0.5,0.5,0.5));
+
+      // shared setup for all passes - projection only
+      CS::Math::Matrix4 projMatrix = context->perspectiveFixup * cam->GetProjectionMatrix();
+
+      // shared setup for deferred passes
+      graphics3D->SetProjectionMatrix (context->gbufferFixup * projMatrix);
 
       // Fill the gbuffer
-      gbuffer->Attach ();
-      if(!gbuffer->HasDepthBuffer())
+      gbuffer.Attach ();
       {
-	graphics3D->SetRenderTarget (context->renderTargets[rtaDepth].texHandle, false,
-            context->renderTargets[rtaDepth].subtexture, rtaDepth);
-      }
-      {
-        // Setup the camera etc.
-        graphics3D->SetProjectionMatrix (context->perspectiveFixup * cam->GetProjectionMatrix ());
-        graphics3D->SetClipper (clipper, CS_CLIPPER_TOPLEVEL);
+	// setup clipper
+	graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
 
         int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
         drawFlags |= CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;
 
-        graphics3D->BeginDraw (drawFlags);
+        CS::RenderManager::BeginFinishDrawScope bd(graphics3D, drawFlags);
+
+	// we want to fill the depth buffer, use pass 1 modes
+        graphics3D->SetZMode (CS_ZBUF_MESH);
+
+        // z only pass - maybe we shouldn't allow disabling it.
+	if(zonlyLayer >= 0)
+	{
+          meshRender.SetLayer (zonlyLayer);
+
+          for (size_t i = 0; i < ctxCount; i++)
+	  {
+            typename RenderTree::ContextNode *ctx = contextStack[i];
+
+              graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
+
+	    // for the depth buffer we want *all* meshes, not just deferred ones
+            ForEachMeshNode (*ctx, meshRender);
+	    }
+	  }
+
+	// deferred pass
+        // @@@TODO: we could check for CS_ENTITY_NOLIGHTING here
+        //          and use it to fill the stencil buffer so those
+        //          meshes can be skipped during the lighting pass
+        {
+	  meshRender.SetLayer (deferredLayer);
+
+          for (size_t i = 0; i < ctxCount; i++)
+          {
+            typename RenderTree::ContextNode *ctx = contextStack[i];
+
+	    graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
+
+	    // only deferred ones contribute to the gbuffer
+	    ForEachDeferredMeshNode (*ctx, meshRender);
+          }
+        }
+
+
+	// clear clipper
+	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
+      }
+
+      // Fill the accumulation buffers
+      gbuffer.AttachAccumulation(); // attach accumulation buffers
+	{
+	graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+
+        int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
+	drawFlags |= CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;
+
+	CS::RenderManager::BeginFinishDrawScope bd (graphics3D, drawFlags);
+
+	// use pass 1 zmodes for re-populating the zbuffer
+	graphics3D->SetZMode (CS_ZBUF_MESH);
+
+	// we use the inaccurate version from our gbuffer here - it's sufficient
+        // @@@NOTE: appearently using an explicit depth output prevents hardware
+        //          optimizations for the zbuffer to kick in - maybe we should
+	//	    just go for a fragkill solution?
+	lightRender.OutputDepth();
+
+	// we're done with all depth writes - use pass 2 modes
+	  graphics3D->SetZMode (CS_ZBUF_MESH2);
+
+	// accumulate lighting data
+	  for (size_t i = 0; i < ctxCount; i++)
+	  {
+            typename RenderTree::ContextNode *ctx = contextStack[i];
+          
+	    graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
+
+          // other light types
+          ForEachLight (*ctx, lightRender);
+	  }
+        
+	// clear clipper
+	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
+      }
+
+      // setup projection matrix for final pass
+      graphics3D->SetProjectionMatrix (projMatrix);
+
+      // attach output render targets if any.
+      if(target)
+      {
+      for (int a = 0; a < rtaNumAttachments; a++)
+        graphics3D->SetRenderTarget (context->renderTargets[a].texHandle, false,
+	    context->renderTargets[a].subtexture, csRenderTargetAttachment (a));
+      CS_ASSERT(graphics3D->ValidateRenderTargets ());
+      }
+      {
+	// setup clipper
+	graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+
+        int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
+        drawFlags |= CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;
+
+        CS::RenderManager::BeginFinishDrawScope bd (graphics3D, drawFlags);
+
+	// set tex scale for lookups.
+	lightRenderPersistent.scale->SetValue(context->texScale);
+
+	// we want to re-populate the depth buffer, use pass 1 modes.
+	  graphics3D->SetZMode (CS_ZBUF_MESH);
 
 	// Visibility Culling
 	{
@@ -198,15 +323,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	    if (!sectors.Contains(ctx->sector))
 	    {
 	      sectors.AddNoTest(ctx->sector);
+
               graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
 	      ctx->sector->GetVisibilityCuller ()->RenderViscull (rview, ctx->shadervars);
 	    }
 	  }
 	}
 
-        // z only pass
+	if(lightingLayer < 0)
+	{
+	  // for deferred shading the inaccurate gbuffer version is enough.
+	  lightRender.OutputDepth();
+	}
+	// early z pass - this one could be disabled if occluvis is used - but how would we know?
+	else if(zonlyLayer >= 0)
         {
-          graphics3D->SetZMode (CS_ZBUF_MESH);
           meshRender.SetLayer (zonlyLayer);
 
           for (size_t i = 0; i < ctxCount; i++)
@@ -214,77 +345,35 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
             typename RenderTree::ContextNode *ctx = contextStack[i];
 
 	    graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
+
+	    // for the depth buffer we want *all* meshes, not just deferred ones
             ForEachMeshNode (*ctx, meshRender);
           }
         }
 
-	// deferred pass
+	// deferred shading - output step
+	if(lightingLayer < 0)
 	{
-	  graphics3D->SetZMode (CS_ZBUF_MESH2);
+	  lightRender.OutputResults();
+          }
+	else // deferred lighting - output step
+	{
+	  meshRender.SetLayer (lightingLayer);
 
-	  meshRender.SetLayer (deferredLayer);
-
-	  for (size_t i = 0; i < ctxCount; i++)
+	  for(size_t i = 0; i < ctxCount; ++i)
 	  {
             typename RenderTree::ContextNode *ctx = contextStack[i];
-          
+
 	    graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
+
+	    // Output deferred lighting results
 	    ForEachDeferredMeshNode (*ctx, meshRender);
-	  }
-	}
-        
-        graphics3D->FinishDraw ();
-      }
-      gbuffer->Detach ();
-
-      // attach render targets.
-      for (int a = 0; a < rtaNumAttachments; a++)
-        graphics3D->SetRenderTarget (context->renderTargets[a].texHandle, false,
-	    context->renderTargets[a].subtexture, csRenderTargetAttachment (a));
-      CS_ASSERT(graphics3D->ValidateRenderTargets ());
-
-      // Fill the accumulation buffer
-      {
-        int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
-        drawFlags |= CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;
-
-        graphics3D->BeginDraw (drawFlags);
-
-        // deferred lighting
-        {
-	  graphics3D->SetZMode (CS_ZBUF_MESH);
-
-          DeferredLightRenderer lightRender (graphics3D,
-                                             shaderMgr,
-                                             stringSet,
-                                             rview,
-                                             *gbuffer,
-                                             lightRenderPersistent);
-          LightVolumeRenderer lightVolumeRender (lightRender, true, 0.2f);
-
-          // ambient light - also fills depth buffer
-          lightRender.OutputAmbientLight ();
-
-          for (size_t i = 0; i < ctxCount; i++)
-          {
-            typename RenderTree::ContextNode *ctx = contextStack[i];
-
-	    graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
-
-            // other light types
-            ForEachLight (*ctx, lightRender);
-
-            // Output light volumes.
-            if (drawLightVolumes)
-              ForEachLight (*ctx, lightVolumeRender);
-          }
         }
+	}
 
         // forward rendering
         {
-	  graphics3D->SetZMode (CS_ZBUF_MESH2);
-
-          ForwardMeshTreeRenderer<RenderTree> render (graphics3D, shaderMgr, deferredLayer, zonlyLayer);
+          ForwardMeshTreeRenderer<RenderTree> render (graphics3D, shaderMgr, deferredLayer, lightingLayer, zonlyLayer);
 
           for (size_t i = 0; i < ctxCount; i++)
           {
@@ -295,8 +384,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
           }
         }
 
-        // finish draw also unsets render targets
-        graphics3D->FinishDraw ();
+	// deferred rendering - debug step if wanted
+	if(drawLightVolumes)
+	{
+          LightVolumeRenderer lightVolumeRender (lightRender, true, 0.2f);
+
+          for (size_t i = 0; i < ctxCount; i++)
+          {
+            typename RenderTree::ContextNode *ctx = contextStack[i];
+
+	    graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
+
+            // Output light volumes.
+            ForEachLight (*ctx, lightVolumeRender);
+      }
+	}
+
+	// clear clipper
+	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
       }
 
       contextStack.Empty ();
@@ -349,10 +454,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     iStringSet *stringSet;
 
     DeferredLightRenderer::PersistentData &lightRenderPersistent;
+    GBuffer& gbuffer;
 
     csArray<typename RenderTree::ContextNode*> contextStack;
 
     int deferredLayer;
+    int lightingLayer;
     int zonlyLayer;
 
     iTextureHandle *lastAccumBuf;

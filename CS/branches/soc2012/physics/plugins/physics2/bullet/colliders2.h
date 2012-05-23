@@ -224,6 +224,9 @@ public:
   {return dynamic_cast<CS::Collisions::iColliderConcaveMesh*>(originalCollider);}
 };
 
+/**
+ * The collider of a single terrain cell
+ */
 class HeightMapCollider : public btHeightfieldTerrainShape
 {
 public:
@@ -242,9 +245,12 @@ public:
   void SetLocalScale (const csVector3& scale);
 };
 
+/**
+ * Wrapper for physically responsive (but static) terrain
+ */ 
 class csBulletColliderTerrain:
-  public scfImplementation3<csBulletColliderTerrain, 
-  csBulletCollider, CS::Collisions::iColliderTerrain, iTerrainCellLoadCallback>
+  public scfImplementation4<csBulletColliderTerrain, 
+  csBulletCollider, CS::Collisions::iColliderTerrain, iTerrainCellLoadCallback, iTerrainCellHeightDataCallback>
 {
   friend class csBulletSector;
   friend class csBulletCollisionObject;
@@ -276,6 +282,9 @@ public:
   virtual void OnCellLoad (iTerrainCell *cell);
   virtual void OnCellPreLoad (iTerrainCell *cell);
   virtual void OnCellUnload (iTerrainCell *cell);
+
+  //-- iTerrainCellHeightDataCallback
+  virtual void OnHeightUpdate (iTerrainCell* cell, const csRect& rectangle);
 
   btRigidBody* GetBulletObject (size_t index) {return bodies[index];}
   void RemoveRigidBodies ();

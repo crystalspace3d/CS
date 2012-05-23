@@ -122,6 +122,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
       itr.AttachNew(new csLoaderIterator<iSector, iSectorLoaderIterator>(&loaderSectors, &sectorsLock));
       return csPtr<iSectorLoaderIterator>(itr);
     }
+    virtual csPtr<iLightFactLoaderIterator> GetLoaderLightFactories()
+    {
+      csRef<iLightFactLoaderIterator> itr;
+      itr.AttachNew(new csLoaderIterator<iLightFactory, iLightFactLoaderIterator>(&loaderLightFactories, &lightfactsLock));
+      return csPtr<iLightFactLoaderIterator>(itr);
+    }
     virtual csPtr<iMeshFactLoaderIterator> GetLoaderMeshFactories()
     {
       csRef<iMeshFactLoaderIterator> itr;
@@ -188,6 +194,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     THREADED_CALLABLE_DECL4(csThreadedLoader, LoadSoundWrapper, csLoaderReturn, const char*, cwd, const char*, name,
     const char*, fname, bool, do_verbose, THREADED, false, false)
 
+    THREADED_CALLABLE_DECL4(csThreadedLoader, LoadLightFactory, csLoaderReturn, const char*, cwd, const char*, fname,
+    csRef<iStreamSource>, ssource, bool, do_verbose, THREADED, false, false)
+
     THREADED_CALLABLE_DECL4(csThreadedLoader, LoadMeshObjectFactory, csLoaderReturn, const char*, cwd, const char*, fname,
     csRef<iStreamSource>, ssource, bool, do_verbose, THREADED, false, false)
 
@@ -231,6 +240,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         CS::Threading::ScopedWriteLock lock(sectorsLock);
         loaderSectors.Push(obj);
         obj->DecRef(); // Compensate for CreateSector IncRef().
+      }
+      MarkSyncNeeded();
+    }
+
+    void AddLightFactToList(iLightFactory* obj)
+    {
+      {
+        CS::Threading::ScopedWriteLock lock(lightfactsLock);
+        loaderLightFactories.Push(obj);
       }
       MarkSyncNeeded();
     }
@@ -330,6 +348,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     // Shared lists and locks.
     CS::Threading::ReadWriteMutex sectorsLock;
     CS::Threading::ReadWriteMutex meshfactsLock;
+    CS::Threading::ReadWriteMutex lightfactsLock;
     CS::Threading::ReadWriteMutex meshesLock;
     CS::Threading::ReadWriteMutex camposLock;
     CS::Threading::ReadWriteMutex texturesLock;
@@ -340,6 +359,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     // Final objects.
     csRefArray<iSector> loaderSectors;
     csRefArray<iMeshFactoryWrapper> loaderMeshFactories;
+    csRefArray<iLightFactory> loaderLightFactories;
     csRefArray<iMeshWrapper> loaderMeshes;
     csRefArray<iCameraPosition> loaderCameraPositions;
     csRefArray<iTextureWrapper> loaderTextures;
@@ -435,6 +455,33 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     {
       CS::Threading::RecursiveMutexScopedLock lock(loadingMaterialsLock);
       loadingMaterials.Delete(name);
+    }
+
+    // Loading lightfact objects.
+    csArray<csString> loadingLightFacts;
+    CS::Threading::RecursiveMutex loadingLightsFactsLock;
+
+    bool AddLoadingLightFact(const char* name)
+    {
+      CS::Threading::RecursiveMutexScopedLock lock(loadingLightsFactsLock);
+      if(!FindLoadingLightFact(name))
+      {
+        return true;
+        loadingLightFacts.Push(name);
+      }
+      return false;
+    }
+
+    bool FindLoadingLightFact(const char* name)
+    {
+      CS::Threading::RecursiveMutexScopedLock lock(loadingLightsFactsLock);
+      return loadingLightFacts.Find(name) != csArrayItemNotFound;
+    }
+
+    void RemoveLoadingLightFact(const char* name)
+    {
+      CS::Threading::RecursiveMutexScopedLock lock(loadingLightsFactsLock);
+      loadingLightFacts.Delete(name);
     }
 
     // Loading meshfact objects.
@@ -552,10 +599,20 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     bool LoadProxyTextures(csSafeCopyArray<ProxyTexture> &proxyTextures,
       csWeakRefArray<iMaterialWrapper> &materialArray);
 
+    THREADED_CALLABLE_DECL5(csThreadedLoader, FindOrLoadLightFactory, csLoaderReturn,
+      const char*, name, csRef<iLoaderContext>, ldr_context, csRef<iDocumentNode>,
+      lightfactnode, csRef<iStreamSource>, ssource, const char*, path, THREADED, false, false);
+
     THREADED_CALLABLE_DECL7(csThreadedLoader, FindOrLoadMeshFactory, csLoaderReturn,
       const char*, name, csRef<iLoaderContext>, ldr_context, csRef<iDocumentNode>,
       meshfactnode, csRef<iMeshFactoryWrapper>, parent, csReversibleTransform*,
       transf, csRef<iStreamSource>, ssource, const char*, path, THREADED, false, false);
+
+    /**
+     * Load a Light Factory from the map file.
+     */
+    bool LoadLightFactory (iLoaderContext* ldr_context, iLightFactory* lightFact,
+      iDocumentNode* node, iStreamSource* ssource);
 
     /**
     * Load a Mesh Object Factory from the map file.
@@ -749,6 +806,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
       csSafeCopyArray<ProxyTexture>* proxyTextures,
       csWeakRefArray<iMaterialWrapper> &materialArray);
 
+    bool LoadLightfacts (csLoaderContext* ldr_context, iStreamSource* ssource);
+
     bool LoadMeshfacts (csLoaderContext* ldr_context,
       iStreamSource* ssource, csSafeCopyArray<ProxyTexture>* proxyTextures,
     csWeakRefArray<iMaterialWrapper> &materialArray);
@@ -806,7 +865,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
       iMeshWrapper* parent, iStreamSource* ssource);
 
     /// Parse a static light definition and add the light to the engine
-    iLight* ParseStatlight (iLoaderContext* ldr_context, iDocumentNode* node);
+    csPtr<iLight> ParseStatlight (iLoaderContext* ldr_context, iDocumentNode* node);
 
     /// Find the named shared variable and verify its type if specified
     iSharedVariable *FindSharedVariable(const char *colvar,

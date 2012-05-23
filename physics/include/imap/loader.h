@@ -47,6 +47,7 @@ struct iLight;
 struct iMaterialWrapper;
 struct iMeshWrapper;
 struct iMeshFactoryWrapper;
+struct iLightFactory;
 struct iSector;
 struct iShader;
 struct iTextureHandle;
@@ -95,6 +96,14 @@ struct iMissingLoaderData : public virtual iBase
   * is not found.
   */
   virtual iShader* MissingShader (const char* name) = 0;
+
+  /**
+   * Called when a light factory is missing. This implementation should
+   * either attempt to find or load the light factory or else return 0.
+   * In the last case the loader will proceed as usual when a light factory
+   * is not found.
+   */
+  virtual iLightFactory* MissingLightFactory (const char* name) = 0;
 
   /**
   * Called when a mesh factory is missing. This implementation should
@@ -290,6 +299,15 @@ struct iSectorLoaderIterator : public virtual iBase
   virtual bool HasNext() const = 0;
 };
 
+struct iLightFactLoaderIterator : public virtual iBase
+{
+  SCF_INTERFACE (iLightFactLoaderIterator, 1, 0, 0);
+
+  virtual iLightFactory* Next() = 0;
+
+  virtual bool HasNext() const = 0;
+};
+
 struct iMeshFactLoaderIterator : public virtual iBase
 {
   SCF_INTERFACE (iMeshFactLoaderIterator, 1, 0, 0);
@@ -355,7 +373,7 @@ struct iSharedVarLoaderIterator : public virtual iBase
 */
 struct iThreadedLoader : public virtual iBase
 {
-  SCF_INTERFACE (iThreadedLoader, 2, 3, 0);
+  SCF_INTERFACE (iThreadedLoader, 2, 3, 1);
 
  /**
   * Get the loader sector list.
@@ -363,6 +381,11 @@ struct iThreadedLoader : public virtual iBase
   virtual csPtr<iSectorLoaderIterator> GetLoaderSectors() = 0;
   
  /**
+   * Get the loader light factory list.
+   */
+  virtual csPtr<iLightFactLoaderIterator> GetLoaderLightFactories() = 0;
+  
+  /**
   * Get the loader mesh factory list.
   */
   virtual csPtr<iMeshFactLoaderIterator> GetLoaderMeshFactories() = 0;
@@ -529,6 +552,14 @@ struct iThreadedLoader : public virtual iBase
 
 
  /**
+   * Load a Light Factory from a file.
+   * \param fname is the VFS name of the file.
+   * \param ssource is an optional stream source for faster loading.
+   */
+  THREADED_INTERFACE4(LoadLightFactory, const char* cwd, const char* fname, csRef<iStreamSource> ssource = 0,
+  bool do_verbose = false);
+
+  /**
   * Load a Mesh Object Factory from a file.
   * \param fname is the VFS name of the file.
   * \param ssource is an optional stream source for faster loading.
@@ -841,6 +872,7 @@ struct iThreadedLoader : public virtual iBase
   /// Add object to the transfer list.
   virtual void AddSectorToList(iSector* obj) = 0;
   virtual void AddMeshFactToList(iMeshFactoryWrapper* obj) = 0;
+  virtual void AddLightFactToList(iLightFactory* obj) = 0;
   virtual void AddMeshToList(iMeshWrapper* obj) = 0;
   virtual void AddCamposToList(iCameraPosition* obj) = 0;
   virtual void AddTextureToList(iTextureWrapper* obj) = 0;
@@ -961,6 +993,14 @@ struct iLoader : public virtual iBase
     int Flags = CS_TEXTURE_3D, iTextureManager *tm = 0,
     bool reg = true, bool create_material = true,
     bool free_image = true) = 0;
+
+  /**
+   * Load a Light Factory from a file.
+   * \param fname is the VFS name of the file.
+   * \param ssource is an optional stream source for faster loading.
+   */
+  virtual csPtr<iLightFactory> LoadLightFactory (
+    const char* fname, iStreamSource* ssource = 0) = 0;
 
   /**
   * Load a Mesh Object Factory from a file.

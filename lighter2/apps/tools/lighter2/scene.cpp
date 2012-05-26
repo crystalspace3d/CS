@@ -65,8 +65,6 @@ namespace lighter
         u = updateFreq;
       }
     }
-    
-    scene->PropagateLights (this);
 
     progress.SetProgress (1);
   }
@@ -458,6 +456,14 @@ namespace lighter
     }
 
     ParseEngineAll (allProgress);
+    
+    //To finish we will propagate lights
+    SectorHash::GlobalIterator sectIt =  sectors.GetIterator();
+    while (sectIt.HasNext())
+    {
+        csRef<Sector> sect = sectIt.Next ();
+        PropagateLights(sect);
+    }
 
     /* We have turned everything needed into our own objects which keep
        refs to the engine objects as needed. Hence instruct engine to

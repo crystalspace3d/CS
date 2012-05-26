@@ -77,7 +77,11 @@ namespace lighter
                                               const PDLQueue& p2)
   {
     if (p1.sector != p2.sector)
-      return csComparator<Sector*, Sector*>::Compare (p1.sector, p2.sector);
+    {
+      // Here I invert the result of the comparator because we want that
+      // PDLQueue with no sector are pushed at the end of the array
+      return !csComparator<Sector*, Sector*>::Compare (p1.sector, p2.sector);
+    }
 
     size_t nb1 = p1.pdBits.NumBitsSet();
     size_t nb2 = p2.pdBits.NumBitsSet();
@@ -190,10 +194,11 @@ namespace lighter
 
     // Prims unaffected by PDLs are handled a bit specially.
     csArray<PDLQueue> queuesNoPDL;
-    while ((allQueues.GetSize() > 0) && (allQueues[0].pdBits.AllBitsFalse()))
+    int size = allQueues.GetSize();
+    while ((size > 0) && (allQueues[size--].pdBits.AllBitsFalse()))
     {
-      queuesNoPDL.Push (allQueues[0]);
-      allQueues.DeleteIndex (0);
+      queuesNoPDL.Push (allQueues[size]);
+      allQueues.DeleteIndex (size);
     }
 
     csArray<LayoutedQueue> layoutedQueues;

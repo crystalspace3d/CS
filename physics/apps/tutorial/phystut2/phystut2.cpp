@@ -17,7 +17,7 @@
 #define ENVIRONMENT_BOX 2
 #define ENVIRONMENT_TERRAIN 3
 
-Simple::Simple()
+PhysDemo::PhysDemo()
   : DemoApplication ("CrystalSpace.PhysTut2"),
     isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
     do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
@@ -28,11 +28,11 @@ Simple::Simple()
   localTrans.Identity ();
 }
 
-Simple::~Simple ()
+PhysDemo::~PhysDemo ()
 {
 }
 
-void Simple::PrintHelp ()
+void PhysDemo::PrintHelp ()
 {
   csCommandLineHelper commandLineHelper;
 
@@ -55,7 +55,7 @@ void Simple::PrintHelp ()
     "Physics tutorial 2 for Crystal Space.");
 }
 
-void Simple::Frame ()
+void PhysDemo::Frame ()
 {
   // First get elapsed time from the virtual clock.
   csTicks elapsed_time = vc->GetElapsedTicks ();
@@ -238,7 +238,7 @@ void Simple::Frame ()
     }
 }
 
-bool Simple::OnKeyboard (iEvent &event)
+bool PhysDemo::OnKeyboard (iEvent &event)
 {
   DemoApplication::OnKeyboard (event);
 
@@ -625,7 +625,7 @@ csVector3 MouseAnchorAnimationControl::GetAnchorPosition () const
   return newPosition;
 }
 
-bool Simple::OnMouseDown (iEvent &event)
+bool PhysDemo::OnMouseDown (iEvent &event)
 {
   if (csMouseEventHelper::GetButton (&event) == 0)
   {
@@ -737,7 +737,7 @@ bool Simple::OnMouseDown (iEvent &event)
   return false;
 }
 
-bool Simple::OnMouseUp (iEvent &event)
+bool PhysDemo::OnMouseUp (iEvent &event)
 {
   if (csMouseEventHelper::GetButton (&event) == 1
     && dragging)
@@ -767,7 +767,7 @@ bool Simple::OnMouseUp (iEvent &event)
   return false;
 }
 
-bool Simple::OnInitialize (int argc, char* argv[])
+bool PhysDemo::OnInitialize (int argc, char* argv[])
 {
   // Default behavior from DemoApplication
   if (!DemoApplication::OnInitialize (argc, argv))
@@ -840,7 +840,7 @@ bool Simple::OnInitialize (int argc, char* argv[])
 }
 
 
-bool Simple::Application ()
+bool PhysDemo::Application ()
 {
   // Default behavior from DemoApplication
   if (!DemoApplication::Application ())
@@ -987,7 +987,7 @@ bool Simple::Application ()
   return true;
 }
 
-void Simple::UpdateCameraMode ()
+void PhysDemo::UpdateCameraMode ()
 {
   switch (physicalCameraMode)
   {
@@ -1090,7 +1090,7 @@ void Simple::UpdateCameraMode ()
   }
 }
 
-void Simple::CreateGhostCylinder ()
+void PhysDemo::CreateGhostCylinder ()
 {
   // Create the cylinder mesh factory.
   csRef<iMeshFactoryWrapper> cylinderFact = engine->CreateMeshFactory(
@@ -1134,7 +1134,7 @@ void Simple::CreateGhostCylinder ()
   collisionSector->AddCollisionObject (ghostObject);
 }
 
-void Simple::GripContactBodies ()
+void PhysDemo::GripContactBodies ()
 {
   size_t count = ghostObject->GetContactObjectsCount ();
   for (size_t i = 0; i < count; i++)
@@ -1161,7 +1161,7 @@ void Simple::GripContactBodies ()
   }
 }
 
-CS::Physics::iRigidBody* Simple::SpawnBox (bool setVelocity /* = true */)
+CS::Physics::iRigidBody* PhysDemo::SpawnBox (bool setVelocity /* = true */)
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -1203,7 +1203,7 @@ CS::Physics::iRigidBody* Simple::SpawnBox (bool setVelocity /* = true */)
   return rb;
 }
 
-CS::Physics::iRigidBody* Simple::SpawnSphere (bool setVelocity /* = true */)
+CS::Physics::iRigidBody* PhysDemo::SpawnSphere (bool setVelocity /* = true */)
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -1270,7 +1270,7 @@ CS::Physics::iRigidBody* Simple::SpawnSphere (bool setVelocity /* = true */)
   return rb;
 }
 
-CS::Physics::iRigidBody* Simple::SpawnCone (bool setVelocity /* = true */)
+CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -1312,7 +1312,7 @@ CS::Physics::iRigidBody* Simple::SpawnCone (bool setVelocity /* = true */)
   return rb;
 }
 
-CS::Physics::iRigidBody* Simple::SpawnCylinder (bool setVelocity /* = true */)
+CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -1378,7 +1378,7 @@ CS::Physics::iRigidBody* Simple::SpawnCylinder (bool setVelocity /* = true */)
   return rb;
 }
 
-CS::Physics::iRigidBody* Simple::SpawnCapsule (float length, float radius, bool setVelocity /* = true */)
+CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, bool setVelocity /* = true */)
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -1434,7 +1434,7 @@ CS::Physics::iRigidBody* Simple::SpawnCapsule (float length, float radius, bool 
   return rb;
 }
 
-CS::Collisions::iCollisionObject* Simple::SpawnConcaveMesh ()
+CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh ()
 {
   // Find the 'star' mesh factory
   csRef<iMeshFactoryWrapper> starFact;
@@ -1484,7 +1484,7 @@ CS::Collisions::iCollisionObject* Simple::SpawnConcaveMesh ()
   return co;
 }
 
-CS::Physics::iRigidBody* Simple::SpawnConvexMesh (bool setVelocity /* = true */)
+CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true */)
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -1542,7 +1542,7 @@ CS::Physics::iRigidBody* Simple::SpawnConvexMesh (bool setVelocity /* = true */)
   return rb;
 }
 
-CS::Physics::iRigidBody* Simple::SpawnCompound (bool setVelocity /* = true */)
+CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -1575,7 +1575,7 @@ CS::Physics::iRigidBody* Simple::SpawnCompound (bool setVelocity /* = true */)
   return rb;
 }
 
-CS::Physics::iJoint* Simple::SpawnJointed ()
+CS::Physics::iJoint* PhysDemo::SpawnJointed ()
 {
 #define SOFT_ANGULAR
 
@@ -1735,7 +1735,7 @@ CS::Physics::iJoint* Simple::SpawnJointed ()
   return joint;
 }
 
-CS::Physics::iRigidBody* Simple::SpawnFilterBody (bool setVelocity)
+CS::Physics::iRigidBody* PhysDemo::SpawnFilterBody (bool setVelocity)
 {
   CS::Physics::iRigidBody* rb;
   if (rand() % 2)
@@ -1770,7 +1770,7 @@ void ConstraintJoint (CS::Physics::iJoint* joint)
   joint->SetMaximumAngle (csVector3 (PI/4.0, PI/6.0, PI/6.0));
 }
 
-void Simple::SpawnChain ()
+void PhysDemo::SpawnChain ()
 {
   CS::Physics::iRigidBody* rb1 = SpawnBox (false);
   csOrthoTransform trans = rb1->GetTransform ();
@@ -1845,7 +1845,7 @@ void Simple::SpawnChain ()
   //dynamicsDebugger->UpdateDisplay ();
 }
 
-void Simple::LoadFrankieRagdoll ()
+void PhysDemo::LoadFrankieRagdoll ()
 {
   // Load animesh factory
   csLoadResult rc = loader->Load ("/lib/frankie/frankie.xml");
@@ -1902,7 +1902,7 @@ void Simple::LoadFrankieRagdoll ()
     ->SetAnimationRoot (ragdollFactory);
 }
 
-void Simple::LoadKrystalRagdoll ()
+void PhysDemo::LoadKrystalRagdoll ()
 {
   // Load animesh factory
   csLoadResult rc = loader->Load ("/lib/krystal/krystal.xml");
@@ -1967,7 +1967,7 @@ void Simple::LoadKrystalRagdoll ()
     ->SetAnimationRoot (ragdollFactory);
 }
 
-void Simple::SpawnFrankieRagdoll ()
+void PhysDemo::SpawnFrankieRagdoll ()
 {
   // Load frankie's factory if not yet done
   csRef<iMeshFactoryWrapper> meshfact =
@@ -2018,7 +2018,7 @@ void Simple::SpawnFrankieRagdoll ()
   }
 }
 
-void Simple::SpawnKrystalRagdoll ()
+void PhysDemo::SpawnKrystalRagdoll ()
 {
   // Load krystal's factory if not yet done
   csRef<iMeshFactoryWrapper> meshfact =
@@ -2062,7 +2062,7 @@ void Simple::SpawnKrystalRagdoll ()
   }
 }
 
-void Simple::SpawnRope ()
+void PhysDemo::SpawnRope ()
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -2142,7 +2142,7 @@ void Simple::SpawnRope ()
 #endif
 }
 
-CS::Physics::iSoftBody* Simple::SpawnCloth ()
+CS::Physics::iSoftBody* PhysDemo::SpawnCloth ()
 {
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
@@ -2191,7 +2191,7 @@ CS::Physics::iSoftBody* Simple::SpawnCloth ()
   return body;
 }
 
-CS::Physics::iSoftBody* Simple::SpawnSoftBody (bool setVelocity /* = true */)
+CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
 {
   // Create the ball mesh factory.
   csRef<iMeshFactoryWrapper> ballFact = engine->CreateMeshFactory(
@@ -2258,7 +2258,7 @@ CS::Physics::iSoftBody* Simple::SpawnSoftBody (bool setVelocity /* = true */)
   return body;
 }
 
-void Simple::CreateBoxRoom ()
+void PhysDemo::CreateBoxRoom ()
 {
   printf ("Loading box level...\n");
 
@@ -2393,7 +2393,7 @@ void Simple::CreateBoxRoom ()
   CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
 }
 
-void Simple::CreatePortalRoom ()
+void PhysDemo::CreatePortalRoom ()
 {
   printf ("Loading portal level...\n");
 
@@ -2546,7 +2546,7 @@ void Simple::CreatePortalRoom ()
   CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
 }
 
-void Simple::CreateTerrainRoom ()
+void PhysDemo::CreateTerrainRoom ()
 {
   printf ("Loading terrain level...\n");
 
@@ -2596,5 +2596,5 @@ CS_IMPLEMENT_APPLICATION
 
 int main (int argc, char* argv[])
 {
-  return Simple ().Main(argc, argv);
+  return PhysDemo ().Main(argc, argv);
 }

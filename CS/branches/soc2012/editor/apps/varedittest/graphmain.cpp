@@ -153,8 +153,8 @@ Graph_behaviourFrame::Graph_behaviourFrame ()
 #endif // wxUSE_STATUSBAR
   //------------------------------------------
 
-  btnTest1 = new wxButton (this,idBtnTest1,wxT ("noeud1"),wxDefaultPosition, wxDefaultSize, 0);
-  btnTest2 = new wxButton (this,idBtnTest2,wxT ("noeud2"),wxDefaultPosition, wxDefaultSize, 0);
+  btnTest1 = new wxButton (this, idBtnTest1, wxT ("Populate"), wxDefaultPosition, wxDefaultSize, 0);
+  btnTest2 = new wxButton (this, idBtnTest2, wxT ("Save"), wxDefaultPosition, wxDefaultSize, 0);
 
   left_vsizer->Add (btnTest1);
   left_vsizer->Add (btnTest2);
@@ -510,6 +510,31 @@ void Graph_behaviourFrame::Populate ()
       }
       */
 
+      case CSVAR_MATRIX3: 
+      {
+
+      }
+      break;
+
+      case CSVAR_TRANSFORM:
+      {
+
+      }
+      break;
+
+      case CSVAR_IBASE:
+      {
+
+
+      }
+      break;
+
+      case CSVAR_ARRAY:
+      {
+
+      }
+      break;
+
       default:
 	pgMan->SetDescription(wxT("Page Manager :"), wxT("Select a property to add a new value"));
       }
@@ -535,7 +560,7 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
   const csOptionDescription* compareValue = nodeFactory->GetParameterDescription (index);
   csVariantType compareType = compareValue->type;
   csVariant oldValue = *variant;
-  csVariant valueVar = new csVariant(oldValue);
+  csVariant valueVar = new csVariant();
 
   if (compareType == CSVAR_STRING)
   {

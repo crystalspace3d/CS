@@ -32,69 +32,72 @@ IMPLEMENT_APP(Graph_behaviourApp);
 
 bool Graph_behaviourApp::OnInit()
 {
-
 	GraphNodeFactory* factory1 = new GraphNodeFactory ();
 	factory1->SetName ("myfactory1"); 
-  
+
  // Add a parameter description
 	csOptionDescription description;
-	description.name = "parameter1";
+	description.name = "A number";
 	description.description = "This is the description of parameter1 (type: long)";
   //description.id ignored?
 	description.type = CSVAR_LONG;
 	factory1->AddParameter (description);
 
   // Add a parameter description
-	description.name = "parameter2";
+	description.name = "A flag";
 	description.description = "This is the description of parameter2 (type: bool)";
 	description.type = CSVAR_BOOL;
 	factory1->AddParameter (description);
 
   // Add a parameter description
-	description.name = "parameter3";
+	description.name = "A floating-point number";
 	description.description = "This is the description of parameter3 (type: float)";
 	description.type = CSVAR_FLOAT;
 	factory1->AddParameter (description);
 
   // Add a parameter description
-	description.name = "parameter4";
+	description.name = "A string";
 	description.description = "This is the description of parameter4 (type: string)";
 	description.type = CSVAR_STRING;
 	factory1->AddParameter (description);
 
 
 	// Add a parameter description color
-	description.name = "parameter5";
+	description.name = "A color";
 	description.description = "This is the description of parameter5 (type: csColor)";
 	description.type = CSVAR_COLOR;
 	factory1->AddParameter (description);
 
-	description.name = "parameter6";
+	description.name = "Vector2";
 	description.description = "This is the description of parameter6 (type: csVector2)";
 	description.type = CSVAR_VECTOR2;
 	factory1->AddParameter (description);
 
 	// Add a parameter description 
-	description.name = "parameter7";
+	description.name = "Vector3";
 	description.description = "This is the description of parameter7 (type: csVector3)";
 	description.type = CSVAR_VECTOR3;
 	factory1->AddParameter (description);
 	
-	description.name = "parameter8";
+	description.name = "Vector4";
 	description.description = "This is the description of parameter8 (type: csVector4)";
 	description.type = CSVAR_VECTOR4;
 	factory1->AddParameter (description);
 	
-  /*
-	description.name = "parameter9";
-	description.description = "This is the description of parameter9 (type: VFSPath)";
-	description.type = CSVAR_VFSPATH;
-	factory1->AddParameter (description);
-  */
-	
 
-    	
-	MyGraphNode1* node1 = new MyGraphNode1 (factory1);
+  // Keyval
+
+  // Keyvallist
+
+  // Matrix3
+
+  // Transform
+  
+  // iBase
+
+  // csArray
+	
+  MyGraphNode1* node1 = new MyGraphNode1 (factory1);
 
 	Graph_behaviourFrame* frame = new Graph_behaviourFrame ();
 	frame->SetGraphNode (node1);

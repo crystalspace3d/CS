@@ -8,6 +8,15 @@
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
 
+#define CAMERA_DYNAMIC 1
+#define CAMERA_KINEMATIC 2
+#define CAMERA_FREE 3
+#define CAMERA_ACTOR 4
+
+#define ENVIRONMENT_PORTALS 1
+#define ENVIRONMENT_BOX 2
+#define ENVIRONMENT_TERRAIN 3
+
 class PhysDemo : public CS::Utility::DemoApplication
 {
 private:

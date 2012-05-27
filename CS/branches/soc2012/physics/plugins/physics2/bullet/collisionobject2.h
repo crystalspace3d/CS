@@ -1,7 +1,7 @@
 #ifndef __CS_BULLET_COLLISIONOBJECT_H__
 #define __CS_BULLET_COLLISIONOBJECT_H__
 
-#include "bullet2.h"
+#include "bulletsystem.h"
 #include "common2.h"
 #include "colliders2.h"
 

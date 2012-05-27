@@ -19,7 +19,7 @@
 #ifndef __CS_BULLET_JOINT_H__
 #define __CS_BULLET_JOINT_H__
 
-#include "bullet2.h"
+#include "bulletsystem.h"
 #include "common2.h"
 #include "BulletSoftBody/btSoftBody.h"
 

@@ -41,7 +41,7 @@
 
 #include "colliders2.h"
 #include "collisionobject2.h"
-#include "bullet2.h"
+#include "bulletsystem.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {

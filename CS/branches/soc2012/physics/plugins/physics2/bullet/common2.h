@@ -19,7 +19,8 @@
 #ifndef __CS_BULLET_COMMON2_H__
 #define __CS_BULLET_COMMON2_H__
 
-#include "bullet2.h"
+#include "bulletsystem.h"
+#include "bulletsector.h"
 #include "csgeom/matrix3.h"
 #include "csgeom/transfrm.h"
 #include "csgeom/vector3.h"

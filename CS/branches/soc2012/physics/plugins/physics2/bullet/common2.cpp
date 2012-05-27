@@ -24,7 +24,7 @@
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
 
-#include "bullet2.h"
+#include "bulletsystem.h"
 #include "common2.h"
 #include "collisionobject2.h"
 #include "rigidbody2.h"

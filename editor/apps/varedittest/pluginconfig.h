@@ -59,9 +59,9 @@ enum csVariantType
   /// csVector4 type
   CSVAR_VECTOR4,
   /// A key-value pair
-  CSVAR_KEYVAL,
+  //CSVAR_KEYVAL, // put on hold
   /// A list of key-value pairs, such as a hashmap
-  CSVAR_KEYVALLIST,
+  //CSVAR_KEYVALLIST, // put on hold
   /// A VFS path
   //CSVAR_VFSPATH,
   /// csMatrix3 type
@@ -94,6 +94,7 @@ private:
     csMatrix3* m;
     csTransform* t;
     iBase* ib;
+    csArray<csVariant>* a;
   } val;
 
   void Clear()
@@ -108,11 +109,16 @@ private:
       delete val.t;
     else if ((type == CSVAR_IBASE) && (val.ib != 0))
       val.ib->DecRef();
+    else if ((type == CSVAR_ARRAY) && (val.a != 0))
+      delete val.a;
   }
 
 public:
-  /// Constructor initialized with a value of type CSVAR_CMD
-  //csVariant () { type = CSVAR_CMD; memset (&val, 0, sizeof (val)); }
+  /** Blank constructor; Set the variant to CSVAR_LONG and 0; 
+   *  Usually not used. Where it is needed, the type and value
+   *  should generally be overwritten anyway.
+   */
+  csVariant () { type = CSVAR_LONG; val.l = 0; }
   /// Constructor initialized with a value of type CSVAR_LONG
   csVariant (int i) { type = CSVAR_LONG; val.l = i; }
   /// Constructor initialized with a value of type CSVAR_LONG
@@ -133,10 +139,6 @@ public:
   csVariant (csVector3& v) { type = CSVAR_VECTOR3; val.f[0] = v[0]; val.f[1] = v[1]; val.f[2] = v[2]; }
   /// Constructor initialized with a value of type CSVAR_VECTOR4
   csVariant (csVector4& v) { type = CSVAR_VECTOR4; val.f[0] = v[0]; val.f[1] = v[1]; val.f[2] = v[2]; val.f[3] = v[3]; }
-  /// Constructor initialized with a key-value pair
-  // TODO
-  /// Constructor initialized with a key-value list
-  // TODO
   /// Constructor initialized with a value of type CSVAR_MATRIX3
   csVariant (csMatrix3& m) { type = CSVAR_MATRIX3; val.m = new csMatrix3 (m); }
   /// Constructor initialized with a value of type CSVAR_TRANSFORM

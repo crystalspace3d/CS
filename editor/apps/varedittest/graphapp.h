@@ -30,6 +30,7 @@
 class Graph_behaviourApp : public wxApp
 {
     public:
+        /// Generates some test properties for GUI generation
         virtual bool OnInit();
    
 };

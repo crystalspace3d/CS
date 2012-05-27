@@ -24,6 +24,14 @@
 
 #include "graphedit.h"
 
+// Stuff needed for the test iModifiable dude
+#include "iutil/modifiable.h"
+
+/*class csTestModifiable : public scfImplementation2<csTestModifiable, iBase, iModifiable>
+{
+
+};*/
+
 class MyGraphNode1 : public GraphNode
   {
     public :

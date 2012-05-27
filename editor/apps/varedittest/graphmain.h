@@ -82,6 +82,7 @@ class Graph_behaviourFrame: public wxFrame
 	 
 	
  private:
+   /// Generates the GUI based on the current node
   void Populate ();
 
  private:

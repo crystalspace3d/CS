@@ -198,11 +198,8 @@ csRef<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor ()
 }
 csRef<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
 {
-  csRef<csBulletSystem> system;
-  system.AttachNew(this);
-  
   csRef<csBulletSector> collSector;
-  collSector.AttachNew (new csBulletSector (system));
+  collSector.AttachNew (new csBulletSector (this));
 
   collSectors.Push (collSector);
   return collSector;

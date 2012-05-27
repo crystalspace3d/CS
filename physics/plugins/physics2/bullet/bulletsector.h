@@ -103,7 +103,7 @@ class csBulletSector : public scfImplementationExt3<
     }
   };
 
-  csRef<csBulletSystem> sys;
+  csWeakRef<csBulletSystem> sys;
 
   bool isSoftWorld;
   csVector3 gravity;

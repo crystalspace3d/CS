@@ -310,7 +310,8 @@ void PhysDemo::CreateTerrainRoom ()
   csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry ()));
   VFS->ChDir ("/lev/terraini");
 
-  if (!loader->LoadMapFile ("world"))
+  if (!loader->LoadMapFile ("worldmod"))
+  //if (!loader->LoadMapFile ("world"))
   {
     ReportError("Error couldn't load terrain level!");
     return;
@@ -328,13 +329,21 @@ void PhysDemo::CreateTerrainRoom ()
     ReportError("Error cannot find the terrain mesh!");
     return;
   }
-
-  csRef<iTerrainSystem> terrain =
-    scfQueryInterface<iTerrainSystem> (terrainWrapper->GetMeshObject ());
+  
+  csRef<iTerrainSystem> terrain = scfQueryInterface<iTerrainSystem> (terrainWrapper->GetMeshObject ());
   if (!terrain)
   {
     ReportError("Error cannot find the terrain interface!");
     return;
+  }
+  
+  csRef<iTerrainFactory> factory = scfQueryInterface<iTerrainFactory>(terrainWrapper->GetFactory()->GetMeshObjectFactory());
+  CS_ASSERT(factory);
+
+  terrainFeeder = scfQueryInterface<iModifiableDataFeeder> (factory->GetFeeder());
+  if (!terrainFeeder)
+  {
+    ReportError("Warning: Terrain is not modifiable");
   }
 
   // Create a terrain collider

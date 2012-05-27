@@ -1,12 +1,16 @@
 #ifndef __PHYSTUT2_H__
 #define __PHYSTUT2_H__
 
+
+#include "csutil/weakref.h"
+
 #include "cstool/demoapplication.h"
 #include "ivaria/physics.h"
 #include "ivaria/bullet2.h"
 #include "ivaria/collisions.h"
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
+#include "imesh/modifiableterrain.h"
 
 #define CAMERA_DYNAMIC 1
 #define CAMERA_KINEMATIC 2
@@ -21,10 +25,11 @@ class PhysDemo : public CS::Utility::DemoApplication
 {
 private:
   csRef<CS::Collisions::iCollisionSystem> collisionSystem;
-  csRef<CS::Physics::iPhysicalSystem> physicalSystem;
+  csWeakRef<CS::Physics::iPhysicalSystem> physicalSystem;
+
   csRef<CS::Collisions::iCollisionSector> collisionSector;
-  csRef<CS::Physics::iPhysicalSector> physicalSector;
-  csRef<CS::Physics::Bullet2::iPhysicalSector> bulletSector;
+  csWeakRef<CS::Physics::iPhysicalSector> physicalSector;
+  csWeakRef<CS::Physics::Bullet2::iPhysicalSector> bulletSector;
 
   csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
 
@@ -84,6 +89,10 @@ private:
 
   // Ghost
   csRef<CS::Collisions::iCollisionObject> ghostObject;
+
+  // Terrain
+  csRef<iModifiableDataFeeder> terrainFeeder;
+  csRef<iTerrainModifier> terrainMod;
 
 private:
   void Frame ();

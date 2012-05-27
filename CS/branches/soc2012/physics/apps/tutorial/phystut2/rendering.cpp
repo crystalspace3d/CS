@@ -97,7 +97,7 @@ void PhysDemo::Frame ()
   else
   {
     iCamera* c = view->GetCamera();
-
+    
     float cameraSpeed = environment == ENVIRONMENT_TERRAIN ? 30.0f : 4.0f;
     if (kbd->GetKeyState (CSKEY_SHIFT))
     {
@@ -239,7 +239,9 @@ void PhysDemo::UpdateCameraMode ()
       // Create a new rigid body
       else
       {
-        csRef<CS::Collisions::iCollider> sphere = collisionSystem->CreateColliderSphere (0.8f);
+        csVector3 size(0.8f);
+        csRef<CS::Collisions::iCollider> sphere = //collisionSystem->CreateColliderSphere (0.8f);
+          collisionSystem->CreateColliderBox(size);
         cameraBody = physicalSystem->CreateRigidBody ();
         cameraBody->SetDensity (0.3f);
         cameraBody->SetElasticity (0.8f);

@@ -382,6 +382,22 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     cameraBody->SetAngularVelocity (csVector3 (0, 0, 0));
   }
 
+  // Terrain stuff
+  if (terrainFeeder)
+  {
+    if (//kbd->GetKeyState (CSKEY_SHIFT) &&
+      csKeyEventHelper::GetCookedCode (&event) == ']')
+    {
+      if (!terrainMod)
+      {
+        csVector3 pos = cameraActor->GetAttachedMovable()->GetFullPosition();
+        float len = 1;
+        float height = 1;
+        terrainMod = terrainFeeder->AddModifier(pos, len, height);
+      }
+    }
+  }
+
   return false;
 }
 

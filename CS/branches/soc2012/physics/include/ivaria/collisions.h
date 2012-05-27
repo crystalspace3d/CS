@@ -29,6 +29,7 @@
 #include "csgeom/matrix3.h"
 #include "csgeom/transfrm.h"
 #include "csgeom/plane3.h"
+#include "iutil/object.h"
 
 struct iTerrainSystem;
 struct iSector;

@@ -5,7 +5,8 @@
 #include "cssysdef.h"
 #include "iengine/movable.h"
 #include "collisionobject2.h"
-#include "colliders2.h"
+#include "colliderprimitives.h"
+#include "colliderterrain.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {

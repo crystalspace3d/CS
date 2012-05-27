@@ -3,7 +3,7 @@
 
 #include "bulletsystem.h"
 #include "common2.h"
-#include "colliders2.h"
+#include "colliderprimitives.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {

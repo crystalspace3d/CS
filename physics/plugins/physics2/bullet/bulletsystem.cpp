@@ -45,7 +45,8 @@
 #include "csutil/custom_new_enable.h"
 
 #include "common2.h"
-#include "colliders2.h"
+#include "colliderprimitives.h"
+#include "colliderterrain.h"
 #include "rigidbody2.h"
 #include "softbody2.h"
 #include "collisionactor2.h"

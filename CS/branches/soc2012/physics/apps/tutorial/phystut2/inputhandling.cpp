@@ -11,7 +11,7 @@
 #include "imesh/terrain2.h"
 #include "cstool/genmeshbuilder.h"
 #include "cstool/materialbuilder.h"
-#include "phystut2.h"
+#include "physdemo.h"
 
 
 bool PhysDemo::OnKeyboard (iEvent &event)

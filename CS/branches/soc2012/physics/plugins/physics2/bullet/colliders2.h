@@ -229,20 +229,26 @@ public:
  */
 class HeightMapCollider : public btHeightfieldTerrainShape
 {
-public:
+  friend class csBulletColliderTerrain;
+
   btVector3 localScale;
   iTerrainCell* cell;
   float* heightData;
 
   HeightMapCollider (float* gridData,
-    int gridWidth, int gridHeight, 
-    csVector3 gridSize,
+    iTerrainCell* cell,
     float minHeight, float maxHeight,
     float internalScale);
+
   virtual ~HeightMapCollider();
+
   void UpdataMinHeight (float minHeight);
   void UpdateMaxHeight (float maxHeight);
   void SetLocalScale (const csVector3& scale);
+
+  void UpdateHeight(const csRect& area);
+
+public:
 };
 
 /**
@@ -285,6 +291,11 @@ public:
 
   //-- iTerrainCellHeightDataCallback
   virtual void OnHeightUpdate (iTerrainCell* cell, const csRect& rectangle);
+
+  /**
+   * Returns the collider that represents the given cell in the physical world
+   */
+  HeightMapCollider* GetCellCollider(iTerrainCell* cell);
 
   btRigidBody* GetBulletObject (size_t index) {return bodies[index];}
   void RemoveRigidBodies ();

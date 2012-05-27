@@ -8,7 +8,7 @@
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
 
-class Simple : public CS::Utility::DemoApplication
+class PhysDemo : public CS::Utility::DemoApplication
 {
 private:
   csRef<CS::Collisions::iCollisionSystem> collisionSystem;
@@ -116,8 +116,8 @@ private:
   void GripContactBodies ();
 
 public:
-  Simple ();
-  virtual ~Simple ();
+  PhysDemo ();
+  virtual ~PhysDemo ();
 
   void PrintHelp ();
   bool OnInitialize (int argc, char* argv[]);
@@ -131,13 +131,13 @@ class MouseAnchorAnimationControl : public scfImplementation1
   <MouseAnchorAnimationControl, CS::Physics::iAnchorAnimationControl>
 {
 public:
-  MouseAnchorAnimationControl (Simple* simple)
+  MouseAnchorAnimationControl (PhysDemo* simple)
     : scfImplementationType (this), simple (simple) {}
 
   csVector3 GetAnchorPosition () const;
 
 private:
-  Simple* simple;
+  PhysDemo* simple;
 };
 
 #endif

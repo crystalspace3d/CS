@@ -379,18 +379,18 @@ csBulletColliderConcaveMeshScaled::~csBulletColliderConcaveMeshScaled ()
 }
 
 HeightMapCollider::HeightMapCollider ( float* gridData, 
-                                   int gridWidth, int gridHeight, 
-                                   csVector3 gridSize, 
+                                   iTerrainCell *cell, 
                                    float minHeight, float maxHeight,
                                    float internalScale)
-                                   : btHeightfieldTerrainShape (gridWidth, gridHeight,
+                                   : btHeightfieldTerrainShape (cell->GetGridWidth(), cell->GetGridHeight(),
                                    gridData, 1.0f, minHeight, maxHeight,
                                    1, PHY_FLOAT, false), heightData (gridData)
 {
   // Apply the local scaling on the shape
-  localScale.setValue (gridSize[0] * internalScale / (gridWidth - 1),
+  const csVector3& size = cell->GetSize();
+  localScale.setValue (size[0] * internalScale / (cell->GetGridWidth() - 1),
     internalScale,
-    gridSize[2] * internalScale/ (gridHeight - 1));
+    size[2] * internalScale/ (cell->GetGridHeight() - 1));
   this->setLocalScaling (localScale);
 }
 
@@ -417,6 +417,21 @@ void HeightMapCollider::UpdateMaxHeight (float maxHeight)
 {
   this->initialize (m_heightStickWidth, m_heightStickLength,
     heightData, 1.0f, m_minHeight, maxHeight, 1, PHY_FLOAT, false);
+}
+
+void HeightMapCollider::UpdateHeight(const csRect& area)
+{
+  int w = cell->GetGridWidth();
+  int h = cell->GetGridHeight();
+  csLockedHeightData newData = cell->LockHeightData (area);
+
+  for (size_t y = 0; y < size_t (area.Height()); y++)
+  {
+    for (size_t x = 0; x < size_t (area.Width()); x++)
+    {
+      heightData[CSToBulletIndex2D(x + area.xmin, y + area.ymin, w, h)] = newData.data[y * w + x];
+    }
+  }
 }
 
 csBulletColliderTerrain::csBulletColliderTerrain (iTerrainSystem* terrain, float minimumHeight,
@@ -499,21 +514,21 @@ void csBulletColliderTerrain::OnCellUnload (iTerrainCell *cell)
 void csBulletColliderTerrain::LoadCellToCollider (iTerrainCell *cell)
 {
   float minHeight,maxHeight;
-  csLockedHeightData gridData = cell->GetHeightData ();
+  csLockedHeightData cellData = cell->GetHeightData ();
   // Check if the min/max have to be computed
   bool needExtremum =  (minimumHeight == 0.0f && maximumHeight == 0.0f);
   if  (needExtremum)
-    minHeight = maxHeight = gridData.data[0];
+    minHeight = maxHeight = cellData.data[0];
   int gridWidth = cell->GetGridWidth ();
   int gridHeight = cell->GetGridHeight ();
 
-  // Initialize the terrain height data
-  float* heightData = new float[gridHeight*gridWidth];
-  for (int i=0;i<gridHeight;i++)
-    for (int j=0;j<gridWidth;j++)
+  // Initialize the bullet terrain height data
+  float* btHeightData = new float[gridHeight*gridWidth];
+  for (int j=0;j<gridHeight;j++)
+  {
+    for (int i=0;i<gridWidth;i++)
     {
-      float height = heightData[ (gridHeight-i-1) * gridWidth + j]
-      = gridData.data[i * gridWidth + j];
+      float height = btHeightData[CSToBulletIndex2D(i, j, gridWidth, gridHeight)] = cellData.data[j * gridWidth + i];
 
       if (needExtremum)
       {
@@ -521,6 +536,7 @@ void csBulletColliderTerrain::LoadCellToCollider (iTerrainCell *cell)
         maxHeight = csMax (maxHeight, height);
       }
     }
+  }
 
   csOrthoTransform cellTransform (terrainTransform);
   csVector3 cellPosition  (cell->GetPosition ()[0], 0.0f, cell->GetPosition ()[1]);
@@ -529,10 +545,8 @@ void csBulletColliderTerrain::LoadCellToCollider (iTerrainCell *cell)
 
   // Create the terrain shape
   HeightMapCollider* colliderData = new HeightMapCollider (
-    heightData, gridWidth, gridHeight,
-    cell->GetSize (), minHeight, maxHeight,
+    btHeightData, cell, minHeight, maxHeight,
     collSystem->getInternalScale ());
-  colliderData->cell = cell;
 
   colliders.Push (colliderData);
 
@@ -555,9 +569,28 @@ void csBulletColliderTerrain::LoadCellToCollider (iTerrainCell *cell)
   bodies.Push (body);
 }
 
+// height in the given rectangle of the given cell has changed
 void csBulletColliderTerrain::OnHeightUpdate (iTerrainCell* cell, const csRect& rectangle) 
 {
+  // find cell collider:
+  HeightMapCollider* collider = GetCellCollider(cell);
+  
+  // this method is actually fired prior to the load event
+  if (collider)
+  {
+    collider->UpdateHeight(rectangle);
+  }
+}
 
+HeightMapCollider* csBulletColliderTerrain::GetCellCollider(iTerrainCell* cell)
+{
+  for (int i = 0; i < (int)colliders.GetSize(); ++i)
+  {
+    HeightMapCollider* collider = colliders[i];
+
+    if (collider->cell == cell) return collider;
+  }
+  return nullptr;
 }
 
 void csBulletColliderTerrain::RemoveRigidBodies ()

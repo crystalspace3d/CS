@@ -1246,7 +1246,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\apps\tutorial\phystut2\phystut2.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\inputhandling.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\physobjects.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\phystut2app.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\rendering.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\statics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\apps\tutorial\phystut2\phystut2.h" />

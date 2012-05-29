@@ -27,7 +27,6 @@
 //#include "iutil/pluginconfig.h"
 #include "pluginconfig.h"
 
-
 IMPLEMENT_APP(Graph_behaviourApp);
 
 bool Graph_behaviourApp::OnInit()
@@ -84,18 +83,11 @@ bool Graph_behaviourApp::OnInit()
 	description.type = CSVAR_VECTOR4;
 	factory1->AddParameter (description);
 	
-
-  // Keyval
-
-  // Keyvallist
-
-  // Matrix3
-
   // Transform
   
-  // iBase
+  // iBase (maybe)
 
-  // csArray
+  // csArray (later)
 	
   MyGraphNode1* node1 = new MyGraphNode1 (factory1);
 

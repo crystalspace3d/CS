@@ -31,7 +31,9 @@ enum iModifiableConstraintType
 
 struct iModifiableConstraint : public virtual iBase
 {
-  iModifiableConstraintType GetType() const;
+  SCF_INTERFACE(iModifiableConstraint, 1, 0, 0);
+
+  virtual iModifiableConstraintType GetType() const = 0;
   // TODO: callbacks
 };
 
@@ -40,11 +42,11 @@ struct iModifiableConstraint : public virtual iBase
 
 struct iModifiableConstraintBounded : public virtual iModifiableConstraint
 {
-  bool HasMinimum () const;
-  csVariant& GetMinimum() const;
+  virtual bool HasMinimum () const = 0;
+  virtual csVariant& GetMinimum() const = 0;
 
-  bool HasMaximum () const;
-  csVariant& GetMaximum () const;
+  virtual bool HasMaximum () const = 0;
+  virtual csVariant& GetMaximum () const = 0;
 };
 
 
@@ -52,8 +54,8 @@ struct iModifiableConstraintBounded : public virtual iModifiableConstraint
 
 struct iModifiableConstraintEnum : public virtual iModifiableConstraint
 {
-  size_t GetValueCount () const;
-  csVariant& GetValue (size_t index) const;
+  virtual size_t GetValueCount () const = 0;
+  virtual csVariant& GetValue (size_t index) const = 0;
 };
 
 
@@ -61,38 +63,52 @@ struct iModifiableConstraintEnum : public virtual iModifiableConstraint
 
 struct iModifiableParameter : public virtual iBase
 {
-  csStringID GetID()  const;
+  SCF_INTERFACE(iModifiableParameter, 1, 0, 0);
+
+  virtual csStringID GetID() const = 0;
 
   /**
    *   Returns char* entry for the parameter's name
    *   to be processed by the translator.
    */
-  char* GetName () const;
+  virtual char* GetName () const = 0;
 
   /**
-   *   Returns char* entry for the parameter's description
+   *   Returns char* entry for the parameter's textual description
    *   to be processed by the translator.
    */
-  char* GetDescription () const;
+  virtual char* GetDescription () const = 0;
 
   /**
-   * Returns the type of this parameter                                                       */
-  csVariantType GetType () const;
+   * Returns the type of this parameter                                                           */
+  virtual csVariantType GetType () const = 0;
+
+  /**
+   * Gets this parameter's value.
+   */
+  virtual csVariant* GetParameterValue () const = 0;
+
+  /**
+   * Sets this parameter's value.
+   */
+  virtual bool SetParameterValue (const csVariant& value) = 0;
 
   /**
    * Returns this parameter's constraint.
    */
-  const iModifiableConstraint* GetConstraint() const;
+  virtual const iModifiableConstraint* GetConstraint() const = 0;
 };
 
 //----------------- iModifiableDescription ---------------------
 
 struct iModifiableDescription : public virtual iBase
 {
-  size_t GetParameterCount () const;
+  SCF_INTERFACE(iModifiableDescription, 1, 0, 0);
 
-  iModifiableParameter* GetParameter (csStringID id) const;
-  iModifiableParameter* GetParameterByIndex (size_t index) const;
+  virtual size_t GetParameterCount () const = 0;
+
+  virtual csPtr<iModifiableParameter> GetParameter (csStringID id) const = 0;
+  virtual csPtr<iModifiableParameter> GetParameterByIndex (size_t index) const = 0;
 };
 
 
@@ -100,12 +116,13 @@ struct iModifiableDescription : public virtual iBase
 
 struct iModifiable : public virtual iBase 
 {
-  const csStringID GetID () const;
+  SCF_INTERFACE(iModifiable, 1, 0 ,0);
 
-  csPtr<iModifiableDescription> GetDescription () const;
+  virtual const csStringID GetID () const = 0;
+  virtual csPtr<iModifiableDescription> GetDescription () const = 0;
 
-  void GetParameterValue (csStringID id, const csVariant& value) const;
-  bool SetParameterValue (csStringID id, const csVariant& value);
+  virtual void GetParameterValue (csStringID id, const csVariant& value) const = 0;
+  virtual bool SetParameterValue (csStringID id, const csVariant& value) = 0;
 };
 
 #endif // __MODIFIABLE_H__

@@ -126,6 +126,10 @@ Graph_behaviourFrame::Graph_behaviourFrame ()
 
   mainsizer->Add (left_vsizer,1,wxALL|wxEXPAND,5);
 
+  modifiableEntities = new csRefArray<iModifiable>();
+  modifiableEntities->Push(new csTestModifiable);
+  // modifiableIterator = modifiableEntities.GetIterator();
+
   //-------------------------------------------
 
 #if wxUSE_MENUS
@@ -153,7 +157,7 @@ Graph_behaviourFrame::Graph_behaviourFrame ()
 #endif // wxUSE_STATUSBAR
   //------------------------------------------
 
-  btnTest1 = new wxButton (this, idBtnTest1, wxT ("Populate"), wxDefaultPosition, wxDefaultSize, 0);
+  btnTest1 = new wxButton (this, idBtnTest1, wxT ("Cycle through nodes"), wxDefaultPosition, wxDefaultSize, 0);
   btnTest2 = new wxButton (this, idBtnTest2, wxT ("Save"), wxDefaultPosition, wxDefaultSize, 0);
 
   left_vsizer->Add (btnTest1);
@@ -358,11 +362,13 @@ wxVector4Property::~wxVector4Property () { }
 
 //------------------------------------------------------------
 
-void Graph_behaviourFrame::Populate ()
+void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 {
   // all pages are cleared from the page manager
   pgMan->Clear ();
 	
+  csRef<iModifiableDescription> description(dataSource->GetDescription());
+
   pgMan->AddPage (wxT("page1"));
   pgMan->SetExtraStyle ( wxPG_EX_HELP_AS_TOOLTIPS );
 
@@ -372,24 +378,35 @@ void Graph_behaviourFrame::Populate ()
   { 
     page = pgMan->GetPage (wxT ("page1"));
     pgMan->SetDescription (wxT ("Page Manager"), wxT ("New Page is added"));
-    wxString categoryName (node->GetName (), wxConvUTF8);
+
+    // TODO: read from iModifiable thingy
+    wxString categoryName (wxT("= entity name here ="), wxConvUTF8);
 	  
     wxPropertyCategory * ctgr = new wxPropertyCategory (categoryName);
     page ->Append (ctgr);
     //ctgr -> GetGrid ()-> MakeColumnEditable (0);
 
+    /*
+    // This is the old code that iterates over a nodeFactory's parameter list; we're going to
+    // do something similar, only for the iModifiableDescription
     nodeFactory = node->GetFactory ();
     for (size_t i = 0; i < nodeFactory->GetParameterCount (); i++)
     {
       const csOptionDescription* option = nodeFactory->GetParameterDescription (i);
+      */
 
-      switch (option->type)
+    for (size_t i = 0; i< description->GetParameterCount(); i++)
+    {
+      csRef<iModifiableParameter> param(description->GetParameterByIndex(i));
+
+      // Right now, implementing just for strings and longs
+      switch (param->GetType())
       {
       case CSVAR_STRING:
       {
-	wxString stringDescription (option->description, wxConvUTF8);
-	wxString stringName (option->name, wxConvUTF8);					
-	wxString stringValue (node->GetParameter (i)->GetString (), wxConvUTF8);
+	wxString stringDescription (param->GetDescription(), wxConvUTF8);
+	wxString stringName (param->GetName(), wxConvUTF8);					
+  wxString stringValue (param->GetParameterValue()->GetString(), wxConvUTF8);
 	wxStringProperty* stringP = new wxStringProperty (stringName);
 	page->Append (stringP);
 	stringP->SetValue (stringValue);
@@ -399,9 +416,9 @@ void Graph_behaviourFrame::Populate ()
 
       case CSVAR_LONG :
       {
-	wxString longDescription (option->description, wxConvUTF8);
-	wxString longName (option->name, wxConvUTF8);
-	wxString longValue = wxString::Format (wxT("%ld"), (int) node->GetParameter (i)->GetLong ());
+	wxString longDescription (param->GetDescription(), wxConvUTF8);
+	wxString longName (param->GetName(), wxConvUTF8);
+	wxString longValue = wxString::Format (wxT("%ld"), (int) param->GetParameterValue()->GetLong());
 	wxIntProperty* intP = new wxIntProperty(longName);				
 	page->Append(intP);
 	intP->SetValue(longValue);					
@@ -409,7 +426,7 @@ void Graph_behaviourFrame::Populate ()
 	page->SetPropertyHelpString(longName, longDescription);
       }
       break;
-
+      /*
       case CSVAR_FLOAT:
       { 
 	wxString floatDescription (option->description, wxConvUTF8);
@@ -494,6 +511,8 @@ void Graph_behaviourFrame::Populate ()
 
       }
       break;
+
+      */
 				
 	/*
       case CSVAR_VFSPATH :
@@ -537,10 +556,10 @@ void Graph_behaviourFrame::Populate ()
 
       default:
 	pgMan->SetDescription(wxT("Page Manager :"), wxT("Select a property to add a new value"));
-      }
+      } // end switch
     
-    }
-  }
+    } // end loop through properties
+  } 
   else
   {
     pgMan->SetDescription(wxT("Page Manager :"), wxT("Error page no added"));
@@ -648,7 +667,9 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
 
 void Graph_behaviourFrame::OnPopulateClick (wxCommandEvent &event )
 {
-  Populate ();
+  // Changes the current active node
+  // TODO: actually iterate
+  Populate (modifiableEntities->Get(0));
   pgMan->SetFocus ();
 }
 //-----------------------------------------------
@@ -681,6 +702,7 @@ void Graph_behaviourFrame::OnAbout (wxCommandEvent &event)
 
 Graph_behaviourFrame::~Graph_behaviourFrame()
 {
+  delete modifiableEntities;
 }
 
 void Graph_behaviourFrame::OnClose(wxCloseEvent &event)

@@ -32,6 +32,7 @@
 #include "csutil/cscolor.h"
 #include "csutil/scf.h"
 #include "csutil/scfstr.h"
+#include "csutil/array.h"
 
 /// Type of the values that can be contained within a csVariant.
 enum csVariantType
@@ -144,7 +145,7 @@ public:
   /// Constructor initialized with a value of type CSVAR_TRANSFORM
   csVariant (csTransform& t) { type = CSVAR_TRANSFORM; val.t = new csTransform (t); }
   /// Constructor initialized with a csArray
-  // TODO
+  csVariant (csArray<csVariant>& a) { type = CSVAR_ARRAY; val.a = new csArray<csVariant>(a); }
   /// Constructor initialized with an iBase
   // TODO
 
@@ -256,22 +257,6 @@ public:
     val.f[2] = v[2];
     val.f[3] = v[3];
   }
-  /// Assign a VFS path
-  /*
-  void SetVFSPath (const char* s)
-  {
-    Clear();
-    type = CSVAR_VFSPATH;
-    if (s)
-      val.s = new scfString (s);
-    else
-      val.s = 0;
-  }
-  */
-  /// Assign a key-value pair
-  // TODO
-  /// Assign a list of key-value pairs
-  // TODO
   /// Assign a csMatrix3
   void SetMatrix3 (const csMatrix3& m)
   {
@@ -289,7 +274,12 @@ public:
   /// Assign an iBase
   // TODO
   /// Assign a csArray
-  // TODO
+  void SetArray ( const csArray<csVariant>& a)
+  {
+    Clear();
+    type = CSVAR_ARRAY;
+    val.a = new csArray<csVariant>(a);
+  }
 
   /// Retrieve a long
   long GetLong () const
@@ -345,17 +335,6 @@ public:
     CS_ASSERT (type == CSVAR_VECTOR4);
     return csVector4 (val.f[0], val.f[1], val.f[2], val.f[3]);
   }
-  /// Retrieve a VFS path
-  /*
-  const char* GetVFSPath () const
-  {
-    CS_ASSERT (type == CSVAR_VFSPATH);
-    return val.s->GetData();
-  }*/
-  /// Retrieve a key-value pair
-  // TODO
-  /// Retrieve a list of key-value pairs
-  // TODO
   /// Retrieve a csMatrix3
   csMatrix3 GetMatrix3 () const
   {
@@ -371,7 +350,11 @@ public:
   /// Retrieve an iBase
   // TODO
   /// Retrieve a csArray
-  // TODO
+  csArray<csVariant> GetArray() const 
+  {
+    CS_ASSERT (type == CSVAR_ARRAY);
+    return *val.a;
+  }
 
   /// Get the type of the contained value. The default value is CSVAR_CMD.
   csVariantType GetType () const { return type; }

@@ -82,8 +82,10 @@ class Graph_behaviourFrame: public wxFrame
 	 
 	
  private:
-   /// Generates the GUI based on the current node
-  void Populate ();
+   /// Generates the GUI based on an iModifiable entity
+  void Populate (const iModifiable* dataSource);
+
+  csRefArray<iModifiable> *modifiableEntities;
 
  private:
   //sizer principal pour tte la fenêtre

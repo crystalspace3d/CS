@@ -25,14 +25,49 @@
 #include "pluginconfig.h"
 #include <csutil/cscolor.h>
 
+// Macro magic to make csTestModifiable work
+CS_IMPLEMENT_FOREIGN_DLL
+
+csTestModifiable :: csTestModifiable() : scfImplementationType(this)
+{
+  position = csVector3(10.0f, 10.0f, 10.0f);
+  color = csColor(0.8f, 0.1f, 0.1f);
+  name = csString("Hello, I am iModifiable!");
+
+  printf("Random test dude created...");
+
+  testID = csStringID();
+  description = csRef<testDudeDescription>(new testDudeDescription);
+}
+
+csTestModifiable :: ~csTestModifiable() { }
+
+const csStringID csTestModifiable :: GetID() const {
+  return testID;
+}
+
+csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
+  csPtr<iModifiableDescription> ref(this->description);
+  return ref;
+}
+
+void csTestModifiable :: GetParameterValue(csStringID id, const csVariant& value) const {
+  // TODO
+}
+
+bool csTestModifiable ::SetParameterValue(csStringID id, const csVariant& value) {
+  printf("Setting %s to %v", id, value);
+  return true;
+}
+
 MyGraphNode1 :: MyGraphNode1 (GraphNodeFactory* _factory):GraphNode (_factory)
 {
   float r = 0.4f;
   float g = 0.2f;
-  float b = 0.7f;
-		
+  float b = 0.7f;	
       
       //factory= _factory;
+  /*
       GetParameter (0)->SetLong (1234567);
       GetParameter (1)->SetBool (true);
       GetParameter (2)->SetFloat (0.5f);
@@ -43,6 +78,7 @@ MyGraphNode1 :: MyGraphNode1 (GraphNodeFactory* _factory):GraphNode (_factory)
       GetParameter (7)->SetVector4(csVector4(0.2f,0.3f,0.8f,0.10f));
       // GetParameter (8)->SetVFSPath("home");
       SetName("bouton1");
+      */
 
  }
 
@@ -51,30 +87,18 @@ void PrintVariant (csVariant* variant)
 	
   switch (variant->GetType ())
     {
-      /*
     case CSVAR_LONG:
       printf ("[variant type: long value: %li]", variant->GetLong ());
       break;
-      */
     case CSVAR_FLOAT:
       printf ("[variant type: float value: %f]", variant->GetFloat ());
       break;
     case CSVAR_BOOL:
       printf ("[variant type: bool value: %i]", variant->GetBool ());
       break;
-      /*
-    case CSVAR_CMD:
-      printf ("[variant type: command]");
-      break;
-      */
     case CSVAR_STRING:
       printf ("[variant type: string value: %s]", variant->GetString ());
       break;
-      /*
-    case CSVAR_VFSPATH:
-      printf ("[variant type: vfspath value: %s]", variant->GetVFSPath ());
-      break;
-      */
     case CSVAR_VECTOR3 :
       printf ("[variant type: vector3 value: %f ; %f ; %f]", variant->GetVector3 ().x,variant->GetVector3 ().y,variant->GetVector3 ().z);
       break;
@@ -88,6 +112,8 @@ void PrintVariant (csVariant* variant)
       csColor col = variant->GetColor();
       printf ("[variant type: color value: %f ; %f ; %f]", col[0], col[1], col[2]);
       break;
+
+      // TODO: rest of debug prints (if needed)
     }
 }
 

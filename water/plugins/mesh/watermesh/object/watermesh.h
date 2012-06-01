@@ -159,6 +159,7 @@ private:
     csPlane3 *planes, uint32 frustum_mask);
 
   void AddNode(csOceanNode start, float dist);
+  void BoundaryMesh(csOceanNode start);
 
 public:
   /// Constructor.

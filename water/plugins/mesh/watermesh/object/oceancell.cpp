@@ -51,30 +51,30 @@ void csOceanCell::SetupVertices()
     {
       default:
       case LOD_LEVEL_1:
-        gran = 0.1f;
-        break;
-      case LOD_LEVEL_2:
         gran = 0.2f;
         break;
+      case LOD_LEVEL_2:
+        gran = 0.4f;
+        break;
       case LOD_LEVEL_3:
-        gran = 0.5f;
+        gran = 0.8f;
         break;
       case LOD_LEVEL_4:
-        gran = 1.0f;
+        gran = 1.6f;
         break;
       case LOD_LEVEL_5:
-        gran = 2.0f;
+        gran = 3.2f;
         break;
     }
 
-    uint maxj = (uint) (len * gran);
-    uint maxjd = maxj - 1;
-    uint maxi = (uint) (wid * gran);
-    uint maxid = maxi - 1;
+    uint maxjd = (uint) (len * gran);
+    uint maxj = maxjd + 1;
+    uint maxid = (uint) (wid * gran);
+    uint maxi = maxid + 1;
 
-    for(uint j = 0; j < maxj; ++j)
+    for(uint j = 0; j < maxj  ; ++j)
     {
-      for(uint i = 0; i < maxi; ++i)
+      for(uint i = 0; i < maxi ; ++i)
       {
         verts.Push(csVector3 ((i * wid / maxid), oHeight, (j * len / maxjd)));
         norms.Push(csVector3 (0, 1, 0));

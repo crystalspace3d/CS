@@ -127,8 +127,7 @@ Graph_behaviourFrame::Graph_behaviourFrame ()
   mainsizer->Add (left_vsizer,1,wxALL|wxEXPAND,5);
 
   modifiableEntities = new csRefArray<iModifiable>();
-  modifiableEntities->Push(new csTestModifiable);
-  // modifiableIterator = modifiableEntities.GetIterator();
+  focusedIndex = 0;
 
   //-------------------------------------------
 
@@ -185,9 +184,8 @@ Graph_behaviourFrame::Graph_behaviourFrame ()
 
 } 
 
-void Graph_behaviourFrame::SetGraphNode (GraphNode* node)
-{
-  this->node = node;
+void Graph_behaviourFrame::AddModifiable(iModifiable* modifiable) {
+  this->modifiableEntities->Push(modifiable);
 }
 
 //_---------------------------------
@@ -369,17 +367,16 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	
   csRef<iModifiableDescription> description(dataSource->GetDescription());
 
-  pgMan->AddPage (wxT("page1"));
+  pgMan->AddPage (wxT("Properties"));
   pgMan->SetExtraStyle ( wxPG_EX_HELP_AS_TOOLTIPS );
 
   size_t nPg = pgMan->GetPageCount ();
 	
   if (nPg >0)
   { 
-    page = pgMan->GetPage (wxT ("page1"));
+    page = pgMan->GetPage (wxT ("Properties"));
     pgMan->SetDescription (wxT ("Page Manager"), wxT ("New Page is added"));
 
-    // TODO: read from iModifiable thingy
     wxString categoryName (wxT("= entity name here ="), wxConvUTF8);
 	  
     wxPropertyCategory * ctgr = new wxPropertyCategory (categoryName);
@@ -399,7 +396,6 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
     {
       csRef<iModifiableParameter> param(description->GetParameterByIndex(i));
 
-      // Right now, implementing just for strings and longs
       switch (param->GetType())
       {
       case CSVAR_STRING:
@@ -575,26 +571,39 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
     return;
 
   size_t index = property->GetIndexInParent ();
+  /*
+    old version
   csVariant* variant = node->GetParameter (index);
   const csOptionDescription* compareValue = nodeFactory->GetParameterDescription (index);
   csVariantType compareType = compareValue->type;
   csVariant oldValue = *variant;
-  csVariant valueVar = new csVariant();
+  csVariant valueVar;
+  */
 
+   iModifiable* currentModifiable = modifiableEntities->Get(focusedIndex);
+
+    
+
+  iModifiableDescription* desc = currentModifiable->GetDescription();
+  iModifiableParameter* editedParameter = desc->GetParameterByIndex(index);
+
+
+  csVariantType compareType = editedParameter->GetType();
+  csVariant* variant =  editedParameter->GetParameterValue();
+  csVariant oldValue = *variant;
+  csVariant valueVar;
+  
+
+  
   if (compareType == CSVAR_STRING)
   {
-
-    valueVar.SetString (newValue.GetString ().mb_str ());
-    node->UpdateParameter (index, &oldValue, &valueVar);
-   
+    variant->SetString(newValue.GetString().mbc_str());
   }
   else if (compareType == CSVAR_LONG)
   {
-	
-    valueVar.SetLong (newValue.GetLong ());
-    node->UpdateParameter (index, &oldValue, &valueVar); 
-    
+    variant->SetLong(newValue.GetLong());    
   }
+  /*
   else if (compareType == CSVAR_FLOAT)
   {
 
@@ -648,18 +657,10 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
     node->UpdateParameter (index, &oldValue, &valueVar);
 				
   }
-  /*
-  else if (compareType == CSVAR_VFSPATH)
-  {
-
-    valueVar.SetVFSPath (newValue.GetString ().mb_str ());
-    node->UpdateParameter (index, &oldValue, &valueVar);
-	
-  }*/
   else
   {
     pgMan->SetDescription (wxT ("Page Manager :"), wxT ("Message test"));
-  }
+  }*/
 	
 }
 
@@ -668,8 +669,13 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
 void Graph_behaviourFrame::OnPopulateClick (wxCommandEvent &event )
 {
   // Changes the current active node
-  // TODO: actually iterate
-  Populate (modifiableEntities->Get(0));
+
+  focusedIndex++;
+  if(focusedIndex >= modifiableEntities->GetSize()) 
+    focusedIndex = 0;
+
+  Populate (modifiableEntities->Get(focusedIndex));
+
   pgMan->SetFocus ();
 }
 //-----------------------------------------------

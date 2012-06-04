@@ -29,38 +29,36 @@
 #include "csutil/refarr.h"
 
 /**
- * Concrete implementation of a modifiable string property.
+ *  Implementation of some of the most common iModifiableParameter usage. Parent class of most basic parameters
  */
-class iModifiableString : public scfImplementation1<iModifiableString, iModifiableParameter>
+class csBasicModifiable : public scfImplementation1<csBasicModifiable, iModifiableParameter> 
 {
 public:
-  iModifiableString() : scfImplementation1(this) {
-    this->name = new char();
-    this->description = new char();
-    this->value = new csVariant("");
-  }
+  csBasicModifiable(const char* name, const char* description, csVariant* value) :
+      name(name),
+      description(description),
+      value(value),    
+      scfImplementation1(this) 
+  { }
 
-  iModifiableString(const char* name, const char* description, csVariant* value) : scfImplementation1(this) 
-  {
-    this->name = new char(*name);
-    this->description = new char(*description);
-    this->value = value;
+  ~csBasicModifiable() {
+    delete value;
   }
 
   csStringID GetID() const {
     return id;
   }
 
-  char* GetName() const {
+  const char* GetName() const {
     return name;
   }
 
-  char* GetDescription() const {
+  const char* GetDescription() const {
     return description;
   }
 
   csVariantType GetType() const {
-    return CSVAR_STRING;
+    return value->GetType();
   }
 
   csVariant* GetParameterValue() const {
@@ -69,40 +67,71 @@ public:
 
   bool SetParameterValue(const csVariant& value)
   {
-    this->value->SetString(value.GetString());
+    // this->value->SetString(value.GetString());
+    *(this->value) = value;
     return true;
   }
 
   const iModifiableConstraint* GetConstraint() const 
   {
+    // Constraints not yet implemented
     return 0;
   }
 
 private:
-  char* name;
-  char* description;
+  const char* name;
+  const char* description;
   csStringID id;
   csVariant* value;
 };
 
-
-//*
-class testDudeDescription : public scfImplementation1<testDudeDescription, iModifiableDescription>
+/**
+ * Concrete implementation of a modifiable string property.
+ */
+class iModifiableString : public csBasicModifiable
 {
 public:
-  testDudeDescription(shared_ptr< name)
-    : scfImplementation1(this)
-  {
-    this->name = name;
-    parameters = csRefArray<iModifiableParameter>();
-    csVariant *nameVariant = new csVariant(name);
-    parameters.Push(csRef<iModifiableParameter>( new iModifiableString("name", "the dude's name", nameVariant)));
-    
-  }
+  /*
+  I don't think this should really be used. Best let the iModifiable system handle the csVariants
+  iModifiableString(const char* name, const char* description, csVariant* value) :
+      csBasicModifiable(name, description, value)
+  { }
+  */
+
+  iModifiableString(const char* name, const char* description, const scfString& value) :
+      csBasicModifiable(name, description, new csVariant(value))
+  { }  
+
+
+  iModifiableString(const char* name, const char* description, const char* value) :
+      csBasicModifiable(name, description, new csVariant(scfString(value)))
+  { }  
+
+};
+
+/**
+ * Concrete implementation of a modifiable long property.
+ */
+class iModifiableLong : public csBasicModifiable
+{
+  iModifiableLong(const char* name, const char* description, long& value) :
+    csBasicModifiable(name, description, new csVariant(value))
+    { }
+};
+
+/**
+ * Basic implementation of iModifiableDescription, suitable for most uses. Simply holds a csRefArray of iModifiableParameter and implements GetParameterCount, GetParameter and GetParameterByIndex.
+ */
+class csBasicModifiableDescription : public scfImplementation1<csBasicModifiableDescription, iModifiableDescription>
+{
+public:
+  csBasicModifiableDescription() :
+      parameters(csRefArray<iModifiableParameter>()),
+      scfImplementation1(this) { }
 
   size_t GetParameterCount() const { return parameters.GetSize(); }
 
-  csPtr<iModifiableParameter> GetParameter(csStringID id) const 
+  csRef<iModifiableParameter> GetParameter(csStringID id) const 
   {
     for(size_t i = 0; i < parameters.GetSize(); i++)
       if(parameters.Get(i)->GetID() == id)
@@ -111,16 +140,20 @@ public:
     return 0;
   }
 
-  csPtr<iModifiableParameter> GetParameterByIndex(size_t index) const 
+  csRef<iModifiableParameter> GetParameterByIndex(size_t index) const 
   {
     return parameters[index];
   }
 
-private:
+  void Push(iModifiableParameter* param) {
+    parameters.Push(csRef<iModifiableParameter>(param));
+  }
+
+protected:
   csRefArray<iModifiableParameter> parameters;
-  char* name;
+
+private:
 };
-//*/
 
 // Test dude; It's going to have some properties exposed to the GUI generation 
 // by iModifiable.
@@ -128,21 +161,23 @@ private:
 class csTestModifiable : public scfImplementation1<csTestModifiable, iModifiable>
 {
 public:
-  csTestModifiable();
+  csTestModifiable(const char* name, const char* job);
   virtual ~csTestModifiable();
 
   const csStringID GetID() const;
-  csPtr<iModifiableDescription> GetDescription () const;
+  csRef<iModifiableDescription> GetDescription () const;
 
   void GetParameterValue (csStringID id, const csVariant& value) const;
   bool SetParameterValue (csStringID id, const csVariant& value);
 
 private:
+  csStringID testID;
+
   csVector3 position;
   csColor color;
-  csString name;
+  scfString name;
+  scfString job;
 
-  csStringID testID;
   csRef<iModifiableDescription> description;
 };
 //*/

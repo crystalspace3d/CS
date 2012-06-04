@@ -100,8 +100,6 @@ private:
 
   void Clear()
   {
-    // TODO: arrays, keyvals, keyvallist, ibase will need decref
-
     if ((type == CSVAR_STRING)
 	&& (val.s != 0)) val.s->DecRef();
     else if ((type == CSVAR_MATRIX3) && (val.m != 0))
@@ -128,8 +126,10 @@ public:
   csVariant (bool b) { type = CSVAR_BOOL; val.b = b; }
   /// Constructor initialized with a value of type CSVAR_FLOAT
   csVariant (float f) { type = CSVAR_FLOAT; val.f[0] = f; }
-  /// Constructor initialized with a value of type CSVAR_STRING
+  /// Constructor initialized with a value of type CSVAR_STRING (from a char*)
   csVariant (const char* s) { type = CSVAR_STRING; val.s = s ? new scfString (s) : nullptr; }
+  /// Constructor initialized with a value of type CSVAR_STRING (from an scfString)
+  csVariant (scfString& s) { type = CSVAR_STRING; val.s = s ? new scfString(s) : nullptr; }
   /// Constructor initialized with a value of type CSVAR_COLOR
   csVariant (csColor& c) { type = CSVAR_COLOR; val.f[0] = c[0]; val.f[1] = c[1]; val.f[2] = c[2]; }
   /// Constructor initialized with a value of type CSVAR_COLOR4

@@ -28,27 +28,33 @@
 // Macro magic to make csTestModifiable work
 CS_IMPLEMENT_FOREIGN_DLL
 
-csTestModifiable :: csTestModifiable() : scfImplementationType(this)
+csTestModifiable :: csTestModifiable(const char* name, const char* job) :
+  name(scfString(name)),
+  job(scfString(job)),
+scfImplementationType(this)
 {
   position = csVector3(10.0f, 10.0f, 10.0f);
   color = csColor(0.8f, 0.1f, 0.1f);
-  name = csString("Hello, I am iModifiable!");
 
-  printf("Random test dude created...");
 
   testID = csStringID();
-  description = csRef<testDudeDescription>(new testDudeDescription);
+
+  // The following is the code required to expose a certain object's members to an editor
+  description = new csBasicModifiableDescription();
+  description->Push(new iModifiableString("Name", "the dude's name", this->name));
+  description->Push(new iModifiableString("Job", "the dude's jawb", this->job));
 }
 
-csTestModifiable :: ~csTestModifiable() { }
+csTestModifiable :: ~csTestModifiable() {
+  delete description;
+}
 
 const csStringID csTestModifiable :: GetID() const {
   return testID;
 }
 
-csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
-  csPtr<iModifiableDescription> ref(this->description);
-  return ref;
+csRef<iModifiableDescription> csTestModifiable :: GetDescription () const {
+  return description;
 }
 
 void csTestModifiable :: GetParameterValue(csStringID id, const csVariant& value) const {
@@ -79,7 +85,6 @@ MyGraphNode1 :: MyGraphNode1 (GraphNodeFactory* _factory):GraphNode (_factory)
       // GetParameter (8)->SetVFSPath("home");
       SetName("bouton1");
       */
-
  }
 
 void PrintVariant (csVariant* variant)

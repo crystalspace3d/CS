@@ -71,13 +71,13 @@ struct iModifiableParameter : public virtual iBase
    *   Returns char* entry for the parameter's name
    *   to be processed by the translator.
    */
-  virtual char* GetName () const = 0;
+  virtual const char* GetName () const = 0;
 
   /**
    *   Returns char* entry for the parameter's textual description
    *   to be processed by the translator.
    */
-  virtual char* GetDescription () const = 0;
+  virtual const char* GetDescription () const = 0;
 
   /**
    * Returns the type of this parameter                                                           */
@@ -107,8 +107,10 @@ struct iModifiableDescription : public virtual iBase
 
   virtual size_t GetParameterCount () const = 0;
 
-  virtual csPtr<iModifiableParameter> GetParameter (csStringID id) const = 0;
-  virtual csPtr<iModifiableParameter> GetParameterByIndex (size_t index) const = 0;
+  virtual csRef<iModifiableParameter> GetParameter (csStringID id) const = 0;
+  virtual csRef<iModifiableParameter> GetParameterByIndex (size_t index) const = 0;
+
+  virtual void Push(iModifiableParameter* param) = 0;
 };
 
 
@@ -119,7 +121,7 @@ struct iModifiable : public virtual iBase
   SCF_INTERFACE(iModifiable, 1, 0 ,0);
 
   virtual const csStringID GetID () const = 0;
-  virtual csPtr<iModifiableDescription> GetDescription () const = 0;
+  virtual csRef<iModifiableDescription> GetDescription () const = 0;
 
   virtual void GetParameterValue (csStringID id, const csVariant& value) const = 0;
   virtual bool SetParameterValue (csStringID id, const csVariant& value) = 0;

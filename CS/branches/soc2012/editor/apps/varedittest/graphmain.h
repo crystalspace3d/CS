@@ -69,7 +69,7 @@ class Graph_behaviourFrame: public wxFrame
   Graph_behaviourFrame ();
   ~Graph_behaviourFrame ();
 
-  void SetGraphNode (GraphNode* node);
+  void AddModifiable(iModifiable* modifiable);
 
 
   //void PopulateGrid();
@@ -86,8 +86,8 @@ class Graph_behaviourFrame: public wxFrame
   void Populate (const iModifiable* dataSource);
 
   csRefArray<iModifiable> *modifiableEntities;
+  size_t focusedIndex;
 
- private:
   //sizer principal pour tte la fenêtre
   wxBoxSizer *mainsizer;
   //sizer gauche

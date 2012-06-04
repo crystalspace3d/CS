@@ -31,6 +31,7 @@ IMPLEMENT_APP(Graph_behaviourApp);
 
 bool Graph_behaviourApp::OnInit()
 {
+  /*
 	GraphNodeFactory* factory1 = new GraphNodeFactory ();
 	factory1->SetName ("myfactory1"); 
 
@@ -83,18 +84,15 @@ bool Graph_behaviourApp::OnInit()
 	description.type = CSVAR_VECTOR4;
 	factory1->AddParameter (description);
 	
-  // Transform
-  
-  // iBase (maybe)
+*/
 
-  // csArray (later)
-	
-  MyGraphNode1* node1 = new MyGraphNode1 (factory1);
-
-	Graph_behaviourFrame* frame = new Graph_behaviourFrame ();
-	frame->SetGraphNode (node1);
-	frame->Show();
-
+  // Add some test objects to the varedittest to check its functionality. 
+  // csTestModifiable implements iModifiable
+  Graph_behaviourFrame* frame = new Graph_behaviourFrame ();
+  frame->AddModifiable(new csTestModifiable("Bob", "murderer"));
+  frame->AddModifiable(new csTestModifiable("Jake", "garbage man"));
+  frame->AddModifiable(new csTestModifiable("Frodo", "part-time orc slayer"));
+  frame->Show();
 
 	return true;
 }

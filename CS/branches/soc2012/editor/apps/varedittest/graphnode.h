@@ -27,6 +27,7 @@
 // Stuff needed for the test iModifiable dude
 #include "iutil/modifiable.h"
 #include "csutil/refarr.h"
+//#include "csutil/scf_implementation.h"
 
 /**
  *  Implementation of some of the most common iModifiableParameter usage. Parent class of most basic parameters
@@ -35,10 +36,10 @@ class csBasicModifiable : public scfImplementation1<csBasicModifiable, iModifiab
 {
 public:
   csBasicModifiable(const char* name, const char* description, csVariant* value) :
+      scfImplementationType (this),
       name(name),
       description(description),
-      value(value),    
-      scfImplementation1(this) 
+      value(value)
   { }
 
   ~csBasicModifiable() {
@@ -126,8 +127,9 @@ class csBasicModifiableDescription : public scfImplementation1<csBasicModifiable
 {
 public:
   csBasicModifiableDescription() :
-      parameters(csRefArray<iModifiableParameter>()),
-      scfImplementation1(this) { }
+      scfImplementationType (this),
+	parameters(csRefArray<iModifiableParameter>())
+	{}
 
   size_t GetParameterCount() const { return parameters.GetSize(); }
 

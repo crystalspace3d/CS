@@ -63,7 +63,7 @@ void csOceanCell::SetupVertices()
         gran = 1.6f;
         break;
       case LOD_LEVEL_5:
-        gran = 3.2f;
+        gran = 0.4f;
         break;
     }
 
@@ -87,12 +87,125 @@ void csOceanCell::SetupVertices()
     {
       for(uint i = 0; i < maxid; ++i)
       {
-        tris.Push(csTriangle ((int)(j * maxi + i), 
-                    (int)((j + 1) * maxi + i), 
-                    (int)(j * maxi + i + 1)));
-        tris.Push(csTriangle ((int)(j * maxi + i + 1),
-                    (int)((j + 1) * maxi + i),
-                    (int)((j + 1) * maxi + i + 1)));
+		      
+		  if( j==0 )         // for bottom boundary
+		  {
+			  if(i%2)
+			  {
+				  tris.Push(csTriangle ((int)(j * maxi + i - 1),
+					  (int)((j + 1) * maxi + i),
+					  (int)(j * maxi + i + 1)));
+				  tris.Push(csTriangle ((int)(j * maxi + i + 1), 
+					  (int)((j + 1) * maxi + i ), 
+					  (int)((j + 1) * maxi + i + 1)));		  
+			  }
+			  else
+			  {
+				  tris.Push(csTriangle ((int)(j * maxi + i), 
+					  (int)((j + 1) * maxi + i), 
+					  (int)((j + 1) * maxi + i + 1)));  
+			  }
+		  }
+		  else
+		  {
+			  tris.Push(csTriangle ((int)(j * maxi + i), 
+				  (int)((j + 1) * maxi + i), 
+				  (int)(j * maxi + i + 1)));
+			  tris.Push(csTriangle ((int)(j * maxi + i + 1),
+				  (int)((j + 1) * maxi + i),
+				  (int)((j + 1) * maxi + i + 1)));
+		  }
+		  
+
+
+
+		    
+		 /* if( j==maxid-1 )   // for top boundary
+		  {
+
+			if(i%2)
+			{
+				tris.Push(csTriangle ((int)(j * maxi + i),
+		  		  (int)((j + 1) * maxi + i - 1),
+		  		  (int)((j + 1) * maxi + i + 1)));
+		  	    tris.Push(csTriangle ((int)(j * maxi + i ), 
+		  		  (int)((j + 1) * maxi + i + 1), 
+		  		  (int)(j * maxi + i + 1)));
+			}
+			else
+			{
+				tris.Push(csTriangle ((int)(j * maxi + i), 
+		  		  (int)((j + 1) * maxi + i), 
+		  		  (int)(j * maxi + i + 1)));
+			}
+		  }
+		  else
+		  {
+		  	  tris.Push(csTriangle ((int)(j * maxi + i), 
+		  		  (int)((j + 1) * maxi + i), 
+		  		  (int)(j * maxi + i + 1)));
+		  	  tris.Push(csTriangle ((int)(j * maxi + i + 1),
+		  		  (int)((j + 1) * maxi + i),
+		  		  (int)((j + 1) * maxi + i + 1)));
+		  }*/
+				  
+
+		 /* if( i==0 )   // for left boundary
+		  {
+			  if (j%2)
+			  {
+				  tris.Push(csTriangle ((int)( (j-1) * maxi + i ), 
+					  (int)((j + 1) * maxi + i), 
+					  (int)(j * maxi + i + 1)));	
+				  tris.Push(csTriangle ((int)(j * maxi + i + 1),
+					  (int)((j + 1) * maxi + i),
+					  (int)((j + 1) * maxi + i + 1)));
+			  }
+			  else
+			  {
+				  tris.Push(csTriangle ((int)(j * maxi + i),
+					  (int)((j + 1) * maxi + i + 1),
+					  (int)(j * maxi + i + 1)));
+			  }
+		  }
+		  else
+		  {
+			  tris.Push(csTriangle ((int)(j * maxi + i), 
+				  (int)((j + 1) * maxi + i), 
+				  (int)(j * maxi + i + 1)));
+			  tris.Push(csTriangle ((int)(j * maxi + i + 1),
+				  (int)((j + 1) * maxi + i),
+				  (int)((j + 1) * maxi + i + 1)));
+		  }*/
+
+		 /* if( i==maxid-1 )   // for right boundary
+		  {
+			  if (j%2)
+			  {
+				  tris.Push(csTriangle ((int)(j * maxi + i), 
+					  (int)((j + 1) * maxi + i), 
+					  (int)((j + 1) * maxi + i + 1)));	
+   				  tris.Push(csTriangle ((int)(j * maxi + i), 
+   					  (int)((j + 1) * maxi + i + 1), 
+   					  (int)((j - 1) * maxi + i + 1)));
+			  }
+			  else
+			  {
+				  tris.Push(csTriangle ((int)(j * maxi + i), 
+					  (int)((j + 1) * maxi + i), 
+					  (int)(j * maxi + i + 1)));
+			  }
+		  }
+		  else
+		  {
+			  tris.Push(csTriangle ((int)(j * maxi + i), 
+				  (int)((j + 1) * maxi + i), 
+				  (int)(j * maxi + i + 1)));
+			  tris.Push(csTriangle ((int)(j * maxi + i + 1),
+				  (int)((j + 1) * maxi + i),
+				  (int)((j + 1) * maxi + i + 1)));
+		  }
+		  */
       }
     }
   

@@ -260,13 +260,6 @@ void csWaterMeshObject::SetupObject ()
   }
 }
 
-void csWaterMeshObject::BoundaryMesh(csOceanNode start)
-{
-
-	// TODO: generate boundary Mesh
-
-}
-
 /*
 * This function distributes Levels of Details to OceanNodes and Pushes the renderCell to meshQueue.
 * "dist_sq" is actually squared distance between camera's position and center of oceanNode.
@@ -304,10 +297,10 @@ void csWaterMeshObject::DrawFromNode(csOceanNode start, const csVector3 camPos, 
     AddNode(start, distFromCam_sq);
   }
 
-  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
-  DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
-  DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
-  DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
+  //DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  //DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
+  //DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
+  //DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
 }
 void csWaterMeshObject::DrawTopFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {

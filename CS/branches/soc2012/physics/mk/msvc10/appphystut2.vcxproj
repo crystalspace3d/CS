@@ -1246,14 +1246,17 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\apps\tutorial\phystut2\inputhandling.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\physobjects.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\physdemoapp.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\rendering.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\statics.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_inputhandling.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_objects.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_app.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_particles.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\physparticles.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_rendering.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_statics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\apps\tutorial\phystut2\physdemo.h" />
+    <ClInclude Include="..\..\apps\tutorial\phystut2\physparticles.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\appphystut2.rc" />

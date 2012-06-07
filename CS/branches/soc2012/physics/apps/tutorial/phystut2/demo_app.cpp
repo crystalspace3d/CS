@@ -16,10 +16,10 @@ PhysDemo::PhysDemo()
     debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
     physicalCameraMode (CAMERA_DYNAMIC), dragging (false), softDragging (false)
 {
-  localTrans.Identity ();
+  localTrans.Identity();
 }
 
-PhysDemo::~PhysDemo ()
+PhysDemo::~PhysDemo()
 {
 }
 
@@ -29,17 +29,17 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   if (!DemoApplication::OnInitialize (argc, argv))
     return false;
 
-  csBaseEventHandler::Initialize (GetObjectRegistry ());
-  if (!RegisterQueue (GetObjectRegistry (), csevAllEvents (GetObjectRegistry ())))
+  csBaseEventHandler::Initialize (GetObjectRegistry());
+  if (!RegisterQueue (GetObjectRegistry(), csevAllEvents (GetObjectRegistry())))
     return ReportError ("Failed to set up event handler!");
 
   // Checking for choosen dynamic system
-  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
+  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
   phys_engine_name = clp->GetOption ("phys_engine");
   
   phys_engine_name = "Bullet";
   csRef<iPluginManager> plugmgr = 
-    csQueryRegistry<iPluginManager> (GetObjectRegistry ());
+    csQueryRegistry<iPluginManager> (GetObjectRegistry());
   collisionSystem = csLoadPlugin<CS::Collisions::iCollisionSystem> (plugmgr, "crystalspace.physics.bullet2");
   physicalSystem = scfQueryInterface<CS::Physics::iPhysicalSystem> (collisionSystem);
 
@@ -57,7 +57,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
     if (!softBodyAnimationType)
       return ReportError ("Could not load soft body animation for genmeshes plugin!");
 
-    softBodyAnimationFactory = softBodyAnimationType->CreateAnimationControlFactory ();
+    softBodyAnimationFactory = softBodyAnimationType->CreateAnimationControlFactory();
   }
 
   // Load the ragdoll plugin
@@ -81,7 +81,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   else
   {
       csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to Terrain\n",
-          CS::Quote::Single (levelName.GetData ()),
+          CS::Quote::Single (levelName.GetData()),
           CS::Quote::Single ("portals"),
           CS::Quote::Single ("box"),
           CS::Quote::Single ("terrain"));
@@ -96,14 +96,14 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
 }
 
 
-bool PhysDemo::Application ()
+bool PhysDemo::Application()
 {
   // Default behavior from DemoApplication
-  if (!DemoApplication::Application ())
+  if (!DemoApplication::Application())
     return false;
 
   // Create the dynamic system
-  collisionSector = collisionSystem->CreateCollisionSector ();
+  collisionSector = collisionSystem->CreateCollisionSector();
   if (!collisionSector) return ReportError ("Error creating collision sector!");
   physicalSector = scfQueryInterface<CS::Physics::iPhysicalSector> (collisionSector);
 
@@ -123,18 +123,19 @@ bool PhysDemo::Application ()
   switch (environment)
   {
   case ENVIRONMENT_PORTALS:
-    CreatePortalRoom ();
-    view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 0, -3));
+    CreatePortalRoom();
+    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3));
     break;
     
   case ENVIRONMENT_BOX:
-    CreateBoxRoom ();
-    view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 0, -3));
+    CreateBoxRoom();
+    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3));
     break;
     
   case ENVIRONMENT_TERRAIN:
-    CreateTerrainRoom ();
-    view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 30, -3));
+    CreateTerrainRoom();
+    //view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 30, -3));
+    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 5, -3));
     break;
 
   default:
@@ -151,9 +152,8 @@ bool PhysDemo::Application ()
     collisionSector->SetGroupCollision ("Box", "BoxFiltered", false);
 
   // Preload some meshes and materials
-  iTextureWrapper* txt = loader->LoadTexture ("spark",
-    "/lib/std/spark.png");
-  if (!txt) return ReportError ("Error loading texture!");
+  if (!loader->LoadTexture ("spark", "/lib/std/spark.png")) return ReportError ("Error loading texture: spark");
+  if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
 
   // Load the box mesh factory.
   boxFact = loader->LoadMeshObjectFactory ("/lib/std/sprite1");
@@ -173,69 +173,69 @@ bool PhysDemo::Application ()
   cameraManager->SetMouseMoveEnabled (false);
 
   // Initialize the camera
-  UpdateCameraMode ();
+  UpdateCameraMode();
 
-  CreateGhostCylinder ();
+  CreateGhostCylinder();
 
   // Initialize the HUD manager
-  hudManager->GetKeyDescriptions ()->Empty ();
-  hudManager->GetKeyDescriptions ()->Push ("b: spawn a box");
-  hudManager->GetKeyDescriptions ()->Push ("s: spawn a sphere");
+  hudManager->GetKeyDescriptions()->Empty();
+  hudManager->GetKeyDescriptions()->Push ("b: spawn a box");
+  hudManager->GetKeyDescriptions()->Push ("s: spawn a sphere");
   
-  hudManager->GetKeyDescriptions ()->Push ("c: spawn a cylinder");
-  hudManager->GetKeyDescriptions ()->Push ("a: spawn a capsule");
-  hudManager->GetKeyDescriptions ()->Push ("n: spawn a cone");
+  hudManager->GetKeyDescriptions()->Push ("c: spawn a cylinder");
+  hudManager->GetKeyDescriptions()->Push ("a: spawn a capsule");
+  hudManager->GetKeyDescriptions()->Push ("n: spawn a cone");
  
-  hudManager->GetKeyDescriptions ()->Push ("v: spawn a convex mesh");
-  hudManager->GetKeyDescriptions ()->Push ("m: spawn a static concave mesh");
+  hudManager->GetKeyDescriptions()->Push ("v: spawn a convex mesh");
+  hudManager->GetKeyDescriptions()->Push ("m: spawn a static concave mesh");
   
-  hudManager->GetKeyDescriptions ()->Push ("q: spawn a compound body");
-  hudManager->GetKeyDescriptions ()->Push ("j: spawn a joint");
-  hudManager->GetKeyDescriptions ()->Push ("k: spawn a filter body");
+  hudManager->GetKeyDescriptions()->Push ("q: spawn a compound body");
+  hudManager->GetKeyDescriptions()->Push ("j: spawn a joint");
+  hudManager->GetKeyDescriptions()->Push ("k: spawn a filter body");
   
-  hudManager->GetKeyDescriptions ()->Push ("h: spawn a chain");
-  hudManager->GetKeyDescriptions ()->Push ("r: spawn a Frankie's ragdoll");
-  hudManager->GetKeyDescriptions ()->Push ("e: spawn a Krystal's ragdoll");
+  hudManager->GetKeyDescriptions()->Push ("h: spawn a chain");
+  hudManager->GetKeyDescriptions()->Push ("r: spawn a Frankie's ragdoll");
+  hudManager->GetKeyDescriptions()->Push ("e: spawn a Krystal's ragdoll");
 
   if (isSoftBodyWorld)
   {
-    hudManager->GetKeyDescriptions ()->Push ("y: spawn a rope");
-    hudManager->GetKeyDescriptions ()->Push ("u: spawn a cloth");
-    hudManager->GetKeyDescriptions ()->Push ("i: spawn a soft body");
+    hudManager->GetKeyDescriptions()->Push ("y: spawn a rope");
+    hudManager->GetKeyDescriptions()->Push ("u: spawn a cloth");
+    hudManager->GetKeyDescriptions()->Push ("i: spawn a soft body");
   }
-  hudManager->GetKeyDescriptions ()->Push ("SPACE: spawn random object");
+  hudManager->GetKeyDescriptions()->Push ("SPACE: spawn random object");
   
-  hudManager->GetKeyDescriptions ()->Push ("left mouse: fire!");
-  hudManager->GetKeyDescriptions ()->Push ("right mouse: drag object");
-  hudManager->GetKeyDescriptions ()->Push ("CTRL-x: cut selected object");
-  hudManager->GetKeyDescriptions ()->Push ("CTRL-v: paste object");
+  hudManager->GetKeyDescriptions()->Push ("left mouse: fire!");
+  hudManager->GetKeyDescriptions()->Push ("right mouse: drag object");
+  hudManager->GetKeyDescriptions()->Push ("CTRL-x: cut selected object");
+  hudManager->GetKeyDescriptions()->Push ("CTRL-v: paste object");
 
-  hudManager->GetKeyDescriptions ()->Push ("f: toggle camera modes");
-  hudManager->GetKeyDescriptions ()->Push ("t: toggle all bodies dynamic/static");
-  hudManager->GetKeyDescriptions ()->Push ("p: pause the simulation");
-  hudManager->GetKeyDescriptions ()->Push ("o: toggle speed of simulation");
-  hudManager->GetKeyDescriptions ()->Push ("d: toggle Bullet debug display");
+  hudManager->GetKeyDescriptions()->Push ("f: toggle camera modes");
+  hudManager->GetKeyDescriptions()->Push ("t: toggle all bodies dynamic/static");
+  hudManager->GetKeyDescriptions()->Push ("p: pause the simulation");
+  hudManager->GetKeyDescriptions()->Push ("o: toggle speed of simulation");
+  hudManager->GetKeyDescriptions()->Push ("d: toggle Bullet debug display");
   
-  hudManager->GetKeyDescriptions ()->Push ("?: toggle display of collisions");
-  hudManager->GetKeyDescriptions ()->Push ("g: toggle gravity");
+  hudManager->GetKeyDescriptions()->Push ("?: toggle display of collisions");
+  hudManager->GetKeyDescriptions()->Push ("g: toggle gravity");
 /*  
 #ifdef CS_HAVE_BULLET_SERIALIZER
   if (phys_engine_id == BULLET_ID)
-    hudManager->GetKeyDescriptions ()->Push ("CTRL-s: save the dynamic world");
+    hudManager->GetKeyDescriptions()->Push ("CTRL-s: save the dynamic world");
 #endif
 */
   /*
   if (phys_engine_id == BULLET_ID)
-    hudManager->GetKeyDescriptions ()->Push ("CTRL-n: next environment");
+    hudManager->GetKeyDescriptions()->Push ("CTRL-n: next environment");
   */
   
-  hudManager->GetKeyDescriptions ()->Push ("CTRL-i: start profiling");
-  hudManager->GetKeyDescriptions ()->Push ("CTRL-o: stop profiling");
-  hudManager->GetKeyDescriptions ()->Push ("CTRL-p: dump profile");
+  hudManager->GetKeyDescriptions()->Push ("CTRL-i: start profiling");
+  hudManager->GetKeyDescriptions()->Push ("CTRL-o: stop profiling");
+  hudManager->GetKeyDescriptions()->Push ("CTRL-p: dump profile");
   
   // Pre-load the animated mesh and the ragdoll animation node data
-  LoadFrankieRagdoll ();
-  LoadKrystalRagdoll ();
+  LoadFrankieRagdoll();
+  LoadKrystalRagdoll();
 
   // Run the application
   Run();
@@ -245,26 +245,26 @@ bool PhysDemo::Application ()
 
 
 
-void PhysDemo::GripContactBodies ()
+void PhysDemo::GripContactBodies()
 {
-  size_t count = ghostObject->GetContactObjectsCount ();
+  size_t count = ghostObject->GetContactObjectsCount();
   for (size_t i = 0; i < count; i++)
   {
-    CS::Physics::iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody ();
+    CS::Physics::iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody();
     if (pb)
     {
-      if (pb->GetType () == CS::Physics::BODY_RIGID)
+      if (pb->GetType() == CS::Physics::BODY_RIGID)
       {
-        CS::Physics::iRigidBody* rb = pb->QueryRigidBody ();
-        csVector3 velo = pb->GetLinearVelocity ();
+        CS::Physics::iRigidBody* rb = pb->QueryRigidBody();
+        csVector3 velo = pb->GetLinearVelocity();
         velo = - velo;
-        //rb->Disable ();
+        //rb->Disable();
         rb->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
         rb->SetAngularVelocity (csVector3 (.0f,.0f,.0f));
       }
       else
       {
-        CS::Physics::iSoftBody* sb = pb->QuerySoftBody ();
+        CS::Physics::iSoftBody* sb = pb->QuerySoftBody();
 	sb->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
         //sb->SetLinearVelocity (csVector3 (0,0,-1.0f));
       }
@@ -279,5 +279,5 @@ CS_IMPLEMENT_APPLICATION
 
 int main (int argc, char* argv[])
 {
-  return PhysDemo ().Main(argc, argv);
+  return PhysDemo().Main(argc, argv);
 }

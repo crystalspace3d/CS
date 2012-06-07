@@ -43,7 +43,8 @@ HeightMapCollider::HeightMapCollider ( float* gridData,
                                    float internalScale)
                                    : btHeightfieldTerrainShape (cell->GetGridWidth(), cell->GetGridHeight(),
                                    gridData, 1.0f, minHeight, maxHeight,
-                                   1, PHY_FLOAT, false), heightData (gridData)
+                                   1, PHY_FLOAT, false),
+                                   heightData (gridData)
 {
   // Apply the local scaling on the shape
   const csVector3& size = cell->GetSize();
@@ -67,15 +68,15 @@ void HeightMapCollider::SetLocalScale (const csVector3& scale)
 
 void HeightMapCollider::UpdataMinHeight (float minHeight)
 {
-  this->initialize (m_heightStickWidth, m_heightStickLength,
-    heightData, 1.0f, minHeight, m_maxHeight, 1, PHY_FLOAT, false);
+  //this->initialize (m_heightStickWidth, m_heightStickLength,
+  //  heightData, 1.0f, minHeight, m_maxHeight, 1, PHY_FLOAT, false);
 
 }
 
 void HeightMapCollider::UpdateMaxHeight (float maxHeight)
 {
-  this->initialize (m_heightStickWidth, m_heightStickLength,
-    heightData, 1.0f, m_minHeight, maxHeight, 1, PHY_FLOAT, false);
+  //this->initialize (m_heightStickWidth, m_heightStickLength,
+  //  heightData, 1.0f, m_minHeight, maxHeight, 1, PHY_FLOAT, false);
 }
 
 void HeightMapCollider::UpdateHeight(const csRect& area)

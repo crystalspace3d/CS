@@ -93,10 +93,10 @@ csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
     return new csVariant(awesome);
   } else if(id == id_floatThingy) {
     return new csVariant(floatThingy);
-  } else if(id == id_position) {
-    return new csVariant( csVector3(position) );
+  } else if(id == id_position) {    
+    return new csVariant(position);
   } else if(id == id_color) {
-    return new csVariant( csColor(color) );
+    return new csVariant(color);
   }
 
   return nullptr;

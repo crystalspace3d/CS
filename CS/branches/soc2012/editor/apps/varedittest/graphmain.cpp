@@ -392,7 +392,7 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 
     for (size_t i = 0; i< description->GetParameterCount(); i++)
     {
-      csRef<iModifiableParameter> param(description->GetParameterByIndex(i));
+      const iModifiableParameter* param = description->GetParameterByIndex(i);
       csVariant* variant = dataSource->GetParameterValue(param->GetID());
 
       switch (param->GetType())
@@ -591,11 +591,11 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
   // It's okay, though, since the GetDescription and GetParameter always allocate
   // new resources.
   csRef<iModifiableDescription> desc = currentModifiable->GetDescription();
-  csRef<iModifiableParameter> editedParameter = desc->GetParameterByIndex(index);
+  const iModifiableParameter* editedParameter = desc->GetParameterByIndex(index);
 
 
   csVariantType compareType = editedParameter->GetType();
-  unique_ptr<csVariant> variant( currentModifiable->GetParameterValue( editedParameter->GetID()) );
+  csVariant* variant( currentModifiable->GetParameterValue( editedParameter->GetID()) );
   csVariant oldValue = *variant;
   
   if (compareType == CSVAR_STRING)

@@ -97,8 +97,8 @@ struct iModifiableDescription : public virtual iBase
 
   virtual size_t GetParameterCount () const = 0;
 
-  virtual csPtr<iModifiableParameter> GetParameter (csStringID id) const = 0;
-  virtual csPtr<iModifiableParameter> GetParameterByIndex (size_t index) const = 0;
+  virtual const iModifiableParameter* GetParameter (csStringID id) const = 0;
+  virtual const iModifiableParameter* GetParameterByIndex (size_t index) const = 0;
 
   virtual void Push(iModifiableParameter* param) = 0;
 };

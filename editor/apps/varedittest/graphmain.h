@@ -59,7 +59,7 @@ using namespace std;
 #endif
 
 #include <wx/artprov.h>
-class csVariant;
+struct csVariant;
 
 //class GraphNodeFrame
 

@@ -477,7 +477,6 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	
       case CSVAR_VECTOR3 :
       {
-        // TODO: fix crash with vector3
 	wxString vector3Description(param->GetDescription(), wxConvUTF8);
 	wxString vector3Name (param->GetName(), wxConvUTF8);
 	csVector3 vector3Value (variant->GetVector3());
@@ -490,7 +489,7 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 
       }
       break;
-      /*
+      
       case CSVAR_VECTOR2 :
       {
 	wxString vector2Description(param->GetDescription(), wxConvUTF8);
@@ -498,9 +497,9 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	csVector2 vector2Value (variant->GetVector2());
 	double x = vector2Value.x;
 	double y = vector2Value.y;
-	wxVector2Property *vector2P = new wxVector2Property(vector2Name,wxT("csVector2"),wxVector2f(x,y));
+	wxVector2Property *vector2P = new wxVector2Property(vector2Name, vector2Name ,wxVector2f(x,y));
 	page->Append (vector2P);
-	page->SetPropertyHelpString(vector2Name,vector2Description );
+	page->SetPropertyHelpString(vector2Name,vector2Description);
 
       }
       break;
@@ -514,29 +513,12 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	double y = vector4Value.y;
 	double z = vector4Value.z;
 	double w = vector4Value.w;
-	wxVector4Property *vector4P = new wxVector4Property(vector4Name,wxT("csVector4"),wxVector4f(x,y,z,w));
+	wxVector4Property *vector4P = new wxVector4Property(vector4Name, vector4Name, wxVector4f(x,y,z,w));
 	page->Append (vector4P);
 	page->SetPropertyHelpString(vector4Name,vector4Description );
 
       }
       break;
-
-      //*/
-				
-	/*
-      case CSVAR_VFSPATH :
-      {
-	wxString pathDescription (param->GetDescription(), wxConvUTF8);
-	wxString pathName (param->GetName(), wxConvUTF8);
-	wxString pathValue (variant->GetVFSPath (), wxConvUTF8);
-	wxFileProperty* pathP = new wxFileProperty (pathName);
-	page->Append (pathP );
-	//pathP->SetAttribute(wxPG_FILE_SHOW_FULL_PATH,false);
-	pathP->SetValue (pathValue);
-	page->SetPropertyHelpString(pathName,pathDescription );
-
-      }
-      */
 
       case CSVAR_MATRIX3: 
       {
@@ -582,7 +564,7 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
   wxVariant newValue = property->GetValue ();
   if (newValue.IsNull ())
     return;
-
+  
   size_t index = property->GetIndexInParent ();
 
   iModifiable* currentModifiable = modifiableEntities->Get(focusedIndex);
@@ -653,10 +635,28 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
     variant->SetVector2(csVector2(valueX,valueY));
     currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);				
   }
+  else if (compareType == CSVAR_MATRIX3)
+  {
+
+  }
+  else if (compareType == CSVAR_TRANSFORM)
+  {
+
+  }
+  else if (compareType == CSVAR_IBASE)
+  {
+
+  }
+  else if (compareType == CSVAR_ARRAY)
+  {
+
+  }
   else
   {
     pgMan->SetDescription (wxT ("Page Manager :"), wxT ("Message test"));
   }
+
+  delete variant;
 }
 
 //---------------------------------------------
@@ -687,8 +687,6 @@ void Graph_behaviourFrame::OnPropertyGridChanging (wxPropertyGridEvent& event)
 {
   wxPGProperty* property = event.GetProperty ();
   OnGetNewValue (property);
-  
-	
 }
 
 //--------------------------------------------------------

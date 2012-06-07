@@ -150,7 +150,7 @@ private:
   long itemCount;
   bool awesome;
   float floatThingy;
-  csVector3 position;
+  csVector2 position;
   csColor color;
   scfString name;
   scfString job;

@@ -30,8 +30,8 @@
 
 //#include "wx/wxsf/ShapeBase.h"
 
-class csOptionDescription;
-class csVariant;
+struct csOptionDescription;
+struct csVariant;
 
 /// Warning, this is part of the old implementation. No longer used, pending deletion.
 class GraphNodeFactory

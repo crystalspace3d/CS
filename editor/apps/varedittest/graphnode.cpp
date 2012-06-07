@@ -32,7 +32,7 @@ csTestModifiable :: csTestModifiable(const char* name, const char* job, long ite
   itemCount(itemCount),
   awesome(false),
   floatThingy(123.55F),
-  position(10, 12, 15),
+  position(10, 12),
   color(0.5f, 0.2f, 0.2f),
   //*
   // TODO: smart id generation
@@ -47,8 +47,8 @@ csTestModifiable :: csTestModifiable(const char* name, const char* job, long ite
   //*/
   scfImplementationType(this)
 {
-  position = csVector3(10.0f, 10.0f, 10.0f);
-  color = csColor(0.8f, 0.1f, 0.1f);
+  //position = csVector3(10.0f, 10.0f, 10.0f);
+  //color = csColor(0.8f, 0.1f, 0.1f);
   /*
   iStringSet strings = csQueryRegistryTagInterface<iStringSet>(r, "crystalspace.shared.stringset");
   id_name = strings.Request("test_name");
@@ -75,7 +75,7 @@ csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
   description->Push(new csBasicModifiable("Awesome", "Am I awesome, or what?", CSVAR_BOOL, id_awesome));
   description->Push(new csBasicModifiable("FloatThingy", "some float", CSVAR_FLOAT, id_floatThingy));
   description->Push(new csBasicModifiable("Color", "my color", CSVAR_COLOR, id_color));
-  description->Push(new csBasicModifiable("Position", "spatial position of the unit", CSVAR_VECTOR3, id_position));
+  description->Push(new csBasicModifiable("Position", "spatial position of the unit", CSVAR_VECTOR2, id_position));
 
   return csPtr<iModifiableDescription>(description);
 }
@@ -122,7 +122,7 @@ bool csTestModifiable ::SetParameterValue(csStringID id, const csVariant& value)
     floatThingy = value.GetFloat();
     return true;
   } else if(id == id_position) {
-    position = value.GetVector3();
+    position = value.GetVector2();
     return true;
   } else if(id == id_color) {
     color = value.GetColor();

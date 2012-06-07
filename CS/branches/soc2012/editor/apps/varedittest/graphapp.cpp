@@ -24,8 +24,6 @@
 #include "graphapp.h"
 #include "graphedit.h"
 #include "graphnode.h"
-//#include "iutil/pluginconfig.h"
-#include "pluginconfig.h"
 
 IMPLEMENT_APP(Graph_behaviourApp);
 

@@ -83,7 +83,8 @@ public:
     
     type = var.type;
     v = var.v;
-    if ((type == CSVAR_STRING) && (v.s != 0)) v.s->IncRef(); 
+    if ((type == CSVAR_STRING) && (v.s != 0))
+      v.s->IncRef(); 
   }
 
   ~csVariant () { Clear(); }

@@ -51,8 +51,6 @@
 //#include <wx/slider.h>
 #include <wx/colour.h>
 //*********************************
-//#include "iutil/pluginconfig.h"
-#include "pluginconfig.h"
 #include <csutil/cscolor.h>
 #include <csgeom/vector3.h>
 #include "wx/propgrid/advprops.h"
@@ -486,7 +484,7 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	double x = vector3Value.x;
 	double y = vector3Value.y;
 	double z = vector3Value.z;
-	wxVectorProperty *vector3P = new wxVectorProperty(vector3Name, wxT("csVector3"), wxVector3f(x,y,z));
+	wxVectorProperty *vector3P = new wxVectorProperty(vector3Name, vector3Name, wxVector3f(x,y,z));
 	page->Append (vector3P);
 	page->SetPropertyHelpString(vector3Name, vector3Description);
 
@@ -597,7 +595,7 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
 
 
   csVariantType compareType = editedParameter->GetType();
-  unique_ptr<csVariant> variant( currentModifiable->GetParameterValue(editedParameter->GetID()) );
+  unique_ptr<csVariant> variant( currentModifiable->GetParameterValue( editedParameter->GetID()) );
   csVariant oldValue = *variant;
   
   if (compareType == CSVAR_STRING)
@@ -620,26 +618,23 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
     variant->SetBool (newValue.GetBool ());
     currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);
   }
-  /*
   else if (compareType == CSVAR_COLOR)
   {	
-    
     const wxString variantValue = page->GetPropertyValueAsString (property);
     wxColour txcol (wxString::FromAscii("rgb") + variantValue);
-    valueVar.SetColor ( csColor ((float)txcol.Red ()/255, (float)txcol.Green ()/255, (float)txcol.Blue ()/255) );
-    node->UpdateParameter (index, &oldValue, &valueVar);
-	  
+    variant->SetColor ( csColor ((float)txcol.Red ()/255, (float)txcol.Green ()/255, (float)txcol.Blue ()/255) );
+    currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);
   }
   else if (compareType == CSVAR_VECTOR3)
   {
-
     float valueX = property->Item(0)->GetValue().GetDouble ();
     float valueY = property->Item(1)->GetValue().GetDouble ();
     float valueZ = property->Item(2)->GetValue().GetDouble ();
-    valueVar.SetVector3(csVector3(valueX,valueY,valueZ));
-    node->UpdateParameter (index, &oldValue, &valueVar);
+    variant->SetVector3(csVector3(valueX,valueY,valueZ));
+    currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);
 				
   }
+  
   else if (compareType == CSVAR_VECTOR4)
   {
 
@@ -647,19 +642,17 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
     float valueY = property->Item(1)->GetValue().GetDouble ();
     float valueZ = property->Item(2)->GetValue().GetDouble ();
     float valueW = property->Item(3)->GetValue().GetDouble ();
-    valueVar.SetVector4(csVector4(valueX,valueY,valueZ,valueW));
-    node->UpdateParameter (index, &oldValue, &valueVar);
-				
+    variant->SetVector4(csVector4(valueX,valueY,valueZ,valueW));
+    currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);
   }
   else if (compareType == CSVAR_VECTOR2)
   {
 
     float valueX = property->Item(0)->GetValue().GetDouble ();
     float valueY = property->Item(1)->GetValue().GetDouble ();
-    valueVar.SetVector2(csVector2(valueX,valueY));
-    node->UpdateParameter (index, &oldValue, &valueVar);
-				
-  }*/
+    variant->SetVector2(csVector2(valueX,valueY));
+    currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);				
+  }
   else
   {
     pgMan->SetDescription (wxT ("Page Manager :"), wxT ("Message test"));

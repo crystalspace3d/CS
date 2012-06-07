@@ -21,8 +21,6 @@
 */
 #include "cssysdef.h"
 #include "graphnode.h"
-//#include "iutil/pluginconfig.h"
-#include "pluginconfig.h"
 #include <csutil/cscolor.h>
 
 // Macro magic to make csTestModifiable work
@@ -76,8 +74,8 @@ csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
   description->Push(new csBasicModifiable("Item count", "How many items this guy has. Coming soon: constraint to prevent negative values!", CSVAR_LONG, id_itemCount));
   description->Push(new csBasicModifiable("Awesome", "Am I awesome, or what?", CSVAR_BOOL, id_awesome));
   description->Push(new csBasicModifiable("FloatThingy", "some float", CSVAR_FLOAT, id_floatThingy));
- // description->Push(new csBasicModifiable("Color", "my color", CSVAR_COLOR, id_color));
- // description->Push(new csBasicModifiable("Position", "spatial position of the unit", CSVAR_VECTOR3, id_position));
+  description->Push(new csBasicModifiable("Color", "my color", CSVAR_COLOR, id_color));
+  description->Push(new csBasicModifiable("Position", "spatial position of the unit", CSVAR_VECTOR3, id_position));
 
   return csPtr<iModifiableDescription>(description);
 }
@@ -96,9 +94,9 @@ csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
   } else if(id == id_floatThingy) {
     return new csVariant(floatThingy);
   } else if(id == id_position) {
-    return new csVariant(&position);
+    return new csVariant( csVector3(position) );
   } else if(id == id_color) {
-    return new csVariant(&color);
+    return new csVariant( csColor(color) );
   }
 
   return nullptr;

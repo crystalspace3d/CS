@@ -33,6 +33,7 @@
 class csOptionDescription;
 class csVariant;
 
+/// Warning, this is part of the old implementation. No longer used, pending deletion.
 class GraphNodeFactory
 {
  public:

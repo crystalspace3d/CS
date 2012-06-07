@@ -35,11 +35,11 @@ class csBasicModifiable : public scfImplementation1<csBasicModifiable, iModifiab
 {
 public:
   csBasicModifiable(const char* name, const char* description, csVariantType type, csStringID id) :
+      scfImplementationType (this),
       name(name),
       description(description),
-      type(type),
-      scfImplementation1(this),
-      id(id)
+      id(id),
+      type(type)
   { }
 
   ~csBasicModifiable() {
@@ -101,23 +101,23 @@ class csBasicModifiableDescription : public scfImplementation1<csBasicModifiable
 {
 public:
   csBasicModifiableDescription() :
-      parameters(csRefArray<iModifiableParameter>()),
-      scfImplementation1(this) { }
+      scfImplementationType (this),
+      parameters(csRefArray<iModifiableParameter>()) {}
 
   size_t GetParameterCount() const { return parameters.GetSize(); }
 
-  csPtr<iModifiableParameter> GetParameter(csStringID id) const 
+  const iModifiableParameter* GetParameter(csStringID id) const 
   {
-    for(size_t i = 0; i < parameters.GetSize(); i++)
-      if(parameters.Get(i)->GetID() == id)
+    for (size_t i = 0; i < parameters.GetSize(); i++)
+      if (parameters.Get(i)->GetID() == id)
         return parameters.Get(i);
 
-    return 0;
+    return nullptr;
   }
 
-  csPtr<iModifiableParameter> GetParameterByIndex(size_t index) const 
+  const iModifiableParameter* GetParameterByIndex(size_t index) const 
   {
-    return csPtr<iModifiableParameter>(parameters[index]);
+    return parameters[index];
   }
 
   void Push(iModifiableParameter* param) {

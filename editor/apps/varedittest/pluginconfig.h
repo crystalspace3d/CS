@@ -131,21 +131,21 @@ public:
   /// Constructor initialized with a value of type CSVAR_STRING (from an scfString)
   csVariant (scfString& s) { type = CSVAR_STRING; val.s = s ? new scfString(s) : nullptr; }
   /// Constructor initialized with a value of type CSVAR_COLOR
-  csVariant (csColor& c) { type = CSVAR_COLOR; val.f[0] = c[0]; val.f[1] = c[1]; val.f[2] = c[2]; }
+  csVariant (const csColor& c) { type = CSVAR_COLOR; val.f[0] = c[0]; val.f[1] = c[1]; val.f[2] = c[2]; }
   /// Constructor initialized with a value of type CSVAR_COLOR4
-  csVariant (csColor4& c) { type = CSVAR_COLOR4; val.f[0] = c[0]; val.f[1] = c[1]; val.f[2] = c[2]; val.f[3] = c[3]; }
+  csVariant (const csColor4& c) { type = CSVAR_COLOR4; val.f[0] = c[0]; val.f[1] = c[1]; val.f[2] = c[2]; val.f[3] = c[3]; }
   /// Constructor initialized with a value of type CSVAR_VECTOR2
-  csVariant (csVector2& v) { type = CSVAR_VECTOR2; val.f[0] = v[0]; val.f[1] = v[1]; }
+  csVariant (const csVector2& v) { type = CSVAR_VECTOR2; val.f[0] = v[0]; val.f[1] = v[1]; }
   /// Constructor initialized with a value of type CSVAR_VECTOR3
-  csVariant (csVector3& v) { type = CSVAR_VECTOR3; val.f[0] = v[0]; val.f[1] = v[1]; val.f[2] = v[2]; }
+  csVariant (const csVector3& v) { type = CSVAR_VECTOR3; val.f[0] = v[0]; val.f[1] = v[1]; val.f[2] = v[2]; }
   /// Constructor initialized with a value of type CSVAR_VECTOR4
-  csVariant (csVector4& v) { type = CSVAR_VECTOR4; val.f[0] = v[0]; val.f[1] = v[1]; val.f[2] = v[2]; val.f[3] = v[3]; }
+  csVariant (const csVector4& v) { type = CSVAR_VECTOR4; val.f[0] = v[0]; val.f[1] = v[1]; val.f[2] = v[2]; val.f[3] = v[3]; }
   /// Constructor initialized with a value of type CSVAR_MATRIX3
-  csVariant (csMatrix3& m) { type = CSVAR_MATRIX3; val.m = new csMatrix3 (m); }
+  csVariant (const csMatrix3& m) { type = CSVAR_MATRIX3; val.m = new csMatrix3 (m); }
   /// Constructor initialized with a value of type CSVAR_TRANSFORM
-  csVariant (csTransform& t) { type = CSVAR_TRANSFORM; val.t = new csTransform (t); }
+  csVariant (const csTransform& t) { type = CSVAR_TRANSFORM; val.t = new csTransform (t); }
   /// Constructor initialized with a csArray
-  csVariant (csArray<csVariant>& a) { type = CSVAR_ARRAY; val.a = new csArray<csVariant>(a); }
+  csVariant (const csArray<csVariant>& a) { type = CSVAR_ARRAY; val.a = new csArray<csVariant>(a); }
   /// Constructor initialized with an iBase
   // TODO
 

@@ -80,18 +80,8 @@ struct iModifiableParameter : public virtual iBase
   virtual const char* GetDescription () const = 0;
 
   /**
-   * Returns the type of this parameter                                                           */
+   * Returns the type of this parameter                                                      */
   virtual csVariantType GetType () const = 0;
-
-  /**
-   * Gets this parameter's value.
-   */
-  virtual csVariant* GetParameterValue () const = 0;
-
-  /**
-   * Sets this parameter's value.
-   */
-  virtual bool SetParameterValue (const csVariant& value) = 0;
 
   /**
    * Returns this parameter's constraint.
@@ -107,8 +97,8 @@ struct iModifiableDescription : public virtual iBase
 
   virtual size_t GetParameterCount () const = 0;
 
-  virtual csRef<iModifiableParameter> GetParameter (csStringID id) const = 0;
-  virtual csRef<iModifiableParameter> GetParameterByIndex (size_t index) const = 0;
+  virtual csPtr<iModifiableParameter> GetParameter (csStringID id) const = 0;
+  virtual csPtr<iModifiableParameter> GetParameterByIndex (size_t index) const = 0;
 
   virtual void Push(iModifiableParameter* param) = 0;
 };
@@ -121,9 +111,10 @@ struct iModifiable : public virtual iBase
   SCF_INTERFACE(iModifiable, 1, 0 ,0);
 
   virtual const csStringID GetID () const = 0;
-  virtual csRef<iModifiableDescription> GetDescription () const = 0;
 
-  virtual void GetParameterValue (csStringID id, const csVariant& value) const = 0;
+  virtual csPtr<iModifiableDescription> GetDescription () const = 0;
+
+  virtual csVariant* GetParameterValue (csStringID id) const = 0;
   virtual bool SetParameterValue (csStringID id, const csVariant& value) = 0;
 };
 

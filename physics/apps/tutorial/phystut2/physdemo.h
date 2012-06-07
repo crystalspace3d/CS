@@ -1,13 +1,14 @@
 #ifndef __PHYSTUT2_H__
 #define __PHYSTUT2_H__
 
-
+#include "cssysdef.h"
 #include "csutil/weakref.h"
 
 #include "cstool/demoapplication.h"
 #include "ivaria/physics.h"
 #include "ivaria/bullet2.h"
 #include "ivaria/collisions.h"
+
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
 #include "imesh/modifiableterrain.h"
@@ -20,6 +21,9 @@
 #define ENVIRONMENT_PORTALS 1
 #define ENVIRONMENT_BOX 2
 #define ENVIRONMENT_TERRAIN 3
+ 
+//static const csVector3 ActorDimensions(0.8);
+static const csVector3 ActorDimensions(1.2);
 
 class PhysDemo : public CS::Utility::DemoApplication
 {
@@ -95,54 +99,100 @@ private:
   csRef<iTerrainModifier> terrainMod;
 
 private:
-  void Frame ();
+  void Frame();
   bool OnKeyboard (iEvent &event);
 
   bool OnMouseDown (iEvent &event);
   bool OnMouseUp (iEvent &event);
 
   // Camera
-  void UpdateCameraMode ();
+  void UpdateCameraMode();
 
   // Spawning objects
-  bool SpawnStarCollider ();
+  bool SpawnStarCollider();
   CS::Physics::iRigidBody* SpawnBox (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnSphere (bool setVelocity = true);
+  CS::Physics::iRigidBody* SpawnSphere (const csVector3& pos, float radius, bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCone (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCylinder (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCapsule (float length = rand() % 3 / 50.f + .7f,
     float radius = rand() % 10 / 50.f + .2f, bool setVelocity = true);
-  CS::Collisions::iCollisionObject* SpawnConcaveMesh ();
+  CS::Collisions::iCollisionObject* SpawnConcaveMesh();
   CS::Physics::iRigidBody* SpawnConvexMesh (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCompound (bool setVelocity = true);
-  CS::Physics::iJoint* SpawnJointed ();
+  CS::Physics::iJoint* SpawnJointed();
   CS::Physics::iRigidBody* SpawnFilterBody (bool setVelocity = true);
-  void SpawnChain ();
-  void LoadFrankieRagdoll ();
-  void LoadKrystalRagdoll ();
-  void SpawnFrankieRagdoll ();
-  void SpawnKrystalRagdoll ();
-  void SpawnRope ();
-  CS::Physics::iSoftBody* SpawnCloth ();
+  void SpawnChain();
+  void LoadFrankieRagdoll();
+  void LoadKrystalRagdoll();
+  void SpawnFrankieRagdoll();
+  void SpawnKrystalRagdoll();
+  void SpawnRope();
+  CS::Physics::iSoftBody* SpawnCloth();
   CS::Physics::iSoftBody* SpawnSoftBody (bool setVelocity = true);
 
-  void CreateBoxRoom ();
-  void CreatePortalRoom ();
-  void CreateTerrainRoom ();
+  void CreateBoxRoom();
+  void CreatePortalRoom();
+  void CreateTerrainRoom();
 
-  void CreateGhostCylinder ();
-  void GripContactBodies ();
+  void CreateGhostCylinder();
+  void GripContactBodies();
+
+
+  // particles
+  void AddParticles(const csVector3& origin, float yFactor = 1, int num = 256);
 
 public:
-  PhysDemo ();
-  virtual ~PhysDemo ();
+  PhysDemo();
+  virtual ~PhysDemo();
 
-  void PrintHelp ();
+  void PrintHelp();
   bool OnInitialize (int argc, char* argv[]);
-  bool Application ();
+  bool Application();
 
   friend class MouseAnchorAnimationControl;
   csRef<CS::Physics::iAnchorAnimationControl> grabAnimationControl;
+
+
+  /**
+   * The location of the actor's head, i.e. the location of the camera
+   */
+  csVector3 GetActorHeadPos() const { return view->GetCamera()->GetTransform().GetOrigin(); }
+
+  /**
+   * The location where the actor stands
+   */
+  csVector3 GetActorFeetPos() const { return GetActorHeadPos() - csVector3(0, ActorDimensions.y, 0); }
+
+  /**
+   * Normalized direction of the camera
+   */
+  csVector3 GetCameraDirection() const { return view->GetCamera()->GetTransform().GetT2O() * csVector3(0, 0, 1); }
+
+  /**
+   * Normalized direction of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
+   */
+  csVector3 GetCameraDirectionXZ() const { csVector3 dist = view->GetCamera()->GetTransform().GetT2O() * csVector3(0, 0, 1); dist.y = 0; dist.Normalize(); return dist; }
+
+  /**
+   * Point in the given distance in front of the camera
+   */
+  csVector3 GetPointInFront(float distance) const { return GetActorHeadPos() + (GetCameraDirection() * distance); }
+
+  /**
+   * Point in the given distance in front of the actor's feet
+   */
+  csVector3 GetPointInFrontOfFeet(float distance) const { return GetActorFeetPos() + (GetCameraDirection() * distance); }
+
+  /**
+   * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
+   */
+  csVector3 GetPointInFrontXZ(float distance) const { return GetActorHeadPos() + (GetCameraDirectionXZ() * distance); }
+
+  /**
+   * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
+   */
+  csVector3 GetPointInFrontOfFeetXZ(float distance) const { return GetActorFeetPos() + (GetCameraDirectionXZ() * distance); }
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1
@@ -152,7 +202,7 @@ public:
   MouseAnchorAnimationControl (PhysDemo* simple)
     : scfImplementationType (this), simple (simple) {}
 
-  csVector3 GetAnchorPosition () const;
+  csVector3 GetAnchorPosition() const;
 
 private:
   PhysDemo* simple;

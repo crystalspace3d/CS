@@ -352,17 +352,17 @@ CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, c
 
     result.hasHit = true;
 
-    // It's a portal..
     if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_GHOST_OBJECT
       && rayCallback.m_collisionObject->getUserPointer () == NULL)
     {
+      // hit a ghost object (potentially a portal...)
       collObject = NULL;
       result.hasHit = false;
       hitPortal = btGhostObject::upcast (rayCallback.m_collisionObject);
     }
-
-    if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_SOFT_BODY)
+    else if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_SOFT_BODY)
     {
+      // hit a soft body
       btSoftBody* body = btSoftBody::upcast (rayCallback.m_collisionObject);
       btSoftBody::sRayCast ray;
 
@@ -406,6 +406,7 @@ CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, c
     } //softBody
     else
     { 
+      // "normal" object
       result.object = collObject;
       result.isect = BulletToCS (rayCallback.m_hitPointWorld,
         sys->getInverseInternalScale ());

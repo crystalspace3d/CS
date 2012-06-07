@@ -82,8 +82,9 @@ void csBulletCollisionObject::SetTransform (const csOrthoTransform& trans)
 
       if (btObject)
       {
-        dynamic_cast<btRigidBody*>(btObject)->setMotionState (motionState);
-        dynamic_cast<btRigidBody*>(btObject)->setCenterOfMassTransform (motionState->m_graphicsWorldTrans);
+        btRigidBody::upcast (btObject)->setAngularFactor(23);
+        btRigidBody::upcast (btObject)->setMotionState (motionState);
+        btRigidBody::upcast (btObject)->setCenterOfMassTransform (motionState->m_graphicsWorldTrans);
       }
 
       if (insideWorld)

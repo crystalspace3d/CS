@@ -89,9 +89,9 @@ bool Graph_behaviourApp::OnInit()
   // Add some test objects to the varedittest to check its functionality. 
   // csTestModifiable implements iModifiable
   Graph_behaviourFrame* frame = new Graph_behaviourFrame ();
-  frame->AddModifiable(new csTestModifiable("Bob", "murderer"));
-  frame->AddModifiable(new csTestModifiable("Jake", "garbage man"));
-  frame->AddModifiable(new csTestModifiable("Frodo", "part-time orc slayer"));
+  frame->AddModifiable(new csTestModifiable("Bob", "murderer", 11));
+  frame->AddModifiable(new csTestModifiable("Jake", "garbage man", 0));
+  frame->AddModifiable(new csTestModifiable("Frodo", "part-time orc slayer", 2));
   frame->Show();
 
 	return true;

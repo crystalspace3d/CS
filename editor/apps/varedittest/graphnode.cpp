@@ -28,42 +28,110 @@
 // Macro magic to make csTestModifiable work
 CS_IMPLEMENT_FOREIGN_DLL
 
-csTestModifiable :: csTestModifiable(const char* name, const char* job) :
-  name(scfString(name)),
-  job(scfString(job)),
-scfImplementationType(this)
+csTestModifiable :: csTestModifiable(const char* name, const char* job, long itemCount) :
+  name(name),
+  job(job),
+  itemCount(itemCount),
+  awesome(false),
+  floatThingy(123.55F),
+  position(10, 12, 15),
+  color(0.5f, 0.2f, 0.2f),
+  //*
+  // TODO: smart id generation
+  id_name(csStringID(1000)),
+  id_job(1001),
+  id_color(1002),
+  id_position(1003),
+  id_itemCount(1004),
+  id_awesome(1005),
+  id_floatThingy(1006),
+  id_testModifiable(1010),
+  //*/
+  scfImplementationType(this)
 {
   position = csVector3(10.0f, 10.0f, 10.0f);
   color = csColor(0.8f, 0.1f, 0.1f);
-
-
-  testID = csStringID();
-
-  // The following is the code required to expose a certain object's members to an editor
-  description = new csBasicModifiableDescription();
-  description->Push(new iModifiableString("Name", "the dude's name", this->name));
-  description->Push(new iModifiableString("Job", "the dude's jawb", this->job));
+  /*
+  iStringSet strings = csQueryRegistryTagInterface<iStringSet>(r, "crystalspace.shared.stringset");
+  id_name = strings.Request("test_name");
+  id_job = strings->Request("test_job");
+  id_color = strings->Request("test_color");
+  id_testModifiable = strings->Request("test_dude");
+  */
 }
 
-csTestModifiable :: ~csTestModifiable() {
-  delete description;
-}
+csTestModifiable :: ~csTestModifiable() { }
 
 const csStringID csTestModifiable :: GetID() const {
-  return testID;
+  return id_testModifiable;
 }
 
-csRef<iModifiableDescription> csTestModifiable :: GetDescription () const {
-  return description;
+csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
+
+  csBasicModifiableDescription* description = new csBasicModifiableDescription();
+  // Currently, the specialized modifiables no longer seem to be needed
+  // The old implementation stored a direct pointer to the actual modifiable value (from the class that implemented iModifiable) and performed its sets/gets using that pointer. In this case (also with specialized string/long/float etc. modifiables the need for chained ifs in GetParameter and SetParameter functions would have been eliminated.
+  description->Push(new csBasicModifiable("Name", "the dude's name", CSVAR_STRING, id_name));
+  description->Push(new csBasicModifiable("Job", "the dude's jawb", CSVAR_STRING, id_job));
+  description->Push(new csBasicModifiable("Item count", "How many items this guy has. Coming soon: constraint to prevent negative values!", CSVAR_LONG, id_itemCount));
+  description->Push(new csBasicModifiable("Awesome", "Am I awesome, or what?", CSVAR_BOOL, id_awesome));
+  description->Push(new csBasicModifiable("FloatThingy", "some float", CSVAR_FLOAT, id_floatThingy));
+ // description->Push(new csBasicModifiable("Color", "my color", CSVAR_COLOR, id_color));
+ // description->Push(new csBasicModifiable("Position", "spatial position of the unit", CSVAR_VECTOR3, id_position));
+
+  return csPtr<iModifiableDescription>(description);
 }
 
-void csTestModifiable :: GetParameterValue(csStringID id, const csVariant& value) const {
-  // TODO
+csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
+  // These things could be fixed up through MACROS_MAYBE
+  // Especially if we assume that each varName has a corresponding id_varName
+  if(id == id_name) {
+    return new csVariant(name);
+  } else if(id == id_job) {
+      return new csVariant(job);
+  } else if(id == id_itemCount) {
+      return new csVariant(itemCount);
+  } else if(id == id_awesome) {
+    return new csVariant(awesome);
+  } else if(id == id_floatThingy) {
+    return new csVariant(floatThingy);
+  } else if(id == id_position) {
+    return new csVariant(&position);
+  } else if(id == id_color) {
+    return new csVariant(&color);
+  }
+
+  return nullptr;
+  // Maybe trigger an assertion here?
+  // or change to the old version and return false
+  
 }
 
 bool csTestModifiable ::SetParameterValue(csStringID id, const csVariant& value) {
-  printf("Setting %s to %v", id, value);
-  return true;
+  if(id == id_name) {
+    name = value.GetString();
+    return true;
+  } else if(id == id_job) {
+    job = value.GetString();
+    return true;
+  } else if(id == id_itemCount) {
+    itemCount = value.GetLong();
+    return true;
+  } else if(id == id_awesome) {
+    awesome = value.GetBool();
+    return true;
+  } else if(id == id_floatThingy) {
+    floatThingy = value.GetFloat();
+    return true;
+  } else if(id == id_position) {
+    position = value.GetVector3();
+    return true;
+  } else if(id == id_color) {
+    color = value.GetColor();
+    return true;
+  }
+
+  return false;
 }
 
 MyGraphNode1 :: MyGraphNode1 (GraphNodeFactory* _factory):GraphNode (_factory)

@@ -395,14 +395,16 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
     for (size_t i = 0; i< description->GetParameterCount(); i++)
     {
       csRef<iModifiableParameter> param(description->GetParameterByIndex(i));
+      csVariant* variant = dataSource->GetParameterValue(param->GetID());
 
       switch (param->GetType())
       {
       case CSVAR_STRING:
       {
 	wxString stringDescription (param->GetDescription(), wxConvUTF8);
-	wxString stringName (param->GetName(), wxConvUTF8);					
-  wxString stringValue (param->GetParameterValue()->GetString(), wxConvUTF8);
+	wxString stringName (param->GetName(), wxConvUTF8);			
+  
+  wxString stringValue (variant->GetString(), wxConvUTF8);
 	wxStringProperty* stringP = new wxStringProperty (stringName);
 	page->Append (stringP);
 	stringP->SetValue (stringValue);
@@ -414,7 +416,7 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
       {
 	wxString longDescription (param->GetDescription(), wxConvUTF8);
 	wxString longName (param->GetName(), wxConvUTF8);
-	wxString longValue = wxString::Format (wxT("%ld"), (int) param->GetParameterValue()->GetLong());
+	wxString longValue = wxString::Format (wxT("%ld"), (int) variant->GetLong());
 	wxIntProperty* intP = new wxIntProperty(longName);				
 	page->Append(intP);
 	intP->SetValue(longValue);					
@@ -422,37 +424,49 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	page->SetPropertyHelpString(longName, longDescription);
       }
       break;
-      /*
+
       case CSVAR_FLOAT:
       { 
-	wxString floatDescription (option->description, wxConvUTF8);
-	wxString floatName (option->name, wxConvUTF8);
-	double value = node->GetParameter (i)->GetFloat ();
+	wxString floatDescription (param->GetDescription(), wxConvUTF8);
+	wxString floatName (param->GetName(), wxConvUTF8);
+	double value = variant->GetFloat();
+
+  // Generate a homebrewed slider 
+  //TODO: complete slider rewrite
+  /*
 	wxPGSliderProperty* sliderP = 
 	  new wxPGSliderProperty (floatName, floatName, value, 0, 10000);
 	page->Append (sliderP);
 	sliderP->Init ();
+  */
+
+  // Temporarily just use a text field
+  wxFloatProperty* floatP = new wxFloatProperty(floatName);
+  page->Append(floatP);
+  floatP->SetValue(value);
+  pgMan->GetGrid()->SetPropertyValue(floatP, value);
+
 	page->SetPropertyHelpString (floatName, floatDescription);
       }
       break;
 
       case CSVAR_BOOL:
       {
-	wxString boolDescription (option->description, wxConvUTF8);
-	wxString boolName (option->name, wxConvUTF8);
+	wxString boolDescription (param->GetDescription(), wxConvUTF8);
+	wxString boolName (param->GetName(), wxConvUTF8);
 	wxBoolProperty* boolP = new wxBoolProperty(boolName);
+  boolP->SetValue ( variant->GetBool ());
 	page->Append (boolP);
 	pgMan->SetPropertyAttribute (boolP, wxPG_BOOL_USE_CHECKBOX, (long)1, wxPG_RECURSE);	
-	boolP->SetValue (node->GetParameter (i)->GetBool ());
 	page->SetPropertyHelpString(boolName,boolDescription );
       }
       break;
 	
       case CSVAR_COLOR :
       {
-	wxString colorDescription(option->description, wxConvUTF8);
-	wxString colorName (option->name, wxConvUTF8);
-	csColor colorValue(node->GetParameter (i)->GetColor ());
+	wxString colorDescription(param->GetDescription(), wxConvUTF8);
+	wxString colorName (param->GetName(), wxConvUTF8);
+	csColor colorValue(variant->GetColor ());
 	int red  = colorValue[0]*255;
 	int blue  = colorValue[1]*255;
 	int green = colorValue[2]*255;
@@ -465,24 +479,25 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	
       case CSVAR_VECTOR3 :
       {
-	wxString vector3Description(option->description, wxConvUTF8);
-	wxString vector3Name (option->name, wxConvUTF8);
-	csVector3 vector3Value (node->GetParameter (i)->GetVector3());
+        // TODO: fix crash with vector3
+	wxString vector3Description(param->GetDescription(), wxConvUTF8);
+	wxString vector3Name (param->GetName(), wxConvUTF8);
+	csVector3 vector3Value (variant->GetVector3());
 	double x = vector3Value.x;
 	double y = vector3Value.y;
 	double z = vector3Value.z;
-	wxVectorProperty *vector3P = new wxVectorProperty(vector3Name,wxT("csVector3"),wxVector3f(x,y,z));
+	wxVectorProperty *vector3P = new wxVectorProperty(vector3Name, wxT("csVector3"), wxVector3f(x,y,z));
 	page->Append (vector3P);
-	page->SetPropertyHelpString(vector3Name,vector3Description );
+	page->SetPropertyHelpString(vector3Name, vector3Description);
 
       }
       break;
-
+      /*
       case CSVAR_VECTOR2 :
       {
-	wxString vector2Description(option->description, wxConvUTF8);
-	wxString vector2Name (option->name, wxConvUTF8);
-	csVector2 vector2Value (node->GetParameter (i)->GetVector2());
+	wxString vector2Description(param->GetDescription(), wxConvUTF8);
+	wxString vector2Name (param->GetName(), wxConvUTF8);
+	csVector2 vector2Value (variant->GetVector2());
 	double x = vector2Value.x;
 	double y = vector2Value.y;
 	wxVector2Property *vector2P = new wxVector2Property(vector2Name,wxT("csVector2"),wxVector2f(x,y));
@@ -494,9 +509,9 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 				
       case CSVAR_VECTOR4 :
       {
-	wxString vector4Description(option->description, wxConvUTF8);
-	wxString vector4Name (option->name, wxConvUTF8);
-	csVector4 vector4Value (node->GetParameter (i)->GetVector4());
+	wxString vector4Description(param->GetDescription(), wxConvUTF8);
+	wxString vector4Name (param->GetName(), wxConvUTF8);
+	csVector4 vector4Value (variant->GetVector4());
 	double x = vector4Value.x;
 	double y = vector4Value.y;
 	double z = vector4Value.z;
@@ -508,14 +523,14 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
       }
       break;
 
-      */
+      //*/
 				
 	/*
       case CSVAR_VFSPATH :
       {
-	wxString pathDescription (option->description, wxConvUTF8);
-	wxString pathName (option->name, wxConvUTF8);
-	wxString pathValue (node->GetParameter (i)->GetVFSPath (), wxConvUTF8);
+	wxString pathDescription (param->GetDescription(), wxConvUTF8);
+	wxString pathName (param->GetName(), wxConvUTF8);
+	wxString pathValue (variant->GetVFSPath (), wxConvUTF8);
 	wxFileProperty* pathP = new wxFileProperty (pathName);
 	page->Append (pathP );
 	//pathP->SetAttribute(wxPG_FILE_SHOW_FULL_PATH,false);
@@ -571,53 +586,41 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
     return;
 
   size_t index = property->GetIndexInParent ();
-  /*
-    old version
-  csVariant* variant = node->GetParameter (index);
-  const csOptionDescription* compareValue = nodeFactory->GetParameterDescription (index);
-  csVariantType compareType = compareValue->type;
-  csVariant oldValue = *variant;
-  csVariant valueVar;
-  */
 
-   iModifiable* currentModifiable = modifiableEntities->Get(focusedIndex);
-
+  iModifiable* currentModifiable = modifiableEntities->Get(focusedIndex);
     
-
-  iModifiableDescription* desc = currentModifiable->GetDescription();
-  iModifiableParameter* editedParameter = desc->GetParameterByIndex(index);
+  // Store the returned csPtrs in csRefs (they get cleaned up after this fct)
+  // It's okay, though, since the GetDescription and GetParameter always allocate
+  // new resources.
+  csRef<iModifiableDescription> desc = currentModifiable->GetDescription();
+  csRef<iModifiableParameter> editedParameter = desc->GetParameterByIndex(index);
 
 
   csVariantType compareType = editedParameter->GetType();
-  csVariant* variant =  editedParameter->GetParameterValue();
+  unique_ptr<csVariant> variant( currentModifiable->GetParameterValue(editedParameter->GetID()) );
   csVariant oldValue = *variant;
-  csVariant valueVar;
-  
-
   
   if (compareType == CSVAR_STRING)
   {
     variant->SetString(newValue.GetString().mbc_str());
+    currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);
   }
   else if (compareType == CSVAR_LONG)
   {
     variant->SetLong(newValue.GetLong());    
+    currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);
   }
-  /*
   else if (compareType == CSVAR_FLOAT)
   {
-
-    valueVar.SetFloat (newValue.GetDouble ());
-    node->UpdateParameter (index, &oldValue, &valueVar); 
-    
+    variant->SetFloat (newValue.GetDouble ());
+    currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);
   }
   else if (compareType == CSVAR_BOOL)
   {
-
-    valueVar.SetBool (newValue.GetBool ());
-    node->UpdateParameter (index, &oldValue, &valueVar);    
-	
+    variant->SetBool (newValue.GetBool ());
+    currentModifiable->SetParameterValue(editedParameter->GetID(), *variant);
   }
+  /*
   else if (compareType == CSVAR_COLOR)
   {	
     
@@ -656,12 +659,11 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
     valueVar.SetVector2(csVector2(valueX,valueY));
     node->UpdateParameter (index, &oldValue, &valueVar);
 				
-  }
+  }*/
   else
   {
     pgMan->SetDescription (wxT ("Page Manager :"), wxT ("Message test"));
-  }*/
-	
+  }
 }
 
 //---------------------------------------------

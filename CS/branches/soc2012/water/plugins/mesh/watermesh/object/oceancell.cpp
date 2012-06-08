@@ -83,132 +83,223 @@ void csOceanCell::SetupVertices()
       }
     }
 
-    for(uint j = 0; j < maxjd; ++j)
+
+    for(uint j = 1; j <  maxjd - 1; ++j)
     {
-      for(uint i = 0; i < maxid; ++i)
+      for(uint i = 1; i < maxid - 1; ++i)
       {
-		      
-		  if( j==0 )         // for bottom boundary
-		  {
-			  if(i%2)
-			  {
-				  tris.Push(csTriangle ((int)(j * maxi + i - 1),
-					  (int)((j + 1) * maxi + i),
-					  (int)(j * maxi + i + 1)));
-				  tris.Push(csTriangle ((int)(j * maxi + i + 1), 
-					  (int)((j + 1) * maxi + i ), 
-					  (int)((j + 1) * maxi + i + 1)));		  
-			  }
-			  else
-			  {
-				  tris.Push(csTriangle ((int)(j * maxi + i), 
-					  (int)((j + 1) * maxi + i), 
-					  (int)((j + 1) * maxi + i + 1)));  
-			  }
-		  }
-		  else
-		  {
-			  tris.Push(csTriangle ((int)(j * maxi + i), 
-				  (int)((j + 1) * maxi + i), 
-				  (int)(j * maxi + i + 1)));
-			  tris.Push(csTriangle ((int)(j * maxi + i + 1),
-				  (int)((j + 1) * maxi + i),
-				  (int)((j + 1) * maxi + i + 1)));
-		  }
-		  
+		  tris.Push(csTriangle ((int)(j * maxi + i), 
+			  (int)((j + 1) * maxi + i), 
+			  (int)(j * maxi + i + 1)));
+		  tris.Push(csTriangle ((int)(j * maxi + i + 1),
+			  (int)((j + 1) * maxi + i),
+			  (int)((j + 1) * maxi + i + 1)));	
+	  }
+	}
 
 
+	
+/*
+ *   Generation of boundaries tris
+ *
+ */
 
-		    
-		 /* if( j==maxid-1 )   // for top boundary
-		  {
-
+	// Generating Top boundaries tris
+	
+	for(uint j=maxid-1, i=1 ; i < maxid ; i++ )
+		{
+		    // Low boundaries
 			if(i%2)
 			{
-				tris.Push(csTriangle ((int)(j * maxi + i),
-		  		  (int)((j + 1) * maxi + i - 1),
-		  		  (int)((j + 1) * maxi + i + 1)));
-		  	    tris.Push(csTriangle ((int)(j * maxi + i ), 
-		  		  (int)((j + 1) * maxi + i + 1), 
-		  		  (int)(j * maxi + i + 1)));
+				tris_TL.Push(csTriangle ((int)(j * maxi + i),
+					(int)((j + 1) * maxi + i - 1),
+					(int)((j + 1) * maxi + i + 1)));
+	
+				if (i!=maxid-1)
+				{
+					tris_TL.Push(csTriangle ((int)(j * maxi + i ), 
+							(int)((j + 1) * maxi + i + 1), 
+							(int)(j * maxi + i + 1)));
+				}
+			}
+			else 
+			{
+				tris_TL.Push(csTriangle ((int)(j * maxi + i), 
+					(int)((j + 1) * maxi + i), 
+					(int)(j * maxi + i + 1)));
+			}
+
+			// High boundaries
+			if(i%2)
+			{
+				tris_TH.Push(csTriangle ((int)(j * maxi + i),
+					(int)((j + 1) * maxi + i - 1),
+					(int)((j + 1) * maxi + i )));
+				tris_TH.Push(csTriangle ((int)(j * maxi + i),
+					(int)((j + 1) * maxi + i),
+					(int)((j + 1) * maxi + i + 1)));
+				if (i!=maxid-1)
+				{
+					tris_TH.Push(csTriangle ((int)(j * maxi + i ), 
+							(int)((j + 1) * maxi + i + 1), 
+							(int)(j * maxi + i + 1)));
+				}
+			}
+			else 
+			{
+				tris_TH.Push(csTriangle ((int)(j * maxi + i), 
+					(int)((j + 1) * maxi + i), 
+					(int)(j * maxi + i + 1)));
+			}
+		} 
+	
+
+	// Generate Bottom boundaries tris
+	for(uint j=0, i=1 ; i < maxid ; i++ )
+		{
+			// Low boundaries
+			if(i%2)
+			{
+				tris_BL.Push(csTriangle ((int)(j * maxi + i - 1),
+					(int)((j + 1) * maxi + i),
+					(int)(j * maxi + i + 1)));
+				if (i!=maxid-1)
+				{
+					tris_BL.Push(csTriangle ((int)(j * maxi + i + 1), 
+						(int)((j + 1) * maxi + i ), 
+						(int)((j + 1) * maxi + i + 1)));
+				}
 			}
 			else
 			{
-				tris.Push(csTriangle ((int)(j * maxi + i), 
-		  		  (int)((j + 1) * maxi + i), 
-		  		  (int)(j * maxi + i + 1)));
+				tris_BL.Push(csTriangle ((int)(j * maxi + i), 
+					(int)((j + 1) * maxi + i), 
+					(int)((j + 1) * maxi + i + 1)));  
 			}
-		  }
-		  else
-		  {
-		  	  tris.Push(csTriangle ((int)(j * maxi + i), 
-		  		  (int)((j + 1) * maxi + i), 
-		  		  (int)(j * maxi + i + 1)));
-		  	  tris.Push(csTriangle ((int)(j * maxi + i + 1),
-		  		  (int)((j + 1) * maxi + i),
-		  		  (int)((j + 1) * maxi + i + 1)));
-		  }*/
-				  
 
-		 /* if( i==0 )   // for left boundary
-		  {
-			  if (j%2)
-			  {
-				  tris.Push(csTriangle ((int)( (j-1) * maxi + i ), 
-					  (int)((j + 1) * maxi + i), 
-					  (int)(j * maxi + i + 1)));	
-				  tris.Push(csTriangle ((int)(j * maxi + i + 1),
-					  (int)((j + 1) * maxi + i),
-					  (int)((j + 1) * maxi + i + 1)));
-			  }
-			  else
-			  {
-				  tris.Push(csTriangle ((int)(j * maxi + i),
-					  (int)((j + 1) * maxi + i + 1),
-					  (int)(j * maxi + i + 1)));
-			  }
-		  }
-		  else
-		  {
-			  tris.Push(csTriangle ((int)(j * maxi + i), 
-				  (int)((j + 1) * maxi + i), 
-				  (int)(j * maxi + i + 1)));
-			  tris.Push(csTriangle ((int)(j * maxi + i + 1),
-				  (int)((j + 1) * maxi + i),
-				  (int)((j + 1) * maxi + i + 1)));
-		  }*/
+			// High boundaries
+			if(i%2)
+			{
+				tris_BH.Push(csTriangle ((int)(j * maxi + i - 1),
+					(int)((j + 1) * maxi + i),
+					(int)(j * maxi + i )));
 
-		 /* if( i==maxid-1 )   // for right boundary
-		  {
-			  if (j%2)
-			  {
-				  tris.Push(csTriangle ((int)(j * maxi + i), 
-					  (int)((j + 1) * maxi + i), 
-					  (int)((j + 1) * maxi + i + 1)));	
-   				  tris.Push(csTriangle ((int)(j * maxi + i), 
-   					  (int)((j + 1) * maxi + i + 1), 
-   					  (int)((j - 1) * maxi + i + 1)));
-			  }
-			  else
-			  {
-				  tris.Push(csTriangle ((int)(j * maxi + i), 
-					  (int)((j + 1) * maxi + i), 
-					  (int)(j * maxi + i + 1)));
-			  }
-		  }
-		  else
-		  {
-			  tris.Push(csTriangle ((int)(j * maxi + i), 
-				  (int)((j + 1) * maxi + i), 
-				  (int)(j * maxi + i + 1)));
-			  tris.Push(csTriangle ((int)(j * maxi + i + 1),
-				  (int)((j + 1) * maxi + i),
-				  (int)((j + 1) * maxi + i + 1)));
-		  }
-		  */
-      }
-    }
-  
+				tris_BH.Push(csTriangle ((int)(j * maxi + i ),
+					(int)((j + 1) * maxi + i),
+					(int)(j * maxi + i + 1)));
+				if (i!=maxid-1)
+				{
+					tris_BH.Push(csTriangle ((int)(j * maxi + i + 1), 
+						(int)((j + 1) * maxi + i ), 
+						(int)((j + 1) * maxi + i + 1)));
+				}
+			}
+			else
+			{
+				tris_BH.Push(csTriangle ((int)(j * maxi + i), 
+					(int)((j + 1) * maxi + i), 
+					(int)((j + 1) * maxi + i + 1)));  
+			}
+		}
+	
+
+	// Generate Left boundaries tris
+	
+	for(uint j=1, i=0 ; j < maxjd ; j++ )
+		{
+		// Low boundaries
+			if (j%2)
+			{
+				tris_LL.Push(csTriangle ((int)( (j-1) * maxi + i ), 
+					(int)((j + 1) * maxi + i), 
+					(int)(j * maxi + i + 1)));	
+				if (j!=maxjd-1)
+				{
+					tris_LL.Push(csTriangle ((int)(j * maxi + i + 1),
+						(int)((j + 1) * maxi + i),
+						(int)((j + 1) * maxi + i + 1)));
+				}
+			}
+			else
+			{
+				tris_LL.Push(csTriangle ((int)(j * maxi + i),
+					(int)((j + 1) * maxi + i + 1),
+					(int)(j * maxi + i + 1)));
+			}
+
+			// High boundaries
+			if (j%2)
+			{
+				tris_LH.Push(csTriangle ((int)( (j-1) * maxi + i ), 
+					(int)(j * maxi + i), 
+					(int)(j * maxi + i + 1)));	
+				tris_LH.Push(csTriangle ((int)(j * maxi + i ), 
+					(int)((j+1) * maxi + i ), 
+					(int)( j * maxi + i +1 )));	
+				if (j!=maxjd-1)
+				{
+					tris_LH.Push(csTriangle ((int)(j * maxi + i + 1),
+						(int)((j + 1) * maxi + i),
+						(int)((j + 1) * maxi + i + 1)));
+				}
+			}
+			else
+			{
+				tris_LH.Push(csTriangle ((int)(j * maxi + i),
+					(int)((j + 1) * maxi + i + 1),
+					(int)(j * maxi + i + 1)));
+			}
+		}
+	
+
+	// Generate Right boundaries tris
+	for(uint j=1, i=maxid -1  ; j < maxjd ; j++ )
+	{
+		// Low boundaries
+		if (j%2)
+		{
+			tris_RL.Push(csTriangle ((int)(j * maxi + i), 
+				(int)((j + 1) * maxi + i + 1), 
+				(int)((j - 1) * maxi + i + 1)));
+			if (j!=maxjd-1)
+			{
+				tris_RL.Push(csTriangle ((int)(j * maxi + i), 
+					(int)((j + 1) * maxi + i), 
+					(int)((j + 1) * maxi + i + 1)));
+			}
+		}
+		else
+		{
+			tris_RL.Push(csTriangle ((int)(j * maxi + i), 
+				(int)((j + 1) * maxi + i), 
+				(int)(j * maxi + i + 1)));
+		}
+
+		// High boundaries
+		if (j%2)
+		{
+			tris_RH.Push(csTriangle ((int)(j * maxi + i), 
+				(int)(j * maxi + i + 1), 
+				(int)((j - 1) * maxi + i + 1)));
+			tris_RH.Push(csTriangle ((int)(j * maxi + i), 
+				(int)((j + 1) * maxi + i + 1), 
+				(int)(j * maxi + i + 1)));
+			if (j!=maxjd-1)
+			{
+				tris_RH.Push(csTriangle ((int)(j * maxi + i), 
+					(int)((j + 1) * maxi + i), 
+					(int)((j + 1) * maxi + i + 1)));
+			}
+		}
+		else
+		{
+			tris_RH.Push(csTriangle ((int)(j * maxi + i), 
+				(int)((j + 1) * maxi + i), 
+				(int)(j * maxi + i + 1)));
+		}
+	}
+
+   
     buffersNeedSetup = true;
     isSetup = true;
   }
@@ -245,7 +336,7 @@ void csOceanCell::SetupBuffers()
         0, verts.GetSize()-1);
   }
   index_buffer->CopyInto (tris.GetArray(), tris.GetSize()*3);
-
+  
   if (!normal_buffer)
   {            
     // Create a buffer that doesn't copy the data.

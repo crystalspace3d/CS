@@ -6,10 +6,7 @@
 #include "imesh/terrain2.h"
 #include "cstool/genmeshbuilder.h"
 #include "cstool/materialbuilder.h"
-<<<<<<< .mine
-=======
 #include "physdemo.h"
->>>>>>> .r38138
 
 //
 //

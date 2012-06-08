@@ -32,6 +32,7 @@
 
 #include "builtineffectors.h"
 #include "particles.h"
+#include "physparticles.h"
 
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
@@ -44,6 +45,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   {
     return new ParticleEffectorForce;
   }
+  
+   csPtr<iParticleBuiltinEffectorForce> ParticleEffectorFactory::CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const
+   {
+     return new ParticlePhysEffectorForce(collisionSector);
+   }
 
   csPtr<iParticleBuiltinEffectorLinColor> 
     ParticleEffectorFactory::CreateLinColor () const

@@ -29,6 +29,8 @@
 #include "csutil/cscolor.h"
 #include "csutil/ref.h"
 
+#include "ivaria/collisions.h"
+
 /**\file
  * Particle System Interface
  */
@@ -1040,10 +1042,13 @@ struct iParticleBuiltinEffectorLight : public iParticleEffector
  */
 struct iParticleBuiltinEffectorFactory : public virtual iBase
 {
-  SCF_INTERFACE(iParticleBuiltinEffectorFactory,1,0,2);
+  SCF_INTERFACE(iParticleBuiltinEffectorFactory,1,0,3);
 
   /// Create a 'force' particle effector
   virtual csPtr<iParticleBuiltinEffectorForce> CreateForce () const = 0;
+
+  /// Create a 'force' particle effector
+  virtual csPtr<iParticleBuiltinEffectorForce> CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const = 0;
 
   /// Create a 'linear color' particle effector
   virtual csPtr<iParticleBuiltinEffectorLinColor> CreateLinColor () const = 0;

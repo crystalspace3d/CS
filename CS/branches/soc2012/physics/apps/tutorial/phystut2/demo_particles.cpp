@@ -3,7 +3,7 @@
  */
 
 #include "physdemo.h"
-#include "physparticles.h"
+#include "imesh/particles.h"
 
 #include "csgeom/poly3d.h"
 #include "csgeom/sphere.h"
@@ -33,6 +33,7 @@ void PhysDemo::AddParticles(const csVector3& origin, float yFactor, int num)
   // create particle mesh
   csRef<iMeshFactoryWrapper> mfw = engine->CreateMeshFactory ("crystalspace.mesh.object.particles", "fire");
   if (!mfw) return;
+
 
   csRef<iMeshWrapper> exp = engine->CreateMeshWrapper (mfw, "custom fire", sector, origin);
 
@@ -72,8 +73,8 @@ void PhysDemo::AddParticles(const csVector3& origin, float yFactor, int num)
   //lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.1875f);
   //lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.0000f);
 
-  //csRef<iParticleBuiltinEffectorForce> force = eff_factory->CreateForce();
-  csRef<iParticleBuiltinEffectorForce> force = csPtr<iParticleBuiltinEffectorForce>(new ParticlePhysEffectorForce(collisionSector));
+  csRef<iParticleBuiltinEffectorForce> force = eff_factory->CreateForceWithCollisions(collisionSector);
+  //csRef<iParticleBuiltinEffectorForce> force = csPtr<iParticleBuiltinEffectorForce>(new ParticlePhysEffectorForce(collisionSector));
   force->SetRandomAcceleration (csVector3(1.5f, yFactor * 1.5f, 1.5f));
 
   csRef<iParticleSystem> partstate = scfQueryInterface<iParticleSystem> (exp->GetMeshObject());

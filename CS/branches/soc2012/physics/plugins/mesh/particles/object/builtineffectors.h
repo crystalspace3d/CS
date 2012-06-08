@@ -24,6 +24,8 @@
 #include "imesh/particles.h"
 #include "iutil/comp.h"
 
+#include "ivaria/collisions.h"
+
 struct iLight;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
@@ -44,6 +46,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     //-- iParticleBuiltinEffectorFactory
     virtual csPtr<iParticleBuiltinEffectorForce> CreateForce () const;
+    virtual csPtr<iParticleBuiltinEffectorForce> CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const;
     virtual csPtr<iParticleBuiltinEffectorLinear> CreateLinear () const;
     virtual csPtr<iParticleBuiltinEffectorLinColor> CreateLinColor () const;
     virtual csPtr<iParticleBuiltinEffectorVelocityField> 

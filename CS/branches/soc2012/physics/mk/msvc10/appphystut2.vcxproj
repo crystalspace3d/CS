@@ -1246,25 +1246,23 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_inputhandling.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_objects.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_app.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_particles.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\physparticles.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_rendering.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_statics.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\apps\tutorial\phystut2\physdemo.h" />
-    <ClInclude Include="..\..\apps\tutorial\phystut2\physparticles.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\appphystut2.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libcrystalspace.vcxproj">
       <Project>{94434FE9-3277-7608-522B-0BEBB7690B41}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_app.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_inputhandling.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_objects.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_particles.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_rendering.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_statics.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\apps\tutorial\phystut2\physdemo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -80,7 +80,21 @@ namespace WaterMesh
     csDirtyAccessArray<csVector2> texs;
     csDirtyAccessArray<csColor>  cols;
     csDirtyAccessArray<csTriangle> tris;
-        
+
+	/*
+	 *  First letter stands for boundary position T->Top, B->Bottom, L->Left, R->Right. 
+	 *  Second letter stands for boundary type H->High, L->Low
+     */ 
+
+	csDirtyAccessArray<csTriangle> tris_TL;
+	csDirtyAccessArray<csTriangle> tris_TH;
+	csDirtyAccessArray<csTriangle> tris_BL;
+	csDirtyAccessArray<csTriangle> tris_BH;
+	csDirtyAccessArray<csTriangle> tris_LL;
+	csDirtyAccessArray<csTriangle> tris_LH;
+	csDirtyAccessArray<csTriangle> tris_RL;
+	csDirtyAccessArray<csTriangle> tris_RH;
+	        
   public:
     csRef<csRenderBufferHolder> bufferHolder;
       
@@ -98,7 +112,7 @@ namespace WaterMesh
     inline void SetOHeight(float h) { oHeight = h; }
       
     inline uint GetNumVerts() { return (uint)verts.GetSize(); }
-    inline uint GetNumIndexes() { return (uint)tris.GetSize() * 3; }
+    inline uint GetNumIndexes() { return (uint)(tris.GetSize() * 3 ) ; }
     inline uint GetNumTris() { return (uint)tris.GetSize(); }        
   };
   

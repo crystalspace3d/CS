@@ -51,6 +51,8 @@ class csBulletJoint : public scfImplementation1<
 {
   friend class csBulletSystem;
   friend class csBulletSector;
+  friend class csBulletCollisionPortal;
+
 private:
   csBulletSystem* sys;
   csBulletSector* sector;

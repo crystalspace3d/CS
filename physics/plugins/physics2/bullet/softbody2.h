@@ -35,6 +35,7 @@ class csBulletSoftBody : public scfImplementationExt2<csBulletSoftBody,
   friend class csBulletRigidBody;
   friend class csBulletJoint;
   friend class csBulletSector;
+  friend class csBulletCollisionPortal;
   
   using csBulletCollisionObject::QueryCollisionObject;
 
@@ -67,7 +68,7 @@ public:
   //iCollisionObject
 
   virtual void SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true) {}
-  virtual CS::Collisions::CollisionObjectType GetType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
+  virtual CS::Collisions::CollisionObjectType GetObjectType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
 
   virtual void SetAttachedMovable (iMovable* movable) {csBulletCollisionObject::SetAttachedMovable (movable);}
   virtual iMovable* GetAttachedMovable () {return csBulletCollisionObject::GetAttachedMovable ();}
@@ -108,7 +109,7 @@ public:
 
   //iPhysicalBody
 
-  virtual CS::Physics::PhysicalBodyType GetType () const {return CS::Physics::BODY_SOFT;}
+  virtual CS::Physics::PhysicalBodyType GetBodyType () const {return CS::Physics::BODY_SOFT;}
   virtual CS::Physics::iRigidBody* QueryRigidBody () {return dynamic_cast<CS::Physics::iRigidBody*>(this);}
   virtual CS::Physics::iSoftBody* QuerySoftBody () {return dynamic_cast<CS::Physics::iSoftBody*>(this);}
 

@@ -200,7 +200,7 @@ csVector3 csBulletSoftBody::GetLinearVelocity () const
 
   // Weighted sum of of all node velocities
   btVector3 vel = btVector3(0, 0, 0);
-  for (size_t i = 0; i < btBody->m_nodes.size(); ++i)
+  for (int i = 0; i < btBody->m_nodes.size(); ++i)
   {
     vel += btBody->m_nodes[i].m_v * btBody->getMass(i);
   }

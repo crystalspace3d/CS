@@ -36,7 +36,7 @@
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
 // new csRef: 
-//  CollisionPortal ->  portal, desSector, ghostPortal
+//  csBulletCollisionPortal ->  portal, desSector, ghostPortal
 //  csBulletSector ->   sys, hitPortal, (debugDraw, bulletWorld, dispatcher, configuration, solver, broadphase, softWorldInfo)
 //  csBulletSystem ->   
 
@@ -70,7 +70,10 @@ class csBulletSystem : public scfImplementation3<
 {
   friend class csBulletColliderConvexMesh;
   friend class csBulletColliderConcaveMesh;
-  friend class csBulletSector;
+    friend class csBulletSector;
+    friend class csBulletCollisionPortal;
+
+
 private:
   iObjectRegistry* object_reg;
   /*csRefArrayObject<CS::Collisions::iCollider> colliders;
@@ -113,6 +116,7 @@ public:
   virtual csRef<CS::Collisions::iCollisionActor> CreateCollisionActor ();
   virtual csRef<CS::Collisions::iCollisionSector> CreateCollisionSector ();
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
+  virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
 
   virtual void DecomposeConcaveMesh (CS::Collisions::iCollisionObject* object,
     iMeshWrapper* mesh, bool simplify = false); 

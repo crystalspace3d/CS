@@ -40,7 +40,7 @@ void PhysDemo::CreateGhostCylinder()
 
   // Create a body and attach the mesh.
   ghostObject = collisionSystem->CreateCollisionObject();
-  ghostObject->SetType (CS::Collisions::COLLISION_OBJECT_GHOST, false);
+  ghostObject->SetObjectType (CS::Collisions::COLLISION_OBJECT_GHOST, false);
   csYRotMatrix3 m (PI/2.0);
   csOrthoTransform trans (m, csVector3 (0, -3, 5));
   if (this->environment == ENVIRONMENT_TERRAIN)

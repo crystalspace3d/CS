@@ -38,6 +38,7 @@ friend class csBulletKinematicMotionState;
 friend class csBulletSoftBody;
 friend class csBulletJoint;
 friend class csBulletSector;
+friend class csBulletCollisionPortal;
   
 using csBulletCollisionObject::QueryCollisionObject;
 using csPhysicalBody::GetFriction;
@@ -63,7 +64,7 @@ public:
   //iCollisionObject
 
   virtual void SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true) {}
-  virtual CS::Collisions::CollisionObjectType GetType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
+  virtual CS::Collisions::CollisionObjectType GetObjectType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
 
   virtual void SetAttachedMovable (iMovable* movable) {csBulletCollisionObject::SetAttachedMovable (movable);}
   virtual iMovable* GetAttachedMovable () {return csBulletCollisionObject::GetAttachedMovable ();}
@@ -105,7 +106,7 @@ public:
 
   //iPhysicalBody
 
-  virtual CS::Physics::PhysicalBodyType GetType () const {return CS::Physics::BODY_RIGID;}
+  virtual CS::Physics::PhysicalBodyType GetBodyType () const {return CS::Physics::BODY_RIGID;}
   virtual iRigidBody* QueryRigidBody () {return dynamic_cast<iRigidBody*> (this);}
   virtual iSoftBody* QuerySoftBody () {return dynamic_cast<iSoftBody*> (this);}
 

@@ -422,7 +422,7 @@ struct iColliderTerrain : public virtual iCollider
  */
 struct iCollisionObject : public virtual iBase
 {
-  SCF_INTERFACE (CS::Collisions::iCollisionObject, 1, 0, 0);
+  SCF_INTERFACE (CS::Collisions::iCollisionObject, 1, 0, 1);
 
   /// Return the underlying object
   virtual iObject *QueryObject (void) = 0;
@@ -434,10 +434,10 @@ struct iCollisionObject : public virtual iBase
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () = 0;
 
   /// Set the type of the collision object.
-  virtual void SetType (CollisionObjectType type, bool forceRebuild = true) = 0;
+  virtual void SetObjectType (CollisionObjectType type, bool forceRebuild = true) = 0;
 
   /// Return the type of the collision object.
-  virtual CollisionObjectType GetType () = 0;
+  virtual CollisionObjectType GetObjectType () = 0;
 
   /**
    * Set the movable attached to this collision object. Its position will be updated
@@ -709,7 +709,7 @@ struct iCollisionSector : public virtual iBase
  */
 struct iCollisionSystem : public virtual iBase
 {
-  SCF_INTERFACE (CS::Collisions::iCollisionSystem, 1, 0, 0);
+  SCF_INTERFACE (CS::Collisions::iCollisionSystem, 1, 0, 1);
 
   /**
    * Set the internal scale to be applied to the whole dynamic world. Use this
@@ -775,6 +775,9 @@ struct iCollisionSystem : public virtual iBase
 
   /// Find a collision sector by name.
   virtual iCollisionSector* FindCollisionSector (const char* name) = 0; 
+
+  /// Find a collision sector by name.
+  virtual iCollisionSector* GetCollisionSector (const iSector* sceneSector) = 0; 
 
   /**
    * Decompose a concave mesh in convex parts. Each convex part will be added to

@@ -809,6 +809,18 @@ CS::Collisions::iCollisionSector* csOpcodeCollisionSystem::FindCollisionSector (
   return this->collSectors.FindByName (name);
 }
 
+CS::Collisions::iCollisionSector* csOpcodeCollisionSystem::GetCollisionSector (const iSector* sceneSector)
+{
+  for (size_t i = 0; i < collSectors.GetSize (); i++)
+  {
+    if (collSectors[i]->GetSector () == sceneSector)
+    {
+      return collSectors[i];
+    }
+  }
+  return nullptr;
+}
+
 void csOpcodeCollisionSystem::DecomposeConcaveMesh (CS::Collisions::iCollisionObject* object,
                                    iMeshWrapper* mesh, bool simplify)
 {

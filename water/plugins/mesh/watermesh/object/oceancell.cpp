@@ -17,6 +17,7 @@
 */
 
 #include "oceancell.h"
+#include <csutil/sysfunc.h> // provides csPrintf();
 
 using namespace CS::Plugins::WaterMesh;
 
@@ -39,7 +40,61 @@ csOceanCell::csOceanCell(float len, float wid, OceanLOD level)
 
 csOceanCell::~csOceanCell()
 {
-  
+    
+}
+
+void csOceanCell::BoundaryGen()
+{
+	//csPrintf("Generating boundaries now");
+
+	csDirtyAccessArray<csTriangle> trisTemp;
+	csDirtyAccessArray<csTriangle> trisTemp1;
+	
+	csTriangle TempTri;
+
+	
+	trisTemp1 = tris;   // Put all the tris
+
+	while(!trisTemp1.IsEmpty())
+	{
+		TempTri = trisTemp1.Pop();
+		trisTemp.Push(TempTri);
+	}
+	
+	trisTemp1 = tris_RH;  // adds right Higher boundary mesh 
+
+	while(!trisTemp1.IsEmpty())   
+	{
+		TempTri = trisTemp1.Pop();
+		trisTemp.Push(TempTri);
+	}
+
+	trisTemp1 = tris_LH;  // adds left Higher boundary mesh 
+
+	while(!trisTemp1.IsEmpty())   
+	{
+		TempTri = trisTemp1.Pop();
+		trisTemp.Push(TempTri);
+	}
+
+	trisTemp1 = tris_TL;  // adds top Lower boundary mesh 
+
+	while(!trisTemp1.IsEmpty())   
+	{
+		TempTri = trisTemp1.Pop();
+		trisTemp.Push(TempTri);
+	}
+
+	trisTemp1 = tris_BL;  // adds Bottom Lower boundary mesh 
+
+	while(!trisTemp1.IsEmpty())   
+	{
+		TempTri = trisTemp1.Pop();
+		trisTemp.Push(TempTri);
+	}
+	
+	index_buffer->CopyInto (trisTemp.GetArray(), trisTemp.GetSize()*3);
+	
 }
 
 void csOceanCell::SetupVertices()
@@ -331,7 +386,7 @@ void csOceanCell::SetupBuffers()
   if (!index_buffer)
   {
       index_buffer = csRenderBuffer::CreateIndexRenderBuffer (
-        tris.GetSize()*3,
+        (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
         CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
         0, verts.GetSize()-1);
   }

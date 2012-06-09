@@ -69,13 +69,13 @@ csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
   csBasicModifiableDescription* description = new csBasicModifiableDescription();
   // Currently, the specialized modifiables no longer seem to be needed
   // The old implementation stored a direct pointer to the actual modifiable value (from the class that implemented iModifiable) and performed its sets/gets using that pointer. In this case (also with specialized string/long/float etc. modifiables the need for chained ifs in GetParameter and SetParameter functions would have been eliminated.
-  description->Push(new csBasicModifiable("Name", "the dude's name", CSVAR_STRING, id_name));
-  description->Push(new csBasicModifiable("Job", "the dude's jawb", CSVAR_STRING, id_job));
-  description->Push(new csBasicModifiable("Item count", "How many items this guy has. Coming soon: constraint to prevent negative values!", CSVAR_LONG, id_itemCount));
-  description->Push(new csBasicModifiable("Awesome", "Am I awesome, or what?", CSVAR_BOOL, id_awesome));
-  description->Push(new csBasicModifiable("FloatThingy", "some float", CSVAR_FLOAT, id_floatThingy));
-  description->Push(new csBasicModifiable("Color", "my color", CSVAR_COLOR, id_color));
-  description->Push(new csBasicModifiable("Position", "spatial position of the unit", CSVAR_VECTOR2, id_position));
+  description->Push(new csBasicModifiableParameter("Name", "the dude's name", CSVAR_STRING, id_name));
+  description->Push(new csBasicModifiableParameter("Job", "the dude's jawb", CSVAR_STRING, id_job));
+  description->Push(new csBasicModifiableParameter("Item count", "How many items this guy has. Coming soon: constraint to prevent negative values!", CSVAR_LONG, id_itemCount));
+  description->Push(new csBasicModifiableParameter("Awesome", "Am I awesome, or what?", CSVAR_BOOL, id_awesome));
+  description->Push(new csBasicModifiableParameter("FloatThingy", "some float", CSVAR_FLOAT, id_floatThingy));
+  description->Push(new csBasicModifiableParameter("Color", "my color", CSVAR_COLOR, id_color));
+  description->Push(new csBasicModifiableParameter("Position", "spatial position of the unit", CSVAR_VECTOR2, id_position));
 
   return csPtr<iModifiableDescription>(description);
 }

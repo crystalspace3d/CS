@@ -43,7 +43,7 @@ csOceanCell::~csOceanCell()
     
 }
 
-void csOceanCell::BoundaryGen()
+void csOceanCell::BoundaryGen(bool top, bool right, bool bottom, bool left)
 {
 	//csPrintf("Generating boundaries now");
 
@@ -60,38 +60,93 @@ void csOceanCell::BoundaryGen()
 		TempTri = trisTemp1.Pop();
 		trisTemp.Push(TempTri);
 	}
+
+	if (top)
+	{
+		trisTemp1 = tris_TL;  // adds top Lower boundary mesh 
+
+		while(!trisTemp1.IsEmpty())   
+		{
+			TempTri = trisTemp1.Pop();
+			trisTemp.Push(TempTri);
+		}
+	}
+	else
+	{
+		trisTemp1 = tris_TH;  // adds top Lower boundary mesh 
+
+		while(!trisTemp1.IsEmpty())   
+		{
+			TempTri = trisTemp1.Pop();
+			trisTemp.Push(TempTri);
+		}
+	}
+
+	if (right)
+	{
+		trisTemp1 = tris_RL;  // adds top Lower boundary mesh 
+
+		while(!trisTemp1.IsEmpty())   
+		{
+			TempTri = trisTemp1.Pop();
+			trisTemp.Push(TempTri);
+		}
+	}
+	else
+	{
+		trisTemp1 = tris_RH;  // adds top Lower boundary mesh 
+
+		while(!trisTemp1.IsEmpty())   
+		{
+			TempTri = trisTemp1.Pop();
+			trisTemp.Push(TempTri);
+		}
+	}
+
+	if (bottom)
+	{
+		trisTemp1 = tris_BL;  // adds top Lower boundary mesh 
+
+		while(!trisTemp1.IsEmpty())   
+		{
+			TempTri = trisTemp1.Pop();
+			trisTemp.Push(TempTri);
+		}
+	}
+	else
+	{
+		trisTemp1 = tris_BH;  // adds top Lower boundary mesh 
+
+		while(!trisTemp1.IsEmpty())   
+		{
+			TempTri = trisTemp1.Pop();
+			trisTemp.Push(TempTri);
+		}
+	}
+
+	if (left)
+	{
+		trisTemp1 = tris_LL;  // adds top Lower boundary mesh 
+
+		while(!trisTemp1.IsEmpty())   
+		{
+			TempTri = trisTemp1.Pop();
+			trisTemp.Push(TempTri);
+		}
+	}
+	else
+	{
+		trisTemp1 = tris_LH;  // adds top Lower boundary mesh 
+
+		while(!trisTemp1.IsEmpty())   
+		{
+			TempTri = trisTemp1.Pop();
+			trisTemp.Push(TempTri);
+		}
+	}
+
+
 	
-	trisTemp1 = tris_RH;  // adds right Higher boundary mesh 
-
-	while(!trisTemp1.IsEmpty())   
-	{
-		TempTri = trisTemp1.Pop();
-		trisTemp.Push(TempTri);
-	}
-
-	trisTemp1 = tris_LH;  // adds left Higher boundary mesh 
-
-	while(!trisTemp1.IsEmpty())   
-	{
-		TempTri = trisTemp1.Pop();
-		trisTemp.Push(TempTri);
-	}
-
-	trisTemp1 = tris_TL;  // adds top Lower boundary mesh 
-
-	while(!trisTemp1.IsEmpty())   
-	{
-		TempTri = trisTemp1.Pop();
-		trisTemp.Push(TempTri);
-	}
-
-	trisTemp1 = tris_BL;  // adds Bottom Lower boundary mesh 
-
-	while(!trisTemp1.IsEmpty())   
-	{
-		TempTri = trisTemp1.Pop();
-		trisTemp.Push(TempTri);
-	}
 	
 	index_buffer->CopyInto (trisTemp.GetArray(), trisTemp.GetSize()*3);
 	
@@ -106,19 +161,19 @@ void csOceanCell::SetupVertices()
     {
       default:
       case LOD_LEVEL_1:
-        gran = 0.2f;
+        gran = 0.1f;
         break;
       case LOD_LEVEL_2:
-        gran = 0.4f;
+        gran = 0.2f;
         break;
       case LOD_LEVEL_3:
-        gran = 0.8f;
+        gran = 0.4f;
         break;
       case LOD_LEVEL_4:
-        gran = 1.6f;
+        gran = 0.8f;
         break;
       case LOD_LEVEL_5:
-        gran = 0.4f;
+        gran = 1.6f;
         break;
     }
 

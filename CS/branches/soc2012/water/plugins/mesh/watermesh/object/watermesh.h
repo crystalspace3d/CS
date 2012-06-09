@@ -158,7 +158,7 @@ private:
   void DrawBottomFromNode(csOceanNode start, const csVector3 camPos, 
     csPlane3 *planes, uint32 frustum_mask);
 
-  void AddNode(csOceanNode start, float dist);
+  void AddNode(csOceanNode start, float dist, const csVector3 camPos);
 
 public:
   /// Constructor.

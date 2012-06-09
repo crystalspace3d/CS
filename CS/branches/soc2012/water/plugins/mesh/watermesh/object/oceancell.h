@@ -105,7 +105,7 @@ namespace WaterMesh
     
     inline OceanLOD GetType() { return type; }
       
-    void BoundaryGen();
+    void BoundaryGen(bool top, bool right, bool bottom, bool left);
 	void SetupVertices();
     void SetupBufferHolder();
     void SetupBuffers();
@@ -147,6 +147,10 @@ namespace WaterMesh
   {
     int cell;
     csVector2 pos;
+	bool b_Top;
+	bool b_Right;
+	bool b_Bottom;
+	bool b_Left;
   } csRenderCell;
 }
 }

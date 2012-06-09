@@ -423,8 +423,9 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
   if(factory->isOcean())
   {
     csOrthoTransform c2ot = rview->GetCamera ()->GetTransform ();
+
     if (!o2wt.IsIdentity ())
-      c2ot /= o2wt;
+         c2ot /= o2wt;
 
     csPlane3 planes[10];
 
@@ -455,6 +456,8 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
       bool rmCreated;
       renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
           rview->GetCurrentFrameNumber ()));
+
+	  factory->cells[nextCell.cell].BoundaryGen();	
 
       renderMeshes[i]->mixmode = MixMode;
       renderMeshes[i]->clip_portal = clip_portal;

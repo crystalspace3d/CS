@@ -78,7 +78,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
           CS::Quote::Single ("portals"),
           CS::Quote::Single ("box"),
           CS::Quote::Single ("terrain"),
-          defaultEnvironmentName);
+          defaultEnvironmentName.GetData());
       //environment = ENVIRONMENT_PORTALS;
       environment = GetEnvironmentByName(defaultEnvironmentName);
   }

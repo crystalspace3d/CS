@@ -5,6 +5,8 @@
 #include "iengine/scenenode.h"
 #include "csgeom/sphere.h"
 
+#include "ivaria/collisions.h"
+
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
 
@@ -13,6 +15,8 @@
 #include "rigidbody2.h"
 #include "softbody2.h"
 #include "joint2.h"
+
+using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
@@ -44,11 +48,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     ghostPortal->setCollisionShape (shape);
 
-    ghostPortal->setCollisionFlags (ghostPortal->getCollisionFlags() 
-      | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    ghostPortal->setCollisionFlags (ghostPortal->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
     // TODO: don't use explicit '3' value, use enums instead
-    sourceSector->bulletWorld->addCollisionObject (ghostPortal, sourceSector->collGroups[3].value, sourceSector->collGroups[3].mask);
+    sourceSector->bulletWorld->addCollisionObject (ghostPortal, sourceSector->collGroups[CollisionGroupTypePortal].value, sourceSector->collGroups[CollisionGroupTypePortal].mask);
 
     targetSector = dynamic_cast<csBulletSector*>(sourceSector->sys->GetCollisionSector(destSector));
   }
@@ -70,15 +73,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     transforms.Empty ();
     btVector3 aabbMin2, aabbMax2;
 
-    ghostPortal->getCollisionShape()->getAabb(
-      ghostPortal->getWorldTransform (),aabbMin2,aabbMax2);
+    ghostPortal->getCollisionShape()->getAabb(ghostPortal->getWorldTransform (),aabbMin2,aabbMax2);
 
     for (int j = 0; j < ghostPortal->getNumOverlappingObjects (); j++)
     {
       btTransform tran = ghostPortal->getWorldTransform ();
       btCollisionObject* obj = ghostPortal->getOverlappingObject (j);
-      CS::Collisions::iCollisionObject* csObj = 
-        static_cast<CS::Collisions::iCollisionObject*> (obj->getUserPointer ());
+      CS::Collisions::iCollisionObject* csObj = static_cast<CS::Collisions::iCollisionObject*> (obj->getUserPointer ());
       csBulletCollisionObject* csBulletObj = dynamic_cast<csBulletCollisionObject*> (csObj);
       csBulletCollisionObject* newObject;
 

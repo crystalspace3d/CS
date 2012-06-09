@@ -86,6 +86,26 @@ COLLISION_OBJECT_GHOST,
 COLLISION_OBJECT_ACTOR
 };
 
+enum CollisionGroupType
+{
+  CollisionGroupTypeDefault =     0,
+  CollisionGroupTypeStatic =      1,
+  CollisionGroupTypeKinematic =   2,
+  CollisionGroupTypePortal =      3,
+  CollisionGroupTypePortalCopy =  4,
+  CollisionGroupTypeActor =       5
+};
+
+enum CollisionGroupMaskValue
+{
+  CollisionGroupMaskValueDefault =    0x0001,
+  CollisionGroupMaskValueStatic =      0x0002,
+  CollisionGroupMaskValueKinematic =   0x0004,
+  CollisionGroupMaskValuePortal =      0x0008,
+  CollisionGroupMaskValuePortalCopy =  0x0010,
+  CollisionGroupMaskValueActor =       0x0020
+};
+
 /**
  * A structure of collision group. 
  * The objects in the group will not collide with each other.

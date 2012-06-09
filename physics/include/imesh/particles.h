@@ -694,6 +694,53 @@ struct iParticleBuiltinEmitterFactory : public virtual iBase
 * @{ */
 
 /**
+ * Simple force/acceleration applied to particles. Particles will not penetrate other physical objects.
+ * 
+ * The new velocity of particles is computed by a simple formula
+ *
+ * v' = v + (a+f/m)*dt
+ *
+ * v  - old velocity (vector)
+ * v' - new velocity (vector)
+ * a  - constant acceleration (vector)
+ * f  - force (vector)
+ * m  - particle mass (scalar)
+ *
+ *
+ */
+struct iParticleBuiltinPhysEffectorForce : public iParticleEffector
+{
+  SCF_INTERFACE(iParticleBuiltinPhysEffectorForce,2,0,0);
+  
+  /// Set constant acceleration vector
+  virtual void SetAcceleration (const csVector3& acceleration) = 0;
+  /// Get constant acceleration vector
+  virtual const csVector3& GetAcceleration () const = 0;
+
+  /// Set the force vector
+  virtual void SetForce (const csVector3& force) = 0;
+  /// Get the force vector
+  virtual const csVector3& GetForce () const = 0;
+
+  /// Set random acceleration magnitude.
+  virtual void SetRandomAcceleration (const csVector3& magnitude) = 0;
+  /// Get random acceleration magnitude
+  virtual const csVector3& GetRandomAcceleration () const = 0;
+
+  /// Set the normal (x) and tangential (y) coefficient of restitution which determines the "bounciness" of particles when colliding with other objects.
+  /// The coefficient should be between 0 (no bounce) and 1 (speed after impact = speed before impact).
+  /// A coefficient > 1 adds energy into the system upon every bounce, because the particle will be faster after than before the impact.
+  virtual void SetRestitution (const csVector2& rest) = 0;
+  /// Get the coefficient of restitution
+  virtual csVector2 GetRestitution () const = 0;
+  
+  /// Set the total magnitude of the coefficient of restitution. Assumes that tangential and normal components are equal.
+  virtual void SetRestitutionMagnitude (float rest) = 0;
+  /// Get the coefficient of restitution
+  virtual float GetRestitutionMagnitude () const = 0;
+};
+
+/**
  * Simple force/acceleration applied to particles.
  * 
  * The new velocity of particles is computed by a simple formula
@@ -712,19 +759,16 @@ struct iParticleBuiltinEffectorForce : public iParticleEffector
   
   /// Set constant acceleration vector
   virtual void SetAcceleration (const csVector3& acceleration) = 0;
-
   /// Get constant acceleration vector
   virtual const csVector3& GetAcceleration () const = 0;
 
   /// Set the force vector
   virtual void SetForce (const csVector3& force) = 0;
-
   /// Get the force vector
   virtual const csVector3& GetForce () const = 0;
 
   /// Set random acceleration magnitude.
   virtual void SetRandomAcceleration (const csVector3& magnitude) = 0;
-
   /// Get random acceleration magnitude
   virtual const csVector3& GetRandomAcceleration () const = 0;
 };
@@ -1042,13 +1086,13 @@ struct iParticleBuiltinEffectorLight : public iParticleEffector
  */
 struct iParticleBuiltinEffectorFactory : public virtual iBase
 {
-  SCF_INTERFACE(iParticleBuiltinEffectorFactory,1,0,3);
+  SCF_INTERFACE(iParticleBuiltinEffectorFactory,1,0,4);
 
   /// Create a 'force' particle effector
   virtual csPtr<iParticleBuiltinEffectorForce> CreateForce () const = 0;
 
   /// Create a 'force' particle effector
-  virtual csPtr<iParticleBuiltinEffectorForce> CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const = 0;
+  virtual csPtr<iParticleBuiltinPhysEffectorForce> CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const = 0;
 
   /// Create a 'linear color' particle effector
   virtual csPtr<iParticleBuiltinEffectorLinColor> CreateLinColor () const = 0;

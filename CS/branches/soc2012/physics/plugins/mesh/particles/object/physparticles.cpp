@@ -13,6 +13,15 @@ using namespace CS::Collisions;
 
 CS_IMPLEMENT_STATIC_VAR(GetVGen, csRandomVectorGen, ());
 
+ParticlePhysEffectorForce::ParticlePhysEffectorForce (csRef<CS::Collisions::iCollisionSector> collisionSector)
+  : scfImplementationType (this),
+  collisionSector(collisionSector),
+  acceleration (collisionSector->GetGravity()), force (0.0f), randomAcceleration (0.0f, 0.0f, 0.0f),
+  do_randomAcceleration (false)
+{
+  SetRestitutionMagnitude(0.5);
+}
+
 csPtr<iParticleEffector> ParticlePhysEffectorForce::Clone () const
 {
   return 0;
@@ -51,9 +60,16 @@ void ParticlePhysEffectorForce::EffectParticles (iParticleSystemBase* system,
     HitBeamResult hitResult = collisionSector->HitBeam(currentPos, newPos);
     if (hitResult.hasHit)
     {
+      // resolve collision
       particle.position = trans.Other2This(hitResult.isect);
-      newVel = 0;
-      particleAux.color = csColor4(1, 0.6, 0.6);
+      hitResult.normal.Normalize();
+
+      float normalSpeed = hitResult.normal * newVel;
+      csVector3 normalVel = normalSpeed * hitResult.normal;
+      csVector3 tangentialVel = newVel - normalVel;
+
+      newVel = -restitution.x * normalVel + restitution.y * tangentialVel;
+      //particleAux.color = csColor4(1, 0.6, 0.6);
     }
     particle.linearVelocity = newVel;
   }

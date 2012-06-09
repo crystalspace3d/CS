@@ -17,7 +17,7 @@
 */ 
 class ParticlePhysEffectorForce : public 
   scfImplementation2<ParticlePhysEffectorForce,
-  iParticleBuiltinEffectorForce,
+  iParticleBuiltinPhysEffectorForce,
   scfFakeInterface<iParticleEffector> >
 {
 private:
@@ -25,17 +25,12 @@ private:
   csVector3 force;
   csVector3 randomAcceleration;
   bool do_randomAcceleration;
+  csVector2 restitution;
 
   csRef<CS::Collisions::iCollisionSector> collisionSector;
 
 public:
-  ParticlePhysEffectorForce (csRef<CS::Collisions::iCollisionSector> collisionSector)
-    : scfImplementationType (this),
-    collisionSector(collisionSector),
-    acceleration (0.0f), force (0.0f), randomAcceleration (0.0f, 0.0f, 0.0f),
-    do_randomAcceleration (false)
-  {
-  }
+  ParticlePhysEffectorForce (csRef<CS::Collisions::iCollisionSector> collisionSector);
 
   //-- iParticleEffector
   virtual csPtr<iParticleEffector> Clone () const;
@@ -77,6 +72,12 @@ public:
   {
     return randomAcceleration;
   }
+
+  virtual void SetRestitution (const csVector2& res) { restitution = res; }
+  virtual csVector2 GetRestitution () const { return restitution; }
+
+  virtual void SetRestitutionMagnitude (float rest) { restitution = csVector2(rest / sqrt(2.f)); }
+  virtual float GetRestitutionMagnitude () const { return sqrt(restitution * restitution); }    // what is the method to get a vector's magnitude?
 };
 
 

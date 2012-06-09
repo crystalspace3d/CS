@@ -46,7 +46,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     return new ParticleEffectorForce;
   }
   
-   csPtr<iParticleBuiltinEffectorForce> ParticleEffectorFactory::CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const
+   csPtr<iParticleBuiltinPhysEffectorForce> ParticleEffectorFactory::CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const
    {
      return new ParticlePhysEffectorForce(collisionSector);
    }

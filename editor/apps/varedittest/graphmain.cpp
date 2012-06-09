@@ -379,16 +379,6 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	  
     wxPropertyCategory * ctgr = new wxPropertyCategory (categoryName);
     page ->Append (ctgr);
-    //ctgr -> GetGrid ()-> MakeColumnEditable (0);
-
-    /*
-    // This is the old code that iterates over a nodeFactory's parameter list; we're going to
-    // do something similar, only for the iModifiableDescription
-    nodeFactory = node->GetFactory ();
-    for (size_t i = 0; i < nodeFactory->GetParameterCount (); i++)
-    {
-      const csOptionDescription* option = nodeFactory->GetParameterDescription (i);
-      */
 
     for (size_t i = 0; i< description->GetParameterCount(); i++)
     {
@@ -465,9 +455,9 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	wxString colorDescription(param->GetDescription(), wxConvUTF8);
 	wxString colorName (param->GetName(), wxConvUTF8);
 	csColor colorValue(variant->GetColor ());
-	int red  = colorValue[0]*255;
-	int blue  = colorValue[1]*255;
-	int green = colorValue[2]*255;
+	int red   = colorValue[0] * 255;
+	int blue  = colorValue[1] * 255;
+	int green = colorValue[2] * 255;
 	wxColourProperty* colorP = new wxColourProperty (colorName,wxPG_LABEL,wxColour (red,blue,green) );
 	page->Append (colorP);
 	page->SetPropertyHelpString(colorName,colorDescription );
@@ -549,6 +539,7 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 	pgMan->SetDescription(wxT("Page Manager :"), wxT("Select a property to add a new value"));
       } // end switch
     
+      delete variant;
     } // end loop through properties
   } 
   else
@@ -568,10 +559,7 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
   size_t index = property->GetIndexInParent ();
 
   iModifiable* currentModifiable = modifiableEntities->Get(focusedIndex);
-    
-  // Store the returned csPtrs in csRefs (they get cleaned up after this fct)
-  // It's okay, though, since the GetDescription and GetParameter always allocate
-  // new resources.
+
   csRef<iModifiableDescription> desc = currentModifiable->GetDescription();
   const iModifiableParameter* editedParameter = desc->GetParameterByIndex(index);
 
@@ -663,14 +651,12 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
 
 void Graph_behaviourFrame::OnPopulateClick (wxCommandEvent &event )
 {
-  // Changes the current active node
-
+  // Cycles through the available nodes
   focusedIndex++;
   if(focusedIndex >= modifiableEntities->GetSize()) 
     focusedIndex = 0;
 
   Populate (modifiableEntities->Get(focusedIndex));
-
   pgMan->SetFocus ();
 }
 //-----------------------------------------------
@@ -713,5 +699,3 @@ void Graph_behaviourFrame::OnQuit(wxCommandEvent &event)
 {
   Destroy();
 }
-
-

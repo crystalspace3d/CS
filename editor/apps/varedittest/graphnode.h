@@ -31,10 +31,10 @@
 /**
  *  Implementation of some of the most common iModifiableParameter usage. Parent class of most basic parameters
  */
-class csBasicModifiable : public scfImplementation1<csBasicModifiable, iModifiableParameter> 
+class csBasicModifiableParameter : public scfImplementation1<csBasicModifiableParameter, iModifiableParameter> 
 {
 public:
-  csBasicModifiable(const char* name, const char* description, csVariantType type, csStringID id) :
+  csBasicModifiableParameter(const char* name, const char* description, csVariantType type, csStringID id) :
       scfImplementationType (this),
       name(name),
       description(description),
@@ -42,7 +42,7 @@ public:
       type(type)
   { }
 
-  ~csBasicModifiable() {
+  ~csBasicModifiableParameter() {
     // delete value;
   }
 
@@ -78,18 +78,18 @@ private:
 /**
  * Concrete implementation of a modifiable string property.
  */
-// class csModifiableString : public csBasicModifiable
+// class csModifiableString : public csBasicModifiableParameter
 // {
 // public:
 //   /*
 //   I don't think this should really be used. Best let the iModifiable system handle the csVariants
 //   iModifiableString(const char* name, const char* description, csVariant* value) :
-//       csBasicModifiable(name, description, value)
+//       csBasicModifiableParameter(name, description, value)
 //   { }
 //   */
 // 
 //   csModifiableString(const char* name, const char* description, /* const scfString& value ,*/ csStringID id) :
-//       csBasicModifiable(name, description, /* new csVariant(value),*/ id)
+//       csBasicModifiableParameter(name, description, /* new csVariant(value),*/ id)
 //   { }  
 // 
 // };
@@ -102,7 +102,7 @@ class csBasicModifiableDescription : public scfImplementation1<csBasicModifiable
 public:
   csBasicModifiableDescription() :
       scfImplementationType (this),
-      parameters(csRefArray<iModifiableParameter>()) {}
+      parameters(csArray<iModifiableParameter*>()) {}
 
   size_t GetParameterCount() const { return parameters.GetSize(); }
 
@@ -121,11 +121,11 @@ public:
   }
 
   void Push(iModifiableParameter* param) {
-    parameters.Push(csRef<iModifiableParameter>(param));
+    parameters.Push(param);
   }
 
 private:
-  csRefArray<iModifiableParameter> parameters;
+  csArray<iModifiableParameter*> parameters;
 };
 
 // Test dude; It's going to have some properties exposed to the GUI generation 

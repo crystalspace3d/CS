@@ -265,10 +265,12 @@ void csWaterMeshObject::SetupObject ()
 * "dist_sq" is actually squared distance between camera's position and center of oceanNode.
 * Nearer the OceanCell Higher the LOD level and visa-versa. 
 */
-void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq)
+void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector3 camPos)
 {
 
   int useCell;
+  float distFromCam_sq;
+
   if(dist_sq < (CELL_WID * CELL_WID * 4))
     useCell = LOD_LEVEL_5;
   else if(dist_sq < (CELL_WID * CELL_WID * 9))
@@ -283,6 +285,91 @@ void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq)
   csRenderCell nextCell;
   nextCell.cell = useCell;
   nextCell.pos = start.gc;
+
+  
+  // calculating boundaries LOD Levels
+
+  csOceanNode position =  start.GetUp();
+  distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
+
+  if(distFromCam_sq < (CELL_WID * CELL_WID * 4))
+	  useCell = LOD_LEVEL_5;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 9))
+	  useCell = LOD_LEVEL_4;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 16))
+	  useCell = LOD_LEVEL_3;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 25))
+	  useCell = LOD_LEVEL_2;
+  else
+	  useCell = LOD_LEVEL_1;
+
+  if( useCell < nextCell.cell)
+	  nextCell.b_Top = TRUE;
+  else
+	  nextCell.b_Top = FALSE;
+
+  
+  position =  start.GetRight();
+  distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
+
+  if(distFromCam_sq < (CELL_WID * CELL_WID * 4))
+	  useCell = LOD_LEVEL_5;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 9))
+	  useCell = LOD_LEVEL_4;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 16))
+	  useCell = LOD_LEVEL_3;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 25))
+	  useCell = LOD_LEVEL_2;
+  else
+	  useCell = LOD_LEVEL_1;
+
+  if( useCell < nextCell.cell)
+	  nextCell.b_Right = TRUE;
+  else
+	  nextCell.b_Right = FALSE;
+
+  
+  position =  start.GetDown();
+  distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
+
+  if(distFromCam_sq < (CELL_WID * CELL_WID * 4))
+	  useCell = LOD_LEVEL_5;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 9))
+	  useCell = LOD_LEVEL_4;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 16))
+	  useCell = LOD_LEVEL_3;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 25))
+	  useCell = LOD_LEVEL_2;
+  else
+	  useCell = LOD_LEVEL_1;
+
+  if( useCell < nextCell.cell)
+	  nextCell.b_Bottom = TRUE;
+  else
+	  nextCell.b_Bottom = FALSE;
+
+
+  position =  start.GetLeft();
+  distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
+
+  if(distFromCam_sq < (CELL_WID * CELL_WID * 4))
+	  useCell = LOD_LEVEL_5;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 9))
+	  useCell = LOD_LEVEL_4;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 16))
+	  useCell = LOD_LEVEL_3;
+  else if(distFromCam_sq < (CELL_WID * CELL_WID * 25))
+	  useCell = LOD_LEVEL_2;
+  else
+	  useCell = LOD_LEVEL_1;
+
+  if( useCell < nextCell.cell)
+	  nextCell.b_Left = TRUE;
+  else
+	  nextCell.b_Left = FALSE;
+
+  	
+
   meshQueue.Push(nextCell);
 }
 
@@ -294,13 +381,13 @@ void csWaterMeshObject::DrawFromNode(csOceanNode start, const csVector3 camPos, 
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
   {
-    AddNode(start, distFromCam_sq);
+    AddNode(start, distFromCam_sq, camPos);
   }
 
-  //DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
-  //DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
-  //DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
-  //DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
+  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
+  DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
+  DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
 }
 void csWaterMeshObject::DrawTopFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {
@@ -310,12 +397,12 @@ void csWaterMeshObject::DrawTopFromNode(csOceanNode start, const csVector3 camPo
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
   {
-    AddNode(start, distFromCam_sq);
+    AddNode(start, distFromCam_sq, camPos);
   }
   
-  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
-  DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
-  DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
+  //DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  //DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
+  //DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
 }
 
 void csWaterMeshObject::DrawBottomFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
@@ -326,11 +413,11 @@ void csWaterMeshObject::DrawBottomFromNode(csOceanNode start, const csVector3 ca
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
   {
-    AddNode(start, distFromCam_sq);
+    AddNode(start, distFromCam_sq, camPos);
   }  
-  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
-  DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
-  DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
+  //DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  //DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
+  //DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
 }
 
 void csWaterMeshObject::DrawRightFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
@@ -341,9 +428,9 @@ void csWaterMeshObject::DrawRightFromNode(csOceanNode start, const csVector3 cam
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
   {
-    AddNode(start, distFromCam_sq);
+    AddNode(start, distFromCam_sq, camPos);
   }
-  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  //DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
 }
 
 void csWaterMeshObject::DrawLeftFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
@@ -354,9 +441,9 @@ void csWaterMeshObject::DrawLeftFromNode(csOceanNode start, const csVector3 camP
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
   {
-    AddNode(start, distFromCam_sq);
+    AddNode(start, distFromCam_sq, camPos);
   }  
-  DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
+  //DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
 }
 
 /*
@@ -450,6 +537,8 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     while(!(meshQueue.IsEmpty()))
     {
       csRenderCell nextCell = meshQueue.Pop();
+	  factory->cells[nextCell.cell].BoundaryGen(nextCell.b_Top, nextCell.b_Right, nextCell.b_Bottom, nextCell.b_Left);	
+
       trans.Identity();
       trans.Translate(csVector3(nextCell.pos.x, 0.0, nextCell.pos.y));
       
@@ -457,7 +546,7 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
       renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
           rview->GetCurrentFrameNumber ()));
 
-	  factory->cells[nextCell.cell].BoundaryGen();	
+	  
 
       renderMeshes[i]->mixmode = MixMode;
       renderMeshes[i]->clip_portal = clip_portal;

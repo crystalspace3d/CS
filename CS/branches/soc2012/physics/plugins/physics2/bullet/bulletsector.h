@@ -56,20 +56,7 @@ class csBulletCollisionObject;
 class csBulletCollisionActor;
 class csBulletCollider;
 class csBulletJoint;
-
-struct CollisionPortal
-{
-  csOrthoTransform warpTrans;
-  csRefArray<csBulletCollisionObject> objects;
-  csArray<csOrthoTransform> oldTrans;
-  csRef<iPortal> portal;
-  csBulletSector*  desSector;
-  btGhostObject* ghostPortal;
-
-  CollisionPortal (csRef<iPortal> portal) : portal (portal), desSector (NULL), ghostPortal (NULL) {}
-  ~CollisionPortal ();
-  void AddObject (csRef<csBulletCollisionObject> object) {objects.Push (object);}
-};
+class csBulletCollisionPortal;
 
 //Will also implement iPhysicalSector...
 class csBulletSector : public scfImplementationExt3<
@@ -86,6 +73,7 @@ class csBulletSector : public scfImplementationExt3<
   friend class csBulletKinematicMotionState;
   friend class csBulletMotionState;
   friend class csBulletSystem;
+  friend class csBulletCollisionPortal;
 
   class CollisionGroupVector : public csArray<CS::Collisions::CollisionGroup>
   {
@@ -129,7 +117,7 @@ class csBulletSector : public scfImplementationExt3<
 
   CollisionGroupVector collGroups;
   csRefArray<csBulletJoint> joints;
-  csArray<CollisionPortal*> portals;
+  csArray<csBulletCollisionPortal*> portals;
   csRefArrayObject<csBulletCollisionObject> collisionObjects;
   csRefArrayObject<csBulletRigidBody> rigidBodies;
   csRefArrayObject<csBulletSoftBody> softBodies;
@@ -138,7 +126,7 @@ class csBulletSector : public scfImplementationExt3<
   csRef<iSector> sector;
 
   void CheckCollisions();
-  void UpdateCollisionPortals ();
+  void UpdatecsBulletCollisionPortals ();
   void SetInformationToCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy,
     const csOrthoTransform& warpTrans);
   void GetInformationFromCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy);

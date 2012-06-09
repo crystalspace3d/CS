@@ -196,6 +196,7 @@ csRef<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor ()
 
   return collActor;
 }
+
 csRef<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
 {
   csRef<csBulletSector> collSector;
@@ -208,6 +209,18 @@ csRef<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
 CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const char* name)
 {
   return this->collSectors.FindByName (name);
+}
+
+CS::Collisions::iCollisionSector* csBulletSystem::GetCollisionSector (const iSector* sec)
+{
+  for (size_t i = 0; i < collSectors.GetSize (); i++)
+  {
+    if (collSectors[i]->GetSector () == sec)
+    {
+      return collSectors[i];
+    }
+  }
+  return nullptr;
 }
 
 void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollisionObject* object, iMeshWrapper* mesh, bool simplify)

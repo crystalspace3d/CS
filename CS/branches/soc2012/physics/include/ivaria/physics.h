@@ -89,10 +89,10 @@ enum RigidBodyState
  */
 struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
 {
-  SCF_INTERFACE (CS::Physics::iPhysicalBody, 1, 0, 0);
+  SCF_INTERFACE (CS::Physics::iPhysicalBody, 1, 0, 1);
 
   /// Get the type of this physical body.
-  virtual PhysicalBodyType GetType () const = 0;
+  virtual PhysicalBodyType GetBodyType () const = 0;
 
   /**
    * Query the iRigidBody interface of this body. It returns NULL if the

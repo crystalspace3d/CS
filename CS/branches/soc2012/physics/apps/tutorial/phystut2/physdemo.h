@@ -18,9 +18,24 @@
 #define CAMERA_FREE 3
 #define CAMERA_ACTOR 4
 
+#define ENVIRONMENT_NONE 0
 #define ENVIRONMENT_PORTALS 1
 #define ENVIRONMENT_BOX 2
 #define ENVIRONMENT_TERRAIN 3
+
+inline int GetEnvironmentByName(csString levelName)
+{
+  if (levelName == "portals")
+      return ENVIRONMENT_PORTALS;
+
+  else if (levelName == "box")
+      return ENVIRONMENT_BOX;
+
+  else if (levelName == "terrain")
+      return ENVIRONMENT_TERRAIN;
+  
+  return ENVIRONMENT_NONE;
+}
  
 //static const csVector3 ActorDimensions(0.8);
 static const csVector3 ActorDimensions(1.2);

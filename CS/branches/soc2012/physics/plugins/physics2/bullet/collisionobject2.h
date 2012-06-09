@@ -20,6 +20,7 @@ class csBulletCollisionObject: public scfVirtImplementationExt1<
   friend class csBulletJoint;
   friend class csBulletColliderTerrain;
   friend class csBulletCollisionActor;
+  friend class csBulletCollisionPortal;
 
 protected:
   csRefArray<csBulletCollider> colliders;
@@ -57,8 +58,8 @@ public:
   virtual CS::Collisions::iCollisionObject* QueryCollisionObject () { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return NULL;}
 
-  virtual void SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true);
-  virtual CS::Collisions::CollisionObjectType GetType () {return type;}
+  virtual void SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true);
+  virtual CS::Collisions::CollisionObjectType GetObjectType () {return type;}
 
   virtual void SetAttachedMovable (iMovable* movable){this->movable = movable;}
   virtual iMovable* GetAttachedMovable (){return movable;}

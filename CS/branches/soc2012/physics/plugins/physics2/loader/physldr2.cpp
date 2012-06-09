@@ -311,7 +311,7 @@ bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node,
   object->QueryObject()->SetName (name);
 
   if (node->GetAttribute ("ghost"))
-    object->SetType (CS::Collisions::COLLISION_OBJECT_GHOST);
+    object->SetObjectType (CS::Collisions::COLLISION_OBJECT_GHOST);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())

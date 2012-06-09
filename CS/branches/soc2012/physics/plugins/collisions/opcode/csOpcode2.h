@@ -43,7 +43,7 @@ class csOpcodeCollisionSector : public scfImplementationExt1<
   Opcode::RayCollider RayCol;
   Opcode::BVTCache ColCache;
 
-  struct CollisionPortal
+  struct csBulletCollisionPortal
   {
     iPortal* portal;
     csOpcodeCollisionObject* ghostPortal1;
@@ -73,7 +73,7 @@ class csOpcodeCollisionSector : public scfImplementationExt1<
   csOpcodeCollisionSystem* sys;
   csVector3 gravity;
   csRefArrayObject<csOpcodeCollisionObject> collisionObjects;
-  csArray<CollisionPortal> portals;
+  csArray<csBulletCollisionPortal> portals;
   csArray<int> collision_faces;
   CS::Collisions::CollisionData curCollisionData;
 
@@ -187,6 +187,7 @@ public:
   virtual csRef<CS::Collisions::iCollisionActor> CreateCollisionActor ();
   virtual csRef<CS::Collisions::iCollisionSector> CreateCollisionSector ();
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
+  virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
 
   virtual void DecomposeConcaveMesh (CS::Collisions::iCollisionObject* object,
     iMeshWrapper* mesh, bool simplify = false); 

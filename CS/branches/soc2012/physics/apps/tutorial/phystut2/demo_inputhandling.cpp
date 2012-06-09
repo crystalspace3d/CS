@@ -267,14 +267,14 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       CS::Collisions::HitBeamResult hitResult =
         collisionSector->HitBeam (startBeam, endBeam);
       if (hitResult.hasHit
-        && hitResult.object->GetType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+        && hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
       {
         // Remove the body and the mesh from the simulation, and put them in the clipboard
         
         clipboardBody = hitResult.object->QueryPhysicalBody();
         clipboardMovable = hitResult.object->GetAttachedMovable();
 
-        if (clipboardBody->GetType() == CS::Physics::BODY_RIGID)
+        if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
         {
           CS::Physics::iRigidBody* rigidBody = clipboardBody->QueryRigidBody();
           if (rigidBody->GetState() == CS::Physics::STATE_DYNAMIC)
@@ -315,7 +315,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       newTransform.SetOrigin (newTransform.GetOrigin() + newPosition * 1.5f);
 
       // Put back the body from the clipboard to the simulation
-      if (clipboardBody->GetType() == CS::Physics::BODY_RIGID)
+      if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {
         clipboardBody->SetTransform (newTransform);
         physicalSector->AddRigidBody (clipboardBody->QueryRigidBody());
@@ -450,14 +450,14 @@ bool PhysDemo::OnMouseDown (iEvent &event)
       return false;
 
     // Add a force at the point clicked
-    if (hitResult.object->GetType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+    if (hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
     {
       csVector3 force = endBeam - startBeam;
       force.Normalize();
       force *= 2.0f;
 
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
-      if (physicalBody->GetType() == CS::Physics::BODY_RIGID)
+      if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {
         csOrthoTransform trans = physicalBody->GetTransform();
         // Check if the body hit is not static or kinematic
@@ -500,10 +500,10 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     if (!hitResult.hasHit || !hitResult.object) return false;
 
     // Check if we hit a rigid body
-    if (hitResult.object->GetType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+    if (hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
     {
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
-      if (physicalBody->GetType() == CS::Physics::BODY_RIGID)
+      if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {
         csRef<CS::Physics::iRigidBody> bulletBody =
           scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);

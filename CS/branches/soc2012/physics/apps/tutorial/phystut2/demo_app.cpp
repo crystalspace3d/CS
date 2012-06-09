@@ -68,25 +68,19 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
 
   // Check which environment has to be loaded
   csString levelName = clp->GetOption ("level");
-
-  if (levelName == "portals")
-      environment = ENVIRONMENT_PORTALS;
-
-  else if (levelName == "box")
-      environment = ENVIRONMENT_BOX;
-
-  else if (levelName == "terrain")
-      environment = ENVIRONMENT_TERRAIN;
-
-  else
+  environment = GetEnvironmentByName(levelName);
+  //csString defaultEnvironmentName = "terrain";
+  csString defaultEnvironmentName = "portals";
+  if (!environment)
   {
-      csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to Terrain\n",
+      csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to \"%s\"\n",
           CS::Quote::Single (levelName.GetData()),
           CS::Quote::Single ("portals"),
           CS::Quote::Single ("box"),
-          CS::Quote::Single ("terrain"));
+          CS::Quote::Single ("terrain"),
+          defaultEnvironmentName);
       //environment = ENVIRONMENT_PORTALS;
-      environment = ENVIRONMENT_TERRAIN;
+      environment = GetEnvironmentByName(defaultEnvironmentName);
   }
 
   if (!collisionSystem)
@@ -253,7 +247,7 @@ void PhysDemo::GripContactBodies()
     CS::Physics::iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody();
     if (pb)
     {
-      if (pb->GetType() == CS::Physics::BODY_RIGID)
+      if (pb->GetBodyType() == CS::Physics::BODY_RIGID)
       {
         CS::Physics::iRigidBody* rb = pb->QueryRigidBody();
         csVector3 velo = pb->GetLinearVelocity();

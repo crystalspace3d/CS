@@ -35,7 +35,7 @@ csOpcodeCollisionObject::~csOpcodeCollisionObject ()
 
 }
 
-void csOpcodeCollisionObject::SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild)
+void csOpcodeCollisionObject::SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild)
 {
 }
 

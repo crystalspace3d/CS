@@ -35,7 +35,7 @@ csBulletCollisionObject::~csBulletCollisionObject ()
     delete motionState;
 }
 
-void csBulletCollisionObject::SetType (CS::Collisions::CollisionObjectType type,
+void csBulletCollisionObject::SetObjectType (CS::Collisions::CollisionObjectType type,
 				       bool forceRebuild /* = true */)
 {
   //many many constraints.

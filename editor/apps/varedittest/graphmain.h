@@ -29,6 +29,7 @@
 
 #include "graphapp.h"
 #include "graphnode.h"
+#include <csutil/refarr.h>
 
 // Main propertygrid header.
 #include "wx/propgrid/propgrid.h"
@@ -44,6 +45,9 @@
 // This defines wxPropertyGridManager.
 #include "wx/propgrid/manager.h"
 
+// Includes basic iModifiable data types
+#include "modifiableimpl.h"
+
 //*********************************
 #include <stdarg.h>
 #include "csutil/array.h"
@@ -53,7 +57,6 @@
 using namespace std;
 
 
-
 #if wxUSE_DATEPICKCTRL
     #include <wx/datectrl.h>
 #endif
@@ -61,19 +64,14 @@ using namespace std;
 #include <wx/artprov.h>
 struct csVariant;
 
-//class GraphNodeFrame
-
-class Graph_behaviourFrame: public wxFrame
+class ModifiableTestFrame: public wxFrame
 {
  public:
-  Graph_behaviourFrame ();
-  ~Graph_behaviourFrame ();
+  ModifiableTestFrame ();
+  ~ModifiableTestFrame ();
 
   void AddModifiable(iModifiable* modifiable);
 
-
-  //void PopulateGrid();
-  //void Populate(GraphNode* _node1);
   void OnPopulateClick(wxCommandEvent &event);
   void OnPropertyGridChanging(wxPropertyGridEvent& event);
   void OnGetNewValue(wxPGProperty* property);
@@ -88,22 +86,19 @@ class Graph_behaviourFrame: public wxFrame
   csRefArray<iModifiable> *modifiableEntities;
   size_t focusedIndex;
 
-  //sizer principal pour tte la fenêtre
+  // Main window sizer
   wxBoxSizer *mainsizer;
-  //sizer gauche
+  // Left/ right sizers
   wxStaticBoxSizer *left_vsizer;
   wxStaticBoxSizer *right_vsizer;
   wxPropertyGridManager* m_pPropGridManager;
   wxPropertyGridPage* page;
   wxPropertyGridManager* pgMan;
 
-  wxButton *btnTest1;
-  wxButton *btnTest2;
-	
-  GraphNodeFactory* nodeFactory;
+  wxButton *btnCycle;
+  wxButton *btnSave;
 	     
  protected:
-  GraphNode* node;
 
   enum
   {
@@ -117,8 +112,6 @@ class Graph_behaviourFrame: public wxFrame
     idMenuAddprop = 1007,
     idCombo = 1008,
     pageId = 1
-	     
-	   
   };
 
   void OnClose(wxCloseEvent& event);
@@ -240,6 +233,8 @@ public:
    
 protected:
 };
+
+// TODO: don't forget to rewrite this after re-implementing the slider!
 
 ///----------------------------------------------
 /* WX_PG_DECLARE_PROPERTY_(wxSliderProperty, const float& , float)

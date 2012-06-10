@@ -54,7 +54,6 @@
 #include <csutil/cscolor.h>
 #include <csgeom/vector3.h>
 #include "wx/propgrid/advprops.h"
-#include "slidereditor.h"
 
 //---------
 #include <iostream>
@@ -98,15 +97,15 @@ wxString wxbuildinfo (wxbuildinfoformat format)
 
 //---------------------------------------------------
 
-BEGIN_EVENT_TABLE (Graph_behaviourFrame, wxFrame)
-    EVT_CLOSE (Graph_behaviourFrame::OnClose)
-    EVT_MENU (idMenuQuit, Graph_behaviourFrame::OnQuit)
-    EVT_BUTTON (idBtnTest1, Graph_behaviourFrame::OnPopulateClick)
-    //EVT_BUTTON(idBtnTest2, Graph_behaviourFrame::OnConfirmKeyPress)
-    EVT_MENU (idMenuAbout, Graph_behaviourFrame::OnAbout)
-    EVT_KEY_DOWN (Graph_behaviourFrame::OnEsc)
-    EVT_KEY_UP (Graph_behaviourFrame::OnEsc)
-    EVT_PG_CHANGED ( pageId, Graph_behaviourFrame::OnPropertyGridChanging )
+BEGIN_EVENT_TABLE (ModifiableTestFrame, wxFrame)
+    EVT_CLOSE (ModifiableTestFrame::OnClose)
+    EVT_MENU (idMenuQuit, ModifiableTestFrame::OnQuit)
+    EVT_BUTTON (idBtnTest1, ModifiableTestFrame::OnPopulateClick)
+    //EVT_BUTTON(idBtnTest2, ModifiableTestFrame::OnConfirmKeyPress)
+    EVT_MENU (idMenuAbout, ModifiableTestFrame::OnAbout)
+    EVT_KEY_DOWN (ModifiableTestFrame::OnEsc)
+    EVT_KEY_UP (ModifiableTestFrame::OnEsc)
+    EVT_PG_CHANGED ( pageId, ModifiableTestFrame::OnPropertyGridChanging )
 END_EVENT_TABLE ()
 
 
@@ -114,13 +113,13 @@ END_EVENT_TABLE ()
 //-------------------------------------------------------------------
 
 
-Graph_behaviourFrame::Graph_behaviourFrame ()
-: wxFrame (NULL, idFrame,wxT ("Graph_edit"),wxDefaultPosition,wxSize (600,600))
+ModifiableTestFrame::ModifiableTestFrame ()
+: wxFrame (NULL, idFrame,wxT ("iModifiable test playground"),wxDefaultPosition,wxSize (600,600))
 {
-  mainsizer=new wxBoxSizer (wxHORIZONTAL);
+  mainsizer = new wxBoxSizer (wxHORIZONTAL);
   
-  left_vsizer=new wxStaticBoxSizer (wxHORIZONTAL,this,_T("Nodes"));
-  right_vsizer=new wxStaticBoxSizer (wxHORIZONTAL,this,_T(""));
+  left_vsizer = new wxStaticBoxSizer (wxHORIZONTAL,this,_T("Nodes"));
+  right_vsizer = new wxStaticBoxSizer (wxHORIZONTAL,this,_T(""));
 
   mainsizer->Add (left_vsizer,1,wxALL|wxEXPAND,5);
 
@@ -154,11 +153,11 @@ Graph_behaviourFrame::Graph_behaviourFrame ()
 #endif // wxUSE_STATUSBAR
   //------------------------------------------
 
-  btnTest1 = new wxButton (this, idBtnTest1, wxT ("Cycle through nodes"), wxDefaultPosition, wxDefaultSize, 0);
-  btnTest2 = new wxButton (this, idBtnTest2, wxT ("Save"), wxDefaultPosition, wxDefaultSize, 0);
+  btnCycle = new wxButton (this, idBtnTest1, wxT ("Cycle through nodes"), wxDefaultPosition, wxDefaultSize, 0);
+  btnSave = new wxButton (this, idBtnTest2, wxT ("Save"), wxDefaultPosition, wxDefaultSize, 0);
 
-  left_vsizer->Add (btnTest1);
-  left_vsizer->Add (btnTest2);
+  left_vsizer->Add (btnCycle);
+  left_vsizer->Add (btnSave);
   SetSizer (mainsizer);
   //-------------------------------------------------------------------------
  
@@ -182,7 +181,7 @@ Graph_behaviourFrame::Graph_behaviourFrame ()
 
 } 
 
-void Graph_behaviourFrame::AddModifiable(iModifiable* modifiable) {
+void ModifiableTestFrame::AddModifiable(iModifiable* modifiable) {
   this->modifiableEntities->Push(modifiable);
 }
 
@@ -358,7 +357,7 @@ wxVector4Property::~wxVector4Property () { }
 
 //------------------------------------------------------------
 
-void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
+void ModifiableTestFrame::Populate (const iModifiable* dataSource)
 {
   // all pages are cleared from the page manager
   pgMan->Clear ();
@@ -550,7 +549,7 @@ void Graph_behaviourFrame::Populate (const iModifiable* dataSource)
 
 //---------------------------------------------------
 
-void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
+void ModifiableTestFrame::OnGetNewValue (wxPGProperty* property)
 {
   wxVariant newValue = property->GetValue ();
   if (newValue.IsNull ())
@@ -649,7 +648,7 @@ void Graph_behaviourFrame::OnGetNewValue (wxPGProperty* property)
 
 //---------------------------------------------
 
-void Graph_behaviourFrame::OnPopulateClick (wxCommandEvent &event )
+void ModifiableTestFrame::OnPopulateClick (wxCommandEvent &event )
 {
   // Cycles through the available nodes
   focusedIndex++;
@@ -661,7 +660,7 @@ void Graph_behaviourFrame::OnPopulateClick (wxCommandEvent &event )
 }
 //-----------------------------------------------
 
-void Graph_behaviourFrame::OnEsc (wxKeyEvent& event)
+void ModifiableTestFrame::OnEsc (wxKeyEvent& event)
 {
   if ( event.GetKeyCode () == WXK_ESCAPE)
   {
@@ -669,7 +668,7 @@ void Graph_behaviourFrame::OnEsc (wxKeyEvent& event)
   }
 }
 
-void Graph_behaviourFrame::OnPropertyGridChanging (wxPropertyGridEvent& event)
+void ModifiableTestFrame::OnPropertyGridChanging (wxPropertyGridEvent& event)
 {
   wxPGProperty* property = event.GetProperty ();
   OnGetNewValue (property);
@@ -677,7 +676,7 @@ void Graph_behaviourFrame::OnPropertyGridChanging (wxPropertyGridEvent& event)
 
 //--------------------------------------------------------
 
-void Graph_behaviourFrame::OnAbout (wxCommandEvent &event)
+void ModifiableTestFrame::OnAbout (wxCommandEvent &event)
 {
   wxString msg = wxbuildinfo (long_f);
   wxMessageBox (msg, _("Welcome to..."));
@@ -685,17 +684,17 @@ void Graph_behaviourFrame::OnAbout (wxCommandEvent &event)
 
 //-------------------------------------------------
 
-Graph_behaviourFrame::~Graph_behaviourFrame()
+ModifiableTestFrame::~ModifiableTestFrame()
 {
   delete modifiableEntities;
 }
 
-void Graph_behaviourFrame::OnClose(wxCloseEvent &event)
+void ModifiableTestFrame::OnClose(wxCloseEvent &event)
 {
   Destroy();
 }
 
-void Graph_behaviourFrame::OnQuit(wxCommandEvent &event)
+void ModifiableTestFrame::OnQuit(wxCommandEvent &event)
 {
   Destroy();
 }

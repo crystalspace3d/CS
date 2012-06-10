@@ -27,7 +27,7 @@
 #include "graphmain.h"
 #include <stdarg.h>
 
-class Graph_behaviourApp : public wxApp
+class VarEditTestApp : public wxApp
 {
     public:
         /// Generates some test properties for GUI generation

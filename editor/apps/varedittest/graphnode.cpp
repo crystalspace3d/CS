@@ -134,24 +134,7 @@ bool csTestModifiable ::SetParameterValue(csStringID id, const csVariant& value)
 
 MyGraphNode1 :: MyGraphNode1 (GraphNodeFactory* _factory):GraphNode (_factory)
 {
-  float r = 0.4f;
-  float g = 0.2f;
-  float b = 0.7f;	
-      
-      //factory= _factory;
-  /*
-      GetParameter (0)->SetLong (1234567);
-      GetParameter (1)->SetBool (true);
-      GetParameter (2)->SetFloat (0.5f);
-      GetParameter (3)->SetString ("testval1");
-      GetParameter (4)->SetColor(csColor(r,g,b)); 
-      GetParameter (5)->SetVector2(csVector2(1.0f, 0.96f));
-      GetParameter (6)->SetVector3(csVector3(1.0f, 0.3f,0.8f));
-      GetParameter (7)->SetVector4(csVector4(0.2f,0.3f,0.8f,0.10f));
-      // GetParameter (8)->SetVFSPath("home");
-      SetName("bouton1");
-      */
- }
+}
 
 void PrintVariant (csVariant* variant)
 {

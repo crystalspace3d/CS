@@ -419,19 +419,19 @@ void ModifiableTestFrame::Populate (const iModifiable* dataSource)
 	double value = variant->GetFloat();
 
   // Generate a homebrewed slider 
-  //TODO: complete slider rewrite
-  /*
-	wxPGSliderProperty* sliderP = 
-	  new wxPGSliderProperty (floatName, floatName, value, 0, 10000);
+  //*
+	wxPGSliderProperty* sliderP = new wxPGSliderProperty (floatName, floatName, value, 0, 10000);
 	page->Append (sliderP);
 	sliderP->Init ();
-  */
+  //*/
 
-  // Temporarily just use a text field
+  // Use a text field
+  /*
   wxFloatProperty* floatP = new wxFloatProperty(floatName);
   page->Append(floatP);
   floatP->SetValue(value);
   pgMan->GetGrid()->SetPropertyValue(floatP, value);
+  //*/
 
 	page->SetPropertyHelpString (floatName, floatDescription);
       }

@@ -29,6 +29,7 @@
 
 #include "graphapp.h"
 #include "graphnode.h"
+#include "wxpgslider.h"
 #include <csutil/refarr.h>
 
 // Main propertygrid header.
@@ -234,10 +235,11 @@ public:
 protected:
 };
 
-// TODO: don't forget to rewrite this after re-implementing the slider!
+
 
 ///----------------------------------------------
-/* WX_PG_DECLARE_PROPERTY_(wxSliderProperty, const float& , float)
+// WX_PG_DECLARE_PROPERTY(wxSliderProperty, const float& , float)
+/*
  class wxSliderProperty : public wxPGProperty
 {
   WX_PG_DECLARE_PROPERTY_CLASS()
@@ -258,7 +260,8 @@ public:
 protected:
   value = m_sliderValue;
 };
-*/
+//*/
+
 //------------------------------------------------------------------------------
 
 

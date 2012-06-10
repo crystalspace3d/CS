@@ -90,14 +90,14 @@ namespace lighter
           newPrims, usedVertices, noModify);
         if (lightmaplayout)
         {
-	  for (size_t n = 0; n < newPrims.GetSize(); n++)
-	  {
-	    layoutedPrimitives.Push (LayoutedPrimitives (newPrims[n],
-	      lightmaplayout, n));
+	        for (size_t n = 0; n < newPrims.GetSize(); n++)
+	        {
+	          layoutedPrimitives.Push (LayoutedPrimitives (newPrims[n],
+	            lightmaplayout, n));
   
-	    AddSubmeshRemap (i, layoutedPrimitives.GetSize () - 1);
-	  }
-	}
+	          AddSubmeshRemap (i, layoutedPrimitives.GetSize () - 1);
+	        }
+	      }
       }
       unlayoutedPrimitives.DeleteAll();
     }
@@ -282,40 +282,40 @@ namespace lighter
       pdBits.SetSize (allPDLights.GetSize());
       for (size_t i = 0; i < allPDLights.GetSize(); i++)
       {
-	if (bsphere.TestIntersect (allPDLights[i]->GetBoundingSphere()))
-	  pdBits.SetBit (i);
+        if (bsphere.TestIntersect (allPDLights[i]->GetBoundingSphere()))
+          pdBits.SetBit (i);
       }
 
       unsigned int i = 0;
       this->allPrimitives.SetCapacity (factory->layoutedPrimitives.GetSize ());
       for(size_t j = 0; j < factory->layoutedPrimitives.GetSize (); ++j)
       {
-	FactoryPrimitiveArray& factPrims = factory->layoutedPrimitives[j].primitives;
-	PrimitiveArray& allPrimitives =
-	  this->allPrimitives.GetExtend (j);
+        FactoryPrimitiveArray& factPrims = factory->layoutedPrimitives[j].primitives;
+        PrimitiveArray& allPrimitives =
+        this->allPrimitives.GetExtend (j);
 
-	allPrimitives.SetCapacity (allPrimitives.GetSize() + factPrims.GetSize());
-	for (i = 0; i < factPrims.GetSize(); i++)
-	{
-	  Primitive newPrim (vertexData, (uint)j);
+        allPrimitives.SetCapacity (allPrimitives.GetSize() + factPrims.GetSize());
+        for (i = 0; i < factPrims.GetSize(); i++)
+        {
+          Primitive newPrim (vertexData, (uint)j);
 	  
-	  Primitive& prim = allPrimitives[allPrimitives.Push (newPrim)];
-	  //prim.SetOriginalPrimitive (&factPrims[i]);
-	  prim.SetTriangle (factPrims[i].GetTriangle ()); 
-	  prim.ComputePlane ();
-	}
+          Primitive& prim = allPrimitives[allPrimitives.Push (newPrim)];
+          //prim.SetOriginalPrimitive (&factPrims[i]);
+          prim.SetTriangle (factPrims[i].GetTriangle ()); 
+          prim.ComputePlane ();
+        }
 
-	if (!lightPerVertex)
-	{
-	  // FIXME: probably separate out to allow for better progress display
-	  LightmapUVObjectLayouter* layout = 
-	    factory->layoutedPrimitives[j].factory;
-	  const size_t group = factory->layoutedPrimitives[j].group;
-	  size_t layoutID = layout->LayoutUVOnPrimitives (allPrimitives, 
-	    group, sector, pdBits);
-	  if (layoutID == (size_t)~0) return false;
-	  lmLayouts.Push (LMLayoutingInfo (layout, layoutID, group));
-	}
+	      if (!lightPerVertex)
+	      {
+	        // FIXME: probably separate out to allow for better progress display
+	        LightmapUVObjectLayouter* layout = 
+	          factory->layoutedPrimitives[j].factory;
+	        const size_t group = factory->layoutedPrimitives[j].group;
+	        size_t layoutID = layout->LayoutUVOnPrimitives (allPrimitives, 
+	          group, sector, pdBits);
+	        if (layoutID == (size_t)~0) return false;
+	        lmLayouts.Push (LMLayoutingInfo (layout, layoutID, group));
+	      }
 
       }
     }

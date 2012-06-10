@@ -67,6 +67,7 @@ namespace lighter
     iObjectRegistry *objectRegistry;
     csRef<iShaderVarStringSet> svStrings;
     csRef<iJobQueue> jobManager;
+    csRef<iThreadManager> threadManager;
     csRef<iSyntaxService> syntaxService;
 
     SwapManager* swapManager;
@@ -88,6 +89,9 @@ namespace lighter
 
     // Adjust light attenuation
     void ForceRealisticAttenuation();
+
+    // Process all the ligthing calculation of one group
+    void ProcessSectorGroups(bool enableRaytracer, bool enablePhotonMapping);
 
     // Initialize objects after LM construction
     void InitializeObjects ();

@@ -195,7 +195,7 @@ namespace lighter
     // Prims unaffected by PDLs are handled a bit specially.
     csArray<PDLQueue> queuesNoPDL;
     int size = allQueues.GetSize();
-    while ((size > 0) && (allQueues[size--].pdBits.AllBitsFalse()))
+    while ((size > 0) && (allQueues[--size].pdBits.AllBitsFalse()))
     {
       queuesNoPDL.Push (allQueues[size]);
       allQueues.DeleteIndex (size);

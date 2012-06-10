@@ -165,8 +165,9 @@ namespace lighter
     }
     else*/
     {
-      jobManager.AttachNew (new CS::Threading::ThreadedJobQueue (
-        globalConfig.GetLighterProperties ().numThreads));
+      /*jobManager.AttachNew (new CS::Threading::ThreadedJobQueue (
+        globalConfig.GetLighterProperties ().numThreads*/
+
     }
 
     // Initialize the TUI
@@ -247,6 +248,10 @@ namespace lighter
     if (!docSystem) 
       docSystem.AttachNew (new csTinyDocumentSystem);
 
+    // Get the thread manager
+    threadManager = csQueryRegistry<iThreadManager>(objectRegistry);
+    threadManager->GetThreadCount();
+
     progStartup.SetProgress (1);
     return true;
   }
@@ -325,6 +330,9 @@ namespace lighter
     /* TODO: the global lightmaps' subrect allocators are not needed any
 	     more, discard contents. */
 
+    ProcessSectorGroups(enableRaytracer,enablePhotonMapper);
+
+    /*
     // Build the KD-trees
     BuildKDTrees ();
 
@@ -333,10 +341,10 @@ namespace lighter
     {
       BuildPhotonMaps();
       BalancePhotonMaps();
-    }
+    }*/
    
     // Compute all lighting components (fill lightmaps)
-    ComputeLighting(enableRaytracer, enablePhotonMapper);
+    //ComputeLighting(enableRaytracer, enablePhotonMapper);
 
     // Postprocessing of ligthmaps
     PostprocessLightmaps ();
@@ -425,84 +433,6 @@ namespace lighter
     progLightmapLayout.SetProgress (1);
   }
 
-  void Lighter::BuildPhotonMaps()
-  {
-    // Indicate 0% progress
-    progPhotonEmission.SetProgress(0);
-
-    // Compute step size for progress updates
-    const float progressStep = 1.0f / scene->GetSectors ().GetSize();
-
-    // Create global illumination object
-    PhotonmapperLighting lighting;
-
-    // Retrieve sector iterator
-    SectorHash::GlobalIterator sectIt = 
-      scene->GetSectors ().GetIterator ();
-
-    // Iterator over all sectors
-    size_t sectorIdx = 0;
-    while (sectIt.HasNext ())
-    {
-      // Retrieve next sector
-      csRef<Sector> sect = sectIt.Next ();
-      
-      // Setup to report progress
-      Statistics::Progress* progPhoton =
-        progPhotonEmission.CreateProgress(progressStep);
-
-      // Emit photons in this sector
-      lighting.EmitPhotons(sect, *progPhoton);
-
-      // Cleanup
-      delete progPhoton;
-
-      sectorIdx++;
-    }
-
-    // Indicate 100% progress
-    progPhotonEmission.SetProgress(1);
-  }
-
-  void Lighter::BalancePhotonMaps()
-  {
-    // Indicate 0% progress
-    progPhotonBalancing.SetProgress(0);
-
-    // Compute step size for progress updates
-    const float progressStep = 1.0f / scene->GetSectors ().GetSize();
-
-    // Create global illumination object
-    PhotonmapperLighting lighting;
-
-    // Retrieve sector iterator
-    SectorHash::GlobalIterator sectIt = 
-      scene->GetSectors ().GetIterator ();
-
-    // Iterator over all sectors
-    size_t sectorIdx = 0;
-    while (sectIt.HasNext ())
-    {
-      // Retrieve next sector
-      csRef<Sector> sect = sectIt.Next ();
-      
-      // Setup to report progress
-      Statistics::Progress* progPhoton =
-        progPhotonBalancing.CreateProgress(progressStep);
-
-      // Balance this sector's photon map
-      lighting.BalancePhotons(sect, *progPhoton);
-
-      // Cleanup
-      delete progPhoton;
-
-      sectorIdx++;
-    }
-
-    // Indicate 100% progress
-    progPhotonBalancing.SetProgress(1);
-  }
-
   void Lighter::InitializeObjects ()
   {
     progInitialize.SetProgress (0);
@@ -549,6 +479,19 @@ namespace lighter
     }
   }
 
+  void Lighter::ProcessSectorGroups(bool enableRayTracer, bool enablePhotonMapping)
+  {
+    SectorGroupRefArray groups = scene->GetSectorGroups();
+    SectorGroupRefArray::Iterator groupIt = groups.GetIterator();
+    
+    while (groupIt.HasNext())
+    {
+      csRef<SectorGroup> group = groupIt.Next();
+      group->Process(enableRayTracer, enablePhotonMapping);
+    }
+
+  }
+
   void Lighter::PrepareLighting ()
   {
     uvLayout->PrepareLighting (progPrepareLightingUVL);
@@ -569,93 +512,6 @@ namespace lighter
     }
     
     progPrepareLightingSector.SetProgress (1);
-  }
-
-  void Lighter::BuildKDTrees ()
-  {
-    progBuildKDTree.SetProgress (0);
-    const float progressStep = 1.0f / scene->GetSectors ().GetSize();
-    SectorHash::GlobalIterator sectIt = 
-      scene->GetSectors ().GetIterator ();
-    while (sectIt.HasNext ())
-    {
-      csRef<Sector> sect = sectIt.Next ();
-
-      Statistics::Progress* progSector = 
-        progBuildKDTree.CreateProgress (progressStep);
-      sect->BuildKDTree (*progSector);
-      delete progSector;
-    }
-    progBuildKDTree.SetProgress (1);
-  }
-
-  void Lighter::ComputeLighting (bool enableRaytracer, bool enablePhotonMapper)
-  {
-    // Set task progress to 0%
-    progCalcLighting.SetProgress (0);
-
-    int numPasses = 
-      globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
-
-    const csVector3 bases[4] =
-    {
-      csVector3 (0, 0, 1),
-      csVector3 (/* -1/sqrt(6) */ -0.408248f, /* 1/sqrt(2) */ 0.707107f, /* 1/sqrt(3) */ 0.577350f),
-      csVector3 (/* sqrt(2/3) */ 0.816497f, 0, /* 1/sqrt(3) */ 0.577350f),
-      csVector3 (/* -1/sqrt(6) */ -0.408248f, /* -1/sqrt(2) */ -0.707107f, /* 1/sqrt(3) */ 0.577350f)
-    };
-
-    // What portion of main task does each sub-task complete
-    float sectorProgress = 
-      1.0f / (numPasses * scene->GetSectors ().GetSize());
-
-    // Loop through lighting calculation for directional dependencies
-    for (int p = 0; p < numPasses; p++)
-    {
-      // Construct a light calculator
-      LightCalculator lighting (bases[p], p);
-
-      // Add components to the light calculator
-      RaytracerLighting *raytracerComponent = NULL;
-      PhotonmapperLighting *photonmapperComponent = NULL;
-
-      if(enableRaytracer)
-      {
-        raytracerComponent = new RaytracerLighting (bases[p], p);
-        lighting.addComponent(raytracerComponent, 1.0f, 0.0f);
-      }
-
-      if(enablePhotonMapper)
-      {
-        photonmapperComponent = new PhotonmapperLighting();
-        lighting.addComponent(photonmapperComponent, 1.0f, 0.0f);
-      }
-
-      // Iterate overl all scene sectors
-      SectorHash::GlobalIterator sectIt = 
-        scene->GetSectors ().GetIterator ();
-      while (sectIt.HasNext ())
-      {
-        // Get the next sector
-        csRef<Sector> sect = sectIt.Next ();
-
-        // Create a sub-task progress
-        Statistics::Progress* lightProg = 
-          progCalcLighting.CreateProgress (sectorProgress);
-
-        // Compute the lighting
-        lighting.ComputeSectorStaticLighting (sect, *lightProg);
-
-        // Clean up
-        delete lightProg;
-      }
-
-      if(raytracerComponent != NULL) delete raytracerComponent;
-      if(photonmapperComponent != NULL) delete photonmapperComponent;
-    }
-
-    // Set task progress to 100%
-    progCalcLighting.SetProgress (1);
   }
 
   void Lighter::PostprocessLightmaps ()

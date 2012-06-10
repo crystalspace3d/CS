@@ -261,6 +261,7 @@ namespace lighter
       {
         numCausticPhotonsPerSector = 0;
         enableCaustics = false;
+        sect->InitCausticPhotonMap();
       }
     }
 
@@ -415,10 +416,10 @@ namespace lighter
           // Setting one time light properties
       
           float spRadius, spanAngle;
-	  spRadius = spanAngle = 0.0f;
+          spRadius = spanAngle = 0.0f;
           csVector3 lightDir (0.0f);
-	  csVector3 objDir (0.0f);
-	  csVector3 pseudoPos (0.0f);
+          csVector3 objDir (0.0f);
+          csVector3 pseudoPos (0.0f);
 
           switch (curLightType)
           {

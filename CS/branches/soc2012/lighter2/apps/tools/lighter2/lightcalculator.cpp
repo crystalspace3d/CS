@@ -48,7 +48,16 @@ namespace lighter
     // Set task progress to 0%
     progress.SetProgress (0);
     size_t totalElements = 0;
-    
+
+    const int numThreads = globalConfig.GetLighterProperties().numThreads;
+    csArray<csArray<csRef<lighter::Object>>*> objectsThreadTab;
+
+    for (int i =0; i < numThreads; i++)
+    {
+      objectsThreadTab.Push(new csArray<csRef<lighter::Object>>());
+    }
+
+    int assignedThread=0;
     // Resize the effecting light list in each component
     for(size_t i=0; i<component.size(); i++)
       component[i]->resizeAffectingLights( sector->allNonPDLights.GetSize ());
@@ -59,26 +68,31 @@ namespace lighter
     {
       // Get the next object and skip unlight objects
       csRef<Object> obj = giter.Next ();
-      if (obj->GetFlags ().Check (OBJECT_FLAG_NOLIGHT)) continue;
-
-      // Count elements (vertices or primitives depending on global settings)
-      if (obj->lightPerVertex)
-        totalElements += obj->GetVertexData().positions.GetSize();
-
-      else
+      if (!obj->GetFlags ().Check (OBJECT_FLAG_NOLIGHT))
       {
-        // Loop through submesses to get a count all primitives
-        csArray<PrimitiveArray>& submeshArray = obj->GetPrimitives ();
-        for (size_t submesh = 0; submesh < submeshArray.GetSize (); ++submesh)
-        {
-          PrimitiveArray& primArray = submeshArray[submesh];
 
-          for (size_t pidx = 0; pidx < primArray.GetSize (); ++pidx)
+        // Count elements (vertices or primitives depending on global settings)
+        if (obj->lightPerVertex)
+          totalElements += obj->GetVertexData().positions.GetSize();
+
+        else
+        {
+          // Loop through submesses to get a count all primitives
+          csArray<PrimitiveArray>& submeshArray = obj->GetPrimitives ();
+          for (size_t submesh = 0; submesh < submeshArray.GetSize (); ++submesh)
           {
-            Primitive& prim = primArray[pidx];
-            totalElements += prim.GetElementCount();
+            PrimitiveArray& primArray = submeshArray[submesh];
+
+            for (size_t pidx = 0; pidx < primArray.GetSize (); ++pidx)
+            {
+              Primitive& prim = primArray[pidx];
+              totalElements += prim.GetElementCount();
+            }
           }
         }
+
+        objectsThreadTab[assignedThread]->Push(obj);
+        assignedThread = (assignedThread+1)%numThreads;
       }
 
     }
@@ -173,7 +187,7 @@ namespace lighter
           && (subLightmapNum == 0);
 
         // Rebuild the list of pseudo-dynamic lightmaps
-	csArray<Lightmap*> pdLightLMs;
+        csArray<Lightmap*> pdLightLMs;
         for (size_t pdli = 0; pdli < PDLights.GetSize (); ++pdli)
         {
           // Get reference to this light's lightmap
@@ -191,7 +205,7 @@ namespace lighter
         const size_t vOffs = size_t (floorf (minUV.y));
 
         // Iterate all primitive elements
-		#pragma omp parallel for
+      #pragma omp parallel for
         for (size_t eidx = 0; eidx < numElements; ++eidx)
         {
           // Skip empty elements

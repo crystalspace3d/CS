@@ -261,10 +261,10 @@ void csWaterMeshObject::SetupObject ()
 }
 
 /*
-* This function distributes Levels of Details to OceanNodes and Pushes the renderCell to meshQueue.
-* "dist_sq" is actually squared distance between camera's position and center of oceanNode.
-* Nearer the OceanCell Higher the LOD level and visa-versa. 
-*/
+ * This function distributes Levels of Details to OceanNodes and Pushes the renderCell to meshQueue.
+ * "dist_sq" is actually squared distance between camera's position and center of oceanNode.
+ * Nearer the OceanCell Higher the LOD level and visa-versa. 
+ */
 void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector3 camPos)
 {
 
@@ -368,8 +368,6 @@ void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector
   else
 	  nextCell.b_Left = FALSE;
 
-  	
-
   meshQueue.Push(nextCell);
 }
 
@@ -400,9 +398,9 @@ void csWaterMeshObject::DrawTopFromNode(csOceanNode start, const csVector3 camPo
     AddNode(start, distFromCam_sq, camPos);
   }
   
-  //DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
-  //DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
-  //DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
+  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
+  DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
 }
 
 void csWaterMeshObject::DrawBottomFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
@@ -415,9 +413,9 @@ void csWaterMeshObject::DrawBottomFromNode(csOceanNode start, const csVector3 ca
   {
     AddNode(start, distFromCam_sq, camPos);
   }  
-  //DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
-  //DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
-  //DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
+  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
+  DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
 }
 
 void csWaterMeshObject::DrawRightFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
@@ -430,7 +428,7 @@ void csWaterMeshObject::DrawRightFromNode(csOceanNode start, const csVector3 cam
   {
     AddNode(start, distFromCam_sq, camPos);
   }
-  //DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
 }
 
 void csWaterMeshObject::DrawLeftFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
@@ -443,7 +441,7 @@ void csWaterMeshObject::DrawLeftFromNode(csOceanNode start, const csVector3 camP
   {
     AddNode(start, distFromCam_sq, camPos);
   }  
-  //DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
+  DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
 }
 
 /*
@@ -537,16 +535,15 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     while(!(meshQueue.IsEmpty()))
     {
       csRenderCell nextCell = meshQueue.Pop();
-	  factory->cells[nextCell.cell].BoundaryGen(nextCell.b_Top, nextCell.b_Right, nextCell.b_Bottom, nextCell.b_Left);	
 
-      trans.Identity();
+	  //factory->cells[nextCell.cell].BoundaryGen(nextCell.b_Top, nextCell.b_Right, nextCell.b_Bottom, nextCell.b_Left);
+
+	  trans.Identity();
       trans.Translate(csVector3(nextCell.pos.x, 0.0, nextCell.pos.y));
       
       bool rmCreated;
       renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
           rview->GetCurrentFrameNumber ()));
-
-	  
 
       renderMeshes[i]->mixmode = MixMode;
       renderMeshes[i]->clip_portal = clip_portal;
@@ -562,17 +559,18 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
       renderMeshes[i]->geometryInstance = (void*)factory;
 
       renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder;
-      
-      //Clone shader variable to provide each mesh with its own o2wt       
-      csRef<csShaderVariableContext> newVarCtxt;
-      newVarCtxt.AttachNew (new csShaderVariableContext);
-        
-      csRefArray<csShaderVariable> vars = variableContext->GetShaderVariables();
-      for(uint j = 0; j < vars.GetSize(); j++)
-      {
-        newVarCtxt->AddVariable(vars[j]);
-      }
 
+	  //Clone shader variable to provide each mesh with its own o2wt       
+	  csRef<csShaderVariableContext> newVarCtxt;
+	  newVarCtxt.AttachNew (new csShaderVariableContext);
+
+	  csRefArray<csShaderVariable> vars = variableContext->GetShaderVariables();
+
+	  for(uint j = 0; j < vars.GetSize(); j++)
+	  {
+		  newVarCtxt->AddVariable(vars[j]);
+	  }
+      
       renderMeshes[i]->variablecontext = newVarCtxt;
       renderMeshes[i]->object2world = o2world * trans;
       
@@ -582,6 +580,154 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
       o2wtVar->SetValue(renderMeshes[i]->object2world);
     
       i++;
+
+      //  renderMesh for top bounary for a cell
+		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
+			  rview->GetCurrentFrameNumber ()));
+
+		  renderMeshes[i]->mixmode = MixMode;
+		  renderMeshes[i]->clip_portal = clip_portal;
+		  renderMeshes[i]->clip_plane = clip_plane;
+		  renderMeshes[i]->clip_z_plane = clip_z_plane;
+		  renderMeshes[i]->do_mirror = camera->IsMirrored ();
+		  renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
+		  renderMeshes[i]->indexstart = 0;
+		  renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes();	
+		  renderMeshes[i]->material = material;    
+		  renderMeshes[i]->worldspace_origin = wo;
+
+		  renderMeshes[i]->geometryInstance = (void*)factory;
+
+		  if (nextCell.b_Top)
+		  {
+		  	renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_TL;
+		  }
+		  else
+		  {
+			renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_TH;	
+		  }
+
+		  renderMeshes[i]->variablecontext = newVarCtxt;
+		  renderMeshes[i]->object2world = o2world * trans;
+
+		  //update mesh-specific shader variable
+		  o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
+		  o2wtVar->SetType(csShaderVariable::MATRIX);
+		  o2wtVar->SetValue(renderMeshes[i]->object2world);
+
+		  i++;
+      
+
+	  //  renderMesh for Left bounary for a cell
+		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
+			  rview->GetCurrentFrameNumber ()));
+
+		  renderMeshes[i]->mixmode = MixMode;
+		  renderMeshes[i]->clip_portal = clip_portal;
+		  renderMeshes[i]->clip_plane = clip_plane;
+		  renderMeshes[i]->clip_z_plane = clip_z_plane;
+		  renderMeshes[i]->do_mirror = camera->IsMirrored ();
+		  renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
+		  renderMeshes[i]->indexstart = 0;
+          renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes(); 
+		  renderMeshes[i]->material = material;    
+		  renderMeshes[i]->worldspace_origin = wo;
+
+		  renderMeshes[i]->geometryInstance = (void*)factory;
+
+		  if (nextCell.b_Right)
+		  {
+			renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_RL;
+		  }
+		  else
+		  {
+			renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_RH;
+		  }
+		  
+		  renderMeshes[i]->variablecontext = newVarCtxt;
+		  renderMeshes[i]->object2world = o2world * trans;
+
+		  //update mesh-specific shader variable
+		  o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
+		  o2wtVar->SetType(csShaderVariable::MATRIX);
+		  o2wtVar->SetValue(renderMeshes[i]->object2world);
+
+		  i++;
+	  
+		  
+        //  renderMesh for Bottom bounary for a cell
+		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
+			  rview->GetCurrentFrameNumber ()));
+
+		  renderMeshes[i]->mixmode = MixMode;
+		  renderMeshes[i]->clip_portal = clip_portal;
+		  renderMeshes[i]->clip_plane = clip_plane;
+		  renderMeshes[i]->clip_z_plane = clip_z_plane;
+		  renderMeshes[i]->do_mirror = camera->IsMirrored ();
+		  renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
+		  renderMeshes[i]->indexstart = 0;
+		  renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes();	
+		  renderMeshes[i]->material = material;    
+		  renderMeshes[i]->worldspace_origin = wo;
+
+		  renderMeshes[i]->geometryInstance = (void*)factory;
+
+		  if (nextCell.b_Bottom)
+		  {
+			   renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_BL;
+		  }
+		  else
+		  {
+			   renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_BH;
+		  }
+
+		  renderMeshes[i]->variablecontext = newVarCtxt;
+		  renderMeshes[i]->object2world = o2world * trans;
+
+		  //update mesh-specific shader variable
+		  o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
+		  o2wtVar->SetType(csShaderVariable::MATRIX);
+		  o2wtVar->SetValue(renderMeshes[i]->object2world);
+
+		  i++;
+	  
+
+		//  renderMesh for left bounary for a cell
+		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
+			  rview->GetCurrentFrameNumber ()));
+
+		  renderMeshes[i]->mixmode = MixMode;
+		  renderMeshes[i]->clip_portal = clip_portal;
+		  renderMeshes[i]->clip_plane = clip_plane;
+		  renderMeshes[i]->clip_z_plane = clip_z_plane;
+		  renderMeshes[i]->do_mirror = camera->IsMirrored ();
+		  renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
+		  renderMeshes[i]->indexstart = 0;
+		  renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes();
+		  renderMeshes[i]->material = material;    
+		  renderMeshes[i]->worldspace_origin = wo;
+
+		  renderMeshes[i]->geometryInstance = (void*)factory;
+
+		  if (nextCell.b_Left)
+		  {
+			  renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_LL;
+		  }
+		  else
+		  {
+			  renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_LH;	
+		  }
+
+		  renderMeshes[i]->variablecontext = newVarCtxt;
+		  renderMeshes[i]->object2world = o2world * trans;
+
+		  //update mesh-specific shader variable
+		  o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
+		  o2wtVar->SetType(csShaderVariable::MATRIX);
+		  o2wtVar->SetValue(renderMeshes[i]->object2world);
+
+		  i++;
+
     }
   }
   else

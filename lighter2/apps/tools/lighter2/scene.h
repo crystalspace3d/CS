@@ -24,6 +24,8 @@
 #include "light.h"
 #include "material.h"
 
+#include "lightcalculator.h"
+
 namespace lighter
 {
   class KDTree;
@@ -31,6 +33,7 @@ namespace lighter
   class Sector;
   class PhotonMap;
   class IrradianceCache;
+  class SectorGroup;
 
   class Portal : public csRefCount
   {
@@ -46,12 +49,43 @@ namespace lighter
   };
   typedef csRefArray<Portal> PortalRefArray;
 
+  class iSectorProcessor : public virtual iBase
+  {
+    THREADED_INTERFACE1(BuildKDTree,csRef<Sector>);
+    THREADED_INTERFACE1(BuildPhotonMaps,csRef<Sector>);
+    THREADED_INTERFACE4(ComputeSectorLighting,csRef<Sector>,int,bool,bool);
+  };
+
+  class SectorProcessor : ThreadedCallable<SectorProcessor>,
+                     public scfImplementation1<SectorProcessor,
+                                               iSectorProcessor>
+  {
+  public:
+    SectorProcessor(iObjectRegistry *objReg);
+
+    iObjectRegistry* GetObjectRegistry() const
+    { return objReg; }
+
+    THREADED_CALLABLE_DECL1(SectorProcessor,BuildKDTree,csThreadReturn,
+      csRef<Sector>,sector,QueueType::THREADED,true,false);
+
+    THREADED_CALLABLE_DECL1(SectorProcessor,BuildPhotonMaps,csThreadReturn,
+      csRef<Sector>,sector,QueueType::THREADED,true,false);
+
+    THREADED_CALLABLE_DECL4(SectorProcessor,ComputeSectorLighting,csThreadReturn,
+      csRef<Sector>,sector,int,numPasses,bool, enableRaytracer,bool, enablePhotonMapper,
+      QueueType::THREADED,true,false);
+
+  private :
+    iObjectRegistry* objReg;
+  };
+
   // Representation of sector in our local setup
   class Sector : public csRefCount
   {
   public:
     Sector (Scene* scene)
-      : kdTree (0), scene (scene), photonMap(NULL), causticPhotonMap(NULL), irradianceCache(NULL)
+        : kdTree (0), scene (scene), sectorGroup(0), photonMap(NULL), causticPhotonMap(NULL), irradianceCache(NULL)
     {}
 
     ~Sector ();
@@ -118,6 +152,8 @@ namespace lighter
 
     Scene* scene;
 
+    SectorGroup* sectorGroup;
+
   protected:
     // Photon map for indirect lighting
     PhotonMap *photonMap;
@@ -130,6 +166,27 @@ namespace lighter
     IrradianceCache *irradianceCache;
   };
   typedef csHash<csRef<Sector>, csString> SectorHash;
+
+  class SectorGroup : public csRefCount
+  {
+    public :
+      SectorGroup(csRef<Sector> sector,csRef<SectorProcessor> processor);
+      
+      void addSector(csRef<Sector> sector);
+
+      void Process(bool enableRaytracer, bool enablePhotonMapper);
+
+    private :
+
+      inline void BuildKDTreeAndPhotonMaps(bool buildPhotonMaps);
+
+      inline void ComputeLighting(bool enableRaytracer, bool enablePhotonMapper);
+
+      SectorHash sectors;
+      csRef<SectorProcessor> sectorProcessor;
+  };
+
+  typedef csArray<csRef<SectorGroup>> SectorGroupRefArray;
 
   class Scene
   {
@@ -173,6 +230,10 @@ namespace lighter
     inline SectorHash& GetSectors () { return sectors; }
 
     inline const SectorHash& GetSectors () const { return sectors; }
+
+    inline SectorGroupRefArray& GetSectorGroups () { return sectorGroups; }
+
+    inline const SectorGroupRefArray& GetSectorGroups () const { return sectorGroups; }
 
     const LightmapPtrDelArray& GetLightmaps () const 
     { return lightmaps; }
@@ -243,6 +304,7 @@ namespace lighter
     
     // All sectors
     SectorHash sectors;
+    SectorGroupRefArray sectorGroups;
     typedef csHash<Sector*, csPtrKey<iSector> > SectorOrigSectorHash;
     SectorOrigSectorHash originalSectorHash;
 

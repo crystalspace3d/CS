@@ -28,6 +28,10 @@
 #include "photonmap.h"
 #include "irradiancecache.h"
 
+#include "photonmapperlighting.h"
+#include "raytracerlighting.h"
+#include "lightcalculator.h"
+
 #include <functional>
 
 using namespace CS;
@@ -124,12 +128,6 @@ namespace lighter
   void Sector::AddPhoton(const csColor power, const csVector3 pos,
     const csVector3 dir )
   {
-    if(photonMap == NULL)
-    {
-      photonMap = new PhotonMap(
-        2 * globalConfig.GetIndirectProperties ().numPhotons);
-    }
-
     const float fPower[3] = { power.red, power.green, power.blue };
     const float fPos[3] = { pos.x, pos.y, pos.z };
     const float fDir[3] = { dir.x, dir.y, dir.z };
@@ -140,12 +138,6 @@ namespace lighter
   void Sector::AddCausticPhoton(const csColor power, const csVector3 pos,
     const csVector3 dir )
   {
-    if(causticPhotonMap == NULL)
-    {
-      causticPhotonMap = new PhotonMap(
-        2 * globalConfig.GetIndirectProperties ().numCausticPhotons);
-    }
-
     const float fPower[3] = { power.red, power.green, power.blue };
     const float fPos[3] = { pos.x, pos.y, pos.z };
     const float fDir[3] = { dir.x, dir.y, dir.z };
@@ -262,6 +254,157 @@ namespace lighter
   void Sector::SaveCausticPhotonMap(const char* filename)
   {
     if(causticPhotonMap != NULL) causticPhotonMap->SaveToFile(filename);
+  }
+
+  //-------------------------------------------------------------------------
+
+  SectorGroup::SectorGroup(csRef<Sector> sector,csRef<SectorProcessor> processor)
+    :sectorProcessor(processor)
+  {
+    this->addSector(sector);
+  }
+
+
+  void SectorGroup::addSector(csRef<Sector> sect)
+  {
+    if (sect->sectorGroup == 0)
+    {
+      sect->sectorGroup = this;
+      sectors.Put(sect->sectorName,sect);
+
+      LightRefArray lights = sect->allPDLights;
+      LightRefArray::Iterator ligthIt = lights.GetIterator();
+      while (ligthIt.HasNext())
+      {
+        csRef<Light> light = ligthIt.Next();
+        if (!light->IsRealLight())
+        {
+          addSector(light->GetSector());
+        }
+      }
+
+      lights = sect->allNonPDLights;
+      ligthIt = lights.GetIterator();
+      while (ligthIt.HasNext())
+      {
+        csRef<Light> light = ligthIt.Next();
+
+        if (!light->IsRealLight())
+        {
+          addSector(light->GetSector());
+        }
+      }
+    }
+  }
+
+  void SectorGroup::BuildKDTreeAndPhotonMaps(bool buildPhotonMaps)
+  {
+    csRefArray<iThreadReturn> returns;
+
+    SectorHash::GlobalIterator sectIt = sectors.GetIterator();
+    while (sectIt.HasNext())
+    {
+      csRef<Sector> sect = sectIt.Next();
+      returns.Push(sectorProcessor->BuildKDTree(sect));
+
+      if(buildPhotonMaps)
+      {
+        returns.Push(sectorProcessor->BuildPhotonMaps(sect));
+      }
+    }
+
+    globalLighter->threadManager->Wait(returns,true);
+  }
+
+  void SectorGroup::ComputeLighting(bool enableRaytracer, bool enablePhotonMapper)
+  { 
+    int numPasses = 
+      globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
+
+    SectorHash::GlobalIterator sectIt = sectors.GetIterator();
+    while (sectIt.HasNext())
+    {
+      csRef<Sector> sect = sectIt.Next();
+
+      sectorProcessor->ComputeSectorLighting(sect,numPasses,enableRaytracer,enablePhotonMapper);
+    }
+  }
+
+  void SectorGroup::Process(bool enableRaytracer, bool enablePhotonMapper)
+  {
+    BuildKDTreeAndPhotonMaps(enablePhotonMapper);
+    ComputeLighting(enableRaytracer,enablePhotonMapper);
+  }
+
+
+
+  //-------------------------------------------------------------------------
+
+  SectorProcessor::SectorProcessor(iObjectRegistry* objectRegistry)
+    :scfImplementationType(this),objReg(objectRegistry)
+  {
+  }
+
+  THREADED_CALLABLE_IMPL1(SectorProcessor,BuildKDTree, csRef<Sector> sector)
+  {
+    Statistics::Progress progress("Super",2);
+    sector->BuildKDTree(progress);
+    return true;
+  }
+
+  THREADED_CALLABLE_IMPL1(SectorProcessor,BuildPhotonMaps, csRef<Sector> sector)
+  {
+    Statistics::Progress progress("Super",2);
+    sector->InitPhotonMap();
+    PhotonmapperLighting lighting;
+
+    lighting.EmitPhotons(sector,progress);
+    lighting.BalancePhotons(sector,progress);
+    return true;
+  }
+
+  THREADED_CALLABLE_IMPL4(SectorProcessor,ComputeSectorLighting,
+        csRef<Sector> sector,const int numPasses, bool enableRaytracer, bool enablePhotonMapper)
+  {
+    const csVector3 bases[4] =
+    {
+      csVector3 (0, 0, 1),
+      csVector3 (/* -1/sqrt(6) */ -0.408248f, /* 1/sqrt(2) */ 0.707107f, /* 1/sqrt(3) */ 0.577350f),
+      csVector3 (/* sqrt(2/3) */ 0.816497f, 0, /* 1/sqrt(3) */ 0.577350f),
+      csVector3 (/* -1/sqrt(6) */ -0.408248f, /* -1/sqrt(2) */ -0.707107f, /* 1/sqrt(3) */ 0.577350f)
+    };
+
+    // Loop through lighting calculation for directional dependencies
+    for (int p = 0; p < numPasses; p++)
+    {
+      // Construct a light calculator
+      LightCalculator lighting (bases[p], p);
+
+      // Add components to the light calculator
+      RaytracerLighting *raytracerComponent = NULL;
+      PhotonmapperLighting *photonmapperComponent = NULL;
+
+      if(enableRaytracer)
+      {
+        raytracerComponent = new RaytracerLighting (bases[p], p);
+        lighting.addComponent(raytracerComponent, 1.0f, 0.0f);
+      }
+
+      if(enablePhotonMapper)
+      {
+        photonmapperComponent = new PhotonmapperLighting();
+        lighting.addComponent(photonmapperComponent, 1.0f, 0.0f);
+      }
+      
+      Statistics::Progress progress("Lighting computation",100);
+      // Compute the lighting
+      lighting.ComputeSectorStaticLighting(sector,progress);
+
+      if(raytracerComponent != NULL) delete raytracerComponent;
+      if(photonmapperComponent != NULL) delete photonmapperComponent;
+    }
+
+    return true;
   }
 
   //-------------------------------------------------------------------------
@@ -457,12 +600,27 @@ namespace lighter
 
     ParseEngineAll (allProgress);
     
-    //To finish we will propagate lights
+    //Now we propagate lights
     SectorHash::GlobalIterator sectIt =  sectors.GetIterator();
     while (sectIt.HasNext())
     {
-        csRef<Sector> sect = sectIt.Next ();
-        PropagateLights(sect);
+      csRef<Sector> sect = sectIt.Next ();
+      PropagateLights(sect);
+    }
+
+
+    //With the proxy lights we are able to know the adjacent sector
+    sectIt.Reset();
+
+    csRef<SectorProcessor> sectorProcessor = new SectorProcessor(globalLighter->objectRegistry);
+    while (sectIt.HasNext())
+    {
+      csRef<Sector> sect = sectIt.Next();
+      if (sect->sectorGroup == 0)
+      {
+        csRef<SectorGroup> sectorGroup = new SectorGroup(sect,sectorProcessor);
+        sectorGroups.Push(sectorGroup);
+      }
     }
 
     /* We have turned everything needed into our own objects which keep
@@ -676,7 +834,7 @@ namespace lighter
         progFile->SetProgress (1);
         delete progFile;
   
-	progress.SetProgress (i * fileProgress);
+        progress.SetProgress (i * fileProgress);
       }
   
       progress.SetProgress (1);
@@ -1257,7 +1415,7 @@ namespace lighter
     {
       Light* l = lid.Next ();
       if (l->IsRealLight ())
-	PropagateLight (l, l->GetFrustum ());
+	      PropagateLight (l, l->GetFrustum ());
     }
 
     tmpArray = sector->allPDLights;
@@ -1267,7 +1425,7 @@ namespace lighter
       Light* l = lid.Next ();
       
       if (l->IsRealLight ())
-	PropagateLight (l, l->GetFrustum ());
+	      PropagateLight (l, l->GetFrustum ());
     }
   }
   

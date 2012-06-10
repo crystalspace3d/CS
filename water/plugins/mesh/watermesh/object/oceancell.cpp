@@ -143,13 +143,10 @@ void csOceanCell::BoundaryGen(bool top, bool right, bool bottom, bool left)
 			TempTri = trisTemp1.Pop();
 			trisTemp.Push(TempTri);
 		}
-	}
-
-
-	
+	}   
 	
 	index_buffer->CopyInto (trisTemp.GetArray(), trisTemp.GetSize()*3);
-	
+
 }
 
 void csOceanCell::SetupVertices()
@@ -207,8 +204,6 @@ void csOceanCell::SetupVertices()
 	  }
 	}
 
-
-	
 /*
  *   Generation of boundaries tris
  *
@@ -446,6 +441,78 @@ void csOceanCell::SetupBuffers()
         0, verts.GetSize()-1);
   }
   index_buffer->CopyInto (tris.GetArray(), tris.GetSize()*3);
+
+  if (!index_buffer_TL)
+  {
+	  index_buffer_TL = csRenderBuffer::CreateIndexRenderBuffer (
+		  (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
+		  CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
+		  0, verts.GetSize()-1);
+  }
+  index_buffer_TL->CopyInto (tris_TL.GetArray(), tris_TL.GetSize()*3);
+
+  if (!index_buffer_TH)
+  {
+	  index_buffer_TH = csRenderBuffer::CreateIndexRenderBuffer (
+		  (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
+		  CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
+		  0, verts.GetSize()-1);
+  }
+  index_buffer_TH->CopyInto (tris_TH.GetArray(), tris_TH.GetSize()*3);
+
+  if (!index_buffer_RL)
+  {
+	  index_buffer_RL = csRenderBuffer::CreateIndexRenderBuffer (
+		  (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
+		  CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
+		  0, verts.GetSize()-1);
+  }
+  index_buffer_RL->CopyInto (tris_RL.GetArray(), tris_RL.GetSize()*3);
+
+  if (!index_buffer_RH)
+  {
+	  index_buffer_RH = csRenderBuffer::CreateIndexRenderBuffer (
+		  (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
+		  CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
+		  0, verts.GetSize()-1);
+  }
+  index_buffer_RH->CopyInto (tris_RH.GetArray(), tris_RH.GetSize()*3);
+
+  if (!index_buffer_BL)
+  {
+	  index_buffer_BL = csRenderBuffer::CreateIndexRenderBuffer (
+		  (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
+		  CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
+		  0, verts.GetSize()-1);
+  }
+  index_buffer_BL->CopyInto (tris_BL.GetArray(), tris_BL.GetSize()*3);
+
+  if (!index_buffer_BH)
+  {
+	  index_buffer_BH = csRenderBuffer::CreateIndexRenderBuffer (
+		  (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
+		  CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
+		  0, verts.GetSize()-1);
+  }
+  index_buffer_BH->CopyInto (tris_BH.GetArray(), tris_BH.GetSize()*3);
+
+  if (!index_buffer_LL)
+  {
+	  index_buffer_LL = csRenderBuffer::CreateIndexRenderBuffer (
+		  (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
+		  CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
+		  0, verts.GetSize()-1);
+  }
+  index_buffer_LL->CopyInto (tris_LL.GetArray(), tris_LL.GetSize()*3);
+
+  if (!index_buffer_LH)
+  {
+	  index_buffer_LH = csRenderBuffer::CreateIndexRenderBuffer (
+		  (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3),
+		  CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT,
+		  0, verts.GetSize()-1);
+  }
+  index_buffer_LH->CopyInto (tris_LH.GetArray(), tris_LH.GetSize()*3);
   
   if (!normal_buffer)
   {            
@@ -483,7 +550,95 @@ void csOceanCell::SetupBufferHolder()
   //Ocean color and normals shouldn't change..
   bufferHolder->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
   bufferHolder->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
-  
+ 
+  if(bufferHolder_TL == 0)
+	  bufferHolder_TL.AttachNew(new csRenderBufferHolder);
+
+  bufferHolder_TL->SetRenderBuffer(CS_BUFFER_INDEX, index_buffer_TL);
+  bufferHolder_TL->SetRenderBuffer(CS_BUFFER_POSITION, vertex_buffer);
+  bufferHolder_TL->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_buffer);
+
+  //Ocean color and normals shouldn't change..
+  bufferHolder_TL->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
+  bufferHolder_TL->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
+
+  if(bufferHolder_TH == 0)
+	  bufferHolder_TH.AttachNew(new csRenderBufferHolder);
+
+  bufferHolder_TH->SetRenderBuffer(CS_BUFFER_INDEX, index_buffer_TH);
+  bufferHolder_TH->SetRenderBuffer(CS_BUFFER_POSITION, vertex_buffer);
+  bufferHolder_TH->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_buffer);
+
+  //Ocean color and normals shouldn't change..
+  bufferHolder_TH->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
+  bufferHolder_TH->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
+
+  if(bufferHolder_RL == 0)
+	  bufferHolder_RL.AttachNew(new csRenderBufferHolder);
+
+  bufferHolder_RL->SetRenderBuffer(CS_BUFFER_INDEX, index_buffer_RL);
+  bufferHolder_RL->SetRenderBuffer(CS_BUFFER_POSITION, vertex_buffer);
+  bufferHolder_RL->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_buffer);
+
+  //Ocean color and normals shouldn't change..
+  bufferHolder_RL->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
+  bufferHolder_RL->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
+
+  if(bufferHolder_RH == 0)
+	  bufferHolder_RH.AttachNew(new csRenderBufferHolder);
+
+  bufferHolder_RH->SetRenderBuffer(CS_BUFFER_INDEX, index_buffer_RH);
+  bufferHolder_RH->SetRenderBuffer(CS_BUFFER_POSITION, vertex_buffer);
+  bufferHolder_RH->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_buffer);
+
+  //Ocean color and normals shouldn't change..
+  bufferHolder_RH->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
+  bufferHolder_RH->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
+
+  if(bufferHolder_BL == 0)
+	  bufferHolder_BL.AttachNew(new csRenderBufferHolder);
+
+  bufferHolder_BL->SetRenderBuffer(CS_BUFFER_INDEX, index_buffer_BL);
+  bufferHolder_BL->SetRenderBuffer(CS_BUFFER_POSITION, vertex_buffer);
+  bufferHolder_BL->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_buffer);
+
+  //Ocean color and normals shouldn't change..
+  bufferHolder_BL->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
+  bufferHolder_BL->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
+
+  if(bufferHolder_BH == 0)
+	  bufferHolder_BH.AttachNew(new csRenderBufferHolder);
+
+  bufferHolder_BH->SetRenderBuffer(CS_BUFFER_INDEX, index_buffer_BH);
+  bufferHolder_BH->SetRenderBuffer(CS_BUFFER_POSITION, vertex_buffer);
+  bufferHolder_BH->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_buffer);
+
+  //Ocean color and normals shouldn't change..
+  bufferHolder_BH->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
+  bufferHolder_BH->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
+
+  if(bufferHolder_LL == 0)
+	  bufferHolder_LL.AttachNew(new csRenderBufferHolder);
+
+  bufferHolder_LL->SetRenderBuffer(CS_BUFFER_INDEX, index_buffer_LL);
+  bufferHolder_LL->SetRenderBuffer(CS_BUFFER_POSITION, vertex_buffer);
+  bufferHolder_LL->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_buffer);
+
+  //Ocean color and normals shouldn't change..
+  bufferHolder_LL->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
+  bufferHolder_LL->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
+
+  if(bufferHolder_LH == 0)
+	  bufferHolder_LH.AttachNew(new csRenderBufferHolder);
+
+  bufferHolder_LH->SetRenderBuffer(CS_BUFFER_INDEX, index_buffer_LH);
+  bufferHolder_LH->SetRenderBuffer(CS_BUFFER_POSITION, vertex_buffer);
+  bufferHolder_LH->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_buffer);
+
+  //Ocean color and normals shouldn't change..
+  bufferHolder_LH->SetRenderBuffer(CS_BUFFER_NORMAL, normal_buffer);
+  bufferHolder_LH->SetRenderBuffer(CS_BUFFER_COLOR, color_buffer);
+	
   bufferHoldersNeedSetup = false;
 }
 
@@ -507,12 +662,12 @@ csOceanNode::~csOceanNode()
 
 csOceanNode csOceanNode::GetLeft() const
 {
-  return csOceanNode(csVector2(gc.x + len, gc.y), len, wid);
+  return csOceanNode(csVector2(gc.x - len, gc.y), len, wid);
 }
 
 csOceanNode csOceanNode::GetRight() const
 {
-  return csOceanNode(csVector2(gc.x - len, gc.y), len, wid);
+  return csOceanNode(csVector2(gc.x + len, gc.y), len, wid);
 }
 
 csOceanNode csOceanNode::GetUp() const

@@ -75,6 +75,15 @@ namespace WaterMesh
     csRef<iRenderBuffer> normal_buffer;
     csRef<iRenderBuffer> color_buffer;
 
+	csRef<iRenderBuffer> index_buffer_TL;
+	csRef<iRenderBuffer> index_buffer_TH;
+	csRef<iRenderBuffer> index_buffer_BL;
+	csRef<iRenderBuffer> index_buffer_BH;
+	csRef<iRenderBuffer> index_buffer_LL;
+	csRef<iRenderBuffer> index_buffer_LH;
+	csRef<iRenderBuffer> index_buffer_RL;
+	csRef<iRenderBuffer> index_buffer_RH;
+	
     csDirtyAccessArray<csVector3> verts;
     csDirtyAccessArray<csVector3> norms;
     csDirtyAccessArray<csVector2> texs;
@@ -96,7 +105,16 @@ namespace WaterMesh
 	csDirtyAccessArray<csTriangle> tris_RH;
 	        
   public:
-    csRef<csRenderBufferHolder> bufferHolder;
+      csRef<csRenderBufferHolder> bufferHolder;
+
+	  csRef<csRenderBufferHolder> bufferHolder_TL;
+	  csRef<csRenderBufferHolder> bufferHolder_TH;
+	  csRef<csRenderBufferHolder> bufferHolder_BL;
+	  csRef<csRenderBufferHolder> bufferHolder_BH;
+	  csRef<csRenderBufferHolder> bufferHolder_LL;
+	  csRef<csRenderBufferHolder> bufferHolder_LH;
+	  csRef<csRenderBufferHolder> bufferHolder_RL;
+	  csRef<csRenderBufferHolder> bufferHolder_RH;
       
     // len and wid must be a multiple of 10 and greater than 20
     // for LOD to work.

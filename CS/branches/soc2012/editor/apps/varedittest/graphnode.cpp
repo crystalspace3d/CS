@@ -21,14 +21,19 @@
 */
 #include "cssysdef.h"
 #include "graphnode.h"
+#include "csutil/event.h"
+#include "cstool/initapp.h"
+#include <csutil/ref.h>
+#include <iutil/eventq.h>
 #include <csutil/cscolor.h>
 
 // Macro magic to make csTestModifiable work
 CS_IMPLEMENT_FOREIGN_DLL
 
-csTestModifiable :: csTestModifiable(const char* name, const char* job, long itemCount) :
+csTestModifiable :: csTestModifiable(const char* name, const char* job, long itemCount, iObjectRegistry* object_reg) :
   name(name),
   job(job),
+  object_reg(object_reg),
   itemCount(itemCount),
   awesome(false),
   floatThingy(123.55F),
@@ -47,8 +52,7 @@ csTestModifiable :: csTestModifiable(const char* name, const char* job, long ite
   //*/
   scfImplementationType(this)
 {
-  //position = csVector3(10.0f, 10.0f, 10.0f);
-  //color = csColor(0.8f, 0.1f, 0.1f);
+  // TODO: when CS environment is available
   /*
   iStringSet strings = csQueryRegistryTagInterface<iStringSet>(r, "crystalspace.shared.stringset");
   id_name = strings.Request("test_name");
@@ -102,10 +106,16 @@ csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
   return nullptr;
   // Maybe trigger an assertion here?
   // or change to the old version and return false
-  
 }
 
-bool csTestModifiable ::SetParameterValue(csStringID id, const csVariant& value) {
+bool csTestModifiable :: SetParameterValue(csStringID id, const csVariant& value) {
+
+  csRef<iEventQueue> eq( csQueryRegistry<iEventQueue>( object_reg ) );
+  csRef<iEventNameRegistry> nameReg( csQueryRegistry<iEventNameRegistry>( object_reg ) );
+  csRef<iEvent> event( eq->CreateBroadcastEvent( nameReg->GetID("crystalspace.modifiable.param.set") ) );  
+  eq->GetEventOutlet()->Broadcast(event->GetName());
+
+
   if(id == id_name) {
     name = value.GetString();
     return true;

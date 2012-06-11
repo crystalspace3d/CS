@@ -29,14 +29,36 @@ IMPLEMENT_APP(VarEditTestApp);
 
 bool VarEditTestApp::OnInit()
 {
+#if defined(wxUSE_UNICODE) && wxUSE_UNICODE
+  char** csargv;
+  csargv = (char**)cs_malloc(sizeof(char*) * argc);
+  for(int i = 0; i < argc; i++) 
+  {
+    csargv[i] = strdup (wxString(argv[i]).mb_str().data());
+  }
+  object_reg = csInitializer::CreateEnvironment (argc, csargv);
+#else
+  object_reg = csInitializer::CreateEnvironment (argc, argv);
+#endif
+
+  // Create the main frame
+  ModifiableTestFrame* frame = new ModifiableTestFrame (object_reg);
+
+  // Setup the frame's CS stuff
+  frame->Initialize();
+
   // Add some test objects to the varedittest to check its functionality. 
   // csTestModifiable implements iModifiable
-  ModifiableTestFrame* frame = new ModifiableTestFrame ();
-  frame->AddModifiable(new csTestModifiable("Bob", "murderer", 11));
-  frame->AddModifiable(new csTestModifiable("Jake", "garbage man", 0));
-  frame->AddModifiable(new csTestModifiable("Frodo", "part-time orc slayer", 2));
+  frame->AddModifiable(new csTestModifiable("Bob", "murderer", 11, object_reg));
+  frame->AddModifiable(new csTestModifiable("Jake", "garbage man", 0, object_reg));
+  frame->AddModifiable(new csTestModifiable("Frodo", "part-time orc slayer", 2, object_reg));
   frame->Show();
 
 	return true;
 }
 
+int VarEditTestApp::OnExit()
+{
+  csInitializer::DestroyApplication( object_reg );
+  return 0;
+}

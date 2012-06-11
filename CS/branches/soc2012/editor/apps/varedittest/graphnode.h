@@ -29,7 +29,7 @@
 class csTestModifiable : public scfImplementation1<csTestModifiable, iModifiable>
 {
 public:
-  csTestModifiable(const char* name, const char* job, long itemCount);
+  csTestModifiable(const char* name, const char* job, long itemCount, iObjectRegistry* object_reg);
   virtual ~csTestModifiable();
   
   const csStringID GetID() const;
@@ -49,6 +49,7 @@ private:
   csColor color;
   scfString name;
   scfString job;
+  iObjectRegistry* object_reg;
 };
 
 class MyGraphNode1 : public GraphNode

@@ -31,6 +31,7 @@
 #include "graphnode.h"
 #include "wxpgslider.h"
 #include <csutil/refarr.h>
+#include <csutil/weakref.h>
 
 // Main propertygrid header.
 #include "wx/propgrid/propgrid.h"
@@ -53,6 +54,7 @@
 #include <stdarg.h>
 #include "csutil/array.h"
 #include "csutil/csstring.h"
+#include "iutil/event.h"
 #include <wx/variant.h>
 #include <string>
 using namespace std;
@@ -64,21 +66,26 @@ using namespace std;
 
 #include <wx/artprov.h>
 struct csVariant;
+//class Pump;
 
-class ModifiableTestFrame: public wxFrame
+
+// We need to implement WeakReferenced for the pump's weakref
+class ModifiableTestFrame : public wxFrame,
+                            public CS::Utility::WeakReferenced
 {
  public:
-  ModifiableTestFrame ();
+  ModifiableTestFrame         (iObjectRegistry* object_reg);
   ~ModifiableTestFrame ();
 
-  void AddModifiable(iModifiable* modifiable);
+  void AddModifiable          (iModifiable* modifiable);
+  bool Initialize ();
+  void PushFrame ();
 
-  void OnPopulateClick(wxCommandEvent &event);
-  void OnPropertyGridChanging(wxPropertyGridEvent& event);
-  void OnGetNewValue(wxPGProperty* property);
-  void OnEsc(wxKeyEvent& event);
-	wxPropertyGridManager* GetManager();	
-	 
+  void OnPopulateClick        (wxCommandEvent &event);
+  void OnPropertyGridChanging (wxPropertyGridEvent& event);
+  void OnGetNewValue          (wxPGProperty* property);
+  void OnEsc                  (wxKeyEvent& event);
+	wxPropertyGridManager *     GetManager();	
 	
  private:
    /// Generates the GUI based on an iModifiable entity
@@ -98,6 +105,10 @@ class ModifiableTestFrame: public wxFrame
 
   wxButton *btnCycle;
   wxButton *btnSave;
+
+  iObjectRegistry* object_reg;
+  static bool GeneralEventHandler(iEvent& ev);
+  bool TestModifiableEvents(iEvent& ev);
 	     
  protected:
 

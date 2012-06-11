@@ -54,6 +54,7 @@
 #include <csutil/cscolor.h>
 #include <csgeom/vector3.h>
 #include "wx/propgrid/advprops.h"
+#include "pump.h"
 
 //---------
 #include <iostream>
@@ -108,13 +109,14 @@ BEGIN_EVENT_TABLE (ModifiableTestFrame, wxFrame)
     EVT_PG_CHANGED ( pageId, ModifiableTestFrame::OnPropertyGridChanging )
 END_EVENT_TABLE ()
 
-
+// Global frame pointer
+csWeakRef<ModifiableTestFrame> frame;
 
 //-------------------------------------------------------------------
 
-
-ModifiableTestFrame::ModifiableTestFrame ()
-: wxFrame (NULL, idFrame,wxT ("iModifiable test playground"),wxDefaultPosition,wxSize (600,600))
+ModifiableTestFrame::ModifiableTestFrame ( iObjectRegistry* object_reg )
+: wxFrame (NULL, idFrame, wxT ("iModifiable test playground"), wxDefaultPosition, wxSize (600,600)),
+  object_reg(object_reg)
 {
   mainsizer = new wxBoxSizer (wxHORIZONTAL);
   
@@ -126,6 +128,12 @@ ModifiableTestFrame::ModifiableTestFrame ()
   modifiableEntities = new csRefArray<iModifiable>();
   focusedIndex = 0;
 
+  frame = this;
+
+  Pump* p = new Pump();
+  p->s = this;
+  p->Start(20);
+  
   //-------------------------------------------
 
 #if wxUSE_MENUS
@@ -177,12 +185,49 @@ ModifiableTestFrame::ModifiableTestFrame ()
 	
 
   //--------------------------------------------------------
-		
+	
+}
 
-} 
+bool ModifiableTestFrame::Initialize() {
+  if (!csInitializer::SetupEventHandler (object_reg, GeneralEventHandler))
+  {
+    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.application.varedittest",
+      "Can't initialize event handler!");
+
+    return false;
+  }
+
+  return true;
+}
+
+/* static */ bool ModifiableTestFrame :: GeneralEventHandler (iEvent& event) {
+  if(frame)
+    return frame->TestModifiableEvents(event);
+
+  return true;
+}
+
+bool ModifiableTestFrame :: TestModifiableEvents(iEvent& event) {
+  
+  csRef<iEventNameRegistry> strings = csQueryRegistry<iEventNameRegistry>( object_reg );
+
+  // Ignore the frame event
+  if(event.GetName() == strings->GetID("crystalspace.frame"))
+    return true;
+
+  printf("\tCaught event: %s (ID #%i)\n", strings->GetString( event.GetName() ), event.GetName() );
+  return true;
+}
 
 void ModifiableTestFrame::AddModifiable(iModifiable* modifiable) {
   this->modifiableEntities->Push(modifiable);
+}
+
+void ModifiableTestFrame::PushFrame() {
+  // No point broadcasting our events if the queue doesn't get to process them
+  csRef<iEventQueue> eq(csQueryRegistry<iEventQueue>( object_reg ));
+  eq->Process();
 }
 
 //_---------------------------------

@@ -304,9 +304,9 @@ void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector
 	  useCell = LOD_LEVEL_1;
 
   if( useCell < nextCell.cell)
-	  nextCell.b_Top = TRUE;
+	  nextCell.b_Top = true;
   else
-	  nextCell.b_Top = FALSE;
+	  nextCell.b_Top = false;
 
   
   position =  start.GetRight();
@@ -324,9 +324,9 @@ void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector
 	  useCell = LOD_LEVEL_1;
 
   if( useCell < nextCell.cell)
-	  nextCell.b_Right = TRUE;
+	  nextCell.b_Right = true;
   else
-	  nextCell.b_Right = FALSE;
+	  nextCell.b_Right = false;
 
   
   position =  start.GetDown();
@@ -344,9 +344,9 @@ void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector
 	  useCell = LOD_LEVEL_1;
 
   if( useCell < nextCell.cell)
-	  nextCell.b_Bottom = TRUE;
+	  nextCell.b_Bottom = true;
   else
-	  nextCell.b_Bottom = FALSE;
+	  nextCell.b_Bottom = false;
 
 
   position =  start.GetLeft();
@@ -364,9 +364,9 @@ void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector
 	  useCell = LOD_LEVEL_1;
 
   if( useCell < nextCell.cell)
-	  nextCell.b_Left = TRUE;
+	  nextCell.b_Left = true;
   else
-	  nextCell.b_Left = FALSE;
+	  nextCell.b_Left = false;
 
   meshQueue.Push(nextCell);
 }

@@ -27,11 +27,34 @@
 #include "graphmain.h"
 #include <stdarg.h>
 
+#include "csutil/sysfunc.h"
+#include "csutil/event.h"
+#include "csutil/common_handlers.h"
+#include "csutil/cfgfile.h"
+#include "iutil/eventq.h"
+#include "iutil/event.h"
+#include "iutil/objreg.h"
+#include "iengine/engine.h"
+#include "iengine/camera.h"
+#include "iengine/light.h"
+#include "iengine/texture.h"
+#include "iengine/mesh.h"
+#include "csutil/event.h"
+#include "cstool/initapp.h"
+
 class VarEditTestApp : public wxApp
 {
-    public:
-        /// Generates some test properties for GUI generation
-        virtual bool OnInit();
+public:
+  /**
+   * Generates some test properties for GUI generation and sets up
+   * the CS environment.
+   */
+  virtual bool OnInit();
+  virtual int  OnExit();
+
+private:
+  iObjectRegistry*  object_reg;
+  // csRef<iEngine>    engine;
    
 };
 

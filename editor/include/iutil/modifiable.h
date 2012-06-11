@@ -153,14 +153,14 @@ struct iModifiable : public virtual iBase
 
   /**
    * Returns the value of one of this object's parameters. 
-   * \ remark Each modifiable property should have its own id in
+   * \remark Each modifiable property should have its own id in
    * order to be properly accessible.
    */
   virtual csVariant* GetParameterValue (csStringID id) const = 0;
 
   /**
    * Sets a value for the parameter with the unique identifier id. 
-   * \ remark Each modifiable property should have its own id in 
+   * \remark Each modifiable property should have its own id in 
    * order to be properly accessible. 
    *
    * \return true if the value can be set, false if a property with

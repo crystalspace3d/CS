@@ -81,23 +81,7 @@ namespace WaterMesh
     csDirtyAccessArray<csVector3> norms;
     csDirtyAccessArray<csVector2> texs;
     csDirtyAccessArray<csColor>  cols;
-    csDirtyAccessArray<csTriangle> tris;
-
-/*
- *  First letter stands for boundary position T->Top, B->Bottom, L->Left, R->Right. 
- *  Second letter stands for boundary type H->High, L->Low
- */ 
-
-    csDirtyAccessArray< csDirtyAccessArray<csTriangle> > trisARR;
-
-    csDirtyAccessArray<csTriangle> tris_TL;
-    csDirtyAccessArray<csTriangle> tris_TH;
-    csDirtyAccessArray<csTriangle> tris_BL;
-    csDirtyAccessArray<csTriangle> tris_BH;
-    csDirtyAccessArray<csTriangle> tris_LL;
-    csDirtyAccessArray<csTriangle> tris_LH;
-    csDirtyAccessArray<csTriangle> tris_RL;
-    csDirtyAccessArray<csTriangle> tris_RH;
+    csDirtyAccessArray<csDirtyAccessArray<csTriangle>> trisARR;
 	        
   public:
 
@@ -117,8 +101,8 @@ namespace WaterMesh
     inline void SetOHeight(float h) { oHeight = h; }
       
     inline uint GetNumVerts() { return (uint)verts.GetSize(); }
-    inline uint GetNumIndexes() { return (uint)( (tris.GetSize()*3 + tris_BH.GetSize()*3 + tris_TH.GetSize()*3 + tris_RH.GetSize()*3 + tris_LH.GetSize()*3) ) ; }
-    inline uint GetNumTris() { return (uint)tris.GetSize(); }        
+    inline uint GetNumIndexes() { return (uint)( (trisARR[0].GetSize()*3 + trisARR[2].GetSize()*3 + trisARR[4].GetSize()*3 + trisARR[6].GetSize()*3 + trisARR[8].GetSize()*3) ) ; }
+    inline uint GetNumTris() { return (uint)trisARR[0].GetSize(); }        
   };
   
   class csOceanNode

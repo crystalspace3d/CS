@@ -132,6 +132,9 @@ struct iModifiableDescription : public virtual iBase
  * properties, helping programs such as cseditor generate GUIs to allow the visual
  * editing of those attributes.
  *
+ * \remark Triggers a crystalspace.modifiable.param.set event when a parameter value
+ * gets set
+ *
  * \see iModifiableDescription
  * \see csBasicModifiableDescription 
  * \see iModifiableParameter

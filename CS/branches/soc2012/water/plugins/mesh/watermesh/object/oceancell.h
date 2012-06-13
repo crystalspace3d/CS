@@ -75,7 +75,7 @@ namespace WaterMesh
     csRef<iRenderBuffer> normal_buffer;
     csRef<iRenderBuffer> color_buffer;
 
-	csDirtyAccessArray<csRef<iRenderBuffer>> index_bufferARR;
+    csDirtyAccessArray< csRef<iRenderBuffer> > index_bufferARR;
 	
     csDirtyAccessArray<csVector3> verts;
     csDirtyAccessArray<csVector3> norms;
@@ -88,20 +88,20 @@ namespace WaterMesh
  *  Second letter stands for boundary type H->High, L->Low
  */ 
 
-	csDirtyAccessArray<csDirtyAccessArray<csTriangle>> trisARR;
+    csDirtyAccessArray< csDirtyAccessArray<csTriangle> > trisARR;
 
-	csDirtyAccessArray<csTriangle> tris_TL;
-	csDirtyAccessArray<csTriangle> tris_TH;
-	csDirtyAccessArray<csTriangle> tris_BL;
-	csDirtyAccessArray<csTriangle> tris_BH;
-	csDirtyAccessArray<csTriangle> tris_LL;
-	csDirtyAccessArray<csTriangle> tris_LH;
-	csDirtyAccessArray<csTriangle> tris_RL;
-	csDirtyAccessArray<csTriangle> tris_RH;
+    csDirtyAccessArray<csTriangle> tris_TL;
+    csDirtyAccessArray<csTriangle> tris_TH;
+    csDirtyAccessArray<csTriangle> tris_BL;
+    csDirtyAccessArray<csTriangle> tris_BH;
+    csDirtyAccessArray<csTriangle> tris_LL;
+    csDirtyAccessArray<csTriangle> tris_LH;
+    csDirtyAccessArray<csTriangle> tris_RL;
+    csDirtyAccessArray<csTriangle> tris_RH;
 	        
   public:
 
-	  csDirtyAccessArray<csRef<csRenderBufferHolder>> bufferHolderARR; 
+    csDirtyAccessArray< csRef<csRenderBufferHolder> > bufferHolderARR; 
       
     // len and wid must be a multiple of 10 and greater than 20
     // for LOD to work.
@@ -151,7 +151,7 @@ namespace WaterMesh
   {
     int cell;
     csVector2 pos;
-	csDirtyAccessArray< bool > boundary;
+    csDirtyAccessArray<bool> boundary;
   } csRenderCell;
 }
 }

@@ -75,14 +75,7 @@ namespace WaterMesh
     csRef<iRenderBuffer> normal_buffer;
     csRef<iRenderBuffer> color_buffer;
 
-	csRef<iRenderBuffer> index_buffer_TL;
-	csRef<iRenderBuffer> index_buffer_TH;
-	csRef<iRenderBuffer> index_buffer_BL;
-	csRef<iRenderBuffer> index_buffer_BH;
-	csRef<iRenderBuffer> index_buffer_LL;
-	csRef<iRenderBuffer> index_buffer_LH;
-	csRef<iRenderBuffer> index_buffer_RL;
-	csRef<iRenderBuffer> index_buffer_RH;
+	csDirtyAccessArray<csRef<iRenderBuffer>> index_bufferARR;
 	
     csDirtyAccessArray<csVector3> verts;
     csDirtyAccessArray<csVector3> norms;
@@ -95,6 +88,8 @@ namespace WaterMesh
  *  Second letter stands for boundary type H->High, L->Low
  */ 
 
+	csDirtyAccessArray<csDirtyAccessArray<csTriangle>> trisARR;
+
 	csDirtyAccessArray<csTriangle> tris_TL;
 	csDirtyAccessArray<csTriangle> tris_TH;
 	csDirtyAccessArray<csTriangle> tris_BL;
@@ -105,16 +100,8 @@ namespace WaterMesh
 	csDirtyAccessArray<csTriangle> tris_RH;
 	        
   public:
-      csRef<csRenderBufferHolder> bufferHolder;
 
-	  csRef<csRenderBufferHolder> bufferHolder_TL;
-	  csRef<csRenderBufferHolder> bufferHolder_TH;
-	  csRef<csRenderBufferHolder> bufferHolder_BL;
-	  csRef<csRenderBufferHolder> bufferHolder_BH;
-	  csRef<csRenderBufferHolder> bufferHolder_LL;
-	  csRef<csRenderBufferHolder> bufferHolder_LH;
-	  csRef<csRenderBufferHolder> bufferHolder_RL;
-	  csRef<csRenderBufferHolder> bufferHolder_RH;
+	  csDirtyAccessArray<csRef<csRenderBufferHolder>> bufferHolderARR; 
       
     // len and wid must be a multiple of 10 and greater than 20
     // for LOD to work.
@@ -123,8 +110,7 @@ namespace WaterMesh
     
     inline OceanLOD GetType() { return type; }
       
-    void BoundaryGen(bool top, bool right, bool bottom, bool left);
-	void SetupVertices();
+    void SetupVertices();
     void SetupBufferHolder();
     void SetupBuffers();
       
@@ -165,10 +151,7 @@ namespace WaterMesh
   {
     int cell;
     csVector2 pos;
-	bool b_Top;
-	bool b_Right;
-	bool b_Bottom;
-	bool b_Left;
+	csDirtyAccessArray< bool > boundary;
   } csRenderCell;
 }
 }

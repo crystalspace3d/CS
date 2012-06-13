@@ -159,6 +159,8 @@ private:
     csPlane3 *planes, uint32 frustum_mask);
 
   void AddNode(csOceanNode start, float dist, const csVector3 camPos);
+  bool SelectBoundary(int nextCell, csOceanNode position, const csVector3 camPos );
+  int CalculateLOD(float distCam);
 
 public:
   /// Constructor.

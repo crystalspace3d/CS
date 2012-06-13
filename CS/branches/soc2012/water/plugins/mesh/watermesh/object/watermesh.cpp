@@ -52,6 +52,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "ivideo/fontserv.h"
 #include "ivideo/shader/shader.h"
 #include "ivideo/txtmgr.h"
+#include "csutil/dirtyaccessarray.h"
 
 #include "watermesh.h"
 
@@ -260,6 +261,35 @@ void csWaterMeshObject::SetupObject ()
   }
 }
 
+int csWaterMeshObject::CalculateLOD(float distCam)
+{
+	if(distCam < (CELL_WID * CELL_WID * 4))
+		return(LOD_LEVEL_5);
+	else if(distCam < (CELL_WID * CELL_WID * 9))
+		return(LOD_LEVEL_4);
+	else if(distCam < (CELL_WID * CELL_WID * 16))
+		return(LOD_LEVEL_3);
+	else if(distCam < (CELL_WID * CELL_WID * 25))
+		return(LOD_LEVEL_2);
+	else
+		return(LOD_LEVEL_1);
+}
+
+bool csWaterMeshObject::SelectBoundary(int nextCell, csOceanNode position, const csVector3 camPos)
+{
+	int useCell;
+	float distFromCam_sq;
+
+	distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
+
+	useCell = CalculateLOD(distFromCam_sq);
+
+	if( useCell < nextCell)
+		return true;    // Low res boundary
+	else
+		return false;   // High res boundary
+}
+
 /*
  * This function distributes Levels of Details to OceanNodes and Pushes the renderCell to meshQueue.
  * "dist_sq" is actually squared distance between camera's position and center of oceanNode.
@@ -267,106 +297,19 @@ void csWaterMeshObject::SetupObject ()
  */
 void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector3 camPos)
 {
-
   int useCell;
-  float distFromCam_sq;
 
-  if(dist_sq < (CELL_WID * CELL_WID * 4))
-    useCell = LOD_LEVEL_5;
-  else if(dist_sq < (CELL_WID * CELL_WID * 9))
-    useCell = LOD_LEVEL_4;
-  else if(dist_sq < (CELL_WID * CELL_WID * 16))
-    useCell = LOD_LEVEL_3;
-  else if(dist_sq < (CELL_WID * CELL_WID * 25))
-    useCell = LOD_LEVEL_2;
-  else
-    useCell = LOD_LEVEL_1;
+  useCell = CalculateLOD(dist_sq);
 
   csRenderCell nextCell;
   nextCell.cell = useCell;
   nextCell.pos = start.gc;
 
-  
-  // calculating boundaries LOD Levels
-
-  csOceanNode position =  start.GetUp();
-  distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
-
-  if(distFromCam_sq < (CELL_WID * CELL_WID * 4))
-	  useCell = LOD_LEVEL_5;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 9))
-	  useCell = LOD_LEVEL_4;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 16))
-	  useCell = LOD_LEVEL_3;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 25))
-	  useCell = LOD_LEVEL_2;
-  else
-	  useCell = LOD_LEVEL_1;
-
-  if( useCell < nextCell.cell)
-	  nextCell.b_Top = true;
-  else
-	  nextCell.b_Top = false;
-
-  
-  position =  start.GetRight();
-  distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
-
-  if(distFromCam_sq < (CELL_WID * CELL_WID * 4))
-	  useCell = LOD_LEVEL_5;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 9))
-	  useCell = LOD_LEVEL_4;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 16))
-	  useCell = LOD_LEVEL_3;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 25))
-	  useCell = LOD_LEVEL_2;
-  else
-	  useCell = LOD_LEVEL_1;
-
-  if( useCell < nextCell.cell)
-	  nextCell.b_Right = true;
-  else
-	  nextCell.b_Right = false;
-
-  
-  position =  start.GetDown();
-  distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
-
-  if(distFromCam_sq < (CELL_WID * CELL_WID * 4))
-	  useCell = LOD_LEVEL_5;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 9))
-	  useCell = LOD_LEVEL_4;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 16))
-	  useCell = LOD_LEVEL_3;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 25))
-	  useCell = LOD_LEVEL_2;
-  else
-	  useCell = LOD_LEVEL_1;
-
-  if( useCell < nextCell.cell)
-	  nextCell.b_Bottom = true;
-  else
-	  nextCell.b_Bottom = false;
-
-
-  position =  start.GetLeft();
-  distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
-
-  if(distFromCam_sq < (CELL_WID * CELL_WID * 4))
-	  useCell = LOD_LEVEL_5;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 9))
-	  useCell = LOD_LEVEL_4;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 16))
-	  useCell = LOD_LEVEL_3;
-  else if(distFromCam_sq < (CELL_WID * CELL_WID * 25))
-	  useCell = LOD_LEVEL_2;
-  else
-	  useCell = LOD_LEVEL_1;
-
-  if( useCell < nextCell.cell)
-	  nextCell.b_Left = true;
-  else
-	  nextCell.b_Left = false;
+  // Calculating boundaries LOD Levels  
+  nextCell.boundary.Push( SelectBoundary(nextCell.cell, start.GetUp(), camPos)    );
+  nextCell.boundary.Push( SelectBoundary(nextCell.cell, start.GetRight(), camPos) );
+  nextCell.boundary.Push( SelectBoundary(nextCell.cell, start.GetDown(), camPos)  );
+  nextCell.boundary.Push( SelectBoundary(nextCell.cell, start.GetLeft(), camPos)  );
 
   meshQueue.Push(nextCell);
 }
@@ -536,8 +479,6 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     {
       csRenderCell nextCell = meshQueue.Pop();
 
-	  //factory->cells[nextCell.cell].BoundaryGen(nextCell.b_Top, nextCell.b_Right, nextCell.b_Bottom, nextCell.b_Left);
-
 	  trans.Identity();
       trans.Translate(csVector3(nextCell.pos.x, 0.0, nextCell.pos.y));
       
@@ -558,7 +499,7 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
 
       renderMeshes[i]->geometryInstance = (void*)factory;
 
-      renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder;
+	  renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolderARR[0];
 
 	  //Clone shader variable to provide each mesh with its own o2wt       
 	  csRef<csShaderVariableContext> newVarCtxt;
@@ -581,7 +522,9 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     
       i++;
 
-      //  renderMesh for top bounary for a cell
+	  for (uint j = 0 ; j < 4 ; j++)
+	  {
+      //  renderMesh for top boundary for a cell
 		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
 			  rview->GetCurrentFrameNumber ()));
 
@@ -598,51 +541,10 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
 
 		  renderMeshes[i]->geometryInstance = (void*)factory;
 
-		  if (nextCell.b_Top)
-		  {
-		  	renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_TL;
-		  }
+		  if (nextCell.boundary[j])
+		    	renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolderARR[2*j+1];
 		  else
-		  {
-			renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_TH;	
-		  }
-
-		  renderMeshes[i]->variablecontext = newVarCtxt;
-		  renderMeshes[i]->object2world = o2world * trans;
-
-		  //update mesh-specific shader variable
-		  o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
-		  o2wtVar->SetType(csShaderVariable::MATRIX);
-		  o2wtVar->SetValue(renderMeshes[i]->object2world);
-
-		  i++;
-      
-
-	  //  renderMesh for Left bounary for a cell
-		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
-			  rview->GetCurrentFrameNumber ()));
-
-		  renderMeshes[i]->mixmode = MixMode;
-		  renderMeshes[i]->clip_portal = clip_portal;
-		  renderMeshes[i]->clip_plane = clip_plane;
-		  renderMeshes[i]->clip_z_plane = clip_z_plane;
-		  renderMeshes[i]->do_mirror = camera->IsMirrored ();
-		  renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
-		  renderMeshes[i]->indexstart = 0;
-          renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes(); 
-		  renderMeshes[i]->material = material;    
-		  renderMeshes[i]->worldspace_origin = wo;
-
-		  renderMeshes[i]->geometryInstance = (void*)factory;
-
-		  if (nextCell.b_Right)
-		  {
-			renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_RL;
-		  }
-		  else
-		  {
-			renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_RH;
-		  }
+		  		renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolderARR[2*j+2];	
 		  
 		  renderMeshes[i]->variablecontext = newVarCtxt;
 		  renderMeshes[i]->object2world = o2world * trans;
@@ -653,81 +555,7 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
 		  o2wtVar->SetValue(renderMeshes[i]->object2world);
 
 		  i++;
-	  
-		  
-        //  renderMesh for Bottom bounary for a cell
-		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
-			  rview->GetCurrentFrameNumber ()));
-
-		  renderMeshes[i]->mixmode = MixMode;
-		  renderMeshes[i]->clip_portal = clip_portal;
-		  renderMeshes[i]->clip_plane = clip_plane;
-		  renderMeshes[i]->clip_z_plane = clip_z_plane;
-		  renderMeshes[i]->do_mirror = camera->IsMirrored ();
-		  renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
-		  renderMeshes[i]->indexstart = 0;
-		  renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes();	
-		  renderMeshes[i]->material = material;    
-		  renderMeshes[i]->worldspace_origin = wo;
-
-		  renderMeshes[i]->geometryInstance = (void*)factory;
-
-		  if (nextCell.b_Bottom)
-		  {
-			   renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_BL;
-		  }
-		  else
-		  {
-			   renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_BH;
-		  }
-
-		  renderMeshes[i]->variablecontext = newVarCtxt;
-		  renderMeshes[i]->object2world = o2world * trans;
-
-		  //update mesh-specific shader variable
-		  o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
-		  o2wtVar->SetType(csShaderVariable::MATRIX);
-		  o2wtVar->SetValue(renderMeshes[i]->object2world);
-
-		  i++;
-	  
-
-		//  renderMesh for left bounary for a cell
-		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
-			  rview->GetCurrentFrameNumber ()));
-
-		  renderMeshes[i]->mixmode = MixMode;
-		  renderMeshes[i]->clip_portal = clip_portal;
-		  renderMeshes[i]->clip_plane = clip_plane;
-		  renderMeshes[i]->clip_z_plane = clip_z_plane;
-		  renderMeshes[i]->do_mirror = camera->IsMirrored ();
-		  renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
-		  renderMeshes[i]->indexstart = 0;
-		  renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes();
-		  renderMeshes[i]->material = material;    
-		  renderMeshes[i]->worldspace_origin = wo;
-
-		  renderMeshes[i]->geometryInstance = (void*)factory;
-
-		  if (nextCell.b_Left)
-		  {
-			  renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_LL;
-		  }
-		  else
-		  {
-			  renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolder_LH;	
-		  }
-
-		  renderMeshes[i]->variablecontext = newVarCtxt;
-		  renderMeshes[i]->object2world = o2world * trans;
-
-		  //update mesh-specific shader variable
-		  o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
-		  o2wtVar->SetType(csShaderVariable::MATRIX);
-		  o2wtVar->SetValue(renderMeshes[i]->object2world);
-
-		  i++;
-
+	  }
     }
   }
   else

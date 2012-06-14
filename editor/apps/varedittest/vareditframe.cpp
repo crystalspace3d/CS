@@ -213,7 +213,9 @@ bool ModifiableTestFrame :: TestModifiableEvents(iEvent& event) {
   if(event.GetName() == strings->GetID("crystalspace.frame"))
     return true;
 
-  printf("\tCaught event: %s (ID #%i)\n", strings->GetString( event.GetName() ), event.GetName() );
+  printf("\tCaught event: %s (ID #%u)\n",
+	 strings->GetString( event.GetName() ),
+	 (unsigned int) event.GetName() );
   return true;
 }
 

@@ -81,7 +81,7 @@ namespace WaterMesh
     csDirtyAccessArray<csVector3> norms;
     csDirtyAccessArray<csVector2> texs;
     csDirtyAccessArray<csColor>  cols;
-    csDirtyAccessArray<csDirtyAccessArray<csTriangle>> trisARR;
+    csDirtyAccessArray< csDirtyAccessArray<csTriangle> > trisARR;
 	        
   public:
 

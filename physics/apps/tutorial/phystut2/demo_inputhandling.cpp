@@ -13,6 +13,8 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
+using namespace CS::Collisions;
+
 
 bool PhysDemo::OnKeyboard (iEvent &event)
 {
@@ -34,6 +36,19 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       }
       else if (csKeyEventHelper::GetCookedCode (&event) == 'd')
       {
+      }
+    }
+
+    if (csKeyEventHelper::GetCookedCode (&event) == 'r')
+    {
+      // reset
+      for (int i = collisionSector->GetCollisionObjectCount() - 1; i >= 0; --i)
+      {
+        iCollisionObject* obj = collisionSector->GetCollisionObject(i);
+        if (obj->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+        {
+          collisionSector->RemoveCollisionObject(obj);
+        }
       }
     }
     /*
@@ -64,7 +79,8 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 'v')
     {
-      SpawnConvexMesh();
+      //SpawnConvexMesh();
+      SpawnSphere();
       return true;
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 'q')
@@ -87,7 +103,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       SpawnChain();
       return true;
     }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'r')
+    else if (csKeyEventHelper::GetCookedCode (&event) == '\'')
     {
       SpawnFrankieRagdoll();
       return true;
@@ -273,7 +289,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
           if (rigidBody->GetState() == CS::Physics::STATE_DYNAMIC)
           {
             size_t count = physicalSector->GetRigidBodyCount();
-            physicalSector->RemoveRigidBody (clipboardBody->QueryRigidBody());
+            collisionSector->RemoveCollisionObject (clipboardBody->QueryRigidBody());
             //room->GetMeshes()->Remove (clipboardMovable->GetSceneNode()->QueryMesh());
             if (physicalSector->GetRigidBodyCount() == count)
               clipboardBody.Invalidate();
@@ -282,7 +298,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         else
         {
           CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-          physicalSector->RemoveSoftBody (softBody);
+          collisionSector->RemoveCollisionObject (softBody);
         }
 
         // Update the display of the dynamics debugger
@@ -316,7 +332,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       else
       {
         CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-        physicalSector->AddSoftBody (softBody);
+        collisionSector->AddCollisionObject (softBody);
       }
 
       clipboardBody = 0;

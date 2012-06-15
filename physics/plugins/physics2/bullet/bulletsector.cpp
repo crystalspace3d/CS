@@ -153,17 +153,17 @@ csBulletSector::csBulletSector (csBulletSystem* sys)
 
 csBulletSector::~csBulletSector ()
 {
-  for (size_t i = 0; i < portals.GetSize (); i++)
+  for (size_t i = 0; i < portals.GetSize (); ++i)
   {
     bulletWorld->removeCollisionObject (portals[i]->ghostPortal);
   }
-  for (size_t i = 0; i < collisionObjects.GetSize (); i++)
+  for (size_t i = 0; i < collisionObjects.GetSize (); ++i)
   {
     bulletWorld->removeCollisionObject (collisionObjects[i]->btObject);
   }
-  for (size_t i = 0; i < rigidBodies.GetSize (); i++)
+  for (size_t i = 0; i < joints.GetSize(); ++i)
   {
-    bulletWorld->removeCollisionObject (rigidBodies[i]->btObject);
+    joints[i]->RemoveBulletJoint();
   }
 
   joints.DeleteAll ();
@@ -189,6 +189,15 @@ csBulletSector::~csBulletSector ()
 
 void csBulletSector::SetGravity (const csVector3& v)
 {
+  // first re-activate all objects
+  for (int i = 0; i < collisionObjects.GetSize(); ++i)
+  {
+    if (collisionObjects[i]->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+    {
+      collisionObjects[i]->btObject->activate(true);
+    }
+  }
+
   gravity = v;
   btVector3 gravity = CSToBullet (v, sys->getInternalScale ());
   bulletWorld->setGravity (gravity);
@@ -211,6 +220,7 @@ void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* objec
     }
     break;
   case CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC:
+  case CS::Collisions::COLLISION_OBJECT_PHYSICAL_STATIC:
     {
       iPhysicalBody* phyBody = obj->QueryPhysicalBody();
       int cflags = obj->btObject->getCollisionFlags();
@@ -227,16 +237,19 @@ void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* objec
       break;
   default:
     {
-      collisionObjects.Push (obj);
-
+      // Ghost objects
       obj->sector = this;
-      obj->collGroup = collGroups[CollisionGroupTypeStatic]; // Static Group.
       //obj->btObject->setCollisionFlags(obj->btObject->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+      
+      obj->collGroup = collGroups[CollisionGroupTypeDefault]; // Default Group.
 
       obj->AddBulletObject ();
       AddMovableToSector (object);
     }
   }
+
+  // add all objects to the collisionObjects list
+  collisionObjects.Push (obj);
 }
 
 void csBulletSector::RemoveCollisionObject (CS::Collisions::iCollisionObject* object)
@@ -245,13 +258,17 @@ void csBulletSector::RemoveCollisionObject (CS::Collisions::iCollisionObject* ob
   if (!collObject)
     return;
 
-  if (collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+  if (collObject->IsPhysicalObject())
   {
     iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
     if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
+    {
       RemoveRigidBody (phyBody->QueryRigidBody ());
+    }
     else
+    {
       RemoveSoftBody (phyBody->QuerySoftBody ());
+    }
   }
   else
   {
@@ -260,9 +277,9 @@ void csBulletSector::RemoveCollisionObject (CS::Collisions::iCollisionObject* ob
     if (removed)
     {
       RemoveMovableFromSector (object);
-      collisionObjects.Delete (collObject);
     }
   }
+  collisionObjects.Delete (collObject);
 }
 
 CS::Collisions::iCollisionObject* csBulletSector::GetCollisionObject (size_t index)
@@ -768,10 +785,6 @@ void csBulletSector::Step (float duration)
     if (collisionObjects[i]->objectOrigin)
       GetInformationFromCopy (collisionObjects[i]->objectOrigin, collisionObjects[i]);
 
-  for (size_t i = 0; i < rigidBodies.GetSize (); i++)
-    if (rigidBodies[i]->objectOrigin)
-      GetInformationFromCopy (rigidBodies[i]->objectOrigin, rigidBodies[i]);
-
   // Check for collisions
   CheckCollisions();
 }
@@ -800,7 +813,6 @@ void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
   rigidBodies.Push (bulletBody);
 
   bulletBody->sector = this;
-  bulletBody->collGroup = collGroups[CollisionGroupTypeDefault]; // Default Group.
   bulletBody->SetLinearDampener(linearDampening);
   bulletBody->SetRollingDampener(angularDampening);
   bulletBody->AddBulletObject ();
@@ -1092,10 +1104,6 @@ void csBulletSector::CheckCollisions ()
 
   for (size_t i = 0; i < collisionObjects.GetSize (); i++)
     collisionObjects[i]->contactObjects.Empty ();
-  for (size_t i = 0; i < rigidBodies.GetSize (); i++)
-    rigidBodies[i]->contactObjects.Empty ();
-  for (size_t i = 0; i < softBodies.GetSize (); i++)
-    softBodies[i]->contactObjects.Empty ();
 
   // Could not get contacted softBody?
   for (int i = 0; i < numManifolds; i++)

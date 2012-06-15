@@ -511,9 +511,11 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
     body->SetFriction (node->GetAttributeValueAsFloat ("friction"));
   if (node->GetAttributeValue ("rigidity"))
     body->SetRigidity (node->GetAttributeValueAsFloat ("rigidity"));
+  
+  csRef<CS::Collisions::iCollisionSector> colSector = scfQueryInterface<CS::Collisions::iCollisionSector> (physSector);
 
   body->RebuildObject ();
-  physSector->AddSoftBody (body);
+  colSector->AddCollisionObject (body);
 
   it = node->GetNodes ();
   while (it->HasNext ())

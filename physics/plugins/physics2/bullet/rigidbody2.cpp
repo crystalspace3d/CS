@@ -20,9 +20,11 @@
 #include "bullet/btBulletDynamicsCommon.h"
 #include "bullet/btBulletCollisionCommon.h"
 
+#include "ivaria/collisions.h"
 #include "rigidbody2.h"
 
 using namespace CS::Physics;
+using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
@@ -241,8 +243,16 @@ bool csBulletRigidBody::AddBulletObject ()
   if (insideWorld)
     RemoveBulletObject ();
 
+  if (physicalState == STATE_DYNAMIC)
+  {
+    collGroup = sector->collGroups[CollisionGroupTypeDefault]; // Default group
+  }
+  else
+  {
+    collGroup = sector->collGroups[CollisionGroupTypeStatic]; // Static group
+  }
   sector->bulletWorld->addRigidBody (btBody, collGroup.value, collGroup.mask);
- 
+
   insideWorld = true;
   return true;
 }
@@ -329,16 +339,19 @@ void csBulletRigidBody::SetElasticity (float elasticity)
 
 bool csBulletRigidBody::SetState (RigidBodyState state)
 {
+  if (haveStaticColliders > 0 && state == STATE_DYNAMIC)
+  {
+    state = STATE_STATIC;
+  }
   if (physicalState != state || !insideWorld)
   {
     RigidBodyState previousState = physicalState;
     physicalState = state;
 
     if (!btBody)
+    {
       return false;
-
-    if (haveStaticColliders > 0 && state != STATE_STATIC)
-      return false;
+    }
 
     if (insideWorld)
     {
@@ -402,6 +415,7 @@ bool csBulletRigidBody::SetState (RigidBodyState state)
         btBody->setInterpolationLinearVelocity (btVector3(0.0f, 0.0f, 0.0f));
         btBody->setInterpolationAngularVelocity (btVector3(0.0f, 0.0f, 0.0f));
         
+
         SetMass(0);
         break;
       }
@@ -411,6 +425,7 @@ bool csBulletRigidBody::SetState (RigidBodyState state)
           | btCollisionObject::CF_STATIC_OBJECT
           & ~btCollisionObject::CF_KINEMATIC_OBJECT);
         btBody->setActivationState (ISLAND_SLEEPING);
+        
         
         SetMass(0);
         break;

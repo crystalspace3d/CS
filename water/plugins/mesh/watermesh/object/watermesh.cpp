@@ -479,6 +479,56 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     {
       csRenderCell nextCell = meshQueue.Pop();
 
+	  uint k = 0;
+
+	  if (nextCell.boundary[0])
+		if (nextCell.boundary[1])
+			if (nextCell.boundary[2])
+				if (nextCell.boundary[3])
+					k=0;
+				else
+					k=1;
+			else
+				if (nextCell.boundary[3])
+					k=2;
+				else
+					k=3;
+		else
+			if (nextCell.boundary[2])
+				if (nextCell.boundary[3])
+					k=4;
+				else
+					k=5;
+			else
+				if (nextCell.boundary[3])
+					k=6;
+				else
+					k=7;
+	  else
+		  if (nextCell.boundary[1])
+			  if (nextCell.boundary[2])
+				  if (nextCell.boundary[3])
+					  k=8;
+				  else
+					  k=9;
+			  else
+				  if (nextCell.boundary[3])
+					  k=10;
+				  else
+					  k=11;
+		  else
+			  if (nextCell.boundary[2])
+				  if (nextCell.boundary[3])
+					  k=12;
+				  else
+					  k=13;
+			  else
+				  if (nextCell.boundary[3])
+					  k=14;
+				  else
+					  k=15;
+
+
 	  trans.Identity();
       trans.Translate(csVector3(nextCell.pos.x, 0.0, nextCell.pos.y));
       
@@ -493,13 +543,13 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
       renderMeshes[i]->do_mirror = camera->IsMirrored ();
       renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
       renderMeshes[i]->indexstart = 0;
-      renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes();
+      renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes(k);
       renderMeshes[i]->material = material;    
       renderMeshes[i]->worldspace_origin = wo;
 
       renderMeshes[i]->geometryInstance = (void*)factory;
 
-	  renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolderARR[0];
+	  renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolderARR[k];
 
 	  //Clone shader variable to provide each mesh with its own o2wt       
 	  csRef<csShaderVariableContext> newVarCtxt;
@@ -521,41 +571,6 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
       o2wtVar->SetValue(renderMeshes[i]->object2world);
     
       i++;
-
-	  for (uint j = 0 ; j < 4 ; j++)
-	  {
-      //  renderMesh for top boundary for a cell
-		  renderMeshes.Push(rmHolder.GetUnusedMesh (rmCreated,
-			  rview->GetCurrentFrameNumber ()));
-
-		  renderMeshes[i]->mixmode = MixMode;
-		  renderMeshes[i]->clip_portal = clip_portal;
-		  renderMeshes[i]->clip_plane = clip_plane;
-		  renderMeshes[i]->clip_z_plane = clip_z_plane;
-		  renderMeshes[i]->do_mirror = camera->IsMirrored ();
-		  renderMeshes[i]->meshtype = CS_MESHTYPE_TRIANGLES;
-		  renderMeshes[i]->indexstart = 0;
-		  renderMeshes[i]->indexend = factory->cells[nextCell.cell].GetNumIndexes();	
-		  renderMeshes[i]->material = material;    
-		  renderMeshes[i]->worldspace_origin = wo;
-
-		  renderMeshes[i]->geometryInstance = (void*)factory;
-
-		  if (nextCell.boundary[j])
-		    	renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolderARR[2*j+1];
-		  else
-		  		renderMeshes[i]->buffers = factory->cells[nextCell.cell].bufferHolderARR[2*j+2];	
-		  
-		  renderMeshes[i]->variablecontext = newVarCtxt;
-		  renderMeshes[i]->object2world = o2world * trans;
-
-		  //update mesh-specific shader variable
-		  o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
-		  o2wtVar->SetType(csShaderVariable::MATRIX);
-		  o2wtVar->SetValue(renderMeshes[i]->object2world);
-
-		  i++;
-	  }
     }
   }
   else

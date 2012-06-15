@@ -69,23 +69,21 @@ namespace WaterMesh
     bool mesh_normals_dirty_flag;
     bool mesh_triangle_dirty_flag;
       
-    csRef<iRenderBuffer> vertex_buffer;
-    csRef<iRenderBuffer> texel_buffer;
-    csRef<iRenderBuffer> index_buffer;
-    csRef<iRenderBuffer> normal_buffer;
-    csRef<iRenderBuffer> color_buffer;
-
-    csDirtyAccessArray< csRef<iRenderBuffer> > index_bufferARR;
+    csDirtyAccessArray<csRef<iRenderBuffer> >vertex_bufferARR;
+    csDirtyAccessArray<csRef<iRenderBuffer> >texel_bufferARR;
+    csDirtyAccessArray<csRef<iRenderBuffer> >index_bufferARR;
+    csDirtyAccessArray<csRef<iRenderBuffer> >normal_bufferARR;
+    csDirtyAccessArray<csRef<iRenderBuffer> >color_bufferARR;
 	
-    csDirtyAccessArray<csVector3> verts;
-    csDirtyAccessArray<csVector3> norms;
-    csDirtyAccessArray<csVector2> texs;
-    csDirtyAccessArray<csColor>  cols;
+    csDirtyAccessArray<csDirtyAccessArray<csVector3>> vertsARR;
+    csDirtyAccessArray<csDirtyAccessArray<csVector3>> normsARR;
+    csDirtyAccessArray<csDirtyAccessArray<csVector2>> texsARR;
+    csDirtyAccessArray<csDirtyAccessArray<csColor>>  colsARR;
     csDirtyAccessArray< csDirtyAccessArray<csTriangle> > trisARR;
 	        
   public:
 
-    csDirtyAccessArray< csRef<csRenderBufferHolder> > bufferHolderARR; 
+    csDirtyAccessArray<csRef<csRenderBufferHolder>> bufferHolderARR; 
       
     // len and wid must be a multiple of 10 and greater than 20
     // for LOD to work.
@@ -100,8 +98,8 @@ namespace WaterMesh
       
     inline void SetOHeight(float h) { oHeight = h; }
       
-    inline uint GetNumVerts() { return (uint)verts.GetSize(); }
-    inline uint GetNumIndexes() { return (uint)( (trisARR[0].GetSize()*3 + trisARR[2].GetSize()*3 + trisARR[4].GetSize()*3 + trisARR[6].GetSize()*3 + trisARR[8].GetSize()*3) ) ; }
+    inline uint GetNumVerts() { return (uint)vertsARR[0].GetSize(); }
+    inline uint GetNumIndexes(uint i) { return (uint)( (trisARR[i].GetSize()*3) ) ; }
     inline uint GetNumTris() { return (uint)trisARR[0].GetSize(); }        
   };
   

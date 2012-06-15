@@ -569,9 +569,6 @@ struct iCollisionGhostObject : public virtual iCollisionObject
  * Main creators of instances implementing this interface:
  * - iCollisionSystem::CreateCollisionActor()
  * 
- * Main ways to get pointers to this interface:
- * - iCollisionSystem::GetCollisionActor()
- * 
  * Main users of this interface:
  * - iCollisionSystem
  * \remark The collider of iCollisionActor must be a convex shape. For example, box, convex mesh.
@@ -717,18 +714,6 @@ struct iCollisionSector : public virtual iBase
 
   /// Get true if the two groups collide with each other.
   virtual bool GetGroupCollision (const char* name1, const char* name2) = 0;
-
-  /**
-   * Add a collision actor into the sector.
-   * The collision actor has to be initialized.
-   */
-  virtual void AddCollisionActor (iCollisionActor* actor) = 0;
-
-  /// Remove a collision object by pointer.
-  virtual void RemoveCollisionActor () = 0;
-
-  /// Get the collision object by index.
-  virtual iCollisionActor* GetCollisionActor () = 0;
 };
 
 /**

@@ -938,6 +938,7 @@ void PhysDemo::SpawnFrankieRagdoll()
 void PhysDemo::SpawnKrystalRagdoll()
 {
   // Load krystal's factory if not yet done
+  
   csRef<iMeshFactoryWrapper> meshfact =
     engine->FindMeshFactory ("krystal");
   if (!meshfact)
@@ -998,7 +999,7 @@ void PhysDemo::SpawnRope()
   body->AnchorVertex (0);
   body->AnchorVertex (body->GetVertexCount() - 1, box);
   body->RebuildObject();
-  physicalSector->AddSoftBody (body);
+  collisionSector->AddCollisionObject (body);
 
   // Spawn a second rope and attach it to the box
   body = physicalSystem->CreateRope
@@ -1009,7 +1010,7 @@ void PhysDemo::SpawnRope()
   body->AnchorVertex (0);
   body->AnchorVertex (body->GetVertexCount() - 1, box);
   body->RebuildObject();
-  physicalSector->AddSoftBody (body);
+  collisionSector->AddCollisionObject (body);
 
   // Second example using ropes defined by the position of each of their vertices
 #else
@@ -1095,7 +1096,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth()
   body->SetAttachedMovable (mesh->GetMovable());
 
   body->RebuildObject();
-  physicalSector->AddSoftBody (body);
+  collisionSector->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
   // If it's a double-side soft body like cloth, you have to call SetSoftBody (body, true);
@@ -1159,7 +1160,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   body->SetAttachedMovable (mesh->GetMovable());
 
   body->RebuildObject();
-  physicalSector->AddSoftBody (body);
+  collisionSector->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
   /*csRef<iGeneralMeshState> meshState =

@@ -931,15 +931,6 @@ struct iPhysicalSector : public virtual iBase
   virtual void SetAutoDisableParams (float linear, float angular,
       float time) = 0;
 
-  /**
-   * Add a rigid body into the sector.
-   * The rigid body has to be initialized.
-   */
-  virtual void AddRigidBody (iRigidBody* body) = 0;
-
-  /// Remove a rigid body by pointer.
-  virtual void RemoveRigidBody (iRigidBody* body) = 0;
-
   /// Get the count of rigid bodies.
   virtual size_t GetRigidBodyCount () = 0;
 
@@ -949,14 +940,6 @@ struct iPhysicalSector : public virtual iBase
   /// Find the rigid body in this sector.
   virtual iRigidBody* FindRigidBody (const char* name) = 0;
 
-  /**
-   * Add a soft body into the sector.
-   * The soft body has to be initialized.
-   */
-  virtual void AddSoftBody (iSoftBody* body) = 0;
-
-  /// Remove a soft body by pointer.
-  virtual void RemoveSoftBody (iSoftBody* body) = 0;
 
   /// Get the count of soft bodies.
   virtual size_t GetSoftBodyCount () = 0;
@@ -966,6 +949,7 @@ struct iPhysicalSector : public virtual iBase
 
   /// Find  the soft body in this setor.
   virtual iSoftBody* FindSoftBody (const char* name) = 0;
+
 
   /// Add a joint to the sector. The joint must have attached two physical bodies.
   virtual void AddJoint (iJoint* joint) = 0;

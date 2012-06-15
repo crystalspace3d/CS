@@ -8,12 +8,15 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
+using namespace CS::Collisions;
+using namespace CS::Physics;
+
 PhysDemo::PhysDemo()
   : DemoApplication ("CrystalSpace.PhysTut2"),
     isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
     do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
     pauseDynamic (false), dynamicSpeed (1.0f),
-    debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
+    debugMode (Bullet2::DEBUG_COLLIDERS),
     dragging (false), softDragging (false),
     physicalCameraMode (CAMERA_ACTOR)
     //physicalCameraMode (CAMERA_DYNAMIC)
@@ -44,7 +47,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   csRef<iPluginManager> plugmgr = 
     csQueryRegistry<iPluginManager> (GetObjectRegistry());
   collisionSystem = csLoadPlugin<CS::Collisions::iCollisionSystem> (plugmgr, "crystalspace.physics.bullet2");
-  physicalSystem = scfQueryInterface<CS::Physics::iPhysicalSystem> (collisionSystem);
+  physicalSystem = scfQueryInterface<iPhysicalSystem> (collisionSystem);
 
   collisionSystem->SetInternalScale (1.0f);
 
@@ -54,7 +57,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   // Load the soft body animation control plugin & factory
   if (isSoftBodyWorld)
   {
-    softBodyAnimationType = csLoadPlugin<CS::Physics::iSoftBodyAnimationControlType>(plugmgr, "crystalspace.physics.softanim2");
+    softBodyAnimationType = csLoadPlugin<iSoftBodyAnimationControlType>(plugmgr, "crystalspace.physics.softanim2");
     if (!softBodyAnimationType)
       return ReportError ("Could not load soft body animation for genmeshes plugin!");
 
@@ -100,7 +103,7 @@ bool PhysDemo::Application()
   // Create the dynamic system
   collisionSector = collisionSystem->CreateCollisionSector();
   if (!collisionSector) return ReportError ("Error creating collision sector!");
-  physicalSector = scfQueryInterface<CS::Physics::iPhysicalSector> (collisionSector);
+  physicalSector = scfQueryInterface<iPhysicalSector> (collisionSector);
 
   // Set some linear and angular dampening in order to have a reduction of
   // the movements of the objects
@@ -111,7 +114,7 @@ bool PhysDemo::Application()
   if (isSoftBodyWorld)
     physicalSector->SetSoftBodyEnabled (true);
 
-  bulletSector = scfQueryInterface<CS::Physics::Bullet2::iPhysicalSector> (physicalSector);
+  bulletSector = scfQueryInterface<Bullet2::iPhysicalSector> (physicalSector);
   bulletSector->SetDebugMode (debugMode);
   collisionSector->SetGravity(0);
 
@@ -175,13 +178,15 @@ bool PhysDemo::Application()
 
   // Initialize the HUD manager
   hudManager->GetKeyDescriptions()->Empty();
+  hudManager->GetKeyDescriptions()->Push ("r: reset");
+
   //hudManager->GetKeyDescriptions()->Push ("b: spawn a box");
   //hudManager->GetKeyDescriptions()->Push ("a: spawn a capsule");
-  //hudManager->GetKeyDescriptions()->Push ("s: spawn a sphere");
   hudManager->GetKeyDescriptions()->Push ("c: spawn a cylinder");
   hudManager->GetKeyDescriptions()->Push ("n: spawn a cone");
  
-  hudManager->GetKeyDescriptions()->Push ("v: spawn a convex mesh");
+  hudManager->GetKeyDescriptions()->Push ("v: spawn a sphere");
+  //hudManager->GetKeyDescriptions()->Push ("v: spawn a convex mesh");
   hudManager->GetKeyDescriptions()->Push ("m: spawn a static concave mesh");
   
   hudManager->GetKeyDescriptions()->Push ("q: spawn a compound body");
@@ -189,8 +194,8 @@ bool PhysDemo::Application()
   hudManager->GetKeyDescriptions()->Push ("k: spawn a filter body");
   
   hudManager->GetKeyDescriptions()->Push ("h: spawn a chain");
-  hudManager->GetKeyDescriptions()->Push ("r: spawn a Frankie's ragdoll");
   hudManager->GetKeyDescriptions()->Push ("e: spawn a Krystal's ragdoll");
+  hudManager->GetKeyDescriptions()->Push ("': spawn a Frankie's ragdoll");
 
   if (isSoftBodyWorld)
   {
@@ -228,9 +233,6 @@ bool PhysDemo::Application()
   hudManager->GetKeyDescriptions()->Push ("CTRL-o: stop profiling");
   hudManager->GetKeyDescriptions()->Push ("CTRL-p: dump profile");
   
-  // Pre-load the animated mesh and the ragdoll animation node data
-  LoadFrankieRagdoll();
-  LoadKrystalRagdoll();
 
   // Run the application
   Run();
@@ -245,10 +247,10 @@ void PhysDemo::GripContactBodies()
   size_t count = ghostObject->GetContactObjectsCount();
   for (size_t i = 0; i < count; i++)
   {
-    CS::Physics::iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody();
-    if (pb)
+    iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody();
+    if (pb && pb->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
     {
-      if (pb->GetBodyType() == CS::Physics::BODY_RIGID)
+      if (pb->GetBodyType() == BODY_RIGID)
       {
         CS::Physics::iRigidBody* rb = pb->QueryRigidBody();
         csVector3 velo = pb->GetLinearVelocity();
@@ -259,7 +261,7 @@ void PhysDemo::GripContactBodies()
       }
       else
       {
-        CS::Physics::iSoftBody* sb = pb->QuerySoftBody();
+        iSoftBody* sb = pb->QuerySoftBody();
 	sb->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
         //sb->SetLinearVelocity (csVector3 (0,0,-1.0f));
       }
@@ -279,7 +281,7 @@ void PhysDemo::UpdateCameraMode()
       // Check if there is already a rigid body created for the 'kinematic' mode
       if (cameraBody)
       {
-        cameraBody->SetState (CS::Physics::STATE_DYNAMIC);
+        cameraBody->SetState (STATE_DYNAMIC);
 
         // Remove the attached camera (in this mode we want to control
         // the orientation of the camera, so we update the camera
@@ -316,7 +318,7 @@ void PhysDemo::UpdateCameraMode()
     {
       if (cameraBody)
       {
-        physicalSector->RemoveRigidBody(cameraBody);
+        collisionSector->AddCollisionObject(cameraBody);
         cameraBody = NULL;
       }
 
@@ -347,7 +349,10 @@ void PhysDemo::UpdateCameraMode()
     // The camera is kinematic
   case CAMERA_KINEMATIC:
     {
-      collisionSector->RemoveCollisionActor();
+      if (cameraActor)
+      {
+        collisionSector->RemoveCollisionObject(cameraActor);
+      }
       // Create a body
       if (!cameraBody)
       {
@@ -370,7 +375,7 @@ void PhysDemo::UpdateCameraMode()
       cameraBody->SetAttachedCamera (view->GetCamera());
 
       // Make it kinematic
-      cameraBody->SetState (CS::Physics::STATE_KINEMATIC);
+      cameraBody->SetState (STATE_KINEMATIC);
 
       collisionSector->AddCollisionObject (cameraBody);
 

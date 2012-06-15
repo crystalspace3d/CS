@@ -163,10 +163,12 @@ void RagdollNode::SetPhysicalSector (CS::Physics::iPhysicalSector* sector)
   {
     BoneData& boneData = it.Next ();
 
+    csRef<CS::Collisions::iCollisionSector> colSector = scfQueryInterface<CS::Collisions::iCollisionSector> (sector);
+
     if (sector)
     {
       if (boneData.rigidBody)
-        sector->AddRigidBody (boneData.rigidBody);
+        colSector->AddCollisionObject(boneData.rigidBody);
       if (boneData.joint)
         sector->AddJoint (boneData.joint);
     }
@@ -174,7 +176,7 @@ void RagdollNode::SetPhysicalSector (CS::Physics::iPhysicalSector* sector)
     else
     {
       if (boneData.rigidBody)
-        sector->RemoveRigidBody (boneData.rigidBody);
+        colSector->RemoveCollisionObject(boneData.rigidBody);
       if (boneData.joint)
         sector->RemoveJoint (boneData.joint);
     }
@@ -636,8 +638,9 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
 
   if (boneData->rigidBody)
   {
+    csRef<CS::Collisions::iCollisionSector> colSector = scfQueryInterface<CS::Collisions::iCollisionSector> (physicalSector);
     boneData->rigidBody->RebuildObject ();
-    physicalSector->AddRigidBody (boneData->rigidBody);
+    colSector->AddCollisionObject (boneData->rigidBody);
   }
 
   // if the bone is in dynamic state

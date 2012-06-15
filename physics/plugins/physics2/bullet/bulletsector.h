@@ -73,6 +73,7 @@ class csBulletSector : public scfImplementationExt3<
   friend class csBulletKinematicMotionState;
   friend class csBulletMotionState;
   friend class csBulletSystem;
+  friend class csBulletCollisionGhostObject;
   friend class csBulletCollisionPortal;
 
   class CollisionGroupVector : public csArray<CS::Collisions::CollisionGroup>
@@ -122,7 +123,6 @@ class csBulletSector : public scfImplementationExt3<
   csRefArrayObject<csBulletRigidBody> rigidBodies;
   csRefArrayObject<csBulletSoftBody> softBodies;
   csWeakRefArray<csBulletSoftBody> anchoredSoftBodies;
-  csRef<csBulletCollisionActor> collisionActor;
   csRef<iSector> sector;
 
   void CheckCollisions();

@@ -57,28 +57,20 @@ private:
   bool tempAddedColliders;    // we want to get rid of this as soon as possible
 
 public:
-  csBulletRigidBody (csBulletSystem* phySys);
+  csBulletRigidBody (csBulletSystem* phySys, bool isStatic = false);
   virtual ~csBulletRigidBody ();
 
-  virtual iObject* QueryObject (void) { return (iObject*) this; }
+  virtual iObject* QueryObject () { return (iObject*) this; }
   //iCollisionObject
 
-  virtual void SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true) {}
-  virtual CS::Collisions::CollisionObjectType GetObjectType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
-
-  virtual void SetAttachedMovable (iMovable* movable) {csBulletCollisionObject::SetAttachedMovable (movable);}
-  virtual iMovable* GetAttachedMovable () {return csBulletCollisionObject::GetAttachedMovable ();}
-
-  virtual void SetAttachedCamera (iCamera* camera) {csBulletCollisionObject::SetAttachedCamera (camera);}
-  virtual iCamera* GetAttachedCamera () {return csBulletCollisionObject::GetAttachedCamera ();}
-
-  virtual void SetTransform (const csOrthoTransform& trans) {csBulletCollisionObject::SetTransform (trans);}
-  virtual csOrthoTransform GetTransform () {return csBulletCollisionObject::GetTransform ();}
+  virtual CS::Collisions::CollisionObjectType GetObjectType() const
+  { 
+    return physicalState == CS::Physics::STATE_DYNAMIC ? CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC : CS::Collisions::COLLISION_OBJECT_PHYSICAL_STATIC; 
+  }
 
   virtual void RebuildObject ();
 
-  virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans
-    = csOrthoTransform (csMatrix3 (), csVector3 (0)));
+  virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform (csMatrix3 (), csVector3 (0)));
   virtual void RemoveCollider (CS::Collisions::iCollider* collider);
   virtual void RemoveCollider (size_t index);
 
@@ -105,6 +97,8 @@ public:
   virtual bool AddBulletObject ();
 
   //iPhysicalBody
+  
+  virtual bool IsDynamicPhysicalObject() const { return physicalState != CS::Physics::STATE_DYNAMIC; }
 
   virtual CS::Physics::PhysicalBodyType GetBodyType () const {return CS::Physics::BODY_RIGID;}
   virtual iRigidBody* QueryRigidBody () {return dynamic_cast<iRigidBody*> (this);}

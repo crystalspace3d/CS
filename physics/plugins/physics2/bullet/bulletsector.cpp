@@ -50,7 +50,7 @@
 #include "colliderterrain.h"
 #include "rigidbody2.h"
 #include "softbody2.h"
-#include "collisionactor2.h"
+#include "collisionactor.h"
 #include "joint2.h"
 #include "portal.h"
 
@@ -124,6 +124,11 @@ csBulletSector::csBulletSector (csBulletSystem* sys)
   kinematicGroup.mask = allFilter ^ CollisionGroupMaskValueKinematic;
   collGroups.Push (kinematicGroup);
 
+  CS::Collisions::CollisionGroup terrainGroup ("Terrain");
+  terrainGroup.value = CollisionGroupMaskValueTerrain;
+  terrainGroup.mask = allFilter ^ CollisionGroupMaskValueTerrain;
+  collGroups.Push (terrainGroup);
+
   CS::Collisions::CollisionGroup portalGroup ("Portal");
   portalGroup.value = CollisionGroupMaskValuePortal;
   portalGroup.mask = allFilter ^ CollisionGroupMaskValuePortal;
@@ -138,8 +143,9 @@ csBulletSector::csBulletSector (csBulletSystem* sys)
   characterGroup.value = CollisionGroupMaskValueActor;
   characterGroup.mask = allFilter ^ CollisionGroupMaskValueActor;
   collGroups.Push (characterGroup);
-
-  SetGroupCollision ("Portal", "Static", false);
+  
+  SetGroupCollision ("PortalCopy", "Terrain", false);
+  SetGroupCollision ("PortalCopy", "Static", false);
   SetGroupCollision ("Portal", "PortalCopy", false);
 
   systemFilterCount = 6;
@@ -150,7 +156,14 @@ csBulletSector::~csBulletSector ()
   for (size_t i = 0; i < portals.GetSize (); i++)
   {
     bulletWorld->removeCollisionObject (portals[i]->ghostPortal);
-    delete portals[i];
+  }
+  for (size_t i = 0; i < collisionObjects.GetSize (); i++)
+  {
+    bulletWorld->removeCollisionObject (collisionObjects[i]->btObject);
+  }
+  for (size_t i = 0; i < rigidBodies.GetSize (); i++)
+  {
+    bulletWorld->removeCollisionObject (rigidBodies[i]->btObject);
   }
 
   joints.DeleteAll ();
@@ -158,12 +171,11 @@ csBulletSector::~csBulletSector ()
   rigidBodies.DeleteAll ();
   collisionObjects.DeleteAll ();
   portals.DeleteAll ();
-  collisionActor = NULL;
   
+  delete bulletWorld;
   delete dispatcher;
   delete configuration;
   delete solver;
-  delete broadphase;
   if (debugDraw)
   {
     delete debugDraw;
@@ -172,6 +184,7 @@ csBulletSector::~csBulletSector ()
   {
     delete softWorldInfo;
   }
+  delete broadphase;
 }
 
 void csBulletSector::SetGravity (const csVector3& v)
@@ -188,22 +201,41 @@ void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* objec
 {
   csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*>(object));
 
-  if (obj->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
-  {
-    iPhysicalBody* phyBody = obj->QueryPhysicalBody ();
-    if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
-      AddRigidBody (phyBody->QueryRigidBody ());
-    else
-      AddSoftBody (phyBody->QuerySoftBody ());
-  }
-  else
-  {
-    collisionObjects.Push (obj);
-    obj->sector = this;
-    obj->collGroup = collGroups[CollisionGroupTypeStatic]; // Static Group.
-    obj->AddBulletObject ();
+  printf("Adding object \"%s\" (%x)\n", object->QueryObject()->GetName(), (int)(void*)obj->btObject);
 
-    AddMovableToSector (object);
+  switch (obj->GetObjectType ())
+  {
+  case CS::Collisions::COLLISION_OBJECT_ACTOR:
+    {
+      AddCollisionActor(static_cast<csBulletCollisionActor*>(obj));
+    }
+    break;
+  case CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC:
+    {
+      iPhysicalBody* phyBody = obj->QueryPhysicalBody();
+      int cflags = obj->btObject->getCollisionFlags();
+      //obj->btObject->setCollisionFlags(obj->btObject->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+      if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
+      {
+        AddRigidBody (phyBody->QueryRigidBody ());
+      }
+      else
+      {
+        AddSoftBody (phyBody->QuerySoftBody ());
+      }
+    }
+      break;
+  default:
+    {
+      collisionObjects.Push (obj);
+
+      obj->sector = this;
+      obj->collGroup = collGroups[CollisionGroupTypeStatic]; // Static Group.
+      //obj->btObject->setCollisionFlags(obj->btObject->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+
+      obj->AddBulletObject ();
+      AddMovableToSector (object);
+    }
   }
 }
 
@@ -213,7 +245,7 @@ void csBulletSector::RemoveCollisionObject (CS::Collisions::iCollisionObject* ob
   if (!collObject)
     return;
 
-  if (collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+  if (collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
   {
     iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
     if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
@@ -491,8 +523,7 @@ bool csBulletSector::CollisionTest (CS::Collisions::iCollisionObject* object,
   PointContactResult result(sys, collisions);
 
   csBulletCollisionObject* collObject = dynamic_cast<csBulletCollisionObject*> (object);
-  if (collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_BASE
-    || collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+  if (collObject->IsPhysicalObject())
   {
     if (collObject->isTerrain)
     {
@@ -509,8 +540,7 @@ bool csBulletSector::CollisionTest (CS::Collisions::iCollisionObject* object,
   }
   else
   {
-    btPairCachingGhostObject* ghost = dynamic_cast<btPairCachingGhostObject*> (
-      btGhostObject::upcast (collObject->btObject));
+    btPairCachingGhostObject* ghost = dynamic_cast<btPairCachingGhostObject*> (btGhostObject::upcast (collObject->btObject));
 
     bulletWorld->getDispatcher()->dispatchAllCollisionPairs(
       ghost->getOverlappingPairCache(), bulletWorld->getDispatchInfo(), bulletWorld->getDispatcher());
@@ -590,7 +620,7 @@ bool csBulletSector::CollisionTest (CS::Collisions::iCollisionObject* object,
 void csBulletSector::AddCollisionActor (CS::Collisions::iCollisionActor* actor)
 {
   csRef<csBulletCollisionActor> obj (dynamic_cast<csBulletCollisionActor*>(actor));
-  collisionActor = obj;
+  collisionObjects.Push(obj);
   obj->sector = this;
   obj->collGroup = collGroups[CollisionGroupTypeActor]; // Actor Group.
   obj->AddBulletObject ();
@@ -598,14 +628,12 @@ void csBulletSector::AddCollisionActor (CS::Collisions::iCollisionActor* actor)
 
 void csBulletSector::RemoveCollisionActor ()
 {
-  collisionActor->RemoveBulletObject ();
-  collisionActor->insideWorld = false;
-  collisionActor = NULL;
+  // TODO: Get rid of this stuff
 }
 
 CS::Collisions::iCollisionActor* csBulletSector::GetCollisionActor ()
 {
-  return collisionActor;
+  return nullptr;
 }
 
 bool csBulletSector::BulletCollide (btCollisionObject* objectA,
@@ -1084,13 +1112,11 @@ void csBulletSector::CheckCollisions ()
       csBulletCollisionObject* csCOA = dynamic_cast <csBulletCollisionObject*> (static_cast<CS::Collisions::iCollisionObject*>(obA->getUserPointer ()));
       csBulletCollisionObject* csCOB = dynamic_cast <csBulletCollisionObject*> (static_cast<CS::Collisions::iCollisionObject*>(obB->getUserPointer ()));
 
-      if (csCOA && (csCOA->GetObjectType () == CS::Collisions::COLLISION_OBJECT_BASE
-        || csCOA->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL))
+      if (csCOA && csCOA->IsPhysicalObject())
         if (csCOA->contactObjects.Contains (csCOB) == csArrayItemNotFound)
           csCOA->contactObjects.Push (csCOB);
 
-      if (csCOB && (csCOB->GetObjectType () == CS::Collisions::COLLISION_OBJECT_BASE
-        || csCOB->GetObjectType () == CS::Collisions::COLLISION_OBJECT_PHYSICAL))
+      if (csCOB && csCOB->IsPhysicalObject())
         if (csCOB->contactObjects.Contains (csCOA) == csArrayItemNotFound)
           csCOB->contactObjects.Push (csCOA);
     }
@@ -1116,7 +1142,7 @@ void csBulletSector::SetInformationToCopy (csBulletCollisionObject* obj,
 
   btTransform btTrans = CSToBullet (trans, sys->getInternalScale ());
 
-  if (obj->type == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+  if (obj->IsPhysicalObject())
   {
     CS::Physics::iPhysicalBody* pb = obj->QueryPhysicalBody ();
     if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
@@ -1139,8 +1165,7 @@ void csBulletSector::SetInformationToCopy (csBulletCollisionObject* obj,
       //TODO Soft Body
     }
   }
-  else if (obj->type == CS::Collisions::COLLISION_OBJECT_GHOST
-    || obj->type == CS::Collisions::COLLISION_OBJECT_ACTOR)
+  else 
   {
     cpy->SetTransform (trans);
   }
@@ -1150,7 +1175,7 @@ void csBulletSector::GetInformationFromCopy (csBulletCollisionObject* obj,
                                              csBulletCollisionObject* cpy)
 {
   // TODO Warp the velocity.
-  if (obj->type == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+  if (obj->IsPhysicalObject())
   {
     CS::Physics::iPhysicalBody* pb = obj->QueryPhysicalBody ();
     if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
@@ -1177,8 +1202,7 @@ void csBulletSector::GetInformationFromCopy (csBulletCollisionObject* obj,
       //TODO Soft Body
     }
   }
-  else if (obj->type == CS::Collisions::COLLISION_OBJECT_GHOST
-    || obj->type == CS::Collisions::COLLISION_OBJECT_ACTOR)
+  else
   {
     //btPairCachingGhostObject* ghostCopy = btPairCachingGhostObject::upcast (cpy);
     //btPairCachingGhostObject* ghostObject = btPairCachingGhostObject::upcast (obj->btObject);

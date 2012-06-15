@@ -38,7 +38,7 @@ inline int GetEnvironmentByName(csString levelName)
 }
  
 //static const csVector3 ActorDimensions(0.8);
-static const csVector3 ActorDimensions(1.2);
+static const csVector3 ActorDimensions(0.4, 1.5, 0.4);
 
 class PhysDemo : public CS::Utility::DemoApplication
 {
@@ -107,11 +107,13 @@ private:
   csOrthoTransform localTrans;
 
   // Ghost
-  csRef<CS::Collisions::iCollisionObject> ghostObject;
+  csRef<CS::Collisions::iCollisionGhostObject> ghostObject;
 
   // Terrain
   csRef<iModifiableDataFeeder> terrainFeeder;
   csRef<iTerrainModifier> terrainMod;
+
+  csHash<int, csString> debugNameMap;
 
 private:
   void Frame();
@@ -208,6 +210,11 @@ public:
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
   csVector3 GetPointInFrontOfFeetXZ(float distance) const { return GetActorFeetPos() + (GetCameraDirectionXZ() * distance); }
+
+  csPtr<CS::Physics::iRigidBody> CreateRigidBody(const csString& name);
+  
+  csPtr<CS::Physics::iRigidBody> CreateStaticRigidBody(const csString& name);
+  
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1

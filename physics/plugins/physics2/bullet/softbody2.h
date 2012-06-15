@@ -67,17 +67,11 @@ public:
   virtual iObject* QueryObject (void) { return (iObject*) this; }
   //iCollisionObject
 
-  virtual void SetType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true) {}
-  virtual CS::Collisions::CollisionObjectType GetObjectType () {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
-
   virtual void SetAttachedMovable (iMovable* movable) {csBulletCollisionObject::SetAttachedMovable (movable);}
   virtual iMovable* GetAttachedMovable () {return csBulletCollisionObject::GetAttachedMovable ();}
 
   virtual void SetAttachedCamera (iCamera* camera) {csBulletCollisionObject::SetAttachedCamera (camera);}
   virtual iCamera* GetAttachedCamera () {return csBulletCollisionObject::GetAttachedCamera ();}
-
-  virtual void SetTransform (const csOrthoTransform& trans);
-  virtual csOrthoTransform GetTransform ();
 
   virtual void RebuildObject ();
 

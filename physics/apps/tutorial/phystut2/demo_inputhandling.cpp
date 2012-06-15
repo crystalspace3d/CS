@@ -21,40 +21,35 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   csKeyEventType eventtype = csKeyEventHelper::GetEventType(&event);
   if (eventtype == csKeyEventTypeDown)
   {
-    if (csKeyEventHelper::GetCookedCode (&event) == CSKEY_SPACE)
+    if (cameraActor)
     {
-      int primitiveCount = 7;
-      switch (rand() % primitiveCount)
+      if (csKeyEventHelper::GetCookedCode (&event) == 'w')
       {
-      case 0: SpawnBox(); break;
-      case 1: SpawnSphere(); break;
-      case 2: SpawnConvexMesh(); break;
-      case 3: SpawnConcaveMesh(); break;
-      case 4: SpawnCylinder(); break;
-      case 5: SpawnCapsule(); break;
-      case 6: SpawnCompound(); break;
-      default: break;
       }
-      return true;
+      else if (csKeyEventHelper::GetCookedCode (&event) == 'a')
+      {
+      }
+      else if (csKeyEventHelper::GetCookedCode (&event) == 's')
+      {
+      }
+      else if (csKeyEventHelper::GetCookedCode (&event) == 'd')
+      {
+      }
     }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'b')
+    /*
+    else if (csKeyEventHelper::GetCookedCode (&event) == 'a')
     {
-      SpawnBox();
+      SpawnCapsule();
       return true;
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 's')
     {
       SpawnSphere();
       return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'c')
+    }*/
+    if (csKeyEventHelper::GetCookedCode (&event) == 'c')
     {
       SpawnCylinder();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'a')
-    {
-      SpawnCapsule();
       return true;
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 'n')
@@ -193,7 +188,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     else if (csKeyEventHelper::GetCookedCode (&event) == 'o')
     {
       // Toggle speed of dynamic simulation
-      if (dynamicSpeed - 1.0 < 0.00001)
+      if (dynamicSpeed - 1.0 < EPSILON)
       {
         dynamicSpeed = 45.0;
         printf ("Dynamic simulation slowed\n");
@@ -205,7 +200,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       }
     }
 
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'd')
+    else if (csKeyEventHelper::GetCookedCode (&event) == 'l')
     {
       // Toggle dynamic system visual debug mode
       // TODO
@@ -248,8 +243,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     else if (csKeyEventHelper::GetCookedCode (&event) == 'g')
     {
       // Toggle gravity.
-      collisionSector->SetGravity (collisionSector->GetGravity().IsZero (EPSILON)?
-        csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
+      collisionSector->SetGravity (collisionSector->GetGravity().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
       return true;
     }
 
@@ -266,8 +260,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
       CS::Collisions::HitBeamResult hitResult =
         collisionSector->HitBeam (startBeam, endBeam);
-      if (hitResult.hasHit
-        && hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+      if (hitResult.hasHit && hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
       {
         // Remove the body and the mesh from the simulation, and put them in the clipboard
         
@@ -318,7 +311,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {
         clipboardBody->SetTransform (newTransform);
-        physicalSector->AddRigidBody (clipboardBody->QueryRigidBody());
+        collisionSector->AddCollisionObject (clipboardBody->QueryRigidBody());
       }
       else
       {
@@ -450,7 +443,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
       return false;
 
     // Add a force at the point clicked
-    if (hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+    if (hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
     {
       csVector3 force = endBeam - startBeam;
       force.Normalize();
@@ -500,7 +493,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     if (!hitResult.hasHit || !hitResult.object) return false;
 
     // Check if we hit a rigid body
-    if (hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL)
+    if (hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
     {
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
       if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
@@ -568,4 +561,21 @@ bool PhysDemo::OnMouseUp (iEvent &event)
   }
 
   return false;
+}
+
+
+// This method updates the position of the dragging for soft bodies
+csVector3 MouseAnchorAnimationControl::GetAnchorPosition() const
+{
+  // Keep the drag joint at the same distance to the camera
+  csRef<iCamera> camera = simple->view->GetCamera();
+  csVector2 v2d (simple->mouse->GetLastX(), simple->g2d->GetHeight() - simple->mouse->GetLastY());
+  csVector3 v3d = camera->InvPerspective (v2d, 10000);
+  csVector3 startBeam = camera->GetTransform().GetOrigin();
+  csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+
+  csVector3 newPosition = endBeam - startBeam;
+  newPosition.Normalize();
+  newPosition = camera->GetTransform().GetOrigin() + newPosition * simple->dragDistance;
+  return newPosition;
 }

@@ -24,7 +24,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Opcode2)
 {
 csOpcodeCollisionObject::csOpcodeCollisionObject (csOpcodeCollisionSystem* sys)
   : scfImplementationType (this), system (sys), sector (NULL),
-  collider (NULL), type (CS::Collisions::COLLISION_OBJECT_BASE),
+  collider (NULL),
   collCb (NULL), isTerrain (false)
 {
   transform.Identity ();
@@ -33,10 +33,6 @@ csOpcodeCollisionObject::csOpcodeCollisionObject (csOpcodeCollisionSystem* sys)
 csOpcodeCollisionObject::~csOpcodeCollisionObject ()
 {
 
-}
-
-void csOpcodeCollisionObject::SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild)
-{
 }
 
 void csOpcodeCollisionObject::SetTransform (const csOrthoTransform& trans)
@@ -48,7 +44,7 @@ void csOpcodeCollisionObject::SetTransform (const csOrthoTransform& trans)
     camera->SetTransform (transform);
 }
 
-csOrthoTransform csOpcodeCollisionObject::GetTransform ()
+csOrthoTransform csOpcodeCollisionObject::GetTransform () const
 {
   if (movable)
     return movable->GetFullTransform ();
@@ -57,9 +53,33 @@ csOrthoTransform csOpcodeCollisionObject::GetTransform ()
   return transform;
 }
 
+void csOpcodeCollisionObject::SetRotation (const csMatrix3& rot)
+{
+  csOrthoTransform trans = GetTransform ();
+  trans.SetT2O (rot);
+  SetTransform (trans);
+}
+
+void csOpcodeCollisionObject::Rotate (const csVector3& v, float angle)
+{
+  csOrthoTransform trans = GetTransform ();
+  trans.RotateThis (v, angle);
+  SetTransform (trans);
+}
+
+void csOpcodeCollisionObject::IncreasePitch(float pitchDelta)
+{
+  Rotate(CS_VEC_TILT_UP, pitchDelta);
+}
+
+void csOpcodeCollisionObject::IncreaseYaw(float yawDelta)
+{
+  Rotate (CS_VEC_ROT_RIGHT, yawDelta);
+}
+
 void csOpcodeCollisionObject::AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans)
 {
-  this->collider = collider;
+    this->collider = collider;
   if (collider->GetType () == CS::Collisions::COLLIDER_TERRAIN)
     isTerrain = true;
 }

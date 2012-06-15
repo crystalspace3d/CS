@@ -1258,7 +1258,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_inputhandling.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_objects.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_particles.cpp" />
-    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_rendering.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_frame.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_statics.cpp" />
   </ItemGroup>
   <ItemGroup>

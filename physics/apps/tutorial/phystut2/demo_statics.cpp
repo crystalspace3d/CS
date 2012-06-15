@@ -13,6 +13,8 @@
 #include "physdemo.h"
 
 
+using namespace CS::Physics;
+using namespace CS::Collisions;
 
 void PhysDemo::CreateBoxRoom()
 {
@@ -31,12 +33,12 @@ void PhysDemo::CreateBoxRoom()
   box.SetFlags (Primitives::CS_PRIMBOX_INSIDE);
 
   // Now we make a factory and a mesh at once.
-  walls = GeneralMeshBuilder::CreateFactoryAndMesh (
-    engine, room, "walls", "walls_factory", &box);
+  walls = GeneralMeshBuilder::CreateFactoryAndMesh (engine, room, "walls", "walls_factory", &box);
 
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
-    ReportWarning ("Could not load texture %s",
-    CS::Quote::Single ("stone"));
+  {
+    ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
+  }
   iMaterialWrapper* tm = engine->GetMaterialList()->FindByName ("stone");
   walls->GetMeshObject()->SetMaterialWrapper (tm);
 /*
@@ -56,23 +58,24 @@ void PhysDemo::CreateBoxRoom()
   // Just to make sure everything works we create half of the colliders
   // using dynsys->CreateCollider() and the other half using
   // dynsys->AttachColliderBox().
-  csRef<CS::Collisions::iCollisionObject> co = collisionSystem->CreateCollisionObject();
+  csRef<CS::Physics::iRigidBody> co = CreateStaticRigidBody("boxroom1");
+
   csRef<CS::Collisions::iColliderBox> collider = collisionSystem->CreateColliderBox (size);
   co->AddCollider (collider, localTrans);
   co->SetTransform (t);
   co->RebuildObject();
   collisionSector->AddCollisionObject (co);
-
+  
+  co = CreateStaticRigidBody("boxroom2");
   t.SetOrigin(csVector3(-10.0f, 0.0f, 0.0f));
-  co = collisionSystem->CreateCollisionObject();
   collider = collisionSystem->CreateColliderBox (size);
   co->AddCollider (collider, localTrans);
   co->SetTransform (t);
   co->RebuildObject();
   collisionSector->AddCollisionObject (co);
-
+  
+  co = CreateStaticRigidBody("boxroom3");
   t.SetOrigin(csVector3(0.0f, 10.0f, 0.0f));
-  co = collisionSystem->CreateCollisionObject();
   collider = collisionSystem->CreateColliderBox (size);
   co->AddCollider (collider, localTrans);
   co->SetTransform (t);
@@ -89,39 +92,38 @@ void PhysDemo::CreateBoxRoom()
   //floorBody->SetFriction (10.0f);
   //floorBody->SetElasticity (0.0f);
   //floorBody->RebuildObject();
-  //physicalSector->AddRigidBody (floorBody);
+  //collisionSector->AddCollisionObject (floorBody);
   ////You should set the state after the body is added to a sector.
   //floorBody->SetState (CS::Physics::STATE_STATIC);
+  csRef<CS::Physics::iRigidBody> rb;
+  
+  rb = CreateStaticRigidBody("boxroom4");
   t.SetOrigin(csVector3(0.0f, -10.0f, 0.0f));
   collider = collisionSystem->CreateColliderBox (size);
-  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody();
   rb->AddCollider (collider, localTrans);
   rb->SetTransform (t);
   rb->SetFriction (10.0f);
   rb->SetElasticity (0.0f);
   rb->RebuildObject();
-  physicalSector->AddRigidBody (rb);
-  rb->SetState (CS::Physics::STATE_STATIC);
+  collisionSector->AddCollisionObject (rb);
 
+  rb = CreateStaticRigidBody("boxroom5");
   t.SetOrigin(csVector3(0.0f, 0.0f, 10.0f));
   collider = collisionSystem->CreateColliderBox (size);
-  rb = physicalSystem->CreateRigidBody();
   rb->AddCollider (collider, localTrans);
   rb->SetTransform (t);
   rb->SetFriction (10.0f);
   rb->SetElasticity (0.0f);
   rb->RebuildObject();
-  physicalSector->AddRigidBody (rb);
-  rb->SetState (CS::Physics::STATE_STATIC);
-
+  collisionSector->AddCollisionObject (rb);
+  
+  rb = CreateStaticRigidBody("boxroom6");
   t.SetOrigin(csVector3(0.0f, 0.0f, -10.0f));
   collider = collisionSystem->CreateColliderBox (size);
-  rb = physicalSystem->CreateRigidBody();
   rb->AddCollider (collider, localTrans);
   rb->SetTransform (t);
   rb->RebuildObject();
-  physicalSector->AddRigidBody (rb);
-  rb->SetState (CS::Physics::STATE_STATIC);
+  collisionSector->AddCollisionObject (rb);
 
   // Set up some lights
   room->SetDynamicAmbientLight (csColor (0.3f, 0.3f, 0.3f));
@@ -178,53 +180,52 @@ void PhysDemo::CreatePortalRoom()
   csVector3 size (10.0f, 10.0f, 10.0f);
   csOrthoTransform transform;
 
-  csRef<CS::Collisions::iCollisionObject> co =
-    collisionSystem->CreateCollisionObject();
+  csRef<CS::Physics::iRigidBody> terrainBody = CreateStaticRigidBody("portalroom");
   csRef<CS::Collisions::iColliderBox> collider;
 
   // Right wall (with a portal inside)
   collider = collisionSystem->CreateColliderBox (csVector3 (4.0f, 2.0f, 4.0f));
   transform.SetOrigin (csVector3 (7.0f, -4.0f, -3.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   transform.SetOrigin (csVector3 (7.0f, -4.0f, 3.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   collider = collisionSystem->CreateColliderBox (csVector3 (4.0f, 8.0f, 10.0f));
   transform.SetOrigin (csVector3 (7.0f, 1.0f, 0.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   // Floor (with a portal inside)
   collider = collisionSystem->CreateColliderBox (csVector3 (6.0f, 4.0f, 4.0f));
   transform.SetOrigin (csVector3 (-2.0f, -7.0f, 3.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   transform.SetOrigin (csVector3 (2.0f, -7.0f, -3.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   collider = collisionSystem->CreateColliderBox (csVector3 (4.0f, 4.0f, 6.0f));
   transform.SetOrigin (csVector3 (3.0f, -7.0f, 2.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   transform.SetOrigin (csVector3 (-3.0f, -7.0f, -2.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   // Remaining walls
   collider = collisionSystem->CreateColliderBox (size);
   transform.SetOrigin (csVector3 (0.0f, 0.0f, 10.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   transform.SetOrigin (csVector3 (0.0f, 0.0f, -10.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   transform.SetOrigin (csVector3 (-10.0f, 0.0f, 0.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
   transform.SetOrigin (csVector3 (0.0f, 10.0f, 0.0f));
-  co->AddCollider (collider, transform);
+  terrainBody->AddCollider (collider, transform);
 
-  co->RebuildObject();
-  collisionSector->AddCollisionObject (co);
+  terrainBody->RebuildObject();
+  collisionSector->AddCollisionObject (terrainBody);
 
   // Debug the identity transform
   CS::Debug::VisualDebuggerHelper::DebugTransform (GetObjectRegistry(), csOrthoTransform(), true);
@@ -347,9 +348,10 @@ void PhysDemo::CreateTerrainRoom()
   }
 
   // Create a terrain collider
-  csRef<CS::Collisions::iColliderTerrain> terrainCollider =
-    collisionSystem->CreateColliderTerrain (terrain);
-  csRef<CS::Collisions::iCollisionObject> co = collisionSystem->CreateCollisionObject();
+  csRef<iColliderTerrain> terrainCollider = collisionSystem->CreateColliderTerrain (terrain);
+  
+  // TODO: Consider creating a terrain CollisionObject class instead
+  csRef<CS::Physics::iRigidBody> co = physicalSystem->CreateStaticRigidBody();
   co->AddCollider (terrainCollider, localTrans);
   co->RebuildObject();
   collisionSector->AddCollisionObject (co);

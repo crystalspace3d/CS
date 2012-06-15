@@ -44,6 +44,8 @@ public:
   virtual ~csPhysicalBody();
 
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return this;}
+  
+  virtual CS::Collisions::CollisionObjectType GetObjectType () const {return CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC;}
 
   virtual CS::Physics::PhysicalBodyType GetBodyType () const = 0;
 

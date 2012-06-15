@@ -33,6 +33,9 @@
 #include "collisionobject2.h"
 #include "bulletsystem.h"
 
+
+using namespace CS::Collisions;
+
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
   
@@ -221,11 +224,18 @@ void csBulletColliderTerrain::LoadCellToCollider (iTerrainCell *cell)
   // Create the rigid body and add it to the world
   btRigidBody* body = new btRigidBody (0, 0, colliderData, btVector3 (0, 0, 0));
   body->setWorldTransform (tr);
+  body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);    // do not debug draw the terrain
 
   if (collSector)
     collSector->bulletWorld->addRigidBody (body);
   if (collBody)
-    body->setUserPointer (static_cast<CS::Collisions::iCollisionObject*> (collBody));
+    body->setUserPointer (static_cast<iCollisionObject*> (collBody));
+
+  // Set collision group
+  CollisionGroup& collGroup = collSector->collGroups[CollisionGroupMaskValueTerrain];
+  body->getBroadphaseHandle ()->m_collisionFilterGroup = collGroup.value;
+  body->getBroadphaseHandle ()->m_collisionFilterMask = collGroup.mask;
+
   bodies.Push (body);
 }
 
@@ -272,7 +282,7 @@ void csBulletColliderTerrain::AddRigidBodies (csBulletSector* sector, csBulletCo
     iTerrainCell* cell = terrainSystem->GetCell (i);
     if (cell->GetLoadState () != iTerrainCell::Loaded)
       continue;
-    bodies[i]->setUserPointer (static_cast<CS::Collisions::iCollisionObject*> (body));
+    bodies[i]->setUserPointer (static_cast<iCollisionObject*> (body));
     sector->bulletWorld->addRigidBody (bodies[i], body->collGroup.value, body->collGroup.mask);
   }
 }

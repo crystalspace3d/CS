@@ -13,12 +13,33 @@ class csBulletCollisionPortal
 {
 //private:
 public:
+  /**
+   * The portal as described by the scene
+   */
   iPortal* portal;
+
+  /**
+   * The transform that converts coordinates of this portal to coordinates of the other side
+   */
   csOrthoTransform warpTrans;
+
+
   csBulletSector* sourceSector;
   csBulletSector* targetSector;
+
+  /**
+   * Represents the portal in the bullet world
+   */ 
   btGhostObject* ghostPortal;
+
+  /**
+   * All objects that are currently touching this portal
+   */
   csRefArray<csBulletCollisionObject> objects;
+
+  /**
+   * All transforms of all objects that are currently touching this portal
+   */
   csArray<csOrthoTransform> transforms;
 
 public:

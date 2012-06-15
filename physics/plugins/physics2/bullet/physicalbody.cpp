@@ -23,7 +23,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 csPhysicalBody::csPhysicalBody (csBulletSystem* phySys)
 : scfImplementationType (this, phySys)
 {
-  type = CS::Collisions::COLLISION_OBJECT_PHYSICAL;
 }
 
 csPhysicalBody::~csPhysicalBody ()

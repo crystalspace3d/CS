@@ -14,9 +14,12 @@ PhysDemo::PhysDemo()
     do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
     pauseDynamic (false), dynamicSpeed (1.0f),
     debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
-    physicalCameraMode (CAMERA_DYNAMIC), dragging (false), softDragging (false)
+    dragging (false), softDragging (false),
+    physicalCameraMode (CAMERA_ACTOR)
+    //physicalCameraMode (CAMERA_DYNAMIC)
 {
   localTrans.Identity();
+  actorSpeed = 5;
 }
 
 PhysDemo::~PhysDemo()
@@ -43,9 +46,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   collisionSystem = csLoadPlugin<CS::Collisions::iCollisionSystem> (plugmgr, "crystalspace.physics.bullet2");
   physicalSystem = scfQueryInterface<CS::Physics::iPhysicalSystem> (collisionSystem);
 
-  // We have some objects of size smaller than 0.035 units, so we scale up the
-  // whole world for a better behavior of the dynamic simulation.
-  collisionSystem->SetInternalScale (10.0f);
+  collisionSystem->SetInternalScale (1.0f);
 
   // Check whether the soft bodies are enabled or not
   isSoftBodyWorld = clp->GetBoolOption ("soft", true);
@@ -112,13 +113,14 @@ bool PhysDemo::Application()
 
   bulletSector = scfQueryInterface<CS::Physics::Bullet2::iPhysicalSector> (physicalSector);
   bulletSector->SetDebugMode (debugMode);
+  collisionSector->SetGravity(0);
 
   // Create the environment
   switch (environment)
   {
   case ENVIRONMENT_PORTALS:
     CreatePortalRoom();
-    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3));
+    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -5));
     break;
     
   case ENVIRONMENT_BOX:
@@ -173,11 +175,10 @@ bool PhysDemo::Application()
 
   // Initialize the HUD manager
   hudManager->GetKeyDescriptions()->Empty();
-  hudManager->GetKeyDescriptions()->Push ("b: spawn a box");
-  hudManager->GetKeyDescriptions()->Push ("s: spawn a sphere");
-  
+  //hudManager->GetKeyDescriptions()->Push ("b: spawn a box");
+  //hudManager->GetKeyDescriptions()->Push ("a: spawn a capsule");
+  //hudManager->GetKeyDescriptions()->Push ("s: spawn a sphere");
   hudManager->GetKeyDescriptions()->Push ("c: spawn a cylinder");
-  hudManager->GetKeyDescriptions()->Push ("a: spawn a capsule");
   hudManager->GetKeyDescriptions()->Push ("n: spawn a cone");
  
   hudManager->GetKeyDescriptions()->Push ("v: spawn a convex mesh");
@@ -197,7 +198,7 @@ bool PhysDemo::Application()
     hudManager->GetKeyDescriptions()->Push ("u: spawn a cloth");
     hudManager->GetKeyDescriptions()->Push ("i: spawn a soft body");
   }
-  hudManager->GetKeyDescriptions()->Push ("SPACE: spawn random object");
+  hudManager->GetKeyDescriptions()->Push ("SPACE: Jump");
   
   hudManager->GetKeyDescriptions()->Push ("left mouse: fire!");
   hudManager->GetKeyDescriptions()->Push ("right mouse: drag object");
@@ -208,7 +209,7 @@ bool PhysDemo::Application()
   hudManager->GetKeyDescriptions()->Push ("t: toggle all bodies dynamic/static");
   hudManager->GetKeyDescriptions()->Push ("p: pause the simulation");
   hudManager->GetKeyDescriptions()->Push ("o: toggle speed of simulation");
-  hudManager->GetKeyDescriptions()->Push ("d: toggle Bullet debug display");
+  hudManager->GetKeyDescriptions()->Push ("l: toggle Bullet debug display");
   
   hudManager->GetKeyDescriptions()->Push ("?: toggle display of collisions");
   hudManager->GetKeyDescriptions()->Push ("g: toggle gravity");
@@ -265,6 +266,122 @@ void PhysDemo::GripContactBodies()
     }
   }
 }
+
+void PhysDemo::UpdateCameraMode()
+{
+  switch (physicalCameraMode)
+  {
+    // The camera is controlled by a rigid body
+  case CAMERA_DYNAMIC:
+    {
+      const csOrthoTransform& tc = view->GetCamera()->GetTransform();
+
+      // Check if there is already a rigid body created for the 'kinematic' mode
+      if (cameraBody)
+      {
+        cameraBody->SetState (CS::Physics::STATE_DYNAMIC);
+
+        // Remove the attached camera (in this mode we want to control
+        // the orientation of the camera, so we update the camera
+        // position by ourselves)
+        cameraBody->SetAttachedCamera (0);
+
+        cameraBody->SetTransform (tc);
+      }
+
+      // Create a new rigid body
+      else
+      {
+        csRef<CS::Collisions::iColliderBox> sphere = //collisionSystem->CreateColliderSphere (ActorDimensions.x);
+          collisionSystem->CreateColliderBox(ActorDimensions);
+        cameraBody = CreateRigidBody("Camera");
+        cameraBody->SetDensity(0.3f);
+        cameraBody->SetElasticity(0.8f);
+        cameraBody->SetFriction(100.0f);
+        
+        cameraBody->AddCollider(sphere, localTrans);
+        cameraBody->RebuildObject();
+
+
+        cameraBody->SetTransform (tc);
+
+        collisionSector->AddCollisionObject(cameraBody);
+      }
+
+      break;
+    }
+
+    // The camera is free
+  case CAMERA_FREE:
+    {
+      if (cameraBody)
+      {
+        physicalSector->RemoveRigidBody(cameraBody);
+        cameraBody = NULL;
+      }
+
+      // Update the display of the dynamics debugger
+      //dynamicsDebugger->UpdateDisplay();
+
+      break;
+    }
+
+  case CAMERA_ACTOR:
+    {
+     
+      csRef<CS::Collisions::iColliderBox> actorCollider = //collisionSystem->CreateColliderSphere (ActorDimensions.x);
+        collisionSystem->CreateColliderBox(ActorDimensions);
+
+      cameraActor = collisionSystem->CreateCollisionActor(actorCollider);
+      cameraActor->QueryObject()->SetName("actor");
+      cameraActor->SetAttachedCamera(view->GetCamera());
+      cameraActor->RebuildObject();
+
+      collisionSector->AddCollisionObject(cameraActor);
+      
+      cameraActor->SetJumpSpeed(actorSpeed);
+      
+    }
+    break;
+
+    // The camera is kinematic
+  case CAMERA_KINEMATIC:
+    {
+      collisionSector->RemoveCollisionActor();
+      // Create a body
+      if (!cameraBody)
+      {
+        csRef<CS::Collisions::iColliderSphere> sphere = collisionSystem->CreateColliderSphere (0.8f);
+        csOrthoTransform localTrans;
+        cameraBody = physicalSystem->CreateRigidBody();
+        cameraBody->AddCollider(sphere, localTrans);
+
+        cameraBody->SetDensity (1.0f);
+        cameraBody->SetElasticity (0.8f);
+        cameraBody->SetFriction (100.0f);
+        cameraBody->RebuildObject();
+        
+        const csOrthoTransform& tc = view->GetCamera()->GetTransform();
+        cameraBody->SetTransform (tc);
+      }
+
+      // Attach the camera to the body so as to benefit of the default
+      // kinematic callback
+      cameraBody->SetAttachedCamera (view->GetCamera());
+
+      // Make it kinematic
+      cameraBody->SetState (CS::Physics::STATE_KINEMATIC);
+
+      collisionSector->AddCollisionObject (cameraBody);
+
+    }
+    break;
+
+  default:
+    break;
+  }
+}
+
 
 
 //---------------------------------------------------------------------------

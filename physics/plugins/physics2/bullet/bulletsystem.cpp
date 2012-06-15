@@ -49,8 +49,11 @@
 #include "colliderterrain.h"
 #include "rigidbody2.h"
 #include "softbody2.h"
-#include "collisionactor2.h"
+#include "collisionactor.h"
 #include "joint2.h"
+
+using namespace CS::Collisions;
+using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
@@ -87,123 +90,114 @@ bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
   return true;
 }
 
-csRef<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify)
+csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify)
 {
-  csRef<csBulletColliderConvexMesh> collider;
-  collider.AttachNew (new csBulletColliderConvexMesh (mesh, this, simplify));
+  csRef<csBulletColliderConvexMesh> collider = csPtr<csBulletColliderConvexMesh>(new csBulletColliderConvexMesh (mesh, this, simplify));
 
   //colliders.Push (collider);
-  return (CS::Collisions::iColliderConvexMesh*)collider;
+  return csPtr<iColliderConvexMesh>(collider);
 }
 
-csRef<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcaveMesh (iMeshWrapper* mesh)
+csPtr<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcaveMesh (iMeshWrapper* mesh)
 {
-  csRef<csBulletColliderConcaveMesh> collider;
-  collider.AttachNew (new csBulletColliderConcaveMesh (mesh,this));
+  csRef<csBulletColliderConcaveMesh> collider = csPtr<csBulletColliderConcaveMesh>(new csBulletColliderConcaveMesh (mesh,this));
 
   //colliders.Push (collider);
-  return collider;
+  return csPtr<iColliderConcaveMesh>(collider);
 }
 
-csRef<CS::Collisions::iColliderConcaveMeshScaled> csBulletSystem::CreateColliderConcaveMeshScaled (
+csPtr<CS::Collisions::iColliderConcaveMeshScaled> csBulletSystem::CreateColliderConcaveMeshScaled (
   CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale)
 {
-  csRef<csBulletColliderConcaveMeshScaled> coll;
-  coll.AttachNew (new csBulletColliderConcaveMeshScaled (collider, scale,this));
+  csRef<csBulletColliderConcaveMeshScaled> coll = csPtr<csBulletColliderConcaveMeshScaled>(new csBulletColliderConcaveMeshScaled (collider, scale,this));
 
   //colliders.Push (coll);
-  return coll;
+  return csPtr<iColliderConcaveMeshScaled>(coll);
 }
 
-csRef<CS::Collisions::iColliderCylinder> csBulletSystem::CreateColliderCylinder (float length, float radius)
+csPtr<CS::Collisions::iColliderCylinder> csBulletSystem::CreateColliderCylinder (float length, float radius)
 {
-  csRef<csBulletColliderCylinder> collider;
-  collider.AttachNew (new csBulletColliderCylinder (length, radius, this));
+  csRef<csBulletColliderCylinder> collider = csPtr<csBulletColliderCylinder>(new csBulletColliderCylinder (length, radius, this));
 
   //colliders.Push (collider);
-  return collider;
+  return csPtr<iColliderCylinder>(collider);
 }
 
-csRef<CS::Collisions::iColliderBox> csBulletSystem::CreateColliderBox (const csVector3& size)
+csPtr<CS::Collisions::iColliderBox> csBulletSystem::CreateColliderBox (const csVector3& size)
 {
-  csRef<csBulletColliderBox> collider;
-  collider.AttachNew (new csBulletColliderBox (size, this));
+  //csRef<csBulletColliderBox> collider = csPtr<csBulletColliderBox>(new csBulletColliderBox (size, this));
+  csRef<CS::Collisions::iColliderBox> collider = csPtr<CS::Collisions::iColliderBox>(new csBulletColliderBox (size, this));
 
   //colliders.Push (collider);
-  return collider;
+  return csPtr<CS::Collisions::iColliderBox>(collider);
 } 
 
-csRef<CS::Collisions::iColliderSphere> csBulletSystem::CreateColliderSphere (float radius)
+csPtr<CS::Collisions::iColliderSphere> csBulletSystem::CreateColliderSphere (float radius)
 {
-  csRef<csBulletColliderSphere> collider;
-  collider.AttachNew (new csBulletColliderSphere (radius, this));
-
-  //colliders.Push (collider);
-  return collider;
+  csRef<csBulletColliderSphere> collider = csPtr<csBulletColliderSphere>(new csBulletColliderSphere (radius, this));
+  return csPtr<CS::Collisions::iColliderSphere>(collider);
 }
 
-csRef<CS::Collisions::iColliderCapsule> csBulletSystem::CreateColliderCapsule (float length, float radius)
+csPtr<CS::Collisions::iColliderCapsule> csBulletSystem::CreateColliderCapsule (float length, float radius)
 {
-  csRef<csBulletColliderCapsule> collider;
-  collider.AttachNew (new csBulletColliderCapsule (length, radius, this));
+  csRef<csBulletColliderCapsule> collider = csPtr<csBulletColliderCapsule>(new csBulletColliderCapsule (length, radius, this));
   
   //colliders.Push (collider);
-  return collider;
+  return csPtr<CS::Collisions::iColliderCapsule>(collider);
 }
 
-csRef<CS::Collisions::iColliderCone> csBulletSystem::CreateColliderCone (float length, float radius)
+csPtr<CS::Collisions::iColliderCone> csBulletSystem::CreateColliderCone (float length, float radius)
 {
-  csRef<csBulletColliderCone> collider;
-  collider.AttachNew (new csBulletColliderCone (length, radius, this));
+  csRef<csBulletColliderCone> collider = csPtr<csBulletColliderCone>(new csBulletColliderCone (length, radius, this));
 
   //colliders.Push (collider);
-  return collider;
+  return csPtr<iColliderCone>(collider);
 }
 
-csRef<CS::Collisions::iColliderPlane> csBulletSystem::CreateColliderPlane (const csPlane3& plane)
+csPtr<CS::Collisions::iColliderPlane> csBulletSystem::CreateColliderPlane (const csPlane3& plane)
 {
-  csRef<csBulletColliderPlane> collider;
-  collider.AttachNew (new csBulletColliderPlane (plane, this));
+  csRef<csBulletColliderPlane> collider = csPtr<csBulletColliderPlane>(new csBulletColliderPlane (plane, this));
 
   //colliders.Push (collider);
-  return collider;
+  return csPtr<iColliderPlane>(collider);
 }
 
-csRef<CS::Collisions::iColliderTerrain> csBulletSystem::CreateColliderTerrain (iTerrainSystem* terrain, 
+csPtr<CS::Collisions::iColliderTerrain> csBulletSystem::CreateColliderTerrain (iTerrainSystem* terrain, 
                                                                float minHeight /* = 0 */, 
                                                                float maxHeight /* = 0 */)
 {
-  csRef<csBulletColliderTerrain> collider;
-  collider.AttachNew (new csBulletColliderTerrain (terrain, minHeight, maxHeight, this));
+  csRef<csBulletColliderTerrain> collider = csPtr<csBulletColliderTerrain>(new csBulletColliderTerrain (terrain, minHeight, maxHeight, this));
 
   //colliders.Push (collider);
-  return collider;
+  return csPtr<iColliderTerrain>(collider);
 }
 
-csRef<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject ()
+csPtr<CS::Collisions::iCollisionGhostObject> csBulletSystem::CreateGhostCollisionObject ()
 {
-  csRef<csBulletCollisionObject> collObject;
-  collObject.AttachNew (new csBulletCollisionObject (this));
+  csRef<csBulletCollisionGhostObject> collObject = csPtr<csBulletCollisionGhostObject>(new csBulletCollisionGhostObject (this));
 
   //objects.Push (collObject);
-  return collObject;
+  return csPtr<iCollisionGhostObject>(collObject);
 }
 
-csRef<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor ()
+csPtr<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject ()
 {
-  csRef<CS::Collisions::iCollisionActor> collActor;
-  collActor.AttachNew (new csBulletCollisionActor (this));
-
-  return collActor;
+  return csRef<CS::Physics::iRigidBody>(CreateStaticRigidBody());
 }
 
-csRef<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
+csPtr<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor (CS::Collisions::iCollider* collider)
 {
-  csRef<csBulletSector> collSector;
-  collSector.AttachNew (new csBulletSector (this));
+  csRef<CS::Collisions::iCollisionActor> collActor = csPtr<CS::Collisions::iCollisionActor>(new csBulletCollisionActor (this, dynamic_cast<csBulletCollider*>(collider)));
+
+  return csPtr<iCollisionActor>(collActor);
+}
+
+csPtr<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
+{
+  csRef<csBulletSector> collSector = csPtr<csBulletSector>(new csBulletSector (this));
 
   collSectors.Push (collSector);
-  return collSector;
+  return csPtr<iCollisionSector>(collSector);
 }
 
 CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const char* name)
@@ -350,35 +344,39 @@ void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollisionObject* obj
     btVector3 centroid = convexDecomposition.m_convexCentroids[i];
     trans.setOrigin(centroid);
     btConvexHullShape* convexShape = convexDecomposition.m_convexShapes[i];
-    csRef<csBulletCollider> collider;
-    collider.AttachNew (new csBulletColliderConvexMesh (convexShape, convexDecomposition.m_convexVolume[i], this));
+    csRef<csBulletCollider> collider = csPtr<csBulletCollider>(new csBulletColliderConvexMesh (convexShape, convexDecomposition.m_convexVolume[i], this));
     //colliders.Push (collider);
     relaTransform = BulletToCS (trans, inverseInternalScale);
     btCollObject->AddCollider (collider, relaTransform);
   }
 }
 
-csRef<CS::Physics::iRigidBody> csBulletSystem::CreateRigidBody ()
+csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateRigidBody ()
 {
-  csRef<csBulletRigidBody> body;
-  body.AttachNew (new csBulletRigidBody (this));
+  csRef<csBulletRigidBody> body = csPtr<csBulletRigidBody>(new csBulletRigidBody (this));
   
   //rigidBodies.Push (body);
-  return body;
+  return csPtr<CS::Physics::iRigidBody>(body);
 }
 
-csRef<CS::Physics::iJoint> csBulletSystem::CreateJoint ()
+csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateStaticRigidBody ()
 {
-  csRef<csBulletJoint> joint;
-  joint.AttachNew (new csBulletJoint (this));
+  csRef<csBulletRigidBody> body = csPtr<csBulletRigidBody>(new csBulletRigidBody (this, true));
+  
+  //rigidBodies.Push (body);
+  return csPtr<CS::Physics::iRigidBody>(body);
+}
+
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateJoint ()
+{
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   //joints.Push (joint);
-  return joint;  
+  return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidP2PJoint (const csVector3 position)
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidP2PJoint (const csVector3 position)
 {
-  csRef<csBulletJoint> joint;
-  joint.AttachNew (new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   csVector3 trans (0.0f,0.0f,0.0f);
   joint->SetMaximumDistance (trans);
@@ -386,17 +384,16 @@ csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidP2PJoint (const csVector3 
   joint->SetPosition (position);
   joint->SetType (RIGID_P2P_JOINT);
   //joints.Push (joint);
-  return joint;
+  return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoTransform trans,
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoTransform trans,
                                                     float minDist, float maxDist, 
                                                     float minAngle, float maxAngle, int axis)
 {
-  csRef<csBulletJoint> joint;
   if (axis < 0 || axis > 2)
-    return joint;
-  joint.AttachNew (new csBulletJoint (this));
+    return nullptr;
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   joint->SetRotConstraints (true, true, true);
   csVector3 minDistant (0.0f, 0.0f, 0.0f);
@@ -413,16 +410,15 @@ csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoT
   joint->SetTransform (trans);
   joint->SetType (RIGID_SLIDE_JOINT);
   //joints.Push (joint);
-  return joint;
+  return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector3 position, 
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector3 position, 
                                                      float minAngle, float maxAngle, int axis)
 {
-  csRef<csBulletJoint> joint;
   if (axis < 0 || axis > 2)
-    return joint;
-  joint.AttachNew (new csBulletJoint (this));
+    return nullptr;
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   csVector3 minDistant (0.0f, 0.0f, 0.0f);
   csVector3 maxDistant (0.0f, 0.0f, 0.0f);
   minDistant[axis] = minAngle;
@@ -433,15 +429,14 @@ csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector
   joint->SetType (RIGID_HINGE_JOINT);
   joint->axis = axis;
   //joints.Push (joint);
-  return joint;
+  return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidConeTwistJoint (const csOrthoTransform trans, 
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidConeTwistJoint (const csOrthoTransform trans, 
                                                                        float swingSpan1,float swingSpan2,
                                                                        float twistSpan) 
 {
-  csRef<csBulletJoint> joint;
-  joint.AttachNew (new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   joint->SetRotConstraints (true, true, true);
 
@@ -455,25 +450,24 @@ csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidConeTwistJoint (const csOr
   joint->SetMaximumAngle (maxDistant);
   joint->SetTransform (trans);
   joint->SetType (RIGID_CONETWIST_JOINT);
-  return joint;
+  return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csRef<CS::Physics::iJoint> csBulletSystem::CreateSoftLinearJoint (const csVector3 position)
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftLinearJoint (const csVector3 position)
 {
-  csRef<csBulletJoint> joint;
-  joint.AttachNew (new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   joint->SetPosition (position);
   joint->SetType (SOFT_LINEAR_JOINT);
   //joints.Push (joint);
-  return joint;
+  return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csRef<CS::Physics::iJoint> csBulletSystem::CreateSoftAngularJoint (int axis)
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftAngularJoint (int axis)
 {
-  csRef<csBulletJoint> joint;
+  csBulletJoint* joint = nullptr;
   if (axis < 0 || axis > 2)
     return joint;
-  joint.AttachNew (new csBulletJoint (this));
+  joint = new csBulletJoint (this);
   if (axis == 0)
     joint->SetRotConstraints (false, true, true);
   else if (axis == 1)
@@ -483,13 +477,12 @@ csRef<CS::Physics::iJoint> csBulletSystem::CreateSoftAngularJoint (int axis)
 
   joint->SetType (SOFT_ANGULAR_JOINT);
   //joints.Push (joint);
-  return joint;
+  return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* body, const csVector3 position)
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* body, const csVector3 position)
 {
-  csRef<csBulletJoint> joint;
-  joint.AttachNew (new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   csVector3 trans (0.0f,0.0f,0.0f);
   joint->SetMaximumDistance (trans);
@@ -498,10 +491,10 @@ csRef<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
   joint->SetType (RIGID_PIVOT_JOINT);
   joint->Attach (body, NULL);
   //joints.Push (joint);
-  return joint;
+  return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csRef<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3 start,
+csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3 start,
                                              csVector3 end,
                                              size_t segmentCount)
 {
@@ -516,13 +509,10 @@ csRef<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3 start,
   body->m_cfg.piterations = 16; // no white zone
   body->m_cfg.timescale = 2;
 
-  csRef<csBulletSoftBody> csBody;
-  csBody.AttachNew (new csBulletSoftBody (this, body));
-  //softBodies.Push (csBody);
-  return csRef<iSoftBody>(csBody->QuerySoftBody());
+  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body));
 }
 
-csRef<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3* vertices, size_t vertexCount)
+csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3* vertices, size_t vertexCount)
 {
   // Create the nodes
   CS_ALLOC_STACK_ARRAY(btVector3, nodes, vertexCount);
@@ -545,14 +535,11 @@ csRef<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3* vertices, s
   body->m_cfg.piterations = 16; // no white zone
   body->m_cfg.timescale = 2;
 
-  csRef<csBulletSoftBody> csBody;
-  csBody.AttachNew (new csBulletSoftBody (this, body));
-
   //softBodies.Push (csBody);
-  return csBody; 
+  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body)); 
 }
 
-csRef<CS::Physics::iSoftBody> csBulletSystem::CreateCloth (csVector3 corner1, csVector3 corner2,
+csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCloth (csVector3 corner1, csVector3 corner2,
                                               csVector3 corner3, csVector3 corner4,
                                               size_t segmentCount1, size_t segmentCount2,
                                               bool withDiagonals /* = false */)
@@ -564,14 +551,11 @@ csRef<CS::Physics::iSoftBody> csBulletSystem::CreateCloth (csVector3 corner1, cs
     withDiagonals);
   body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
 
-  csRef<csBulletSoftBody> csBody;
-  csBody.AttachNew (new csBulletSoftBody (this, body));
-
   //softBodies.Push (csBody);
-  return csBody;
+  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body));
 }
 
-csRef<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (iGeneralFactoryState* genmeshFactory,
+csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (iGeneralFactoryState* genmeshFactory,
                                                  const csOrthoTransform& bodyTransform)
 {
   btScalar* vertices = new btScalar[genmeshFactory->GetVertexCount () * 3];
@@ -601,15 +585,14 @@ csRef<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (iGeneralFactorySta
   body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
   body->m_materials[0]->m_kLST = 1;
 
-  csRef<csBulletSoftBody> csBody;
-  csBody.AttachNew (new csBulletSoftBody (this, body));
+  csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (this, body));
   csBody->SetTransform (bodyTransform);
 
   //softBodies.Push (csBody);
-  return csBody;
+  return csPtr<CS::Physics::iSoftBody>(csBody);
 }
 
-csRef<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (csVector3* vertices, size_t vertexCount,
+csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (csVector3* vertices, size_t vertexCount,
                                                  csTriangle* triangles, size_t triangleCount,
                                                  const csOrthoTransform& bodyTransform)
 {
@@ -642,12 +625,11 @@ csRef<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (csVector3* vertice
   delete [] btVertices;
   delete [] btTriangles;
 
-  csRef<csBulletSoftBody> csBody;
-  csBody.AttachNew (new csBulletSoftBody (this, body));
+  csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (this, body));
   csBody->SetTransform (bodyTransform);
 
   //softBodies.Push (csBody);
-  return csBody;
+  return csPtr<CS::Physics::iSoftBody>(csBody);
 }
 
 void csBulletSystem::ReportWarning (const char* msg, ...)

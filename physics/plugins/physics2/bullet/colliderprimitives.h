@@ -56,6 +56,8 @@ class csBulletCollider: public virtual CS::Collisions::iCollider
   friend class csBulletCollisionObject;
   friend class csBulletCollisionActor;
   friend class csBulletRigidBody;
+  friend class csBulletCollisionGhostObject;
+
 protected:
   csVector3 scale;
   btCollisionShape* shape;

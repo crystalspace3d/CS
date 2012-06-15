@@ -269,7 +269,15 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
       }
     case XMLTOKEN_COLLISIONOBJECT:
       {
-        csRef<CS::Collisions::iCollisionObject> obj= collisionSystem->CreateCollisionObject ();
+        csRef<CS::Collisions::iCollisionObject> obj;
+        if (child->GetAttribute ("ghost"))
+        {
+          obj = collisionSystem->CreateCollisionObject ();
+        }
+        else
+        {
+          obj = csRef<CS::Collisions::iCollisionGhostObject>(collisionSystem->CreateGhostCollisionObject ());
+        }
         if (!ParseCollisionObject (child, obj, collSector, ldr_context))
           return false;
         break;
@@ -309,9 +317,6 @@ bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node,
 {
   const char *name = node->GetAttributeValue ("name");
   object->QueryObject()->SetName (name);
-
-  if (node->GetAttribute ("ghost"))
-    object->SetObjectType (CS::Collisions::COLLISION_OBJECT_GHOST);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())

@@ -57,6 +57,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 class csBulletSector;
 class csBulletSystem;
 class csBulletDebugDraw;
+class csBulletCollisionGhostObject;
 class csBulletRigidBody;
 class csBulletSoftBody;
 class csBulletCollisionObject;
@@ -98,23 +99,25 @@ public:
 
   // iCollisionSystem
   virtual void SetInternalScale (float scale);
-  virtual csRef<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (
+  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (
     iMeshWrapper* mesh, bool simplify = false);
-  virtual csRef<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);
-  virtual csRef<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
+  virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);
+  virtual csPtr<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
       (CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale);
-  virtual csRef<CS::Collisions::iColliderCylinder> CreateColliderCylinder (float length, float radius);
-  virtual csRef<CS::Collisions::iColliderBox> CreateColliderBox (const csVector3& size);
-  virtual csRef<CS::Collisions::iColliderSphere> CreateColliderSphere (float radius);
-  virtual csRef<CS::Collisions::iColliderCapsule> CreateColliderCapsule (float length, float radius);
-  virtual csRef<CS::Collisions::iColliderCone> CreateColliderCone (float length, float radius);
-  virtual csRef<CS::Collisions::iColliderPlane> CreateColliderPlane (const csPlane3& plane);
-  virtual csRef<CS::Collisions::iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
+  virtual csPtr<CS::Collisions::iColliderCylinder> CreateColliderCylinder (float length, float radius);
+  virtual csPtr<CS::Collisions::iColliderBox> CreateColliderBox (const csVector3& size);
+  virtual csPtr<CS::Collisions::iColliderSphere> CreateColliderSphere (float radius);
+  virtual csPtr<CS::Collisions::iColliderCapsule> CreateColliderCapsule (float length, float radius);
+  virtual csPtr<CS::Collisions::iColliderCone> CreateColliderCone (float length, float radius);
+  virtual csPtr<CS::Collisions::iColliderPlane> CreateColliderPlane (const csPlane3& plane);
+  virtual csPtr<CS::Collisions::iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
       float minHeight = 0, float maxHeight = 0);
 
-  virtual csRef<CS::Collisions::iCollisionObject> CreateCollisionObject ();
-  virtual csRef<CS::Collisions::iCollisionActor> CreateCollisionActor ();
-  virtual csRef<CS::Collisions::iCollisionSector> CreateCollisionSector ();
+  
+  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
+  virtual csPtr<CS::Collisions::iCollisionGhostObject> CreateGhostCollisionObject ();
+  virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor (CS::Collisions::iCollider* collider);
+  virtual csPtr<CS::Collisions::iCollisionSector> CreateCollisionSector ();
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
 
@@ -122,32 +125,33 @@ public:
     iMeshWrapper* mesh, bool simplify = false); 
 
   //iPhysicalSystem
-  virtual csRef<CS::Physics::iRigidBody> CreateRigidBody ();
+  virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody ();
+  virtual csPtr<CS::Physics::iRigidBody> CreateStaticRigidBody ();
 
-  virtual csRef<CS::Physics::iJoint> CreateJoint ();
-  virtual csRef<CS::Physics::iJoint> CreateRigidP2PJoint (const csVector3 position);
-  virtual csRef<CS::Physics::iJoint> CreateRigidSlideJoint (const csOrthoTransform trans,
+  virtual csPtr<CS::Physics::iJoint> CreateJoint ();
+  virtual csPtr<CS::Physics::iJoint> CreateRigidP2PJoint (const csVector3 position);
+  virtual csPtr<CS::Physics::iJoint> CreateRigidSlideJoint (const csOrthoTransform trans,
     float minDist, float maxDist, float minAngle, float maxAngle, int axis);
-  virtual csRef<CS::Physics::iJoint> CreateRigidHingeJoint (const csVector3 position,
+  virtual csPtr<CS::Physics::iJoint> CreateRigidHingeJoint (const csVector3 position,
     float minAngle, float maxAngle, int axis);
-  virtual csRef<CS::Physics::iJoint> CreateRigidConeTwistJoint (const csOrthoTransform trans,
+  virtual csPtr<CS::Physics::iJoint> CreateRigidConeTwistJoint (const csOrthoTransform trans,
     float swingSpan1,float swingSpan2,float twistSpan);
-  virtual csRef<CS::Physics::iJoint> CreateSoftLinearJoint (const csVector3 position);
-  virtual csRef<CS::Physics::iJoint> CreateSoftAngularJoint (int axis);
-  virtual csRef<CS::Physics::iJoint> CreateRigidPivotJoint (CS::Physics::iRigidBody* body, const csVector3 position);
+  virtual csPtr<CS::Physics::iJoint> CreateSoftLinearJoint (const csVector3 position);
+  virtual csPtr<CS::Physics::iJoint> CreateSoftAngularJoint (int axis);
+  virtual csPtr<CS::Physics::iJoint> CreateRigidPivotJoint (CS::Physics::iRigidBody* body, const csVector3 position);
  
-  virtual csRef<CS::Physics::iSoftBody> CreateRope (csVector3 start,
+  virtual csPtr<CS::Physics::iSoftBody> CreateRope (csVector3 start,
       csVector3 end, size_t segmentCount);
-  virtual csRef<CS::Physics::iSoftBody> CreateRope (csVector3* vertices, size_t vertexCount);
-  virtual csRef<CS::Physics::iSoftBody> CreateCloth (csVector3 corner1, csVector3 corner2,
+  virtual csPtr<CS::Physics::iSoftBody> CreateRope (csVector3* vertices, size_t vertexCount);
+  virtual csPtr<CS::Physics::iSoftBody> CreateCloth (csVector3 corner1, csVector3 corner2,
       csVector3 corner3, csVector3 corner4,
       size_t segmentCount1, size_t segmentCount2,
       bool withDiagonals = false);
 
-  virtual csRef<CS::Physics::iSoftBody> CreateSoftBody (iGeneralFactoryState* genmeshFactory, 
+  virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody (iGeneralFactoryState* genmeshFactory, 
     const csOrthoTransform& bodyTransform);
 
-  virtual csRef<CS::Physics::iSoftBody> CreateSoftBody (csVector3* vertices,
+  virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody (csVector3* vertices,
       size_t vertexCount, csTriangle* triangles, size_t triangleCount,
       const csOrthoTransform& bodyTransform);
   float getInverseInternalScale() {return inverseInternalScale;}

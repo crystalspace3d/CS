@@ -109,10 +109,8 @@ public:
   virtual CS::Collisions::CollisionGroup& CreateCollisionGroup (const char* name);
   virtual CS::Collisions::CollisionGroup& FindCollisionGroup (const char* name);
 
-  virtual void SetGroupCollision (const char* name1,
-    const char* name2, bool collide);
-  virtual bool GetGroupCollision (const char* name1,
-    const char* name2);
+  virtual void SetGroupCollision (const char* name1, const char* name2, bool collide);
+  virtual bool GetGroupCollision (const char* name1, const char* name2);
 
   virtual bool CollisionTest(CS::Collisions::iCollisionObject* object, 
     csArray<CS::Collisions::CollisionData>& collisions);
@@ -169,23 +167,24 @@ public:
 
   // iCollisionSystem
   virtual void SetInternalScale (float scale);
-  virtual csRef<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (
+  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (
     iMeshWrapper* mesh, bool simplify = false);
-  virtual csRef<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);
-  virtual csRef<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
+  virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);
+  virtual csPtr<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
     (CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale);
-  virtual csRef<CS::Collisions::iColliderCylinder> CreateColliderCylinder (float length, float radius);
-  virtual csRef<CS::Collisions::iColliderBox> CreateColliderBox (const csVector3& size);
-  virtual csRef<CS::Collisions::iColliderSphere> CreateColliderSphere (float radius);
-  virtual csRef<CS::Collisions::iColliderCapsule> CreateColliderCapsule (float length, float radius);
-  virtual csRef<CS::Collisions::iColliderCone> CreateColliderCone (float length, float radius);
-  virtual csRef<CS::Collisions::iColliderPlane> CreateColliderPlane (const csPlane3& plane);
-  virtual csRef<CS::Collisions::iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
+  virtual csPtr<CS::Collisions::iColliderCylinder> CreateColliderCylinder (float length, float radius);
+  virtual csPtr<CS::Collisions::iColliderBox> CreateColliderBox (const csVector3& size);
+  virtual csPtr<CS::Collisions::iColliderSphere> CreateColliderSphere (float radius);
+  virtual csPtr<CS::Collisions::iColliderCapsule> CreateColliderCapsule (float length, float radius);
+  virtual csPtr<CS::Collisions::iColliderCone> CreateColliderCone (float length, float radius);
+  virtual csPtr<CS::Collisions::iColliderPlane> CreateColliderPlane (const csPlane3& plane);
+  virtual csPtr<CS::Collisions::iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
     float minHeight = 0, float maxHeight = 0);
-
-  virtual csRef<CS::Collisions::iCollisionObject> CreateCollisionObject ();
-  virtual csRef<CS::Collisions::iCollisionActor> CreateCollisionActor ();
-  virtual csRef<CS::Collisions::iCollisionSector> CreateCollisionSector ();
+  
+  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
+  virtual csPtr<CS::Collisions::iCollisionGhostObject> CreateGhostCollisionObject ();
+  virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor (CS::Collisions::iCollider* collider);
+  virtual csPtr<CS::Collisions::iCollisionSector> CreateCollisionSector ();
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
 

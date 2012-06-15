@@ -25,11 +25,14 @@
 
 #include "csutil/scf.h"
 #include "csutil/csstring.h"
+#include "csgeom/vector2.h"
 #include "csgeom/vector3.h"
 #include "csgeom/matrix3.h"
 #include "csgeom/transfrm.h"
 #include "csgeom/plane3.h"
 #include "iutil/object.h"
+
+#define	SQRT2				1.41421356237f	
 
 struct iTerrainSystem;
 struct iSector;
@@ -80,8 +83,8 @@ COLLIDER_TERRAIN
  */
 enum CollisionObjectType
 {
-COLLISION_OBJECT_BASE = 0,
-COLLISION_OBJECT_PHYSICAL,
+COLLISION_OBJECT_PHYSICAL_STATIC = 0,
+COLLISION_OBJECT_PHYSICAL_DYNAMIC,
 COLLISION_OBJECT_GHOST,
 COLLISION_OBJECT_ACTOR
 };
@@ -92,18 +95,20 @@ enum CollisionGroupType
   CollisionGroupTypeStatic =      1,
   CollisionGroupTypeKinematic =   2,
   CollisionGroupTypePortal =      3,
+  CollisionGroupTypeTerrain =     3,
   CollisionGroupTypePortalCopy =  4,
   CollisionGroupTypeActor =       5
 };
 
 enum CollisionGroupMaskValue
 {
-  CollisionGroupMaskValueDefault =    0x0001,
-  CollisionGroupMaskValueStatic =      0x0002,
-  CollisionGroupMaskValueKinematic =   0x0004,
-  CollisionGroupMaskValuePortal =      0x0008,
-  CollisionGroupMaskValuePortalCopy =  0x0010,
-  CollisionGroupMaskValueActor =       0x0020
+  CollisionGroupMaskValueDefault =      0x0001,
+  CollisionGroupMaskValueStatic =       0x0002,
+  CollisionGroupMaskValueKinematic =    0x0004,
+  CollisionGroupMaskValuePortal =       0x0008,
+  CollisionGroupMaskValueTerrain =      0x0008,
+  CollisionGroupMaskValuePortalCopy =   0x0010,
+  CollisionGroupMaskValueActor =        0x0020
 };
 
 /**
@@ -453,11 +458,11 @@ struct iCollisionObject : public virtual iBase
   /// Return the physical body pointer if it's a physical body, or NULL.
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () = 0;
 
-  /// Set the type of the collision object.
-  virtual void SetObjectType (CollisionObjectType type, bool forceRebuild = true) = 0;
+  /// Whether this is a rigid or soft body object
+  virtual bool IsPhysicalObject() const = 0;
 
   /// Return the type of the collision object.
-  virtual CollisionObjectType GetObjectType () = 0;
+  virtual CollisionObjectType GetObjectType () const = 0;
 
   /**
    * Set the movable attached to this collision object. Its position will be updated
@@ -475,13 +480,28 @@ struct iCollisionObject : public virtual iBase
   virtual void SetAttachedCamera (iCamera* camera) = 0;
 
   /// Get the camera attached to this collision object.
-  virtual iCamera* GetAttachedCamera () = 0;
+  virtual iCamera* GetAttachedCamera () const = 0;
   
   /// Set the transform.
   virtual void SetTransform (const csOrthoTransform& trans) = 0;
 
   /// Get the transform.
-  virtual csOrthoTransform GetTransform () = 0;
+  virtual csOrthoTransform GetTransform () const = 0;
+
+  /**
+   * Set current rotation in angles around every axis and set to actor.
+   * If a camera is used, set it to camera too.
+   */
+  virtual void SetRotation (const csMatrix3& rot) = 0;
+
+  /// Rotate the collision actor.
+  virtual void Rotate (const csVector3& v, float angle) = 0;
+
+  /// Increases pitch angle by the given value in radians
+  virtual void IncreasePitch(float yawDelta) = 0;
+
+  /// Increases yaw angle by the given value in radians
+  virtual void IncreaseYaw(float yawDelta) = 0;
 
   /// Add a collider to this collision body.
   virtual void AddCollider (iCollider* collider, const csOrthoTransform& relaTrans
@@ -532,6 +552,17 @@ struct iCollisionObject : public virtual iBase
 };
 
 /**
+ * This is the interface for ghost-type collision objects.
+ * Ghost objects can be set to not interact with the physical world while still collecting collision information.
+ * This can be used as a test for collisions, or to implement any sort of object that does not entirely play by the laws 
+ * of ridig body or soft body dynamics.
+ */
+struct iCollisionGhostObject : public virtual iCollisionObject
+{
+
+};
+
+/**
  * A iCollisionActor is a kinematic collision object. It has a faster collision detection and response.
  * You can use it to create a player or character model with gravity handling.
  *
@@ -546,46 +577,33 @@ struct iCollisionObject : public virtual iBase
  * \remark The collider of iCollisionActor must be a convex shape. For example, box, convex mesh.
  */
 // kickvb: most of this would have to be redesigned, let's do it later
-struct iCollisionActor : public virtual iCollisionObject
+struct iCollisionActor : public virtual iCollisionGhostObject
 {
   SCF_INTERFACE (CS::Collisions::iCollisionActor, 1, 0, 0);
 
+  /// Whether the actor is currently not bound by gravity
+  virtual bool IsFlying () const = 0;
+
+  /// Set whether the actor is currently not bound by gravity
+  virtual void SetFlying (bool flying) = 0;
+
   /// Check if we are on the ground.
-  virtual bool IsOnGround () = 0;
+  virtual bool IsOnGround () const = 0;
+
+  virtual float GetPitch () const = 0;
 
   /// Set the onground status.
   //virtual void SetOnGround (bool og) = 0;
 
-  /// Attach a camera to the collision actor.
-  virtual void SetCamera (iCamera* camera) = 0;
-
-  /**
-   * Set current rotation in angles around every axis and set to actor.
-   * If a camera is used, set it to camera too.
-   */
-  virtual void SetRotation (const csMatrix3& rot) = 0;
-
-  /// Rotate the collision actor.
-  virtual void Rotate (const csVector3& v, float angle) = 0;
-
   /// Move the actor.
   virtual void UpdateAction (float delta) = 0;
 
-  /// Set the walking velocity of the actor.
-  virtual void SetVelocity (float speed) = 0;
+  /// Set the walking velocity of the actor in the forward and right direction for the given timeInterval.
+  virtual void SetPlanarVelocity (const csVector2& vel, float timeInterval = float(INT_MAX)) = 0;
 
-  /**
-   * This is used by UpdateAction() but you can also call it manually.
-   * It will adjust the new position to match with collision
-   * detection.
-   */
-  virtual void PreStep () = 0;
+  /// Set the walking velocity of the actor in the forward and right direction for the given timeInterval.
+  virtual void SetVelocity (const csVector3& vel, float timeInterval = float(INT_MAX)) = 0;
 
-  /**
-   * This is used by UpdateAction() but you can also call it manually.
-   * Move the actor to proper target position.
-   */
-  virtual void PlayerStep (float delta) = 0;
 
   /// Set the falling speed.
   virtual void SetFallSpeed (float fallSpeed) = 0;
@@ -746,52 +764,53 @@ struct iCollisionSystem : public virtual iBase
   virtual void SetInternalScale (float scale) = 0;
 
   /// Create a convex mesh collider.
-  virtual csRef<iColliderConvexMesh> CreateColliderConvexMesh (
+  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (
     iMeshWrapper* mesh, bool simplify = false) = 0;
 
   /// Create a static concave mesh collider.
-  virtual csRef<iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh) = 0;
+  virtual csPtr<iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh) = 0;
 
   /// Create a scaled concave mesh collider.
-  virtual csRef<iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled (
+  virtual csPtr<iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled (
     iColliderConcaveMesh* collider, csVector3 scale) = 0;
 
+  virtual csPtr<iCollisionObject> CreateCollisionObject() = 0;
+
   /// Create a cylinder collider.
-  virtual csRef<iColliderCylinder> CreateColliderCylinder (float length, float radius) = 0;
+  virtual csPtr<iColliderCylinder> CreateColliderCylinder (float length, float radius) = 0;
 
   /// Create a box collider.
-  virtual csRef<iColliderBox> CreateColliderBox (const csVector3& size) = 0;
+  virtual csPtr<iColliderBox> CreateColliderBox (const csVector3& size) = 0;
 
   /// Create a sphere collider.
-  virtual csRef<iColliderSphere> CreateColliderSphere (float radius) = 0;
+  virtual csPtr<iColliderSphere> CreateColliderSphere (float radius) = 0;
 
   /// Create a capsule collider.
-  virtual csRef<iColliderCapsule> CreateColliderCapsule (float length, float radius) = 0;
+  virtual csPtr<iColliderCapsule> CreateColliderCapsule (float length, float radius) = 0;
 
   /// Create a cone collider.
-  virtual csRef<iColliderCone> CreateColliderCone (float length, float radius) = 0;
+  virtual csPtr<iColliderCone> CreateColliderCone (float length, float radius) = 0;
 
   /// Create a static plane collider.
-  virtual csRef<iColliderPlane> CreateColliderPlane (const csPlane3& plane) = 0;
+  virtual csPtr<iColliderPlane> CreateColliderPlane (const csPlane3& plane) = 0;
 
   /// Create a terrain collider.
-  virtual csRef<iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
+  virtual csPtr<iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
       float minHeight = 0, float maxHeight = 0) = 0;
 
   /**
-   * Create a collision object. Without any initialization.
-   * Need to call iCollisionObject::RebuildObject.
+   * Create a ghost collision object
    */
-  virtual csRef<iCollisionObject> CreateCollisionObject () = 0;
+  virtual csPtr<iCollisionGhostObject> CreateGhostCollisionObject () = 0;
 
   /**
    * Create a collision actor.
    * Need to call iCollisionObject::RebuildObject.
    */
-  virtual csRef<iCollisionActor> CreateCollisionActor () = 0;
+  virtual csPtr<iCollisionActor> CreateCollisionActor (iCollider* collider) = 0;
   
   /// Create a collision sector.
-  virtual csRef<iCollisionSector> CreateCollisionSector () = 0;
+  virtual csPtr<iCollisionSector> CreateCollisionSector () = 0;
 
   /// Find a collision sector by name.
   virtual iCollisionSector* FindCollisionSector (const char* name) = 0; 

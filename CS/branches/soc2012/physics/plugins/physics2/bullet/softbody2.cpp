@@ -43,26 +43,12 @@ csBulletSoftBody::csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body)
   // friction = 0.5f;
   btObject = body;
   btBody->setUserPointer (dynamic_cast<iPhysicalBody*> (this));
-  this->type = CS::Collisions::COLLISION_OBJECT_PHYSICAL;
 }
 
 csBulletSoftBody::~csBulletSoftBody ()
 {
   RemoveBulletObject ();
   (sector->anchoredSoftBodies).Delete (this);
-}
-
-void csBulletSoftBody::SetTransform (const csOrthoTransform& trans)
-{
-  btTransform btTrans = CSToBullet (trans, system->getInternalScale ());
-  btTransform t = transform.inverse () * btTrans;
-  transform = btTrans;
-  btBody->transform (t);
-}
-
-csOrthoTransform csBulletSoftBody::GetTransform ()
-{
-  return BulletToCS (transform, system->getInverseInternalScale ());
 }
 
 void csBulletSoftBody::RebuildObject ()
@@ -150,8 +136,7 @@ bool csBulletSoftBody::AddBulletObject ()
       static_cast<btSoftRigidDynamicsWorld*> (sector->bulletWorld);
 
     softWorld->addSoftBody (btBody, collGroup.value, collGroup.mask);
-    btBody->setUserPointer (static_cast<CS::Collisions::iCollisionObject*> (
-      dynamic_cast<iPhysicalBody*>(this)));
+    btBody->setUserPointer (static_cast<CS::Collisions::iCollisionObject*> (dynamic_cast<iPhysicalBody*>(this)));
     insideWorld = true;
   }
   return true;

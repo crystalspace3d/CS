@@ -193,6 +193,9 @@ class CS_CRYSTALSPACE_EXPORT DemoApplication : public csApplicationFramework,
   /// Access to the configuration manager system
   csConfigAccess config;
 
+  /// The speed in m/s at which the actor can move
+  float actorSpeed;
+
   //-- csBaseEventHandler
   /**
    * Base implementation of the method inherited from csBaseEventHandler. It initializes the

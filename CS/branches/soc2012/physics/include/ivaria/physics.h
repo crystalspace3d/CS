@@ -91,6 +91,9 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
 {
   SCF_INTERFACE (CS::Physics::iPhysicalBody, 1, 0, 1);
 
+  /// Whether this is a rigid or soft body object
+  virtual bool IsPhysicalObject() const { return true; }
+
   /// Get the type of this physical body.
   virtual PhysicalBodyType GetBodyType () const = 0;
 
@@ -714,19 +717,25 @@ struct iPhysicalSystem : public virtual iBase
   SCF_INTERFACE (CS::Physics::iPhysicalSystem, 1, 0, 0);
 
   /**
-   * Create a rigid body, if there's an iCollisionObject pointer, 
+   * Create a rigid body.
    * Need to call iCollisionObject::RebuildObject.
    */
-  virtual csRef<iRigidBody> CreateRigidBody () = 0;
+  virtual csPtr<iRigidBody> CreateRigidBody () = 0;
+
+  /**
+   * Create a static rigid body which cannot move.
+   * Need to call iCollisionObject::RebuildObject.
+   */
+  virtual csPtr<iRigidBody> CreateStaticRigidBody () = 0;
 
   /// Create a general 6DOF joint.
-  virtual csRef<iJoint> CreateJoint () = 0;
+  virtual csPtr<iJoint> CreateJoint () = 0;
 
   /*
    * Create a P2P joint for rigid bodies by setting the position in 
    * world space.
    */
-  virtual csRef<iJoint> CreateRigidP2PJoint (const csVector3 position) = 0;
+  virtual csPtr<iJoint> CreateRigidP2PJoint (const csVector3 position) = 0;
 
   /* 
    * Create a slide joint for rigid bodies.
@@ -737,7 +746,7 @@ struct iPhysicalSystem : public virtual iBase
    * \param maxAngle The max angle the body can rotate around the axis.
    * \param axis The slide axis, can only be 0, 1, 2.
    */
-  virtual csRef<iJoint> CreateRigidSlideJoint (const csOrthoTransform trans,
+  virtual csPtr<iJoint> CreateRigidSlideJoint (const csOrthoTransform trans,
     float minDist, float maxDist, float minAngle, float maxAngle, int axis) = 0;
 
   /* 
@@ -747,7 +756,7 @@ struct iPhysicalSystem : public virtual iBase
    * \param maxAngle The max angle the body can rotate around the axis.
    * \param axis The axis of the hinge, can only be 0, 1, 2.
    */
-  virtual csRef<iJoint> CreateRigidHingeJoint (const csVector3 position,
+  virtual csPtr<iJoint> CreateRigidHingeJoint (const csVector3 position,
     float minAngle, float maxAngle, int axis) = 0;
 
   /* 
@@ -757,26 +766,26 @@ struct iPhysicalSystem : public virtual iBase
    * \param swingSpan2 The swing span the body can rotate around the local Y axis of joint.
    * \param twistSpan The twist span the body can rotate around the local X axis of joint.
    */
-  virtual csRef<iJoint> CreateRigidConeTwistJoint (const csOrthoTransform trans,
+  virtual csPtr<iJoint> CreateRigidConeTwistJoint (const csOrthoTransform trans,
     float swingSpan1,float swingSpan2,float twistSpan) = 0;
 
   /* 
    * Create a linear joint for soft body by setting the position in 
    * world space.
    */
-  virtual csRef<iJoint> CreateSoftLinearJoint (const csVector3 position) = 0;
+  virtual csPtr<iJoint> CreateSoftLinearJoint (const csVector3 position) = 0;
 
   /* 
    * Create a angular joint for soft body by setting the rotation axis.
    * The axis can only be 0, 1, 2.
    */
-  virtual csRef<iJoint> CreateSoftAngularJoint (int axis) = 0;
+  virtual csPtr<iJoint> CreateSoftAngularJoint (int axis) = 0;
 
   /*
    * Create a pivot joint to attach to a rigid body to a position in world space
    * in order to manipulate it.
    */
-  virtual csRef<iJoint> CreateRigidPivotJoint (iRigidBody* body, const csVector3 position) = 0;
+  virtual csPtr<iJoint> CreateRigidPivotJoint (iRigidBody* body, const csVector3 position) = 0;
   
   /**
    * Create a soft body rope.
@@ -785,7 +794,7 @@ struct iPhysicalSystem : public virtual iBase
    * \param segmentCount Number of segments in the rope.
    * \remark You must call SetSoftBodyWorld() prior to this.
    */
-  virtual csRef<iSoftBody> CreateRope (csVector3 start,
+  virtual csPtr<iSoftBody> CreateRope (csVector3 start,
       csVector3 end, size_t segmentCount) = 0;
 
   /**
@@ -794,7 +803,7 @@ struct iPhysicalSystem : public virtual iBase
    * \param vertexCount The amount of vertices for the rope.
    * \remark You must call SetSoftBodyWorld() prior to this.
    */
-  virtual csRef<iSoftBody> CreateRope (csVector3* vertices, size_t vertexCount) = 0;
+  virtual csPtr<iSoftBody> CreateRope (csVector3* vertices, size_t vertexCount) = 0;
 
   /**
    * Create a soft body cloth.
@@ -808,7 +817,7 @@ struct iPhysicalSystem : public virtual iBase
    * or not. Diagonal segments will make the cloth more rigid.
    * \remark You must call SetSoftBodyWorld() prior to this.
    */
-  virtual csRef<iSoftBody> CreateCloth (csVector3 corner1, csVector3 corner2,
+  virtual csPtr<iSoftBody> CreateCloth (csVector3 corner1, csVector3 corner2,
       csVector3 corner3, csVector3 corner4,
       size_t segmentCount1, size_t segmentCount2,
       bool withDiagonals = false) = 0;
@@ -819,7 +828,7 @@ struct iPhysicalSystem : public virtual iBase
    * \param bodyTransform the transform of this body.
    * \remark You must call SetSoftBodyWorld() prior to this.
    */
-  virtual csRef<iSoftBody> CreateSoftBody (iGeneralFactoryState* genmeshFactory, 
+  virtual csPtr<iSoftBody> CreateSoftBody (iGeneralFactoryState* genmeshFactory, 
     const csOrthoTransform& bodyTransform) = 0;
 
   /**
@@ -832,7 +841,7 @@ struct iPhysicalSystem : public virtual iBase
    * \param if there's an iCollisionObject pointer, attach the iCollisionObject to it.
    * \remark You must call SetSoftBodyWorld() prior to this.
    */
-  virtual csRef<iSoftBody> CreateSoftBody (csVector3* vertices,
+  virtual csPtr<iSoftBody> CreateSoftBody (csVector3* vertices,
       size_t vertexCount, csTriangle* triangles,
       size_t triangleCount, const csOrthoTransform& bodyTransform) = 0;
 };

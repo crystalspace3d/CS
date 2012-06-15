@@ -31,6 +31,10 @@
 #include "csutil/cscolor.h"
 #include "btBulletCollisionCommon.h"
 
+#ifdef _DEBUG
+#define OBJECT_DEBUG_NAMES
+#endif
+
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
 
@@ -172,17 +176,13 @@ public:
 
   CS::Physics::Bullet2::DebugMode GetDebugMode ()
   {
-    CS::Physics::Bullet2::DebugMode mode =
-      CS::Physics::Bullet2::DEBUG_NOTHING;
+    CS::Physics::Bullet2::DebugMode mode = CS::Physics::Bullet2::DEBUG_NOTHING;
     if (this->mode & DBG_DrawWireframe)
-      mode = (CS::Physics::Bullet2::DebugMode)
-      (mode | CS::Physics::Bullet2::DEBUG_COLLIDERS);
+      mode = (CS::Physics::Bullet2::DebugMode) (mode | CS::Physics::Bullet2::DEBUG_COLLIDERS);
     if (this->mode & DBG_DrawAabb)
-      mode = (CS::Physics::Bullet2::DebugMode)
-      (mode | CS::Physics::Bullet2::DEBUG_AABB);
+      mode = (CS::Physics::Bullet2::DebugMode) (mode | CS::Physics::Bullet2::DEBUG_AABB);
     if (this->mode & DBG_DrawConstraints)
-      mode = (CS::Physics::Bullet2::DebugMode)
-      (mode | CS::Physics::Bullet2::DEBUG_JOINTS);
+      mode = (CS::Physics::Bullet2::DebugMode) (mode | CS::Physics::Bullet2::DEBUG_JOINTS);
     return mode;
   }
 
@@ -259,6 +259,46 @@ public:
 
   virtual void getWorldTransform (btTransform& trans) const;
 };
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Some extra Bullet vector operations
+
+///Reflect the vector d around the vector r
+inline btVector3 reflect( const btVector3& d, const btVector3& r )
+{
+  return d - ( btScalar( 2.0 ) * d.dot( r ) ) * r;
+}
+
+
+///Project a vector u on another vector v
+inline btVector3 project( const btVector3& u, const btVector3& v )
+{
+  return v * u.dot( v );
+}
+
+
+///Helper for computing the character sliding
+inline btVector3 slide( const btVector3& direction, const btVector3& planeNormal )
+{
+  return direction - project( direction, planeNormal );
+}
+
+inline btVector3 slideOnCollision( const btVector3& fromPosition, const btVector3& toPosition, const btVector3& hitNormal )
+{
+  btVector3 moveDirection = toPosition - fromPosition;
+  btScalar moveLength = moveDirection.length();
+
+  if( moveLength <= btScalar( SIMD_EPSILON ) )
+    return toPosition;
+
+  moveDirection.normalize();
+
+  btVector3 reflectDir = reflect( moveDirection, hitNormal );
+  reflectDir.normalize();
+
+  return fromPosition + slide( reflectDir, hitNormal ) * moveLength;
+}
 
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

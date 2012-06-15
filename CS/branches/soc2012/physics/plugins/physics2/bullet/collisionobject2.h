@@ -20,6 +20,7 @@ class csBulletCollisionObject: public scfVirtImplementationExt1<
   friend class csBulletJoint;
   friend class csBulletColliderTerrain;
   friend class csBulletCollisionActor;
+  friend class csBulletCollisionGhostObject;
   friend class csBulletCollisionPortal;
 
 protected:
@@ -31,9 +32,7 @@ protected:
   csWeakRef<iMovable> movable;
   csWeakRef<iCamera> camera;
   csRef<CS::Collisions::iCollisionCallback> collCb;
-  CS::Collisions::CollisionObjectType type;
 
-  btTransform transform;
   btTransform invPricipalAxis;
   btQuaternion portalWarp;
 
@@ -50,6 +49,10 @@ protected:
   bool shapeChanged;
   bool isTerrain;
 
+#ifdef OBJECT_DEBUG_NAMES
+  csString debugName;
+#endif
+
 public:
   csBulletCollisionObject (csBulletSystem* sys);
   virtual ~csBulletCollisionObject ();
@@ -58,17 +61,20 @@ public:
   virtual CS::Collisions::iCollisionObject* QueryCollisionObject () { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return NULL;}
 
-  virtual void SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true);
-  virtual CS::Collisions::CollisionObjectType GetObjectType () {return type;}
+  virtual CS::Collisions::CollisionObjectType GetObjectType () const = 0;
 
   virtual void SetAttachedMovable (iMovable* movable){this->movable = movable;}
   virtual iMovable* GetAttachedMovable (){return movable;}
 
   virtual void SetAttachedCamera (iCamera* camera){this->camera = camera;}
-  virtual iCamera* GetAttachedCamera (){return camera;}
+  virtual iCamera* GetAttachedCamera () const {return camera;}
 
   virtual void SetTransform (const csOrthoTransform& trans);
-  virtual csOrthoTransform GetTransform ();
+  virtual csOrthoTransform GetTransform () const;
+  virtual void SetRotation (const csMatrix3& rot);
+  virtual void Rotate (const csVector3& v, float angle);
+  virtual void IncreaseYaw(float yawDelta);
+  virtual void IncreasePitch(float pitchDelta);
 
   virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans
     = csOrthoTransform (csMatrix3 (), csVector3 (0)));
@@ -78,7 +84,7 @@ public:
   virtual CS::Collisions::iCollider* GetCollider (size_t index) ;
   virtual size_t GetColliderCount () {return colliders.GetSize ();}
 
-  virtual void RebuildObject ();
+  virtual void RebuildObject () = 0;
 
   virtual void SetCollisionGroup (const char* name);
   virtual const char* GetCollisionGroup () const {return collGroup.name.GetData ();}
@@ -94,8 +100,8 @@ public:
 
   btCollisionObject* GetBulletCollisionPointer () {return btObject;}
   virtual void CreateBulletObject() {}
-  virtual bool RemoveBulletObject ();
-  virtual bool AddBulletObject ();
+  virtual bool RemoveBulletObject () = 0;
+  virtual bool AddBulletObject () = 0;
   void RemoveObjectCopy () 
   {
     csBulletSector* sec = objectCopy->sector;

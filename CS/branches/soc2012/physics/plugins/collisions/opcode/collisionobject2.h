@@ -30,7 +30,7 @@ class csOpcodeCollisionSystem;
 class csOpcodeCollider;
 
 class csOpcodeCollisionObject: public scfImplementationExt1<
-  csOpcodeCollisionObject, csObject, CS::Collisions::iCollisionObject>
+  csOpcodeCollisionObject, csObject, CS::Collisions::iCollisionGhostObject>
 {
   friend class csOpcodeCollisionSector;
 private:
@@ -56,17 +56,28 @@ public:
   virtual CS::Collisions::iCollisionObject* QueryCollisionObject () {return dynamic_cast<iCollisionObject*> (this);}
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return NULL;}
 
-  virtual void SetObjectType (CS::Collisions::CollisionObjectType type, bool forceRebuild = true);
-  virtual CS::Collisions::CollisionObjectType GetObjectType () {return type;}
+  /// Whether this is a rigid or soft body object
+  virtual bool IsPhysicalObject() const { return false; }
+
+  virtual CS::Collisions::CollisionObjectType GetObjectType () const 
+  {
+      // doesn't really matter
+      return CS::Collisions::COLLISION_OBJECT_GHOST;
+  }
 
   virtual void SetAttachedMovable (iMovable* movable){this->movable = movable;}
   virtual iMovable* GetAttachedMovable (){return movable;}
 
   virtual void SetAttachedCamera (iCamera* camera){this->camera = camera;}
-  virtual iCamera* GetAttachedCamera (){return camera;}
+  virtual iCamera* GetAttachedCamera () const {return camera;}
 
   virtual void SetTransform (const csOrthoTransform& trans);
-  virtual csOrthoTransform GetTransform ();
+  virtual csOrthoTransform GetTransform () const;
+
+  virtual void SetRotation (const csMatrix3& rot);
+  virtual void Rotate (const csVector3& v, float angle);
+  virtual void IncreasePitch(float pitchDelta);
+  virtual void IncreaseYaw(float yawDelta);
 
   virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans
     = csOrthoTransform (csMatrix3 (), csVector3 (0)));

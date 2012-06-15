@@ -723,65 +723,70 @@ void csOpcodeCollisionSystem::SetInternalScale (float scale)
   //use internal scale?
 }
 
-csRef<CS::Collisions::iColliderConvexMesh> csOpcodeCollisionSystem::CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify /* = false */)
+csPtr<CS::Collisions::iColliderConvexMesh> csOpcodeCollisionSystem::CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify /* = false */)
 {
   return NULL;
 }
 
-csRef<CS::Collisions::iColliderConcaveMesh> csOpcodeCollisionSystem::CreateColliderConcaveMesh (iMeshWrapper* mesh)
+csPtr<CS::Collisions::iColliderConcaveMesh> csOpcodeCollisionSystem::CreateColliderConcaveMesh (iMeshWrapper* mesh)
 {
-  csRef<csOpcodeCollider> collider;
-  collider.AttachNew (new csOpcodeCollider (mesh,this));
-
-  return collider;
+  return csPtr<CS::Collisions::iColliderConcaveMesh>(new csOpcodeCollider (mesh,this));
 }
 
-csRef<CS::Collisions::iColliderConcaveMeshScaled> csOpcodeCollisionSystem::CreateColliderConcaveMeshScaled
+csPtr<CS::Collisions::iColliderConcaveMeshScaled> csOpcodeCollisionSystem::CreateColliderConcaveMeshScaled
 (CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale)
 {
   return NULL;
 }
 
-csRef<CS::Collisions::iColliderCylinder> csOpcodeCollisionSystem::CreateColliderCylinder (float length, float radius)
+csPtr<CS::Collisions::iColliderCylinder> csOpcodeCollisionSystem::CreateColliderCylinder (float length, float radius)
 {
   return NULL;
 }
 
-csRef<CS::Collisions::iColliderBox> csOpcodeCollisionSystem::CreateColliderBox (const csVector3& size)
+csPtr<CS::Collisions::iColliderBox> csOpcodeCollisionSystem::CreateColliderBox (const csVector3& size)
 {
   return NULL;
 }
 
-csRef<CS::Collisions::iColliderSphere> csOpcodeCollisionSystem::CreateColliderSphere (float radius)
+csPtr<CS::Collisions::iColliderSphere> csOpcodeCollisionSystem::CreateColliderSphere (float radius)
 {
   return NULL;
 }
 
-csRef<CS::Collisions::iColliderCapsule> csOpcodeCollisionSystem::CreateColliderCapsule (float length, float radius)
+csPtr<CS::Collisions::iColliderCapsule> csOpcodeCollisionSystem::CreateColliderCapsule (float length, float radius)
 {
   return NULL;
 }
 
-csRef<CS::Collisions::iColliderCone> csOpcodeCollisionSystem::CreateColliderCone (float length, float radius)
+csPtr<CS::Collisions::iColliderCone> csOpcodeCollisionSystem::CreateColliderCone (float length, float radius)
 {
   return NULL;
 }
 
-csRef<CS::Collisions::iColliderPlane> csOpcodeCollisionSystem::CreateColliderPlane (const csPlane3& plane)
+csPtr<CS::Collisions::iColliderPlane> csOpcodeCollisionSystem::CreateColliderPlane (const csPlane3& plane)
 {
   return NULL;
 }
 
-csRef<CS::Collisions::iColliderTerrain> csOpcodeCollisionSystem::CreateColliderTerrain (iTerrainSystem* terrain,
+csPtr<CS::Collisions::iColliderTerrain> csOpcodeCollisionSystem::CreateColliderTerrain (iTerrainSystem* terrain,
                                                                float minHeight, float maxHeight)
 {
   csRef<csOpcodeColliderTerrain> collider;
   collider.AttachNew (new csOpcodeColliderTerrain (terrain, this));
 
-  return collider;
+  return csPtr<CS::Collisions::iColliderTerrain>(collider);
 }
 
-csRef<CS::Collisions::iCollisionObject> csOpcodeCollisionSystem::CreateCollisionObject ()
+csPtr<CS::Collisions::iCollisionObject> csOpcodeCollisionSystem::CreateCollisionObject ()
+{
+  csRef<csOpcodeCollisionObject> collObject;
+  collObject.AttachNew (new csOpcodeCollisionObject (this));
+
+  return csPtr<CS::Collisions::iCollisionObject>(collObject);
+}
+
+csPtr<CS::Collisions::iCollisionGhostObject> csOpcodeCollisionSystem::CreateGhostCollisionObject()
 {
   csRef<csOpcodeCollisionObject> collObject;
   collObject.AttachNew (new csOpcodeCollisionObject (this));
@@ -789,13 +794,13 @@ csRef<CS::Collisions::iCollisionObject> csOpcodeCollisionSystem::CreateCollision
   return collObject;
 }
 
-csRef<CS::Collisions::iCollisionActor> csOpcodeCollisionSystem::CreateCollisionActor ()
+csPtr<CS::Collisions::iCollisionActor> csOpcodeCollisionSystem::CreateCollisionActor (CS::Collisions::iCollider* collider)
 {
   //TODO
   return NULL;
 }
 
-csRef<CS::Collisions::iCollisionSector> csOpcodeCollisionSystem::CreateCollisionSector ()
+csPtr<CS::Collisions::iCollisionSector> csOpcodeCollisionSystem::CreateCollisionSector ()
 {
   csRef<csOpcodeCollisionSector> collSector;
   collSector.AttachNew (new csOpcodeCollisionSector (this));

@@ -182,7 +182,9 @@ csPtr<CS::Collisions::iCollisionGhostObject> csBulletSystem::CreateGhostCollisio
 
 csPtr<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject ()
 {
-  return csRef<CS::Physics::iRigidBody>(CreateStaticRigidBody());
+  csRef<CS::Physics::iRigidBody> ref = CreateStaticRigidBody();
+  //return csPtr<CS::Collisions::iCollisionObject> ();
+  return csPtr<CS::Collisions::iCollisionObject> (ref);
 }
 
 csPtr<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor (CS::Collisions::iCollider* collider)
@@ -392,7 +394,7 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoT
                                                     float minAngle, float maxAngle, int axis)
 {
   if (axis < 0 || axis > 2)
-    return nullptr;
+    return csPtr<CS::Physics::iJoint> (nullptr);
   csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   joint->SetRotConstraints (true, true, true);
@@ -417,7 +419,7 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector
                                                      float minAngle, float maxAngle, int axis)
 {
   if (axis < 0 || axis > 2)
-    return nullptr;
+    return csPtr<CS::Physics::iJoint> (nullptr);
   csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
   csVector3 minDistant (0.0f, 0.0f, 0.0f);
   csVector3 maxDistant (0.0f, 0.0f, 0.0f);

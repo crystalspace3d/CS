@@ -20,14 +20,16 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "common2.h"
 #include "collisionobject2.h"
 
-struct CS::Physics::iRigidBody;
-struct CS::Physics::iSoftBody;
+using namespace CS::Physics;
 
-enum CS::Physics::PhysicalBodyType;
+struct iRigidBody;
+struct iSoftBody;
+
+//enum PhysicalBodyType;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
-using CS::Physics::iPhysicalBody;
+//using CS::Physics::iPhysicalBody;
 
   /**
   * Class extended by csBulletRigidBody and csBulletSoftBody

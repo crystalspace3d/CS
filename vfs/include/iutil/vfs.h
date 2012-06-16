@@ -20,6 +20,9 @@
 #ifndef __CS_IUTIL_VFS_H__
 #define __CS_IUTIL_VFS_H__
 
+// current dev environment is 64-bit
+#define CS_SIZE_T_64BIT
+
 /**\file
  * Virtual File System SCF interface
  */
@@ -28,6 +31,14 @@
 #include "csutil/scf.h"
 #include "iutil/databuff.h"
 #include <time.h>
+
+//#ifndef CS_OFF64_T_DEFINED
+//#ifdef CS_64B_OFF_T
+//typedef off_t off64_t;
+//#else
+//typedef int64_t off64_t;
+//#endif
+//#endif
 
 namespace CS
 {
@@ -39,6 +50,40 @@ namespace CS
 struct iConfigFile;
 
 class csStringArray;
+
+/**
+ * File permission structure - used to query
+ * and set basic permissions of a file.
+ */
+struct csFilePermission
+{
+  bool user_read;
+  bool user_write;
+  bool user_execute;
+
+  bool group_read;
+  bool group_write;
+  bool group_execute;
+
+  bool others_read;
+  bool others_write;
+  bool others_execute;
+
+  /// Read permission
+  bool read;
+  /// Write permission
+  bool write;
+  /// Execute permission
+  bool execute;
+
+  /// empty constructor
+  csFilePermission() { }
+
+  csFilePermission(int octal)
+  : read(!!(octal & 0x04)), write(!!(octal & 0x02)), execute(!!(octal & 0x01))
+  {
+  }
+};
 
 /**
  * File time structure - used to query and set
@@ -150,6 +195,7 @@ namespace CS
 #define VFS_STATUS_IOERROR	5
 /** @} */
 
+
 /**
  * A replacement for FILE type in the virtual file space.
  *
@@ -158,13 +204,13 @@ namespace CS
  */
 struct iFile : public virtual iBase
 {
-  SCF_INTERFACE(iFile, 2, 2, 0);
+  SCF_INTERFACE(iFile, 3, 0, 0);
 
   /// Query file name (in VFS)
   virtual const char *GetName () = 0;
 
   /// Query file size
-  virtual size_t GetSize () = 0;
+  virtual uint64_t GetSize () = 0;
 
   /**
    * Check (and clear) file last error status
@@ -198,14 +244,14 @@ struct iFile : public virtual iBase
   virtual bool AtEOF () = 0;
 
   /// Query current file pointer.
-  virtual size_t GetPos () = 0;
+  virtual uint64_t GetPos () = 0;
 
   /**
    * Set new file pointer.
    * \param newpos New position in file.
    * \return True if the operation succeeded, else false.
    */
-  virtual bool SetPos (size_t newpos) = 0;
+  virtual bool SetPos (off64_t newpos, int ref = 0) = 0;
 
   /**
    * Request whole content of the file as a single data buffer.
@@ -238,9 +284,42 @@ struct iFile : public virtual iBase
    * \return A file object operating on a part of the original file.
    * \remarks Note that the returned file will not support writing.
    */
-  virtual csPtr<iFile> GetPartialView (size_t offset, size_t size = (size_t)~0) = 0;
+  virtual csPtr<iFile> GetPartialView (uint64_t offset,
+                                       uint64_t size = ~(uint64_t)0) = 0;
 };
 
+struct iFileSystem : public virtual iBase
+{
+  SCF_INTERFACE(iFileSystem, 0, 0, 0);
+
+  virtual csPtr<iFile> Open (const char *Path, bool UseCaching) = 0;
+
+  virtual bool Move (const char *OldPath, const char *NewPath) = 0;
+
+  virtual bool GetPermission (const char *FileName, /* const char *User,*/
+                              csFilePermission &oPerm) = 0;
+
+  virtual bool SetPermission (const char *FileName, /*const char *User,*/
+                              const csFilePermission &iPerm) = 0;
+
+  virtual bool GetTime (const char *FileName, csFileTime &oTime) = 0;
+
+  virtual bool SetTime (const char *FileName, const csFileTime &iTime) = 0;
+
+  virtual bool GetSize (const char *FileName, uint64_t &oSize) = 0;
+
+  virtual int GetStatus () = 0;
+};
+
+struct iArchiveHandler : public virtual iBase
+{
+  SCF_INTERFACE(iArchiveHandler, 0, 0, 0);
+
+  virtual csPtr<iFileSystem> GetFileSystem (const char *Path,
+                                            iFile *ArchiveFile) = 0;
+
+  
+};
 
 /**
  * The Virtual Filesystem Class is intended to be the only way for Crystal
@@ -273,7 +352,8 @@ struct iFile : public virtual iBase
  */
 struct iVFS : public virtual iBase
 {
-  SCF_INTERFACE(iVFS, 3, 1, 0);
+  SCF_INTERFACE(iVFS, 4, 0, 0);
+
 
   /// Set current working directory
   virtual bool ChDir (const char *Path) = 0;
@@ -461,6 +541,8 @@ struct iVFS : public virtual iBase
   virtual bool ChDirAuto (const char* path, const csStringArray* paths = 0,
   	const char* vfspath = 0, const char* filename = 0) = 0;
 
+  virtual bool MoveFile (const char *OldPath, const char *NewPath) = 0;
+
   /**
    * Query file date/time.
    * \return True if the query succeeded, else false.
@@ -472,12 +554,37 @@ struct iVFS : public virtual iBase
    */
   virtual bool SetFileTime (const char *FileName, const csFileTime &iTime) = 0;
 
+
   /**
    * Query file size (without opening it).
    * \return True if the query succeeded, else false.
    */
-  virtual bool GetFileSize (const char *FileName, size_t &oSize) = 0;
+  virtual bool GetFileSize (const char *FileName, uint64_t &oSize) = 0;
 
+  // if 64-bit, size_t is equivalent to uint64_t.
+  // deprecated overload is only available for non 64-bit systems.
+#ifndef CS_SIZE_T_64BIT
+  /**
+   * Query file size (without opening it).
+   * \return True if the query succeeded, else false.
+   */
+  CS_DEPRECATED_METHOD_MSG("Use uint64_t overload instead.")
+  virtual bool GetFileSize (const char *FileName, size_t &oSize) = 0;
+#endif
+
+  /**
+   * Query file permission.
+   * \return True if the query succeeded, else false.
+   */
+  virtual bool GetFilePermission (const char *FileName, 
+                                  csFilePermission &oPerm) = 0;
+
+  /**
+   * Set file permission.
+   * \return True if the operation succeeded, else false.
+   */
+  virtual bool SetFilePermission (const char *FileName,
+                                  const csFilePermission &iPerm) = 0;
   /**
    * Query real-world path from given VFS path.
    * \param FileName The virtual path for which the physical path is desired.

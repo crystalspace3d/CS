@@ -28,32 +28,32 @@
 class csPhysicalFile::PartialView : public scfImplementation1<PartialView, iFile>
 {
   csRef<csPhysicalFile> parent;
-  size_t pos;
-  size_t offset;
-  size_t size;
+  uint64_t pos;
+  uint64_t offset;
+  uint64_t size;
 
   int status;
 public:
-  PartialView (csPhysicalFile* parent, size_t offset, size_t size)
+  PartialView (csPhysicalFile* parent, uint64_t offset, uint64_t size)
     : scfImplementationType (this), parent (parent), pos (0), offset (offset), size (size),
       status (VFS_STATUS_OK)
   {}
 
   char const* GetName();
-  size_t GetSize();
+  uint64_t GetSize();
   int GetStatus();
 
   size_t Read(char* buffer, size_t nbytes);
   size_t Write(char const* data, size_t nbytes);
   void Flush();
   bool AtEOF();
-  size_t GetPos();
-  bool SetPos(size_t);
+  uint64_t GetPos();
+  bool SetPos(off64_t, int ref = 0);
 
   csPtr<iDataBuffer> GetAllData(bool nullterm = false);
   csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator* allocator);
 
-  csPtr<iFile> GetPartialView (size_t offset, size_t size = (size_t)~0);
+  csPtr<iFile> GetPartialView (uint64_t offset, uint64_t size = (uint64_t)~0LL);
 };
 
 int csPhysicalFile::GetStatus() { return last_error; }
@@ -107,6 +107,7 @@ size_t csPhysicalFile::Read(char* buff, size_t nbytes)
   {
     errno = 0;
     rc = fread(buff, 1, nbytes, fp);
+
     last_error = (errno == 0 ? VFS_STATUS_OK : VFS_STATUS_IOERROR);
   }
   else
@@ -138,11 +139,11 @@ char const* csPhysicalFile::GetName()
     return "#csPhysicalFile";
 }
 
-size_t csPhysicalFile::GetSize()
+uint64_t csPhysicalFile::GetSize()
 {
   CS::Threading::ScopedLock<CS::Threading::Mutex> lock (mutex);
 
-  size_t len = (size_t)-1;
+  uint64_t len = (uint64_t)-1;
   if (fp != 0)
   {
     errno = 0;
@@ -191,11 +192,11 @@ bool csPhysicalFile::AtEOF()
   return rc;
 }
 
-size_t csPhysicalFile::GetPos()
+uint64_t csPhysicalFile::GetPos()
 {
   CS::Threading::ScopedLock<CS::Threading::Mutex> lock (mutex);
 
-  size_t pos = (size_t)-1;
+  uint64_t pos = (uint64_t)-1;
   if (fp != 0)
   {
     errno = 0;
@@ -207,7 +208,7 @@ size_t csPhysicalFile::GetPos()
   return pos;
 }
 
-bool csPhysicalFile::SetPos(size_t p)
+bool csPhysicalFile::SetPos(off64_t p, int ref)
 {
   CS::Threading::ScopedLock<CS::Threading::Mutex> lock (mutex);
 
@@ -275,11 +276,11 @@ csPtr<iDataBuffer> csPhysicalFile::GetAllData(CS::Memory::iAllocator* allocator)
   return csPtr<iDataBuffer>(data);
 }
 
-csPtr<iFile> csPhysicalFile::GetPartialView (size_t offset, size_t size)
+csPtr<iFile> csPhysicalFile::GetPartialView (uint64_t offset, uint64_t size)
 {
   if (!fp) return (iFile*)0;
 
-  size_t const len = csMin (size, GetSize() - offset);
+  uint64_t const len = csMin (size, GetSize() - offset);
   return csPtr<iFile> (new PartialView (this, offset, len));
 }
 
@@ -290,7 +291,7 @@ char const* csPhysicalFile::PartialView::GetName()
   return parent->GetName();
 }
 
-size_t csPhysicalFile::PartialView::GetSize()
+uint64_t csPhysicalFile::PartialView::GetSize()
 {
   status = VFS_STATUS_OK;
   return size;
@@ -342,12 +343,12 @@ bool csPhysicalFile::PartialView::AtEOF()
   return pos >= size;
 }
 
-size_t csPhysicalFile::PartialView::GetPos()
+uint64_t csPhysicalFile::PartialView::GetPos()
 {
   return pos;
 }
 
-bool csPhysicalFile::PartialView::SetPos(size_t p)
+bool csPhysicalFile::PartialView::SetPos(off64_t p, int ref)
 {
   if (p > size)
     return false;
@@ -358,10 +359,11 @@ bool csPhysicalFile::PartialView::SetPos(size_t p)
 csPtr<iDataBuffer> csPhysicalFile::PartialView::GetAllData (bool nullterm)
 {
   csDataBuffer* data = 0;
-  size_t const len = GetSize();
+  // Partial view might be too large to fit in memory...
+  uint64_t const len = GetSize();
   if (GetStatus() == VFS_STATUS_OK)
   {
-    size_t const pos = GetPos();
+    uint64_t const pos = GetPos();
     if (GetStatus() == VFS_STATUS_OK)
     {
       SetPos (0);
@@ -406,8 +408,9 @@ csPtr<iDataBuffer> csPhysicalFile::PartialView::GetAllData (CS::Memory::iAllocat
   return csPtr<iDataBuffer>(data);
 }
 
-csPtr<iFile> csPhysicalFile::PartialView::GetPartialView (size_t offset, size_t size)
+csPtr<iFile> csPhysicalFile::PartialView::GetPartialView (uint64_t offset,
+                                                          uint64_t size)
 {
-  size_t const len = csMin (size, GetSize() - offset);
+  uint64_t const len = csMin (size, GetSize() - offset);
   return parent->GetPartialView (this->offset + offset, len);
 }

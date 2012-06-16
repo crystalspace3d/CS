@@ -51,12 +51,22 @@ namespace
 const char* csMemFile::GetName() { return "#csMemFile"; }
 const char* csMemFile::GetData() const 
 { return buffer ? buffer->GetData() : 0; }
-size_t csMemFile::GetSize() { return size; }
+uint64_t csMemFile::GetSize() { return size; }
 int csMemFile::GetStatus() { return status; }
 void csMemFile::Flush() {}
 bool csMemFile::AtEOF() { return (cursor >= size); }
-size_t csMemFile::GetPos() { return cursor; }
-bool csMemFile::SetPos(size_t p) { cursor = p < size ? p : size; return true; }
+uint64_t csMemFile::GetPos() { return cursor; }
+bool csMemFile::SetPos(off64_t p, int ref)
+{
+  if (p < 0)
+  {
+    p = size; // prevent  being negative
+    //return false;
+  }
+
+  cursor = (p < (off64_t)size) ? p : size;
+  return true;
+}
 
 csMemFile::csMemFile() 
   : scfImplementationType (this),
@@ -190,11 +200,13 @@ csPtr<iDataBuffer> csMemFile::GetAllData (CS::Memory::iAllocator* /*allocator*/)
   return GetAllData ();
 }
 
-csPtr<iFile> csMemFile::GetPartialView (size_t offset, size_t size)
+csPtr<iFile> csMemFile::GetPartialView (uint64_t offset, uint64_t size)
 {
   if (!buffer) return 0;
+  if (offset < 0) offset = 0; // cannot have negative offset
+  if (size < 0) size = this->size;
   copyOnWrite = true;
-  size_t bufSize (csMin (size, GetSize() - offset));
+  size_t bufSize (csMin ((size_t)size, (size_t)(GetSize() - offset))); 
   csRef<iDataBuffer> viewBuffer;
   if ((offset == 0) && (buffer->GetSize() == bufSize))
   {

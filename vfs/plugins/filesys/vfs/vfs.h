@@ -51,7 +51,7 @@ protected:
   // Filename in VFS
   char *Name;
   // File size (initialized in constructor)
-  size_t Size;
+  uint64_t Size;
   // Last error code
   int Error;
   // Verbosity flags.
@@ -70,7 +70,7 @@ public:
   /// Query file name (in VFS)
   virtual const char *GetName () { return Name; }
   /// Query file size
-  virtual size_t GetSize () { return Size; }
+  virtual uint64_t GetSize () { return Size; }
   /// Check (and clear) file last error status
   virtual int GetStatus ();
 
@@ -83,11 +83,11 @@ public:
   /// Replacement for standard feof()
   virtual bool AtEOF () = 0;
   /// Query current file pointer
-  virtual size_t GetPos () = 0;
+  virtual uint64_t GetPos () = 0;
   /// Get entire file data at once, if possible, or 0
   virtual csPtr<iDataBuffer> GetAllData (bool nullterm = false) = 0;
   /// Set new file pointer
-  virtual bool SetPos (size_t newpos) = 0;
+  virtual bool SetPos (off64_t newpos, int ref = 0) = 0;
 protected:
   friend class csVFS;
 };
@@ -255,13 +255,28 @@ public:
   /// Initialize the Virtual File System
   virtual bool Initialize (iObjectRegistry *object_reg);
 
+  /// Move one file to new VFS path
+  virtual bool MoveFile (const char *OldPath, const char *NewPath);
+
   /// Query file local date/time
   virtual bool GetFileTime (const char *FileName, csFileTime &oTime);
   /// Set file local date/time
   virtual bool SetFileTime (const char *FileName, const csFileTime &iTime);
+ 
+  /// Query file permissions
+  virtual bool GetFilePermission (const char *FileName,
+                                  csFilePermission &oPerm);
+  /// Set file permissions
+  virtual bool SetFilePermission (const char *FileName,
+                                  const csFilePermission &iPerm);
 
+// this function is enabled only when size_t is not 64-bit
+#ifndef CS_SIZE_T_64BIT
   /// Query file size (without opening it)
   virtual bool GetFileSize (const char *FileName, size_t &oSize);
+#endif
+  /// Query file size (without opening it)
+  virtual bool GetFileSize (const char *FileName, uint64_t &oSize);
 
   /**
    * Query real-world path from given VFS path.

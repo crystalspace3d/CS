@@ -279,7 +279,7 @@ namespace lighter
         csRef<Light> light = ligthIt.Next();
         if (!light->IsRealLight())
         {
-          addSector(light->GetSector());
+          addSector(light->GetOriginalLight()->GetSector());
         }
       }
 
@@ -291,7 +291,7 @@ namespace lighter
 
         if (!light->IsRealLight())
         {
-          addSector(light->GetSector());
+          addSector(light->GetOriginalLight()->GetSector());
         }
       }
     }
@@ -321,13 +321,17 @@ namespace lighter
     int numPasses = 
       globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
 
+    csRefArray<iThreadReturn> returns;
     SectorHash::GlobalIterator sectIt = sectors.GetIterator();
     while (sectIt.HasNext())
     {
       csRef<Sector> sect = sectIt.Next();
 
-      sectorProcessor->ComputeSectorLighting(sect,numPasses,enableRaytracer,enablePhotonMapper);
+      returns.Push(sectorProcessor->ComputeSectorLighting(sect,numPasses,enableRaytracer,enablePhotonMapper));
     }
+
+    globalLighter->threadManager->Wait(returns);
+    globalLighter->threadManager->Wait(lightComputations);
   }
 
   void SectorGroup::Process(bool enableRaytracer, bool enablePhotonMapper)
@@ -347,14 +351,14 @@ namespace lighter
 
   THREADED_CALLABLE_IMPL1(SectorProcessor,BuildKDTree, csRef<Sector> sector)
   {
-    Statistics::Progress progress("Super",2);
+    Statistics::Progress progress("Build KdTree",2);
     sector->BuildKDTree(progress);
     return true;
   }
 
   THREADED_CALLABLE_IMPL1(SectorProcessor,BuildPhotonMaps, csRef<Sector> sector)
   {
-    Statistics::Progress progress("Super",2);
+    Statistics::Progress progress("Build Photons Maps",2);
     sector->InitPhotonMap();
     PhotonmapperLighting lighting;
 
@@ -374,11 +378,13 @@ namespace lighter
       csVector3 (/* -1/sqrt(6) */ -0.408248f, /* -1/sqrt(2) */ -0.707107f, /* 1/sqrt(3) */ 0.577350f)
     };
 
+    csRefArray<iThreadReturn> returns;
+
     // Loop through lighting calculation for directional dependencies
     for (int p = 0; p < numPasses; p++)
     {
       // Construct a light calculator
-      LightCalculator lighting (bases[p], p);
+      LightCalculator* lighting = new LightCalculator(bases[p], p);
 
       // Add components to the light calculator
       RaytracerLighting *raytracerComponent = NULL;
@@ -387,23 +393,24 @@ namespace lighter
       if(enableRaytracer)
       {
         raytracerComponent = new RaytracerLighting (bases[p], p);
-        lighting.addComponent(raytracerComponent, 1.0f, 0.0f);
+        lighting->addComponent(raytracerComponent, 1.0f, 0.0f);
       }
 
       if(enablePhotonMapper)
       {
         photonmapperComponent = new PhotonmapperLighting();
-        lighting.addComponent(photonmapperComponent, 1.0f, 0.0f);
+        lighting->addComponent(photonmapperComponent, 1.0f, 0.0f);
       }
       
       Statistics::Progress progress("Lighting computation",100);
       // Compute the lighting
-      lighting.ComputeSectorStaticLighting(sector,progress);
+      returns.Merge(lighting->ComputeSectorStaticLighting(sector,progress));
 
       if(raytracerComponent != NULL) delete raytracerComponent;
       if(photonmapperComponent != NULL) delete photonmapperComponent;
     }
 
+    sector->sectorGroup->lightComputations.Merge(returns);
     return true;
   }
 

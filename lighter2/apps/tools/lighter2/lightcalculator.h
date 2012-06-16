@@ -35,19 +35,28 @@ namespace lighter
   class Object;
   
   // Class to calculate direct lighting
-  class LightCalculator : private CS::NonCopyable
+  class LightCalculator : public ThreadedCallable<LightCalculator>,
+                          public scfImplementation0<LightCalculator>,
+                          private CS::NonCopyable
   {
   public:
     // Constructor & Destructor
     LightCalculator (const csVector3& tangentSpaceNorm, size_t subLightmapNum);
     ~LightCalculator ();
 
+    iObjectRegistry* GetObjectRegistry() const
+    { return objReg; }
+
     void addComponent(LightComponent* newComponent, float scaler = 1.0, float offset = 0.0);
 
     // Loop through all objects in a sector and calculate the
     // static light using all attached LightComponents
-    void ComputeSectorStaticLighting (Sector* sector, 
+    csRefArray<iThreadReturn> ComputeSectorStaticLighting (Sector* sector, 
             Statistics::Progress& progress);
+
+    THREADED_CALLABLE_DECL2(LightCalculator,ComputeObjectGroupLighting,csThreadReturn,
+      Sector*,sector,csArray<csRef<lighter::Object> >*, objGroup,
+      QueueType::THREADED,true,false);
 
   private:
     void ComputeObjectStaticLightingForLightmap (Sector* sector,
@@ -71,6 +80,8 @@ namespace lighter
 
     size_t subLightmapNum;
 //    csBitArray affectingLights;
+
+    iObjectRegistry* objReg;
   };
 }
 

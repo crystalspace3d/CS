@@ -53,7 +53,8 @@ namespace lighter
 
     // Set a pixel to given color
     inline void SetAddPixel (size_t u, size_t v, csColor c)
-    {     
+    {
+      CS::Threading::MutexScopedLock lock (writeMutex);
       colorArray[v*GetWidth() + u] += c;
     }
 
@@ -91,7 +92,7 @@ namespace lighter
     {
       if (!IsLocked() && (colorArray == 0))
       {
-	colorArray = AllocColors();
+        colorArray = AllocColors();
       }           
       Swappable::Lock();
 
@@ -135,6 +136,8 @@ namespace lighter
     csString filename;
 
     iTextureWrapper* texture;
+
+    CS::Threading::Mutex writeMutex;
 
     inline csColor* BogusPointer () const 
     { return ((csColor*)~0) - (GetWidth() * GetHeight()); }

@@ -208,6 +208,8 @@ void csBulletRigidBody::CreateBulletObject()
     infos.m_restitution = GetElasticity();
     infos.m_linearDamping = GetLinearDampener();
     infos.m_angularDamping = GetRollingDampener();
+    linVel = btBody->getLinearVelocity();
+    angVel = btBody->getAngularVelocity();
   }
   else
   {

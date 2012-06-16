@@ -74,7 +74,7 @@ namespace lighter
 
     THREADED_CALLABLE_DECL4(SectorProcessor,ComputeSectorLighting,csThreadReturn,
       csRef<Sector>,sector,int,numPasses,bool, enableRaytracer,bool, enablePhotonMapper,
-      QueueType::THREADED,true,false);
+      QueueType::THREADED,false,false);
 
   private :
     iObjectRegistry* objReg;
@@ -175,6 +175,8 @@ namespace lighter
       void addSector(csRef<Sector> sector);
 
       void Process(bool enableRaytracer, bool enablePhotonMapper);
+
+      csRefArray<iThreadReturn> lightComputations;
 
     private :
 

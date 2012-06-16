@@ -30,7 +30,7 @@ namespace lighter
   LightCalculator::LightCalculator (const csVector3& tangentSpaceNorm, 
     size_t subLightmapNum) : tangentSpaceNorm (tangentSpaceNorm),
     fancyTangentSpaceNorm (!(tangentSpaceNorm - csVector3 (0, 0, 1)).IsZero ()),
-    subLightmapNum (subLightmapNum)
+    subLightmapNum (subLightmapNum),objReg(globalLighter->objectRegistry),scfImplementationType(this)
   {}
 
   LightCalculator::~LightCalculator() {}
@@ -42,7 +42,51 @@ namespace lighter
     componentOffset.push_back(offset);
   }
 
-  void LightCalculator::ComputeSectorStaticLighting (
+  THREADED_CALLABLE_IMPL2(LightCalculator,ComputeObjectGroupLighting,
+      Sector* sector, csArray<csRef<lighter::Object> >* objGroup)
+  {
+    Statistics::Progress progress("Object lighting",2);
+    // Create a progressState to easily increment progress on this task
+    Statistics::ProgressState progressState(progress, 100000);
+
+    // Initialize the sampler
+    SamplerSequence<2> masterSampler;
+
+
+    // Rest the object looper and loop though all object again
+    csArray<csRef<lighter::Object> >::Iterator objIterator = objGroup->GetIterator();
+    while (objIterator.HasNext ())
+    {
+      // Get reference to next object
+      csRef<Object> obj = objIterator.Next ();
+
+      // Skip unlight objects
+      if (obj->GetFlags ().Check (OBJECT_FLAG_NOLIGHT))
+        continue;
+
+      // Create the list of affecting lights in each component
+      ComputeAffectingLights (obj);
+
+      // Either light per vertex or add light to the lightmap
+      if (obj->lightPerVertex)
+      {
+        ComputeObjectStaticLightingForVertex (
+          sector, obj, masterSampler, progressState);
+      }
+      else
+      {
+        ComputeObjectStaticLightingForLightmap (
+          sector, obj, masterSampler, progressState);
+      }
+
+    }
+
+    delete objGroup;
+
+    return true;
+  }
+
+  csRefArray<iThreadReturn> LightCalculator::ComputeSectorStaticLighting (
     Sector* sector, Statistics::Progress& progress)
   {
     // Set task progress to 0%
@@ -50,7 +94,7 @@ namespace lighter
     size_t totalElements = 0;
 
     const int numThreads = globalConfig.GetLighterProperties().numThreads;
-    csArray<csArray<csRef<lighter::Object>>*> objectsThreadTab;
+    csArray<csArray<csRef<lighter::Object> >*> objectsThreadTab;
 
     for (int i =0; i < numThreads; i++)
     {
@@ -97,43 +141,15 @@ namespace lighter
 
     }
 
-    // Initialize the sampler
-    SamplerSequence<2> masterSampler;
-
-    // Create a progressState to easily increment progress on this task
-    Statistics::ProgressState progressState(progress, totalElements);
-
-    // Rest the object looper and loop though all object again
-    giter.Reset();
-    while (giter.HasNext ())
+    csRefArray<iThreadReturn> returns;
+    for (int i =0; i < numThreads; i++)
     {
-      // Get reference to next object
-      csRef<Object> obj = giter.Next ();
-
-      // Skip unlight objects
-      if (obj->GetFlags ().Check (OBJECT_FLAG_NOLIGHT))
-        continue;
-
-      // Create the list of affecting lights in each component
-      ComputeAffectingLights (obj);
-
-      // Either light per vertex or add light to the lightmap
-      if (obj->lightPerVertex)
-      {
-        ComputeObjectStaticLightingForVertex (
-          sector, obj, masterSampler, progressState);
-      }
-      else
-      {
-        ComputeObjectStaticLightingForLightmap (
-          sector, obj, masterSampler, progressState);
-      }
-
+      returns.Push(ComputeObjectGroupLighting(sector,objectsThreadTab[i]));
     }
 
     // Set task progress to 100%
     progress.SetProgress (1);
-    return;
+    return returns;
   }
 
   void LightCalculator::ComputeObjectStaticLightingForLightmap (
@@ -243,7 +259,6 @@ namespace lighter
           }
 
           // Update the normal lightmap
-	#pragma omp critical
           normalLM->SetAddPixel (u, v, c * pixelAreaPart);
 
           // Loop through pseudo-dynamic lights

@@ -764,7 +764,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
     else
     {
       // TODO: How to get an instance of iCollisionSector?
-      return nullptr;
+      return csPtr<iParticleEffector> (nullptr);
       //forceEffector = factory->CreateForceWithCollisions ();
     }
 
@@ -829,6 +829,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
         return 0;
       }
     }
+
+    return 0;
   }
 
   csPtr<iBase> ParticlesFactoryLoader::Parse (iDocumentNode* node,

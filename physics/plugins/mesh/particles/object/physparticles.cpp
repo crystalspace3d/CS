@@ -16,17 +16,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   CS_IMPLEMENT_STATIC_VAR(GetVGen, csRandomVectorGen, ());
 
   ParticleEffectorForceWithCollisions::ParticleEffectorForceWithCollisions (csRef<CS::Collisions::iCollisionSector> collisionSector)
-    : scfImplementationType (this),
-    collisionSector(collisionSector),
-    acceleration (collisionSector->GetGravity()), force (0.0f), randomAcceleration (0.0f, 0.0f, 0.0f),
-    do_randomAcceleration (false)
+    : scfImplementationType (this), acceleration (0.0f), force (0.0f),
+    randomAcceleration (0.0f), do_randomAcceleration (false), collisionSector (collisionSector)
   {
     SetRestitutionMagnitude(0.5);
+    //acceleration = collisionSector->GetGravity ();
   }
 
   csPtr<iParticleEffector> ParticleEffectorForceWithCollisions::Clone () const
   {
-    return nullptr;
+    return csPtr<iParticleEffector> (nullptr);
   }
 
   void ParticleEffectorForceWithCollisions::EffectParticles (iParticleSystemBase* system,
@@ -35,7 +34,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     for (size_t idx = 0; idx < particleBuffer.particleCount; ++idx)
     {
       csParticle& particle = particleBuffer.particleData[idx];
-      csParticleAux& particleAux = particleBuffer.particleAuxData[idx];
+      //csParticleAux& particleAux = particleBuffer.particleAuxData[idx];
 
       csVector3 a = acceleration;
 

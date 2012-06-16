@@ -39,7 +39,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     // compute the size of the portal
     const csVector3* vert = portal->GetWorldVertices ();
     csBox3 box;
-    for (size_t i = 0; i < portal->GetVertexIndicesCount (); i++)
+    for (int i = 0; i < portal->GetVertexIndicesCount (); i++)
       box.AddBoundingVertex (vert[portal->GetVertexIndices ()[i]]);
 
     float maxEdge = csMax (box.GetSize ().x, box.GetSize ().y);
@@ -50,7 +50,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     
     // place the portal at the center of the box that represents it
     csVector3 size = 0.499f * box.GetSize ();
-    csVector3 centerDist = 1f * size * normal;
+    csVector3 centerDist = 1.0f * size * normal;
     csOrthoTransform realTrans = meshTrans;
     realTrans.Translate(centerDist);
     ghostPortal->setWorldTransform (CSToBullet (realTrans, sourceSector->sys->getInternalScale ()));
@@ -85,7 +85,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     for (int j = 0; j < ghostPortal->getNumOverlappingObjects (); j++)
     {
-      btTransform tran = ghostPortal->getWorldTransform ();
+      //btTransform tran = ghostPortal->getWorldTransform ();
       btCollisionObject* obj = ghostPortal->getOverlappingObject (j);
       iCollisionObject* csObj = static_cast<iCollisionObject*> (obj->getUserPointer ());
       csBulletCollisionObject* csBulletObj = dynamic_cast<csBulletCollisionObject*> (csObj);
@@ -261,9 +261,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         // Check if it has traversed the portal
         csOrthoTransform transform = csObj->GetTransform ();
         csVector3 newPosition = transform.GetOrigin ();
-        csVector3 oldPosition = oldTrans[index].GetOrigin ();
+        //csVector3 oldPosition = oldTrans[index].GetOrigin ();
         csVector3 orien1 = newPosition - portal->GetWorldSphere ().GetCenter ();
-        csVector3 orien2 = oldPosition - portal->GetWorldSphere ().GetCenter ();
+        //csVector3 orien2 = oldPosition - portal->GetWorldSphere ().GetCenter ();
         float a = orien1 * portal->GetWorldPlane ().GetNormal ();
         //float b = orien2 * portal->GetWorldPlane ().GetNormal ();
         if ( a >= 0)

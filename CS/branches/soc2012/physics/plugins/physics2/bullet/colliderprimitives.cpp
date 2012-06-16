@@ -64,7 +64,7 @@ csRef<iTriangleMesh> FindColdetTriangleMesh (iMeshWrapper* mesh,
     csFPrintf (stderr, "iCollider: No collision polygons, triangles or vertices on mesh factory %s\n",
       CS::Quote::Single (mesh->QueryObject ()->GetName ()));
 
-    return nullptr;
+    return csRef<iTriangleMesh> (nullptr);
   }
   return triMesh;
 }

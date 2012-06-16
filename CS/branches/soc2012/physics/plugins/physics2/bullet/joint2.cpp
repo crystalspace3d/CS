@@ -54,11 +54,12 @@ void csBulletJoint::Attach (CS::Physics::iPhysicalBody* body1, CS::Physics::iPhy
   CS_ASSERT (body1);
 
   //csBulletCollisionObject *collBody1 = dynamic_cast<csBulletCollisionObject*> (body1);
+/*
   csBulletCollisionObject* collBody2 = nullptr;
 
   if (body2)
     collBody2 = dynamic_cast<csBulletCollisionObject*> (body2);
-
+*/
   jointFlag |= JOINT_SOFT;
   // If the joint is attached to two bodies.
   if (body2)

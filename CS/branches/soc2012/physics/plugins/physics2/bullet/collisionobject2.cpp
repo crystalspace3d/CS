@@ -81,7 +81,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csOrthoTransform csBulletCollisionObject::GetTransform () const
   {
-    float inverseScale = system->getInverseInternalScale ();
+    //float inverseScale = system->getInverseInternalScale ();
 
     if (isTerrain)
     {

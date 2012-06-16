@@ -190,7 +190,7 @@ csBulletSector::~csBulletSector ()
 void csBulletSector::SetGravity (const csVector3& v)
 {
   // first re-activate all objects
-  for (int i = 0; i < collisionObjects.GetSize(); ++i)
+  for (size_t i = 0; i < collisionObjects.GetSize(); ++i)
   {
     if (collisionObjects[i]->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
     {
@@ -223,7 +223,7 @@ void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* objec
   case CS::Collisions::COLLISION_OBJECT_PHYSICAL_STATIC:
     {
       iPhysicalBody* phyBody = obj->QueryPhysicalBody();
-      int cflags = obj->btObject->getCollisionFlags();
+      //int cflags = obj->btObject->getCollisionFlags();
       //obj->btObject->setCollisionFlags(obj->btObject->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
       if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
       {
@@ -1148,7 +1148,7 @@ void csBulletSector::SetInformationToCopy (csBulletCollisionObject* obj,
 
   csOrthoTransform trans = obj->GetTransform () * warpTrans;
 
-  btTransform btTrans = CSToBullet (trans, sys->getInternalScale ());
+  //btTransform btTrans = CSToBullet (trans, sys->getInternalScale ());
 
   if (obj->IsPhysicalObject())
   {

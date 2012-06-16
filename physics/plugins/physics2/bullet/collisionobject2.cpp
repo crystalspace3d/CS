@@ -56,13 +56,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
         if (btObject)
         {
-          //btRigidBody::upcast (btObject)->setAngularFactor(23);
           btRigidBody::upcast (btObject)->setMotionState (motionState);
           btRigidBody::upcast (btObject)->setCenterOfMassTransform (motionState->m_graphicsWorldTrans);
         }
 
         if (insideWorld)
+        {
           sector->bulletWorld->addRigidBody (btRigidBody::upcast (btObject), collGroup.value, collGroup.mask);
+        }
       }
       else
       {
@@ -273,6 +274,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       }
       else
       {
+        // TODO: Highly inconsistent
         if (objectCopy)
         {
           index -= contactObjects.GetSize ();
@@ -299,6 +301,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         }
         else
         {
+          // TODO: Highly inconsistent
           if (objectCopy)
           {
             index -= ghost->getNumOverlappingObjects ();

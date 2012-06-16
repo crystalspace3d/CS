@@ -489,7 +489,7 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
   joint->SetMinimumDistance (trans);
   joint->SetPosition (position);
   joint->SetType (RIGID_PIVOT_JOINT);
-  joint->Attach (body, NULL);
+  joint->Attach (body, nullptr);
   //joints.Push (joint);
   return csPtr<CS::Physics::iJoint>(joint);
 }
@@ -498,7 +498,7 @@ csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3 start,
                                              csVector3 end,
                                              size_t segmentCount)
 {
-  //Don't know the soft world info currently. So just set it to NULL
+  //Don't know the soft world info currently. So just set it to nullptr
   
   btSoftBody* body = btSoftBodyHelpers::CreateRope
     (*defaultInfo, CSToBullet (start, internalScale),
@@ -524,7 +524,7 @@ csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3* vertices, s
     materials[i] = 1;
   }
 
-  btSoftBody* body = new btSoftBody(NULL, int (vertexCount), &nodes[0], &materials[0]);
+  btSoftBody* body = new btSoftBody(nullptr, int (vertexCount), &nodes[0], &materials[0]);
 
   // Create the links between the nodes
   for (size_t i = 1; i < vertexCount; i++)

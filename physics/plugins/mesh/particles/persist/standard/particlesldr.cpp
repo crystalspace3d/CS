@@ -553,70 +553,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
 
     if (!strcasecmp (effectorType, "force"))
     {
-      csRef<iParticleBuiltinEffectorForce> forceEffector = factory->CreateForce ();
-      effector = forceEffector;
-
-      csRef<iDocumentNodeIterator> it = node->GetNodes ();
-      while (it->HasNext ())
-      {
-        csRef<iDocumentNode> child = it->Next ();
-
-        if (child->GetType () != CS_NODE_ELEMENT) 
-          continue;
-
-        const char* value = child->GetValue ();
-        csStringID id = xmltokens.Request (value);
-        switch(id)
-        {
-        case XMLTOKEN_ACCELERATION:
-          {
-            csVector3 acceleration;
-            if (!synldr->ParseVector (child, acceleration))
-            {
-              synldr->ReportError ("crystalspace.particleloader.parseeffector", child,
-                "Error parsing acceleration!");
-            }
-
-            forceEffector->SetAcceleration (acceleration);
-          }
-          break;
-        case XMLTOKEN_FORCE:
-          {
-            csVector3 force;
-            if (!synldr->ParseVector (child, force))
-            {
-              synldr->ReportError ("crystalspace.particleloader.parseeffector", child,
-                "Error parsing force!");
-            }
-            forceEffector->SetForce (force);
-          }
-          break;
-        case XMLTOKEN_RANDOMACCELERATION:
-          {
-            csVector3 randomAcc;
-            csRef<iDocumentAttribute> attr = child->GetAttribute ("x");
-            if (attr)
-            {
-              if (!synldr->ParseVector (child, randomAcc))
-              {
-                synldr->ReportError ("crystalspace.particleloader.parseeffector", child,
-                  "Error parsing randomacceleration!");
-              }
-            }
-            else
-            {
-              float r = child->GetContentsValueAsFloat ();
-              randomAcc.Set (r, r, r);
-            }
-
-            forceEffector->SetRandomAcceleration (randomAcc);
-          }
-          break;
-        default:
-          synldr->ReportBadToken (child); 
-          return 0;
-        }
-      }
+      effector = ParseEffectorForce(node, factory);
     }
     else if (!strcasecmp (effectorType, "linear"))
     {
@@ -815,13 +752,90 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
     return csPtr<iParticleEffector> (effector);
   }
 
+  csPtr<iParticleEffector> ParticlesBaseLoader::ParseEffectorForce (iDocumentNode* node, csRef<iParticleBuiltinEffectorFactory> factory)
+  {
+    bool forceWithColl = node->GetAttribute("collisions") != nullptr;
+    
+    csRef<iParticleBuiltinEffectorForce> forceEffector;
+    if (forceWithColl)
+    {
+      forceEffector = factory->CreateForce ();
+    }
+    else
+    {
+      // TODO: How to get an instance of iCollisionSector?
+      return nullptr;
+      //forceEffector = factory->CreateForceWithCollisions ();
+    }
 
+    csRef<iDocumentNodeIterator> it = node->GetNodes ();
+    while (it->HasNext ())
+    {
+      csRef<iDocumentNode> child = it->Next ();
+
+      if (child->GetType () != CS_NODE_ELEMENT) 
+        continue;
+
+      const char* value = child->GetValue ();
+      csStringID id = xmltokens.Request (value);
+      switch(id)
+      {
+      case XMLTOKEN_ACCELERATION:
+        {
+          csVector3 acceleration;
+          if (!synldr->ParseVector (child, acceleration))
+          {
+            synldr->ReportError ("crystalspace.particleloader.parseeffector", child,
+              "Error parsing acceleration!");
+          }
+
+          forceEffector->SetAcceleration (acceleration);
+        }
+        break;
+      case XMLTOKEN_FORCE:
+        {
+          csVector3 force;
+          if (!synldr->ParseVector (child, force))
+          {
+            synldr->ReportError ("crystalspace.particleloader.parseeffector", child,
+              "Error parsing force!");
+          }
+          forceEffector->SetForce (force);
+        }
+        break;
+      case XMLTOKEN_RANDOMACCELERATION:
+        {
+          csVector3 randomAcc;
+          csRef<iDocumentAttribute> attr = child->GetAttribute ("x");
+          if (attr)
+          {
+            if (!synldr->ParseVector (child, randomAcc))
+            {
+              synldr->ReportError ("crystalspace.particleloader.parseeffector", child,
+                "Error parsing randomacceleration!");
+            }
+          }
+          else
+          {
+            float r = child->GetContentsValueAsFloat ();
+            randomAcc.Set (r, r, r);
+          }
+
+          forceEffector->SetRandomAcceleration (randomAcc);
+        }
+        break;
+      default:
+        synldr->ReportBadToken (child); 
+        return 0;
+      }
+    }
+  }
 
   csPtr<iBase> ParticlesFactoryLoader::Parse (iDocumentNode* node,
     iStreamSource* ssource, iLoaderContext* ldr_context, iBase* context)
   {
     csRef<iMeshObjectType> type = csLoadPluginCheck<iMeshObjectType> (
-  	objectRegistry, "crystalspace.mesh.object.particles", false);
+      objectRegistry, "crystalspace.mesh.object.particles", false);
     if (!type)
     {
       synldr->ReportError (

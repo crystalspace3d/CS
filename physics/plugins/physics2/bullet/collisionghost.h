@@ -12,6 +12,7 @@ class csBulletCollisionGhostObject : public scfVirtImplementationExt1<
 {
 public:
   csBulletCollisionGhostObject(csBulletSystem* sys);
+  virtual ~csBulletCollisionGhostObject();
   virtual bool IsPhysicalObject() const { return false; }
   virtual CS::Collisions::CollisionObjectType GetObjectType () const { return CS::Collisions::COLLISION_OBJECT_GHOST; }
 

@@ -363,7 +363,7 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
     if (!starFact)
     {
       ReportError ("Error loading %s!", CS::Quote::Single ("star.xml"));
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -378,7 +378,7 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
 
   csRef<CS::Physics::iRigidBody> co = physicalSystem->CreateStaticRigidBody();
   csRef<CS::Collisions::iCollider> starCollider;
-  if (mainCollider == NULL)
+  if (mainCollider == nullptr)
   {
     mainCollider = collisionSystem->CreateColliderConcaveMesh (star);
     starCollider = mainCollider;
@@ -549,7 +549,7 @@ CS::Physics::iJoint* PhysDemo::SpawnJointed()
   // Add a motor to the joint
   joint->SetDesiredVelocity (csVector3 (0.0f, -0.5f, 0.0f));
   joint->SetMaxForce (csVector3 (0.0f, 1.0f, 0.0f));
-  joint->Attach (rb1, NULL/* rb2, true*/);
+  joint->Attach (rb1, nullptr/* rb2, true*/);
 #endif
 
 #ifdef SLIDE
@@ -1117,7 +1117,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   if (!ballFact)
   {
     ReportError ("Error creating mesh object factory!");
-    return NULL;
+    return nullptr;
   }
 
   csRef<iGeneralFactoryState> gmstate = scfQueryInterface<

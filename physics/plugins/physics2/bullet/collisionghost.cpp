@@ -15,6 +15,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
   }
 
+  
+  csBulletCollisionGhostObject::~csBulletCollisionGhostObject()
+  {
+  }
+
   void csBulletCollisionGhostObject::RebuildObject () 
   { 
     bool wasInWorld = insideWorld;
@@ -94,17 +99,15 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (insideWorld)
     {
       sector->bulletWorld->removeCollisionObject (btObject);
-      delete btObject;
-      btObject = NULL;
       insideWorld = false;
 
       if (objectCopy)
         objectCopy->sector->RemoveCollisionObject (objectCopy);
       if (objectOrigin)
-        objectOrigin->objectCopy = NULL;
+        objectOrigin->objectCopy = nullptr;
 
-      objectCopy = NULL;
-      objectOrigin = NULL;
+      objectCopy = nullptr;
+      objectOrigin = nullptr;
       return true;
     }
     return false;

@@ -278,6 +278,11 @@ void PhysDemo::UpdateCameraMode()
     // The camera is controlled by a rigid body
   case CAMERA_DYNAMIC:
     {
+      if (cameraActor)
+      {
+        collisionSector->RemoveCollisionObject(cameraActor);
+      }
+
       const csOrthoTransform& tc = view->GetCamera()->GetTransform();
 
       // Check if there is already a rigid body created for the 'kinematic' mode
@@ -321,7 +326,7 @@ void PhysDemo::UpdateCameraMode()
       if (cameraBody)
       {
         collisionSector->RemoveCollisionObject(cameraBody);
-        cameraBody = NULL;
+        cameraBody = nullptr;
       }
       if (cameraActor)
       {
@@ -339,7 +344,7 @@ void PhysDemo::UpdateCameraMode()
       if (cameraBody)
       {
         collisionSector->RemoveCollisionObject(cameraBody);
-        cameraBody = NULL;
+        cameraBody = nullptr;
       }
 
       if (!cameraActor)

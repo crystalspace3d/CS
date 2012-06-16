@@ -12,74 +12,80 @@
 #include "imesh/emit.h"
 #include "imesh/particles.h"
 
-/**
-* Behaves like the default ParticleEffectorForce but does not penetrate physical boundaries
-*/ 
-class ParticlePhysEffectorForce : public 
-  scfImplementation2<ParticlePhysEffectorForce,
-  iParticleBuiltinPhysEffectorForce,
-  scfFakeInterface<iParticleEffector> >
+#include "builtineffectors.h"
+
+CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 {
-private:
-  csVector3 acceleration;
-  csVector3 force;
-  csVector3 randomAcceleration;
-  bool do_randomAcceleration;
-  csVector2 restitution;
-
-  csRef<CS::Collisions::iCollisionSector> collisionSector;
-
-public:
-  ParticlePhysEffectorForce (csRef<CS::Collisions::iCollisionSector> collisionSector);
-
-  //-- iParticleEffector
-  virtual csPtr<iParticleEffector> Clone () const;
-
-  virtual void EffectParticles (iParticleSystemBase* system,
-    const csParticleBuffer& particleBuffer, float dt, float totalTime);
-
-  //-- iParticleBuiltinEffectorForce
-  virtual void SetAcceleration (const csVector3& acceleration)
+  /**
+  * Behaves like the default ParticleEffectorForce but does not penetrate physical boundaries
+  */ 
+  class ParticleEffectorForceWithCollisions : public scfImplementationExt1<
+    ParticleEffectorForceWithCollisions,
+    ParticleEffectorForce, 
+    iParticleBuiltinEffectorForceWithCollisions>
   {
-    this->acceleration = acceleration;
-  }
+  private:
+    csVector3 acceleration;
+    csVector3 force;
+    csVector3 randomAcceleration;
+    bool do_randomAcceleration;
+    csVector2 restitution;
 
-  virtual const csVector3& GetAcceleration () const
-  {
-    return acceleration;
-  }
+    csRef<CS::Collisions::iCollisionSector> collisionSector;
 
-  virtual void SetForce (const csVector3& force)
-  {
-    this->force = force;
-  }
+  public:
+    ParticleEffectorForceWithCollisions (csRef<CS::Collisions::iCollisionSector> collisionSector);
 
-  virtual const csVector3& GetForce () const
-  {
-    return force; 
-  }
+    //-- iParticleEffector
+    virtual csPtr<iParticleEffector> Clone () const;
 
-  virtual void SetRandomAcceleration (const csVector3& magnitude)
-  {
-    randomAcceleration = magnitude;
-    if (randomAcceleration < .000001f)
-      do_randomAcceleration = false;
-    else
-      do_randomAcceleration = true;
-  }
+    virtual void EffectParticles (iParticleSystemBase* system,
+      const csParticleBuffer& particleBuffer, float dt, float totalTime);
 
-  virtual const csVector3& GetRandomAcceleration () const
-  {
-    return randomAcceleration;
-  }
+    //-- iParticleBuiltinEffectorForce
+    virtual void SetAcceleration (const csVector3& acceleration)
+    {
+      this->acceleration = acceleration;
+    }
 
-  virtual void SetRestitution (const csVector2& res) { restitution = res; }
-  virtual csVector2 GetRestitution () const { return restitution; }
+    virtual const csVector3& GetAcceleration () const
+    {
+      return acceleration;
+    }
 
-  virtual void SetRestitutionMagnitude (float rest) { restitution = csVector2(rest / sqrt(2.f)); }
-  virtual float GetRestitutionMagnitude () const { return sqrt(restitution * restitution); }    // what is the method to get a vector's magnitude?
-};
+    virtual void SetForce (const csVector3& force)
+    {
+      this->force = force;
+    }
 
+    virtual const csVector3& GetForce () const
+    {
+      return force; 
+    }
+
+    virtual void SetRandomAcceleration (const csVector3& magnitude)
+    {
+      randomAcceleration = magnitude;
+      if (randomAcceleration < .000001f)
+        do_randomAcceleration = false;
+      else
+        do_randomAcceleration = true;
+    }
+
+    virtual const csVector3& GetRandomAcceleration () const
+    {
+      return randomAcceleration;
+    }
+
+    virtual void SetRestitution (const csVector2& res) { restitution = res; }
+    virtual csVector2 GetRestitution () const { return restitution; }
+
+    virtual void SetRestitutionMagnitude (float rest) { restitution = csVector2(rest / sqrt(2.f)); }
+    virtual float GetRestitutionMagnitude () const { return sqrt(restitution * restitution); }    // what is the method to get a vector's magnitude?
+  };
+
+}
+CS_PLUGIN_NAMESPACE_END(Particles)
 
 #endif
 

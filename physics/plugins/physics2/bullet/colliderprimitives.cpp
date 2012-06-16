@@ -64,7 +64,7 @@ csRef<iTriangleMesh> FindColdetTriangleMesh (iMeshWrapper* mesh,
     csFPrintf (stderr, "iCollider: No collision polygons, triangles or vertices on mesh factory %s\n",
       CS::Quote::Single (mesh->QueryObject ()->GetName ()));
 
-    return NULL;
+    return nullptr;
   }
   return triMesh;
 }
@@ -76,7 +76,7 @@ btTriangleMesh* GenerateTriMeshData (iMeshWrapper* mesh, csStringID baseID,
 {
   csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh, baseID, colldetID);
   if (!triMesh)
-    return NULL;
+    return nullptr;
   btTriangleMesh* btMesh = new btTriangleMesh ();
   
   size_t triangleCount = triMesh->GetTriangleCount ();
@@ -107,7 +107,7 @@ btTriangleMesh* GenerateTriMeshData (iMeshWrapper* mesh, csStringID baseID,
 #include "csutil/custom_new_enable.h"
 
 csBulletCollider::csBulletCollider ()
-  : scale (1,1,1), shape (NULL), margin (0.0), volume (0.0), collSystem (NULL)
+  : scale (1,1,1), shape (nullptr), margin (0.0), volume (0.0), collSystem (nullptr)
 {
 }
 

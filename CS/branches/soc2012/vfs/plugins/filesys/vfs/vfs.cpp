@@ -96,7 +96,7 @@ class DiskFile : public scfImplementationExt0<DiskFile, csFile>
   // 'real-world' path of this file
   char *fName;
   // position in the data buffer
-  size_t fpos;
+  uint64_t fpos;
   // whether alldata is null-terminated
   bool buffernt;
 
@@ -114,15 +114,16 @@ public:
   // check for EOF
   virtual bool AtEOF ();
   /// Query current file pointer
-  virtual size_t GetPos ();
+  virtual uint64_t GetPos ();
   /// Clear file error after queriyng status
   virtual int GetStatus ();
   /// Set file position
-  virtual bool SetPos (size_t newpos);
+  virtual bool SetPos (off64_t newpos, int ref = 0);
   /// Get all data
   virtual csPtr<iDataBuffer> GetAllData (bool nullterm = false);
   csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator* alloc);
-  csPtr<iFile> GetPartialView (size_t offset, size_t size = (size_t)~0);
+  csPtr<iFile> GetPartialView (uint64_t offset, uint64_t size
+                                                        = (uint64_t)~0LL);
 private:
   // Create a directory or a series of directories starting from PathBase
   void MakeDir (const char *PathBase, const char *PathSuffix);
@@ -146,7 +147,7 @@ private:
   // whether databuf is null-terminated
   bool buffernt;
   // current data pointer
-  size_t fpos;
+  uint64_t fpos;
   // constructor
   ArchiveFile (int Mode, VfsNode *ParentNode, size_t RIndex,
     const char *NameSuffix, VfsArchive *ParentArchive, unsigned int verbosity);
@@ -163,13 +164,14 @@ public:
   /// flush stream
   virtual void Flush ();
   /// Query current file pointer
-  virtual size_t GetPos ();
+  virtual uint64_t GetPos ();
   /// Get all the data at once
   virtual csPtr<iDataBuffer> GetAllData (bool nullterm = false);
   csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator* alloc);
-  csPtr<iFile> GetPartialView (size_t offset, size_t size = (size_t)~0);
+  csPtr<iFile> GetPartialView (uint64_t offset, uint64_t size
+                                                       = (uint64_t)~0LL);
   /// Set current file pointer
-  virtual bool SetPos (size_t newpos);
+  virtual bool SetPos (off64_t newpos, int ref = 0);
 };
 
 class VfsArchive : public csArchive
@@ -391,7 +393,7 @@ public:
   // Set date/time
   bool SetFileTime (const char *Suffix, const csFileTime &iTime);
   // Get file size
-  bool GetFileSize (const char *Suffix, size_t &oSize);
+  bool GetFileSize (const char *Suffix, uint64_t &oSize);
 private:
   // Get value of a variable
   const char *GetValue (csVFS *Parent, const char *VarName);
@@ -785,7 +787,7 @@ bool DiskFile::AtEOF ()
   }
 }
 
-size_t DiskFile::GetPos ()
+uint64_t DiskFile::GetPos ()
 {
   if (file)
   {
@@ -797,15 +799,15 @@ size_t DiskFile::GetPos ()
   }
 }
 
-bool DiskFile::SetPos (size_t newpos)
+bool DiskFile::SetPos (off64_t offset, int ref)
 {
   if (file)
   {
-    return (fseek (file, (long)newpos, SEEK_SET) == 0);
+    return (fseek (file, (long)offset, SEEK_SET) == 0);
   }
   else
   {
-    fpos = (newpos > Size) ? Size : newpos;
+    fpos = (offset > Size) ? Size : offset;
     return true;
   }
 }
@@ -929,7 +931,7 @@ csPtr<iDataBuffer> DiskFile::GetAllData (CS::Memory::iAllocator* alloc)
   }
 }
 
-csPtr<iFile> DiskFile::GetPartialView (size_t offset, size_t size)
+csPtr<iFile> DiskFile::GetPartialView (uint64_t offset, uint64_t size)
 {
   // @@@ FIXME: Obtaining the view as a buffer is kinda lazy.
   size_t bufSize (csMin (size, GetSize() - offset));
@@ -1065,16 +1067,16 @@ bool ArchiveFile::AtEOF ()
     return true;
 }
 
-size_t ArchiveFile::GetPos ()
+uint64_t ArchiveFile::GetPos ()
 {
   return fpos;
 }
 
-bool ArchiveFile::SetPos (size_t newpos)
+bool ArchiveFile::SetPos (off64_t offset, int ref)
 {
   if (databuf.IsValid())
   {
-    fpos = (newpos > Size) ? Size : newpos;
+    fpos = (offset > Size) ? Size : offset;
     return true;
   }
   else
@@ -1106,7 +1108,7 @@ csPtr<iDataBuffer> ArchiveFile::GetAllData (CS::Memory::iAllocator* alloc)
   return csPtr<iDataBuffer> (databuf);
 }
 
-csPtr<iFile> ArchiveFile::GetPartialView (size_t offset, size_t size)
+csPtr<iFile> ArchiveFile::GetPartialView (uint64_t offset, uint64_t size)
 {
   size_t bufSize (csMin (size, GetSize() - offset));
   csRef<iDataBuffer> allData (GetAllData());
@@ -1596,7 +1598,7 @@ bool VfsNode::SetFileTime (const char *Suffix, const csFileTime &iTime)
   return true;
 }
 
-bool VfsNode::GetFileSize (const char *Suffix, size_t &oSize)
+bool VfsNode::GetFileSize (const char *Suffix, uint64_t &oSize)
 {
   PathString fname;
   csRef<VfsArchive> a;
@@ -2477,6 +2479,20 @@ bool csVFS::SetFileTime (const char *FileName, const csFileTime &iTime)
   return success;
 }
 
+bool csVFS::GetFilePermission (const char *FileName, csFilePermission &oPerm)
+{
+  // non-implemented stub
+  return false;
+}
+
+bool csVFS::SetFilePermission (const char *FileName,
+                   const csFilePermission &iPerm)
+{
+  // non-implemented stub
+  return false;
+}
+
+#ifndef CS_SIZE_T_64BIT
 bool csVFS::GetFileSize (const char *FileName, size_t &oSize)
 {
   if (!FileName)
@@ -2486,10 +2502,27 @@ bool csVFS::GetFileSize (const char *FileName, size_t &oSize)
   char suffix [VFS_MAX_PATH_LEN + 1];
   PreparePath (FileName, false, node, suffix, sizeof (suffix));
 
+  // TODO: implement error mechanism for large files
   bool success = node ? node->GetFileSize (suffix, oSize) : false;
 
   ArchiveCache->CheckUp ();
   return success;
+}
+#endif
+
+bool csVFS::GetFileSize (const char *FileName, uint64_t &oSize)
+{
+  if (!FileName)
+    return false;
+ 
+  VfsNode *node;
+  char suffix [VFS_MAX_PATH_LEN + 1];
+  PreparePath (FileName, false, node, suffix, sizeof (suffix));
+
+  bool success = node ? node->GetFileSize (suffix, oSize) : false;
+
+  ArchiveCache->CheckUp ();
+  return success; 
 }
 
 csPtr<iDataBuffer> csVFS::GetRealPath (const char *FileName)

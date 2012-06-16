@@ -71,7 +71,7 @@ public:
    */
   virtual char const* GetName();
   /// Query file size.
-  virtual size_t GetSize();
+  virtual uint64_t GetSize();
   /// Check (and clear) file last error status.
   virtual int GetStatus();
 
@@ -84,9 +84,9 @@ public:
   /// Return true if at end of buffer
   virtual bool AtEOF();
   /// Query current cursor position,
-  virtual size_t GetPos();
+  virtual uint64_t GetPos();
   /// Set current cursor position.
-  virtual bool SetPos(size_t);
+  virtual bool SetPos(off64_t, int ref = 0);
 
   /**
    * Get entire file data in one go.  Creates a copy of the data, so changing
@@ -98,7 +98,7 @@ public:
   virtual csPtr<iDataBuffer> GetAllData(bool nullterm = false);
   virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator* allocator);
 
-  csPtr<iFile> GetPartialView (size_t offset, size_t size = (size_t)~0);
+  csPtr<iFile> GetPartialView (uint64_t offset, uint64_t size = ~(uint64_t)0);
 protected:
   CS::Threading::Mutex mutex;
   FILE* fp;

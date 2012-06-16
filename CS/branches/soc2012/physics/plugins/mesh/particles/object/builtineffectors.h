@@ -46,7 +46,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     //-- iParticleBuiltinEffectorFactory
     virtual csPtr<iParticleBuiltinEffectorForce> CreateForce () const;
-    virtual csPtr<iParticleBuiltinPhysEffectorForce> CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const;
+    virtual csPtr<iParticleBuiltinEffectorForceWithCollisions> CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const;
     virtual csPtr<iParticleBuiltinEffectorLinear> CreateLinear () const;
     virtual csPtr<iParticleBuiltinEffectorLinColor> CreateLinColor () const;
     virtual csPtr<iParticleBuiltinEffectorVelocityField> 

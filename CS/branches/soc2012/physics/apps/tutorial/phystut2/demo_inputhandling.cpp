@@ -564,7 +564,7 @@ bool PhysDemo::OnMouseUp (iEvent &event)
 
     // Remove the drag joint
     physicalSector->RemoveJoint (dragJoint);
-    dragJoint = NULL;
+    dragJoint = nullptr;
     return true;
   }
 

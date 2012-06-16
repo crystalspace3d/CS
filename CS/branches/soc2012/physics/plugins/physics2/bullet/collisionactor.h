@@ -40,7 +40,7 @@ public:
   virtual iObject* QueryObject (void) { return (iObject*) this; }
   //iCollisionObject
   virtual CS::Collisions::iCollisionObject* QueryCollisionObject () {return dynamic_cast<csBulletCollisionObject*> (this);}
-  virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return NULL;}
+  virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return nullptr;}
 
   virtual bool IsPhysicalObject() const { return false; }
 

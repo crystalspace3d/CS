@@ -34,7 +34,7 @@ csBulletJoint::csBulletJoint (csBulletSystem* system)
   angularEquilPoint (0.f, 0.f, 0.f), minDist (1.0f, 1.0f, 1.0f),
   maxDist (1.0f, 1.0f, 1.0f), minAngle (PI / 2.0f), maxAngle (PI / 2.0f),
   bounce (0.0f), desiredVelocity (0.0f), type (RIGID_6DOF_JOINT),
-  rigidJoint (NULL), softJoint (NULL), threshold (FLT_MAX), jointFlag (0),
+  rigidJoint (nullptr), softJoint (nullptr), threshold (FLT_MAX), jointFlag (0),
   transConstraintX (false), transConstraintY (false), transConstraintZ (false),
   rotConstraintX (false), rotConstraintY (false), rotConstraintZ (false)
 {
@@ -54,7 +54,7 @@ void csBulletJoint::Attach (CS::Physics::iPhysicalBody* body1, CS::Physics::iPhy
   CS_ASSERT (body1);
 
   //csBulletCollisionObject *collBody1 = dynamic_cast<csBulletCollisionObject*> (body1);
-  csBulletCollisionObject* collBody2 = NULL;
+  csBulletCollisionObject* collBody2 = nullptr;
 
   if (body2)
     collBody2 = dynamic_cast<csBulletCollisionObject*> (body2);
@@ -99,7 +99,7 @@ void csBulletJoint::Attach (CS::Physics::iPhysicalBody* body1, CS::Physics::iPhy
   else
   {
     bodies[0] = body1;
-    bodies[1] = NULL;
+    bodies[1] = nullptr;
 
     if (body1->GetBodyType () == CS::Physics::BODY_RIGID)
       jointFlag &= ~JOINT_SOFT;
@@ -235,15 +235,15 @@ bool csBulletJoint::RebuildJoint ()
   if (jointFlag & JOINT_INSIDE_WORLD)
     RemoveBulletJoint ();
 
-  if (bodies[0] == NULL && bodies[1] == NULL) return false;
+  if (bodies[0] == nullptr && bodies[1] == nullptr) return false;
 
   if (!(jointFlag & JOINT_SOFT))
   {
-    csBulletRigidBody* body1, *body2 = NULL;
+    csBulletRigidBody* body1, *body2 = nullptr;
     body1 = dynamic_cast<csBulletRigidBody*> (bodies[0]);
 
     if (type == RIGID_PIVOT_JOINT)
-      bodies[1] = NULL;
+      bodies[1] = nullptr;
 
     if (jointFlag & JOINT_POSITION)
     {
@@ -536,7 +536,7 @@ void csBulletJoint::AddBulletJoint ()
     RemoveBulletJoint ();
 
   csBulletCollisionObject *collBody1 = dynamic_cast<csBulletCollisionObject*> (bodies[0]);
-  csBulletCollisionObject* collBody2 = NULL;
+  csBulletCollisionObject* collBody2 = nullptr;
   if (bodies[1])
     collBody2 = dynamic_cast<csBulletCollisionObject*> (bodies[1]);
   if (collBody1->sector != sector)
@@ -617,18 +617,18 @@ void csBulletJoint::RemoveBulletJoint ()
     {
       sector->bulletWorld->removeConstraint (rigidJoint);
       delete rigidJoint;
-      rigidJoint = NULL;
+      rigidJoint = nullptr;
     }
     if (softJoint)
     {
       csBulletSoftBody* body = dynamic_cast<csBulletSoftBody*> (bodies[0]);
       body->btBody->m_joints.remove (softJoint);
-      softJoint = NULL;
+      softJoint = nullptr;
     }
 
     jointFlag &= ~(JOINT_INSIDE_WORLD | JOINT_POSITION | JOINT_TRANSFORM);
     //jointFlag = 0;
-    sector = NULL;
+    sector = nullptr;
     /*transConstraintX = transConstraintY = transConstraintZ = false;
     rotConstraintX = rotConstraintY = rotConstraintZ = false;
     linearStiff.Set (0.f, 0.f, 0.f);

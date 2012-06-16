@@ -81,7 +81,7 @@ public:
   virtual void RemoveCollider (CS::Collisions::iCollider* collider) {}
   virtual void RemoveCollider (size_t index) {}
 
-  virtual CS::Collisions::iCollider* GetCollider (size_t index) {return NULL;}
+  virtual CS::Collisions::iCollider* GetCollider (size_t index) {return nullptr;}
   virtual size_t GetColliderCount () {return 0;}
 
   virtual void SetCollisionGroup (const char* name) {csBulletCollisionObject::SetCollisionGroup (name);}

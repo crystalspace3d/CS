@@ -49,10 +49,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     box.AddBoundingVertex (vert[0] + normal * thresh);
     
     // place the portal at the center of the box that represents it
-    csVector3 size = 0.3f * box.GetSize ();
-    csVector3 centerDist = 1.001f * size * normal;
+    csVector3 size = 0.499f * box.GetSize ();
+    csVector3 centerDist = 1f * size * normal;
     csOrthoTransform realTrans = meshTrans;
-    realTrans.Translate(+centerDist);
+    realTrans.Translate(centerDist);
     ghostPortal->setWorldTransform (CSToBullet (realTrans, sourceSector->sys->getInternalScale ()));
 
     // give the portal it's shape and add it to the world
@@ -162,7 +162,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
             csBox3 box;
             while (head < end)
             {
-              if (rbs[head] == NULL)
+              if (rbs[head] == nullptr)
               {
                 // Only attached one body on this joint. This should not be transmitted.
                 doTrans = false;

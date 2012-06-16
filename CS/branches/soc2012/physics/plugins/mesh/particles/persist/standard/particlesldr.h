@@ -59,6 +59,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
 
     csPtr<iParticleEffector> ParseEffector (iDocumentNode* node);
 
+    csPtr<iParticleEffector> ParseEffectorForce (iDocumentNode* node, csRef<iParticleBuiltinEffectorFactory> factory);
+
     bool ParseLinearEffectorParameters (
       iDocumentNode* child, csParticleParameterSet& param, int& mask);
   };

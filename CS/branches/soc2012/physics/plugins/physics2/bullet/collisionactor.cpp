@@ -32,7 +32,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csBulletCollisionActor::~csBulletCollisionActor ()
   {
-    delete controller;
+    if (controller)
+    {
+      delete controller;
+    }
   }
   
   void csBulletCollisionActor::IncreaseYaw(float delta)

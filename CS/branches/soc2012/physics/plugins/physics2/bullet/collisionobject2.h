@@ -112,7 +112,7 @@ public:
   {
     csBulletSector* sec = objectCopy->sector;
     sec->RemoveCollisionObject (objectCopy);
-    objectCopy = NULL;
+    objectCopy = nullptr;
   }
 };
 }

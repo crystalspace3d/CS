@@ -85,7 +85,7 @@ struct PointContactResult : public btCollisionWorld::ContactResultCallback
 
 csBulletSector::csBulletSector (csBulletSystem* sys)
   :scfImplementationType (this), sys (sys), isSoftWorld (false),
-  hitPortal (NULL), debugDraw (NULL), softWorldInfo (NULL),
+  hitPortal (nullptr), debugDraw (nullptr), softWorldInfo (nullptr),
   linearDampening (0.0f), angularDampening (0.0f),
   linearDisableThreshold (0.8f), angularDisableThreshold (1.0f),
   timeDisableThreshold (0.0f), worldTimeStep (1.0f / 60.0f), worldMaxSteps (1)
@@ -159,7 +159,7 @@ csBulletSector::~csBulletSector ()
   }
   for (size_t i = 0; i < collisionObjects.GetSize (); ++i)
   {
-    bulletWorld->removeCollisionObject (collisionObjects[i]->btObject);
+    collisionObjects[i]->RemoveBulletObject();
   }
   for (size_t i = 0; i < joints.GetSize(); ++i)
   {
@@ -287,7 +287,7 @@ CS::Collisions::iCollisionObject* csBulletSector::GetCollisionObject (size_t ind
   if (index >= 0 && index < collisionObjects.GetSize ())
     return collisionObjects[index]->QueryCollisionObject ();
   else
-    return NULL;
+    return nullptr;
 }
 
 CS::Collisions::iCollisionObject* csBulletSector::FindCollisionObject (const char* name)
@@ -363,10 +363,10 @@ CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, c
     result.hasHit = true;
 
     if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_GHOST_OBJECT
-      && rayCallback.m_collisionObject->getUserPointer () == NULL)
+      && rayCallback.m_collisionObject->getUserPointer () == nullptr)
     {
       // hit a ghost object (potentially a portal...)
-      collObject = NULL;
+      collObject = nullptr;
       result.hasHit = false;
       hitPortal = btGhostObject::upcast (rayCallback.m_collisionObject);
     }
@@ -431,11 +431,11 @@ CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, c
 CS::Collisions::HitBeamResult csBulletSector::HitBeamPortal (const csVector3& start, const csVector3& end)
 {
   
-  hitPortal = NULL;
+  hitPortal = nullptr;
 
   CS::Collisions::HitBeamResult result = HitBeam (start, end);
 
-  if (result.object == NULL && hitPortal)
+  if (result.object == nullptr && hitPortal)
   {
     //Portals are not included.
     for (size_t i = 0; i < portals.GetSize (); i++)
@@ -960,7 +960,7 @@ void csBulletSector::SetSoftBodyEnabled (bool enabled)
     if (softWorldInfo)
     {
         delete softWorldInfo;
-        softWorldInfo = NULL;
+        softWorldInfo = nullptr;
     }
   }
 

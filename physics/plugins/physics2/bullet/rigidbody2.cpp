@@ -17,8 +17,8 @@
 */
 
 #include "cssysdef.h"
-#include "bullet/btBulletDynamicsCommon.h"
-#include "bullet/btBulletCollisionCommon.h"
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
 
 #include "ivaria/collisions.h"
 #include "rigidbody2.h"

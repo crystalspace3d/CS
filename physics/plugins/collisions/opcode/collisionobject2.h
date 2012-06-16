@@ -56,6 +56,12 @@ public:
   virtual CS::Collisions::iCollisionObject* QueryCollisionObject () {return dynamic_cast<iCollisionObject*> (this);}
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return NULL;}
 
+  /// Returns the sector to which is this object has been added or nullptr, if not in world
+  virtual CS::Collisions::iCollisionSector* GetSector () const { return sector; }
+
+  /// Whether this object is currently added to the world
+  virtual bool IsInWorld () const { return sector != nullptr; }
+
   /// Whether this is a rigid or soft body object
   virtual bool IsPhysicalObject() const { return false; }
 

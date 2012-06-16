@@ -791,7 +791,7 @@ csPtr<CS::Collisions::iCollisionGhostObject> csOpcodeCollisionSystem::CreateGhos
   csRef<csOpcodeCollisionObject> collObject;
   collObject.AttachNew (new csOpcodeCollisionObject (this));
 
-  return collObject;
+  return csPtr<CS::Collisions::iCollisionGhostObject>(collObject);
 }
 
 csPtr<CS::Collisions::iCollisionActor> csOpcodeCollisionSystem::CreateCollisionActor (CS::Collisions::iCollider* collider)
@@ -806,7 +806,7 @@ csPtr<CS::Collisions::iCollisionSector> csOpcodeCollisionSystem::CreateCollision
   collSector.AttachNew (new csOpcodeCollisionSector (this));
 
   collSectors.Push (collSector);
-  return collSector;
+  return csPtr<CS::Collisions::iCollisionSector>(collSector);
 }
 
 CS::Collisions::iCollisionSector* csOpcodeCollisionSystem::FindCollisionSector (const char* name)

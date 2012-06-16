@@ -1,6 +1,6 @@
 /**
- * Handle keyboard/mouse/etc input
- */
+* Handle keyboard/mouse/etc input
+*/
 
 
 #include "cssysdef.h"
@@ -54,13 +54,13 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     /*
     else if (csKeyEventHelper::GetCookedCode (&event) == 'a')
     {
-      SpawnCapsule();
-      return true;
+    SpawnCapsule();
+    return true;
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 's')
     {
-      SpawnSphere();
-      return true;
+    SpawnSphere();
+    return true;
     }*/
     if (csKeyEventHelper::GetCookedCode (&event) == 'c')
     {
@@ -139,14 +139,14 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         break;
 
       case CAMERA_FREE:
-          physicalCameraMode = CAMERA_ACTOR;
+        physicalCameraMode = CAMERA_ACTOR;
         break;
 
       case CAMERA_ACTOR:
-        physicalCameraMode = CAMERA_KINEMATIC;
-        break;
+      //  physicalCameraMode = CAMERA_KINEMATIC;
+      //  break;
 
-      case CAMERA_KINEMATIC:
+      //case CAMERA_KINEMATIC:
         physicalCameraMode = CAMERA_DYNAMIC;
         break;
       }
@@ -186,7 +186,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         printf ("Toggling all bodies to dynamic mode\n");
       }
 
-      
+
       return true;
     }
 
@@ -279,7 +279,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       if (hitResult.hasHit && hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
       {
         // Remove the body and the mesh from the simulation, and put them in the clipboard
-        
+
         clipboardBody = hitResult.object->QueryPhysicalBody();
         clipboardMovable = hitResult.object->GetAttachedMovable();
 
@@ -341,22 +341,22 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       // Update the display of the dynamics debugger
       //dynamicsDebugger->UpdateDisplay();
     }
-/*
-#ifdef CS_HAVE_BULLET_SERIALIZER
+    /*
+    #ifdef CS_HAVE_BULLET_SERIALIZER
     // Save a .bullet file
     else if (csKeyEventHelper::GetRawCode (&event) == 's'
-      && kbd->GetKeyState (CSKEY_CTRL))
+    && kbd->GetKeyState (CSKEY_CTRL))
     {
-      const char* filename = "phystut_world.bullet";
-      if (bulletDynamicSystem->SaveBulletWorld (filename))
-        printf ("Dynamic world successfully saved as file %s\n", filename);
-      else
-        printf ("Problem saving dynamic world to file %s\n", filename);
+    const char* filename = "phystut_world.bullet";
+    if (bulletDynamicSystem->SaveBulletWorld (filename))
+    printf ("Dynamic world successfully saved as file %s\n", filename);
+    else
+    printf ("Problem saving dynamic world to file %s\n", filename);
 
-      return true;
+    return true;
     }
-#endif
-*/
+    #endif
+    */
     else if (csKeyEventHelper::GetRawCode (&event) == 'i'
       && kbd->GetKeyState (CSKEY_CTRL))
     {

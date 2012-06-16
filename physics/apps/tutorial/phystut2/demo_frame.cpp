@@ -194,7 +194,10 @@ void PhysDemo::Frame()
 
   case CAMERA_ACTOR:
     {
-      cameraActor->UpdateAction(timeMs / dynamicSpeed);
+      if (cameraActor->IsInWorld())
+      {
+        cameraActor->UpdateAction(timeMs / dynamicSpeed);
+      }
       break;
     }
   }

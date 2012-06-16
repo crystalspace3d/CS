@@ -22,7 +22,7 @@
 #include "cssysdef.h"
 #include "common2.h"
 #include "collisionghost.h"
-#include "bullet/BulletDynamics/Character/btKinematicCharacterController.h"
+#include "BulletDynamics/Character/btKinematicCharacterController.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {

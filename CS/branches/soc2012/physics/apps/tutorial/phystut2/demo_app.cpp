@@ -174,7 +174,7 @@ bool PhysDemo::Application()
   // Initialize the camera
   UpdateCameraMode();
 
-  CreateGhostCylinder();
+  //CreateGhostCylinder();
 
   // Initialize the HUD manager
   hudManager->GetKeyDescriptions()->Empty();
@@ -244,6 +244,8 @@ bool PhysDemo::Application()
 
 void PhysDemo::GripContactBodies()
 {
+  if (!ghostObject) return;
+
   size_t count = ghostObject->GetContactObjectsCount();
   for (size_t i = 0; i < count; i++)
   {
@@ -307,8 +309,8 @@ void PhysDemo::UpdateCameraMode()
 
         cameraBody->SetTransform (tc);
 
-        collisionSector->AddCollisionObject(cameraBody);
       }
+      collisionSector->AddCollisionObject(cameraBody);
 
       break;
     }
@@ -318,8 +320,12 @@ void PhysDemo::UpdateCameraMode()
     {
       if (cameraBody)
       {
-        collisionSector->AddCollisionObject(cameraBody);
+        collisionSector->RemoveCollisionObject(cameraBody);
         cameraBody = NULL;
+      }
+      if (cameraActor)
+      {
+        collisionSector->RemoveCollisionObject(cameraActor);
       }
 
       // Update the display of the dynamics debugger
@@ -330,17 +336,28 @@ void PhysDemo::UpdateCameraMode()
 
   case CAMERA_ACTOR:
     {
-     
-      csRef<CS::Collisions::iColliderBox> actorCollider = //collisionSystem->CreateColliderSphere (ActorDimensions.x);
-        collisionSystem->CreateColliderBox(ActorDimensions);
+      if (cameraBody)
+      {
+        collisionSector->RemoveCollisionObject(cameraBody);
+        cameraBody = NULL;
+      }
 
-      cameraActor = collisionSystem->CreateCollisionActor(actorCollider);
-      cameraActor->QueryObject()->SetName("actor");
-      cameraActor->SetAttachedCamera(view->GetCamera());
+      if (!cameraActor)
+      {
+        csRef<CS::Collisions::iColliderBox> actorCollider = //collisionSystem->CreateColliderSphere (ActorDimensions.x);
+          collisionSystem->CreateColliderBox(ActorDimensions);
+
+        cameraActor = collisionSystem->CreateCollisionActor(actorCollider);
+        cameraActor->QueryObject()->SetName("actor");
+        cameraActor->SetAttachedCamera(view->GetCamera());
+      }
+
       cameraActor->RebuildObject();
-
-      collisionSector->AddCollisionObject(cameraActor);
+      csOrthoTransform trans = cameraActor->GetTransform();
+      trans.Translate(csVector3(0, 0, -3));
+      cameraActor->SetTransform(trans);
       
+      collisionSector->AddCollisionObject(cameraActor);
       cameraActor->SetJumpSpeed(actorSpeed);
       
     }

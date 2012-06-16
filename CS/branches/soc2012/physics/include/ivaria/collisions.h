@@ -58,6 +58,7 @@ namespace Collisions
 struct csConvexResult;
 struct iCollisionCallback;
 struct iCollisionObject;
+struct iCollisionSector;
 typedef short CollisionGroupMask;
 
 /**
@@ -458,8 +459,14 @@ struct iCollisionObject : public virtual iBase
   /// Return the physical body pointer if it's a physical body, or NULL.
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () = 0;
 
+  /// Returns the sector to which is this object has been added or nullptr, if not in world
+  virtual iCollisionSector* GetSector () const = 0;
+
+  /// Whether this object is currently added to the world
+  virtual bool IsInWorld () const = 0;
+
   /// Whether this is a rigid or soft body object
-  virtual bool IsPhysicalObject() const = 0;
+  virtual bool IsPhysicalObject () const = 0;
 
   /// Return the type of the collision object.
   virtual CollisionObjectType GetObjectType () const = 0;

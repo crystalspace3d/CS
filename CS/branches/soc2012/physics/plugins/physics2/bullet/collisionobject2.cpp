@@ -15,9 +15,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 
   csBulletCollisionObject::csBulletCollisionObject (csBulletSystem* sys)
-    : scfImplementationType (this), movable (NULL), camera (NULL), collCb (NULL),
-    portalWarp (btQuaternion::getIdentity ()), sector (NULL), system (sys),
-    btObject (NULL), compoundShape (NULL), objectOrigin (NULL), objectCopy (NULL),
+    : scfImplementationType (this), movable (nullptr), camera (nullptr), collCb (nullptr),
+    portalWarp (btQuaternion::getIdentity ()), sector (nullptr), system (sys),
+    btObject (nullptr), compoundShape (nullptr), objectOrigin (nullptr), objectCopy (nullptr),
     haveStaticColliders(0), insideWorld (false), shapeChanged (false), isTerrain (false)
   {
     btTransform identity;
@@ -27,7 +27,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csBulletCollisionObject::~csBulletCollisionObject ()
   {
-    //RemoveBulletObject ();  <- this won't be necessary, since it won't be deleted until the object has been removed from the world, anyway
+    //RemoveBulletObject ();  <- this won't be necessary, since it should not be deleted until the object has been removed from the world, anyway
     colliders.DeleteAll ();
     if (btObject)
       delete btObject;
@@ -159,7 +159,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (index < colliders.GetSize ())
       return colliders[index];
-    return NULL;
+    return nullptr;
   }
 
   void csBulletCollisionObject::SetCollisionGroup (const char* name)
@@ -280,7 +280,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         }
         else
         {
-          return NULL;
+          return nullptr;
         }
       }
     }
@@ -295,7 +295,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
           if (obj)
             return static_cast<CS::Collisions::iCollisionObject*> (obj->getUserPointer ());
           else 
-            return NULL;
+            return nullptr;
         }
         else
         {
@@ -305,11 +305,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
             return objectCopy->GetContactObject (index);
           }
           else
-            return NULL;
+            return nullptr;
         }
       }
       else 
-        return NULL;
+        return nullptr;
     }
   }
 

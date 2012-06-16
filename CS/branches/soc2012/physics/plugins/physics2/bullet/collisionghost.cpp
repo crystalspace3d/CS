@@ -1,5 +1,5 @@
-#include "bullet/btBulletDynamicsCommon.h"
-#include "bullet/btBulletCollisionCommon.h"
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
 
 
 #include "cssysdef.h"
@@ -13,7 +13,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csBulletCollisionGhostObject::csBulletCollisionGhostObject(csBulletSystem* sys) : scfImplementationType(this, sys)
   {
-    btObject = new btPairCachingGhostObject ();
   }
 
   void csBulletCollisionGhostObject::RebuildObject () 
@@ -51,6 +50,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         pricipalAxis = CSToBullet (relaTransforms[0], system->getInternalScale ());
 
       invPricipalAxis = pricipalAxis.inverse ();
+
+      if (!btObject)
+      {
+        btObject = new btPairCachingGhostObject ();
+      }
 
       btTransform transform = btObject->getWorldTransform();
       if (movable)

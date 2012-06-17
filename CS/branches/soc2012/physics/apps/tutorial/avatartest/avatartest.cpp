@@ -392,8 +392,8 @@ bool AvatarTest::Application ()
     {
       // Set up some deactivation and dampening parameters
       dynamicSystem->SetAutoDisableParams (1.6f, 2.5f, 0, 0.8f);
-      dynamicSystem->SetLinearDampener (0.05f);
-      dynamicSystem->SetRollingDampener (0.85f);
+      dynamicSystem->SetLinearDamping (0.05f);
+      dynamicSystem->SetAngularDamping (0.85f);
 
       // Find the Bullet interface of the dynamic system
       bulletDynamicSystem =

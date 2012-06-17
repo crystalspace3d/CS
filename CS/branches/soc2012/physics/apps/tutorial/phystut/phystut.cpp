@@ -713,10 +713,10 @@ bool Simple::OnMouseDown (iEvent& ev)
       // Set some dampening on the rigid body to have a more stable dragging
       csRef<CS::Physics::Bullet::iRigidBody> bulletBody =
 	scfQueryInterface<CS::Physics::Bullet::iRigidBody> (hitResult.body->QueryRigidBody ());
-      linearDampening = bulletBody->GetLinearDampener ();
-      angularDampening = bulletBody->GetRollingDampener ();
-      bulletBody->SetLinearDampener (0.9f);
-      bulletBody->SetRollingDampener (0.9f);
+      linearDampening = bulletBody->GetLinearDamping ();
+      angularDampening = bulletBody->GetAngularDamping ();
+      bulletBody->SetLinearDamping (0.9f);
+      bulletBody->SetAngularDamping (0.9f);
     }
 
     else if (hitResult.body->GetType () == CS::Physics::Bullet::SOFT_BODY)
@@ -747,8 +747,8 @@ bool Simple::OnMouseUp (iEvent& event)
     // Put back the original dampening on the rigid body
     csRef<CS::Physics::Bullet::iRigidBody> bulletBody =
       scfQueryInterface<CS::Physics::Bullet::iRigidBody> (dragJoint->GetAttachedBody ());
-    bulletBody->SetLinearDampener (linearDampening);
-    bulletBody->SetRollingDampener (angularDampening);
+    bulletBody->SetLinearDamping (linearDampening);
+    bulletBody->SetAngularDamping (angularDampening);
 
     // Remove the drag joint
     bulletDynamicSystem->RemovePivotJoint (dragJoint);
@@ -875,8 +875,8 @@ bool Simple::Application ()
 
   // Set some linear and angular dampening in order to have a reduction of
   // the movements of the objects
-  dynamicSystem->SetLinearDampener(0.1f);
-  dynamicSystem->SetRollingDampener(0.1f);
+  dynamicSystem->SetLinearDamping(0.1f);
+  dynamicSystem->SetAngularDamping(0.1f);
 
   // Configure the physical plugins
   if (phys_engine_id == ODE_ID)

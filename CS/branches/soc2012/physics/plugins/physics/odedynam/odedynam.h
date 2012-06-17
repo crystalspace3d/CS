@@ -341,10 +341,10 @@ public:
 
   virtual void SetGravity (const csVector3& v);
   virtual const csVector3 GetGravity () const;
-  virtual void SetRollingDampener (float d) { roll_damp = (d > 1) ? 1.0 : d; }
-  virtual float GetRollingDampener () const { return roll_damp; }
-  virtual void SetLinearDampener (float d) { lin_damp = (d > 1) ? 1.0 : d; }
-  virtual float GetLinearDampener () const { return lin_damp; }
+  virtual void SetAngularDamping (float d) { roll_damp = (d > 1) ? 1.0 : d; }
+  virtual float GetAngularDamping () const { return roll_damp; }
+  virtual void SetLinearDamping (float d) { lin_damp = (d > 1) ? 1.0 : d; }
+  virtual float GetLinearDamping () const { return lin_damp; }
 
   virtual void Step (float stepsize);
 

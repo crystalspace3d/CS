@@ -14476,7 +14476,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_iDynamicSystem_SetLinearDampener(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_iDynamicSystem_SetLinearDamping(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   iDynamicSystem *arg1 = (iDynamicSystem *) 0 ;
   float arg2 ;
@@ -14487,18 +14487,18 @@ SWIGINTERN PyObject *_wrap_iDynamicSystem_SetLinearDampener(PyObject *SWIGUNUSED
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if(!PyArg_UnpackTuple(args,(char *)"iDynamicSystem_SetLinearDampener",2,2,&obj0,&obj1)) SWIG_fail;
+  if(!PyArg_UnpackTuple(args,(char *)"iDynamicSystem_SetLinearDamping",2,2,&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iDynamicSystem, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iDynamicSystem_SetLinearDampener" "', argument " "1"" of type '" "iDynamicSystem *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iDynamicSystem_SetLinearDamping" "', argument " "1"" of type '" "iDynamicSystem *""'"); 
   }
   arg1 = reinterpret_cast< iDynamicSystem * >(argp1);
   ecode2 = SWIG_AsVal_float(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "iDynamicSystem_SetLinearDampener" "', argument " "2"" of type '" "float""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "iDynamicSystem_SetLinearDamping" "', argument " "2"" of type '" "float""'");
   } 
   arg2 = static_cast< float >(val2);
-  (arg1)->SetLinearDampener(arg2);
+  (arg1)->SetLinearDamping(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -14506,7 +14506,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_iDynamicSystem_GetLinearDampener(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_iDynamicSystem_GetLinearDamping(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   iDynamicSystem *arg1 = (iDynamicSystem *) 0 ;
   void *argp1 = 0 ;
@@ -14514,13 +14514,13 @@ SWIGINTERN PyObject *_wrap_iDynamicSystem_GetLinearDampener(PyObject *SWIGUNUSED
   PyObject * obj0 = 0 ;
   float result;
   
-  if(!PyArg_UnpackTuple(args,(char *)"iDynamicSystem_GetLinearDampener",1,1,&obj0)) SWIG_fail;
+  if(!PyArg_UnpackTuple(args,(char *)"iDynamicSystem_GetLinearDamping",1,1,&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iDynamicSystem, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iDynamicSystem_GetLinearDampener" "', argument " "1"" of type '" "iDynamicSystem const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iDynamicSystem_GetLinearDamping" "', argument " "1"" of type '" "iDynamicSystem const *""'"); 
   }
   arg1 = reinterpret_cast< iDynamicSystem * >(argp1);
-  result = (float)((iDynamicSystem const *)arg1)->GetLinearDampener();
+  result = (float)((iDynamicSystem const *)arg1)->GetLinearDamping();
   resultobj = SWIG_From_float(static_cast< float >(result));
   return resultobj;
 fail:
@@ -14528,7 +14528,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_iDynamicSystem_SetRollingDampener(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_iDynamicSystem_SetAngularDamping(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   iDynamicSystem *arg1 = (iDynamicSystem *) 0 ;
   float arg2 ;
@@ -14539,18 +14539,18 @@ SWIGINTERN PyObject *_wrap_iDynamicSystem_SetRollingDampener(PyObject *SWIGUNUSE
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if(!PyArg_UnpackTuple(args,(char *)"iDynamicSystem_SetRollingDampener",2,2,&obj0,&obj1)) SWIG_fail;
+  if(!PyArg_UnpackTuple(args,(char *)"iDynamicSystem_SetAngularDamping",2,2,&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iDynamicSystem, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iDynamicSystem_SetRollingDampener" "', argument " "1"" of type '" "iDynamicSystem *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iDynamicSystem_SetAngularDamping" "', argument " "1"" of type '" "iDynamicSystem *""'"); 
   }
   arg1 = reinterpret_cast< iDynamicSystem * >(argp1);
   ecode2 = SWIG_AsVal_float(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "iDynamicSystem_SetRollingDampener" "', argument " "2"" of type '" "float""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "iDynamicSystem_SetAngularDamping" "', argument " "2"" of type '" "float""'");
   } 
   arg2 = static_cast< float >(val2);
-  (arg1)->SetRollingDampener(arg2);
+  (arg1)->SetAngularDamping(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -14558,7 +14558,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_iDynamicSystem_GetRollingDampener(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_iDynamicSystem_GetAngularDamping(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   iDynamicSystem *arg1 = (iDynamicSystem *) 0 ;
   void *argp1 = 0 ;
@@ -14566,13 +14566,13 @@ SWIGINTERN PyObject *_wrap_iDynamicSystem_GetRollingDampener(PyObject *SWIGUNUSE
   PyObject * obj0 = 0 ;
   float result;
   
-  if(!PyArg_UnpackTuple(args,(char *)"iDynamicSystem_GetRollingDampener",1,1,&obj0)) SWIG_fail;
+  if(!PyArg_UnpackTuple(args,(char *)"iDynamicSystem_GetAngularDamping",1,1,&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_iDynamicSystem, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iDynamicSystem_GetRollingDampener" "', argument " "1"" of type '" "iDynamicSystem const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "iDynamicSystem_GetAngularDamping" "', argument " "1"" of type '" "iDynamicSystem const *""'"); 
   }
   arg1 = reinterpret_cast< iDynamicSystem * >(argp1);
-  result = (float)((iDynamicSystem const *)arg1)->GetRollingDampener();
+  result = (float)((iDynamicSystem const *)arg1)->GetAngularDamping();
   resultobj = SWIG_From_float(static_cast< float >(result));
   return resultobj;
 fail:
@@ -45781,10 +45781,10 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"iDynamicSystem_QueryObject", _wrap_iDynamicSystem_QueryObject, METH_VARARGS, NULL},
 	 { (char *)"iDynamicSystem_SetGravity", _wrap_iDynamicSystem_SetGravity, METH_VARARGS, NULL},
 	 { (char *)"iDynamicSystem_GetGravity", _wrap_iDynamicSystem_GetGravity, METH_VARARGS, NULL},
-	 { (char *)"iDynamicSystem_SetLinearDampener", _wrap_iDynamicSystem_SetLinearDampener, METH_VARARGS, NULL},
-	 { (char *)"iDynamicSystem_GetLinearDampener", _wrap_iDynamicSystem_GetLinearDampener, METH_VARARGS, NULL},
-	 { (char *)"iDynamicSystem_SetRollingDampener", _wrap_iDynamicSystem_SetRollingDampener, METH_VARARGS, NULL},
-	 { (char *)"iDynamicSystem_GetRollingDampener", _wrap_iDynamicSystem_GetRollingDampener, METH_VARARGS, NULL},
+	 { (char *)"iDynamicSystem_SetLinearDamping", _wrap_iDynamicSystem_SetLinearDamping, METH_VARARGS, NULL},
+	 { (char *)"iDynamicSystem_GetLinearDamping", _wrap_iDynamicSystem_GetLinearDamping, METH_VARARGS, NULL},
+	 { (char *)"iDynamicSystem_SetAngularDamping", _wrap_iDynamicSystem_SetAngularDamping, METH_VARARGS, NULL},
+	 { (char *)"iDynamicSystem_GetAngularDamping", _wrap_iDynamicSystem_GetAngularDamping, METH_VARARGS, NULL},
 	 { (char *)"iDynamicSystem_EnableAutoDisable", _wrap_iDynamicSystem_EnableAutoDisable, METH_VARARGS, NULL},
 	 { (char *)"iDynamicSystem_AutoDisableEnabled", _wrap_iDynamicSystem_AutoDisableEnabled, METH_VARARGS, NULL},
 	 { (char *)"iDynamicSystem_SetAutoDisableParams", _wrap_iDynamicSystem_SetAutoDisableParams, METH_VARARGS, NULL},

@@ -526,10 +526,10 @@ bool PhysDemo::OnMouseDown (iEvent &event)
         dragDistance = (hitResult.isect - startBeam).Norm();
 
         // Set some dampening on the rigid body to have a more stable dragging
-        linearDampening = bulletBody->GetLinearDampener();
-        angularDampening = bulletBody->GetRollingDampener();
-        bulletBody->SetLinearDampener (0.9f);
-        bulletBody->SetRollingDampener (0.9f);
+        linearDampening = bulletBody->GetLinearDamping();
+        angularDampening = bulletBody->GetAngularDamping();
+        bulletBody->SetLinearDamping (0.9f);
+        bulletBody->SetAngularDamping (0.9f);
       }
       else
       {
@@ -559,8 +559,8 @@ bool PhysDemo::OnMouseUp (iEvent &event)
     // Put back the original dampening on the rigid body
     csRef<CS::Physics::iRigidBody> bulletBody =
       scfQueryInterface<CS::Physics::iRigidBody> (dragJoint->GetAttachedBody (0));
-    bulletBody->SetLinearDampener (linearDampening);
-    bulletBody->SetRollingDampener (angularDampening);
+    bulletBody->SetLinearDamping (linearDampening);
+    bulletBody->SetAngularDamping (angularDampening);
 
     // Remove the drag joint
     physicalSector->RemoveJoint (dragJoint);

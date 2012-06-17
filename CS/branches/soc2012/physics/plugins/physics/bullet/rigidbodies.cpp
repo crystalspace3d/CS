@@ -1191,7 +1191,7 @@ void csBulletRigidBody::Update ()
   }
 }
 
-void csBulletRigidBody::SetLinearDampener (float d)
+void csBulletRigidBody::SetLinearDamping (float d)
 {
   linearDampening = d;
 
@@ -1199,12 +1199,12 @@ void csBulletRigidBody::SetLinearDampener (float d)
     body->setDamping (linearDampening, angularDampening);
 }
 
-float csBulletRigidBody::GetLinearDampener () const
+float csBulletRigidBody::GetLinearDamping () const
 {
   return linearDampening;
 }
 
-void csBulletRigidBody::SetRollingDampener (float d)
+void csBulletRigidBody::SetAngularDamping (float d)
 {
   angularDampening = d;
 
@@ -1212,7 +1212,7 @@ void csBulletRigidBody::SetRollingDampener (float d)
     body->setDamping (linearDampening, angularDampening);
 }
 
-float csBulletRigidBody::GetRollingDampener () const
+float csBulletRigidBody::GetAngularDamping () const
 {
   return angularDampening;
 }

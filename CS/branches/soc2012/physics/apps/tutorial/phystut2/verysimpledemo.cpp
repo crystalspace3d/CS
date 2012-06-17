@@ -223,8 +223,8 @@ bool VerySimple::Application ()
 
   // Set some linear and angular dampening in order to have a reduction of
   // the movements of the objects
-  physicalSector->SetLinearDampener(0.1f);
-  physicalSector->SetRollingDampener(0.1f);
+  physicalSector->SetLinearDamping(0.1f);
+  physicalSector->SetAngularDamping(0.1f);
 
   // Enable soft bodies
   if (isSoftBodyWorld)

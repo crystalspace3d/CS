@@ -149,11 +149,11 @@ public:
   virtual void SetKinematicCallback (CS::Physics::iKinematicCallback* cb) {kinematicCb = cb;}
   virtual CS::Physics::iKinematicCallback* GetKinematicCallback () {return kinematicCb;}
   
-  virtual btScalar GetLinearDampener();
-  virtual void SetLinearDampener(btScalar d);
+  virtual btScalar GetLinearDamping();
+  virtual void SetLinearDamping(btScalar d);
   
-  virtual btScalar GetRollingDampener();
-  virtual void SetRollingDampener(btScalar d);
+  virtual btScalar GetAngularDamping();
+  virtual void SetAngularDamping(btScalar d);
 };
 
 class csBulletDefaultKinematicCallback : public scfImplementation1<

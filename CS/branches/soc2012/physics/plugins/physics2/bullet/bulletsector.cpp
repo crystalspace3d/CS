@@ -791,12 +791,12 @@ void csBulletSector::Step (float duration)
   CheckCollisions();
 }
 
-void csBulletSector::SetLinearDampener (float d)
+void csBulletSector::SetLinearDamping (float d)
 {
   linearDampening = d;
 }
 
-void csBulletSector::SetRollingDampener (float d)
+void csBulletSector::SetAngularDamping (float d)
 {
   angularDampening = d;
 }
@@ -815,8 +815,8 @@ void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
   rigidBodies.Push (bulletBody);
 
   bulletBody->sector = this;
-  bulletBody->SetLinearDampener(linearDampening);
-  bulletBody->SetRollingDampener(angularDampening);
+  bulletBody->SetLinearDamping(linearDampening);
+  bulletBody->SetAngularDamping(angularDampening);
   bulletBody->AddBulletObject ();
   bulletBody->btBody->setSleepingThresholds (linearDisableThreshold, angularDisableThreshold);
   bulletBody->btBody->setDeactivationTime (timeDisableThreshold);

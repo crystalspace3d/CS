@@ -608,8 +608,8 @@ CS::Physics::iJoint* PhysDemo::SpawnJointed()
   //csOrthoTransform trans = rb2->GetTransform();
   //trans.SetOrigin (trans.GetOrigin() + trans.GetT2O() * csVector3 (0.0f,2.0f,0.0f));
   //rb2->SetTransform (trans);
-  //rb2->SetLinearDampener (0.8f);
-  //rb2->SetRollingDampener (0.8f);
+  //rb2->SetLinearDamping (0.8f);
+  //rb2->SetAngularDamping (0.8f);
 
   //Or you can attach it with a softbody.
   CS::Physics::iSoftBody* rb2 = SpawnSoftBody (false);
@@ -641,8 +641,8 @@ CS::Physics::iJoint* PhysDemo::SpawnJointed()
   csOrthoTransform trans = rb2->GetTransform();
   trans.SetOrigin (trans.GetOrigin() + trans.GetT2O() * csVector3 (0.0f,2.0f,0.0f));
   rb2->SetTransform (trans);
-  rb2->SetLinearDampener (0.8f);
-  rb2->SetRollingDampener (0.8f);
+  rb2->SetLinearDamping (0.8f);
+  rb2->SetAngularDamping (0.8f);
 
   csRef<CS::Physics::iJoint> joint = physicalSystem->CreateSoftAngularJoint (1);
   joint->Attach (sb1, rb2);

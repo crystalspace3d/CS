@@ -182,9 +182,7 @@ csPtr<CS::Collisions::iCollisionGhostObject> csBulletSystem::CreateGhostCollisio
 
 csPtr<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject ()
 {
-  csRef<CS::Physics::iRigidBody> ref = CreateStaticRigidBody();
-  //return csPtr<CS::Collisions::iCollisionObject> ();
-  return csPtr<CS::Collisions::iCollisionObject> (ref);
+  return csPtr<CS::Collisions::iCollisionObject>(csRef<CS::Physics::iRigidBody>(CreateStaticRigidBody()));
 }
 
 csPtr<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor (CS::Collisions::iCollider* collider)

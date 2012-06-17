@@ -50,7 +50,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     
     // place the portal at the center of the box that represents it
     csVector3 size = 0.499f * box.GetSize ();
-    csVector3 centerDist = 1.0f * size * normal;
+    csVector3 centerDist = 1.f * size * normal;
     csOrthoTransform realTrans = meshTrans;
     realTrans.Translate(centerDist);
     ghostPortal->setWorldTransform (CSToBullet (realTrans, sourceSector->sys->getInternalScale ()));
@@ -354,6 +354,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
           newObject->SetCollisionGroup ("Portal");
 
+          // TODO: When traversing forth and back, it might still have a copy that is saved in the other portal
           CS_ASSERT (!csBulletObj->objectCopy);
           csBulletObj->objectCopy = newObject;
           newObject->objectOrigin = csBulletObj;

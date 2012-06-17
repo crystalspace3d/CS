@@ -43,11 +43,9 @@ static const csVector3 ActorDimensions(0.4, 1.5, 0.4);
 class PhysDemo : public CS::Utility::DemoApplication
 {
 private:
-  csRef<CS::Collisions::iCollisionSystem> collisionSystem;
-  csWeakRef<CS::Physics::iPhysicalSystem> physicalSystem;
+  csRef<CS::Physics::iPhysicalSystem> physicalSystem;
 
-  csRef<CS::Collisions::iCollisionSector> collisionSector;
-  csWeakRef<CS::Physics::iPhysicalSector> physicalSector;
+  csRef<CS::Physics::iPhysicalSector> physicalSector;
   csWeakRef<CS::Physics::Bullet2::iPhysicalSector> bulletSector;
 
   csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;

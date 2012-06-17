@@ -26,9 +26,7 @@
 class VerySimple : public CS::Utility::DemoApplication
 {
 private:
-  csRef<CS::Collisions::iCollisionSystem> collisionSystem;
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
-  csRef<CS::Collisions::iCollisionSector> collisionSector;
   csRef<CS::Physics::iPhysicalSector> physicalSector;
   csRef<CS::Physics::Bullet2::iPhysicalSector> bulletSector;
 
@@ -76,7 +74,7 @@ private:
   bool softDragging;
   csRef<CS::Physics::iJoint> dragJoint;
   csRef<CS::Physics::iSoftBody> draggedBody;
-  
+
   size_t draggedVertex;
   float dragDistance;
   float linearDampening, angularDampening;
@@ -115,8 +113,8 @@ public:
 
 int runDebug(int argc, char* argv[])
 {
-    //VerySimple ().Main(argc, argv);
-    return 1;
+  //VerySimple ().Main(argc, argv);
+  return 1;
 }
 
 
@@ -135,11 +133,11 @@ int runDebug(int argc, char* argv[])
 
 VerySimple::VerySimple()
   : DemoApplication ("CrystalSpace.PhysTut2"),
-    isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
-    do_soft_debug (true), remainingStepDuration (0.0f), allStatic (false), 
-    pauseDynamic (false), dynamicSpeed (1.0f),
-    debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
-    physicalCameraMode (CAMERA_DYNAMIC), dragging (false), softDragging (false)
+  isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
+  do_soft_debug (true), remainingStepDuration (0.0f), allStatic (false), 
+  pauseDynamic (false), dynamicSpeed (1.0f),
+  debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
+  physicalCameraMode (CAMERA_DYNAMIC), dragging (false), softDragging (false)
 {
   localTrans.Identity ();
 }
@@ -156,7 +154,7 @@ void VerySimple::Frame ()
 
 bool VerySimple::OnKeyboard (iEvent &event)
 {
-    return false;
+  return false;
 }
 
 bool VerySimple::OnMouseDown (iEvent &event)
@@ -172,7 +170,7 @@ bool VerySimple::OnMouseUp (iEvent &event)
 
 bool VerySimple::OnInitialize (int argc, char* argv[])
 {
-csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
+  csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
   // Default behavior from DemoApplication
   if (!DemoApplication::OnInitialize (argc, argv))
     return false;
@@ -184,23 +182,21 @@ csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
   // Checking for choosen dynamic system
   csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
   phys_engine_name = clp->GetOption ("phys_engine");
-  
+
   phys_engine_name = "Bullet";
-  csRef<iPluginManager> plugmgr = 
-    csQueryRegistry<iPluginManager> (GetObjectRegistry ());
-  collisionSystem = csLoadPlugin<CS::Collisions::iCollisionSystem> (plugmgr, "crystalspace.physics.bullet2");
-  physicalSystem = scfQueryInterface<CS::Physics::iPhysicalSystem> (collisionSystem);
+  csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry ());
+  physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet2");
 
   // We have some objects of size smaller than 0.035 units, so we scale up the
   // whole world for a better behavior of the dynamic simulation.
-  collisionSystem->SetInternalScale (10.0f);
+  physicalSystem->SetInternalScale (10.0f);
 
   softBodyAnimationType =
-      csLoadPlugin<CS::Physics::iSoftBodyAnimationControlType>
-      (plugmgr, "crystalspace.physics.softanim2");
+    csLoadPlugin<CS::Physics::iSoftBodyAnimationControlType>
+    (plugmgr, "crystalspace.physics.softanim2");
 
   if (!softBodyAnimationType)
-      return ReportError ("Could not load soft body animation for genmeshes plugin!");
+    return ReportError ("Could not load soft body animation for genmeshes plugin!");
 
   // Edit1: The 2 lines return the same object.
   //csRef<iGenMeshAnimationControlFactory> animationFactory =
@@ -209,7 +205,7 @@ csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
   //  scfQueryInterface<CS::Physics::iSoftBodyAnimationControlFactory> (animationFactory);
   softBodyAnimationFactory = softBodyAnimationType->CreateAnimationControlFactory ();
 
-  if (!collisionSystem)
+  if (!physicalSystem)
     return ReportError ("No bullet system plugin!");
 
   return true;
@@ -223,9 +219,7 @@ bool VerySimple::Application ()
     return false;
 
   // Create the dynamic system
-  collisionSector = collisionSystem->CreateCollisionSector ();
-  if (!collisionSector) return ReportError ("Error creating collision sector!");
-  physicalSector = scfQueryInterface<CS::Physics::iPhysicalSector> (collisionSector);
+  physicalSector = physicalSystem->CreatePhysicalSector ();
 
   // Set some linear and angular dampening in order to have a reduction of
   // the movements of the objects
@@ -266,14 +260,14 @@ bool VerySimple::Application ()
 
   SpawnSoftBody(false);
 
-  collisionSector->SetSector (room);
+  physicalSector->SetSector (room);
 
-  collisionSector->CreateCollisionGroup ("Box");
-  collisionSector->CreateCollisionGroup ("BoxFiltered");
+  physicalSector->CreateCollisionGroup ("Box");
+  physicalSector->CreateCollisionGroup ("BoxFiltered");
 
-  bool coll = collisionSector->GetGroupCollision ("Box", "BoxFiltered");
+  bool coll = physicalSector->GetGroupCollision ("Box", "BoxFiltered");
   if (coll)
-    collisionSector->SetGroupCollision ("Box", "BoxFiltered", false);
+    physicalSector->SetGroupCollision ("Box", "BoxFiltered", false);
 
   // Run the application
   Run();
@@ -299,7 +293,7 @@ CS::Physics::iSoftBody* VerySimple::SpawnSoftBody (bool setVelocity /* = true */
   csRef<iGeneralFactoryState> gmstate = scfQueryInterface<
     iGeneralFactoryState> (ballFact->GetMeshObjectFactory ());
 
-  
+
   gmstate->SetAnimationControlFactory (softBodyAnimationFactory);
 
 
@@ -317,14 +311,14 @@ CS::Physics::iSoftBody* VerySimple::SpawnSoftBody (bool setVelocity /* = true */
   // This would have worked too
   csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateSoftBody
     (gmstate->GetVertices (), gmstate->GetVertexCount (),
-     gmstate->GetTriangles (), gmstate->GetTriangleCount (),
-     csOrthoTransform (csMatrix3 (), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
+    gmstate->GetTriangles (), gmstate->GetTriangleCount (),
+    csOrthoTransform (csMatrix3 (), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
   body->SetMass (5.0f);
   body->SetRigidity (0.8f);
   csRef<CS::Physics::Bullet2::iSoftBody> bulletbody = 
     scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (body);
   bulletbody->SetBendingConstraint (true);
-  
+
   if (setVelocity)
   {
     // Fling the body.
@@ -340,13 +334,13 @@ CS::Physics::iSoftBody* VerySimple::SpawnSoftBody (bool setVelocity /* = true */
   body->SetAttachedMovable (mesh->GetMovable ());
 
   body->RebuildObject ();
-  physicalSector->AddSoftBody (body);
+  physicalSector->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
   /*csRef<iGeneralMeshState> meshState =
-    scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
+  scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
   csRef<CS::Physics::iSoftBodyAnimationControl> animationControl =
-    scfQueryInterface<CS::Physics::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
+  scfQueryInterface<CS::Physics::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
   animationControl->SetSoftBody (body);*/
 
 

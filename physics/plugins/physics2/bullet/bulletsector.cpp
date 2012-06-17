@@ -210,7 +210,9 @@ void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* objec
 {
   csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*>(object));
 
-  printf("Adding object \"%s\" (%x)\n", object->QueryObject()->GetName(), (int)(void*)obj->btObject);
+#ifdef _DEBUG
+  printf("Adding object \"%s\" (0x%lx)\n", object->QueryObject()->GetName(), obj->btObject);
+#endif
 
   switch (obj->GetObjectType ())
   {

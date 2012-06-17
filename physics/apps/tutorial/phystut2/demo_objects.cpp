@@ -54,7 +54,7 @@ void PhysDemo::CreateGhostCylinder()
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh.
-  ghostObject = collisionSystem->CreateGhostCollisionObject();
+  ghostObject = physicalSystem->CreateGhostCollisionObject();
   csYRotMatrix3 m (PI/2.0);
   csOrthoTransform trans (m, csVector3 (0, -3, 5));
   if (this->environment == ENVIRONMENT_TERRAIN)
@@ -63,13 +63,13 @@ void PhysDemo::CreateGhostCylinder()
   ghostObject->SetAttachedMovable (mesh->GetMovable());
 
   // Create and attach a cone collider.
-  csRef<CS::Collisions::iColliderCylinder> cylinder = collisionSystem->CreateColliderCylinder (length, radius);
+  csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
   //It won't work for ghost and actor.
   ghostObject->AddCollider (cylinder, csReversibleTransform(csYRotMatrix3 (PI/2.0), csVector3 (0,0,0)));
   ghostObject->QueryObject()->SetName("ghostObject");
   //ghostObject->AddCollider (cylinder, trans)
   ghostObject->RebuildObject();
-  collisionSector->AddCollisionObject (ghostObject);
+  physicalSector->AddCollisionObject (ghostObject);
 }
 
 CS::Physics::iRigidBody* PhysDemo::SpawnBox (bool setVelocity /* = true */)
@@ -82,7 +82,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnBox (bool setVelocity /* = true */)
   
   // Create and attach a box collider.
   csVector3 size (0.4f, 0.8f, 0.4f); // This should be the same size as the mesh
-  csRef<CS::Collisions::iColliderBox> box = collisionSystem->CreateColliderBox (size);
+  csRef<CS::Collisions::iColliderBox> box = physicalSystem->CreateColliderBox (size);
 
   // Create a body and attach the mesh.
   csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("box");
@@ -99,7 +99,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnBox (bool setVelocity /* = true */)
   rb->SetFriction (10.0f);
 
   rb->RebuildObject();
-  collisionSector->AddCollisionObject (rb);
+  physicalSector->AddCollisionObject (rb);
 
   if (setVelocity)
   {
@@ -154,7 +154,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh and attach a sphere collider.
-  csRef<CS::Collisions::iColliderSphere> sphere = collisionSystem->CreateColliderSphere (1.0);
+  csRef<CS::Collisions::iColliderSphere> sphere = physicalSystem->CreateColliderSphere (1.0);
   csOrthoTransform trans = localTrans;
   sphere->SetLocalScale (radius);
   trans.SetOrigin (artificialOffset);
@@ -179,7 +179,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   }
 
   rb->RebuildObject();
-  collisionSector->AddCollisionObject (rb);
+  physicalSector->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -199,7 +199,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   // offset. That way we can test if the physics engine supports that.
  
   // Create a body and attach the mesh and attach a cone collider.
-  csRef<CS::Collisions::iColliderCone> cone = collisionSystem->CreateColliderCone (length, radius);
+  csRef<CS::Collisions::iColliderCone> cone = physicalSystem->CreateColliderCone (length, radius);
   cone->SetLocalScale (csVector3 (rand()%5/10. + .2, rand()%5/10. + .2, rand()%5/10. + .2));
   csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("cone");
   rb->AddCollider(cone, localTrans);
@@ -221,7 +221,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   }
 
   rb->RebuildObject();
-  collisionSector->AddCollisionObject (rb);
+  physicalSector->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -263,7 +263,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh.
-  csRef<CS::Collisions::iColliderCylinder> cylinder = collisionSystem->CreateColliderCylinder (length, radius);
+  csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
   csMatrix3 m;
   csReversibleTransform t = csReversibleTransform (m, artificialOffset);
   csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("cylinder");
@@ -287,7 +287,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   }
   
   rb->RebuildObject();
-  collisionSector->AddCollisionObject (rb);
+  physicalSector->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -330,14 +330,14 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   rb->SetAttachedMovable (mesh->GetMovable());
 
   // Create and attach a cone collider.
-  csRef<CS::Collisions::iColliderCapsule> capsule = collisionSystem->CreateColliderCapsule (length, radius);
+  csRef<CS::Collisions::iColliderCapsule> capsule = physicalSystem->CreateColliderCapsule (length, radius);
   rb->AddCollider (capsule, localTrans);
   rb->SetDensity (10.0f);
   rb->SetElasticity (0.8f);
   rb->SetFriction (10.0f);
 
   rb->RebuildObject();
-  collisionSector->AddCollisionObject (rb);
+  physicalSector->AddCollisionObject (rb);
 
   if (setVelocity)
   {
@@ -380,12 +380,12 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
   csRef<CS::Collisions::iCollider> starCollider;
   if (mainCollider == nullptr)
   {
-    mainCollider = collisionSystem->CreateColliderConcaveMesh (star);
+    mainCollider = physicalSystem->CreateColliderConcaveMesh (star);
     starCollider = mainCollider;
   }
   else
   {
-    starCollider = csRef<CS::Collisions::iColliderConcaveMeshScaled>(collisionSystem->CreateColliderConcaveMeshScaled (mainCollider, 1.0f));
+    starCollider = csRef<CS::Collisions::iColliderConcaveMeshScaled>(physicalSystem->CreateColliderConcaveMeshScaled (mainCollider, 1.0f));
   }  
   co->AddCollider (starCollider, localTrans);
   csOrthoTransform trans = tc;
@@ -394,7 +394,7 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
   co->SetTransform (trans);
 
   co->RebuildObject();
-  collisionSector->AddCollisionObject (co);
+  physicalSector->AddCollisionObject (co);
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
 
@@ -438,7 +438,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
 
   // Create and attach a cone collider.
   // If you simplify a convex CS mesh, you may get a wrong convex hull.
-  csRef<CS::Collisions::iColliderConvexMesh> cylinder = collisionSystem->CreateColliderConvexMesh (mesh);
+  csRef<CS::Collisions::iColliderConvexMesh> cylinder = physicalSystem->CreateColliderConvexMesh (mesh);
   rb->AddCollider (cylinder, localTrans);
   rb->SetDensity (10.0f);
   rb->SetElasticity (0.8f);
@@ -451,7 +451,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
     rb->SetAngularVelocity (tc.GetT2O() * csVector3 (5, 0, 0));
   }
   rb->RebuildObject();
-  collisionSector->AddCollisionObject (rb);
+  physicalSector->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -475,9 +475,9 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
   rb->SetTransform (trans);
   rb->SetAttachedMovable (mesh->GetMovable());
 
-  collisionSystem->DecomposeConcaveMesh (rb, mesh, true);
+  physicalSystem->DecomposeConcaveMesh (rb, mesh, true);
   rb->RebuildObject();
-  collisionSector->AddCollisionObject (rb);
+  physicalSector->AddCollisionObject (rb);
 
   if (setVelocity)
   {
@@ -999,7 +999,7 @@ void PhysDemo::SpawnRope()
   body->AnchorVertex (0);
   body->AnchorVertex (body->GetVertexCount() - 1, box);
   body->RebuildObject();
-  collisionSector->AddCollisionObject (body);
+  physicalSector->AddCollisionObject (body);
 
   // Spawn a second rope and attach it to the box
   body = physicalSystem->CreateRope
@@ -1010,7 +1010,7 @@ void PhysDemo::SpawnRope()
   body->AnchorVertex (0);
   body->AnchorVertex (body->GetVertexCount() - 1, box);
   body->RebuildObject();
-  collisionSector->AddCollisionObject (body);
+  physicalSector->AddCollisionObject (body);
 
   // Second example using ropes defined by the position of each of their vertices
 #else
@@ -1096,7 +1096,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth()
   body->SetAttachedMovable (mesh->GetMovable());
 
   body->RebuildObject();
-  collisionSector->AddCollisionObject (body);
+  physicalSector->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
   // If it's a double-side soft body like cloth, you have to call SetSoftBody (body, true);
@@ -1160,7 +1160,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   body->SetAttachedMovable (mesh->GetMovable());
 
   body->RebuildObject();
-  collisionSector->AddCollisionObject (body);
+  physicalSector->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
   /*csRef<iGeneralMeshState> meshState =

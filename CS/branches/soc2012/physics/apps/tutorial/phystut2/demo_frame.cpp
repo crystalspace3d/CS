@@ -98,7 +98,7 @@ void PhysDemo::Frame()
       cameraActor->IncreasePitch(-timeMs);
     }
 
-    if (cameraActor->IsOnGround() || collisionSector->GetGravity()[1] == 0)    // actor can only be moved while on ground or when flying
+    if (cameraActor->IsOnGround() || physicalSector->GetGravity()[1] == 0)    // actor can only be moved while on ground or when flying
     {
       if (kbd->GetKeyState (CSKEY_UP))
       {
@@ -209,7 +209,7 @@ void PhysDemo::Frame()
 
   hudManager->GetStateDescriptions()->Push (csString ("Physics engine: ") + phys_engine_name);
 
-  txt.Format ("Collision objects count: %zu", collisionSector->GetCollisionObjectCount());
+  txt.Format ("Collision objects count: %zu", physicalSector->GetCollisionObjectCount());
   hudManager->GetStateDescriptions()->Push (txt);
 
   txt.Format ("Rigid bodies count: %zu", physicalSector->GetRigidBodyCount());

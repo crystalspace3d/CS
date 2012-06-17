@@ -42,12 +42,12 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     if (csKeyEventHelper::GetCookedCode (&event) == 'r')
     {
       // reset
-      for (int i = collisionSector->GetCollisionObjectCount() - 1; i >= 0; --i)
+      for (int i = physicalSector->GetCollisionObjectCount() - 1; i >= 0; --i)
       {
-        iCollisionObject* obj = collisionSector->GetCollisionObject(i);
+        iCollisionObject* obj = physicalSector->GetCollisionObject(i);
         if (obj->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
         {
-          collisionSector->RemoveCollisionObject(obj);
+          physicalSector->RemoveCollisionObject(obj);
         }
       }
     }
@@ -259,7 +259,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     else if (csKeyEventHelper::GetCookedCode (&event) == 'g')
     {
       // Toggle gravity.
-      collisionSector->SetGravity (collisionSector->GetGravity().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
+      physicalSector->SetGravity (physicalSector->GetGravity().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
       return true;
     }
 
@@ -275,7 +275,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       csVector3 endBeam = camera->GetTransform().This2Other (v3d);
 
       CS::Collisions::HitBeamResult hitResult =
-        collisionSector->HitBeam (startBeam, endBeam);
+        physicalSector->HitBeam (startBeam, endBeam);
       if (hitResult.hasHit && hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
       {
         // Remove the body and the mesh from the simulation, and put them in the clipboard
@@ -289,7 +289,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
           if (rigidBody->GetState() == CS::Physics::STATE_DYNAMIC)
           {
             size_t count = physicalSector->GetRigidBodyCount();
-            collisionSector->RemoveCollisionObject (clipboardBody->QueryRigidBody());
+            physicalSector->RemoveCollisionObject (clipboardBody->QueryRigidBody());
             //room->GetMeshes()->Remove (clipboardMovable->GetSceneNode()->QueryMesh());
             if (physicalSector->GetRigidBodyCount() == count)
               clipboardBody.Invalidate();
@@ -298,7 +298,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         else
         {
           CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-          collisionSector->RemoveCollisionObject (softBody);
+          physicalSector->RemoveCollisionObject (softBody);
         }
 
         // Update the display of the dynamics debugger
@@ -327,12 +327,12 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {
         clipboardBody->SetTransform (newTransform);
-        collisionSector->AddCollisionObject (clipboardBody->QueryRigidBody());
+        physicalSector->AddCollisionObject (clipboardBody->QueryRigidBody());
       }
       else
       {
         CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-        collisionSector->AddCollisionObject (softBody);
+        physicalSector->AddCollisionObject (softBody);
       }
 
       clipboardBody = 0;
@@ -454,7 +454,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
 
     // Trace the physical beam
     CS::Collisions::HitBeamResult hitResult =
-      collisionSector->HitBeamPortal (startBeam, endBeam);
+      physicalSector->HitBeamPortal (startBeam, endBeam);
     if (!hitResult.hasHit)
       return false;
 
@@ -505,7 +505,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     csVector3 endBeam = camera->GetTransform().This2Other (v3d);
 
     // Trace the physical beam
-    CS::Collisions::HitBeamResult hitResult = collisionSector->HitBeam (startBeam, endBeam);
+    CS::Collisions::HitBeamResult hitResult = physicalSector->HitBeam (startBeam, endBeam);
     if (!hitResult.hasHit || !hitResult.object) return false;
 
     // Check if we hit a rigid body

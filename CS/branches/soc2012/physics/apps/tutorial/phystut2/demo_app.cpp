@@ -44,12 +44,10 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   phys_engine_name = clp->GetOption ("phys_engine");
   
   phys_engine_name = "Bullet";
-  csRef<iPluginManager> plugmgr = 
-    csQueryRegistry<iPluginManager> (GetObjectRegistry());
-  collisionSystem = csLoadPlugin<CS::Collisions::iCollisionSystem> (plugmgr, "crystalspace.physics.bullet2");
-  physicalSystem = scfQueryInterface<iPhysicalSystem> (collisionSystem);
+  csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry());
+  physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet2");
 
-  collisionSystem->SetInternalScale (1.0f);
+  physicalSystem->SetInternalScale (1.0f);
 
   // Check whether the soft bodies are enabled or not
   isSoftBodyWorld = clp->GetBoolOption ("soft", true);
@@ -87,7 +85,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
       environment = GetEnvironmentByName(defaultEnvironmentName);
   }
 
-  if (!collisionSystem)
+  if (!physicalSystem)
     return ReportError ("No bullet system plugin!");
 
   return true;
@@ -101,9 +99,7 @@ bool PhysDemo::Application()
     return false;
 
   // Create the dynamic system
-  collisionSector = collisionSystem->CreateCollisionSector();
-  if (!collisionSector) return ReportError ("Error creating collision sector!");
-  physicalSector = scfQueryInterface<iPhysicalSector> (collisionSector);
+  physicalSector = physicalSystem->CreatePhysicalSector();
 
   // Set some linear and angular dampening in order to have a reduction of
   // the movements of the objects
@@ -116,7 +112,7 @@ bool PhysDemo::Application()
 
   bulletSector = scfQueryInterface<Bullet2::iPhysicalSector> (physicalSector);
   bulletSector->SetDebugMode (debugMode);
-  collisionSector->SetGravity(0);
+  physicalSector->SetGravity(0);
 
   // Create the environment
   switch (environment)
@@ -141,14 +137,14 @@ bool PhysDemo::Application()
     break;
   }
 
-  collisionSector->SetSector (room);
+  physicalSector->SetSector (room);
 
-  collisionSector->CreateCollisionGroup ("Box");
-  collisionSector->CreateCollisionGroup ("BoxFiltered");
+  physicalSector->CreateCollisionGroup ("Box");
+  physicalSector->CreateCollisionGroup ("BoxFiltered");
 
-  bool coll = collisionSector->GetGroupCollision ("Box", "BoxFiltered");
+  bool coll = physicalSector->GetGroupCollision ("Box", "BoxFiltered");
   if (coll)
-    collisionSector->SetGroupCollision ("Box", "BoxFiltered", false);
+    physicalSector->SetGroupCollision ("Box", "BoxFiltered", false);
 
   // Preload some meshes and materials
   if (!loader->LoadTexture ("spark", "/lib/std/spark.png")) return ReportError ("Error loading texture: spark");
@@ -280,7 +276,7 @@ void PhysDemo::UpdateCameraMode()
     {
       if (cameraActor)
       {
-        collisionSector->RemoveCollisionObject(cameraActor);
+        physicalSector->RemoveCollisionObject(cameraActor);
       }
 
       const csOrthoTransform& tc = view->GetCamera()->GetTransform();
@@ -301,8 +297,8 @@ void PhysDemo::UpdateCameraMode()
       // Create a new rigid body
       else
       {
-        csRef<CS::Collisions::iColliderBox> sphere = //collisionSystem->CreateColliderSphere (ActorDimensions.x);
-          collisionSystem->CreateColliderBox(ActorDimensions);
+        csRef<CS::Collisions::iColliderBox> sphere = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
+          physicalSystem->CreateColliderBox(ActorDimensions);
         cameraBody = CreateRigidBody("Camera");
         cameraBody->SetDensity(0.3f);
         cameraBody->SetElasticity(0.8f);
@@ -315,7 +311,7 @@ void PhysDemo::UpdateCameraMode()
         cameraBody->SetTransform (tc);
 
       }
-      collisionSector->AddCollisionObject(cameraBody);
+      physicalSector->AddCollisionObject(cameraBody);
 
       break;
     }
@@ -325,12 +321,12 @@ void PhysDemo::UpdateCameraMode()
     {
       if (cameraBody)
       {
-        collisionSector->RemoveCollisionObject(cameraBody);
+        physicalSector->RemoveCollisionObject(cameraBody);
         cameraBody = nullptr;
       }
       if (cameraActor)
       {
-        collisionSector->RemoveCollisionObject(cameraActor);
+        physicalSector->RemoveCollisionObject(cameraActor);
       }
 
       // Update the display of the dynamics debugger
@@ -343,16 +339,16 @@ void PhysDemo::UpdateCameraMode()
     {
       if (cameraBody)
       {
-        collisionSector->RemoveCollisionObject(cameraBody);
+        physicalSector->RemoveCollisionObject(cameraBody);
         cameraBody = nullptr;
       }
 
       if (!cameraActor)
       {
-        csRef<CS::Collisions::iColliderBox> actorCollider = //collisionSystem->CreateColliderSphere (ActorDimensions.x);
-          collisionSystem->CreateColliderBox(ActorDimensions);
+        csRef<CS::Collisions::iColliderBox> actorCollider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
+          physicalSystem->CreateColliderBox(ActorDimensions);
 
-        cameraActor = collisionSystem->CreateCollisionActor(actorCollider);
+        cameraActor = physicalSystem->CreateCollisionActor(actorCollider);
         cameraActor->QueryObject()->SetName("actor");
         cameraActor->SetAttachedCamera(view->GetCamera());
       }
@@ -362,7 +358,7 @@ void PhysDemo::UpdateCameraMode()
       trans.Translate(csVector3(0, 0, -3));
       cameraActor->SetTransform(trans);
       
-      collisionSector->AddCollisionObject(cameraActor);
+      physicalSector->AddCollisionObject(cameraActor);
       cameraActor->SetJumpSpeed(actorSpeed);
       
     }
@@ -373,12 +369,12 @@ void PhysDemo::UpdateCameraMode()
     {
       if (cameraActor)
       {
-        collisionSector->RemoveCollisionObject(cameraActor);
+        physicalSector->RemoveCollisionObject(cameraActor);
       }
       // Create a body
       if (!cameraBody)
       {
-        csRef<CS::Collisions::iColliderSphere> sphere = collisionSystem->CreateColliderSphere (0.8f);
+        csRef<CS::Collisions::iColliderSphere> sphere = physicalSystem->CreateColliderSphere (0.8f);
         csOrthoTransform localTrans;
         cameraBody = physicalSystem->CreateRigidBody();
         cameraBody->AddCollider(sphere, localTrans);
@@ -399,7 +395,7 @@ void PhysDemo::UpdateCameraMode()
       // Make it kinematic
       cameraBody->SetState (STATE_KINEMATIC);
 
-      collisionSector->AddCollisionObject (cameraBody);
+      physicalSector->AddCollisionObject (cameraBody);
 
     }
     break;

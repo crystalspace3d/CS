@@ -59,8 +59,8 @@ class csBulletJoint;
 class csBulletCollisionPortal;
 
 //Will also implement iPhysicalSector...
-class csBulletSector : public scfImplementationExt3<
-  csBulletSector, csObject, CS::Collisions::iCollisionSector, 
+class csBulletSector : public scfImplementationExt2<
+  csBulletSector, csObject,
   CS::Physics::Bullet2::iPhysicalSector,
   CS::Physics::iPhysicalSector>
 {

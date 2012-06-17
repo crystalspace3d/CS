@@ -65,9 +65,10 @@ class csBulletCollisionActor;
 class csBulletCollider;
 class csBulletJoint;
 
-class csBulletSystem : public scfImplementation3<
-  csBulletSystem, CS::Collisions::iCollisionSystem, 
-  CS::Physics::iPhysicalSystem, iComponent>
+class csBulletSystem : public scfImplementationExt2<
+  csBulletSystem, csObject,
+  CS::Physics::iPhysicalSystem, 
+  iComponent>
 {
   friend class csBulletColliderConvexMesh;
   friend class csBulletColliderConcaveMesh;
@@ -125,6 +126,12 @@ public:
     iMeshWrapper* mesh, bool simplify = false); 
 
   //iPhysicalSystem
+  virtual csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector () 
+  { 
+    return csPtr<CS::Physics::iPhysicalSector>(scfQueryInterface<CS::Physics::iPhysicalSector>(
+      csRef<CS::Collisions::iCollisionSector>(CreateCollisionSector())));
+  }
+
   virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody ();
   virtual csPtr<CS::Physics::iRigidBody> CreateStaticRigidBody ();
 

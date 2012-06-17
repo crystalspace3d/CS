@@ -63,6 +63,7 @@ struct iRigidBody;
 struct iSoftBody;
 struct iKinematicCallback;
 struct iPhysicalSystem;
+struct iPhysicalSector;
 
 /**
  * The type of a physical body.
@@ -712,9 +713,15 @@ struct iKinematicCallback : public virtual iBase
  *
  * \sa CS::Collisions::iCollisionSystem
  */
-struct iPhysicalSystem : public virtual iBase
+struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
+ //public virtual iBase
 {
   SCF_INTERFACE (CS::Physics::iPhysicalSystem, 1, 0, 0);
+  
+  /**
+   * Create a new physical sector
+   */
+  virtual csPtr<iPhysicalSector> CreatePhysicalSector () = 0;
 
   /**
    * Create a rigid body.
@@ -849,13 +856,10 @@ struct iPhysicalSystem : public virtual iBase
 /**
  * This is the interface for the physical sector.
  * It manage all physical bodies.
- * 
- * Main ways to get pointers to this interface:
- * - scfQueryInterface<CS::Physics::iPhysicalSector>() from a CS::Collisions::iCollisionSector
  *
  * \sa CS::Collisions::iCollisionSector CS::Physics::Bullet2::iPhysicalSector
  */
-struct iPhysicalSector : public virtual iBase
+struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
 {
   SCF_INTERFACE (CS::Physics::iPhysicalSector, 1, 0, 0);
 

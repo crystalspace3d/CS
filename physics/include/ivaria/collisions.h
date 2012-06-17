@@ -31,6 +31,7 @@
 #include "csgeom/transfrm.h"
 #include "csgeom/plane3.h"
 #include "iutil/object.h"
+#include "colliders.h"
 
 #define	SQRT2				1.41421356237f	
 
@@ -60,24 +61,6 @@ struct iCollisionCallback;
 struct iCollisionObject;
 struct iCollisionSector;
 typedef short CollisionGroupMask;
-
-/**
- * The type of a collider.
- */
-enum ColliderType
-{
-COLLIDER_INVALID = 0,
-COLLIDER_BOX,
-COLLIDER_SPHERE,
-COLLIDER_CYLINDER,
-COLLIDER_CAPSULE,
-COLLIDER_CONE,
-COLLIDER_PLANE,
-COLLIDER_CONVEX_MESH,
-COLLIDER_CONCAVE_MESH,
-COLLIDER_CONCAVE_MESH_SCALED,
-COLLIDER_TERRAIN
-};
 
 /**
  * The type of a collision object.
@@ -210,230 +193,6 @@ struct iCollisionCallback: public virtual iBase
 };
 
 /**
- * A base interface for colliders. 
- * Other colliders will be derived from this one.
- */
-struct iCollider : public virtual iBase
-{
-  SCF_INTERFACE (CS::Collisions::iCollider, 1, 0, 0);
-
-  /// Get the type of this collider. 
-  virtual ColliderType GetType () const = 0;
-
-  /// Set the scale of the collider shape on X/Y/Z axis.
-  virtual void SetLocalScale (const csVector3& scale) = 0;
-
-  /// Get the scale on X/Y/Z axis.
-  virtual const csVector3& GetLocalScale () const = 0;
-  
-  /// Set the margin of collision shape.
-  virtual void SetMargin (float margin) = 0;
-
-  /// Get the margin of collision shape.
-  virtual float GetMargin () const = 0; 
-};
-
-/**
- * A box collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderBox()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderBox : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderBox, 1, 0, 0);
-
-  /// Get the box geometry of this collider.
-  virtual csVector3 GetBoxGeometry ()  = 0;
-};
-
-/**
- * A sphere collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderSphere()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderSphere : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderSphere, 1, 0, 0);
-
-  /// Get the sphere geometry of this collider.
-  virtual float GetSphereGeometry () = 0;
-};
-
-/**
- * A cylinder collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderCylinder()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderCylinder : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderCylinder, 1, 0, 0);
-
-  /// Get the cylinder geometry of this collider.
-  virtual void GetCylinderGeometry (float& length, float& radius) = 0;
-};
-
-/**
- * A capsule collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderCapsule()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderCapsule : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderCapsule, 1, 0, 0);
-
-  /// Get the capsule geometry of this collider.
-  virtual void GetCapsuleGeometry (float& length, float& radius) = 0;
-};
-
-/**
- * A cone collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderCone()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderCone : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderCone, 1, 0, 0);
-
-  /// Get the cone geometry of this collider.
-  virtual void GetConeGeometry (float& length, float& radius) = 0;
-};
-
-/**
- * A static plane collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderPlane()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderPlane : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderPlane, 1, 0, 0);
-
-  /// Get the plane geometry of this collider.
-  virtual csPlane3 GetPlaneGeometry () = 0;
-};
-
-/**
- * A convex mesh collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderConvexMesh()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderConvexMesh : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderConvexMesh, 1, 0, 0);
-
-  /// Get the mesh factory of this collider.
-  virtual iMeshWrapper* GetMesh () = 0;
-};
-
-/**
- * A static concave mesh collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderConcaveMesh()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderConcaveMesh : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderConcaveMesh, 1, 0, 0);
-
-  /// Get the mesh factory of this collider.
-  virtual iMeshWrapper* GetMesh () = 0;
-};
-
-/**
- * A scaled static concave mesh collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderConcaveMeshScaled()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderConcaveMeshScaled : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderConcaveMeshScaled, 1, 0, 0);
-
-  /// Get the concave collider scaled by this collider.
-  virtual iColliderConcaveMesh* GetCollider () = 0;
-};
-
-/**
- * A terrain collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderTerrain()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
-struct iColliderTerrain : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderTerrain, 1, 0, 0);
-
-  /// Get the terrain system.
-  virtual iTerrainSystem* GetTerrain () const = 0;
-};
-
-/**
  * This is the interface of a collision object. 
  *It contains the collision information of the object.
  * 
@@ -501,7 +260,7 @@ struct iCollisionObject : public virtual iBase
    */
   virtual void SetRotation (const csMatrix3& rot) = 0;
 
-  /// Rotate the collision actor.
+  /// Rotate the collision actor by the given angle around the given axis
   virtual void Rotate (const csVector3& v, float angle) = 0;
 
   /// Increases pitch angle by the given value in radians

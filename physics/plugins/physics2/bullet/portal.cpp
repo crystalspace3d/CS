@@ -282,8 +282,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
             rb->SetLinearVelocity (warpTrans.GetT2O () * rb->GetLinearVelocity ());
             rb->SetAngularVelocity (warpTrans.GetT2O () * rb->GetAngularVelocity ()); 
-            /*rb->SetLinearDampener (rb->GetLinearDampener ());
-            rb->SetRollingDampener (rb->GetRollingDampener ());*/
+            /*rb->SetLinearDamping (rb->GetLinearDamping ());
+            rb->SetAngularDamping (rb->GetAngularDamping ());*/
           }
           csObj->SetTransform (transform);
 

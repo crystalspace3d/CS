@@ -250,8 +250,8 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
 	// TODO: use default values
         float angular = child->GetAttributeValueAsFloat ("angular");
         float linear = child->GetAttributeValueAsFloat ("linear");
-        physSector->SetRollingDampener (angular);
-        physSector->SetLinearDampener (linear);
+        physSector->SetAngularDamping (angular);
+        physSector->SetLinearDamping (linear);
         break;
       }
     case XMLTOKEN_SIMULATIONSPEED:
@@ -436,8 +436,8 @@ bool csPhysicsLoader2::ParseRigidBody (iDocumentNode *node,
     {
       float angular = child->GetAttributeValueAsFloat ("angular");
       float linear = child->GetAttributeValueAsFloat ("linear");
-      body->SetRollingDampener (angular);
-      body->SetLinearDampener (linear);
+      body->SetAngularDamping (angular);
+      body->SetLinearDamping (linear);
       break;
     }
     else if (id == XMLTOKEN_DYNAMICSTATE)

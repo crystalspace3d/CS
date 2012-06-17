@@ -183,11 +183,11 @@ public:
     size_t maxSteps, size_t iterations);
   virtual void Step (float duration);
 
-  virtual void SetLinearDampener (float d);
-  virtual float GetLinearDampener () const {return linearDampening;}
+  virtual void SetLinearDamping (float d);
+  virtual float GetLinearDamping () const {return linearDampening;}
 
-  virtual void SetRollingDampener (float d);
-  virtual float GetRollingDampener () const {return angularDampening;}
+  virtual void SetAngularDamping (float d);
+  virtual float GetAngularDamping () const {return angularDampening;}
 
   virtual void SetAutoDisableParams (float linear,
     float angular, float time);

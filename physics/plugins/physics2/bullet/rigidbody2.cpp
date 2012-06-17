@@ -206,8 +206,8 @@ void csBulletRigidBody::CreateBulletObject()
   {
     infos.m_friction = GetFriction();
     infos.m_restitution = GetElasticity();
-    infos.m_linearDamping = GetLinearDampener();
-    infos.m_angularDamping = GetRollingDampener();
+    infos.m_linearDamping = GetLinearDamping();
+    infos.m_angularDamping = GetAngularDamping();
     linVel = btBody->getLinearVelocity();
     angVel = btBody->getAngularVelocity();
   }
@@ -618,24 +618,24 @@ csVector3 csBulletRigidBody::GetTorque () const
     torque.getZ () * system->getInverseInternalScale () * system->getInverseInternalScale ());
 }
 
-float csBulletRigidBody::GetLinearDampener () 
+float csBulletRigidBody::GetLinearDamping () 
 {
   return btBody->getLinearDamping();
 }
 
-void csBulletRigidBody::SetLinearDampener (float d)
+void csBulletRigidBody::SetLinearDamping (float d)
 {
-  btBody->setDamping (d, GetRollingDampener());
+  btBody->setDamping (d, GetAngularDamping());
 }
 
-float csBulletRigidBody::GetRollingDampener ()
+float csBulletRigidBody::GetAngularDamping ()
 {
   return btBody->getAngularDamping();
 }
 
-void csBulletRigidBody::SetRollingDampener (float d)
+void csBulletRigidBody::SetAngularDamping (float d)
 {
-  btBody->setDamping (GetLinearDampener(), d);
+  btBody->setDamping (GetLinearDamping(), d);
 }
 
 csBulletDefaultKinematicCallback::csBulletDefaultKinematicCallback ()

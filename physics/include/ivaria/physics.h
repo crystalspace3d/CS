@@ -33,6 +33,8 @@
 #include "cstool/primitives.h"
 #include "ivaria/collisions.h"
 
+#include "physicsproperties.h"
+
 namespace CS 
 {
 namespace Mesh 
@@ -260,12 +262,12 @@ struct iRigidBody : public virtual iPhysicalBody
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa iDynamicSystem::SetLinearDampener()
+   * \sa iDynamicSystem::SetLinearDamping()
    */
-  virtual void SetLinearDampener (float d) = 0;
+  virtual void SetLinearDamping (float d) = 0;
 
   /// Get the linear dampener for this rigid body.
-  virtual float GetLinearDampener () = 0;
+  virtual float GetLinearDamping () = 0;
 
   /**
    * Set the angular dampener for this rigid body. The dampening correspond to
@@ -274,12 +276,12 @@ struct iRigidBody : public virtual iPhysicalBody
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa iDynamicSystem::SetRollingDampener()
+   * \sa iDynamicSystem::SetAngularDamping()
    */
-  virtual void SetRollingDampener (float d) = 0;
+  virtual void SetAngularDamping (float d) = 0;
 
   /// Get the angular dampener for this rigid body.
-  virtual float GetRollingDampener () = 0;
+  virtual float GetAngularDamping () = 0;
 };
 
 /**
@@ -897,14 +899,14 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa CS::Physics::iRigidBody::SetLinearDampener()
+   * \sa CS::Physics::iRigidBody::SetLinearDamping()
    */
-  virtual void SetLinearDampener (float d) = 0;
+  virtual void SetLinearDamping (float d) = 0;
 
   /**
    * Get the global linear dampener setting.
    */
-  virtual float GetLinearDampener () const = 0;
+  virtual float GetLinearDamping () const = 0;
 
   /**
    * Set the global angular dampener. The dampening correspond to how
@@ -913,12 +915,12 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa CS::Physics::iRigidBody::SetRollingDampener()
+   * \sa CS::Physics::iRigidBody::SetAngularDamping()
    */
-  virtual void SetRollingDampener (float d) = 0;
+  virtual void SetAngularDamping (float d) = 0;
 
   /// Get the global rolling dampener setting.
-  virtual float GetRollingDampener () const = 0;
+  virtual float GetAngularDamping () const = 0;
   
   /**
    * Set the parameters for AutoDisable.
@@ -932,8 +934,7 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * \remark With the Bullet plugin, calling this method will not affect bodies already
    * created.
    */
-  virtual void SetAutoDisableParams (float linear, float angular,
-      float time) = 0;
+  virtual void SetAutoDisableParams (float linear, float angular, float time) = 0;
 
   /// Get the count of rigid bodies.
   virtual size_t GetRigidBodyCount () = 0;

@@ -233,8 +233,8 @@ bool csPhysicsLoader::ParseSystem (iDocumentNode* node, iDynamicSystem* system,
       {
         float angular = child->GetAttributeValueAsFloat ("angular");
         float linear = child->GetAttributeValueAsFloat ("linear");
-        system->SetRollingDampener (angular);
-        system->SetLinearDampener (linear);
+        system->SetAngularDamping (angular);
+        system->SetLinearDamping (linear);
         break;
       }
       case XMLTOKEN_GROUP:

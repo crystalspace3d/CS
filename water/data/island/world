@@ -10,6 +10,8 @@
         <plugin name="genmeshfact">crystalspace.mesh.loader.factory.genmesh</plugin>
         <plugin name="emitFact">crystalspace.mesh.loader.factory.emit</plugin>
         <plugin name="emit">crystalspace.mesh.loader.emit</plugin>
+        <plugin name="waterFact">crystalspace.mesh.loader.factory.watermesh</plugin>
+   		<plugin name="water">crystalspace.mesh.loader.watermesh</plugin>
     </plugins>
 
     <shaders>
@@ -161,21 +163,16 @@
             <priority>sky</priority>
         </meshobj>
 
-        <meshobj name="water">
-            <plugin>genmesh</plugin>
-            <noshadowcast />
-            <priority>object2</priority>
-            <params>
-                <factory>water</factory>
-            </params>
-            <trimesh>
-                <id>colldet</id>
-            </trimesh>
-            <move>
+		<meshobj name="ocean">
+     		 <plugin>water</plugin>
+     		 <params>
+       			 <factory>oceantest</factory>
+       			 <material>oceanMat</material>
+     		 </params>
+             <move>
                 <v x="0.0" y="50.0" z="0.0" />
             </move>
-            <zuse />
-        </meshobj>
+    	</meshobj>
 
         <meshobj name="ground">
             <plugin>genmesh</plugin>

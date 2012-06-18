@@ -438,7 +438,7 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     mesh_colors_dirty_flag = true;
   }
 
-  logparent->SetZBufMode(CS_ZBUF_TEST);
+  //logparent->SetZBufMode(CS_ZBUF_TEST);
   logparent->SetRenderPriority (factory->engine->GetRenderPriority ("alpha"));
 
   const uint currentFrame = rview->GetCurrentFrameNumber ();

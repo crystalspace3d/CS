@@ -234,7 +234,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
       /// Render information for all layers
       csArray<LayerRenderInfo> layerRenderInfos;
 
-      void AllocatePingpongTextures (PostEffect& pfx);
+      bool AllocatePingpongTextures (PostEffect& pfx);
       void UpdateSVContexts (PostEffect& pfx);
     
       void SetupRenderInfo (PostEffect& pfx);

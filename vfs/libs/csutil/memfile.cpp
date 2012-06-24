@@ -58,13 +58,21 @@ bool csMemFile::AtEOF() { return (cursor >= size); }
 uint64_t csMemFile::GetPos() { return cursor; }
 bool csMemFile::SetPos(off64_t p, int ref)
 {
-  if (p < 0)
+  switch (ref)
   {
-    p = size; // prevent  being negative
-    //return false;
-  }
+  case 0: // absolute mode
+    if (p < 0)
+    {
+      p = size; // prevent  being negative
+      //return false;
+    }
 
-  cursor = (p < (off64_t)size) ? p : size;
+    cursor = (p < (off64_t)size) ? p : size;
+    break;
+  default:
+    // Unknown mode
+    return false;
+  }
   return true;
 }
 

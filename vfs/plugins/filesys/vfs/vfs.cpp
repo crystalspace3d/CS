@@ -123,7 +123,7 @@ public:
   virtual csPtr<iDataBuffer> GetAllData (bool nullterm = false);
   csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator* alloc);
   csPtr<iFile> GetPartialView (uint64_t offset, uint64_t size
-                                                        = (uint64_t)~0LL);
+                                                        = ~(uint64_t)0);
 private:
   // Create a directory or a series of directories starting from PathBase
   void MakeDir (const char *PathBase, const char *PathSuffix);
@@ -168,8 +168,7 @@ public:
   /// Get all the data at once
   virtual csPtr<iDataBuffer> GetAllData (bool nullterm = false);
   csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator* alloc);
-  csPtr<iFile> GetPartialView (uint64_t offset, uint64_t size
-                                                       = (uint64_t)~0LL);
+  csPtr<iFile> GetPartialView (uint64_t offset, uint64_t size = ~(uint64_t)0);
   /// Set current file pointer
   virtual bool SetPos (off64_t newpos, int ref = 0);
 };
@@ -1180,6 +1179,7 @@ bool VfsNode::AddRPath (const char *RealPath, csVFS *Parent)
 
 bool VfsNode::RemoveRPath (const char *RealPath, csVFS* Parent)
 {
+  // Remove all entries if RealPath is NULL
   if (!RealPath)
   {
     CS::Threading::ScopedWriteLock lock(mutex);
@@ -1191,6 +1191,7 @@ bool VfsNode::RemoveRPath (const char *RealPath, csVFS* Parent)
   csString const expanded_path = Expand(Parent, RealPath);
   {
     CS::Threading::ScopedUpgradeableLock lock(mutex);
+    // iterate over UPathV entries
     for (size_t i = 0; i < UPathV.GetSize (); i++)
     {
       if (strcmp ((char *)UPathV.Get (i), expanded_path) == 0)
@@ -1204,6 +1205,7 @@ bool VfsNode::RemoveRPath (const char *RealPath, csVFS* Parent)
     }
   }
 
+  // UPathV entry is not found
   return false;
 }
 
@@ -1377,8 +1379,8 @@ void VfsNode::FindFiles (const char *Suffix, const char *Mask,
 	{
 	  vpath << VFS_PATH_SEPARATOR;
 	}
-    if (FileList->Find (vpath) == csArrayItemNotFound)
-      FileList->Push (vpath);
+        if (FileList->Find (vpath) == csArrayItemNotFound)
+          FileList->Push (vpath);
       } /* endwhile */
       closedir (dh);
     }
@@ -1885,16 +1887,21 @@ VfsNode *csVFS::GetNode (const char *Path, char *NodePrefix,
     size_t vpath_l = strlen (node->VPath);
     if ((vpath_l <= path_l) && (strncmp (node->VPath, Path, vpath_l) == 0))
     {
+      // picks the latest partial match;
+      // the latest one would be the deepest
       best_i = i;
       best_l = vpath_l;
+      // if it is a perfect match, stop the search.
       if (vpath_l == path_l)
         break;
     }
   }
   if (best_i != (size_t)-1)
   {
+    // match found
     if (NodePrefix != 0 && NodePrefixSize != 0)
     {
+      // if 'NodePrefix' (suffix in fact) is supplied, give it what it wants
       size_t taillen = path_l - best_l + 1;
       if (taillen > NodePrefixSize)
         taillen = NodePrefixSize;

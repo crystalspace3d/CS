@@ -57,31 +57,41 @@ class csStringArray;
  */
 struct csFilePermission
 {
+  /// Read permission of user
   bool user_read;
+  /// Write permission of user
   bool user_write;
+  /// Execute permission of user
   bool user_execute;
 
+  /// Read permission of group
   bool group_read;
+  /// Write permission of group
   bool group_write;
+  /// Execute permission of group
   bool group_execute;
 
+  /// Read permission of others
   bool others_read;
+  /// Write permission of others
   bool others_write;
+  /// Execute permission of others
   bool others_execute;
-
-  /// Read permission
-  bool read;
-  /// Write permission
-  bool write;
-  /// Execute permission
-  bool execute;
 
   /// empty constructor
   csFilePermission() { }
 
   csFilePermission(int octal)
-  : read(!!(octal & 0x04)), write(!!(octal & 0x02)), execute(!!(octal & 0x01))
   {
+    user_read      = (octal >> 8) & 0x01;
+    user_write     = (octal >> 7) & 0x01;
+    user_execute   = (octal >> 6) & 0x01;
+    group_read     = (octal >> 5) & 0x01;
+    group_write    = (octal >> 4) & 0x01;
+    group_execute  = (octal >> 3) & 0x01;
+    others_read    = (octal >> 2) & 0x01;
+    others_write   = (octal >> 1) & 0x01;
+    others_execute = octal & 0x01;
   }
 };
 
@@ -201,6 +211,7 @@ namespace CS
  *
  * Main creators of instances implementing this interface:
  * - iVFS::Open()
+ * - iFileSystem::Open()
  */
 struct iFile : public virtual iBase
 {
@@ -288,11 +299,17 @@ struct iFile : public virtual iBase
                                        uint64_t size = ~(uint64_t)0) = 0;
 };
 
+/**
+ * Represents a file system mountable on Virtual File System tree.
+ */
 struct iFileSystem : public virtual iBase
 {
   SCF_INTERFACE(iFileSystem, 0, 0, 0);
 
-  virtual csPtr<iFile> Open (const char *Path, bool UseCaching) = 0;
+  virtual csPtr<iFile> Open (const char *RealPath,
+                             const char *VfsPath,
+                             int Mode,
+                             bool UseCaching) = 0;
 
   virtual bool Move (const char *OldPath, const char *NewPath) = 0;
 

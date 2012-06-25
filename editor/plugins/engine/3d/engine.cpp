@@ -2660,7 +2660,7 @@ iLightFactory* csEngine::FindLightFactory (const char* name,
 iLightFactory* csEngine::CreateLightFactory (const char* name)
 {
   csRef<csLightFactory> lf;
-  lf.AttachNew (new csLightFactory ());
+  lf.AttachNew (new csLightFactory (this));
   if (name) lf->SetName (name);
   lightFactories.Add (lf);
   return lf;
@@ -2791,6 +2791,7 @@ public:
   virtual iMaterialWrapper* FindMaterial (const char* name, bool doLoad = true);
   virtual iMaterialWrapper* FindNamedMaterial (const char* name,
   	const char* filename);
+  virtual iLightFactory* FindLightFactory (const char* name, bool notify = true);
   virtual iMeshFactoryWrapper* FindMeshFactory (const char* name, bool notify = true);
   virtual iMeshWrapper* FindMeshObject (const char* name);
   virtual iTextureWrapper* FindTexture (const char* name, bool doLoad = true);
@@ -2832,6 +2833,11 @@ iMaterialWrapper* EngineLoaderContext::FindNamedMaterial (const char* name,
                                                           const char* /*filename*/)
 {
   return Engine->FindMaterial (name, searchCollectionOnly ? collection : 0);
+}
+
+iLightFactory* EngineLoaderContext::FindLightFactory (const char* name, bool notify)
+{
+  return Engine->FindLightFactory (name, searchCollectionOnly ? collection : 0);
 }
 
 iMeshFactoryWrapper* EngineLoaderContext::FindMeshFactory (const char* name, bool notify)

@@ -87,20 +87,11 @@ class Hierarchy:
     func(" "*depth + "  <plugin>crystalspace.mesh.loader.factory.animesh</plugin>")
 
     # Render priority and Z-mode properties
-    if self.object.type == 'ARMATURE':
-      for child in self.object.children:
-        if child.parent_type!='BONE':
-          mat = child.GetDefaultMaterial()
-          if mat != None and mat.priority != 'object':
-            func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
-          if mat != None and mat.zbuf_mode != 'zuse':
-            func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
-    else:
-      mat = self.object.GetDefaultMaterial()
-      if mat != None and mat.priority != 'object':
-        func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
-      if mat != None and mat.zbuf_mode != 'zuse':
-        func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
+    mat = self.object.GetDefaultMaterial()
+    if mat != None and mat.priority != 'object':
+      func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
+    if mat != None and mat.zbuf_mode != 'zuse':
+      func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
       
 
   def AsCSLib(self, path='', animesh=False, **kwargs):
@@ -158,7 +149,7 @@ class Hierarchy:
       total = 0
       for ob, children in objs:
         numCSVertices = 0
-        if ob.type == 'MESH':
+        if (ob.type == 'MESH') and (not ob.hide):
           # Socket objects must be exported as general meshes
           if animesh and ob.parent_type=='BONE':
             continue
@@ -265,7 +256,10 @@ class Hierarchy:
 
     # Take the first found material as default object material
     mat = self.object.GetDefaultMaterial()
-    func(" "*depth + "    <material>%s</material>"%(mat.uname if mat!=None else 'None'))
+    if mat != None:
+      func(" "*depth + "    <material>%s</material>"%(mat.uname))
+    else:
+      func(" "*depth + "    <material>%s</material>"%(self.uv_texture if self.uv_texture!=None else 'None'))
 
     # Export object's render buffers
     print('EXPORT factory "%s"' % (self.object.name))
@@ -337,16 +331,13 @@ def AsCSGenmeshLib(self, func, depth=0, **kwargs):
   if 'subMeshes' in kwargs:
     subMeshes = kwargs['subMeshes']
 
-  # Write mesh's material
-  def SubmeshesLackMaterial(subMeshes):
-    for sub in subMeshes:
-      if not sub.material:
-        return True
-    return False
-
-  if SubmeshesLackMaterial(subMeshes):
-    #This mesh has a submesh without a material
-    func(' '*depth + '    <material>%s</material>'%(mat.uname if mat!=None else 'None'))
+  # Take the first found material as default object material
+  if mat != None:
+    func(" "*depth + "    <material>%s</material>"%(mat.uname))
+  else:
+    func(" "*depth + "    <material>%s</material>"%(self.uv_texture if self.uv_texture!=None else 'None'))
+  if not mat.HasDiffuseTexture() and mat.uv_texture != 'None':
+    func(' '*depth + '    <shadervar type="texture" name="tex diffuse">%s</shadervar>'%(mat.uv_texture))
 
   # Export mesh's render buffers
   for buf in GetRenderBuffers(**kwargs):
@@ -371,6 +362,10 @@ bpy.types.Object.AsCSGenmeshLib = AsCSGenmeshLib
 
 #======== Object ====================================================================
 
+# Property defining an UV texture's name for a mesh ('None' if not defined)
+StringProperty(['Object'], attr="uv_texture", name="UV texture", default='None')
+
+
 def ObjectAsCS(self, func, depth=0, **kwargs):
   """ Write a reference to this object (as part of a sector in the 'world' file); 
       only mesh, armature, group and lamp objects are described
@@ -381,8 +376,22 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
 
   if self.type == 'MESH':
     if len(self.data.vertices)!=0 and len(self.data.all_faces)!=0:
-      func(' '*depth +'<meshref name="%s_object">'%(self.name))
-      func(' '*depth +'  <factory>%s</factory>'%(self.name))
+      # Temporary disable of meshref support because of incompatibility
+      # issues with lighter2 that needs to be genmesh aware in order to
+      # pack the lightmaps per submeshes
+      #func(' '*depth +'<meshref name="%s_object">'%(self.name))
+      #func(' '*depth +'  <factory>%s</factory>'%(self.name))
+
+      func(' '*depth +'<meshobj name="%s_object">'%(self.name))
+
+      if self.parent and self.parent.type == 'ARMATURE':
+        func(' '*depth +'  <plugin>crystalspace.mesh.loader.animesh</plugin>')
+      else:
+        func(' '*depth +'  <plugin>crystalspace.mesh.loader.genmesh</plugin>')
+      func(' '*depth +'  <params>')
+      func(' '*depth +'    <factory>%s</factory>'%(self.name))
+      func(' '*depth +'  </params>')
+
       if self.parent and self.parent_type == 'BONE':
         matrix = self.matrix_world
       else:
@@ -390,16 +399,30 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
         if 'transform' in kwargs:
           matrix =  matrix * kwargs['transform']
       MatrixAsCS(matrix, func, depth+2)
-      func(' '*depth +'</meshref>')
+
+      #func(' '*depth +'</meshref>')
+      func(' '*depth +'</meshobj>')
 
   elif self.type == 'ARMATURE':
-    func(' '*depth +'<meshref name="%s_object">'%(name))
-    func(' '*depth +'  <factory>%s</factory>'%(name))
+    # Temporary disable of meshref support because of incompatibility
+    # issues with lighter2 that needs to be genmesh aware in order to
+    # pack the lightmaps per submeshes
+    #func(' '*depth +'<meshref name="%s_object">'%(name))
+    #func(' '*depth +'  <factory>%s</factory>'%(name))
+
+    func(' '*depth +'<meshobj name="%s_object">'%(self.name))
+    func(' '*depth +'  <plugin>crystalspace.mesh.loader.animesh</plugin>')
+    func(' '*depth +'  <params>')
+    func(' '*depth +'    <factory>%s</factory>'%(self.name))
+    func(' '*depth +'  </params>')
+
     matrix = self.relative_matrix
     if 'transform' in kwargs:
       matrix =  matrix * kwargs['transform']
     MatrixAsCS(matrix, func, depth+2)
-    func(' '*depth +'</meshref>')
+
+    #func(' '*depth +'</meshref>')
+    func(' '*depth +'</meshobj>')
 
   elif self.type == 'LAMP':
     func(' '*depth +'<light name="%s">'%(name))
@@ -556,23 +579,21 @@ def GetDefaultMaterial (self, notifications = True):
     # Take the first found material among children as default object material
     foundMaterial = False
     for child in self.children:
-      if child.type == 'MESH' and len(child.data.uv_textures) != 0:
-        if child.data.GetMaterial(0):
-          mat = child.data.GetMaterial(0)
+      if child.type == 'MESH' and child.parent_type!='BONE':
+        mat = child.GetDefaultMaterial(notifications)
+        if mat != None:
           foundMaterial = True
           break
     if not foundMaterial and notifications:
-      print('ERROR: armature object "%s" has no child with texture coordinates'%(self.name))
+      print('WARNING: armature object "%s" has no child with texture coordinates'%(self.name))
   elif self.type == 'MESH':
     # Mesh object
-    if len(self.data.uv_textures) != 0 and self.data.GetMaterial(0):
+    if len(self.data.uv_textures) != 0 and self.data.GetFirstMaterial():
       # Take the first defined material as default object material
-      mat = self.data.GetMaterial(0)
+      mat = self.data.GetFirstMaterial()
     elif notifications:
       if len(self.data.uv_textures) == 0:
-        print('ERROR: mesh object "%s" has no texture coordinates'%(self.name))
-      if not self.data.GetMaterial(0):
-        print('WARNING: Factory "%s" has no material'%(self.name))
+        print('WARNING: mesh object "%s" has no texture coordinates'%(self.name))
           
   return mat
 
@@ -598,10 +619,14 @@ def GetMaterialDeps(self):
         for index, facedata in enumerate(self.data.uv_textures.active.data):
           if facedata.image and facedata.image.uname not in dependencies['T'].keys():
             dependencies['T'][facedata.image.uname] = facedata.image
-            self.data.uv_texture = facedata.image.uname
             material = self.data.GetMaterial(self.data.all_faces[index].material_index)
             if material:
               material.uv_texture = facedata.image.uname
+            else:
+              # Create a material if the mesh has a texture but no material
+              dependencies['TM'][facedata.image.uname] = facedata.image
+              if self.uv_texture == 'None':
+                self.uv_texture = facedata.image.uname
   return dependencies
 
 bpy.types.Object.GetMaterialDeps = GetMaterialDeps

@@ -1,4 +1,5 @@
 /*
+    Copyright (C) 2011-2012 by Jorrit Tyberghein, Jelle Hellemans, Christian Van Brussel
     Copyright (C) 2007 by Seth Yastrov
 
     This library is free software; you can redistribute it and/or
@@ -15,117 +16,123 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __EDITOR_H__
 #define __EDITOR_H__
 
+#include "csutil/stringquote.h"
+#include "csutil/weakrefarr.h"
 #include "ieditor/editor.h"
-#include "ieditor/interfacewrappermanager.h"
-#include "ieditor/actionmanager.h"
-
-#include "iengine/collection.h"
+//#include "imap/loader.h"
+//#include "iutil/document.h"
 #include "iutil/comp.h"
-#include "csutil/refarr.h"
 
-#include "auipanelmanager.h"
-#include "mainframe.h"
-#include "menubar.h"
+#include <wx/bitmap.h>
+#include <wx/frame.h>
+#include <wx/timer.h>
 
+/*
 struct iObjectRegistry;
 struct iSaver;
 struct iVFS;
 struct csSimpleRenderMesh;
-
+*/
 using namespace CS::EditorApp;
 
-CS_PLUGIN_NAMESPACE_BEGIN(CSE)
+CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
-class Editor : public scfImplementation2<Editor, iEditor, iComponent>
+class ActionManager;
+class Editor;
+class MenuManager;
+class OperatorManager;
+class SpaceManager;
+class StatusBar;
+
+class EditorManager
+  : public scfImplementation2<EditorManager, iEditorManager, iComponent>
 {
 public:
-  Editor (iBase* parent);
-  virtual ~Editor ();
+  EditorManager (iBase* parent);
+  virtual ~EditorManager ();
   
-  // iComponent
+  //-- Error reporting
+  bool ReportError (const char* description, ...) const;
+  bool ReportWarning (const char* description, ...) const;
+
+  //-- iComponent
   virtual bool Initialize (iObjectRegistry* reg);
 
+  //-- iEditorManager
   virtual bool StartEngine ();
   virtual bool StartApplication ();
-  virtual bool LoadPlugin (const char* name);
 
-  inline virtual wxWindow* GetWindow ()
-  { return static_cast<wxWindow*> (mainFrame); }
+  virtual iEditor* CreateEditor (const char* name, const char* title, iContext* context);
+  virtual void RemoveEditor (iEditor* editor);
+  virtual iEditor* FindEditor (const char* name);
+  virtual iEditor* GetEditor (size_t index);
+  virtual size_t GetEditorCount () const;
 
-  inline virtual iPanelManager* GetPanelManager () const
-  { return panelManager; }
+public:
+  iObjectRegistry* object_reg;
+  csRefArray<Editor> editors;
+};
 
-  inline virtual iMenuBar* GetMenuBar () const
-  { return menuBar; }
+class Editor
+  : public scfImplementation1<Editor, iEditor>, public wxFrame
+{
+public:
+  Editor (EditorManager* manager, const char* name, const char* title, iContext* context);
+  ~Editor ();
 
-  virtual csPtr<iProgressMeter> GetProgressMeter ();
+  //-- iEditor
+  virtual iContext* GetContext () const;
 
-  virtual iThreadReturn* LoadMapFile (const char* path, const char* filename, bool clearEngine);
+  virtual iEditorManager* GetManager () const;
+  virtual iActionManager* GetActionManager () const;
+  virtual iMenuManager* GetMenuManager () const;
+  virtual iOperatorManager* GetOperatorManager () const;
+  virtual iSpaceManager* GetSpaceManager () const;
 
-  virtual void SaveMapFile (const char* path, const char* filename);
-  
-  virtual iThreadReturn* LoadLibraryFile (const char* path, const char* filename);
-  
-  virtual void AddMapListener (iMapListener* listener);
+  virtual csPtr<iProgressMeter> CreateProgressMeter () const;
 
-  virtual void RemoveMapListener (iMapListener* listener);
+  virtual wxFrame* GetwxFrame ();
 
-  virtual csPtr<iEditorObject> CreateEditorObject (iBase* object, wxBitmap* icon);
-  
-  virtual iObjectList* GetSelection ();
+  virtual void Save (iDocumentNode* node) const;
+  virtual bool Load (iDocumentNode* node);
 
-  virtual iObjectList* GetObjects ();
-  
-  virtual void SetHelperMeshes (csArray<csSimpleRenderMesh>* helpers);
-  virtual csArray<csSimpleRenderMesh>* GetHelperMeshes ();
+public:
+  void Init ();
 
-  virtual void SetTransformStatus (TransformStatus status);
-  virtual TransformStatus GetTransformStatus ();
+protected:
+  void OnQuit (wxCommandEvent& event);
+  void Update ();
 
-  void FireMapLoaded (const char* path, const char* file);
-  void FireLibraryLoaded (const char* path, const char* file);
+public:
+  csString name;
+  EditorManager* manager;
+  csRef<iEventQueue> eventQueue;
+  csRef<iContext> context;
+  csRef<ActionManager> actionManager;
+  csRef<MenuManager> menuManager;
+  csRef<OperatorManager> operatorManager;
+  csRef<SpaceManager> spaceManager;
+  StatusBar* statusBar;
 
 private:
-  void Help ();
-
-  iObjectRegistry* object_reg;
-
-  csArray<csSimpleRenderMesh>* helper_meshes;
-  TransformStatus transstatus;
-
-  MainFrame* mainFrame;
-
-  csRef<iEngine> engine;
-  csRef<iVFS> vfs;
-  csRef<iThreadedLoader> loader;
-  csRef<iSaver> saver;
-
-  csRef<iCollection> mainCollection;
-
-  csRef<AUIPanelManager> panelManager;
-  csRef<MenuBar> menuBar;
-  csRef<iInterfaceWrapperManager> interfaceManager;
-  csRef<iActionManager> actionManager;
-
-  /*
-  csRef<iActionManager> actionManager;
-  csRef<iToolManager> toolManager;
-  csRef<iPluginManager> pluginManager;
-  */
-
-  csRefArray<iMapListener> mapListeners;
-
-  csRef<iObjectList> selection;
-  csRef<iObjectList> objects;
-
+  class Pump : public wxTimer
+  {
+  public:
+    Pump (Editor* editor) : editor (editor) {}
+    
+    virtual void Notify ()
+    { editor->Update (); }
+  private:
+    Editor* editor;
+  };
+  Pump* pump;
 };
 
 }
-CS_PLUGIN_NAMESPACE_END(CSE)
+CS_PLUGIN_NAMESPACE_END (CSEditor)
 
 #endif

@@ -4,11 +4,11 @@
   <scf>
     <classes>
       <class>
-        <name>crystalspace.editor.plugin.core.gui</name>
-        <implementation>Editor</implementation>
-        <description>CSEditor GUI</description>
+        <name>crystalspace.editor.core</name>
+        <implementation>EditorManager</implementation>
+        <description>Crystal Space Editor Core System</description>
       </class>
-      <class>
+      <!--class>
         <name>crystalspace.editor.plugin.core.cs3dpanel</name>
         <implementation>CS3DPanel</implementation>
         <description>CSEditor 3D Panel</description>
@@ -32,7 +32,7 @@
         <name>crystalspace.editor.plugin.core.csinterfacewrappers</name>
         <implementation>CSInterfaceWrappers</implementation>
         <description>CSEditor CS Interface Wrappers</description>
-      </class>
+      </class-->
     </classes>
   </scf>
 </plugin>

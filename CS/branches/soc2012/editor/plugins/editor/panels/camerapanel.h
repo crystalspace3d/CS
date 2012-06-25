@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2007 by Seth Yastrov
+    Copyright (C) 2011 by Jelle Hellemans
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,45 +16,31 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "cssysdef.h"
-#include "csutil/scf.h"
+#ifndef __CSEDITOR_CAMERA_PANEL_H__
+#define __CSEDITOR_CAMERA_PANEL_H__
 
-#include <wx/event.h>
+#include "csutil/scf_implementation.h"
+#include "iutil/comp.h"
 
-#include "statusbar.h"
+#include "ieditor/panel.h"
+
+using namespace CS::EditorApp;
 
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
 
-BEGIN_EVENT_TABLE(StatusBar, wxStatusBar)
-  EVT_SIZE(StatusBar::OnSize)
-END_EVENT_TABLE()
-
-StatusBar::StatusBar (wxWindow* parent)
-  : wxStatusBar (parent)
+class CameraPanel : public scfImplementation1<CameraPanel, iPanel>
 {
-  static const int widths[Field_Max] = {-1, 150, 30};
-
-  SetFieldsCount(Field_Max);
-  SetStatusWidths(Field_Max, widths);
-
-  gauge = new wxGauge(this, wxID_ANY, 100);
-  gauge->SetValue(0);
-}
-
-StatusBar::~StatusBar ()
-{
-}
-
-void StatusBar::OnSize (wxSizeEvent& event)
-{
-  wxRect gaugeRect;
-  GetFieldRect(Field_Gauge, gaugeRect);
-
-  gauge->SetSize(gaugeRect);
-  Layout();
-  event.Skip();
-}
+public:
+  CameraPanel (iBase* parent);
+  virtual ~CameraPanel ();
+  
+  //-- iPanel
+  virtual bool Poll (iContext* context);
+  virtual void Draw (iContext* context, iLayout* layout);
+};
 
 }
 CS_PLUGIN_NAMESPACE_END(CSEditor)
+
+#endif

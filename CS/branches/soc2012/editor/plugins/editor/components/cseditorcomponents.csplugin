@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- cseditorcomponents.csplugin -->
+<plugin>
+  <scf>
+    <classes>
+      <class>
+        <name>crystalspace.editor.component.engine</name>
+        <implementation>CS3DEngine</implementation>
+        <description>Base engine and menu entries</description>
+      </class>
+      <class>
+        <name>crystalspace.editor.component.maploader</name>
+        <implementation>MapLoader</implementation>
+        <description>Default map and library loader</description>
+      </class>
+      <class>
+        <name>crystalspace.editor.component.exit</name>
+        <implementation>Exit</implementation>
+        <description>Management of application exit</description>
+      </class>
+    </classes>
+  </scf>
+</plugin>

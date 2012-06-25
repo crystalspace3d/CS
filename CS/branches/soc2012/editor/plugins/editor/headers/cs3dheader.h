@@ -1,5 +1,4 @@
 /*
-    Copyright (C) 2007 by Seth Yastrov
     Copyright (C) 2011 by Jelle Hellemans
 
     This library is free software; you can redistribute it and/or
@@ -17,44 +16,30 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __ACTIONMANAGER_H__
-#define __ACTIONMANAGER_H__
+#ifndef __CSEDITOR_CS3DHEADER_H__
+#define __CSEDITOR_CS3DHEADER_H__
 
-#include "csutil/refarr.h"
-#include "ieditor/action.h"
+#include "csutil/scf_implementation.h"
+#include "iutil/comp.h"
 
-struct iObjectRegistry;
+#include "ieditor/header.h"
 
 using namespace CS::EditorApp;
 
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
-class ActionManager : public scfImplementation1<ActionManager, iActionManager>
+class CS3DHeader : public scfImplementation1<CS3DHeader, iHeader>
 {
 public:
-  ActionManager (iObjectRegistry* obj_reg);
-  virtual ~ActionManager ();
-
-  virtual bool Do (iAction* action);
-
-  virtual bool Undo ();
-  virtual bool Redo ();
-
-  virtual const iAction* PeekUndo () const;
-  virtual const iAction* PeekRedo () const;
-
-  virtual void AddListener (iActionListener* listener);
-  virtual void RemoveListener (iActionListener* listener);
+  CS3DHeader (iBase* parent);
+  virtual ~CS3DHeader ();
+  
+  // iHeader
+  virtual void Draw (iContext* context, iLayout* layout);
   
 private:
-  void NotifyListeners (iAction* listener);
-  
   iObjectRegistry* object_reg;
-
-  csRefArray<iAction> undoStack, redoStack;
-  csRefArray<iActionListener> listeners;
-
 };
 
 }

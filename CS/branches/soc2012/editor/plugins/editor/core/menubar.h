@@ -19,99 +19,107 @@
 #ifndef __MENUBAR_H__
 #define __MENUBAR_H__
 
-#include <csutil/refarr.h>
-#include <csutil/hash.h>
+#include "csutil/refarr.h"
+#include "csutil/weakrefarr.h"
+#include "csutil/hash.h"
+#include "ieditor/menu.h"
+#include "ieditor/operator.h"
 
 #include <wx/aui/aui.h>
 #include <wx/menu.h>
 
 #include <map>
 
-#include "ieditor/menubar.h"
+using namespace CS::EditorApp;
 
-namespace CS {
-namespace EditorApp {
+CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
+{
+  
+class Editor;
+class MenuManager;
 
-class MenuItem : public scfImplementation1<MenuItem,iMenuItem>, public wxEvtHandler
+class MenuItem : public scfImplementation1<MenuItem, iMenuItem>, public wxEvtHandler
 {
 public:
-  MenuItem (wxMenuBar* menuBar, wxMenu* menu, wxMenuItem* item);
+  MenuItem (MenuManager* menuManager, wxMenu* menu, wxMenuItem* item, const char* eventName);
   virtual ~MenuItem ();
   
   virtual wxMenuItem* GetwxMenuItem () const;
-  
-  virtual void AddListener (iMenuItemEventListener*);
-  virtual void RemoveListener (iMenuItemEventListener*);
+  virtual const csEventID GetEventID () const;
   
 private:
   void OnToggle (wxCommandEvent& event);
-  wxMenuBar* menuBar;
+  MenuManager* menuManager;
   wxMenu* menu;
   wxMenuItem* item;
-  
-  csRefArray<iMenuItemEventListener> listeners;
+  csEventID eventID;
+  //char priority;
 };
 
-class MenuCheckItem : public scfImplementation1<MenuCheckItem,iMenuCheckItem>, public wxEvtHandler
+//---------------------------------------------------------------
+
+class SeparatorMenuItem : public scfImplementation1<SeparatorMenuItem, iMenuItem>
 {
 public:
-  MenuCheckItem (wxMenuBar* menuBar, wxMenu* menu, wxMenuItem* item);
-  virtual ~MenuCheckItem ();
-  
-  virtual bool IsChecked () const;
-  
-  virtual void Check (bool v);
+  SeparatorMenuItem (wxMenu* menu, wxMenuItem* item);
+  virtual ~SeparatorMenuItem ();
   
   virtual wxMenuItem* GetwxMenuItem () const;
-  
-  virtual void AddListener (iMenuItemEventListener*);
-  virtual void RemoveListener (iMenuItemEventListener*);
-  
+  virtual const csEventID GetEventID () const;
+
 private:
-  void OnToggle (wxCommandEvent& event);
-  wxMenuBar* menuBar;
   wxMenu* menu;
   wxMenuItem* item;
-  
-  csRefArray<iMenuItemEventListener> listeners;
 };
 
-class Menu : public scfImplementation1<Menu,iMenu>, public wxEvtHandler
+//---------------------------------------------------------------
+
+class SubMenu : public scfImplementation1<SubMenu, iSubMenu>, public wxEvtHandler
 {
 public:
-  Menu (wxMenuBar* menuBar, wxMenu* menu, const wxString& title);
-  virtual ~Menu ();
+  SubMenu (MenuManager* menuManager, wxMenu* menu, const wxString& title);
+  virtual ~SubMenu ();
   
   virtual wxMenu* GetwxMenu () const;
   
-  virtual csPtr<iMenuItem> AppendItem (const char* item);
-  virtual csPtr<iMenuCheckItem> AppendCheckItem (const char* item);
+  virtual csPtr<iMenuItem> AppendItem (const char* item, const char* eventName);
   virtual csPtr<iMenuItem> AppendSeparator ();
-  virtual csPtr<iMenu> AppendSubMenu (const char* item);
+  virtual csPtr<iSubMenu> AppendSubMenu (const char* item);
+
+  virtual void SeekPriority (char priority);
 
 private:
-  wxMenuBar* menuBar;
+  MenuManager* menuManager;
   wxMenu* menu;
   wxString title;
+  //char priority;
+  //char currentPriority;
+
+  friend class MenuManager;
 };
 
+//---------------------------------------------------------------
 
-class MenuBar : public scfImplementation1<MenuBar,iMenuBar>, public wxEvtHandler
+class MenuManager : public scfImplementation1<MenuManager, iMenuManager>, public wxEvtHandler
 {
 public:
-  MenuBar (iObjectRegistry* obj_reg, wxMenuBar* menuBar);
-  virtual ~MenuBar ();
+  MenuManager (Editor* editor);
+  virtual ~MenuManager ();
   
   virtual wxMenuBar* GetwxMenuBar () const;
   
-  virtual csPtr<iMenu> Append (const char* item);
+  virtual csRef<iSubMenu> GetSubMenu (const char* item);
 
 private:
-  iObjectRegistry* object_reg;
+  Editor* editor;
   wxMenuBar* menuBar;
+  csWeakRefArray<SubMenu> subMenus;
+
+  friend class MenuOperatorItem;
+  friend class MenuItem;
 };
 
-} // namespace EditorApp
-} // namespace CS
+}
+CS_PLUGIN_NAMESPACE_END (CSEditor)
 
 #endif

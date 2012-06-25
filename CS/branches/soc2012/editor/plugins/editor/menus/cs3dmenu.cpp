@@ -1,5 +1,4 @@
 /*
-    Copyright (C) 2007 by Seth Yastrov
     Copyright (C) 2011 by Jelle Hellemans
 
     This library is free software; you can redistribute it and/or
@@ -17,47 +16,46 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __ACTIONMANAGER_H__
-#define __ACTIONMANAGER_H__
+#include "cssysdef.h"
+#include "csutil/scf.h"
+#include "iutil/objreg.h"
+#include "iutil/plugin.h"
 
-#include "csutil/refarr.h"
-#include "ieditor/action.h"
+#include "ieditor/space.h"
+#include "ieditor/layout.h"
 
-struct iObjectRegistry;
-
-using namespace CS::EditorApp;
+#include "cs3dmenu.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
+  
+SCF_IMPLEMENT_FACTORY (CS3DMenu)
 
-class ActionManager : public scfImplementation1<ActionManager, iActionManager>
+CS3DMenu::CS3DMenu (iBase* parent) : scfImplementationType (this, parent)
 {
-public:
-  ActionManager (iObjectRegistry* obj_reg);
-  virtual ~ActionManager ();
+}
 
-  virtual bool Do (iAction* action);
+CS3DMenu::~CS3DMenu ()
+{
+}
 
-  virtual bool Undo ();
-  virtual bool Redo ();
+bool CS3DMenu::Initialize (iObjectRegistry* obj_reg)
+{
+  object_reg = obj_reg;
+  return true;
+}
 
-  virtual const iAction* PeekUndo () const;
-  virtual const iAction* PeekRedo () const;
+bool CS3DMenu::Poll (iContext* context)
+{
+  return true;
+}
 
-  virtual void AddListener (iActionListener* listener);
-  virtual void RemoveListener (iActionListener* listener);
-  
-private:
-  void NotifyListeners (iAction* listener);
-  
-  iObjectRegistry* object_reg;
-
-  csRefArray<iAction> undoStack, redoStack;
-  csRefArray<iActionListener> listeners;
-
-};
+void CS3DMenu::Draw (iContext* context, iLayout* layout)
+{
+  layout->AppendOperator ("crystalspace.editor.operator.select", "Select", "");
+  layout->AppendSeparator ();
+  //layout->AppendOperator ("crystalspace.editor.operator.move", "Move", "");
+}
 
 }
 CS_PLUGIN_NAMESPACE_END (CSEditor)
-
-#endif

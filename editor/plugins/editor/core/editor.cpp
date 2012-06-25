@@ -1,4 +1,5 @@
 /*
+    Copyright (C) 2011-2012 by Jelle Hellemans, Christian Van Brussel
     Copyright (C) 2007 by Seth Yastrov
 
     This library is free software; you can redistribute it and/or
@@ -15,377 +16,242 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "cssysdef.h"
+#include "cstool/initapp.h"
 #include "csutil/scf.h"
 
-#include "cstool/initapp.h"
-#include "csutil/cmdhelp.h"
-#include "imap/saverfile.h"
-#include "iutil/cmdline.h"
-#include "iutil/stringarray.h"
-#include "ivaria/collider.h"
-#include "ivideo/graph2d.h"
-#include "ivideo/wxwin.h"
+//#include "ivideo/graph2d.h"
 
-#include "ieditor/panelmanager.h"
-#include "objectlist.h"
-#include "menubar.h"
-#include "auipanelmanager.h"
-#include "interfacewrappermanager.h"
 #include "actionmanager.h"
-#include "editorobject.h"
-#include "mainframe.h"
-
 #include "editor.h"
+#include "menubar.h"
+#include "operatormanager.h"
+#include "spacemanager.h"
+#include "statusbar.h"
+#include "window.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(CSE)
+CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
-SCF_IMPLEMENT_FACTORY (Editor)
+//------------------------------------  EditorManager  ------------------------------------
 
-Editor::Editor (iBase* parent)
-: scfImplementationType (this, parent), helper_meshes (0), transstatus (NOTHING)
+SCF_IMPLEMENT_FACTORY (EditorManager)
+
+EditorManager::EditorManager (iBase* parent)
+  : scfImplementationType (this, parent)
 {
+}
+
+EditorManager::~EditorManager ()
+{
+  // Remove ourself from the object registry
+  //object_reg->Unregister (this, "iEditorManager");
+}
+
+bool EditorManager::ReportError (const char* description, ...) const
+{
+  va_list arg;
+  va_start (arg, description);
+  csReportV (object_reg, CS_REPORTER_SEVERITY_ERROR,
+	     "crystalspace.editor.core",
+	     description, arg);
+  va_end (arg);
+  return false;
+}
+
+bool EditorManager::ReportWarning (const char* description, ...) const
+{
+  va_list arg;
+  va_start (arg, description);
+  csReportV (object_reg, CS_REPORTER_SEVERITY_WARNING,
+	     "crystalspace.editor.core",
+	     description, arg);
+  va_end (arg);
+  return false;
+}
+
+bool EditorManager::Initialize (iObjectRegistry* reg)
+{
+  object_reg = reg;
+  //StartEngine ();
+
+  return true;
+}
+
+bool EditorManager::StartEngine ()
+{
+  // Request every standard plugin of Crystal Space
+  if (!csInitializer::RequestPlugins (object_reg,
+        CS_REQUEST_VFS,
+        CS_REQUEST_FONTSERVER,
+        CS_REQUEST_REPORTER,
+        CS_REQUEST_REPORTERLISTENER,
+        CS_REQUEST_END))
+    return ReportError ("Can't initialize standard Crystal Space plugins!");
+/*
+  // Open the main system. This will open all the previously loaded plug-ins.
+  if (!csInitializer::OpenApplication (object_reg))
+    return ReportError ("Error opening system!");
+*/
+  return true;
+}
+
+bool EditorManager::StartApplication ()
+{
+  // Open the main system. This will open all the previously loaded plug-ins.
+  if (!csInitializer::OpenApplication (object_reg))
+    return ReportError ("Error opening system!");
+
+  // TODO: remove this hack?
+  for (size_t i = 0; i < editors.GetSize (); i++)
+    editors[i]->Init ();
+
+  return true;
+}
+
+iEditor* EditorManager::CreateEditor (const char* name, const char* title, iContext* context)
+{
+  if (!context)
+  {
+    ReportError ("No context provided when creating an editor instance!");
+    return nullptr;
+  }
+
+  csRef<Editor> editor;
+  editor.AttachNew (new Editor (this, name, title, context));
+  editors.Push (editor);
+  return editor;
+}
+
+void EditorManager::RemoveEditor (iEditor* editor)
+{
+  editors.Delete (static_cast<Editor*> (editor));
+}
+
+iEditor* EditorManager::FindEditor (const char* name)
+{
+  for (size_t i = 0; i < editors.GetSize (); i++)
+    if (editors[i]->name == name)
+      return editors[i];
+  return nullptr;
+}
+
+iEditor* EditorManager::GetEditor (size_t index)
+{
+  return editors[index];
+}
+
+size_t EditorManager::GetEditorCount () const
+{
+  return editors.GetSize ();
+}
+
+//------------------------------------  Editor  ------------------------------------
+
+Editor::Editor (EditorManager* manager, const char* name, const char* title, iContext* context)
+  // TODO: use size from CS config
+  : scfImplementationType (this), wxFrame (nullptr, -1, wxString::FromAscii (title), wxDefaultPosition, wxSize (1024, 768)/*, pos, size*/),
+    name (name), manager (manager), context (context), pump (nullptr)
+{
+  // Create the main objects and managers
+  actionManager.AttachNew (new ActionManager (manager->object_reg));
+  menuManager.AttachNew (new MenuManager (this));
+  operatorManager.AttachNew (new OperatorManager (manager->object_reg, this));
+  spaceManager.AttachNew (new SpaceManager (this));
+
+  // Create the status bar
+  statusBar = new StatusBar (this);
+  SetStatusBar (statusBar);
+  //SetStatusText (wxT ("Ready"));
+
+  PositionStatusBar ();
+  statusBar->Show ();
+
+  // Make this window visible
+  Show (true);
 }
 
 Editor::~Editor ()
 {
-  delete helper_meshes;
-
-  panelManager->Uninitialize ();
-
-  // Remove ourself from object registry
-  object_reg->Unregister (this, "iEditor");
+  delete statusBar;
+  delete pump;
 }
 
-void Editor::Help ()
+iContext* Editor::GetContext () const
 {
-  csCommandLineHelper commandLineHelper;
-
-  // Usage examples
-  commandLineHelper.AddCommandLineExample ("cseditor data/castel/world");
-  commandLineHelper.AddCommandLineExample ("cseditor -R=data/kwartz.zip kwartz.lib");
-  commandLineHelper.AddCommandLineExample ("cseditor -R=data/seymour.zip Seymour.dae");
-
-  // Command line options
-  commandLineHelper.AddCommandLineOption
-    ("R", "Real path to be mounted in VFS", csVariant (""));
-  commandLineHelper.AddCommandLineOption
-    ("C", "VFS directory where to find the files", csVariant ("/"));
-  commandLineHelper.AddCommandLineOption
-    ("L", "Load a library file (for textures/materials)", csVariant (""));
-
-  // Printing help
-  commandLineHelper.PrintApplicationHelp
-    (object_reg, "cseditor", "cseditor <OPTIONS> [filename]",
-     "The Crystal Space editor\n\n"
-     "If provided, it will load the given file from the specified VFS directory."
-     " If no VFS directory is provided then it will assume the one of the file. "
-     "An additional real path can be provided to be mounted before loading the file."
-     " This is useful for example to mount an archive in VFS before accessing the"
-     " files in it.");
+  return context;
 }
 
-bool Editor::Initialize (iObjectRegistry* reg)
+iEditorManager* Editor::GetManager () const
 {
-  // Check for commandline help.
-  if (csCommandLineHelper::CheckHelp (reg))
-  {
-    Help ();
-    return true;
-  }
-
-  object_reg = reg;
-  object_reg->Register (this, "iEditor");
-  
-  actionManager.AttachNew (new ActionManager (object_reg));
-  
-  // Create the main frame
-  mainFrame = new MainFrame (object_reg, this, wxT (""), wxDefaultPosition, wxSize (1024, 768));
-
-  menuBar.AttachNew (new MenuBar (object_reg, mainFrame->GetMenuBar ()));
-  mainFrame->Show ();
-  
-  panelManager.AttachNew (new AUIPanelManager (object_reg, mainFrame));
-  interfaceManager.AttachNew (new InterfaceWrapperManager (object_reg));
-
-  selection.AttachNew (new ObjectList ());
-  objects.AttachNew (new ObjectList ());
-
-  return true;
+  return manager;
 }
 
-bool Editor::StartEngine ()
+iSpaceManager* Editor::GetSpaceManager () const
 {
-  // Request every standard plugin except for OpenGL/WXGL canvas
-  if (!csInitializer::RequestPlugins (object_reg,
-        CS_REQUEST_VFS,
-	CS_REQUEST_PLUGIN ("crystalspace.graphics2d.wxgl", iGraphics2D),
-	CS_REQUEST_OPENGL3D,
-        CS_REQUEST_ENGINE,
-        CS_REQUEST_FONTSERVER,
-        CS_REQUEST_IMAGELOADER,
-        CS_REQUEST_LEVELLOADER,
-        CS_REQUEST_REPORTER,
-        CS_REQUEST_REPORTERLISTENER,
-        CS_REQUEST_PLUGIN ("crystalspace.collisiondetection.opcode",
-                           iCollideSystem),
-        CS_REQUEST_END))
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Can't initialize plugins!");
-    return false;
-  }
-
-  vfs = csQueryRegistry<iVFS> (object_reg);
-  if (!vfs)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Failed to locate iVFS plugin!");
-    return false;
-  }
-
-  engine = csQueryRegistry<iEngine> (object_reg);
-  if (!engine)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Failed to locate 3D engine!");
-    return false;
-  }
-  engine->SetSaveableFlag(true);
-
-  if (!csInitializer::RequestPlugins(object_reg,
-    CS_REQUEST_LEVELSAVER,
-    CS_REQUEST_END))
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Failed to initialize iSaver plugin!");
-    return false;
-  }
-  
-  loader = csQueryRegistry<iThreadedLoader> (object_reg);
-  if (!loader)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Failed to locate iThreadedLoader plugin!");
-    return false;
-  }
-
-  saver = csQueryRegistry<iSaver> (object_reg);
-  if (!saver)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Failed to locate iSaver plugin!");
-    return false;
-  }
-
-  csRef<iGraphics3D> g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  if (!g3d)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Failed to locate iGraphics3d!");
-    return false;
-  }
-
-  csRef<iWxWindow> wxwin = scfQueryInterface<iWxWindow> (g3d->GetDriver2D ());
-  if(!wxwin)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "The drawing canvas is not a iWxWindow plugin!");
-    return false;
-  }
-  wxwin->SetParent (mainFrame);
-
-  return true;
+  return spaceManager;
 }
 
-bool Editor::StartApplication ()
+iActionManager* Editor::GetActionManager () const
 {
-  // Open the main system. This will open all the previously loaded plug-ins.
-  if (!csInitializer::OpenApplication (object_reg))
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Error opening system!");
-    return false;
-  }
-
-  mainCollection = engine->CreateCollection ("Main collection");
-
-  mainFrame->Initialize ();
-  panelManager->Initialize ();
-
-  // Analyze the command line arguments
-  csRef<iCommandLineParser> cmdline =
-    csQueryRegistry<iCommandLineParser> (object_reg);
-
-  const char* libname;
-  for (int i = 0; (libname = cmdline->GetOption ("L", i)); i++)
-    mainFrame->PushLibraryFile ("", libname);
-
-  const char* realPath = cmdline->GetOption ("R");
-  if (realPath)
-  {
-    vfs->Mount ("/tmp/cseditor", realPath);
-    //vfs->ChDir ("/tmp/cseditor");
-  }
-
-  csString filename = cmdline->GetName (0);
-  csString vfsDir = cmdline->GetOption ("C");
-  if (vfsDir.IsEmpty ())
-    vfsDir = realPath;
-
-  if (vfsDir.IsEmpty () && filename)
-  {
-    size_t index = filename.FindLast ('/');
-    if (index != (size_t) -1)
-    {
-      vfsDir = filename.Slice (0, index);
-      filename = filename.Slice (index + 1);
-    }
-  }
-
-  if (filename)
-    mainFrame->PushMapFile (vfsDir, filename, false);
-
-  return true;
+  return actionManager;
 }
 
-bool Editor::LoadPlugin (const char* name)
+iOperatorManager* Editor::GetOperatorManager () const
 {
-  csRef<iPluginManager> plugmgr =
-    csQueryRegistry<iPluginManager> (object_reg);
+  return operatorManager;
+}
 
-  csRef<iComponent> c (plugmgr->LoadPluginInstance (name,
-        iPluginManager::lpiInitialize | iPluginManager::lpiReportErrors
-        | iPluginManager::lpiLoadDependencies));
-  csRef<iBase> b = scfQueryInterface<iBase> (c);
+iMenuManager* Editor::GetMenuManager () const
+{
+  return menuManager;
+}
 
-  csReport (object_reg, CS_REPORTER_SEVERITY_NOTIFY,
-	    "crystalspace.application.editor", "Attempt to load plugin '%s' %s",
-	    name, b ? "successful" : "failed");
-  if (b)
-  {
-    return true;
-  }
+csPtr<iProgressMeter> Editor::CreateProgressMeter () const
+{
+  csRef<iProgressMeter> meter;
+  meter.AttachNew (new StatusBarProgressMeter (statusBar));
+  return csPtr<iProgressMeter> (meter);
+}
 
+wxFrame* Editor::GetwxFrame ()
+{
+  return this;
+}
+
+void Editor::Save (iDocumentNode* node) const
+{
+}
+
+bool Editor::Load (iDocumentNode* node)
+{
   return false;
 }
 
-csPtr<iProgressMeter> Editor::GetProgressMeter ()
+void Editor::Init ()
 {
-  return mainFrame->GetProgressMeter ();
-}
-
-iThreadReturn* Editor::LoadMapFile (const char* path, const char* filename, bool clearEngine)
-{
-  vfs->ChDir (path);
-
-  if (clearEngine)
-  {
-    engine->RemoveCollection (mainCollection);
-    mainCollection = engine->CreateCollection ("Main collection");
-  }
-
-  csRef<iThreadReturn> loadingResult =
-    loader->LoadMapFile (vfs->GetCwd (), filename, clearEngine, mainCollection);
-  return loadingResult;
-}
-
-iThreadReturn* Editor::LoadLibraryFile (const char* path, const char* filename)
-{
-  vfs->ChDir (path);
-
-  csRef<iThreadReturn> loadingResult =
-    loader->LoadLibraryFile (vfs->GetCwd (), filename, mainCollection);
-  return loadingResult;
-}
-
-void Editor::SaveMapFile (const char* path, const char* filename)
-{
-  vfs->ChDir (path);
+  // Create the main splitter window
+  Window* m_splitter = new Window (manager->object_reg, this, this);
   
-  saver->SaveCollectionFile (mainCollection, filename, CS_SAVER_FILE_WORLD);
+  wxBoxSizer* box = new wxBoxSizer (wxHORIZONTAL);
+  box->Add (m_splitter, 1, wxEXPAND | wxALL, 0);
+  SetSizer (box);
+  box->SetSizeHints (this);
+
+  // Reset the window size
+  SetSize (wxSize (1024, 768));
+
+  // Initialize the pump (the refresh rate is in millisecond)
+  pump = new Pump(this);
+  pump->Start (20);
+
+  SetStatusText (wxT ("Ready"));
 }
 
-void Editor::FireMapLoaded (const char* path, const char* filename)
+void Editor::Update ()
 {
-  csRef<iProgressMeter> progressMeter = GetProgressMeter ();
-  engine->Prepare (progressMeter);
-
-  // TODO: Remove me. I'm only here to test the relighting progress gauge.
-  //engine->SetLightingCacheMode (0);
-
-  // Notify map listeners
-  csRefArray<iMapListener>::Iterator it = mapListeners.GetIterator ();
-  while (it.HasNext ())
-  {
-    it.Next ()->OnMapLoaded (path, filename);
-  }
-}
-
-void Editor::FireLibraryLoaded (const char* path, const char* filename)
-{
-  // Notify map listeners
-  csRefArray<iMapListener>::Iterator it = mapListeners.GetIterator ();
-  while (it.HasNext ())
-  {
-    it.Next ()->OnLibraryLoaded (path, filename, mainCollection);
-  }
-}
-
-void Editor::AddMapListener (iMapListener* listener)
-{
-  mapListeners.Push (listener);
-}
-
-void Editor::RemoveMapListener (iMapListener* listener)
-{
-  mapListeners.Delete (listener);
-}
-
-csPtr<iEditorObject> Editor::CreateEditorObject (iBase* object, wxBitmap* icon)
-{
-  return csPtr<iEditorObject> (new EditorObject (object_reg, object, icon));
-}
-
-iObjectList* Editor::GetSelection ()
-{
-  return selection;
-}
-
-iObjectList* Editor::GetObjects ()
-{
-  return objects;
-}
-
-void Editor::SetHelperMeshes (csArray<csSimpleRenderMesh>* helpers)
-{
-  delete helper_meshes;
-  helper_meshes = helpers;
-}
-csArray<csSimpleRenderMesh>* Editor::GetHelperMeshes ()
-{
-  return helper_meshes;
-}
-
-void Editor::SetTransformStatus (TransformStatus status)
-{
-  transstatus = status;
-}
-Editor::TransformStatus Editor::GetTransformStatus ()
-{
-  return transstatus;
+  spaceManager->Update ();
 }
 
 }
-CS_PLUGIN_NAMESPACE_END(CSE)
+CS_PLUGIN_NAMESPACE_END (CSEditor)

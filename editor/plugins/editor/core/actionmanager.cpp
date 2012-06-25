@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2007 by Seth Yastrov
+    Copyright (C) 2011 by Jelle Hellemans
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,17 +17,14 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <cssysdef.h>
+#include "cssysdef.h"
+#include "csutil/objreg.h"
 #include "csutil/scf.h"
-
-#include <csutil/objreg.h>
 
 #include "actionmanager.h"
 
-#include "ieditor/action.h"
-
-namespace CS {
-namespace EditorApp {
+CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
+{
 
 ActionManager::ActionManager (iObjectRegistry* obj_reg)
   : scfImplementationType (this), object_reg (obj_reg)
@@ -41,12 +39,11 @@ ActionManager::~ActionManager ()
 
 bool ActionManager::Do (iAction* action)
 {
-  csRef<iAction> undoAction (action->Do ());
-  if (!undoAction.IsValid ())
+  if (!action->Do ())
     return false;
   
   redoStack.Empty ();
-  undoStack.Push (undoAction);
+  undoStack.Push (action);
 
   NotifyListeners (action);
   
@@ -61,9 +58,8 @@ bool ActionManager::Undo ()
   csRef<iAction> action (undoStack.Pop ());
 
   // Store redo action
-  csRef<iAction> redoAction (action->Do ());
-  if (redoAction.IsValid ())
-    redoStack.Push (redoAction);
+  if (action->Undo ())
+    redoStack.Push (action);
 
   NotifyListeners (action);
 
@@ -77,9 +73,8 @@ bool ActionManager::Redo ()
   
   csRef<iAction> action (redoStack.Pop ());
   
-  csRef<iAction> undoAction (action->Do ());
-  if (undoAction.IsValid ())
-    undoStack.Push (undoAction);
+  if (action->Do ())
+    undoStack.Push (action);
 
   NotifyListeners (action);
 
@@ -121,5 +116,5 @@ void ActionManager::NotifyListeners (iAction* action)
   }
 }
 
-} // namespace EditorApp
-} // namespace CS
+}
+CS_PLUGIN_NAMESPACE_END (CSEditor)

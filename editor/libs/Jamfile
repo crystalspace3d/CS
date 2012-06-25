@@ -85,6 +85,7 @@ rule CsLibAddModule
 }
 
 SubInclude TOP libs csutil ;
+SubInclude TOP libs cseditor ;
 SubInclude TOP libs csgeom ;
 SubInclude TOP libs csgfx ;
 SubInclude TOP libs cstool ;

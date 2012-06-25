@@ -21,7 +21,7 @@
 */
 #include "cssysdef.h"
 #include "vareditapp.h"
-#include "testModifiable.h"
+#include "testmodifiable.h"
 
 IMPLEMENT_APP(VarEditTestApp);
 

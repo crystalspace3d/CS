@@ -209,6 +209,12 @@ void csWaterMeshObject::SetupObject ()
 
       SetupBufferHolder ();
     }
+
+	// Plane of Reflection 
+	csShaderVariable *PlaneReflection = variableContext->GetVariableAdd(svStrings->Request("plane reflection"));
+	PlaneReflection->SetType(csShaderVariable::VECTOR4);
+	PlaneReflection->SetValue(csVector4(0.0, 1.0, 0.0, 0.0));
+
   }
 
   if(factory->murkChanged)
@@ -259,6 +265,7 @@ void csWaterMeshObject::SetupObject ()
 
     factory->directions_changed = false;
   }
+
 }
 
 int csWaterMeshObject::CalculateLOD(float distCam)
@@ -438,8 +445,9 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     mesh_colors_dirty_flag = true;
   }
 
+  //Commenting these 2 lines are swithching these values to default
   //logparent->SetZBufMode(CS_ZBUF_TEST);
-  logparent->SetRenderPriority (factory->engine->GetRenderPriority ("alpha"));
+  //logparent->SetRenderPriority (factory->engine->GetRenderPriority ("alpha"));
 
   const uint currentFrame = rview->GetCurrentFrameNumber ();
   bool meshesCreated;

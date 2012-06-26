@@ -16,8 +16,8 @@
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __CS_OPCODE_COLLISION_H__
-#define __CS_OPCODE_COLLISION_H__
+#ifndef __CS_OPCODE_COLLISIONSECTOR_H__
+#define __CS_OPCODE_COLLISIONSECTOR_H__
 
 #include "iutil/comp.h"
 #include "csutil/scf.h"
@@ -49,26 +49,6 @@ class csOpcodeCollisionSector : public scfImplementationExt1<
     csOpcodeCollisionObject* ghostPortal1;
   };
 
-  class CollisionGroupVector : public csArray<CS::Collisions::CollisionGroup>
-  {
-  public:
-    CollisionGroupVector () : csArray<CS::Collisions::CollisionGroup> () {}
-    static int CompareKey (CS::Collisions::CollisionGroup const& item,
-      char const* const& key)
-    {
-      return strcmp (item.name.GetData (), key);
-    }
-    static csArrayCmp<CS::Collisions::CollisionGroup, char const*>
-      KeyCmp(char const* k)
-    {
-      return csArrayCmp<CS::Collisions::CollisionGroup, char const*> (k,CompareKey);
-    }
-  };
-
-  CollisionGroupVector collGroups;
-  CS::Collisions::CollisionGroupMask allFilter; 
-  size_t systemFilterCount;
-
   csRef<iSector> sector;
   csOpcodeCollisionSystem* sys;
   csVector3 gravity;
@@ -81,7 +61,10 @@ public:
   csOpcodeCollisionSector (csOpcodeCollisionSystem* sys);
   virtual ~csOpcodeCollisionSector ();
 
-  virtual iObject* QueryObject () {return (iObject*) this;}
+  /// The system to which this sector belongs
+  virtual CS::Collisions::iCollisionSystem* GetSystem();
+
+  virtual iObject* QueryObject () { return (iObject*) this; }
   
   //iCollisionSector
   virtual void SetGravity (const csVector3& v);
@@ -94,6 +77,8 @@ public:
   virtual CS::Collisions::iCollisionObject* GetCollisionObject (size_t index);
   virtual CS::Collisions::iCollisionObject* FindCollisionObject (const char* name);
 
+  virtual void AddCollisionTerrain(CS::Collisions::iCollisionTerrain *terrain);
+
   virtual void AddPortal(iPortal* portal, const csOrthoTransform& meshTrans);
   virtual void RemovePortal(iPortal* portal);
 
@@ -105,12 +90,6 @@ public:
 
   virtual CS::Collisions::HitBeamResult HitBeamPortal(const csVector3& start, 
     const csVector3& end);
-
-  virtual CS::Collisions::CollisionGroup& CreateCollisionGroup (const char* name);
-  virtual CS::Collisions::CollisionGroup& FindCollisionGroup (const char* name);
-
-  virtual void SetGroupCollision (const char* name1, const char* name2, bool collide);
-  virtual bool GetGroupCollision (const char* name1, const char* name2);
 
   virtual bool CollisionTest(CS::Collisions::iCollisionObject* object, 
     csArray<CS::Collisions::CollisionData>& collisions);
@@ -126,9 +105,6 @@ public:
   CS::Collisions::HitBeamResult HitBeamCollider (Opcode::Model* model, Point* vertholder, udword* indexholder,
     const csOrthoTransform& trans, const csVector3& start, const csVector3& end, float& depth);
 
-  CS::Collisions::HitBeamResult HitBeamTerrain (csOpcodeCollisionObject* terrainObj, 
-    const csVector3& start, const csVector3& end, float& depth);
-
   CS::Collisions::HitBeamResult HitBeamObject (csOpcodeCollisionObject* object,
     const csVector3& start, const csVector3& end, float& depth);
 
@@ -142,60 +118,6 @@ public:
 
   bool CollideObject (csOpcodeCollisionObject* objA, csOpcodeCollisionObject* objB, 
     csArray<CS::Collisions::CollisionData>& collisions);
-
-  bool CollideTerrain (csOpcodeCollisionObject* objA, csOpcodeCollisionObject* objB, 
-    csArray<CS::Collisions::CollisionData>& collisions);
-};
-
-class csOpcodeCollisionSystem : public scfImplementation2<
-  csOpcodeCollisionSystem, CS::Collisions::iCollisionSystem,
-  iComponent>
-{
-friend class csOpcodeCollider;
-private:
-  iObjectRegistry* object_reg;
-  csRefArrayObject<csOpcodeCollisionSector> collSectors;
-  csStringID baseID;
-  csStringID colldetID;
-
-public:
-  csOpcodeCollisionSystem (iBase* iParent);
-  virtual ~csOpcodeCollisionSystem ();
-
-  // iComponent
-  virtual bool Initialize (iObjectRegistry* object_reg);
-
-  // iCollisionSystem
-  virtual void SetInternalScale (float scale);
-  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (
-    iMeshWrapper* mesh, bool simplify = false);
-  virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);
-  virtual csPtr<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
-    (CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale);
-  virtual csPtr<CS::Collisions::iColliderCylinder> CreateColliderCylinder (float length, float radius);
-  virtual csPtr<CS::Collisions::iColliderBox> CreateColliderBox (const csVector3& size);
-  virtual csPtr<CS::Collisions::iColliderSphere> CreateColliderSphere (float radius);
-  virtual csPtr<CS::Collisions::iColliderCapsule> CreateColliderCapsule (float length, float radius);
-  virtual csPtr<CS::Collisions::iColliderCone> CreateColliderCone (float length, float radius);
-  virtual csPtr<CS::Collisions::iColliderPlane> CreateColliderPlane (const csPlane3& plane);
-  virtual csPtr<CS::Collisions::iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
-    float minHeight = 0, float maxHeight = 0);
-  
-  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
-  virtual csPtr<CS::Collisions::iCollisionGhostObject> CreateGhostCollisionObject ();
-  virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor (CS::Collisions::iCollider* collider);
-  virtual csPtr<CS::Collisions::iCollisionSector> CreateCollisionSector ();
-  virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
-  virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
-
-  virtual void DecomposeConcaveMesh (CS::Collisions::iCollisionObject* object,
-    iMeshWrapper* mesh, bool simplify = false); 
-
-  static void OpcodeReportV (int severity, const char* message, 
-    va_list args);
-
-public:
-  static iObjectRegistry* rep_object_reg;
 };
 }
 CS_PLUGIN_NAMESPACE_END (Opcode2)

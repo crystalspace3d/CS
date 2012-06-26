@@ -7,12 +7,15 @@
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
-class csBulletCollisionGhostObject : public scfVirtImplementationExt1<
-  csBulletCollisionGhostObject, csBulletCollisionObject, CS::Collisions::iCollisionGhostObject>
+class csBulletGhostCollisionObject : public scfVirtImplementationExt1<
+  csBulletGhostCollisionObject, csBulletCollisionObject, CS::Collisions::iGhostCollisionObject>
 {
 public:
-  csBulletCollisionGhostObject(csBulletSystem* sys);
-  virtual ~csBulletCollisionGhostObject();
+  void CreateGhostCollisionObject(CS::Collisions::GhostCollisionObjectProperties* props);
+
+public:
+  csBulletGhostCollisionObject(csBulletSystem* sys);
+  virtual ~csBulletGhostCollisionObject();
   virtual bool IsPhysicalObject() const { return false; }
   virtual CS::Collisions::CollisionObjectType GetObjectType () const { return CS::Collisions::COLLISION_OBJECT_GHOST; }
 

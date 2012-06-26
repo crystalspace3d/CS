@@ -27,14 +27,17 @@
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 
-class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,  csBulletCollisionGhostObject,  CS::Collisions::iCollisionActor>
+class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,  csBulletGhostCollisionObject,  CS::Collisions::iCollisionActor>
 {
   btKinematicCharacterController* controller;
   float pitch;
   bool flying;
 
 public:
-  csBulletCollisionActor (csBulletSystem* sys, csBulletCollider* collider);
+  void CreateCollisionActor(CS::Collisions::CollisionActorProperties* props);
+
+public:
+  csBulletCollisionActor (csBulletSystem* sys);
   virtual ~csBulletCollisionActor ();
 
   virtual iObject* QueryObject (void) { return (iObject*) this; }

@@ -42,7 +42,7 @@ csBulletSoftBody::csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body)
   density = btScalar(.1);
   // friction = 0.5f;
   btObject = body;
-  btBody->setUserPointer (dynamic_cast<iPhysicalBody*> (this));
+  btBody->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*>(this));
 }
 
 csBulletSoftBody::~csBulletSoftBody ()
@@ -136,7 +136,7 @@ bool csBulletSoftBody::AddBulletObject ()
       static_cast<btSoftRigidDynamicsWorld*> (sector->bulletWorld);
 
     softWorld->addSoftBody (btBody, collGroup.value, collGroup.mask);
-    btBody->setUserPointer (static_cast<CS::Collisions::iCollisionObject*> (dynamic_cast<iPhysicalBody*>(this)));
+    btBody->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*>(this));
     insideWorld = true;
   }
   return true;

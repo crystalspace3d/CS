@@ -146,12 +146,12 @@ struct iDynamicSystem : public virtual iBase
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa CS::Physics::Bullet::iRigidBody::SetLinearDamping()
+   * \sa CS::Physics::Bullet::iRigidBody::SetLinearDampener()
    */
-  virtual void SetLinearDamping (float d) = 0;
+  virtual void SetLinearDampener (float d) = 0;
 
   /// Get the global linear dampener setting.
-  virtual float GetLinearDamping () const = 0;
+  virtual float GetLinearDampener () const = 0;
 
   /**
    * Set the global angular dampener. The dampening correspond to how
@@ -160,12 +160,12 @@ struct iDynamicSystem : public virtual iBase
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa CS::Physics::Bullet::iRigidBody::SetAngularDamping()
+   * \sa CS::Physics::Bullet::iRigidBody::SetRollingDampener()
    */
-  virtual void SetAngularDamping (float d) = 0;
+  virtual void SetRollingDampener (float d) = 0;
 
   /// Get the global rolling dampener setting.
-  virtual float GetAngularDamping () const = 0;
+  virtual float GetRollingDampener () const = 0;
 
   /**
    * Turn on/off AutoDisable functionality.

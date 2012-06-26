@@ -10,79 +10,60 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+  void csBulletGhostCollisionObject::CreateGhostCollisionObject(CS::Collisions::GhostCollisionObjectProperties* props)
+  {
+    CreateCollisionObject(props);
+  }
 
-  csBulletCollisionGhostObject::csBulletCollisionGhostObject(csBulletSystem* sys) : scfImplementationType(this, sys)
+  csBulletGhostCollisionObject::csBulletGhostCollisionObject(csBulletSystem* sys) : scfImplementationType(this, sys)
   {
   }
 
   
-  csBulletCollisionGhostObject::~csBulletCollisionGhostObject()
+  csBulletGhostCollisionObject::~csBulletGhostCollisionObject()
   {
   }
 
-  void csBulletCollisionGhostObject::RebuildObject () 
+  void csBulletGhostCollisionObject::RebuildObject () 
   { 
     bool wasInWorld = insideWorld;
     if (insideWorld)
     {
+      // TODO: Is it necessary to remove/re-insert the object?
       wasInWorld = true;
       RemoveBulletObject ();
     }
 
-    // TODO: Recreate object only if necessary
-    //CreateBulletObject();
-    
-    size_t colliderCount = colliders.GetSize ();
-    if (colliderCount == 0)
-    {  
-      csFPrintf (stderr, "csBulletCollisionObject: Haven't add any collider to the object.\nRebuild failed.\n");
-      return;
-    }
-
-    if (shapeChanged)
+    if (!btObject)
     {
-      // TODO: Clean up this crap
-      btCollisionShape* shape;
-      if (compoundShape)
-        shape = compoundShape;
-      else
-        shape = colliders[0]->shape;
-
-      btTransform pricipalAxis;
-      if (compoundShape)
-        pricipalAxis.setIdentity ();
-      else
-        pricipalAxis = CSToBullet (relaTransforms[0], system->getInternalScale ());
-
-      invPricipalAxis = pricipalAxis.inverse ();
-
-      if (!btObject)
-      {
-        btObject = new btPairCachingGhostObject ();
-      }
-
-      btTransform transform = btObject->getWorldTransform();
-      if (movable)
-      {
-        movable->SetFullTransform (BulletToCS(transform * invPricipalAxis, system->getInverseInternalScale ()));
-      }
-
-      if (camera)
-      {
-        camera->SetTransform (BulletToCS(transform * invPricipalAxis, system->getInverseInternalScale ()));
-      }
-
-      btObject->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*> (this));
-      btObject->setCollisionShape (shape);
+      btObject = new btPairCachingGhostObject ();
     }
 
+    // create and set shape
+    btShape = collider->GetOrCreateBulletShape();
+    btObject->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*> (this));
+    btObject->setCollisionShape (btShape);
+
+    // set transform
+    btTransform transform = btObject->getWorldTransform();
+    if (movable)
+    {
+      movable->SetFullTransform (BulletToCS(transform, system->getInverseInternalScale ()));
+    }
+
+    if (camera)
+    {
+      camera->SetTransform (BulletToCS(transform, system->getInverseInternalScale ()));
+    }
+
+    // add back to world
     if (wasInWorld)
     {
       AddBulletObject ();
     }
   }
 
-  bool csBulletCollisionGhostObject::AddBulletObject()
+  bool csBulletGhostCollisionObject::AddBulletObject()
   {
     if (insideWorld)
       RemoveBulletObject ();
@@ -94,7 +75,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   }
   
 
-  bool csBulletCollisionGhostObject::RemoveBulletObject ()
+  bool csBulletGhostCollisionObject::RemoveBulletObject ()
   {
     if (insideWorld)
     {

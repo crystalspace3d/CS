@@ -84,7 +84,6 @@ private:
   csRef<iMovable> clipboardMovable;
 
   // Collider
-  csOrthoTransform localTrans;
 
   // Ghost
   csRef<CS::Collisions::iCollisionObject> ghostObject;
@@ -139,7 +138,6 @@ VerySimple::VerySimple()
   debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
   physicalCameraMode (CAMERA_DYNAMIC), dragging (false), softDragging (false)
 {
-  localTrans.Identity ();
 }
 
 VerySimple::~VerySimple ()
@@ -262,12 +260,12 @@ bool VerySimple::Application ()
 
   physicalSector->SetSector (room);
 
-  physicalSector->CreateCollisionGroup ("Box");
-  physicalSector->CreateCollisionGroup ("BoxFiltered");
+  physicalSystem->CreateCollisionGroup ("Box");
+  physicalSystem->CreateCollisionGroup ("BoxFiltered");
 
-  bool coll = physicalSector->GetGroupCollision ("Box", "BoxFiltered");
+  bool coll = physicalSystem->GetGroupCollision ("Box", "BoxFiltered");
   if (coll)
-    physicalSector->SetGroupCollision ("Box", "BoxFiltered", false);
+    physicalSystem->SetGroupCollision ("Box", "BoxFiltered", false);
 
   // Run the application
   Run();

@@ -28,6 +28,10 @@
 #include "imesh/object.h"
 #include "imesh/animesh.h"
 #include "ragdoll2.h"
+#include "ivaria/collisions.h"
+
+using namespace CS::Collisions;
+using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Ragdoll2)
 {
@@ -516,6 +520,60 @@ void RagdollNode::BlendState (CS::Animation::AnimatedMeshState* state, float bas
   }
 }
 
+csRef<iCollider> RagdollNode::CreateBoneCollider(CS::Animation::iBodyBoneCollider* boneCollider, csColliderGeometryType type)
+{
+  switch (type)
+  {
+  case BOX_COLLIDER_GEOMETRY:
+    {
+      csVector3 boxSize;
+      boneCollider->GetBoxGeometry (boxSize);
+      return csRef<iColliderBox>(collisionSystem->CreateColliderBox (boxSize));
+    }
+  case CYLINDER_COLLIDER_GEOMETRY:
+    {
+      float length, radius;
+      boneCollider->GetCylinderGeometry (length, radius);
+      return csRef<iColliderCylinder>(collisionSystem->CreateColliderCylinder (length,radius));
+    }
+  case CAPSULE_COLLIDER_GEOMETRY:
+    {
+      float length, radius;
+      boneCollider->GetCapsuleGeometry (length, radius);
+      return csRef<iColliderCapsule>(collisionSystem->CreateColliderCapsule (length, radius));
+    }
+  case CONVEXMESH_COLLIDER_GEOMETRY:
+    {
+      iMeshWrapper* mesh;
+      boneCollider->GetConvexMeshGeometry (mesh);
+      return csRef<iColliderConvexMesh>(collisionSystem->CreateColliderConvexMesh (mesh));
+    }
+
+  case TRIMESH_COLLIDER_GEOMETRY:
+    {
+      iMeshWrapper* mesh;
+      boneCollider->GetMeshGeometry (mesh);
+      return csRef<iColliderConcaveMesh>(collisionSystem->CreateColliderConcaveMesh (mesh));
+    }
+
+  case PLANE_COLLIDER_GEOMETRY:
+    {
+      csPlane3 plane;
+      boneCollider->GetPlaneGeometry (plane);
+      // TODO: add transform
+      return csRef<iColliderPlane>(collisionSystem->CreateColliderPlane (plane));
+    }
+
+  case SPHERE_COLLIDER_GEOMETRY:
+    {
+      float radius;
+      boneCollider->GetSphereGeometry (radius);
+      return csRef<iColliderSphere>(collisionSystem->CreateColliderSphere (radius));
+    }
+  }
+  return nullptr;
+}
+
 void RagdollNode::UpdateBoneState (BoneData* boneData)
 {
   // check if this node has been stopped or if the bone is inactive
@@ -535,113 +593,57 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
   {
     previousBody = false;
 
+    csRef<CS::Collisions::iColliderCompound> rootCollider = collisionSystem->CreateColliderCompound();
+    CS::Physics::RigidBodyProperties rbProps(rootCollider);
+    CS::Animation::iBodyBoneProperties* boneProps = bodyBone->GetBoneProperties ();
+    if (boneProps)
+    {
+      rbProps.SetMass (boneProps->GetMass ());
+    }
+
+    // set body properties if they are defined
+    // (with the Bullet plugin, it is more efficient to define it before the colliders)
+
+    // attach bone colliders
+    for (uint index = 0; index < bodyBone->GetBoneColliderCount (); index++)
+    {
+      CS::Animation::iBodyBoneCollider* boneCollider = bodyBone->GetBoneCollider (index);
+
+      // TODO: These values are overridden on every iteration
+      rbProps.SetDensity (boneCollider->GetDensity ());
+      rbProps.SetFriction (boneCollider->GetFriction ());
+      rbProps.SetElasticity (boneCollider->GetElasticity ());
+
+      csRef<CS::Collisions::iCollider> rbCollider = CreateBoneCollider(boneCollider, boneCollider->GetGeometryType());
+
+      if (!rbCollider)
+      {
+        factory->manager->Report (CS_REPORTER_SEVERITY_WARNING,
+          "No supported geometry for collider %d in bone %i while RagdollNode.\n",
+			          index, bodyBone->GetAnimeshBone ());
+      }
+      else
+      {
+        rootCollider->AddCollider(rbCollider, boneCollider->GetTransform());
+      }
+    }
+
     // create rigid body
-    boneData->rigidBody = physicalSystem->CreateRigidBody ();
+    boneData->rigidBody = physicalSystem->CreateRigidBody (&rbProps);
 
     // set body position
     csQuaternion rotation;
     csVector3 offset;
     skeleton->GetTransformAbsSpace (boneData->boneID, rotation, offset);
-    // TODO: we shouldn't have to use the conjugate of the quaternion, isn't it?
+    // TODO: we shouldn't have to use the conjugate of the quaternion, should we?
     csOrthoTransform boneTransform (csMatrix3 (rotation.GetConjugate ()), offset);
     csOrthoTransform animeshTransform = sceneNode->GetMovable ()->GetFullTransform ();
     csOrthoTransform bodyTransform = boneTransform * animeshTransform;
     boneData->rigidBody->SetTransform (bodyTransform);
-
-    // set body properties if they are defined
-    // (with the Bullet plugin, it is more efficient to define it before the colliders)
-    CS::Animation::iBodyBoneProperties* properties = bodyBone->GetBoneProperties ();
-    if (properties)
-      boneData->rigidBody->SetMass (properties->GetMass ());
-
-    // attach bone colliders
-    for (uint index = 0; index < bodyBone->GetBoneColliderCount (); index++)
-    {
-      CS::Animation::iBodyBoneCollider* collider = bodyBone->GetBoneCollider (index);
-
-
-      boneData->rigidBody->SetDensity (collider->GetDensity ());
-      boneData->rigidBody->SetFriction (collider->GetFriction ());
-      boneData->rigidBody->SetElasticity (collider->GetElasticity ());
-
-      switch (collider->GetGeometryType ())
-      {
-      case BOX_COLLIDER_GEOMETRY:
-        {
-          csVector3 boxSize;
-          collider->GetBoxGeometry (boxSize);
-          csRef<CS::Collisions::iColliderBox> box = collisionSystem->CreateColliderBox (boxSize);
-          boneData->rigidBody->AddCollider (box, collider->GetTransform ());
-          break;
-        }
-      case CYLINDER_COLLIDER_GEOMETRY:
-        {
-          float length, radius;
-          collider->GetCylinderGeometry (length, radius);
-          csRef<CS::Collisions::iColliderCylinder> cy = collisionSystem->CreateColliderCylinder (length,radius);
-          boneData->rigidBody->AddCollider (cy, collider->GetTransform ());
-          break;
-        }
-      case CAPSULE_COLLIDER_GEOMETRY:
-        {
-          float length, radius;
-          collider->GetCapsuleGeometry (length, radius);
-          csRef<CS::Collisions::iColliderCapsule> ca = collisionSystem->CreateColliderCapsule (length, radius);
-          boneData->rigidBody->AddCollider (ca, collider->GetTransform ());
-          break;
-        }
-      case CONVEXMESH_COLLIDER_GEOMETRY:
-        {
-          iMeshWrapper* mesh;
-          collider->GetConvexMeshGeometry (mesh);
-          csRef<CS::Collisions::iColliderConvexMesh> conv = collisionSystem->CreateColliderConvexMesh (mesh);
-          boneData->rigidBody->AddCollider (conv, collider->GetTransform ());
-          break;
-        }
-
-      case TRIMESH_COLLIDER_GEOMETRY:
-        {
-          iMeshWrapper* mesh;
-          collider->GetMeshGeometry (mesh);
-          csRef<CS::Collisions::iColliderConcaveMesh> conc = collisionSystem->CreateColliderConcaveMesh (mesh);
-          boneData->rigidBody->AddCollider (conc, collider->GetTransform ());
-          break;
-        }
-
-      case PLANE_COLLIDER_GEOMETRY:
-        {
-          csPlane3 plane;
-          collider->GetPlaneGeometry (plane);
-          // TODO: add transform
-          csRef<CS::Collisions::iColliderPlane> pl = collisionSystem->CreateColliderPlane (plane);
-          boneData->rigidBody->AddCollider (pl, collider->GetTransform ());
-          break;
-        }
-
-      case SPHERE_COLLIDER_GEOMETRY:
-        {
-	  float radius;
-	  collider->GetSphereGeometry (radius);
-          csRef<CS::Collisions::iColliderSphere> sp = collisionSystem->CreateColliderSphere (radius);
-          boneData->rigidBody->AddCollider (sp, collider->GetTransform ());
-          break;
-        }
-
-      default:
-        factory->manager->Report (CS_REPORTER_SEVERITY_WARNING,
-          "No supported geometry for collider in bone %i while creating rigid body.\n",
-			          bodyBone->GetAnimeshBone ());
-        boneData->rigidBody = 0;
-      }
-    }
   }
 
-  if (boneData->rigidBody)
-  {
-    csRef<CS::Collisions::iCollisionSector> colSector = scfQueryInterface<CS::Collisions::iCollisionSector> (physicalSector);
-    boneData->rigidBody->RebuildObject ();
-    colSector->AddCollisionObject (boneData->rigidBody);
-  }
+  boneData->rigidBody->RebuildObject ();
+  physicalSector->AddCollisionObject (boneData->rigidBody);
 
   // if the bone is in dynamic state
   if (boneData->state == CS::Animation::STATE_DYNAMIC)

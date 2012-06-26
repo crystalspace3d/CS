@@ -203,6 +203,94 @@ private:
     metadataArray[pos].interfaceVersion = scfInterfaceTraits<IF>::GetVersion ();
   }
 };
+template<class Class ,class I1>
+class scfVirtImplementation1 :
+  public scfImplementation<Class>
+  ,public virtual I1
+{
+public:
+  inline void *QueryInterface(scfInterfaceID id, scfInterfaceVersion version)
+  {
+    void *x;
+    if((x = GetInterface<I1>(this->GetSCFObject(), id, version)) != 0) return x;
+    return scfImplementation<Class>::QueryInterface(id, version);
+  }
+protected:
+  scfVirtImplementation1(Class *object, iBase *parent=0)
+    : scfImplementation<Class>(object, parent)
+  {
+    csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases();
+  }
+  virtual ~scfVirtImplementation1()
+  {
+    RemoveReftrackerAliases();
+  }
+  typedef scfVirtImplementation1<Class ,I1> scfImplementationType;
+  typedef Class scfClassType;
+  virtual size_t GetInterfaceMetadataCount () const
+  {
+    return 1 + scfImplementation<Class>::GetInterfaceMetadataCount ();
+  }
+  virtual void FillInterfaceMetadata (size_t n)
+  {
+    FillInterfaceMetadataIf<I1> (this->scfAuxData->metadataList->metadata, n++);
+    scfImplementation<Class>::FillInterfaceMetadata (n);
+  }
+private:
+  void AddReftrackerAliases ()
+  {
+    AddReftrackerAlias<iBase>(this->GetSCFObject());
+    AddReftrackerAlias<I1>(this->GetSCFObject());
+  }
+  void RemoveReftrackerAliases ()
+  {
+    RemoveReftrackerAlias<iBase>(this->GetSCFObject());
+    RemoveReftrackerAlias<I1>(this->GetSCFObject());
+  }
+  template<typename I>
+  CS_FORCEINLINE_TEMPLATEMETHOD static void* GetInterface (
+    Class* scfObject, scfInterfaceID id, scfInterfaceVersion version)
+  {
+    if (id == scfInterfaceTraits<I>::GetID() &&
+      scfCompatibleVersion(version, scfInterfaceTraits<I>::GetVersion()))
+    {
+      scfObject->IncRef();
+      return static_cast<
+        typename scfInterfaceTraits<I>::InterfaceType*> (scfObject);
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  template<typename I>
+  CS_FORCEINLINE_TEMPLATEMETHOD static void AddReftrackerAlias (
+    Class* scfObject)
+  {
+    csRefTrackerAccess::AddAlias(
+      static_cast<
+      typename scfInterfaceTraits<I>::InterfaceType*> (scfObject),
+      scfObject);
+  }
+  template<typename I>
+  CS_FORCEINLINE_TEMPLATEMETHOD static void RemoveReftrackerAlias (
+    Class* scfObject)
+  {
+    csRefTrackerAccess::RemoveAlias(
+      static_cast<
+      typename scfInterfaceTraits<I>::InterfaceType*> (scfObject),
+      scfObject);
+  }
+  template<typename IF>
+  CS_FORCEINLINE_TEMPLATEMETHOD static void FillInterfaceMetadataIf (
+    scfInterfaceMetadata* metadataArray, size_t pos)
+  {
+    metadataArray[pos].interfaceName = scfInterfaceTraits<IF>::GetName ();
+    metadataArray[pos].interfaceID = scfInterfaceTraits<IF>::GetID ();
+    metadataArray[pos].interfaceVersion = scfInterfaceTraits<IF>::GetVersion ();
+  }
+};
 template<class Class ,class I1, class I2>
 class scfImplementation2 :
   public scfImplementation<Class>
@@ -228,6 +316,98 @@ protected:
     RemoveReftrackerAliases();
   }
   typedef scfImplementation2<Class ,I1, I2> scfImplementationType;
+  typedef Class scfClassType;
+  virtual size_t GetInterfaceMetadataCount () const
+  {
+    return 2 + scfImplementation<Class>::GetInterfaceMetadataCount ();
+  }
+  virtual void FillInterfaceMetadata (size_t n)
+  {
+    FillInterfaceMetadataIf<I1> (this->scfAuxData->metadataList->metadata, n++);
+    FillInterfaceMetadataIf<I2> (this->scfAuxData->metadataList->metadata, n++);
+    scfImplementation<Class>::FillInterfaceMetadata (n);
+  }
+private:
+  void AddReftrackerAliases ()
+  {
+    AddReftrackerAlias<iBase>(this->GetSCFObject());
+    AddReftrackerAlias<I1>(this->GetSCFObject());
+    AddReftrackerAlias<I2>(this->GetSCFObject());
+  }
+  void RemoveReftrackerAliases ()
+  {
+    RemoveReftrackerAlias<iBase>(this->GetSCFObject());
+    RemoveReftrackerAlias<I1>(this->GetSCFObject());
+    RemoveReftrackerAlias<I2>(this->GetSCFObject());
+  }
+  template<typename I>
+  CS_FORCEINLINE_TEMPLATEMETHOD static void* GetInterface (
+    Class* scfObject, scfInterfaceID id, scfInterfaceVersion version)
+  {
+    if (id == scfInterfaceTraits<I>::GetID() &&
+      scfCompatibleVersion(version, scfInterfaceTraits<I>::GetVersion()))
+    {
+      scfObject->IncRef();
+      return static_cast<
+        typename scfInterfaceTraits<I>::InterfaceType*> (scfObject);
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  template<typename I>
+  CS_FORCEINLINE_TEMPLATEMETHOD static void AddReftrackerAlias (
+    Class* scfObject)
+  {
+    csRefTrackerAccess::AddAlias(
+      static_cast<
+      typename scfInterfaceTraits<I>::InterfaceType*> (scfObject),
+      scfObject);
+  }
+  template<typename I>
+  CS_FORCEINLINE_TEMPLATEMETHOD static void RemoveReftrackerAlias (
+    Class* scfObject)
+  {
+    csRefTrackerAccess::RemoveAlias(
+      static_cast<
+      typename scfInterfaceTraits<I>::InterfaceType*> (scfObject),
+      scfObject);
+  }
+  template<typename IF>
+  CS_FORCEINLINE_TEMPLATEMETHOD static void FillInterfaceMetadataIf (
+    scfInterfaceMetadata* metadataArray, size_t pos)
+  {
+    metadataArray[pos].interfaceName = scfInterfaceTraits<IF>::GetName ();
+    metadataArray[pos].interfaceID = scfInterfaceTraits<IF>::GetID ();
+    metadataArray[pos].interfaceVersion = scfInterfaceTraits<IF>::GetVersion ();
+  }
+};
+template<class Class ,class I1, class I2>
+class scfVirtImplementation2 :
+  public scfImplementation<Class>
+  ,public virtual I1, public virtual I2
+{
+public:
+  inline void *QueryInterface(scfInterfaceID id, scfInterfaceVersion version)
+  {
+    void *x;
+    if((x = GetInterface<I1>(this->GetSCFObject(), id, version)) != 0) return x;
+    if((x = GetInterface<I2>(this->GetSCFObject(), id, version)) != 0) return x;
+    return scfImplementation<Class>::QueryInterface(id, version);
+  }
+protected:
+  scfVirtImplementation2(Class *object, iBase *parent=0)
+    : scfImplementation<Class>(object, parent)
+  {
+    csRefTrackerAccess::SetDescription (object, CS_TYPENAME (Class));
+    AddReftrackerAliases();
+  }
+  virtual ~scfVirtImplementation2()
+  {
+    RemoveReftrackerAliases();
+  }
+  typedef scfVirtImplementation2<Class ,I1, I2> scfImplementationType;
   typedef Class scfClassType;
   virtual size_t GetInterfaceMetadataCount () const
   {

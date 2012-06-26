@@ -21,7 +21,6 @@ PhysDemo::PhysDemo()
     physicalCameraMode (CAMERA_ACTOR)
     //physicalCameraMode (CAMERA_DYNAMIC)
 {
-  localTrans.Identity();
   actorSpeed = 5;
 }
 
@@ -71,8 +70,8 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   // Check which environment has to be loaded
   csString levelName = clp->GetOption ("level");
   environment = GetEnvironmentByName(levelName);
-  //csString defaultEnvironmentName = "terrain";
-  csString defaultEnvironmentName = "portals";
+  csString defaultEnvironmentName = "terrain";
+  //csString defaultEnvironmentName = "portals";
   if (!environment)
   {
       csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to \"%s\"\n",
@@ -97,6 +96,13 @@ bool PhysDemo::Application()
   // Default behavior from DemoApplication
   if (!DemoApplication::Application())
     return false;
+
+  physicalSystem->CreateCollisionGroup ("Box");
+  physicalSystem->CreateCollisionGroup ("BoxFiltered");
+
+  bool coll = physicalSystem->GetGroupCollision ("Box", "BoxFiltered");
+  if (coll)
+    physicalSystem->SetGroupCollision ("Box", "BoxFiltered", false);
 
   // Create the dynamic system
   physicalSector = physicalSystem->CreatePhysicalSector();
@@ -138,13 +144,6 @@ bool PhysDemo::Application()
   }
 
   physicalSector->SetSector (room);
-
-  physicalSector->CreateCollisionGroup ("Box");
-  physicalSector->CreateCollisionGroup ("BoxFiltered");
-
-  bool coll = physicalSector->GetGroupCollision ("Box", "BoxFiltered");
-  if (coll)
-    physicalSector->SetGroupCollision ("Box", "BoxFiltered", false);
 
   // Preload some meshes and materials
   if (!loader->LoadTexture ("spark", "/lib/std/spark.png")) return ReportError ("Error loading texture: spark");
@@ -297,15 +296,14 @@ void PhysDemo::UpdateCameraMode()
       // Create a new rigid body
       else
       {
-        csRef<CS::Collisions::iColliderBox> sphere = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
+        csRef<CS::Collisions::iColliderBox> collider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
           physicalSystem->CreateColliderBox(ActorDimensions);
-        cameraBody = CreateRigidBody("Camera");
-        cameraBody->SetDensity(0.3f);
-        cameraBody->SetElasticity(0.8f);
-        cameraBody->SetFriction(100.0f);
+        RigidBodyProperties props(collider, "Camera");
+        props.SetDensity(100.f);
+        props.SetElasticity(0.8f);
+        props.SetFriction(100.0f);
         
-        cameraBody->AddCollider(sphere, localTrans);
-        cameraBody->RebuildObject();
+        cameraBody = physicalSystem->CreateRigidBody(&props);
 
 
         cameraBody->SetTransform (tc);
@@ -348,19 +346,17 @@ void PhysDemo::UpdateCameraMode()
         csRef<CS::Collisions::iColliderBox> actorCollider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
           physicalSystem->CreateColliderBox(ActorDimensions);
 
-        cameraActor = physicalSystem->CreateCollisionActor(actorCollider);
-        cameraActor->QueryObject()->SetName("actor");
+        CollisionActorProperties props(actorCollider);
+        props.SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
+        
+        cameraActor = physicalSystem->CreateCollisionActor(&props);
         cameraActor->SetAttachedCamera(view->GetCamera());
       }
-
-      cameraActor->RebuildObject();
-      csOrthoTransform trans = cameraActor->GetTransform();
-      trans.Translate(csVector3(0, 0, -3));
-      cameraActor->SetTransform(trans);
+      
+      cameraActor->SetTransform(view->GetCamera()->GetTransform());
       
       physicalSector->AddCollisionObject(cameraActor);
       cameraActor->SetJumpSpeed(actorSpeed);
-      
     }
     break;
 
@@ -375,15 +371,16 @@ void PhysDemo::UpdateCameraMode()
       if (!cameraBody)
       {
         csRef<CS::Collisions::iColliderSphere> sphere = physicalSystem->CreateColliderSphere (0.8f);
-        csOrthoTransform localTrans;
-        cameraBody = physicalSystem->CreateRigidBody();
-        cameraBody->AddCollider(sphere, localTrans);
+        RigidBodyProperties props(sphere);
 
-        cameraBody->SetDensity (1.0f);
-        cameraBody->SetElasticity (0.8f);
-        cameraBody->SetFriction (100.0f);
-        cameraBody->RebuildObject();
+        props.SetDensity (1.0f);
+        props.SetElasticity (0.8f);
+        props.SetFriction (100.0f);
         
+        // create body
+        cameraBody = physicalSystem->CreateRigidBody(&props);
+
+        // set transform
         const csOrthoTransform& tc = view->GetCamera()->GetTransform();
         cameraBody->SetTransform (tc);
       }

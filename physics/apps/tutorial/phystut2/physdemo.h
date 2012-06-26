@@ -102,10 +102,9 @@ private:
   csRef<iMovable> clipboardMovable;
 
   // Collider
-  csOrthoTransform localTrans;
 
   // Ghost
-  csRef<CS::Collisions::iCollisionGhostObject> ghostObject;
+  csRef<CS::Collisions::iGhostCollisionObject> ghostObject;
 
   // Terrain
   csRef<iModifiableDataFeeder> terrainFeeder;
@@ -208,10 +207,6 @@ public:
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
   csVector3 GetPointInFrontOfFeetXZ(float distance) const { return GetActorFeetPos() + (GetCameraDirectionXZ() * distance); }
-
-  csPtr<CS::Physics::iRigidBody> CreateRigidBody(const csString& name);
-  
-  csPtr<CS::Physics::iRigidBody> CreateStaticRigidBody(const csString& name);
   
 };
 

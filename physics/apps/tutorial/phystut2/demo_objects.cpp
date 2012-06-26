@@ -12,21 +12,8 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
-
-csPtr<CS::Physics::iRigidBody> PhysDemo::CreateRigidBody(const csString& name)
-{
-  csRef<CS::Physics::iRigidBody> body = physicalSystem->CreateRigidBody();
-  body->QueryObject()->SetName(name);
-  return csPtr<CS::Physics::iRigidBody>(body);
-}
-
-csPtr<CS::Physics::iRigidBody> PhysDemo::CreateStaticRigidBody(const csString& name)
-{
-  csRef<CS::Physics::iRigidBody> body = physicalSystem->CreateStaticRigidBody();
-  body->QueryObject()->SetName(name);
-  return csPtr<CS::Physics::iRigidBody>(body);
-}
-
+using namespace CS::Collisions;
+using namespace CS::Physics;
 
 void PhysDemo::CreateGhostCylinder()
 {
@@ -42,19 +29,22 @@ void PhysDemo::CreateGhostCylinder()
 
   csRef<iGeneralFactoryState> gmstate = scfQueryInterface<
     iGeneralFactoryState> (cylinderFact->GetMeshObjectFactory());
+
   const float radius (1.5f);
   const float length (4.0f);
   gmstate->GenerateCylinder (length, radius, 10);
 
   // Create the mesh.
-  csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
-    cylinderFact, "cylinder"));
+  csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (cylinderFact, "cylinder"));
 
   iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("spark");
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
-  // Create a body and attach the mesh.
-  ghostObject = physicalSystem->CreateGhostCollisionObject();
+  // Create a body and attach the mesh
+  csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
+  GhostCollisionObjectProperties props(cylinder);
+  ghostObject = physicalSystem->CreateGhostCollisionObject(&props);
+  
   csYRotMatrix3 m (PI/2.0);
   csOrthoTransform trans (m, csVector3 (0, -3, 5));
   if (this->environment == ENVIRONMENT_TERRAIN)
@@ -62,13 +52,11 @@ void PhysDemo::CreateGhostCylinder()
   ghostObject->SetTransform (trans);
   ghostObject->SetAttachedMovable (mesh->GetMovable());
 
-  // Create and attach a cone collider.
-  csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
-  //It won't work for ghost and actor.
-  ghostObject->AddCollider (cylinder, csReversibleTransform(csYRotMatrix3 (PI/2.0), csVector3 (0,0,0)));
+  // It won't work for ghost and actor.
   ghostObject->QueryObject()->SetName("ghostObject");
+  ghostObject->Rotate(csVector3(0, 1, 0), PI/2.0);
   //ghostObject->AddCollider (cylinder, trans)
-  ghostObject->RebuildObject();
+
   physicalSector->AddCollisionObject (ghostObject);
 }
 
@@ -83,22 +71,21 @@ CS::Physics::iRigidBody* PhysDemo::SpawnBox (bool setVelocity /* = true */)
   // Create and attach a box collider.
   csVector3 size (0.4f, 0.8f, 0.4f); // This should be the same size as the mesh
   csRef<CS::Collisions::iColliderBox> box = physicalSystem->CreateColliderBox (size);
+  box->SetMargin (0.05f);
 
-  // Create a body and attach the mesh.
-  csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("box");
-  rb->AddCollider(box, localTrans);
-
+  // Create a body
+  RigidBodyProperties props(box, "box");
+  props.SetDensity (10.0f);
+  props.SetElasticity (0.8f);
+  props.SetFriction (10.0f);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+  
+  // Set transform, attach mesh and add to world
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
   rb->SetTransform (trans);
+
   rb->SetAttachedMovable (mesh->GetMovable());
-
-  box->SetMargin (0.05f);
-  rb->SetDensity (5.0f);
-  rb->SetElasticity (0.8f);
-  rb->SetFriction (10.0f);
-
-  rb->RebuildObject();
   physicalSector->AddCollisionObject (rb);
 
   if (setVelocity)
@@ -143,7 +130,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   // We do a hardtransform here to make sure our sphere has an artificial
   // offset. That way we can test if the physics engine supports that.
   csMatrix3 m;
-  csVector3 artificialOffset (0, .5, 0);
+  csVector3 artificialOffset (0, 0, 0);
   csReversibleTransform t = csReversibleTransform (m, artificialOffset);
   ballFact->HardTransform (t);
 
@@ -155,22 +142,18 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
 
   // Create a body and attach the mesh and attach a sphere collider.
   csRef<CS::Collisions::iColliderSphere> sphere = physicalSystem->CreateColliderSphere (1.0);
-  csOrthoTransform trans = localTrans;
   sphere->SetLocalScale (radius);
-  trans.SetOrigin (artificialOffset);
-  csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("sphere");
-  rb->AddCollider(sphere, trans);
-
-  trans = tc;
+  RigidBodyProperties props(sphere, "sphere");
+  props.SetDensity (10.0f);
+  props.SetElasticity (0.8f);
+  props.SetFriction (10.0f);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+  
+  rb->SetAttachedMovable (mesh->GetMovable());
+  csOrthoTransform trans = tc;
   trans.SetOrigin (pos);
   rb->SetTransform (trans);
-  rb->SetAttachedMovable (mesh->GetMovable());
-
-  // set some physical properties
-  rb->SetDensity (10.0f);
-  rb->SetElasticity (0.8f);
-  rb->SetFriction (10.0f);
-
+  
   if (setVelocity)
   {
     // Fling the body.
@@ -178,7 +161,6 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
     rb->SetAngularVelocity (tc.GetT2O() * csVector3 (5, 0, 0));
   }
 
-  rb->RebuildObject();
   physicalSector->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
@@ -201,17 +183,19 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   // Create a body and attach the mesh and attach a cone collider.
   csRef<CS::Collisions::iColliderCone> cone = physicalSystem->CreateColliderCone (length, radius);
   cone->SetLocalScale (csVector3 (rand()%5/10. + .2, rand()%5/10. + .2, rand()%5/10. + .2));
-  csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("cone");
-  rb->AddCollider(cone, localTrans);
+
+  // Create object
+  RigidBodyProperties props(cone, "cone");
+  props.SetDensity (10.0f);
+  props.SetElasticity (0.8f);
+  props.SetFriction (10.0f);
+
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
   trans.RotateThis (csXRotMatrix3 (PI / 5.0));
   rb->SetTransform (trans);
-
-  rb->SetDensity (10.0f);
-  rb->SetElasticity (0.8f);
-  rb->SetFriction (10.0f);
 
   if (setVelocity)
   {
@@ -220,7 +204,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
     rb->SetAngularVelocity (tc.GetT2O() * csVector3 (5, 0, 0));
   }
 
-  rb->RebuildObject();
+  // TODO: Attach a mesh
   physicalSector->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
@@ -265,19 +249,18 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   // Create a body and attach the mesh.
   csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
   csMatrix3 m;
-  csReversibleTransform t = csReversibleTransform (m, artificialOffset);
-  csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("cylinder");
-  rb->AddCollider(cylinder, t);
+
+  RigidBodyProperties props(cylinder, "cylinder");
+  props.SetDensity (10.0f);
+  props.SetElasticity (0.8f);
+  props.SetFriction (10.0f);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
   csOrthoTransform trans = tc;
   trans.RotateThis (csXRotMatrix3 (PI / 5.0));
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
   rb->SetTransform (trans);
   rb->SetAttachedMovable (mesh->GetMovable());
-
-  rb->SetDensity (10.0f);
-  rb->SetElasticity (0.8f);
-  rb->SetFriction (10.0f);
 
   if (setVelocity)
   {
@@ -321,22 +304,24 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("spark");
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
-  // Create a body and attach the mesh.
-  csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("capsule");
+  // Create a body
+  csRef<CS::Collisions::iColliderCapsule> capsule = physicalSystem->CreateColliderCapsule (length, radius);
+  RigidBodyProperties props(capsule, "capsule");
+  props.SetDensity (10.0f);
+  props.SetElasticity (0.8f);
+  props.SetFriction (10.0f);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+
+  // set transform
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
   trans.RotateThis (csXRotMatrix3 (PI / 5.0));
   rb->SetTransform (trans);
+
+  // attach the mesh
   rb->SetAttachedMovable (mesh->GetMovable());
 
-  // Create and attach a cone collider.
-  csRef<CS::Collisions::iColliderCapsule> capsule = physicalSystem->CreateColliderCapsule (length, radius);
-  rb->AddCollider (capsule, localTrans);
-  rb->SetDensity (10.0f);
-  rb->SetElasticity (0.8f);
-  rb->SetFriction (10.0f);
-
-  rb->RebuildObject();
+  // Add to world
   physicalSector->AddCollisionObject (rb);
 
   if (setVelocity)
@@ -376,7 +361,6 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
   star->GetMovable()->SetTransform (tc);
   star->GetMovable()->UpdateMove();
 
-  csRef<CS::Physics::iRigidBody> co = physicalSystem->CreateStaticRigidBody();
   csRef<CS::Collisions::iCollider> starCollider;
   if (mainCollider == nullptr)
   {
@@ -387,14 +371,20 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
   {
     starCollider = csRef<CS::Collisions::iColliderConcaveMeshScaled>(physicalSystem->CreateColliderConcaveMeshScaled (mainCollider, 1.0f));
   }  
-  co->AddCollider (starCollider, localTrans);
+
+  // create body
+  RigidBodyProperties props(starCollider);
+  props.SetName("star");
+  csRef<CS::Physics::iRigidBody> co = physicalSystem->CreateRigidBody(&props);
+
+  // set transform
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 2));
   co->SetAttachedMovable (star->GetMovable());
   co->SetTransform (trans);
-
-  co->RebuildObject();
+  
   physicalSector->AddCollisionObject (co);
+
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
 
@@ -430,27 +420,29 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh.
-  csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("convexmesh");
+  csRef<CS::Collisions::iColliderConvexMesh> collider = physicalSystem->CreateColliderConvexMesh (mesh);
+  RigidBodyProperties props(collider, "convexmesh");
+  props.SetDensity (10.0f);
+  props.SetElasticity (0.8f);
+  props.SetFriction (10.0f);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+
+  // Set transform
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
   rb->SetTransform (trans);
+  
+  // Attach mesh
   rb->SetAttachedMovable (mesh->GetMovable());
-
-  // Create and attach a cone collider.
-  // If you simplify a convex CS mesh, you may get a wrong convex hull.
-  csRef<CS::Collisions::iColliderConvexMesh> cylinder = physicalSystem->CreateColliderConvexMesh (mesh);
-  rb->AddCollider (cylinder, localTrans);
-  rb->SetDensity (10.0f);
-  rb->SetElasticity (0.8f);
-  rb->SetFriction (10.0f);
-
+  
   if (setVelocity)
   {
     // Fling the body.
     rb->SetLinearVelocity (tc.GetT2O() * csVector3 (0, 0, 5));
     rb->SetAngularVelocity (tc.GetT2O() * csVector3 (5, 0, 0));
   }
-  rb->RebuildObject();
+
+  // Add to world
   physicalSector->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
@@ -467,16 +459,20 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (meshFact, "mesh"));
 
-  // Create a body and attach the mesh.
-  // Create a body and attach the mesh.
-  csRef<CS::Physics::iRigidBody> rb = CreateRigidBody("compound");
+  csRef<CS::Collisions::iColliderCompound> rootCollider = physicalSystem->CreateColliderCompound();
+  physicalSystem->DecomposeConcaveMesh (&*rootCollider, mesh, true);
+
+  // Create a body
+  RigidBodyProperties props(rootCollider, "compound");
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+
+  // Set transform
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 2));
   rb->SetTransform (trans);
   rb->SetAttachedMovable (mesh->GetMovable());
 
-  physicalSystem->DecomposeConcaveMesh (rb, mesh, true);
-  rb->RebuildObject();
+  // Add to world
   physicalSector->AddCollisionObject (rb);
 
   if (setVelocity)

@@ -20,10 +20,10 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "common2.h"
 #include "collisionobject2.h"
 
-using namespace CS::Physics;
-
-struct iRigidBody;
-struct iSoftBody;
+namespace CS { namespace Physics {
+  struct iRigidBody;
+  struct iSoftBody;
+} }
 
 //enum PhysicalBodyType;
 
@@ -40,6 +40,8 @@ class csPhysicalBody : public scfVirtImplementationExt1<
 {
 protected:
   btScalar density;
+
+  void CreatePhysicalBodyObject(CS::Physics::PhysicalObjectProperties* props);
 
 public:
   csPhysicalBody (csBulletSystem* sys);
@@ -66,8 +68,6 @@ public:
 
   virtual float GetDensity () const {return density;}
   virtual void SetDensity (float density) = 0;
-
-  virtual float GetVolume () const = 0;
 
   virtual void SetLinearVelocity (const csVector3& vel) = 0;
   virtual csVector3 GetLinearVelocity (size_t index = 0) const = 0;

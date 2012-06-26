@@ -58,7 +58,7 @@ class csBulletCollider;
 class csBulletJoint;
 class csBulletCollisionPortal;
 
-//Will also implement iPhysicalSector...
+// Also implements iPhysicalSector
 class csBulletSector : public scfImplementationExt2<
   csBulletSector, csObject,
   CS::Physics::Bullet2::iPhysicalSector,
@@ -69,28 +69,12 @@ class csBulletSector : public scfImplementationExt2<
   friend class csBulletRigidBody;
   friend class csBulletSoftBody;
   friend class csBulletJoint;
-  friend class csBulletColliderTerrain;
+  friend class csBulletCollisionTerrain;
   friend class csBulletKinematicMotionState;
   friend class csBulletMotionState;
   friend class csBulletSystem;
-  friend class csBulletCollisionGhostObject;
+  friend class csBulletGhostCollisionObject;
   friend class csBulletCollisionPortal;
-
-  class CollisionGroupVector : public csArray<CS::Collisions::CollisionGroup>
-  {
-  public:
-    CollisionGroupVector () : csArray<CS::Collisions::CollisionGroup> () {}
-    static int CompareKey (CS::Collisions::CollisionGroup const& item,
-      char const* const& key)
-    {
-      return strcmp (item.name.GetData (), key);
-    }
-    static csArrayCmp<CS::Collisions::CollisionGroup, char const*>
-      KeyCmp(char const* k)
-    {
-      return csArrayCmp<CS::Collisions::CollisionGroup, char const*> (k,CompareKey);
-    }
-  };
 
   csWeakRef<csBulletSystem> sys;
 
@@ -105,8 +89,6 @@ class csBulletSector : public scfImplementationExt2<
   btBroadphaseInterface* broadphase;
   btSoftBodyWorldInfo* softWorldInfo;
 
-  size_t systemFilterCount;
-
   float linearDampening;
   float angularDampening;
 
@@ -116,7 +98,6 @@ class csBulletSector : public scfImplementationExt2<
   float worldTimeStep;
   size_t worldMaxSteps;
 
-  CollisionGroupVector collGroups;
   csRefArray<csBulletJoint> joints;
   csArray<csBulletCollisionPortal*> portals;
   csRefArrayObject<csBulletCollisionObject> collisionObjects;
@@ -134,6 +115,8 @@ class csBulletSector : public scfImplementationExt2<
 public:
   csBulletSector (csBulletSystem* sys);
   virtual ~csBulletSector ();
+  
+  virtual CS::Collisions::iCollisionSystem* GetSystem();
 
   virtual iObject* QueryObject () {return (iObject*) this;}
   //iCollisionSector
@@ -147,6 +130,8 @@ public:
   virtual CS::Collisions::iCollisionObject* GetCollisionObject (size_t index);
   virtual CS::Collisions::iCollisionObject* FindCollisionObject (const char* name);
 
+  virtual void AddCollisionTerrain(CS::Collisions::iCollisionTerrain* terrain);
+
   virtual void AddPortal(iPortal* portal, const csOrthoTransform& meshTrans);
   virtual void RemovePortal(iPortal* portal);
 
@@ -159,20 +144,10 @@ public:
   virtual CS::Collisions::HitBeamResult HitBeamPortal(const csVector3& start, 
     const csVector3& end);
 
-  virtual CS::Collisions::CollisionGroup& CreateCollisionGroup (const char* name);
-  virtual CS::Collisions::CollisionGroup& FindCollisionGroup (const char* name);
-
-  virtual void SetGroupCollision (const char* name1,
-    const char* name2, bool collide);
-  virtual bool GetGroupCollision (const char* name1,
-    const char* name2);
-
   virtual bool CollisionTest(CS::Collisions::iCollisionObject* object, 
     csArray<CS::Collisions::CollisionData>& collisions);
 
   virtual void AddCollisionActor (CS::Collisions::iCollisionActor* actor);
-  virtual void RemoveCollisionActor ();
-  virtual CS::Collisions::iCollisionActor* GetCollisionActor ();
 
   /*virtual MoveResult MoveTest (iCollisionObject* object,
     const csOrthoTransform& fromWorld, const csOrthoTransform& toWorld);*/

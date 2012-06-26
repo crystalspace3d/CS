@@ -57,13 +57,29 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 class csBulletSector;
 class csBulletSystem;
 class csBulletDebugDraw;
-class csBulletCollisionGhostObject;
+class csBulletGhostCollisionObject;
 class csBulletRigidBody;
 class csBulletSoftBody;
 class csBulletCollisionObject;
 class csBulletCollisionActor;
 class csBulletCollider;
 class csBulletJoint;
+
+class CollisionGroupVector : public csArray<CS::Collisions::CollisionGroup>
+{
+public:
+  CollisionGroupVector () : csArray<CS::Collisions::CollisionGroup> () {}
+  static int CompareKey (CS::Collisions::CollisionGroup const& item,
+    char const* const& key)
+  {
+    return strcmp (item.name.GetData (), key);
+  }
+  static csArrayCmp<CS::Collisions::CollisionGroup, char const*>
+    KeyCmp(char const* k)
+  {
+    return csArrayCmp<CS::Collisions::CollisionGroup, char const*> (k,CompareKey);
+  }
+};
 
 class csBulletSystem : public scfImplementationExt2<
   csBulletSystem, csObject,
@@ -72,8 +88,9 @@ class csBulletSystem : public scfImplementationExt2<
 {
   friend class csBulletColliderConvexMesh;
   friend class csBulletColliderConcaveMesh;
-    friend class csBulletSector;
-    friend class csBulletCollisionPortal;
+  friend class csBulletSector;
+  friend class csBulletCollisionPortal;
+  friend class csBulletRigidBody;
 
 
 private:
@@ -90,6 +107,9 @@ private:
   float inverseInternalScale;
   csStringID baseID;
   csStringID colldetID;
+  
+  CollisionGroupVector collGroups;
+  size_t systemFilterCount;
 
 public:
   csBulletSystem (iBase* iParent);
@@ -100,6 +120,7 @@ public:
 
   // iCollisionSystem
   virtual void SetInternalScale (float scale);
+  virtual csPtr<CS::Collisions::iColliderCompound> CreateColliderCompound ( );
   virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (
     iMeshWrapper* mesh, bool simplify = false);
   virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);
@@ -111,19 +132,18 @@ public:
   virtual csPtr<CS::Collisions::iColliderCapsule> CreateColliderCapsule (float length, float radius);
   virtual csPtr<CS::Collisions::iColliderCone> CreateColliderCone (float length, float radius);
   virtual csPtr<CS::Collisions::iColliderPlane> CreateColliderPlane (const csPlane3& plane);
-  virtual csPtr<CS::Collisions::iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
+  virtual csPtr<CS::Collisions::iCollisionTerrain> CreateCollisionTerrain (iTerrainSystem* terrain,
       float minHeight = 0, float maxHeight = 0);
 
   
-  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
-  virtual csPtr<CS::Collisions::iCollisionGhostObject> CreateGhostCollisionObject ();
-  virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor (CS::Collisions::iCollider* collider);
+  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject (CS::Collisions::CollisionObjectProperties* props);
+  virtual csPtr<CS::Collisions::iGhostCollisionObject> CreateGhostCollisionObject (CS::Collisions::GhostCollisionObjectProperties* props);
+  virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor (CS::Collisions::CollisionActorProperties* props);
   virtual csPtr<CS::Collisions::iCollisionSector> CreateCollisionSector ();
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
 
-  virtual void DecomposeConcaveMesh (CS::Collisions::iCollisionObject* object,
-    iMeshWrapper* mesh, bool simplify = false); 
+  virtual void DecomposeConcaveMesh (CS::Collisions::iCollider* object, iMeshWrapper* mesh, bool simplify = false); 
 
   //iPhysicalSystem
   virtual csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector () 
@@ -132,8 +152,7 @@ public:
       csRef<CS::Collisions::iCollisionSector>(CreateCollisionSector())));
   }
 
-  virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody ();
-  virtual csPtr<CS::Physics::iRigidBody> CreateStaticRigidBody ();
+  virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody (CS::Physics::RigidBodyProperties* props);
 
   virtual csPtr<CS::Physics::iJoint> CreateJoint ();
   virtual csPtr<CS::Physics::iJoint> CreateRigidP2PJoint (const csVector3 position);
@@ -163,6 +182,14 @@ public:
       const csOrthoTransform& bodyTransform);
   float getInverseInternalScale() {return inverseInternalScale;}
   float getInternalScale() {return internalScale;}
+
+  virtual CS::Collisions::CollisionGroup& CreateCollisionGroup (const char* name);
+  virtual CS::Collisions::CollisionGroup& FindCollisionGroup (const char* name);
+
+  virtual void SetGroupCollision (const char* name1,
+    const char* name2, bool collide);
+  virtual bool GetGroupCollision (const char* name1,
+    const char* name2);
 
   void ReportWarning (const char* msg, ...);
 };

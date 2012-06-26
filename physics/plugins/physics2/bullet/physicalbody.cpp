@@ -17,9 +17,20 @@
 #include "cssysdef.h"
 #include "physicalbody.h"
 
+using namespace CS::Collisions;
+using namespace CS::Physics;
+
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+  void csPhysicalBody::CreatePhysicalBodyObject(PhysicalObjectProperties* props)
+  {
+    CreateCollisionObject(props);
+
+    SetDensity(props->GetDensity());
+    SetFriction(props->GetFriction());
+  }
+
 csPhysicalBody::csPhysicalBody (csBulletSystem* phySys)
 : scfImplementationType (this, phySys)
 {

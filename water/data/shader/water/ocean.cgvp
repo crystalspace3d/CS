@@ -18,9 +18,8 @@ struct vert2frag
 {
 	float4 Position    	: POSITION;	
 	float4 Color	   	: COLOR;
-	float3 CamVec		: TEXCOORD0;
-	float4 TexCoord2	: TEXCOORD1;
-	float4 TexCoord3	: TEXCOORD2;
+	float4 PosRef       : TEXCOORD0;
+	float4 RefXform;
 };
 
 /**
@@ -54,13 +53,16 @@ vert2frag main (app2vert IN,
 			 uniform float3 phases,
 			 uniform float4x4 ModelViewIT : state.matrix.modelview.invtrans,
 			 uniform float4x4 ModelViewProj : state.matrix.mvp,
-			 uniform float4x4 o2w)
+			 uniform float4x4 o2w,
+			 uniform float4 reflectXform)
 {
     vert2frag OUT;
 
 	float4 inPos = IN.Position;
 	
   	float4 camera = ModelViewIT[3];
+	
+	float4 reflectionTC;
 
 	//Grab xz position
 	float2 xzpos = mul(o2w, IN.Position).xz;
@@ -86,26 +88,27 @@ vert2frag main (app2vert IN,
 	inPos.y = wdy1 + wdy2 + wdy3;
 
 	//Get real position again.
-	OUT.Position = mul (ModelViewProj, inPos);
+	reflectionTC = mul (ModelViewProj, inPos); 
+	OUT.Position = reflectionTC;
+	float3 reflScale = float3 (reflectXform.xy, 0.5);
+	float3 reflXlate = float3 (reflectXform.zw, -0.5) * reflectionTC.w;
+	reflectionTC.xyz = reflectionTC.xyz * reflScale + reflXlate;
+	
+	OUT.RefXform = reflectXform;
 
 	OUT.Color = IN.Color;
-	OUT.CamVec = (camera - IN.Position).xzy;
-	//OUT.CamVec = inPos.xyz;
 
 	float s1, cs1, s2, cs2;
 	float4 texCoord = mul(o2w, float4(IN.TexCoord.x, 0, IN.TexCoord.y, 1));
 	sincos (time, s1, cs1);
 	sincos (time + 1.41, s2, cs2);
 
-	OUT.TexCoord2.x = texCoord.x  - s1 * 0.1;
-	OUT.TexCoord2.y = texCoord.z  + cs1 * 0.1;
-	OUT.TexCoord2.z = 0.0;
-	OUT.TexCoord2.w = 1.0;
+	reflectionTC.x += texCoord.x  - s1 * 0.1;
+	reflectionTC.y += texCoord.z  + cs1 * 0.1;
+	reflectionTC.z += 0.0;
+	reflectionTC.w = 1.0;
 		
-	OUT.TexCoord3.x = texCoord.x + s2 * 0.1;
-	OUT.TexCoord3.y = texCoord.z - cs2 * 0.1;
-	OUT.TexCoord3.z = 0.0;
-	OUT.TexCoord3.w = 1.0;
+	OUT.PosRef = reflectionTC;
 		
     return OUT;
 }

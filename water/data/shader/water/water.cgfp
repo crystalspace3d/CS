@@ -6,9 +6,9 @@ struct vert2frag
 {
 	float4 Position    	: POSITION;
 	float4 Color	   	: COLOR;
-	float3 CamVec		: TEXCOORD0;
-	float4 TexCoord2	: TEXCOORD1;
-	float4 TexCoord3	: TEXCOORD2;
+	float4 PosRef       : TEXCOORD0;
+	float4 RefXform;
+	
 };
 
 // Calculated from 1.3333, which is approx. refraction index for water
@@ -37,9 +37,11 @@ float4 main (vert2frag IN,
 			 uniform float4 lightCol,
 			 uniform float shininess,
 			 uniform float waterAlpha,
-			 uniform sampler2D TexNormal) : COLOR        
+			 uniform sampler2D TexNormal,
+			 uniform sampler2D TexReflect,
+			 uniform sampler2D TexReflectDepth) : COLOR        
 {     
-    float3 N = normalize(tex2D(TexNormal, IN.TexCoord2.xy).xyz 
+    /*float3 N = normalize(tex2D(TexNormal, IN.TexCoord2.xy).xyz 
 						- tex2D(TexNormal, IN.TexCoord3.xy).xyz);
 	
 	//reset light position
@@ -61,7 +63,13 @@ float4 main (vert2frag IN,
 	float4 reflection = IN.Color + specular;
 	
 	float fresnelFactor = fresnel(tsCamVec, N);
-    return float4(reflection.rgb, 1) * fresnelFactor + float4(watCol.rgb, 1) * (1 - fresnelFactor);
+    return float4(reflection.rgb, 1) * fresnelFactor + float4(watCol.rgb, 1) * (1 - fresnelFactor);*/
+	
+	float3 tc = IN.PosRef.xyw;
+	
+	return float4(tex2Dproj(TexReflect,tc));
+	return float4(tex2Dproj(TexNormal,tc));
+	
 //	return float4(IN.CamVec.xyz, 1);
 }
 

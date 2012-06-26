@@ -74,7 +74,7 @@ bool OperatorManager::HandleEvent (iEvent& ev)
   return false;
 } 
 
-csPtr<iOperator> OperatorManager::Create (const char* identifier)
+csPtr<iOperator> OperatorManager::CreateOperator (const char* identifier)
 {
   csRef<OperatorMeta> meta = operatorMeta.Get (identifier, csRef<OperatorMeta>());
   if (!meta)
@@ -90,27 +90,44 @@ csPtr<iOperator> OperatorManager::Create (const char* identifier)
       operatorMeta.PutUnique (identifier, meta);
     }
   }
+
   if (!meta)
   {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR, "crystalspace.editor.core.operator",
-	      "Failed to load metadata for operator '%s'", identifier);
-    return 0;
+    if (!iSCF::SCF->ClassRegistered  (identifier))
+      csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+		"crystalspace.editor.core.operator",
+		"The operator %s is not registered",
+		CS::Quote::Single (identifier));
+
+    else csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+		   "crystalspace.editor.core.operator",
+		   "Failed to load plugin metadata for operator '%s'",
+		   CS::Quote::Single (identifier));
+
+    return csPtr<iOperator> (nullptr);
   }
+
   csRef<iBase> base = iSCF::SCF->CreateInstance (identifier);
   if (!base)
   {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR, "crystalspace.editor.core.operator",
-	      "Failed to instantiate operator '%s'", identifier);
-    return 0;
+    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+	      "crystalspace.editor.core.operator",
+	      "Failed to instantiate operator '%s'",
+	      CS::Quote::Single (identifier));
+    return csPtr<iOperator> (nullptr);
   }
+
   csRef<iOperator> ref = scfQueryInterface<iOperator> (base);
   if (!ref)
   {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR, "crystalspace.editor.core.operator",
-	      "Not of type iOperator: '%s'", identifier);
-    return 0;
+    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+	      "crystalspace.editor.core.operator",
+	      "The instanciation of the operator %s is not of type iOperator",
+	      CS::Quote::Single (identifier));
+    return csPtr<iOperator> (nullptr);
   }
-  ref->Initialize (object_reg, identifier, meta->label, meta->description);
+
+  ref->Initialize (object_reg, editor, identifier, meta->label, meta->description);
 
   return csPtr<iOperator> (ref);
 }
@@ -153,14 +170,6 @@ iOperator* OperatorManager::Invoke (iOperator* op, iEvent* ev)
   }
 
   return op;
-}
-
-void OperatorManager::Uninitialize ()
-{
-}
-
-void OperatorManager::Initialize ()
-{
 }
 
 }

@@ -28,6 +28,8 @@
 namespace CS {
 namespace EditorApp {
 
+struct iContext;
+
 /**
  * An undoable action. All reversible operations should implement this
  * interface so that they can be undone.
@@ -40,27 +42,15 @@ struct iAction : public virtual iBase
   /**
    * Does the action.
    */
-  virtual bool Do () = 0;
+  virtual bool Do (iContext* context ) = 0;
   
   /**
    * Undoes the action.
    */
-  virtual bool Undo () = 0;
+  virtual bool Undo (iContext* context) = 0;
 
   /// Get a user-friendly description of the action.
   virtual const char* GetDescription () const = 0;
-};
-
-/**
- * Implement this if you're interested in knowing when an action is done.
- * This includes undo/redo actions.
- */
-struct iActionListener : public virtual iBase
-{
-  SCF_INTERFACE (iActionListener, 0, 0, 1);
-
-  /// Called just after an action is done.
-  virtual void OnActionDone (iAction* action) = 0;
 };
 
 /**
@@ -97,11 +87,6 @@ struct iActionManager : public virtual iBase
 
   /// Get the last redone action or 0 if none.
   virtual const iAction* PeekRedo () const = 0;
-
-  // TODO: events instead
-  virtual void AddListener (iActionListener* listener) = 0;
-
-  virtual void RemoveListener (iActionListener* listener) = 0;
 };
 
 } // namespace EditorApp

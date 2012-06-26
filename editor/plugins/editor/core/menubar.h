@@ -53,7 +53,6 @@ private:
   wxMenu* menu;
   wxMenuItem* item;
   csEventID eventID;
-  //char priority;
 };
 
 //---------------------------------------------------------------
@@ -86,14 +85,10 @@ public:
   virtual csPtr<iMenuItem> AppendSeparator ();
   virtual csPtr<iSubMenu> AppendSubMenu (const char* item);
 
-  virtual void SeekPriority (char priority);
-
 private:
   MenuManager* menuManager;
   wxMenu* menu;
   wxString title;
-  //char priority;
-  //char currentPriority;
 
   friend class MenuManager;
 };

@@ -30,15 +30,15 @@ using namespace CS::EditorApp;
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
-class SelectOperator : public scfImplementation1<SelectOperator,iOperator>
+class SelectOperator : public scfImplementation1<SelectOperator, iOperator>
 {
 public:
   SelectOperator (iBase* parent);
   virtual ~SelectOperator ();
 
   // iOperator
-  virtual bool Initialize (iObjectRegistry* obj_reg, const char* identifier,
-			   const char* label, const char* desc);
+  virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+			   const char* identifier, const char* label, const char* desc);
   virtual const char* GetIdentifier ();
   virtual const char* GetLabel ();
   virtual const char* GetDescription ();
@@ -50,6 +50,7 @@ public:
 
 private:
   iObjectRegistry* object_reg;
+  iEditor* editor;
   csString identifier;
   csString label;
   csString desc;
@@ -60,8 +61,8 @@ class SelectObjectAction : public scfImplementation1<SelectObjectAction, iAction
 public:
   SelectObjectAction (iObjectRegistry* object_reg, iObject*, bool);
   
-  virtual bool Do ();
-  virtual bool Undo ();
+  virtual bool Do (iContext* context);
+  virtual bool Undo (iContext* context);
   virtual const char* GetDescription () const { return "Select object"; }
 
 private:

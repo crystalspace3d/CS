@@ -4,7 +4,7 @@
   <scf>
     <classes>
       <class>
-        <name>crytalspace.editor.operator.select</name>
+        <name>crystalspace.editor.operator.select</name>
         <implementation>SelectOperator</implementation>
         <label>Select</label>
         <description>Select something</description>

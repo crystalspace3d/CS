@@ -20,26 +20,32 @@
 #include "cssysdef.h"
 #include "csutil/objreg.h"
 #include "csutil/scf.h"
+#include "ieditor/context.h"
+#include "iutil/eventq.h"
 
 #include "actionmanager.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
-ActionManager::ActionManager (iObjectRegistry* obj_reg)
-  : scfImplementationType (this), object_reg (obj_reg)
+ActionManager::ActionManager (iObjectRegistry* obj_reg, iEditor* editor)
+  : scfImplementationType (this), object_reg (obj_reg), editor (editor)
 {
-  object_reg->Register (this, "iActionManager");
+  csRef<iEventNameRegistry> registry = csQueryRegistry<iEventNameRegistry>
+    (editor->GetContext ()->GetObjectRegistry ());
+  csEventID eventID = registry->GetID ("crystalspace.editor.action.actiondone");
+
+  iEventQueue* queue = editor->GetContext ()->GetEventQueue ();
+  event = queue->CreateEvent (eventID);
 }
 
 ActionManager::~ActionManager ()
 {
-  object_reg->Unregister (this, "iActionManager");
 }
 
 bool ActionManager::Do (iAction* action)
 {
-  if (!action->Do ())
+  if (!action->Do (editor->GetContext ()))
     return false;
   
   redoStack.Empty ();
@@ -58,7 +64,7 @@ bool ActionManager::Undo ()
   csRef<iAction> action (undoStack.Pop ());
 
   // Store redo action
-  if (action->Undo ())
+  if (action->Undo (editor->GetContext ()))
     redoStack.Push (action);
 
   NotifyListeners (action);
@@ -73,7 +79,7 @@ bool ActionManager::Redo ()
   
   csRef<iAction> action (redoStack.Pop ());
   
-  if (action->Do ())
+  if (action->Do (editor->GetContext ()))
     undoStack.Push (action);
 
   NotifyListeners (action);
@@ -97,23 +103,13 @@ const iAction* ActionManager::PeekRedo () const
   return redoStack.Get (redoStack.GetSize () - 1);
 }
 
-void ActionManager::AddListener (iActionListener* listener)
-{
-  listeners.Push (listener);
-}
-
-void ActionManager::RemoveListener (iActionListener* listener)
-{
-  listeners.Delete (listener);
-}
-
 void ActionManager::NotifyListeners (iAction* action)
 {
-  csRefArray<iActionListener>::Iterator it = listeners.GetIterator ();
-  while (it.HasNext ())
-  {
-    it.Next ()->OnActionDone (action);
-  }
+  event->Add ("description", action->GetDescription ());
+
+  iEventQueue* queue = editor->GetContext ()->GetEventQueue ();
+  queue->Post (event);
+  queue->Process ();
 }
 
 }

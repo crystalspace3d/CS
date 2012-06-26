@@ -97,7 +97,6 @@ const csEventID SeparatorMenuItem::GetEventID () const
 
 SubMenu::SubMenu (MenuManager* menuManager, wxMenu* menu, const wxString& title)
   : scfImplementationType (this), menuManager (menuManager), menu (menu), title (title)
-  //, currentPriority (128)
 {
 }
 
@@ -144,11 +143,6 @@ csPtr<iSubMenu> SubMenu::AppendSubMenu (const char* item)
   ref.AttachNew (new SubMenu (menuManager, m, str));
 
   return csPtr<iSubMenu> (ref);
-}
-
-void SubMenu::SeekPriority (char priority)
-{
-
 }
 
 //---------------------------------------------------------------

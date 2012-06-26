@@ -61,6 +61,8 @@ protected:
   Editor* editor;
   csHash<csRef<iOperator>, int> operators;
   csHash<csRef<iMenu>, int> menus;
+
+  csHash<csRef<iMenu>, csString> registeredMenus;
 };
 
 //----------------------------------------------------------------------

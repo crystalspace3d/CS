@@ -141,8 +141,7 @@ bool EditorApp::OnInit (void)
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.3dview")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.properties")) return false;
   if (!spaceManager->RegisterPanel ("crystalspace.editor.panel.camera")) return false;
-  // TODO: fix concurrency issue with the headers
-  //if (!spaceManager->RegisterHeader ("crystalspace.editor.header.3dheader")) return false;
+  if (!spaceManager->RegisterHeader ("crystalspace.editor.header.3dheader")) return false;
 
   // Start the application
   if (!editorManager->StartApplication ()) return false;

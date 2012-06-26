@@ -154,7 +154,7 @@ Editor::Editor (EditorManager* manager, const char* name, const char* title, iCo
     name (name), manager (manager), context (context), pump (nullptr)
 {
   // Create the main objects and managers
-  actionManager.AttachNew (new ActionManager (manager->object_reg));
+  actionManager.AttachNew (new ActionManager (manager->object_reg, this));
   menuManager.AttachNew (new MenuManager (this));
   operatorManager.AttachNew (new OperatorManager (manager->object_reg, this));
   spaceManager.AttachNew (new SpaceManager (this));

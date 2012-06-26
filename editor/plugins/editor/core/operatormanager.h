@@ -46,16 +46,14 @@ public:
   OperatorManager (iObjectRegistry* obj_reg, Editor* editor);
   virtual ~OperatorManager ();
   
-  virtual void Initialize ();
-  virtual void Uninitialize ();
-  
-  //iOperatorManager
-  virtual csPtr<iOperator> Create (const char*);
-  virtual iOperator* Execute (iOperator*);
-  virtual iOperator* Invoke (iOperator*, iEvent*);
+  //-- iOperatorManager
+  virtual csPtr<iOperator> CreateOperator (const char* identifier);
+
+  virtual iOperator* Execute (iOperator* op);
+  virtual iOperator* Invoke (iOperator* op, iEvent* event);
   
 private:  
-  //iEventHandler
+  //-- iEventHandler
   virtual bool HandleEvent (iEvent& ev);
   csRef<iOperator> modalOperator; //TODO: needs to become a stack?
   

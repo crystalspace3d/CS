@@ -47,7 +47,7 @@
 #include "bulletsystem.h"
 #include "common2.h"
 #include "colliderprimitives.h"
-#include "colliderterrain.h"
+#include "collisionterrain.h"
 #include "rigidbody2.h"
 #include "softbody2.h"
 #include "collisionactor.h"
@@ -106,49 +106,6 @@ csBulletSector::csBulletSector (csBulletSystem* sys)
   broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
   SetGravity (csVector3 (0.0f, -9.81f, 0.0f));
-
-  CollisionGroupMask allFilter = -1;
-
-  CollisionGroup defaultGroup ("Default");
-  defaultGroup.value = CollisionGroupMaskValueDefault;
-  defaultGroup.mask = allFilter;
-  collGroups.Push (defaultGroup);
-
-  CS::Collisions::CollisionGroup staticGroup ("Static");
-  staticGroup.value = CollisionGroupMaskValueStatic;
-  staticGroup.mask = allFilter ^ CollisionGroupMaskValueStatic;
-  collGroups.Push (staticGroup);
-
-  CS::Collisions::CollisionGroup kinematicGroup ("Kinematic");
-  kinematicGroup.value = CollisionGroupMaskValueKinematic;
-  kinematicGroup.mask = allFilter ^ CollisionGroupMaskValueKinematic;
-  collGroups.Push (kinematicGroup);
-
-  CS::Collisions::CollisionGroup terrainGroup ("Terrain");
-  terrainGroup.value = CollisionGroupMaskValueTerrain;
-  terrainGroup.mask = allFilter ^ CollisionGroupMaskValueTerrain;
-  collGroups.Push (terrainGroup);
-
-  CS::Collisions::CollisionGroup portalGroup ("Portal");
-  portalGroup.value = CollisionGroupMaskValuePortal;
-  portalGroup.mask = allFilter ^ CollisionGroupMaskValuePortal;
-  collGroups.Push (portalGroup);
-
-  CS::Collisions::CollisionGroup copyGroup ("PortalCopy");
-  copyGroup.value = CollisionGroupMaskValuePortalCopy;
-  copyGroup.mask = allFilter ^ CollisionGroupMaskValuePortalCopy;
-  collGroups.Push (copyGroup);
-
-  CS::Collisions::CollisionGroup characterGroup ("Character");
-  characterGroup.value = CollisionGroupMaskValueActor;
-  characterGroup.mask = allFilter ^ CollisionGroupMaskValueActor;
-  collGroups.Push (characterGroup);
-  
-  SetGroupCollision ("PortalCopy", "Terrain", false);
-  SetGroupCollision ("PortalCopy", "Static", false);
-  SetGroupCollision ("Portal", "PortalCopy", false);
-
-  systemFilterCount = 6;
 }
 
 csBulletSector::~csBulletSector ()
@@ -186,6 +143,8 @@ csBulletSector::~csBulletSector ()
   }
   delete broadphase;
 }
+  
+CS::Collisions::iCollisionSystem* csBulletSector::GetSystem() { return sys; }
 
 void csBulletSector::SetGravity (const csVector3& v)
 {
@@ -242,8 +201,6 @@ void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* objec
       // Ghost objects
       obj->sector = this;
       //obj->btObject->setCollisionFlags(obj->btObject->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
-      
-      obj->collGroup = collGroups[CollisionGroupTypeDefault]; // Default Group.
 
       obj->AddBulletObject ();
       AddMovableToSector (object);
@@ -287,9 +244,23 @@ void csBulletSector::RemoveCollisionObject (CS::Collisions::iCollisionObject* ob
 CS::Collisions::iCollisionObject* csBulletSector::GetCollisionObject (size_t index)
 {
   if (index >= 0 && index < collisionObjects.GetSize ())
+  {
     return collisionObjects[index]->QueryCollisionObject ();
+  }
   else
+  {
     return nullptr;
+  }
+}
+
+void csBulletSector::AddCollisionTerrain(CS::Collisions::iCollisionTerrain* terrain)
+{
+  csBulletCollisionTerrain* btTerrain = dynamic_cast<csBulletCollisionTerrain*>(terrain);
+
+  btTerrain->RemoveRigidBodies();
+  btTerrain->AddRigidBodies(this);
+
+  // Keeping an explicit list of terrain objects seems unnecessary
 }
 
 CS::Collisions::iCollisionObject* csBulletSector::FindCollisionObject (const char* name)
@@ -351,8 +322,8 @@ CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, c
   btVector3 rayTo = CSToBullet (end, sys->getInternalScale ());
 
   btCollisionWorld::ClosestRayResultCallback rayCallback (rayFrom, rayTo);
-  rayCallback.m_collisionFilterMask = collGroups[CollisionGroupTypePortalCopy].mask;
-  rayCallback.m_collisionFilterGroup = collGroups[CollisionGroupTypeDefault].value;
+  rayCallback.m_collisionFilterMask = sys->collGroups[CollisionGroupTypePortalCopy].mask;
+  rayCallback.m_collisionFilterGroup = sys->collGroups[CollisionGroupTypeDefault].value;
   bulletWorld->rayTest (rayFrom, rayTo, rayCallback);
 
   CS::Collisions::HitBeamResult result;
@@ -471,66 +442,6 @@ CS::Collisions::HitBeamResult csBulletSector::HitBeamPortal (const csVector3& st
   return result;
 }
 
-CS::Collisions::CollisionGroup& csBulletSector::CreateCollisionGroup (const char* name)
-{
-  size_t groupCount = collGroups.GetSize ();
-  if (groupCount >= sizeof (CS::Collisions::CollisionGroupMask) * 8)
-    return collGroups[CollisionGroupTypeDefault];
-
-  CS::Collisions::CollisionGroup newGroup(name);
-  newGroup.value = 1 << groupCount;
-  newGroup.mask = ~newGroup.value;
-  collGroups.Push (newGroup);
-  return collGroups[groupCount];
-}
-
-CS::Collisions::CollisionGroup& csBulletSector::FindCollisionGroup (const char* name)
-{
-  size_t index = collGroups.FindKey (CollisionGroupVector::KeyCmp (name));
-  if (index == csArrayItemNotFound)
-    return collGroups[CollisionGroupTypeDefault];
-  else
-    return collGroups[index];
-}
-
-void csBulletSector::SetGroupCollision (const char* name1,
-                                        const char* name2,
-                                        bool collide)
-{
-  size_t index1 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name1));
-  size_t index2 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name2));
-  if (index1 == csArrayItemNotFound || index2 == csArrayItemNotFound)
-    return;
-  if (!collide)
-  {
-    if (index1 >= systemFilterCount)
-      collGroups[index1].mask &= ~(1 << index2);
-    if (index2 >= systemFilterCount)
-      collGroups[index2].mask &= ~(1 << index1);
-  }
-  else
-  {
-    if (index1 >= systemFilterCount)
-      collGroups[index1].mask |= 1 << index2;
-    if (index2 >= systemFilterCount)
-      collGroups[index2].mask |= 1 << index1;
-  }
-}
-
-bool csBulletSector::GetGroupCollision (const char* name1,
-                                        const char* name2)
-{
-  size_t index1 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name1));
-  size_t index2 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name2));
-  if (index1 == csArrayItemNotFound || index2 == csArrayItemNotFound)
-    return false;
-  if ((collGroups[index1].mask & (1 << index2)) != 0 
-    || (collGroups[index2].mask & (1 << index1)) != 0)
-    return true;
-  else
-    return false;
-}
-
 bool csBulletSector::CollisionTest (CS::Collisions::iCollisionObject* object, 
                                     csArray<CS::Collisions::CollisionData>& collisions)
 {
@@ -544,18 +455,7 @@ bool csBulletSector::CollisionTest (CS::Collisions::iCollisionObject* object,
   csBulletCollisionObject* collObject = dynamic_cast<csBulletCollisionObject*> (object);
   if (collObject->IsPhysicalObject())
   {
-    if (collObject->isTerrain)
-    {
-      //Here is a question. Should we let user to do collision test on terrain object?
-      csBulletColliderTerrain* terrainShape = dynamic_cast<csBulletColliderTerrain*> (collObject->colliders[0]);
-      for (size_t i = 0; i< terrainShape->colliders.GetSize (); i++)
-      {
-        btRigidBody* body = terrainShape->GetBulletObject (i);
-        bulletWorld->contactTest (body, result);
-      }
-    }
-    else
-      bulletWorld->contactTest (collObject->btObject, result);
+    bulletWorld->contactTest (collObject->btObject, result);
   }
   else
   {
@@ -641,18 +541,8 @@ void csBulletSector::AddCollisionActor (CS::Collisions::iCollisionActor* actor)
   csRef<csBulletCollisionActor> obj (dynamic_cast<csBulletCollisionActor*>(actor));
   collisionObjects.Push(obj);
   obj->sector = this;
-  obj->collGroup = collGroups[CollisionGroupTypeActor]; // Actor Group.
+  obj->collGroup = sys->collGroups[CollisionGroupTypeActor]; // Actor Group.
   obj->AddBulletObject ();
-}
-
-void csBulletSector::RemoveCollisionActor ()
-{
-  // TODO: Get rid of this stuff
-}
-
-CS::Collisions::iCollisionActor* csBulletSector::GetCollisionActor ()
-{
-  return nullptr;
 }
 
 bool csBulletSector::BulletCollide (btCollisionObject* objectA,
@@ -815,6 +705,8 @@ void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
   rigidBodies.Push (bulletBody);
 
   bulletBody->sector = this;
+
+  // TODO: Body might have set its own damping
   bulletBody->SetLinearDamping(linearDampening);
   bulletBody->SetAngularDamping(angularDampening);
   bulletBody->AddBulletObject ();
@@ -852,7 +744,7 @@ void csBulletSector::AddSoftBody (CS::Physics::iSoftBody* body)
   csRef<csBulletSoftBody> btBody (dynamic_cast<csBulletSoftBody*>(body));
   softBodies.Push (btBody);
   btBody->sector = this;
-  btBody->collGroup = collGroups[CollisionGroupTypeDefault];
+  btBody->collGroup = sys->collGroups[CollisionGroupTypeDefault];
   btBody->AddBulletObject ();
 
   iMovable* movable = body->GetAttachedMovable ();

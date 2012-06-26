@@ -134,6 +134,8 @@ private:
   void UpdateBoneState (BoneData* boneData);
   void ResetChainNodeTransform (CS::Animation::iBodyChainNode* chainNode);
 
+  csRef<CS::Collisions::iCollider> CreateBoneCollider(CS::Animation::iBodyBoneCollider* boneCollider, csColliderGeometryType type);
+
 private:
   csWeakRef<iSceneNode> sceneNode;
   csWeakRef<CS::Collisions::iCollisionSystem> collisionSystem;

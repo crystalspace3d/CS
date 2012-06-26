@@ -61,7 +61,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     ghostPortal->setCollisionShape (shape);
     ghostPortal->setCollisionFlags (ghostPortal->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
     
-    sourceSector->bulletWorld->addCollisionObject (ghostPortal, sourceSector->collGroups[CollisionGroupTypePortal].value, sourceSector->collGroups[CollisionGroupTypePortal].mask);
+    sourceSector->bulletWorld->addCollisionObject (ghostPortal, sourceSector->sys->collGroups[CollisionGroupTypePortal].value, sourceSector->sys->collGroups[CollisionGroupTypePortal].mask);
   }
 
   csBulletCollisionPortal::~csBulletCollisionPortal ()
@@ -307,29 +307,26 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           if (pb->GetBodyType () == BODY_RIGID)
           {
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
-            csRef<iRigidBody> nb = sector->sys->CreateRigidBody ();
-            nb->AddCollider(rb->GetCollider (0), rb->relaTransforms[0]);
 
-            csBulletRigidBody* newBody = dynamic_cast<csBulletRigidBody*> ((iRigidBody*)nb);
+            RigidBodyProperties props(rb->GetCollider());
+            
+            props.SetDensity (rb->GetDensity());
+            props.SetFriction (rb->GetFriction());
+            props.SetElasticity (rb->GetElasticity());
+            props.SetLinearDamping (0.5f);
+            props.SetAngularDamping (0.5f);
 
-            for (size_t k = 1; k < rb->GetColliderCount (); k++)
-            {
-              newBody->AddCollider (rb->GetCollider (k), rb->relaTransforms[k]);
-            }
+            props.SetCollisionGroup (sector->GetSystem()->FindCollisionGroup("Portal"));
 
-            newBody->SetFriction (rb->GetFriction());
-            newBody->SetElasticity (rb->GetElasticity());
+            csRef<iRigidBody> inb = sector->sys->CreateRigidBody (&props);
 
-            newBody->SetState (rb->GetState ());
-            newBody->RebuildObject ();
-            targetSector->AddRigidBody (newBody);
-            newBody->btBody->setDamping (0.5f,0.5f);
-
-            newBody->SetCollisionGroup ("Portal");
+            csBulletRigidBody* newBody = dynamic_cast<csBulletRigidBody*> ((iRigidBody*)inb);
 
             // Eliminate gravity and terrain influences, since we assume that the object is still "standing" on "this side" of the portal
             newBody->btBody->setGravity (btVector3 (0.0,0.0,0.0));
             newObject = newBody;
+            
+            targetSector->AddRigidBody (newBody);
 
             CS_ASSERT (!rb->objectCopy);
             rb->objectCopy = newBody;
@@ -342,17 +339,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         }
         else if (csObj->GetObjectType () == COLLISION_OBJECT_GHOST || csObj->GetObjectType () == COLLISION_OBJECT_ACTOR)
         {
-          csRef<iCollisionGhostObject> co = sector->sys->CreateGhostCollisionObject ();
+          GhostCollisionObjectProperties props(csBulletObj->GetCollider());
+          props.SetName ("ghost copy");
+          props.SetCollisionGroup (sector->sys->FindCollisionGroup("Portal"));
+          
+          csRef<iGhostCollisionObject> co = sector->sys->CreateGhostCollisionObject (&props);
+          
           newObject = dynamic_cast<csBulletCollisionObject*> ((iCollisionObject*)co);
 
-          for (size_t k = 0; k < csBulletObj->GetColliderCount (); k++)
-          {
-            newObject->AddCollider (csBulletObj->GetCollider (k), csBulletObj->relaTransforms[k]);
-          }
-
-          newObject->RebuildObject ();
-
-          newObject->SetCollisionGroup ("Portal");
 
           // TODO: When traversing forth and back, it might still have a copy that is saved in the other portal
           CS_ASSERT (!csBulletObj->objectCopy);
@@ -367,7 +361,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       // And set the transform and record old transforms.
       SetInformationToCopy (csBulletObj, newObject, warpTrans);
       if (csBulletObj->movable)
+      {
         csBulletObj->movable->GetSceneNode ()->QueryMesh ()->PlaceMesh ();
+      }
       transforms.Push (csObj->GetTransform ());
     }
 

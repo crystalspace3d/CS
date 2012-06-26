@@ -32,6 +32,7 @@
 #include "csgeom/plane3.h"
 #include "iutil/object.h"
 #include "colliders.h"
+#include "collisionproperties.h"
 
 #define	SQRT2				1.41421356237f	
 
@@ -60,7 +61,7 @@ struct csConvexResult;
 struct iCollisionCallback;
 struct iCollisionObject;
 struct iCollisionSector;
-typedef short CollisionGroupMask;
+struct iCollisionSystem;
 
 /**
  * The type of a collision object.
@@ -71,50 +72,6 @@ COLLISION_OBJECT_PHYSICAL_STATIC = 0,
 COLLISION_OBJECT_PHYSICAL_DYNAMIC,
 COLLISION_OBJECT_GHOST,
 COLLISION_OBJECT_ACTOR
-};
-
-enum CollisionGroupType
-{
-  CollisionGroupTypeDefault =     0,
-  CollisionGroupTypeStatic =      1,
-  CollisionGroupTypeKinematic =   2,
-  CollisionGroupTypePortal =      3,
-  CollisionGroupTypeTerrain =     3,
-  CollisionGroupTypePortalCopy =  4,
-  CollisionGroupTypeActor =       5
-};
-
-enum CollisionGroupMaskValue
-{
-  CollisionGroupMaskValueDefault =      0x0001,
-  CollisionGroupMaskValueStatic =       0x0002,
-  CollisionGroupMaskValueKinematic =    0x0004,
-  CollisionGroupMaskValuePortal =       0x0008,
-  CollisionGroupMaskValueTerrain =      0x0008,
-  CollisionGroupMaskValuePortalCopy =   0x0010,
-  CollisionGroupMaskValueActor =        0x0020
-};
-
-/**
- * A structure of collision group. 
- * The objects in the group will not collide with each other.
- */
-struct CollisionGroup
-{
-  /// The name of the group.
-  csString name;
-
-  /// The value of the group.
-  CollisionGroupMask value;
-
-  /// The mask of the group.
-  CollisionGroupMask mask;
-
-  CollisionGroup () {}
-
-  CollisionGroup (const char* name)
-    : name (name)
-  {}
 };
 
 /**
@@ -247,6 +204,12 @@ struct iCollisionObject : public virtual iBase
 
   /// Get the camera attached to this collision object.
   virtual iCamera* GetAttachedCamera () const = 0;
+
+  /// Get the collider that defines this object's shape
+  virtual iCollider* GetCollider () const = 0;
+
+  /// Set the collider that defines this object's shape
+  virtual void SetCollider (iCollider* collider) = 0;
   
   /// Set the transform.
   virtual void SetTransform (const csOrthoTransform& trans) = 0;
@@ -260,7 +223,7 @@ struct iCollisionObject : public virtual iBase
    */
   virtual void SetRotation (const csMatrix3& rot) = 0;
 
-  /// Rotate the collision actor by the given angle around the given axis
+  /// Rotate the collision actor by the given angle about the given axis
   virtual void Rotate (const csVector3& v, float angle) = 0;
 
   /// Increases pitch angle by the given value in radians
@@ -269,30 +232,17 @@ struct iCollisionObject : public virtual iBase
   /// Increases yaw angle by the given value in radians
   virtual void IncreaseYaw(float yawDelta) = 0;
 
-  /// Add a collider to this collision body.
-  virtual void AddCollider (iCollider* collider, const csOrthoTransform& relaTrans
-    = csOrthoTransform (csMatrix3 (), csVector3 (0))) = 0;
-
-  /// Remove the given collider from this collision object.
-  virtual void RemoveCollider (iCollider* collider) = 0;
-
-  /// Remove the collider with the given index from this collision object.
-  virtual void RemoveCollider (size_t index) = 0;
-
-  /// Get the collider with the given index.
-  virtual iCollider* GetCollider (size_t index) = 0;
-
-  /// Get the count of colliders in this collision object.
-  virtual size_t GetColliderCount () = 0;
-
   /// Rebuild this collision object.
   virtual void RebuildObject () = 0;
 
-  /// Set the collision group this object belongs to by name.
+  /// Set the collision group this object belongs to by name
   virtual void SetCollisionGroup (const char* name) = 0;
+  
+  /// Set the collision group of this object
+  virtual void SetCollisionGroup (const CollisionGroup& group) = 0;
 
-  /// Get the collision group this object belongs to.
-  virtual const char* GetCollisionGroup () const = 0;
+  /// Get the collision group of this object
+  virtual const CollisionGroup& GetCollisionGroup () const = 0;
 
   /**
    * Set a callback to be executed when this body collides with another.
@@ -323,9 +273,32 @@ struct iCollisionObject : public virtual iBase
  * This can be used as a test for collisions, or to implement any sort of object that does not entirely play by the laws 
  * of ridig body or soft body dynamics.
  */
-struct iCollisionGhostObject : public virtual iCollisionObject
+struct iGhostCollisionObject : public virtual iCollisionObject
 {
 
+};
+
+
+/**
+ * A collision terrain consists of multiple cells.
+ *
+ * Main creators of instances implementing this interface:
+ * - iCollisionSystem::CreateCollisionTerrain()
+ * 
+ * Main ways to get pointers to this interface:
+ * - iCollisionObject::GetCollider()
+ * 
+ * Main users of this interface:
+ * - 
+ */
+struct iCollisionTerrain : public virtual iBase
+{
+  SCF_INTERFACE (CS::Collisions::iCollisionTerrain, 1, 0, 0);
+
+  /// Get the terrain system.
+  virtual iTerrainSystem* GetTerrain () const = 0;
+
+  // TODO: Methods to iterate over the terrain objects etc
 };
 
 /**
@@ -340,7 +313,7 @@ struct iCollisionGhostObject : public virtual iCollisionObject
  * \remark The collider of iCollisionActor must be a convex shape. For example, box, convex mesh.
  */
 // kickvb: most of this would have to be redesigned, let's do it later
-struct iCollisionActor : public virtual iCollisionGhostObject
+struct iCollisionActor : public virtual iGhostCollisionObject
 {
   SCF_INTERFACE (CS::Collisions::iCollisionActor, 1, 0, 0);
 
@@ -409,6 +382,9 @@ struct iCollisionSector : public virtual iBase
 {
   SCF_INTERFACE (CS::Collisions::iCollisionSector, 1, 0, 0);
 
+  /// Return the system that this sector belongs to
+  virtual CS::Collisions::iCollisionSystem* GetSystem() = 0;
+
   /// Return the underlying object
   virtual iObject *QueryObject (void) = 0;
 
@@ -435,6 +411,9 @@ struct iCollisionSector : public virtual iBase
 
   /// Find a collision object within a sector.
   virtual iCollisionObject* FindCollisionObject (const char* name) = 0;
+
+  /// Adds the given terrain to this sector
+  virtual void AddCollisionTerrain(iCollisionTerrain* terrain) = 0;
 
   /// Add a portal into the sector. Collision objects crossing a portal will be switched from iCollisionSector's.
   virtual void AddPortal (iPortal* portal, const csOrthoTransform& meshTrans) = 0;
@@ -467,19 +446,7 @@ struct iCollisionSector : public virtual iBase
    * it reports one or more contact points for every overlapping object
    */
   virtual bool CollisionTest (iCollisionObject* object, csArray<CollisionData>& collisions) = 0;
-
-  /// Create a collision group.
-  virtual CollisionGroup& CreateCollisionGroup (const char* name) = 0;
-
-  /// Find a collision group by name.
-  virtual CollisionGroup& FindCollisionGroup (const char* name) = 0;
-
-  /// Set whether the two groups collide with each other.
-  virtual void SetGroupCollision (const char* name1,
-    const char* name2, bool collide) = 0;
-
-  /// Get true if the two groups collide with each other.
-  virtual bool GetGroupCollision (const char* name1, const char* name2) = 0;
+  
 };
 
 /**
@@ -498,7 +465,7 @@ struct iCollisionSector : public virtual iBase
  */
 struct iCollisionSystem : public virtual iBase
 {
-  SCF_INTERFACE (CS::Collisions::iCollisionSystem, 1, 0, 1);
+  SCF_INTERFACE (CS::Collisions::iCollisionSystem, 2, 0, 0);
 
   /**
    * Set the internal scale to be applied to the whole dynamic world. Use this
@@ -514,6 +481,9 @@ struct iCollisionSystem : public virtual iBase
    */
   virtual void SetInternalScale (float scale) = 0;
 
+  /// Creates an empty compound collider (does not have a root shape, but only children)
+  virtual csPtr<iColliderCompound> CreateColliderCompound () = 0;
+
   /// Create a convex mesh collider.
   virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (
     iMeshWrapper* mesh, bool simplify = false) = 0;
@@ -525,7 +495,8 @@ struct iCollisionSystem : public virtual iBase
   virtual csPtr<iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled (
     iColliderConcaveMesh* collider, csVector3 scale) = 0;
 
-  virtual csPtr<iCollisionObject> CreateCollisionObject() = 0;
+  /// Create a CollisionObject
+  virtual csPtr<iCollisionObject> CreateCollisionObject(CollisionObjectProperties* props) = 0;
 
   /// Create a cylinder collider.
   virtual csPtr<iColliderCylinder> CreateColliderCylinder (float length, float radius) = 0;
@@ -546,19 +517,19 @@ struct iCollisionSystem : public virtual iBase
   virtual csPtr<iColliderPlane> CreateColliderPlane (const csPlane3& plane) = 0;
 
   /// Create a terrain collider.
-  virtual csPtr<iColliderTerrain> CreateColliderTerrain (iTerrainSystem* terrain,
+  virtual csPtr<iCollisionTerrain> CreateCollisionTerrain (iTerrainSystem* terrain,
       float minHeight = 0, float maxHeight = 0) = 0;
 
   /**
    * Create a ghost collision object
    */
-  virtual csPtr<iCollisionGhostObject> CreateGhostCollisionObject () = 0;
+  virtual csPtr<iGhostCollisionObject> CreateGhostCollisionObject (GhostCollisionObjectProperties* props) = 0;
 
   /**
    * Create a collision actor.
    * Need to call iCollisionObject::RebuildObject.
    */
-  virtual csPtr<iCollisionActor> CreateCollisionActor (iCollider* collider) = 0;
+  virtual csPtr<iCollisionActor> CreateCollisionActor (CollisionActorProperties* props) = 0;
   
   /// Create a collision sector.
   virtual csPtr<iCollisionSector> CreateCollisionSector () = 0;
@@ -574,10 +545,23 @@ struct iCollisionSystem : public virtual iBase
    * the collision object as a separate iColliderConvexMesh. By this way you can
    * get a dynamic concave mesh collider.
    */
-  virtual void DecomposeConcaveMesh (iCollisionObject* object, 
+  virtual void DecomposeConcaveMesh (iCollider* object, 
     iMeshWrapper* mesh, bool simplify = false) = 0;
+
+  /// Create a collision group.
+  virtual CollisionGroup& CreateCollisionGroup (const char* name) = 0;
+
+  /// Find a collision group by name.
+  virtual CollisionGroup& FindCollisionGroup (const char* name) = 0;
+
+  /// Set whether the two groups collide with each other.
+  virtual void SetGroupCollision (const char* name1,
+    const char* name2, bool collide) = 0;
+
+  /// Get true if the two groups collide with each other.
+  virtual bool GetGroupCollision (const char* name1, const char* name2) = 0;
 };
-}
-}
+
+} }
 
 #endif

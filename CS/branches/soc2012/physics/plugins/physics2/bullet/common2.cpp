@@ -44,28 +44,28 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (body->btObject)
       body->btObject->setInterpolationWorldTransform (initialTransform);
 
-    csOrthoTransform tr = BulletToCS (initialTransform * inversePrincipalAxis,
+    /*csOrthoTransform tr = BulletToCS (initialTransform * inversePrincipalAxis,
 				      body->system->getInverseInternalScale ());
+*/
+    //iMovable* movable = body->GetAttachedMovable ();
+    //if (movable)
+    //{
+    //  // Update movable
+    //  movable->SetFullTransform (tr);
+    //  movable->UpdateMove ();
+    //}
+    //iCamera* camera = body->GetAttachedCamera ();
+    //if (camera)
+    //{
+    //  csOrthoTransform& cameraTrans = camera->GetTransform ();
+    //  if (cameraTrans.GetOrigin () == tr.GetOrigin () &&
+    //    cameraTrans.GetT2O () == tr.GetT2O ())
+    //    return;
 
-    iMovable* movable = body->GetAttachedMovable ();
-    if (movable)
-    {
-      // Update movable
-      movable->SetFullTransform (tr);
-      movable->UpdateMove ();
-    }
-    iCamera* camera = body->GetAttachedCamera ();
-    if (camera)
-    {
-      csOrthoTransform& cameraTrans = camera->GetTransform ();
-      if (cameraTrans.GetOrigin () == tr.GetOrigin () &&
-        cameraTrans.GetT2O () == tr.GetT2O ())
-        return;
-
-      // Update camera position
-      cameraTrans.SetOrigin (tr.GetOrigin ());
-      cameraTrans.SetT2O (tr.GetT2O ());
-    }
+    //  // Update camera position
+    //  cameraTrans.SetOrigin (tr.GetOrigin ());
+    //  cameraTrans.SetT2O (tr.GetT2O ());
+    //}
   }
 
   void csBulletMotionState::setWorldTransform (const btTransform& trans)

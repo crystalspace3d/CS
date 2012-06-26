@@ -1223,7 +1223,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\physics2\bullet\collisionactor.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\collisionghost.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\collisionobject2.cpp" />
-    <ClCompile Include="..\..\plugins\physics2\bullet\colliderterrain.cpp" />
+    <ClCompile Include="..\..\plugins\physics2\bullet\collisionterrain.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\common2.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\convexdecompose\bestfit.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\convexdecompose\bestfitobb.cpp" />
@@ -1252,7 +1252,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\physics2\bullet\collisionactor.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\collisionghost.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\collisionobject2.h" />
-    <ClInclude Include="..\..\plugins\physics2\bullet\colliderterrain.h" />
+    <ClInclude Include="..\..\plugins\physics2\bullet\collisionterrain.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\common2.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\convexdecompose\bestfit.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\convexdecompose\bestfitobb.h" />

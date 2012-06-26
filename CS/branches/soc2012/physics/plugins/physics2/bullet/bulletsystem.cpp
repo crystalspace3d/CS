@@ -46,7 +46,7 @@
 
 #include "common2.h"
 #include "colliderprimitives.h"
-#include "colliderterrain.h"
+#include "collisionterrain.h"
 #include "rigidbody2.h"
 #include "softbody2.h"
 #include "collisionactor.h"
@@ -63,6 +63,50 @@ csBulletSystem::csBulletSystem (iBase* iParent)
   : scfImplementationType (this, iParent), internalScale (1.0f), inverseInternalScale (1.0f)
 {
   defaultInfo = new btSoftBodyWorldInfo;
+  
+
+  static const CollisionGroupMask allFilter = -1;
+
+  CollisionGroup defaultGroup ("Default");
+  defaultGroup.value = CollisionGroupMaskValueDefault;
+  defaultGroup.mask = allFilter;
+  collGroups.Push (defaultGroup);
+
+  CS::Collisions::CollisionGroup staticGroup ("Static");
+  staticGroup.value = CollisionGroupMaskValueStatic;
+  staticGroup.mask = allFilter ^ CollisionGroupMaskValueStatic;
+  collGroups.Push (staticGroup);
+
+  CS::Collisions::CollisionGroup kinematicGroup ("Kinematic");
+  kinematicGroup.value = CollisionGroupMaskValueKinematic;
+  kinematicGroup.mask = allFilter ^ CollisionGroupMaskValueKinematic;
+  collGroups.Push (kinematicGroup);
+
+  CS::Collisions::CollisionGroup terrainGroup ("Terrain");
+  terrainGroup.value = CollisionGroupMaskValueTerrain;
+  terrainGroup.mask = allFilter ^ CollisionGroupMaskValueTerrain;
+  collGroups.Push (terrainGroup);
+
+  CS::Collisions::CollisionGroup portalGroup ("Portal");
+  portalGroup.value = CollisionGroupMaskValuePortal;
+  portalGroup.mask = allFilter ^ CollisionGroupMaskValuePortal;
+  collGroups.Push (portalGroup);
+
+  CS::Collisions::CollisionGroup copyGroup ("PortalCopy");
+  copyGroup.value = CollisionGroupMaskValuePortalCopy;
+  copyGroup.mask = allFilter ^ CollisionGroupMaskValuePortalCopy;
+  collGroups.Push (copyGroup);
+
+  CS::Collisions::CollisionGroup characterGroup ("Character");
+  characterGroup.value = CollisionGroupMaskValueActor;
+  characterGroup.mask = allFilter ^ CollisionGroupMaskValueActor;
+  collGroups.Push (characterGroup);
+  
+  SetGroupCollision ("PortalCopy", "Terrain", false);
+  SetGroupCollision ("PortalCopy", "Static", false);
+  SetGroupCollision ("Portal", "PortalCopy", false);
+
+  systemFilterCount = 6;
 }
 
 csBulletSystem::~csBulletSystem ()
@@ -88,6 +132,14 @@ bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
   baseID = strings->Request ("base");
   colldetID = strings->Request ("colldet");
   return true;
+}
+
+csPtr<CS::Collisions::iColliderCompound> csBulletSystem::CreateColliderCompound ( )
+{
+   csRef<iColliderCompound> collider = csPtr<iColliderCompound>(new csBulletColliderCompound(this));
+
+  //colliders.Push (collider);
+  return csPtr<iColliderCompound>(collider);
 }
 
 csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify)
@@ -162,34 +214,41 @@ csPtr<CS::Collisions::iColliderPlane> csBulletSystem::CreateColliderPlane (const
   return csPtr<iColliderPlane>(collider);
 }
 
-csPtr<CS::Collisions::iColliderTerrain> csBulletSystem::CreateColliderTerrain (iTerrainSystem* terrain, 
+csPtr<CS::Collisions::iCollisionTerrain> csBulletSystem::CreateCollisionTerrain (iTerrainSystem* terrain, 
                                                                float minHeight /* = 0 */, 
                                                                float maxHeight /* = 0 */)
 {
-  csRef<csBulletColliderTerrain> collider = csPtr<csBulletColliderTerrain>(new csBulletColliderTerrain (terrain, minHeight, maxHeight, this));
+  csRef<csBulletCollisionTerrain> collider = csPtr<csBulletCollisionTerrain>(new csBulletCollisionTerrain (terrain, minHeight, maxHeight, this));
 
   //colliders.Push (collider);
-  return csPtr<iColliderTerrain>(collider);
+  return csPtr<iCollisionTerrain>(collider);
 }
 
-csPtr<CS::Collisions::iCollisionGhostObject> csBulletSystem::CreateGhostCollisionObject ()
+csPtr<CS::Collisions::iGhostCollisionObject> csBulletSystem::CreateGhostCollisionObject (CS::Collisions::GhostCollisionObjectProperties* props)
 {
-  csRef<csBulletCollisionGhostObject> collObject = csPtr<csBulletCollisionGhostObject>(new csBulletCollisionGhostObject (this));
+  csRef<csBulletGhostCollisionObject> collObject = csPtr<csBulletGhostCollisionObject>(new csBulletGhostCollisionObject (this));
+
+  collObject->CreateCollisionObject(props);
+  collObject->RebuildObject ();
 
   //objects.Push (collObject);
-  return csPtr<iCollisionGhostObject>(collObject);
+  return csPtr<iGhostCollisionObject>(collObject);
 }
 
-csPtr<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject ()
+csPtr<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject (CS::Collisions::CollisionObjectProperties* props)
 {
-  return csPtr<CS::Collisions::iCollisionObject>(csRef<CS::Physics::iRigidBody>(CreateStaticRigidBody()));
+  return nullptr;
 }
 
-csPtr<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor (CS::Collisions::iCollider* collider)
+csPtr<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor (CS::Collisions::CollisionActorProperties* props)
 {
-  csRef<CS::Collisions::iCollisionActor> collActor = csPtr<CS::Collisions::iCollisionActor>(new csBulletCollisionActor (this, dynamic_cast<csBulletCollider*>(collider)));
+  csBulletCollisionActor* actor = new csBulletCollisionActor (this);
 
-  return csPtr<iCollisionActor>(collActor);
+  actor->CreateCollisionActor(props);
+  actor->RebuildObject ();
+
+  csRef<CS::Collisions::iCollisionActor> iactor = csPtr<CS::Collisions::iCollisionActor>(actor);
+  return csPtr<iCollisionActor>(iactor);
 }
 
 csPtr<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
@@ -217,10 +276,8 @@ CS::Collisions::iCollisionSector* csBulletSystem::GetCollisionSector (const iSec
   return nullptr;
 }
 
-void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollisionObject* object, iMeshWrapper* mesh, bool simplify)
+void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollider* root, iMeshWrapper* mesh, bool simplify)
 {
-  csBulletCollisionObject* btCollObject = dynamic_cast<csBulletCollisionObject*> (object);
-
   class MyConvexDecomposition : public ConvexDecomposition::ConvexDecompInterface
   {
     int mHullCount;
@@ -347,21 +404,15 @@ void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollisionObject* obj
     csRef<csBulletCollider> collider = csPtr<csBulletCollider>(new csBulletColliderConvexMesh (convexShape, convexDecomposition.m_convexVolume[i], this));
     //colliders.Push (collider);
     relaTransform = BulletToCS (trans, inverseInternalScale);
-    btCollObject->AddCollider (collider, relaTransform);
+    root->AddCollider (collider, relaTransform);
   }
 }
 
-csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateRigidBody ()
+csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateRigidBody (RigidBodyProperties* props)
 {
   csRef<csBulletRigidBody> body = csPtr<csBulletRigidBody>(new csBulletRigidBody (this));
-  
-  //rigidBodies.Push (body);
-  return csPtr<CS::Physics::iRigidBody>(body);
-}
 
-csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateStaticRigidBody ()
-{
-  csRef<csBulletRigidBody> body = csPtr<csBulletRigidBody>(new csBulletRigidBody (this, true));
+  body->CreateRigidBodyObject(props);
   
   //rigidBodies.Push (body);
   return csPtr<CS::Physics::iRigidBody>(body);
@@ -641,5 +692,66 @@ void csBulletSystem::ReportWarning (const char* msg, ...)
 	     msg, arg);
   va_end (arg);
 }
+
+CS::Collisions::CollisionGroup& csBulletSystem::CreateCollisionGroup (const char* name)
+{
+  size_t groupCount = collGroups.GetSize ();
+  if (groupCount >= sizeof (CS::Collisions::CollisionGroupMask) * 8)
+    return collGroups[CollisionGroupTypeDefault];
+
+  CS::Collisions::CollisionGroup newGroup(name);
+  newGroup.value = 1 << groupCount;
+  newGroup.mask = ~newGroup.value;
+  collGroups.Push (newGroup);
+  return collGroups[groupCount];
+}
+
+CS::Collisions::CollisionGroup& csBulletSystem::FindCollisionGroup (const char* name)
+{
+  size_t index = collGroups.FindKey (CollisionGroupVector::KeyCmp (name));
+  if (index == csArrayItemNotFound)
+    return collGroups[CollisionGroupTypeDefault];
+  else
+    return collGroups[index];
+}
+
+void csBulletSystem::SetGroupCollision (const char* name1,
+                                        const char* name2,
+                                        bool collide)
+{
+  size_t index1 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name1));
+  size_t index2 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name2));
+  if (index1 == csArrayItemNotFound || index2 == csArrayItemNotFound)
+    return;
+  if (!collide)
+  {
+    if (index1 >= systemFilterCount)
+      collGroups[index1].mask &= ~(1 << index2);
+    if (index2 >= systemFilterCount)
+      collGroups[index2].mask &= ~(1 << index1);
+  }
+  else
+  {
+    if (index1 >= systemFilterCount)
+      collGroups[index1].mask |= 1 << index2;
+    if (index2 >= systemFilterCount)
+      collGroups[index2].mask |= 1 << index1;
+  }
+}
+
+bool csBulletSystem::GetGroupCollision (const char* name1,
+                                        const char* name2)
+{
+  size_t index1 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name1));
+  size_t index2 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name2));
+  if (index1 == csArrayItemNotFound || index2 == csArrayItemNotFound)
+    return false;
+  if ((collGroups[index1].mask & (1 << index2)) != 0 
+    || (collGroups[index2].mask & (1 << index1)) != 0)
+    return true;
+  else
+    return false;
+}
+
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

@@ -187,10 +187,10 @@ public:
   virtual void SetKinematicCallback (iKinematicCallback* callback);
   virtual iKinematicCallback* GetKinematicCallback ();
 
-  virtual void SetLinearDamping (float d);
-  virtual float GetLinearDamping () const;
-  virtual void SetAngularDamping (float d);
-  virtual float GetAngularDamping () const;
+  virtual void SetLinearDampener (float d);
+  virtual float GetLinearDampener () const;
+  virtual void SetRollingDampener (float d);
+  virtual float GetRollingDampener () const;
 };
 
 /**

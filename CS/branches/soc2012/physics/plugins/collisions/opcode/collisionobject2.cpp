@@ -20,12 +20,29 @@
 #include "iengine/movable.h"
 #include "collisionobject2.h"
 
+using namespace CS::Collisions;
+
 CS_PLUGIN_NAMESPACE_BEGIN (Opcode2)
 {
+void csOpcodeCollisionObject::CreateCollisionObject(CS::Collisions::CollisionObjectProperties* props)
+{
+  SetCollider(props->GetCollider());
+  SetName(props->GetName());
+
+  if (props->GetCollisionGroup().name.Length())
+  {
+    SetCollisionGroup(props->GetCollisionGroup());
+  }
+  else
+  {
+    SetCollisionGroup(system->FindCollisionGroup("Default"));
+  }
+}
+
 csOpcodeCollisionObject::csOpcodeCollisionObject (csOpcodeCollisionSystem* sys)
   : scfImplementationType (this), system (sys), sector (NULL),
   collider (NULL),
-  collCb (NULL), isTerrain (false)
+  collCb (NULL)
 {
   transform.Identity ();
 }
@@ -77,51 +94,18 @@ void csOpcodeCollisionObject::IncreaseYaw(float yawDelta)
   Rotate (CS_VEC_ROT_RIGHT, yawDelta);
 }
 
-void csOpcodeCollisionObject::AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans)
-{
-    this->collider = collider;
-  if (collider->GetType () == CS::Collisions::COLLIDER_TERRAIN)
-    isTerrain = true;
-}
-
-void csOpcodeCollisionObject::RemoveCollider (CS::Collisions::iCollider* collider)
-{
-  //Please delete the collision object or set another collider. Don't use this function.
-}
-
-void csOpcodeCollisionObject::RemoveCollider (size_t index)
-{
-  //Please delete the collision object or set another collider. Don't use this function.
-}
-
-CS::Collisions::iCollider* csOpcodeCollisionObject::GetCollider (size_t index)
-{
-  return collider;
-}
-
-size_t csOpcodeCollisionObject::GetColliderCount ()
-{
-  if (collider == NULL)
-    return 0;
-  else
-    return 1;
-}
-
 void csOpcodeCollisionObject::RebuildObject ()
 {
-  if (collider == NULL)
-  {  
-    csFPrintf (stderr, "csBulletCollisionObject: Haven't add any collider to the object.\nRebuild failed.\n");
-    return;
-  }
+  // does nothing
 }
 
 void csOpcodeCollisionObject::SetCollisionGroup (const char* name)
 {
-  if (!sector)
-    return;
+  this->collGroup = system->FindCollisionGroup(name);
+}
 
-  CS::Collisions::CollisionGroup& group = sector->FindCollisionGroup (name);
+void csOpcodeCollisionObject::SetCollisionGroup (const CS::Collisions::CollisionGroup& group)
+{
   this->collGroup = group;
 }
 
@@ -136,40 +120,22 @@ bool csOpcodeCollisionObject::Collide (CS::Collisions::iCollisionObject* otherOb
 
   csArray<CS::Collisions::CollisionData> collisions;
 
-  if (obj->isTerrain && isTerrain)
-    return false;
-  else if (obj->isTerrain || isTerrain)
+  bool contact = sector->CollideObject (this, obj, collisions);
+  if (contact)
   {
-    bool contact = sector->CollideTerrain (this, obj, collisions);
-    if (contact && collCb)
+    if (collCb)
     {
-      if (obj->isTerrain)
-	collCb->OnCollision (this,obj,collisions);
-      else
-	collCb->OnCollision (obj,this,collisions);
+      collCb->OnCollision (this, obj, collisions);
     }
-    return contact;
   }
-  else
-  {
-    bool contact = sector->CollideObject (this, obj, collisions);
-    if (contact)
-      if (collCb)
-        collCb->OnCollision (this, obj, collisions);
-    return contact;
-  }
+  return contact;
 }
 
 CS::Collisions::HitBeamResult csOpcodeCollisionObject::HitBeam (const csVector3& start, const csVector3& end)
 {
   //CS::Collisions::iCollider* col = collider;
   float dep;
-  CS::Collisions::HitBeamResult result;
-  if (isTerrain)
-    result = sector->HitBeamTerrain (this, start, end, dep);
-  else
-    result = sector->HitBeamObject (this, start, end, dep);
-
+  CS::Collisions::HitBeamResult result = sector->HitBeamObject (this, start, end, dep);
   return result;
 }
 

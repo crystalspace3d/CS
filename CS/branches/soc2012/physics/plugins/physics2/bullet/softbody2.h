@@ -61,6 +61,9 @@ private:
   csArray<AnimatedAnchor> animatedAnchors;
 
 public:
+  void CreateSoftBodyObject(CS::Physics::SoftBodyProperties* props);
+
+public:
   csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body);
   virtual ~csBulletSoftBody ();
 
@@ -82,13 +85,6 @@ public:
   virtual void RemoveCollider (size_t index) {}
 
   virtual CS::Collisions::iCollider* GetCollider (size_t index) {return nullptr;}
-  virtual size_t GetColliderCount () {return 0;}
-
-  virtual void SetCollisionGroup (const char* name) {csBulletCollisionObject::SetCollisionGroup (name);}
-  virtual const char* GetCollisionGroup () const {return csBulletCollisionObject::GetCollisionGroup ();}
-
-  virtual void SetCollisionCallback (CS::Collisions::iCollisionCallback* cb) {collCb = cb;}
-  virtual CS::Collisions::iCollisionCallback* GetCollisionCallback () {return collCb;}
 
   virtual bool Collide (iCollisionObject* otherObject) {return csBulletCollisionObject::Collide (otherObject);}
   virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end);

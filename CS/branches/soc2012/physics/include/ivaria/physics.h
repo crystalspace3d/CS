@@ -33,7 +33,7 @@
 #include "cstool/primitives.h"
 #include "ivaria/collisions.h"
 
-#include "physicsproperties.h"
+#include "ivaria/physicsproperties.h"
 
 namespace CS 
 {
@@ -256,7 +256,7 @@ struct iRigidBody : public virtual iPhysicalBody
   virtual iKinematicCallback* GetKinematicCallback () = 0;
 
   /**
-   * Set the linear dampener for this rigid body. The dampening correspond to
+   * Set the linear Damping for this rigid body. The dampening correspond to
    * how much the movements of the objects will be reduced. It is a value
    * between 0 and 1, giving the ratio of speed that will be reduced
    * in one second. 0 means that the movement will not be reduced, while
@@ -266,21 +266,20 @@ struct iRigidBody : public virtual iPhysicalBody
    */
   virtual void SetLinearDamping (float d) = 0;
 
-  /// Get the linear dampener for this rigid body.
+  /// Get the linear Damping for this rigid body.
   virtual float GetLinearDamping () = 0;
 
   /**
-   * Set the angular dampener for this rigid body. The dampening correspond to
+   * Set the angular Damping for this rigid body. The dampening correspond to
    * how much the movements of the objects will be reduced. It is a value
    * between 0 and 1, giving the ratio of speed that will be reduced
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa iDynamicSystem::SetAngularDamping()
    */
   virtual void SetAngularDamping (float d) = 0;
 
-  /// Get the angular dampener for this rigid body.
+  /// Get the angular Damping for this rigid body.
   virtual float GetAngularDamping () = 0;
 };
 
@@ -729,13 +728,7 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
    * Create a rigid body.
    * Need to call iCollisionObject::RebuildObject.
    */
-  virtual csPtr<iRigidBody> CreateRigidBody () = 0;
-
-  /**
-   * Create a static rigid body which cannot move.
-   * Need to call iCollisionObject::RebuildObject.
-   */
-  virtual csPtr<iRigidBody> CreateStaticRigidBody () = 0;
+  virtual csPtr<iRigidBody> CreateRigidBody (RigidBodyProperties* props) = 0;
 
   /// Create a general 6DOF joint.
   virtual csPtr<iJoint> CreateJoint () = 0;
@@ -893,7 +886,7 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
   virtual void Step (float duration) = 0;
 
   /**
-   * Set the global linear dampener. The dampening correspond to how
+   * Set the global linear Damping. The dampening correspond to how
    * much the movements of the objects will be reduced. It is a value
    * between 0 and 1, giving the ratio of speed that will be reduced
    * in one second. 0 means that the movement will not be reduced, while
@@ -904,12 +897,12 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
   virtual void SetLinearDamping (float d) = 0;
 
   /**
-   * Get the global linear dampener setting.
+   * Get the global linear Damping setting.
    */
   virtual float GetLinearDamping () const = 0;
 
   /**
-   * Set the global angular dampener. The dampening correspond to how
+   * Set the global angular Damping. The dampening correspond to how
    * much the movements of the objects will be reduced. It is a value
    * between 0 and 1, giving the ratio of speed that will be reduced
    * in one second. 0 means that the movement will not be reduced, while
@@ -919,7 +912,7 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    */
   virtual void SetAngularDamping (float d) = 0;
 
-  /// Get the global rolling dampener setting.
+  /// Get the global angular damping value
   virtual float GetAngularDamping () const = 0;
   
   /**

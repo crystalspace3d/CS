@@ -31,6 +31,7 @@
 #include "iutil/object.h"
 
 struct iTerrainSystem;
+struct iTerrainCell;
 struct iSector;
 struct iMeshWrapper;
 struct iMovable;
@@ -66,7 +67,8 @@ COLLIDER_PLANE,
 COLLIDER_CONVEX_MESH,
 COLLIDER_CONCAVE_MESH,
 COLLIDER_CONCAVE_MESH_SCALED,
-COLLIDER_TERRAIN
+COLLIDER_TERRAIN,
+COLLIDER_COMPOUND
 };
 
 /**
@@ -78,7 +80,7 @@ struct iCollider : public virtual iBase
   SCF_INTERFACE (CS::Collisions::iCollider, 1, 0, 0);
 
   /// Get the type of this collider. 
-  virtual ColliderType GetType () const = 0;
+  virtual ColliderType GetColliderType () const = 0;
 
   /// Set the scale of the collider shape on X/Y/Z axis.
   virtual void SetLocalScale (const csVector3& scale) = 0;
@@ -86,11 +88,52 @@ struct iCollider : public virtual iBase
   /// Get the scale on X/Y/Z axis.
   virtual const csVector3& GetLocalScale () const = 0;
   
-  /// Set the margin of collision shape.
+  /// Set the margin of this collider
   virtual void SetMargin (float margin) = 0;
 
-  /// Get the margin of collision shape.
+  /// Get the margin of this collider
   virtual float GetMargin () const = 0; 
+
+  /// Get the volume of this collider
+  virtual float GetVolume () const = 0;
+
+  /// Whether this collider (and all its children) can be used in a dynamic environment
+  virtual bool IsDynamic () const = 0;
+  
+
+  /// Add a child collider, fixed relative to this collider.
+  virtual void AddCollider (iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform ()) = 0;
+
+  /// Remove the given collider from this collider.
+  virtual void RemoveCollider (iCollider* collider) = 0;
+
+  /// Remove the collider with the given index from this collider.
+  virtual void RemoveCollider (size_t index) = 0;
+
+  /// Get the collider with the given index.
+  virtual iCollider* GetCollider (size_t index) = 0;                                        
+
+  /// Get the count of colliders in this collider (including self).
+  virtual size_t GetColliderCount () = 0;
+};
+
+
+/**
+ * A compound collider. Does not have a root shape, but only children.
+ *
+ * Main creators of instances implementing this interface:
+ * - iCollisionSystem::CreateColliderCompound()
+ * 
+ * Main ways to get pointers to this interface:
+ * - iCollider::GetCollider()
+ * 
+ * Main users of this interface:
+ * - iCollider
+ * - iCollisionObject
+ */
+struct iColliderCompound : public virtual iCollider
+{
+  SCF_INTERFACE (CS::Collisions::iColliderCompound, 1, 0, 0);
 };
 
 /**
@@ -273,24 +316,12 @@ struct iColliderConcaveMeshScaled : public virtual iCollider
   virtual iColliderConcaveMesh* GetCollider () = 0;
 };
 
-/**
- * A terrain collider.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderTerrain()
- * 
- * Main ways to get pointers to this interface:
- * - iCollisionObject::GetCollider()
- * 
- * Main users of this interface:
- * - iCollisionObject
- */
 struct iColliderTerrain : public virtual iCollider
 {
   SCF_INTERFACE (CS::Collisions::iColliderTerrain, 1, 0, 0);
 
-  /// Get the terrain system.
-  virtual iTerrainSystem* GetTerrain () const = 0;
+  /// Returns the terrain cell, represented by this collider
+  virtual iTerrainCell* GetCell () const = 0;
 };
 
 }

@@ -23,11 +23,14 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {   
+  void csBulletCollisionActor::CreateCollisionActor(CS::Collisions::CollisionActorProperties* props)
+  {
+    CreateGhostCollisionObject(props);
+  }
 
-  csBulletCollisionActor::csBulletCollisionActor(csBulletSystem* sys, csBulletCollider* collider) : scfVirtImplementationExt1(this, sys),
+  csBulletCollisionActor::csBulletCollisionActor(csBulletSystem* sys) : scfVirtImplementationExt1(this, sys),
     controller(nullptr), pitch(0), flying(false)
   {
-    AddCollider(collider);
   }
 
   csBulletCollisionActor::~csBulletCollisionActor ()
@@ -46,7 +49,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       // align with up-axis before turning horizontally
       camera->GetTransform().RotateThis(CS_VEC_TILT_UP, -pitch);
     }
-    csBulletCollisionGhostObject::IncreaseYaw(delta);
+    csBulletGhostCollisionObject::IncreaseYaw(delta);
     if (reset)
     {
       // re-apply pitch
@@ -61,7 +64,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       camera->GetTransform().RotateThis(CS_VEC_TILT_UP, delta);
     }
-    //csBulletCollisionGhostObject::IncreasePitch(delta);
+    //csBulletGhostCollisionObject::IncreasePitch(delta);
   }
 
   void csBulletCollisionActor::SetAttachedCamera (iCamera* camera)
@@ -74,12 +77,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   bool csBulletCollisionActor::AddBulletObject()
   {
-    if (csBulletCollisionGhostObject::AddBulletObject())
+    if (csBulletGhostCollisionObject::AddBulletObject())
     {
       if (!controller)
       {
         btPairCachingGhostObject* go = GetPairCachingGhostObject();
-        btConvexShape* convShape = (btConvexShape*)(colliders[0]->shape);
+        btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
         controller = new btKinematicCharacterController(go, convShape, 0.04, 1);
       }
       return true;

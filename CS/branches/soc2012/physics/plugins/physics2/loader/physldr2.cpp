@@ -37,6 +37,8 @@
 #include "imesh/terrain2.h"
 #include "physldr2.h"
 
+using namespace CS::Collisions;
+
 enum
 {
   XMLTOKEN_INTERNALSCALE,
@@ -203,6 +205,7 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
   csRef<CS::Physics::iPhysicalSector> physSector = 
     scfQueryInterface<CS::Physics::iPhysicalSector> (collSector);
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
+  iCollisionSystem* collSys = collSector->GetSystem();
   while (it->HasNext ())
   {
     csRef<iDocumentNode> child = it->Next ();
@@ -227,8 +230,10 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
     case XMLTOKEN_GROUP:
       {
         const char* name = child->GetAttributeValue ("name");
-        if (collSector->FindCollisionGroup (name).name.Compare (name) == false)
-          collSector->CreateCollisionGroup (name);
+        if (collSys->FindCollisionGroup (name).name.Compare (name))
+        {
+          collSys->CreateCollisionGroup (name);
+        }
         break;
       }
     case XMLTOKEN_SECTOR:
@@ -270,21 +275,28 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
     case XMLTOKEN_COLLISIONOBJECT:
       {
         csRef<CS::Collisions::iCollisionObject> obj;
+        
+        csRef<CS::Collisions::iColliderCompound> rootCollider = csRef<CS::Collisions::iColliderCompound>(physicalSystem->CreateColliderCompound());
+        GhostCollisionObjectProperties props(rootCollider);
         if (child->GetAttribute ("ghost"))
         {
-          obj = collisionSystem->CreateCollisionObject ();
+          obj = csRef<CS::Collisions::iGhostCollisionObject>(collisionSystem->CreateGhostCollisionObject (&props));
         }
         else
         {
-          obj = csRef<CS::Collisions::iCollisionGhostObject>(collisionSystem->CreateGhostCollisionObject ());
+          obj = collisionSystem->CreateCollisionObject (&props);
         }
+        
         if (!ParseCollisionObject (child, obj, collSector, ldr_context))
           return false;
         break;
       }
     case XMLTOKEN_RIGIDBODY:
       {
-        csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody ();
+        csRef<CS::Collisions::iColliderCompound> rootCollider = csRef<CS::Collisions::iColliderCompound>(physicalSystem->CreateColliderCompound());
+
+        CS::Physics::RigidBodyProperties props(rootCollider);
+        csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody (&props);
         if (!ParseRigidBody (child, rb, collSector, ldr_context))
           return false;
         break;
@@ -575,7 +587,7 @@ bool csPhysicsLoader2::ParseColliderBox (iDocumentNode *node, CS::Collisions::iC
   ParseTransform (node, trans);
 
   csRef<CS::Collisions::iColliderBox> box = collisionSystem->CreateColliderBox (v);
-  object->AddCollider (box, trans);
+  object->GetCollider()->AddCollider (box, trans);
   return true;
 }
 
@@ -588,7 +600,7 @@ bool csPhysicsLoader2::ParseColliderSphere (iDocumentNode *node, CS::Collisions:
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->AddCollider (sp, trans);
+  object->GetCollider()->AddCollider (sp, trans);
   return true;
 }
 
@@ -602,7 +614,7 @@ bool csPhysicsLoader2::ParseColliderCylinder (iDocumentNode *node, CS::Collision
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->AddCollider (cy, trans);
+  object->GetCollider()->AddCollider (cy, trans);
   return true;
 }
 
@@ -616,7 +628,7 @@ bool csPhysicsLoader2::ParseColliderCapsule (iDocumentNode *node, CS::Collisions
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->AddCollider (ca, trans);
+  object->GetCollider()->AddCollider (ca, trans);
   return true;
 }
 
@@ -630,7 +642,7 @@ bool csPhysicsLoader2::ParseColliderCone (iDocumentNode *node, CS::Collisions::i
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->AddCollider (co, trans);
+  object->GetCollider()->AddCollider (co, trans);
   return true;
 }
 
@@ -649,7 +661,7 @@ bool csPhysicsLoader2::ParseColliderPlane (iDocumentNode *node, CS::Collisions::
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->AddCollider (pl, trans);
+  object->GetCollider()->AddCollider (pl, trans);
   return true;
 }
 
@@ -669,7 +681,7 @@ bool csPhysicsLoader2::ParseColliderConvexMesh (iDocumentNode *node, CS::Collisi
     trans.Identity ();
     ParseTransform (node, trans);
 
-    object->AddCollider (conv, trans);
+    object->GetCollider()->AddCollider (conv, trans);
     return true;
   }
   else
@@ -696,7 +708,7 @@ bool csPhysicsLoader2::ParseColliderConcaveMesh (iDocumentNode *node, CS::Collis
     trans.Identity ();
     ParseTransform (node, trans);
 
-    object->AddCollider (conc, trans);
+    object->GetCollider()->AddCollider (conc, trans);
     return true;
   }
   else
@@ -720,17 +732,16 @@ bool csPhysicsLoader2::ParseColliderTerrain (iDocumentNode *node, CS::Collisions
     csRef<iTerrainSystem> terrain = scfQueryInterface<iTerrainSystem> (m->GetMeshObject ());
     if (!terrain)
     {
-      synldr->ReportError ("crystalspace.dynamics.loader",
-        node, "Unable to find terrain system in engine");
+      synldr->ReportError ("crystalspace.dynamics.loader", node, "Unable to find terrain system in engine");
       return false;
     }
-    csRef<CS::Collisions::iColliderTerrain> terr = collisionSystem->CreateColliderTerrain (terrain);
+    csRef<CS::Collisions::iCollisionTerrain> terr = collisionSystem->CreateCollisionTerrain (terrain);
 
     csOrthoTransform trans;
     trans.Identity ();
     ParseTransform (node, trans);
 
-    object->AddCollider (terr, trans);
+    // TODO: Fix terrain parsing
     return true;
   }
   else

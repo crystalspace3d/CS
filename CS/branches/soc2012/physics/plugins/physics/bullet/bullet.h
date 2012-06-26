@@ -147,10 +147,10 @@ public:
 
   virtual void SetGravity (const csVector3& v);
   virtual const csVector3 GetGravity () const;
-  virtual void SetLinearDamping (float d);
-  virtual float GetLinearDamping () const;
-  virtual void SetAngularDamping (float d);
-  virtual float GetAngularDamping () const;
+  virtual void SetLinearDampener (float d);
+  virtual float GetLinearDampener () const;
+  virtual void SetRollingDampener (float d);
+  virtual float GetRollingDampener () const;
   virtual void EnableAutoDisable (bool enable);
   virtual bool AutoDisableEnabled ();
   virtual void SetAutoDisableParams (float linear, float angular, int steps,

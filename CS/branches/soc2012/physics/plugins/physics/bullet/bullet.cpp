@@ -202,22 +202,22 @@ const csVector3 csBulletDynamicsSystem::GetGravity () const
   return BulletToCS (v, inverseInternalScale);
 }
 
-void csBulletDynamicsSystem::SetLinearDamping (float dampening)
+void csBulletDynamicsSystem::SetLinearDampener (float dampening)
 {
   linearDampening = dampening;
 }
 
-float csBulletDynamicsSystem::GetLinearDamping () const
+float csBulletDynamicsSystem::GetLinearDampener () const
 {
   return linearDampening;
 }
 
-void csBulletDynamicsSystem::SetAngularDamping (float dampening)
+void csBulletDynamicsSystem::SetRollingDampener (float dampening)
 {
   angularDampening = dampening;
 }
 
-float csBulletDynamicsSystem::GetAngularDamping () const
+float csBulletDynamicsSystem::GetRollingDampener () const
 {
   return angularDampening;
 }

@@ -31,9 +31,6 @@
 #include "csutil/cscolor.h"
 #include "btBulletCollisionCommon.h"
 
-#ifdef _DEBUG
-#define OBJECT_DEBUG_NAMES
-#endif
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {

@@ -49,15 +49,19 @@ using csPhysicalBody::Disable;
 using csPhysicalBody::IsEnabled;
 
 private:
-  // TODO: remove as much as possible of these fields and store them in the btRigidBody instead
   btRigidBody* btBody;
+  csBulletMotionState* motionState;
   CS::Physics::RigidBodyState physicalState;
   short anchorCount;
   csRef<CS::Physics::iKinematicCallback> kinematicCb;
   bool tempAddedColliders;    // we want to get rid of this as soon as possible
 
 public:
-  csBulletRigidBody (csBulletSystem* phySys, bool isStatic = false);
+  void CreateRigidBodyObject(CS::Physics::RigidBodyProperties* props);
+
+
+public:
+  csBulletRigidBody (csBulletSystem* phySys);
   virtual ~csBulletRigidBody ();
 
   virtual iObject* QueryObject () { return (iObject*) this; }
@@ -70,18 +74,7 @@ public:
 
   virtual void RebuildObject ();
 
-  virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform (csMatrix3 (), csVector3 (0)));
-  virtual void RemoveCollider (CS::Collisions::iCollider* collider);
-  virtual void RemoveCollider (size_t index);
-
-  virtual CS::Collisions::iCollider* GetCollider (size_t index) {return csBulletCollisionObject::GetCollider (index);}
-  virtual size_t GetColliderCount () {return colliders.GetSize ();}
-
-  virtual void SetCollisionGroup (const char* name) {csBulletCollisionObject::SetCollisionGroup (name);}
-  virtual const char* GetCollisionGroup () const {return csBulletCollisionObject::GetCollisionGroup ();}
-
-  virtual void SetCollisionCallback (CS::Collisions::iCollisionCallback* cb) {collCb = cb;}
-  virtual CS::Collisions::iCollisionCallback* GetCollisionCallback () {return collCb;}
+  virtual void SetCollider (CS::Collisions::iCollider* collider);
 
   virtual bool Collide (iCollisionObject* otherObject) {return csBulletCollisionObject::Collide (otherObject);}
   virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end)
@@ -92,9 +85,10 @@ public:
     return csBulletCollisionObject::GetContactObject (index);}
 
   btRigidBody* GetBulletRigidPointer () {return btBody;}
-  virtual void CreateBulletObject();
   virtual bool RemoveBulletObject ();
   virtual bool AddBulletObject ();
+
+  virtual void csBulletRigidBody::SetTransform (const csOrthoTransform& trans);
 
   //iPhysicalBody
   
@@ -106,6 +100,8 @@ public:
 
   virtual void SetMass (btScalar mass);
   virtual btScalar GetMass () const;
+
+  void SetMassInternal(btScalar mass);
 
   virtual btScalar GetDensity () const {return density;}
   virtual void SetDensity (btScalar density);

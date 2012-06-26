@@ -112,7 +112,7 @@ namespace CS { namespace Collisions {
     void SetName(const char* newName) { name = newName; }
 
     /// Get the collision group of all objects that will be constructed with these properties
-    const const CollisionGroup& GetCollisionGroup() const { return collGroup; }
+    const CollisionGroup& GetCollisionGroup() const { return collGroup; }
     /// Set the collision group of all objects that will be constructed with these properties
     void SetCollisionGroup(const CollisionGroup& value) { collGroup = value; }
   };

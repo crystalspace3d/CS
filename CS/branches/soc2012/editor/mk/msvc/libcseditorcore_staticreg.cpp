@@ -22,90 +22,25 @@ static char const metainfo_cseditorcore[] =
 "  <scf>"
 "    <classes>"
 "      <class>"
-"        <name>crystalspace.editor.plugin.core.gui</name>"
-"        <implementation>Editor</implementation>"
-"        <description>CSEditor GUI</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.editor.plugin.core.cs3dpanel</name>"
-"        <implementation>CS3DPanel</implementation>"
-"        <description>CSEditor 3D Panel</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.editor.plugin.core.scenebrowserpanel</name>"
-"        <implementation>SceneBrowserPanel</implementation>"
-"        <description>CSEditor Scene Browser Panel</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.editor.plugin.core.assetbrowserpanel</name>"
-"        <implementation>AssetBrowserPanel</implementation>"
-"        <description>CSEditor Asset Browser Panel</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.editor.plugin.core.csobjectmaplistener</name>"
-"        <implementation>CSObjectMapListener</implementation>"
-"        <description>CSEditor CS Object Map Listener</description>"
-"      </class>"
-"      <class>"
-"        <name>crystalspace.editor.plugin.core.csinterfacewrappers</name>"
-"        <implementation>CSInterfaceWrappers</implementation>"
-"        <description>CSEditor CS Interface Wrappers</description>"
+"        <name>crystalspace.editor.core</name>"
+"        <implementation>EditorManager</implementation>"
+"        <description>Crystal Space Editor Core System</description>"
 "      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
 ;
-  #ifndef Editor_FACTORY_REGISTER_DEFINED 
-  #define Editor_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(Editor) 
-  #endif
-  #ifndef CS3DPanel_FACTORY_REGISTER_DEFINED 
-  #define CS3DPanel_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(CS3DPanel) 
-  #endif
-  #ifndef SceneBrowserPanel_FACTORY_REGISTER_DEFINED 
-  #define SceneBrowserPanel_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(SceneBrowserPanel) 
-  #endif
-  #ifndef AssetBrowserPanel_FACTORY_REGISTER_DEFINED 
-  #define AssetBrowserPanel_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(AssetBrowserPanel) 
-  #endif
-  #ifndef CSObjectMapListener_FACTORY_REGISTER_DEFINED 
-  #define CSObjectMapListener_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(CSObjectMapListener) 
-  #endif
-  #ifndef CSInterfaceWrappers_FACTORY_REGISTER_DEFINED 
-  #define CSInterfaceWrappers_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(CSInterfaceWrappers) 
+  #ifndef EditorManager_FACTORY_REGISTER_DEFINED 
+  #define EditorManager_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(EditorManager) 
   #endif
 
 class cseditorcore
 {
 SCF_REGISTER_STATIC_LIBRARY(cseditorcore,metainfo_cseditorcore)
-  #ifndef Editor_FACTORY_REGISTERED 
-  #define Editor_FACTORY_REGISTERED 
-    Editor_StaticInit Editor_static_init__; 
-  #endif
-  #ifndef CS3DPanel_FACTORY_REGISTERED 
-  #define CS3DPanel_FACTORY_REGISTERED 
-    CS3DPanel_StaticInit CS3DPanel_static_init__; 
-  #endif
-  #ifndef SceneBrowserPanel_FACTORY_REGISTERED 
-  #define SceneBrowserPanel_FACTORY_REGISTERED 
-    SceneBrowserPanel_StaticInit SceneBrowserPanel_static_init__; 
-  #endif
-  #ifndef AssetBrowserPanel_FACTORY_REGISTERED 
-  #define AssetBrowserPanel_FACTORY_REGISTERED 
-    AssetBrowserPanel_StaticInit AssetBrowserPanel_static_init__; 
-  #endif
-  #ifndef CSObjectMapListener_FACTORY_REGISTERED 
-  #define CSObjectMapListener_FACTORY_REGISTERED 
-    CSObjectMapListener_StaticInit CSObjectMapListener_static_init__; 
-  #endif
-  #ifndef CSInterfaceWrappers_FACTORY_REGISTERED 
-  #define CSInterfaceWrappers_FACTORY_REGISTERED 
-    CSInterfaceWrappers_StaticInit CSInterfaceWrappers_static_init__; 
+  #ifndef EditorManager_FACTORY_REGISTERED 
+  #define EditorManager_FACTORY_REGISTERED 
+    EditorManager_StaticInit EditorManager_static_init__; 
   #endif
 public:
  cseditorcore();

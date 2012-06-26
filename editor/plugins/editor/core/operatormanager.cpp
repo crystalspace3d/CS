@@ -22,19 +22,11 @@
 #include "csutil/scf.h"
 
 #include "ieditor/context.h"
-#include "ieditor/editor.h"
 #include "iutil/document.h"
-#include "iutil/plugin.h"
+#include "ivaria/reporter.h"
 
 #include "editor.h"
 #include "operatormanager.h"
-//#include "mainframe.h"
-
-#include <wx/colordlg.h>
-#include <wx/msgdlg.h>
-#include <wx/button.h>
-#include <wx/textdlg.h>
-#include <wx/stattext.h>
 
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
@@ -42,20 +34,17 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 OperatorManager::OperatorManager (iObjectRegistry* obj_reg, Editor* editor)
   : scfImplementationType (this), object_reg (obj_reg), editor (editor)
 {
-  //object_reg->Register (this, "iOperatorManager");
-  
   nameRegistry = csEventNameRegistry::GetRegistry (object_reg);
   if (!nameRegistry) return;
 
   editor->GetContext ()->GetEventQueue ()->RegisterListener (this);
 
-  //Register for the input events, for Handle ().
+  // Register for the input events, for Handle ().
   editor->GetContext ()->GetEventQueue ()->RegisterListener (this, nameRegistry->GetID ("crystalspace.input"));
 }
 
 OperatorManager::~OperatorManager ()
 {
-  //object_reg->Unregister (this, "iOperatorManager");
 }
 
 bool OperatorManager::HandleEvent (iEvent& ev)

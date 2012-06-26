@@ -24,6 +24,7 @@
 
 #include "ieditor/action.h"
 #include "ieditor/context.h"
+#include "ieditor/editor.h"
 #include "iengine/camera.h"
 #include "iengine/mesh.h"
 #include "iutil/csinput.h"
@@ -45,9 +46,10 @@ SelectOperator::SelectOperator (iBase* parent)
 {
 }
 
-bool SelectOperator::Initialize (iObjectRegistry* obj_reg, const char* identifier,
-				 const char* label, const char* desc)
+bool SelectOperator::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+				 const char* identifier, const char* label, const char* desc)
 {
+  this->editor = editor;
   this->object_reg = obj_reg;
   this->identifier = identifier;
   this->label = label;
@@ -63,38 +65,37 @@ SelectOperator::~SelectOperator ()
 {
 }
 
-bool SelectOperator::Poll (iContext* ctx)
+bool SelectOperator::Poll (iContext* context)
 {
-  return ctx != 0 && ctx->GetCamera ();
+  csRef<iContextCamera> cameraContext = scfQueryInterface<iContextCamera> (context);
+  return cameraContext->GetCamera ();
 }
 
-OperatorState SelectOperator::Execute (iContext*)
+OperatorState SelectOperator::Execute (iContext* context)
 {
   return OperatorFinished;
 }
 
-OperatorState SelectOperator::Invoke (iContext* ctx, iEvent* ev)
+OperatorState SelectOperator::Invoke (iContext* context, iEvent* event)
 {
-  if (ctx->GetCamera ()->GetSector ())
+  csRef<iContextCamera> cameraContext = scfQueryInterface<iContextCamera> (context);
+  if (cameraContext->GetCamera ()->GetSector ())
   {
-    int mouse_x = csMouseEventHelper::GetX (ev);
-    int mouse_y = csMouseEventHelper::GetY (ev);
+    int mouse_x = csMouseEventHelper::GetX (event);
+    int mouse_y = csMouseEventHelper::GetY (event);
     csScreenTargetResult result =
       csEngineTools::FindScreenTarget (csVector2 (mouse_x, mouse_y),
-				       100000.0f, ctx->GetCamera ());
+				       100000.0f, cameraContext->GetCamera ());
     if (result.mesh)
     {
       printf ("SelectOperator::Invoke select\n");
       csRef<iKeyboardDriver> kbd =
 	csQueryRegistry<iKeyboardDriver> (object_reg);
-      // TODO: not from the registry
-      csRef<iActionManager> actionManager =
-	csQueryRegistry<iActionManager> (object_reg);
       csRef<iAction> action;
       action.AttachNew (new SelectObjectAction
 			(object_reg, result.mesh->QueryObject (),
 			 kbd->GetKeyState (CSKEY_SHIFT)));
-      actionManager->Do (action);
+      editor->GetActionManager ()->Do (action);
     }
   }
   return OperatorFinished;
@@ -113,14 +114,14 @@ SelectObjectAction::SelectObjectAction (iObjectRegistry* object_reg,
 {
 }
 
-bool SelectObjectAction::Do () 
-{ 
+bool SelectObjectAction::Do (iContext* context)
+{
   if (object)
   {
-    // TODO: not from the registry
-    csRef<iContext> context = csQueryRegistry<iContext> (object_reg);
-    if (!multiple) context->ClearSelectedObjects ();
-    context->AddSelectedObject (object);
+    csRef<iContextObjectSelection> objectSelectionContext =
+      scfQueryInterface<iContextObjectSelection> (context);
+    if (!multiple) objectSelectionContext->ClearSelectedObjects ();
+    objectSelectionContext->AddSelectedObject (object);
     printf ("SelectObjectAction::Do AddSelectedObject %s\n",
 	    multiple ? "multi" : "single");
     return true; 
@@ -128,13 +129,13 @@ bool SelectObjectAction::Do ()
   return false; 
 }
 
-bool SelectObjectAction::Undo () 
-{ 
+bool SelectObjectAction::Undo (iContext* context)
+{
   if (object)
   {
-    // TODO: not from the registry
-    csRef<iContext> context = csQueryRegistry<iContext> (object_reg);
-    context->RemoveSelectedObject (object);
+    csRef<iContextObjectSelection> objectSelectionContext =
+      scfQueryInterface<iContextObjectSelection> (context);
+    objectSelectionContext->RemoveSelectedObject (object);
     printf ("SelectObjectAction::Undo RemoveSelectedObject\n");
     return true; 
   }

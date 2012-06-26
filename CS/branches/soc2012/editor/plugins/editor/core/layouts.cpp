@@ -69,31 +69,47 @@ void BaseLayout::OnMenu (wxCommandEvent& event)
 
 iOperator* BaseLayout::GetOperator (const char* id)
 {
-  csRef<iOperator> op = editor->GetOperatorManager ()->Create (id);
+  csRef<iOperator> op = editor->GetOperatorManager ()->CreateOperator (id);
   return op;
 }
 
-iMenu* BaseLayout::GetMenu (const char* id)
+iMenu* BaseLayout::GetMenu (const char* pluginName)
 {
-  csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (object_reg);
-  csRef<iComponent> comp = plugmgr->QueryPluginInstance (id);
-  if (!comp)
-  {
-    comp = plugmgr->LoadPluginInstance
-      (id, iPluginManager::lpiInitialize
-       | iPluginManager::lpiReportErrors
-       | iPluginManager::lpiLoadDependencies);
-  }
+  csRef<iMenu>* menu =
+    registeredMenus.GetElementPointer (pluginName);
+  if (menu) return *menu;
 
-  csRef<iMenu> menu = scfQueryInterfaceSafe<iMenu> (comp);
-  if (!menu)
+  csRef<iBase> base = iSCF::SCF->CreateInstance (pluginName);
+  if (!base)
   {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR, "crystalspace.editor.core.layout",
-	      "The requested component %s is not of type iMenu", CS::Quote::Single (id));
+    if (!iSCF::SCF->ClassRegistered  (pluginName))
+      csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+		"crystalspace.editor.core.layout",
+		"The editor menu %s is not registered",
+		CS::Quote::Single (pluginName));
+
+    else csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+		   "crystalspace.editor.core.layout",
+		   "Failed to instantiate editor menu %s",
+		   CS::Quote::Single (pluginName));
+
     return nullptr;
   }
 
-  return menu;
+  csRef<iMenu> ref = scfQueryInterface<iMenu> (base);
+  if (!ref)
+  {
+    csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+	      "crystalspace.editor.core.layout",
+	      "The instanciation of the editor menu %s is not of type iMenu",
+	      CS::Quote::Single (pluginName));
+    return nullptr;
+  }
+
+  base->DecRef ();
+
+  registeredMenus.PutUnique (pluginName, ref);
+  return ref;
 }
 
 //----------------------------------------------------------------------

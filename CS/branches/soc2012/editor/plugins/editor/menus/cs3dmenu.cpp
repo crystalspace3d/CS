@@ -39,12 +39,6 @@ CS3DMenu::~CS3DMenu ()
 {
 }
 
-bool CS3DMenu::Initialize (iObjectRegistry* obj_reg)
-{
-  object_reg = obj_reg;
-  return true;
-}
-
 bool CS3DMenu::Poll (iContext* context)
 {
   return true;

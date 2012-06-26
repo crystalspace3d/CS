@@ -29,21 +29,15 @@ using namespace CS::EditorApp;
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
-class CS3DMenu : public scfImplementation2<CS3DMenu, iMenu, iComponent>
+class CS3DMenu : public scfImplementation1<CS3DMenu, iMenu>
 {
 public:
   CS3DMenu (iBase* parent);
   virtual ~CS3DMenu ();
 
-  // iComponent
-  virtual bool Initialize (iObjectRegistry* obj_reg);
-  
   // iMenu
   virtual bool Poll (iContext* context);
   virtual void Draw (iContext* context, iLayout* layout);
-  
-private:
-  iObjectRegistry* object_reg;
 };
 
 }

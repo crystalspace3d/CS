@@ -28,24 +28,27 @@ namespace CS {
 namespace EditorApp {
   
 struct iContext;
+struct iEditor;
 
-
+/**
+ * State of the execution of an iOperator
+ */
 enum OperatorState
 {
   OperatorFinished = 0,
   OperatorRunningModal = 1,
-  OperatorCanceled = 2
+  OperatorCancelled = 2
 };
 
 /**
- * 
+ * An operator to be executed in an iEditor session.
  */
 struct iOperator : public virtual iBase
 {
   SCF_INTERFACE (iOperator, 0, 0, 1);
   
-  virtual bool Initialize (iObjectRegistry* obj_reg, const char* identifier,
-			   const char* label, const char* desc) = 0;
+  virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+			   const char* identifier, const char* label, const char* desc) = 0;
 
   /**
    * Check whether this operator can run.
@@ -87,16 +90,18 @@ struct iOperator : public virtual iBase
   virtual const char* GetDescription () = 0;
 };
 
-
+/**
+ * Management of the iEditor operators.
+ */
 struct iOperatorManager : public virtual iBase
 {
   SCF_INTERFACE (iOperatorManager, 0, 0, 1);
   
-  virtual csPtr<iOperator> Create (const char*) = 0;
+  virtual csPtr<iOperator> CreateOperator (const char* pluginName) = 0;
+
+  virtual iOperator* Execute (iOperator* op) = 0;
   
-  virtual iOperator* Execute (iOperator*) = 0;
-  
-  virtual iOperator* Invoke (iOperator*, iEvent*) = 0; 
+  virtual iOperator* Invoke (iOperator* op, iEvent* event) = 0; 
 };  
 
 } // namespace EditorApp

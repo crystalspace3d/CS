@@ -24,6 +24,8 @@
 
 #include "modifiableimpl.h"
 
+class iObjectRegistry;
+
 /// Test entity for GUI generation.
 class csTestModifiable : public scfImplementation1<csTestModifiable, iModifiable>
 {

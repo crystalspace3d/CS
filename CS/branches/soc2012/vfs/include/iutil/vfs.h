@@ -306,8 +306,8 @@ struct iFileSystem : public virtual iBase
 {
   SCF_INTERFACE(iFileSystem, 0, 0, 0);
 
-  virtual csPtr<iFile> Open (const char *RealPath,
-                             const char *VfsPath,
+  virtual csPtr<iFile> Open (const char *Path,
+                             const char *PathPrefix,
                              int Mode,
                              bool UseCaching) = 0;
 

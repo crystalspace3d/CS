@@ -73,7 +73,7 @@ const csEventID MenuItem::GetEventID () const
 //---------------------------------------------------------------
 
 SeparatorMenuItem::SeparatorMenuItem (wxMenu* menu, wxMenuItem* item)
-  : scfImplementationType (this), item (item)
+  : scfImplementationType (this), menu (menu), item (item)
 {
 }
 
@@ -157,7 +157,8 @@ MenuManager::MenuManager (Editor* editor)
 
 MenuManager::~MenuManager ()
 {
-  //delete menuBar;
+  // The 'menuBar' doesn't need to be deleted since this is made
+  // automatically by wxWidgets
 }
 
 wxMenuBar* MenuManager::GetwxMenuBar () const
@@ -171,23 +172,19 @@ csRef<iSubMenu> MenuManager::GetSubMenu (const char* item)
 
   // Check if this submenu already exists
   subMenus.Compact ();
-  printf ("menu size: %i\n", (int) subMenus.GetSize ());
   for (size_t i = 0; i < subMenus.GetSize (); i++)
     if (subMenus[i]->title.CmpNoCase (title) == 0)
       return csRef<iSubMenu> (subMenus[i]);
-      //return subMenus[i];
 
-  // Create a new submenu
+  // If not found then create a new submenu
   wxMenu* menu = new wxMenu ();
   menuBar->Append (menu, title);
 
   csRef<SubMenu> ref;
   ref.AttachNew (new SubMenu (this, menu, title));
   subMenus.Push (ref);
-  //subMenus.Push (new SubMenu (this, menu, title));
 
   return ref;
-  //return csPtr<iSubMenu> (ref);
 }
 
 }

@@ -54,6 +54,8 @@ int main (int argc, const char* const argv[])
 
 #endif // defined(CS_PLATFORM_WIN32)
 
+using namespace CS::EditorApp;
+
 // Define a new application type
 class EditorApp : public wxApp
 {
@@ -81,16 +83,14 @@ class EditorApp : public wxApp
 
 public:
   iObjectRegistry* object_reg;
-  csRef<CS::EditorApp::iEditorManager> editorManager;
+  csRef<iEditorManager> editorManager;
 
   virtual bool OnInit (void);
   virtual int OnExit (void);
 };
 
 
-IMPLEMENT_APP (EditorApp)
-
-using namespace CS::EditorApp;
+IMPLEMENT_APP (EditorApp);
 
 /*---------------------------------------------------------------------*
  * Main function
@@ -135,6 +135,7 @@ bool EditorApp::OnInit (void)
 
   // Load the specific plugins for the Crystal Space editor
   iSpaceManager* spaceManager = editor->GetSpaceManager ();
+
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.maploader")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.exit")) return false;
@@ -155,6 +156,10 @@ int EditorApp::OnExit ()
   // Send the general Crystal Space 'quit' event
   csRef<iEventQueue> queue (csQueryRegistry<iEventQueue> (object_reg));
   if (queue) queue->GetEventOutlet ()->Broadcast (csevQuit (object_reg));
+
+  // Invalidate the editor manager component since it will be destroyed by
+  // csInitializer::DestroyApplication ()
+  editorManager.Invalidate ();
 
   // Close the Crystal Space environment
   csInitializer::DestroyApplication (object_reg);

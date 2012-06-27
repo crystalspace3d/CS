@@ -44,8 +44,8 @@ EditorManager::EditorManager (iBase* parent)
 
 EditorManager::~EditorManager ()
 {
-  // Remove ourself from the object registry
-  //object_reg->Unregister (this, "iEditorManager");
+  // The deletion of the iEditor instances is managed automatically
+  // by wxWidgets
 }
 
 bool EditorManager::ReportError (const char* description, ...) const
@@ -117,15 +117,15 @@ iEditor* EditorManager::CreateEditor (const char* name, const char* title, iCont
     return nullptr;
   }
 
-  csRef<Editor> editor;
-  editor.AttachNew (new Editor (this, name, title, context));
+  Editor* editor = new Editor (this, name, title, context);
   editors.Push (editor);
+
   return editor;
 }
 
 void EditorManager::RemoveEditor (iEditor* editor)
 {
-  editors.Delete (static_cast<Editor*> (editor));
+  editor->GetwxFrame ()->Close (false);
 }
 
 iEditor* EditorManager::FindEditor (const char* name)
@@ -148,10 +148,13 @@ size_t EditorManager::GetEditorCount () const
 
 //------------------------------------  Editor  ------------------------------------
 
-Editor::Editor (EditorManager* manager, const char* name, const char* title, iContext* context)
+Editor::Editor (EditorManager* manager, const char* name, const char* title,
+		iContext* context)
   // TODO: use size from CS config
-  : scfImplementationType (this), wxFrame (nullptr, -1, wxString::FromAscii (title), wxDefaultPosition, wxSize (1024, 768)/*, pos, size*/),
-    name (name), manager (manager), context (context), pump (nullptr)
+  : scfImplementationType (this),
+  wxFrame (nullptr, -1, wxString::FromAscii (title), wxDefaultPosition,
+	   wxSize (1024, 768)),
+  name (name), manager (manager), context (context), pump (nullptr)
 {
   // Create the main objects and managers
   actionManager.AttachNew (new ActionManager (manager->object_reg, this));
@@ -162,7 +165,6 @@ Editor::Editor (EditorManager* manager, const char* name, const char* title, iCo
   // Create the status bar
   statusBar = new StatusBar (this);
   SetStatusBar (statusBar);
-  //SetStatusText (wxT ("Ready"));
 
   PositionStatusBar ();
   statusBar->Show ();
@@ -173,6 +175,9 @@ Editor::Editor (EditorManager* manager, const char* name, const char* title, iCo
 
 Editor::~Editor ()
 {
+  // Remove ourself from the list maintained by the editor manager
+  manager->editors.Delete (this);
+
   delete statusBar;
   delete pump;
 }

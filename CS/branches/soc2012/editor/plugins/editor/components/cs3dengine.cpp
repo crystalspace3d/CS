@@ -17,21 +17,16 @@
 */
 
 #include "cssysdef.h"
+#include "cstool/initapp.h"
 #include "csutil/scf.h"
 #include "ieditor/context.h"
 #include "ieditor/operator.h"
 #include "iengine/engine.h"
-//#include "igraphic/imageio.h"
-//#include "imap/loader.h"
-//#include "imap/saver.h"
-//#include "iutil/plugin.h"
+#include "ivideo/graph2d.h"
 #include "ivideo/graph3d.h"
+#include "ivideo/wxwin.h"
 
 #include "cs3dengine.h"
-
-#include "cstool/initapp.h"
-#include "ivideo/graph2d.h"
-#include "ivideo/wxwin.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
@@ -56,6 +51,7 @@ bool CS3DEngine::Initialize (iEditor* editor)
 
   // Request the WX 2D canvas along with the 3D renderer and the engine plugins
   if (!csInitializer::RequestPlugins (object_reg,
+	CS_REQUEST_IMAGELOADER,
 	CS_REQUEST_PLUGIN ("crystalspace.graphics2d.wxgl", iGraphics2D),
 	CS_REQUEST_OPENGL3D,
         CS_REQUEST_ENGINE,

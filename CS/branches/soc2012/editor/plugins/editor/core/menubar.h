@@ -38,10 +38,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 class Editor;
 class MenuManager;
 
-class MenuItem : public scfImplementation1<MenuItem, iMenuItem>, public wxEvtHandler
+class MenuItem
+  : public scfImplementation1<MenuItem, iMenuItem>, public wxEvtHandler
 {
 public:
-  MenuItem (MenuManager* menuManager, wxMenu* menu, wxMenuItem* item, const char* eventName);
+  MenuItem (MenuManager* menuManager, wxMenu* menu,
+	    wxMenuItem* item, const char* eventName);
   virtual ~MenuItem ();
   
   virtual wxMenuItem* GetwxMenuItem () const;
@@ -57,7 +59,8 @@ private:
 
 //---------------------------------------------------------------
 
-class SeparatorMenuItem : public scfImplementation1<SeparatorMenuItem, iMenuItem>
+class SeparatorMenuItem
+  : public scfImplementation1<SeparatorMenuItem, iMenuItem>
 {
 public:
   SeparatorMenuItem (wxMenu* menu, wxMenuItem* item);
@@ -73,7 +76,8 @@ private:
 
 //---------------------------------------------------------------
 
-class SubMenu : public scfImplementation1<SubMenu, iSubMenu>, public wxEvtHandler
+class SubMenu
+  : public scfImplementation1<SubMenu, iSubMenu>, public wxEvtHandler
 {
 public:
   SubMenu (MenuManager* menuManager, wxMenu* menu, const wxString& title);
@@ -95,7 +99,8 @@ private:
 
 //---------------------------------------------------------------
 
-class MenuManager : public scfImplementation1<MenuManager, iMenuManager>, public wxEvtHandler
+class MenuManager
+  : public scfImplementation1<MenuManager, iMenuManager>, public wxEvtHandler
 {
 public:
   MenuManager (Editor* editor);

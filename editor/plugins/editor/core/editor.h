@@ -74,7 +74,7 @@ public:
 
 public:
   iObjectRegistry* object_reg;
-  csRefArray<Editor> editors;
+  csArray<Editor*> editors;
 };
 
 class Editor
@@ -126,6 +126,7 @@ private:
     
     virtual void Notify ()
     { editor->Update (); }
+
   private:
     Editor* editor;
   };

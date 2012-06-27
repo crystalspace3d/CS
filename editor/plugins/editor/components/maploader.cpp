@@ -20,21 +20,15 @@
 #include "cstool/initapp.h"
 #include "csutil/scf.h"
 #include "ieditor/context.h"
-#include "ieditor/operator.h"
 #include "iengine/engine.h"
-#include "igraphic/imageio.h"
 #include "imap/loader.h"
 #include "imap/saver.h"
 #include "iutil/plugin.h"
 #include "ivaria/pmeter.h"
-//#include "ivideo/graph2d.h"
-#include "ivideo/graph3d.h"
-//#include "ivideo/wxwin.h"
 
 #include "maploader.h"
 #include "vfsfiledialog.h"
 
-//#include <wx/wx.h>
 #include <wx/frame.h>
 
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
@@ -60,7 +54,7 @@ bool MapLoader::Initialize (iEditor* editor)
 
   // Request the main loader plugins of Crystal Space
   if (!csInitializer::RequestPlugins (object_reg,
-        CS_REQUEST_IMAGELOADER,
+				      //CS_REQUEST_IMAGELOADER,
         CS_REQUEST_LEVELLOADER,
         CS_REQUEST_END))
     return ReportError ("Can't initialize standard Crystal Space plugins!");
@@ -69,9 +63,6 @@ bool MapLoader::Initialize (iEditor* editor)
   csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
   if (!engine) return ReportError ("Failed to locate 3D engine!");
   engine->SetSaveableFlag (true);
-
-  // Create the 'loader' collection
-  //collection = engine->CreateCollection ("loader");
 
   // Load the iSaver plugin
   if (!csInitializer::RequestPlugins (object_reg,

@@ -75,7 +75,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Opcode2)
 
     // iCollisionSystem
     virtual void SetInternalScale (float scale);
-    virtual csPtr<CS::Collisions::iColliderCompound> CreateColliderCompound() { return nullptr; }
+    virtual csPtr<CS::Collisions::iColliderCompound> CreateColliderCompound()
+    { return csPtr<CS::Collisions::iColliderCompound> (nullptr); }
     virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (
       iMeshWrapper* mesh, bool simplify = false);
     virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);

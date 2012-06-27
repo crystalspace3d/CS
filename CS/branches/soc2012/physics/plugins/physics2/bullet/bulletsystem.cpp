@@ -237,7 +237,8 @@ csPtr<CS::Collisions::iGhostCollisionObject> csBulletSystem::CreateGhostCollisio
 
 csPtr<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject (CS::Collisions::CollisionObjectProperties* props)
 {
-  return nullptr;
+  // TODO
+  return csPtr<CS::Collisions::iCollisionObject> (nullptr);
 }
 
 csPtr<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor (CS::Collisions::CollisionActorProperties* props)

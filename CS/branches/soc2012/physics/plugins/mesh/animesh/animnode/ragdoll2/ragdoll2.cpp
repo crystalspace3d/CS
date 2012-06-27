@@ -571,7 +571,8 @@ csRef<iCollider> RagdollNode::CreateBoneCollider(CS::Animation::iBodyBoneCollide
       return csRef<iColliderSphere>(collisionSystem->CreateColliderSphere (radius));
     }
   }
-  return nullptr;
+
+  return csRef<iCollider> (nullptr);
 }
 
 void RagdollNode::UpdateBoneState (BoneData* boneData)

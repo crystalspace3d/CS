@@ -125,18 +125,21 @@ public:
 // OS Native iFileSystem
 class NativeFS : public scfImplementation1<NativeFS, iFileSystem>
 {
+  // Real-world mountpoint of this instance
+  char *MountRoot;
   // Last error status
   int LastError;
 
-  NativeFS ();
+  // Construct a NativeFS instance with 'RealPath' as mount root.
+  NativeFS (const char *RealPath);
 
 public:
 
   // Destructor
   virtual ~NativeFS ();
   // Open a file of given path and return iFile pointer
-  virtual csPtr<iFile> Open (const char *RealPath,
-                             const char *VfsPath,
+  virtual csPtr<iFile> Open (const char *Path,
+                             const char *PathPrefix,
                              int Mode,
                              bool UseCaching);
   // Move file from OldPath to NewPath

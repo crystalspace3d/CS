@@ -88,7 +88,7 @@ public:
   virtual bool RemoveBulletObject ();
   virtual bool AddBulletObject ();
 
-  virtual void csBulletRigidBody::SetTransform (const csOrthoTransform& trans);
+  virtual void SetTransform (const csOrthoTransform& trans);
 
   //iPhysicalBody
   

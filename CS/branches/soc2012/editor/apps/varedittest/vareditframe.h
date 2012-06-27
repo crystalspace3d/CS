@@ -53,7 +53,8 @@
 #include <stdarg.h>
 #include "csutil/array.h"
 #include "csutil/csstring.h"
-#include "iutil/event.h"
+#include <iutil/event.h>
+#include <iutil/objreg.h>
 #include <wx/variant.h>
 #include <string>
 using namespace std;

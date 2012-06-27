@@ -50,6 +50,7 @@
 //*********************************
 #include <csutil/cscolor.h>
 #include <csgeom/vector3.h>
+#include <ivaria/translator.h>
 #include "wx/propgrid/advprops.h"
 #include "pump.h"
 
@@ -127,6 +128,7 @@ ModifiableTestFrame::ModifiableTestFrame ( iObjectRegistry* object_reg )
 
   frame = this;
 
+  // Initialize the pump driving the CS loop
   Pump* p = new Pump();
   p->s = this;
   p->Start(20);
@@ -403,10 +405,14 @@ wxVector4Property::~wxVector4Property () { }
 
 void ModifiableTestFrame::Populate (const iModifiable* dataSource)
 {
-  // all pages are cleared from the page manager
+  // All pages are cleared from the page manager
   pgMan->Clear ();
 	
   csRef<iModifiableDescription> description(dataSource->GetDescription());
+
+  // Fetch the iTranslator, to attempt to fetch existing translations of
+  // the parameter names and descriptions
+  csRef<iTranslator> translator = csQueryRegistry<iTranslator>( object_reg );
 
   pgMan->AddPage (wxT("Properties"));
   pgMan->SetExtraStyle ( wxPG_EX_HELP_AS_TOOLTIPS );
@@ -428,31 +434,34 @@ void ModifiableTestFrame::Populate (const iModifiable* dataSource)
       const iModifiableParameter* param = description->GetParameterByIndex(i);
       csVariant* variant = dataSource->GetParameterValue(param->GetID());
 
+      const char* translation;
+
+      translation = translator->GetMsg( param->GetName() );
+      wxString name( translation ? translation : param->GetName(), wxConvUTF8 );
+      
+      translation = translator->GetMsg( param->GetDescription() );
+      wxString description( translation ? translation : param->GetDescription(), wxConvUTF8 );
+
       switch (param->GetType())
       {
       case CSVAR_STRING:
       {
-	wxString stringDescription (param->GetDescription(), wxConvUTF8);
-	wxString stringName (param->GetName(), wxConvUTF8);			
-  
   wxString stringValue (variant->GetString(), wxConvUTF8);
-	wxStringProperty* stringP = new wxStringProperty (stringName);
+	wxStringProperty* stringP = new wxStringProperty (name);
 	page->Append (stringP);
 	stringP->SetValue (stringValue);
-	page->SetPropertyHelpString(stringName, stringDescription);
+	page->SetPropertyHelpString(name, description);
       }
       break;
 
       case CSVAR_LONG :
       {
-	wxString longDescription (param->GetDescription(), wxConvUTF8);
-	wxString longName (param->GetName(), wxConvUTF8);
 	wxString longValue = wxString::Format (wxT("%ld"), (int) variant->GetLong());
-	wxIntProperty* intP = new wxIntProperty(longName);				
+	wxIntProperty* intP = new wxIntProperty(name);				
 	page->Append(intP);
 	intP->SetValue(longValue);					
 	pgMan->GetGrid ()->SetPropertyValue (intP, longValue);
-	page->SetPropertyHelpString(longName, longDescription);
+	page->SetPropertyHelpString(name, description);
       }
       break;
 

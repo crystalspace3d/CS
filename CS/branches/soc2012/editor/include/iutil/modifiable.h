@@ -79,7 +79,8 @@ struct iModifiableParameter : public virtual iBase
   virtual const char* GetDescription () const = 0;
 
   /**
-   * Returns the type of this parameter                                                      */
+   * Returns the type of this parameter
+   */
   virtual csVariantType GetType () const = 0;
 
   /**

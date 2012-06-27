@@ -22,6 +22,13 @@
 #include "cssysdef.h"
 #include "vareditapp.h"
 #include "testmodifiable.h"
+#include "ivaria/translator.h"
+
+#include "plugins/translator/standard/transldr_xml.h"
+#include "iutil/document.h"
+#include "plugins/documentsystem/xmlread/xr.h"
+#include "plugins/filesys/vfs/vfs.h"
+#include "iutil/stringarray.h"
 
 IMPLEMENT_APP(VarEditTestApp);
 
@@ -39,9 +46,75 @@ bool VarEditTestApp::OnInit()
   object_reg = csInitializer::CreateEnvironment (argc, argv);
 #endif
 
+  // Load the needed plugins; so far, just the translator is needed
+  if( ! csInitializer::RequestPlugins(  object_reg, 
+
+            // Read the XML required for the name translations
+            CS_REQUEST_PLUGIN("crystalspace.documentsystem.xmlread",  iDocumentSystem),
+            // The translator itself
+            CS_REQUEST_PLUGIN("crystalspace.translator.standard",     iTranslator),
+            // Translator component for transforming the XML data into usable translations
+            CS_REQUEST_PLUGIN("crystalspace.translator.loader.xml",   iLoaderPlugin),
+            // We need a file system to read stuff from it
+            CS_REQUEST_PLUGIN("crystalspace.kernel.vfs",              iVFS),
+
+            CS_REQUEST_END ) ) 
+  {
+    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.application.varedittest",
+      "Can't initialize plugins!");
+
+    return false;
+  }
+
+  using namespace CS_PLUGIN_NAMESPACE_NAME(TransStd);
+
+  csRef<iLoaderPlugin>  loaderRef( csQueryRegistry<iLoaderPlugin>(object_reg) );
+  csRef<iTranslator>    translator( csQueryRegistry<iTranslator>( object_reg ));
+  csRef<iVFS>           vfs( csQueryRegistry<iVFS>( object_reg ) );
+  
+  if(!vfs->Mount("/lang", "$^apps$/varedittest$/lang$/")) {
+    cout << "Failed to mount" << endl;
+  } else {
+    cout << "Mounted data..." << endl;
+    cout << "Opening lang file..." << endl;
+
+    csRef<iDataBuffer> path(vfs->GetRealPath("/lang/"));
+    if(path.IsValid()) {
+      cout << "Mounted path..." << endl;
+      cout << path->GetData() << endl;
+    } else {
+      cout << "Path is not active" << endl;
+    }
+
+    csRef<iStringArray> ls(vfs->FindFiles("/lang/"));
+    cout << "files in /lang/:" << endl;
+    for(size_t i = 0; i < ls->GetSize(); i++)
+      cout << ls->Get(i) << endl;
+
+    cout << endl;
+
+    csRef<iFile> file(vfs->Open("/lang/de_DE.xml", VFS_FILE_READ));
+    if(file.IsValid()) {
+      csRef<iDataBuffer> data(file->GetAllData());
+      csRef<iDocumentSystem> documentSystem(csQueryRegistry<iDocumentSystem>( object_reg ));
+      csRef<iDocument> document(documentSystem->CreateDocument());
+
+      document->Parse(data->GetData());
+      csRef<iDocumentNode> root = document->GetRoot();
+      csRef<iBase> result = loaderRef->Parse(root, 0, 0, translator);
+      
+      cout << dynamic_cast<iTranslator*>( &*result )->GetMsg("Hello world") << endl;
+
+    } else {
+      cout << "Could not open file..." << endl;
+    }
+  }
+  csRef<iStringArray> mnt(vfs->GetMounts());
+
   // Create the main frame
   ModifiableTestFrame* frame = new ModifiableTestFrame (object_reg);
-
+  
   // Setup the frame's CS stuff
   frame->Initialize();
 

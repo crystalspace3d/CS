@@ -83,15 +83,15 @@ struct csFilePermission
 
   csFilePermission(int octal)
   {
-    user_read      = (octal >> 8) & 0x01;
-    user_write     = (octal >> 7) & 0x01;
-    user_execute   = (octal >> 6) & 0x01;
-    group_read     = (octal >> 5) & 0x01;
-    group_write    = (octal >> 4) & 0x01;
-    group_execute  = (octal >> 3) & 0x01;
-    others_read    = (octal >> 2) & 0x01;
-    others_write   = (octal >> 1) & 0x01;
-    others_execute = octal & 0x01;
+    user_read      = (octal & 0400) != 0;
+    user_write     = (octal & 0200) != 0;
+    user_execute   = (octal & 0100) != 0;
+    group_read     = (octal & 0040) != 0;
+    group_write    = (octal & 0020) != 0;
+    group_execute  = (octal & 0010) != 0;
+    others_read    = (octal & 0004) != 0;
+    others_write   = (octal & 0002) != 0;
+    others_execute = (octal & 0001) != 0;
   }
 };
 

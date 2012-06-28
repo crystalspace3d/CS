@@ -78,9 +78,13 @@ struct csFilePermission
   /// Execute permission of others
   bool others_execute;
 
-  /// empty constructor
+  /// Empty csFilePermission constructor. Members are not initialized.
   csFilePermission() { }
 
+  /** Construct csFilePermission from octal representation of Unix permissions.
+   * \param octal Unix-style permissions in octal format (e.g. 0744). The order
+   *   of digits is from the left: 0 (octal prefix), user, group, and others.
+   */
   csFilePermission(int octal)
   {
     user_read      = (octal & 0400) != 0;
@@ -306,25 +310,80 @@ struct iFileSystem : public virtual iBase
 {
   SCF_INTERFACE(iFileSystem, 0, 0, 0);
 
+  /**
+   * Opens a file within current file system. 
+   * \param Path Virtual path relative to current mount point.
+   * \param PathPrefix Absolute virtual path where current iFileSystem is
+   *   mounted.
+   * \param Mode File mode to open.
+   * \return Pointer to iFile instance of corresponding file.
+   */
   virtual csPtr<iFile> Open (const char *Path,
                              const char *PathPrefix,
                              int Mode,
                              bool UseCaching) = 0;
 
+  /**
+   * Moves a file within current file system. 
+   * \param OldPath Virtual path of source file relative to current mount point.
+   * \param NewPath Virtual path of destination path relative to current mount
+   *   point.
+   * \return true if operation succeeded; false otherwise. Use GetStatus() for
+   *   error information.
+   */
   virtual bool Move (const char *OldPath, const char *NewPath) = 0;
 
-  virtual bool GetPermission (const char *FileName, /* const char *User,*/
+  /**
+   * Get permission of specified file within current file system.
+   * \param FileName Virtual path of file to get permission
+   * \param oPerm Reference to csFilePermission structure to be written
+   * \return true if operation succeeded; false otherwise. Use GetStatus() for
+   *   error information.
+   */
+  virtual bool GetPermission (const char *FileName,
                               csFilePermission &oPerm) = 0;
 
-  virtual bool SetPermission (const char *FileName, /*const char *User,*/
+  /**
+   * Set permission of specified file within current file system.
+   * \param FileName Virtual path of file to set permission
+   * \param iPerm csFilePermission structure containing desired permission.
+   * \return true if operation succeeded; false otherwise. Use GetStatus() for
+   *   error information.
+   */
+  virtual bool SetPermission (const char *FileName,
                               const csFilePermission &iPerm) = 0;
 
+  /**
+   * Get file time of specified file within current file system.
+   * \param FileName Virtual path of file to get time
+   * \param oTime Reference of csFileTime structure to be written
+   * \return true if operation succeeded; false otherwise. Use GetStatus() for
+   *   error information.
+   */
   virtual bool GetTime (const char *FileName, csFileTime &oTime) = 0;
 
+  /**
+   * Set file time of specified file within current file system.
+   * \param FileName Virtual path of file to set time
+   * \param iTime csFileTime structure containing desired file time.
+   * \return true if operation succeeded; false otherwise. Use GetStatus() for
+   *   error information.
+   */
   virtual bool SetTime (const char *FileName, const csFileTime &iTime) = 0;
 
+  /**
+   * Query file size of specified file within current file system.
+   * \param FileName Virtual path of file to query size
+   * \param oSize 64-bit unsigned integer variable to receive file size
+   * \return true if operation succeeded; false otherwise. Use GetStatus() for
+   *   error information.
+   */
   virtual bool GetSize (const char *FileName, uint64_t &oSize) = 0;
 
+  /**
+   * Query and reset last error status.
+   * \return Last error status. If there was no error, returns VFS_STATUS_OK.
+   */
   virtual int GetStatus () = 0;
 };
 

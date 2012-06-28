@@ -299,7 +299,7 @@ size_t NativeFile::Write (const char *Data, size_t DataSize)
 
 // NativeFS methods
 
-NativeFS::NativeFS () : scfImplementationType(this)
+NativeFS::NativeFS (const char *RealPath) : scfImplementationType(this)
 {
   //
 }

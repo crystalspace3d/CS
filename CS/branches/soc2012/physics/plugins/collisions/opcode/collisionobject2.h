@@ -86,6 +86,8 @@ public:
   virtual void Rotate (const csVector3& v, float angle);
   virtual void IncreasePitch(float pitchDelta);
   virtual void IncreaseYaw(float yawDelta);
+
+  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const { /* TODO */ }
   
   virtual void SetCollider (CS::Collisions::iCollider* newCollider) { collider = newCollider; }
   virtual CS::Collisions::iCollider* GetCollider () const { return collider; }

@@ -64,7 +64,6 @@ namespace CS { namespace Collisions {
     CollisionGroupMaskValueStatic =       0x0002,
     CollisionGroupMaskValueKinematic =    0x0004,
     CollisionGroupMaskValuePortal =       0x0008,
-    CollisionGroupMaskValueTerrain =      0x0008,
     CollisionGroupMaskValuePortalCopy =   0x0010,
     CollisionGroupMaskValueActor =        0x0020
   };

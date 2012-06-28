@@ -12,9 +12,8 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
-
-using namespace CS::Physics;
 using namespace CS::Collisions;
+using namespace CS::Physics;
 using namespace CS::Geometry;
 
 void PhysDemo::CreateBoxRoom()

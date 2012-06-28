@@ -82,11 +82,6 @@ csBulletSystem::csBulletSystem (iBase* iParent)
   kinematicGroup.mask = allFilter ^ CollisionGroupMaskValueKinematic;
   collGroups.Push (kinematicGroup);
 
-  CS::Collisions::CollisionGroup terrainGroup ("Terrain");
-  terrainGroup.value = CollisionGroupMaskValueTerrain;
-  terrainGroup.mask = allFilter ^ CollisionGroupMaskValueTerrain;
-  collGroups.Push (terrainGroup);
-
   CS::Collisions::CollisionGroup portalGroup ("Portal");
   portalGroup.value = CollisionGroupMaskValuePortal;
   portalGroup.mask = allFilter ^ CollisionGroupMaskValuePortal;
@@ -102,7 +97,6 @@ csBulletSystem::csBulletSystem (iBase* iParent)
   characterGroup.mask = allFilter ^ CollisionGroupMaskValueActor;
   collGroups.Push (characterGroup);
   
-  SetGroupCollision ("PortalCopy", "Terrain", false);
   SetGroupCollision ("PortalCopy", "Static", false);
   SetGroupCollision ("Portal", "PortalCopy", false);
 

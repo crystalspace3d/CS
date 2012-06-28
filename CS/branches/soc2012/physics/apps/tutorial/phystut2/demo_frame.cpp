@@ -12,6 +12,9 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
+using namespace CS::Collisions;
+using namespace CS::Physics;
+
 void PhysDemo::PrintHelp()
 {
   csCommandLineHelper commandLineHelper;
@@ -43,7 +46,8 @@ void PhysDemo::Frame()
   // Now rotate the camera according to keyboard state
   const float timeMs = elapsed_time / 1000.0;
 
-  // Camera is controlled by a rigid body
+  // Camera is attached to a rigid body
+  // TODO: Clean this mess up
   if (physicalCameraMode == CAMERA_DYNAMIC || physicalCameraMode == CAMERA_KINEMATIC)
   {
     if (kbd->GetKeyState (CSKEY_RIGHT))
@@ -54,17 +58,97 @@ void PhysDemo::Frame()
       view->GetCamera()->GetTransform().RotateThis (CS_VEC_TILT_UP, timeMs);
     if (kbd->GetKeyState (CSKEY_PGDN))
       view->GetCamera()->GetTransform().RotateThis (CS_VEC_TILT_DOWN, timeMs);
+
     if (physicalCameraMode == CAMERA_DYNAMIC)
     {
-      if (kbd->GetKeyState (CSKEY_UP))
+      // Check if actor is on ground
+      const csVector3& vel = cameraBody->GetLinearVelocity();
+      if (vel[UpAxis] < 1)  // check that the actor is not already lifting off
       {
-        cameraBody->SetLinearVelocity (view->GetCamera()->GetTransform()
-          .GetT2O() * csVector3 (0, 0, 5));
-      }
-      if (kbd->GetKeyState (CSKEY_DOWN))
-      {
-        cameraBody->SetLinearVelocity (view->GetCamera()->GetTransform()
-          .GetT2O() * csVector3 (0, 0, -5));
+        // cast ray from center of mass downward (assume it is not a straight-standing shape)
+        // to right beneath the actor's feet
+        static const float groundAngleCosThresh = 0.7f;             // min cos of angle between ground and up-axis
+        static const float walkSpeed = 5.f;
+        static const float jumpAccel = 6.f * cameraBody->GetMass();
+
+        csVector3 aabbMin, aabbMax;
+        cameraBody->GetAABB(aabbMin, aabbMax);
+        
+        csArray<CollisionData> collisions;
+        physicalSector->CollisionTest(cameraBody, collisions);
+
+        int objBeneathCount = 0;
+        for (size_t i = 0; i < collisions.GetSize (); ++i)
+        {
+          CollisionData& coll = collisions[i];
+
+          float groundAngleCos = coll.normalWorldOnB * UpVector;
+          if (groundAngleCos > groundAngleCosThresh)
+          {
+            ++objBeneathCount;
+          }
+        }
+
+        if (objBeneathCount)
+        {
+          // actor is on ground
+          if (kbd->GetKeyState (CSKEY_UP) || kbd->GetKeyState (CSKEY_DOWN))
+          {
+            csVector3 newVelRel(0);
+            if (kbd->GetKeyState (CSKEY_UP))
+            {
+              newVelRel = csVector3(0, 0, 1);
+            }
+            else if (kbd->GetKeyState (CSKEY_DOWN))
+            {
+              newVelRel = csVector3(0, 0, -1);
+            }
+
+            csVector3 newVel = view->GetCamera()->GetTransform().GetT2O() * newVelRel;
+
+            // aim a little bit higher to overcome slopes
+            newVel[UpAxis] = 0.01f;
+            newVel.Normalize();
+
+            newVel *= walkSpeed;
+
+            cameraBody->SetLinearVelocity(newVel);
+          }
+          if (kbd->GetKeyState(CSKEY_SPACE))
+          {
+            // jump
+
+            // we stand on top of something -> Apply force to both objects
+            // of course this is not quite correct, since the up force on the actor depends on the restitution of both objects
+            // (imagine jumping from a soft piece of cloth vs. jumping from concrete)
+            csVector3 force(jumpAccel * UpVector);
+
+            // jump accelerates the body upward
+            cameraBody->AddForce(force);
+
+            // apply inverse of force to objects beneath
+            float currentSpeed = vel.Norm();
+            if (currentSpeed > 1)
+            {
+              // apply a 45¢X backwards force on the other object when walking forward
+              force = UpVector * currentSpeed + vel;
+              force /= 2 * currentSpeed;
+              force.Normalize();
+              force *= -jumpAccel / objBeneathCount;   // split force between all objects beneath
+            }
+
+            for (size_t i = 0; i < collisions.GetSize (); ++i)
+            {
+              CollisionData& coll = collisions[i];
+
+              if (coll.normalWorldOnB * UpAxis < groundAngleCosThresh)
+              {
+                iPhysicalBody* pb = coll.objectB->QueryPhysicalBody();
+                pb->AddForce(force);
+              }
+            }
+          }
+        }
       }
     }
     else

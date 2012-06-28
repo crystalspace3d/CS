@@ -56,6 +56,16 @@ namespace CS
 {
 namespace Collisions
 {
+static const int UpAxis = 1;
+static const int HorizontalAxis1 = 0;
+static const int HorizontalAxis2 = 0;
+static const csVector3 UpVector(0, 1, 0);
+
+/// 3D vector defined by Horizontal (2D) and Vertical (1D) components
+#define HV_VECTOR3(horizontal2, vertical1) csVector3(horizontal2.x, vertical1, horizontal2.y)
+
+/// 2D horizontal components of the given 3D vector
+#define HORIZONTAL_COMPONENT(vec3) csVector2(vec3.x, vec3.z);
 
 struct csConvexResult;
 struct iCollisionCallback;
@@ -216,6 +226,9 @@ struct iCollisionObject : public virtual iBase
 
   /// Get the transform.
   virtual csOrthoTransform GetTransform () const = 0;
+  
+  /// Returns the AABB of this object, centered at it's center of mass
+  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const = 0;
 
   /**
    * Set current rotation in angles around every axis and set to actor.

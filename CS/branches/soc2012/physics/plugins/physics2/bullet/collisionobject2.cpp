@@ -32,7 +32,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     : scfImplementationType (this), movable (nullptr), camera (nullptr), collCb (nullptr),
     portalWarp (btQuaternion::getIdentity ()), sector (nullptr), system (sys),
     btObject (nullptr), objectOrigin (nullptr), objectCopy (nullptr),
-    insideWorld (false), btShape(nullptr)
+    insideWorld (false)
   {
   }
 
@@ -76,6 +76,15 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //float inverseScale = system->getInverseInternalScale ();
     CS_ASSERT(btObject);
     return BulletToCS (btObject->getWorldTransform(), system->getInverseInternalScale ());
+  }
+
+  void csBulletCollisionObject::GetAABB(csVector3& aabbMin, csVector3& aabbMax) const
+  {
+    btVector3 bmin, bmax;
+    collider->GetOrCreateBulletShape()->getAabb(btObject->getWorldTransform(), bmin, bmax);
+    
+    aabbMin = BulletToCS(bmin, system->getInverseInternalScale ());
+    aabbMax = BulletToCS(bmax, system->getInverseInternalScale ());
   }
   
   void csBulletCollisionObject::SetCollisionGroup (const char* name)

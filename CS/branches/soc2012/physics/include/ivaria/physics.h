@@ -54,11 +54,7 @@ struct iCollisionObject;
 }
 }
 
-namespace CS
-{
-namespace Physics
-{
-
+namespace CS { namespace Physics {
 struct iJoint;
 struct iObject;
 struct iRigidBody;
@@ -1078,6 +1074,6 @@ struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
    */
   virtual void RemoveAnimatedMeshAnchor (size_t bodyVertexIndex) = 0;
 };
-}
-}
+
+} }
 #endif

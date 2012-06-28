@@ -53,7 +53,7 @@ bool csPhysicalBody::Disable ()
 bool csPhysicalBody::Enable ()
 {
   CS_ASSERT (btObject);
-  btObject->setActivationState (ACTIVE_TAG);
+  btObject->activate (true);
   return true;
 }
 

@@ -189,7 +189,7 @@ csVector3 csBulletSoftBody::GetLinearVelocity () const
   {
     vel += btBody->m_nodes[i].m_v * btBody->getMass(i);
   }
-  return BulletToCS (vel, system->getInverseInternalScale ());
+  return BulletToCS (vel / GetMass(), system->getInverseInternalScale ());
 }
 
 csVector3 csBulletSoftBody::GetLinearVelocity (size_t index /* = 0 */) const

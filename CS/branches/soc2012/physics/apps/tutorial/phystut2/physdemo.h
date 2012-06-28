@@ -38,7 +38,7 @@ inline int GetEnvironmentByName(csString levelName)
 }
  
 //static const csVector3 ActorDimensions(0.8);
-static const csVector3 ActorDimensions(0.4, 1.5, 0.4);
+static const csVector3 ActorDimensions(0.1, 0.8, 0.1);
 
 class PhysDemo : public CS::Utility::DemoApplication
 {
@@ -60,7 +60,8 @@ private:
   csRef<CS::Collisions::iColliderConcaveMesh> mainCollider;
 
 
-  // Environments
+  // Static environment
+  csString defaultEnvironmentName;
   int environment;
   csRef<iMeshWrapper> walls;
 
@@ -125,6 +126,7 @@ private:
   // Spawning objects
   bool SpawnStarCollider();
   CS::Physics::iRigidBody* SpawnBox (bool setVelocity = true);
+  CS::Physics::iRigidBody* SpawnBox (const csVector3& extents, const csVector3& pos, float mass = 30, bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnSphere (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnSphere (const csVector3& pos, float radius, bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCone (bool setVelocity = true);
@@ -144,6 +146,7 @@ private:
   void SpawnRope();
   CS::Physics::iSoftBody* SpawnCloth();
   CS::Physics::iSoftBody* SpawnSoftBody (bool setVelocity = true);
+  void PhysDemo::SpawnBoxStacks(int stackNum = 4, int stackHeight = 4, float boxLen = .5f, float mass = 20.f);
 
   void CreateBoxRoom();
   void CreatePortalRoom();
@@ -177,6 +180,11 @@ public:
    * The location where the actor stands
    */
   csVector3 GetActorFeetPos() const { return GetActorHeadPos() - csVector3(0, ActorDimensions.y, 0); }
+
+  /**
+   * Position of the camera
+   */
+  csVector3 GetCameraPosition() const { return view->GetCamera()->GetTransform().GetOrigin(); }
 
   /**
    * Normalized direction of the camera

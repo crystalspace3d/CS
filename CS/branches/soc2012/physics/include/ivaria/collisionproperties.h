@@ -129,7 +129,7 @@ namespace CS { namespace Collisions {
   public:
     CollisionActorProperties(iCollider* collider) : GhostCollisionObjectProperties(collider) 
     {
-      SetName("actor");
+      SetName("Actor");
     }
 
   };

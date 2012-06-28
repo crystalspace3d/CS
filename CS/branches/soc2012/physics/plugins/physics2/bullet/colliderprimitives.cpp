@@ -41,6 +41,8 @@
 #include "collisionobject2.h"
 #include "bulletsystem.h"
 
+#include "csutil/custom_new_enable.h"
+
 using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
@@ -106,205 +108,6 @@ btTriangleMesh* GenerateTriMeshData (iMeshWrapper* mesh, csStringID baseID,
   return btMesh;
 }
 
-#include "csutil/custom_new_enable.h"
-
-csBulletCollider::csBulletCollider ()
-  : scfImplementationType (this), scale (1,1,1), shape (nullptr), margin (0.0), volume (0.0), collSystem (nullptr), 
-    children(nullptr), usedShape(nullptr), dirty(true), localInertia(0, 0, 0)
-{
-  principalAxisTransform.setIdentity();
-}
-
-csBulletCollider::~csBulletCollider ()
-{
-  if (children)
-  {
-    delete children;
-  }
-}
-
-bool csBulletCollider::IsDirty() const
-{
-  // recursively check if the collider tree has been changed
-  bool isDirty = dirty;
-  if (children && !dirty)
-  {
-    for (size_t i = 0; i < children->colliders.GetSize(); i++)
-    {
-      iCollider* icoll = children->colliders[i];
-      csBulletCollider* coll = dynamic_cast<csBulletCollider*>(icoll);
-      isDirty |= coll->IsDirty();
-    }
-  }
-  return isDirty;
-}
-
-void csBulletCollider::SetLocalScale (const csVector3& scale)
-{
-  // TODO: Fix this
-  this->scale = scale;
-  shape->setLocalScaling (btVector3(scale.x, scale.y, scale.z));
-  //volume *= scale.x * scale.y * scale.z;
-}
-
-void csBulletCollider::SetMargin (float margin)
-{
-  if (margin > 0.0f)
-  {
-    // TODO: Fix this
-    this->margin = margin;
-    shape->setMargin (margin * collSystem->getInternalScale ());
-  }
-}
-
-float csBulletCollider::GetMargin () const
-{
-  return margin;
-}
-
-btCollisionShape* csBulletCollider::GetOrCreateBulletShape()
-{
-  bool needsRebuild = IsDirty();
-  if (!needsRebuild) return usedShape;
-
-  dirty = false;
-  
-  if (children)
-  {
-    children->staticColliderCount = 0;
-  }
-
-  if (children && children->colliders.GetSize() > 0)
-  {
-    // create a new shape
-    btCompoundShape& compound = children->compoundShape;
-
-    volume = 0;
-    int start = shape ? 1 : 0;
-    int totalShapeCount = int(children->colliders.GetSize()) + start;
-
-    // TODO: Add density ratio to colliders to allow for non-uniform density
-    CS_ALLOC_STACK_ARRAY(float, masses, totalShapeCount);
-    
-    if (shape)
-    {
-      btTransform relaTrans;
-      relaTrans.setIdentity();
-      compound.addChildShape (relaTrans, shape);
-      volume = ComputeShapeVolume();
-      ++totalShapeCount;
-      masses[0] = volume;
-    }
-
-    // create compound shape, find total staticColliderCount and compute volume
-    for (int i = 0; i < children->colliders.GetSize(); i++)
-    {
-      iCollider* icoll = children->colliders[i];
-      csBulletCollider* coll = dynamic_cast<csBulletCollider*>(icoll);
-      btTransform relaTrans = CSToBullet (children->transforms[i], collSystem->getInternalScale ());
-      compound.addChildShape (relaTrans, coll->GetOrCreateBulletShape());
-
-      if (!coll->IsDynamic())
-      {
-        ++children->staticColliderCount;
-      }
-      masses[start + i] = coll->GetVolume();
-      volume += coll->GetVolume();
-    }
-    
-    btVector3 principalInertia;   // we don't care about this
-    children->compoundShape.calculatePrincipalAxisTransform(masses, principalAxisTransform, principalInertia);
-    usedShape = &children->compoundShape;
-  }
-  else
-  {
-    principalAxisTransform.setIdentity();
-    usedShape = shape;
-    volume = ComputeShapeVolume();
-  }
-    
-  // TODO: Fix the principal axis transform
-  principalAxisTransform.setIdentity();
-  
-  if (usedShape)
-  {
-    usedShape->calculateLocalInertia(1, localInertia);      // inertia is proportional to mass
-  }
-  return usedShape;
-}
-
-bool csBulletCollider::IsDynamic() const
-{
-  CS::Collisions::ColliderType type = GetColliderType ();
-  if (type == CS::Collisions::COLLIDER_CONCAVE_MESH
-    ||type == CS::Collisions::COLLIDER_CONCAVE_MESH_SCALED
-    ||type == CS::Collisions::COLLIDER_PLANE
-    ||type == CS::Collisions::COLLIDER_TERRAIN)
-  {
-    return false;
-  }
-  return !children || children->staticColliderCount == 0;
-}
-
-void csBulletCollider::AddCollider (CS::Collisions::iCollider* iColl, const csOrthoTransform& relaTrans)
-{
-  csRef<csBulletCollider> coll (dynamic_cast<csBulletCollider*>(iColl));
-
-  csColliderCollection* children = GetOrCreateChildren();
-  
-  dirty = true;
-  children->colliders.Push (coll);
-  children->transforms.Push (relaTrans);
-}
-
-void csBulletCollider::RemoveCollider (CS::Collisions::iCollider* collider)
-{
-  if (!children) return;
-
-  for (size_t i =0; i < children->colliders.GetSize(); i++)
-  {
-    if (children->colliders[i] == collider)
-    {
-      RemoveCollider (i);
-      return;
-    }
-  }
-}
-
-void csBulletCollider::RemoveCollider (size_t index)
-{
-  if (!children) return;
-
-  index = index - (shape ? 1 : 0);
-  if (index < children->colliders.GetSize ())
-  {
-    csRef<csBulletCollider> child = children->colliders[index];
-    
-    children->colliders.DeleteIndex (index);
-    children->transforms.DeleteIndex (index);
-  
-    dirty = true;
-  }
-}
-
-CS::Collisions::iCollider* csBulletCollider::GetCollider (size_t index)
-{
-  if (shape)
-  {
-    if (index == 0) return this;
-  
-    if (!children || index > children->colliders.GetSize()) return nullptr;
-  
-    return children->colliders[index-1];
-  }
-  else
-  {
-    if (!children || index >= children->colliders.GetSize()) return nullptr;
-  
-    return children->colliders[index];
-  }
-}
-
 
 csBulletColliderCompound::csBulletColliderCompound (csBulletSystem* sys)
   : scfImplementationType (this)
@@ -364,7 +167,7 @@ csBulletColliderCylinder::csBulletColliderCylinder (float length, float radius, 
   : scfImplementationType (this), length (length), radius (radius)
 {
   collSystem = sys;
-  // Lulu: why Z?
+  
   shape = new btCylinderShapeZ (btVector3 (radius * collSystem->getInternalScale (),
     radius * collSystem->getInternalScale (),
     length * collSystem->getInternalScale () * 0.5f));

@@ -58,6 +58,8 @@
                         <variablemap variable="o2w transform" destination="o2w" />
 						
 						<variablemap variable="reflection coord xform" destination="reflectXform" />
+						
+						<variablemap variable="refraction coord xform" destination="refractXform" />
 
                         <program file="/shader/water/ocean.cgvp"/>
                         <?else ?>
@@ -68,7 +70,7 @@
 
       <texture name="tex normal" destination="TexNormal" />
 	  <texture name="tex plane reflect" destination="TexReflect" />
-	  <texture name="tex plane reflect depth" destination="TexReflectDepth" />
+	  <texture name="tex plane refract" destination="TexRefract" />
       <fp plugin="glcg" name="Water pixels">
                 <cgfp>
                         <variablemap variable="position" destination="lightPos" />

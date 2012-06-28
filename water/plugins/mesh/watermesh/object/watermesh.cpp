@@ -213,7 +213,7 @@ void csWaterMeshObject::SetupObject ()
 	// Plane of Reflection 
 	csShaderVariable *PlaneReflection = variableContext->GetVariableAdd(svStrings->Request("plane reflection"));
 	PlaneReflection->SetType(csShaderVariable::VECTOR4);
-	PlaneReflection->SetValue(csVector4(0.0, 1.0, 0.0, 0.0));
+	PlaneReflection->SetValue(csVector4(0.0, -1.0, 0.0, 0.0));
 
   }
 

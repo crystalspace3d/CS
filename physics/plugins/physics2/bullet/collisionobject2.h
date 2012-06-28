@@ -40,7 +40,6 @@ protected:
   csBulletCollisionObject* objectCopy;
   
   btCollisionObject* btObject;
-  btCollisionShape* btShape;
   
   bool insideWorld;
 
@@ -88,6 +87,9 @@ public:
   virtual void Rotate (const csVector3& v, float angle);
   virtual void IncreaseYaw(float yawDelta);
   virtual void IncreasePitch(float pitchDelta);
+  
+  /// Returns the AABB of this object, centered at it's center of mass
+  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const;
 
   virtual void RebuildObject () = 0;
   

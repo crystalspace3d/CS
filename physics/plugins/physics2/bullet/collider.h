@@ -111,6 +111,9 @@ public:
    */
   virtual bool IsDynamic() const;
 
+  /// Returns the AABB of this collider, centered at it's center of mass (assuming uniform density)
+  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const;
+
   virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform ());
   virtual void RemoveCollider (CS::Collisions::iCollider* collider);
   virtual void RemoveCollider (size_t index);

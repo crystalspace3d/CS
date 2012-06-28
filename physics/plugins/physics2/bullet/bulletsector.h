@@ -80,7 +80,10 @@ class csBulletSector : public scfImplementationExt2<
 
   bool isSoftWorld;
   csVector3 gravity;
+
+  // TODO: Get rid of this hitPortal field
   btGhostObject* hitPortal;
+
   csBulletDebugDraw* debugDraw;
   btDynamicsWorld* bulletWorld;
   btCollisionDispatcher* dispatcher;

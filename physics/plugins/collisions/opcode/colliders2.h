@@ -60,6 +60,8 @@ public:
   virtual float GetMargin () const {return 0;}
   virtual float GetVolume () const {return volume;}
   virtual bool IsDynamic () const {return false;}
+
+  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const { /* TODO */ }
   
   virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform ()) {}
   virtual void RemoveCollider (CS::Collisions::iCollider* collider) {}

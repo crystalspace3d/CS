@@ -116,6 +116,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     return margin;
   }
 
+  void csBulletCollider::GetAABB(csVector3& aabbMin, csVector3& aabbMax) const
+  {
+    btVector3 bmin, bmax;
+    
+    // TODO: Cannot currently work correctly if GetOrCreateBulletShape has not been called previously
+    if (usedShape)
+    {
+      usedShape->getAabb(principalAxisTransform, bmin, bmax);
+    }
+    else if (shape)
+    {
+      usedShape->getAabb(principalAxisTransform, bmin, bmax);
+    }
+    
+    aabbMin = BulletToCS(bmin, 1);
+    aabbMax = BulletToCS(bmax, 1);
+  }
+
   btCollisionShape* csBulletCollider::GetOrCreateBulletShape()
   {
     bool needsRebuild = IsDirty();

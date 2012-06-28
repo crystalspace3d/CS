@@ -10,10 +10,12 @@
 #include "imesh/terrain2.h"
 #include "cstool/genmeshbuilder.h"
 #include "cstool/materialbuilder.h"
+#include "csutil/floatrand.h"
 #include "physdemo.h"
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
+using namespace CS::Geometry;
 
 void PhysDemo::CreateGhostCylinder()
 {
@@ -62,27 +64,46 @@ void PhysDemo::CreateGhostCylinder()
 
 CS::Physics::iRigidBody* PhysDemo::SpawnBox (bool setVelocity /* = true */)
 {
-  // Use the camera transform.
-  const csOrthoTransform& tc = view->GetCamera()->GetTransform();
+  csVector3 extents(0.4f, 0.8f, 0.4f);
+  csVector3 pos = view->GetCamera()->GetTransform().GetOrigin() + GetCameraDirection();
+  return SpawnBox(extents, pos, 15, setVelocity);
+}
 
-  // Create the mesh.
-  csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (boxFact, "box"));
+CS::Physics::iRigidBody* PhysDemo::SpawnBox (const csVector3& extents, const csVector3& pos, float mass, bool setVelocity /* = true */)
+{
+  static csRandomFloatGen randGen;
+
+  const csOrthoTransform& tc = view->GetCamera()->GetTransform();
   
-  // Create and attach a box collider.
-  csVector3 size (0.4f, 0.8f, 0.4f); // This should be the same size as the mesh
-  csRef<CS::Collisions::iColliderBox> box = physicalSystem->CreateColliderBox (size);
+  DensityTextureMapper mapper (0.3f);
+  TesselatedBox tbox (-extents/2, extents/2);
+  tbox.SetLevel (3);
+  tbox.SetMapper (&mapper);
+  
+  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
+  {
+    ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
+  }
+
+  csRef<iMeshWrapper> mesh = GeneralMeshBuilder::CreateFactoryAndMesh (engine, room, "walls", "walls_factory", &tbox);
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
+  mesh->GetMeshObject()->SetMaterialWrapper (mat);
+
+  // Create and attach a box collider
+  csRef<CS::Collisions::iColliderBox> box = physicalSystem->CreateColliderBox (extents);
   box->SetMargin (0.05f);
 
   // Create a body
   RigidBodyProperties props(box, "box");
-  props.SetDensity (10.0f);
+  props.SetMass (mass);
   props.SetElasticity (0.8f);
   props.SetFriction (10.0f);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
   
   // Set transform, attach mesh and add to world
   csOrthoTransform trans = tc;
-  trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
+  trans.RotateThis(UpVector, randGen.GetAngle());
+  trans.SetOrigin (pos);
   rb->SetTransform (trans);
 
   rb->SetAttachedMovable (mesh->GetMovable());
@@ -1171,4 +1192,55 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   //for (size_t i = 0; i < body->GetVertexCount(); i++)
   //  body->SetLinearVelocity (tc.GetT2O() * csVector3 (0, 0, 5), i);
   return body;
+}
+
+
+void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float mass)
+{
+  // Place stacks of boxes
+  // Stacks are horizontally aligned with the viewing direction
+
+  static const float anchorDist = 2;                  // distance from pos to stack area
+  static const float spacingFactor = 0.8f;            // how much of the box length is to be left as space between boxes
+
+  // position & direction
+  csVector3 pos = GetCameraPosition();
+  csVector3 dir = GetCameraDirection();
+  
+  csVector2 pos2 = HORIZONTAL_COMPONENT(pos);
+  csVector2 dir2 = HORIZONTAL_COMPONENT(dir);
+  csVector2 dirOrth2 = dir2;
+  dirOrth2.Rotate(HALF_PI);
+  
+  float hspace = spacingFactor * boxLen;                          // horizontal spacing between boxes
+  float dist = boxLen + hspace;                                   // horizontal distance between two neighboring stacks
+  csVector2 hdistDir = dist * dir2;                               // horizontal stack distance in dir
+  csVector2 hdistOrth = dist * dirOrth2;                          // horizontal stack distance orthogonal to dir
+  
+  int numDir = int(sqrt(float(stackNum)) + 0.99999f);             // amount of stacks in dir direction
+  int numOrth = int(stackNum / numDir + 1);                       // amount of stacks in orth direction
+
+  float halfWidth = .5f * (numOrth - 1) * (boxLen + hspace);      // half the width of the OBB that covers all box centers
+  
+  csVector3 extents(boxLen);                                      // box size
+  csVector2 anchor = pos2 + anchorDist * dir2;                    // the closest point of the stack area from pos
+  csVector2 boxPos2(anchor - halfWidth * dirOrth2);               // position of the first box
+
+  int n = 0;
+  for (int x = 0; x < numOrth; ++x)
+  {
+    for (int z = 0; z < numDir && n < stackNum; ++z)
+    {
+      csVector3 boxPos = HV_VECTOR3(boxPos2, pos[UpAxis]);
+      for (int i = 0; i < stackHeight; ++i)
+      {
+        SpawnBox(extents, boxPos, mass, false);
+        boxPos += dist * UpVector;
+      }
+      ++n;
+      boxPos2 += hdistDir;
+    }
+    boxPos2 += hdistOrth - numDir * hdistDir;
+  }
+  
 }

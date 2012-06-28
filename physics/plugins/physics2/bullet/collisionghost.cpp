@@ -40,9 +40,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
 
     // create and set shape
-    btShape = collider->GetOrCreateBulletShape();
     btObject->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*> (this));
-    btObject->setCollisionShape (btShape);
+    btObject->setCollisionShape (collider->GetOrCreateBulletShape());
 
     // set transform
     btTransform transform = btObject->getWorldTransform();

@@ -115,6 +115,9 @@ struct iCollider : public virtual iBase
 
   /// Get the count of colliders in this collider (including self).
   virtual size_t GetColliderCount () = 0;
+
+  /// Returns the AABB of this shape, centered at it's center of mass (assuming uniform density)
+  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const = 0;
 };
 
 

@@ -20,6 +20,9 @@ PhysDemo::PhysDemo()
     dragging (false), softDragging (false),
     physicalCameraMode (CAMERA_ACTOR)
     //physicalCameraMode (CAMERA_DYNAMIC)
+    ,
+    defaultEnvironmentName("terrain")
+    //defaultEnvironmentName("portals")
 {
   actorSpeed = 5;
 }
@@ -70,8 +73,6 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   // Check which environment has to be loaded
   csString levelName = clp->GetOption ("level");
   environment = GetEnvironmentByName(levelName);
-  //csString defaultEnvironmentName = "terrain";
-  csString defaultEnvironmentName = "portals";
   if (!environment)
   {
       csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to \"%s\"\n",
@@ -136,7 +137,7 @@ bool PhysDemo::Application()
   case ENVIRONMENT_TERRAIN:
     CreateTerrainRoom();
     //view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 30, -3));
-    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 5, -3));
+    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 5, 3));
     break;
 
   default:
@@ -297,9 +298,9 @@ void PhysDemo::UpdateCameraMode()
       else
       {
         csRef<CS::Collisions::iColliderCylinder> collider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
-          physicalSystem->CreateColliderCylinder(ActorDimensions.x, ActorDimensions.x / 8.f);
+          physicalSystem->CreateColliderCylinder(ActorDimensions.y, ActorDimensions.x);
         RigidBodyProperties props(collider, "Actor");
-        props.SetDensity(100.f);
+        props.SetMass(80.f);
         props.SetElasticity(0.1f);
         props.SetFriction(1.f);
         props.SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));

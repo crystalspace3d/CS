@@ -23,22 +23,6 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   csKeyEventType eventtype = csKeyEventHelper::GetEventType(&event);
   if (eventtype == csKeyEventTypeDown)
   {
-    if (cameraActor)
-    {
-      if (csKeyEventHelper::GetCookedCode (&event) == 'w')
-      {
-      }
-      else if (csKeyEventHelper::GetCookedCode (&event) == 'a')
-      {
-      }
-      else if (csKeyEventHelper::GetCookedCode (&event) == 's')
-      {
-      }
-      else if (csKeyEventHelper::GetCookedCode (&event) == 'd')
-      {
-      }
-    }
-
     if (csKeyEventHelper::GetCookedCode (&event) == 'r')
     {
       // reset
@@ -70,6 +54,11 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     else if (csKeyEventHelper::GetCookedCode (&event) == 'n')
     {
       SpawnCone();
+      return true;
+    }
+    else if (csKeyEventHelper::GetCookedCode (&event) == 'b')
+    {
+      SpawnBoxStacks(5, 4, .5, 80);
       return true;
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 'm')
@@ -379,16 +368,6 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       bulletSector->DumpProfile();
       return true;
     }
-  }
-
-  // Slow down the camera's body
-  else if (physicalCameraMode == CAMERA_DYNAMIC
-    && (eventtype == csKeyEventTypeUp)
-    && ((csKeyEventHelper::GetCookedCode (&event) == CSKEY_DOWN) 
-    || (csKeyEventHelper::GetCookedCode (&event) == CSKEY_UP)))
-  {
-    cameraBody->SetLinearVelocity(csVector3 (0, 0, 0));
-    cameraBody->SetAngularVelocity (csVector3 (0, 0, 0));
   }
 
   if (eventtype == csKeyEventTypeUp)

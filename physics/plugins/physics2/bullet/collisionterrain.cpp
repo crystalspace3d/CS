@@ -133,7 +133,6 @@ csBulletCollisionTerrain::~csBulletCollisionTerrain ()
   {
     collSector->RemoveCollisionObject(bodies[i]);
   }
-  bodies.DeleteAll();
 }
 
 void csBulletCollisionTerrain::OnCellLoad (iTerrainCell *cell)

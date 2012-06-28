@@ -18,12 +18,13 @@
  * Collection of primitive colliders
  */
 
-#ifndef __CS_BULLET_COLLIDERS_H__
-#define __CS_BULLET_COLLIDERS_H__
+#ifndef __CS_BULLET_COLLIDERPRIMITIVES_H__
+#define __CS_BULLET_COLLIDERPRIMITIVES_H__
 
 #include "csgeom/plane3.h"
 #include "ivaria/collisions.h"
 #include "common2.h"
+#include "collider.h"
 
 class btBoxShape;
 class btSphereShape;
@@ -51,98 +52,6 @@ class csBulletCollider;
 
 csRef<iTriangleMesh> FindColdetTriangleMesh (iMeshWrapper* mesh, 
                                              csStringID baseID, csStringID colldetID);
-
-
-/**
- * A collection of colliders that belong to another collider
- */
-struct csColliderCollection
-{
-  btCompoundShape compoundShape;
-
-  short staticColliderCount;
-  csRefArray<csBulletCollider> colliders;
-  csArray<csOrthoTransform> transforms;
-
-  csColliderCollection() :
-    staticColliderCount(0)
-  {
-  }
-};
-
-
-/**
- * Implementation of iCollider. Supports hierarchy of colliders.
- */
-class csBulletCollider : public scfVirtImplementation1<csBulletCollider, CS::Collisions::iCollider>
-  //public virtual CS::Collisions::iCollider
-{
-  friend class csBulletCollisionObject;
-  friend class csBulletCollisionActor;
-  friend class csBulletRigidBody;
-  friend class csBulletGhostCollisionObject;
-
-protected:
-  csVector3 scale;
-  btCollisionShape* shape, *usedShape;
-  float margin;
-  csBulletSystem* collSystem;
-
-  bool dirty;
-  csColliderCollection* children;
-  
-  float volume;
-  btVector3 localInertia;
-  btTransform principalAxisTransform;
-
-  virtual float ComputeShapeVolume() const = 0;
-
-  bool IsDirty() const;
-
-  inline csColliderCollection* GetOrCreateChildren() 
-  {
-    if (!children)
-    {
-      children = new csColliderCollection;
-    }
-    return children;
-  }
-
-public:
-  csBulletCollider ();
-  virtual ~csBulletCollider();
-  virtual CS::Collisions::ColliderType GetColliderType () const = 0;
-  virtual void SetLocalScale (const csVector3& scale);
-  virtual const csVector3& GetLocalScale () const {return scale;}
-  virtual void SetMargin (float margin);
-  virtual float GetMargin () const;
-  virtual float GetVolume () const { return volume; }
-
-  /**
-   * Whether this collider (and all its children) can be used in a dynamic environment
-   */
-  virtual bool IsDynamic() const;
-
-  virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform ());
-  virtual void RemoveCollider (CS::Collisions::iCollider* collider);
-  virtual void RemoveCollider (size_t index);
-
-  virtual CS::Collisions::iCollider* GetCollider (size_t index) ;
-  virtual size_t GetColliderCount () {return 1 + children ? children->colliders.GetSize () : 0;}
-  
-  btCollisionShape* GetOrCreateBulletShape();
-
-  inline const btVector3& GetLocalInertia() const 
-  { 
-    //return btVector3(0, 0, 0); 
-    return localInertia; 
-  }
-
-  inline const btTransform& GetPrincipalAxisTransform() const 
-  {
-    return principalAxisTransform; 
-  }
-};
 
 class csBulletColliderCompound : 
   public scfVirtImplementationExt1<csBulletColliderCompound,
@@ -320,6 +229,7 @@ class csBulletColliderConcaveMeshScaled:
   csBulletCollider, CS::Collisions::iColliderConcaveMeshScaled>
 {
   csBulletColliderConcaveMesh* originalCollider;
+  csVector3 scale;
 
 protected:
   virtual float ComputeShapeVolume() const;

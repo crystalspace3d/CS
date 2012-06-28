@@ -1219,6 +1219,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\bulletsector.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\bulletsystem.cpp" />
+    <ClCompile Include="..\..\plugins\physics2\bullet\collider.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\colliderprimitives.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\collisionactor.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\collisionghost.cpp" />
@@ -1248,6 +1249,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
   <ItemGroup>
     <ClInclude Include="..\..\plugins\physics2\bullet\bulletsystem.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\bulletsector.h" />
+    <ClInclude Include="..\..\plugins\physics2\bullet\collider.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\colliderprimitives.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\collisionactor.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\collisionghost.h" />

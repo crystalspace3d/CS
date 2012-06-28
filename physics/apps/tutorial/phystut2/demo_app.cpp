@@ -70,8 +70,8 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   // Check which environment has to be loaded
   csString levelName = clp->GetOption ("level");
   environment = GetEnvironmentByName(levelName);
-  csString defaultEnvironmentName = "terrain";
-  //csString defaultEnvironmentName = "portals";
+  //csString defaultEnvironmentName = "terrain";
+  csString defaultEnvironmentName = "portals";
   if (!environment)
   {
       csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to \"%s\"\n",
@@ -296,17 +296,19 @@ void PhysDemo::UpdateCameraMode()
       // Create a new rigid body
       else
       {
-        csRef<CS::Collisions::iColliderBox> collider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
-          physicalSystem->CreateColliderBox(ActorDimensions);
-        RigidBodyProperties props(collider, "Camera");
+        csRef<CS::Collisions::iColliderCylinder> collider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
+          physicalSystem->CreateColliderCylinder(ActorDimensions.x, ActorDimensions.x / 8.f);
+        RigidBodyProperties props(collider, "Actor");
         props.SetDensity(100.f);
-        props.SetElasticity(0.8f);
-        props.SetFriction(100.0f);
+        props.SetElasticity(0.1f);
+        props.SetFriction(1.f);
+        props.SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
         
         cameraBody = physicalSystem->CreateRigidBody(&props);
 
-
-        cameraBody->SetTransform (tc);
+        csOrthoTransform trans(tc);
+        trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
+        cameraBody->SetTransform (trans);
 
       }
       physicalSector->AddCollisionObject(cameraBody);

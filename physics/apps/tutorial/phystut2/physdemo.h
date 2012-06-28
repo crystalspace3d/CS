@@ -125,6 +125,9 @@ private:
 
   // Spawning objects
   bool SpawnStarCollider();
+
+  void CreateBoxCollider (csRef<CS::Collisions::iColliderBox>& colliderPtr, csRef<iMeshWrapper>& meshPtr, const csVector3& extents);
+
   CS::Physics::iRigidBody* SpawnBox (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnBox (const csVector3& extents, const csVector3& pos, float mass = 30, bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnSphere (bool setVelocity = true);
@@ -154,6 +157,13 @@ private:
 
   void CreateGhostCylinder();
   void GripContactBodies();
+
+  CS::Physics::iRigidBody* PhysDemo::SpawnRigidBody (
+    CS::Collisions::iCollider* collider,
+    iMeshWrapper* mesh, 
+    const csVector3& pos, 
+    float mass, 
+    bool setVelocity = true);
 
 
   // particles

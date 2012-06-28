@@ -18,8 +18,8 @@ PhysDemo::PhysDemo()
     pauseDynamic (false), dynamicSpeed (1.0f),
     debugMode (Bullet2::DEBUG_COLLIDERS),
     dragging (false), softDragging (false),
-    physicalCameraMode (CAMERA_ACTOR)
-    //physicalCameraMode (CAMERA_DYNAMIC)
+    //physicalCameraMode (CAMERA_ACTOR)
+    physicalCameraMode (CAMERA_DYNAMIC)
     ,
     defaultEnvironmentName("terrain")
     //defaultEnvironmentName("portals")
@@ -181,6 +181,7 @@ bool PhysDemo::Application()
   hudManager->GetKeyDescriptions()->Push ("c: spawn a cylinder");
   hudManager->GetKeyDescriptions()->Push ("n: spawn a cone");
  
+  hudManager->GetKeyDescriptions()->Push ("t: spawn capsule");
   hudManager->GetKeyDescriptions()->Push ("v: spawn a sphere");
   //hudManager->GetKeyDescriptions()->Push ("v: spawn a convex mesh");
   hudManager->GetKeyDescriptions()->Push ("m: spawn a static concave mesh");
@@ -207,7 +208,6 @@ bool PhysDemo::Application()
   hudManager->GetKeyDescriptions()->Push ("CTRL-v: paste object");
 
   hudManager->GetKeyDescriptions()->Push ("f: toggle camera modes");
-  hudManager->GetKeyDescriptions()->Push ("t: toggle all bodies dynamic/static");
   hudManager->GetKeyDescriptions()->Push ("p: pause the simulation");
   hudManager->GetKeyDescriptions()->Push ("o: toggle speed of simulation");
   hudManager->GetKeyDescriptions()->Push ("l: toggle Bullet debug display");
@@ -297,8 +297,8 @@ void PhysDemo::UpdateCameraMode()
       // Create a new rigid body
       else
       {
-        csRef<CS::Collisions::iColliderCylinder> collider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
-          physicalSystem->CreateColliderCylinder(ActorDimensions.y, ActorDimensions.x);
+        csRef<CS::Collisions::iColliderSphere> collider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
+          physicalSystem->CreateColliderSphere(ActorDimensions.y);
         RigidBodyProperties props(collider, "Actor");
         props.SetMass(80.f);
         props.SetElasticity(0.1f);
@@ -308,7 +308,6 @@ void PhysDemo::UpdateCameraMode()
         cameraBody = physicalSystem->CreateRigidBody(&props);
 
         csOrthoTransform trans(tc);
-        trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
         cameraBody->SetTransform (trans);
 
       }
@@ -346,8 +345,8 @@ void PhysDemo::UpdateCameraMode()
 
       if (!cameraActor)
       {
-        csRef<CS::Collisions::iColliderBox> actorCollider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
-          physicalSystem->CreateColliderBox(ActorDimensions);
+        csRef<CS::Collisions::iColliderCylinder> actorCollider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
+          physicalSystem->CreateColliderCylinder(ActorDimensions.y, ActorDimensions.x);
 
         CollisionActorProperties props(actorCollider);
         props.SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
@@ -356,7 +355,8 @@ void PhysDemo::UpdateCameraMode()
         cameraActor->SetAttachedCamera(view->GetCamera());
       }
       
-      cameraActor->SetTransform(view->GetCamera()->GetTransform());
+      csOrthoTransform trans(view->GetCamera()->GetTransform());
+      cameraActor->SetTransform(trans);
       
       physicalSector->AddCollisionObject(cameraActor);
       cameraActor->SetJumpSpeed(actorSpeed);

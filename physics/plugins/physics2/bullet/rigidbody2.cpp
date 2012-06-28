@@ -122,20 +122,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     sector->bulletWorld->addRigidBody (btBody, collGroup.value, collGroup.mask);
 
-    if (GetName() && strcmp(GetName(), "Actor") == 0)
-    {
-      // TODO: This is some test code to rotationally lock an actor object - Ignore it
-      btTransform frameB;
-      frameB.setIdentity();
-      btGeneric6DofConstraint* pGen6Dof = new btGeneric6DofConstraint(*btBody, frameB, false );
-      sector->bulletWorld->addConstraint(pGen6Dof);
-      pGen6Dof->setDbgDrawSize(btScalar(1.f));
-
-      pGen6Dof->setAngularLowerLimit(btVector3(0,0,0));
-      pGen6Dof->setAngularUpperLimit(btVector3(0,0,0));
-      pGen6Dof->setLinearLowerLimit(btVector3(-INT_MAX, -INT_MAX, -INT_MAX));
-      pGen6Dof->setLinearUpperLimit(btVector3(INT_MAX, INT_MAX, INT_MAX));
-    }
+    //if (GetName() && strcmp(GetName(), "Actor") == 0)
+    //{
+    //  btBody->setAngularFactor(0);
+    //}
 
     insideWorld = true;
     return true;

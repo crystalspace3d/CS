@@ -13,6 +13,8 @@
 #include "csutil/floatrand.h"
 #include "physdemo.h"
 
+#include "ivaria/colliders.h"
+
 using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
@@ -62,6 +64,27 @@ void PhysDemo::CreateGhostCylinder()
   physicalSector->AddCollisionObject (ghostObject);
 }
 
+void PhysDemo::CreateBoxCollider (csRef<CS::Collisions::iColliderBox>& collider, csRef<iMeshWrapper>& mesh, const csVector3& extents)
+{
+  DensityTextureMapper mapper (0.3f);
+  TesselatedBox tbox (-extents/2, extents/2);
+  tbox.SetLevel (3);
+  tbox.SetMapper (&mapper);
+
+  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
+  {
+    ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
+  }
+
+  mesh = GeneralMeshBuilder::CreateFactoryAndMesh (engine, room, "walls", "walls_factory", &tbox);
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
+  mesh->GetMeshObject()->SetMaterialWrapper (mat);
+
+  // Create and attach a box collider
+  collider = physicalSystem->CreateColliderBox (extents);
+
+}
+
 CS::Physics::iRigidBody* PhysDemo::SpawnBox (bool setVelocity /* = true */)
 {
   csVector3 extents(0.4f, 0.8f, 0.4f);
@@ -73,34 +96,32 @@ CS::Physics::iRigidBody* PhysDemo::SpawnBox (const csVector3& extents, const csV
 {
   static csRandomFloatGen randGen;
 
-  const csOrthoTransform& tc = view->GetCamera()->GetTransform();
+  // Create a box collider & mesh
+  csRef<iColliderBox> box;
+  csRef<iMeshWrapper> mesh;
+  CreateBoxCollider(box, mesh, extents);
+
+  return SpawnRigidBody(box, mesh, pos, mass, setVelocity);
+}
+
+CS::Physics::iRigidBody* PhysDemo::SpawnRigidBody (
+  CS::Collisions::iCollider* collider,
+  iMeshWrapper* mesh, 
+  const csVector3& pos, 
+  float mass, 
+  bool setVelocity /* = true */)
+{
+  static csRandomFloatGen randGen;
   
-  DensityTextureMapper mapper (0.3f);
-  TesselatedBox tbox (-extents/2, extents/2);
-  tbox.SetLevel (3);
-  tbox.SetMapper (&mapper);
-  
-  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
-  {
-    ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
-  }
-
-  csRef<iMeshWrapper> mesh = GeneralMeshBuilder::CreateFactoryAndMesh (engine, room, "walls", "walls_factory", &tbox);
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
-  mesh->GetMeshObject()->SetMaterialWrapper (mat);
-
-  // Create and attach a box collider
-  csRef<CS::Collisions::iColliderBox> box = physicalSystem->CreateColliderBox (extents);
-  box->SetMargin (0.05f);
-
   // Create a body
-  RigidBodyProperties props(box, "box");
+  RigidBodyProperties props(collider, mesh->QueryObject ()->GetName ());
   props.SetMass (mass);
   props.SetElasticity (0.8f);
   props.SetFriction (10.0f);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
   
   // Set transform, attach mesh and add to world
+  const csOrthoTransform& tc = view->GetCamera()->GetTransform();
   csOrthoTransform trans = tc;
   trans.RotateThis(UpVector, randGen.GetAngle());
   trans.SetOrigin (pos);
@@ -1227,6 +1248,20 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
   csVector2 boxPos2(anchor - halfWidth * dirOrth2);               // position of the first box
 
   int n = 0;
+
+  // prepare collider and material
+  csRef<iColliderBox> collider = physicalSystem->CreateColliderBox (extents);
+
+  DensityTextureMapper mapper (0.3f);
+  TesselatedBox tbox (-extents/2, extents/2);
+  tbox.SetLevel (3);
+  tbox.SetMapper (&mapper);
+  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
+  {
+    ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
+  }
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
+
   for (int x = 0; x < numOrth; ++x)
   {
     for (int z = 0; z < numDir && n < stackNum; ++z)
@@ -1234,8 +1269,12 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
       csVector3 boxPos = HV_VECTOR3(boxPos2, pos[UpAxis]);
       for (int i = 0; i < stackHeight; ++i)
       {
-        SpawnBox(extents, boxPos, mass, false);
-        boxPos += dist * UpVector;
+        // TODO: Meshes can't be shared
+        // Re-create mesh
+        csRef<iMeshWrapper> mesh = GeneralMeshBuilder::CreateFactoryAndMesh (engine, room, "box", "walls_factory", &tbox);
+        mesh->GetMeshObject()->SetMaterialWrapper (mat);
+        SpawnRigidBody(collider, mesh, boxPos, mass, false);
+        boxPos += 0.2f * dist * UpVector;
       }
       ++n;
       boxPos2 += hdistDir;

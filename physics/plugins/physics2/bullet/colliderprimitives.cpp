@@ -184,8 +184,7 @@ csBulletColliderCylinder::csBulletColliderCylinder (float length, float radius, 
   shape = new btCylinderShapeZ (btVector3 (radius * collSystem->getInternalScale (),
     radius * collSystem->getInternalScale (),
     length * collSystem->getInternalScale () * 0.5f));
-  //margin = 0.04 * collSystem->getInverseInternalScale ();
-  margin = 2.f;
+  margin = 0.04 * collSystem->getInverseInternalScale ();
   GetOrCreateBulletShape();
 }
 

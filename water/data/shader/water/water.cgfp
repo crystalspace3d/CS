@@ -9,6 +9,7 @@ struct vert2frag
 	float4 PosRefl      : TEXCOORD0;
 	float4 PosRefr      : TEXCOORD1;
 	float2 NormalTC		: TEXCOORD2; 
+	float3 Normal;
 	float4 Pos;
 };
 
@@ -51,7 +52,9 @@ float4 main (vert2frag IN,
 	
 	float3 eye_vector = normalize(camera_pos.xyz - IN.Pos.xyz);   
 
-	float3 N = normalize( tex2D(TexNormal, IN.NormalTC).xyz );      
+	float3 N = normalize( tex2D(TexNormal, IN.NormalTC).xyz );    
+
+	N = normalize(N + IN.Normal);
 	
 	float4 reflColor = tex2Dproj(TexReflect,IN.PosRefl);
 	float4 refrColor = tex2Dproj(TexRefract,IN.PosRefr);

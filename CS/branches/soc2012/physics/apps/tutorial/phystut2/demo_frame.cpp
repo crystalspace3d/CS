@@ -92,6 +92,7 @@ void PhysDemo::Frame()
         if (objBeneathCount)
         {
           // actor is on ground
+          bool anyKey = false;
           if (kbd->GetKeyState (CSKEY_UP) || kbd->GetKeyState (CSKEY_DOWN))
           {
             csVector3 newVelRel(0);
@@ -113,6 +114,7 @@ void PhysDemo::Frame()
             newVel *= walkSpeed;
 
             cameraBody->SetLinearVelocity(newVel);
+            anyKey = true;
           }
           if (kbd->GetKeyState(CSKEY_SPACE))
           {
@@ -147,6 +149,13 @@ void PhysDemo::Frame()
                 pb->AddForce(force);
               }
             }
+            anyKey = true;
+          }
+
+          if (!anyKey)
+          {
+            // stop moving
+            cameraBody->SetLinearVelocity(0);
           }
         }
       }

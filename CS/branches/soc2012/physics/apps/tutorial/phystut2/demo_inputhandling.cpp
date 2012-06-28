@@ -35,13 +35,12 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         }
       }
     }
-    /*
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'a')
+    else if (csKeyEventHelper::GetCookedCode (&event) == 't')
     {
-    SpawnCapsule();
-    return true;
+      SpawnCapsule();
+      return true;
     }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 's')
+    /*else if (csKeyEventHelper::GetCookedCode (&event) == 's')
     {
     SpawnSphere();
     return true;
@@ -141,41 +140,6 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       }
 
       UpdateCameraMode();
-      return true;
-    }
-
-    else if (csKeyEventHelper::GetCookedCode (&event) == 't')
-    {
-      // Toggle all bodies between dynamic and static
-      allStatic = !allStatic;
-
-      if (allStatic)
-      {
-        printf ("Toggling all bodies to static mode\n");
-        dynamicBodies.DeleteAll();
-
-        for (size_t i = 0; i < physicalSector->GetRigidBodyCount(); i++)
-        {
-          CS::Physics::iRigidBody* body = physicalSector->GetRigidBody (i);
-          if (body->GetState() == CS::Physics::STATE_DYNAMIC)
-          {
-            body->SetState (CS::Physics::STATE_STATIC);
-            dynamicBodies.Push (body);     
-          }   
-        }
-      }
-      else
-      {
-        for (size_t i = 0; i <dynamicBodies.GetSize(); i++)
-        {
-          CS::Physics::iRigidBody* body = dynamicBodies[i];
-          body->SetState (CS::Physics::STATE_DYNAMIC);
-          body->Enable();
-        }
-        printf ("Toggling all bodies to dynamic mode\n");
-      }
-
-
       return true;
     }
 

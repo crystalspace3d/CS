@@ -16,10 +16,11 @@ struct app2vert
 
 struct vert2frag
 {
-	float4 Position    	: POSITION;	
-	float4 Color	   	: COLOR;
-	float4 PosRef       : TEXCOORD0;
-	float4 RefXform;
+	float4 Position      : POSITION;	
+	float4 Color	   	 : COLOR;
+	float4 PosRefl       : TEXCOORD0;
+	float4 PosRefr       : TEXCOORD1;
+	//float2 NormalTC		 : TEXCOORD2; 
 };
 
 /**
@@ -50,19 +51,16 @@ vert2frag main (app2vert IN,
 			 uniform float3 kxs,
 			 uniform float3 kys,
 			 uniform float3 freqs,
-			 uniform float3 phases,
-			 uniform float4x4 ModelViewIT : state.matrix.modelview.invtrans,
+			 uniform float3 phases, 
 			 uniform float4x4 ModelViewProj : state.matrix.mvp,
 			 uniform float4x4 o2w,
-			 uniform float4 reflectXform)
+			 uniform float4 reflectXform,
+			 uniform float4 refractXform)
 {
     vert2frag OUT;
 
 	float4 inPos = IN.Position;
-	
-  	float4 camera = ModelViewIT[3];
-	
-	float4 reflectionTC;
+	float4 reflrefrTC;
 
 	//Grab xz position
 	float2 xzpos = mul(o2w, IN.Position).xz;
@@ -88,28 +86,23 @@ vert2frag main (app2vert IN,
 	inPos.y = wdy1 + wdy2 + wdy3;
 
 	//Get real position again.
-	reflectionTC = mul (ModelViewProj, inPos); 
-	OUT.Position = reflectionTC;
+	reflrefrTC = mul(ModelViewProj, inPos); 
+	OUT.Position = reflrefrTC;
 	float3 reflScale = float3 (reflectXform.xy, 0.5);
-	float3 reflXlate = float3 (reflectXform.zw, -0.5) * reflectionTC.w;
-	reflectionTC.xyz = reflectionTC.xyz * reflScale + reflXlate;
+	float3 reflXlate = float3 (reflectXform.zw, -0.5) * reflrefrTC.w;
 	
-	OUT.RefXform = reflectXform;
-
-	OUT.Color = IN.Color;
-
-	float s1, cs1, s2, cs2;
-	float4 texCoord = mul(o2w, float4(IN.TexCoord.x, 0, IN.TexCoord.y, 1));
-	sincos (time, s1, cs1);
-	sincos (time + 1.41, s2, cs2);
-
-	reflectionTC.x += texCoord.x  - s1 * 0.1;
-	reflectionTC.y += texCoord.z  + cs1 * 0.1;
-	reflectionTC.z += 0.0;
-	reflectionTC.w = 1.0;
+	float3 refrScale = float3 (refractXform.xy, 0.5);
+	float3 refrXlate = float3 (refractXform.zw, -0.5) * reflrefrTC.w;
 		
-	OUT.PosRef = reflectionTC;
-		
+	OUT.PosRefl.xy = reflrefrTC.xy * reflScale + reflXlate;
+	OUT.PosRefl.wz = reflrefrTC.wz;
+	OUT.PosRefr.xy = reflrefrTC.xy * refrScale + refrXlate;
+	OUT.PosRefr.wz = reflrefrTC.wz;
+
+	//OUT.NormalTC = IN.TexCoord;
+	
+	OUT.Color = IN.Color;	
+	
     return OUT;
 }
 

@@ -6,9 +6,9 @@ struct vert2frag
 {
 	float4 Position    	: POSITION;
 	float4 Color	   	: COLOR;
-	float4 PosRef       : TEXCOORD0;
-	float4 RefXform;
-	
+	float4 PosRefl      : TEXCOORD0;
+	float4 PosRefr      : TEXCOORD1;
+	float2 NormalTC		: TEXCOORD2; 
 };
 
 // Calculated from 1.3333, which is approx. refraction index for water
@@ -39,40 +39,48 @@ float4 main (vert2frag IN,
 			 uniform float waterAlpha,
 			 uniform sampler2D TexNormal,
 			 uniform sampler2D TexReflect,
-			 uniform sampler2D TexReflectDepth) : COLOR        
+			 uniform sampler2D TexRefract,
+			 uniform float4x4 ModelViewIT : state.matrix.modelview.invtrans) : COLOR        
 {     
-    /*
-	float3 N = normalize(tex2D(TexNormal, IN.TexCoord2.xy).xyz 
-						- tex2D(TexNormal, IN.TexCoord3.xy).xyz);
+    
+	float4 color : COLOR ;
+	float4 camera_pos = ModelViewIT[3];
 	
-	//reset light position
-	float3 lightVector = -lightPos.xyz;
+	float3 light_vector = lightPos.xyz - IN.Position.xyz;
+	//float3 light_vector = normalize(lightPos.xyz - IN.Position.xyz);   // Not working
 	
-	float3 tsCamVec = IN.CamVec;
-	tsCamVec.x += N.x;
-	tsCamVec.y += N.y;
-	tsCamVec = normalize(tsCamVec);
+	float3 eye_vector = camera_pos.xyz - IN.Position.xyz;
+	//float3 eye_vector = normalize(camera_pos.xyz - IN.Position.xyz);   // Not working
 	
-	//Get Specular reflection (computed in object coordinates)
-	float3 eyeDir = normalize(IN.CamVec);
-	float3 halfDir = normalize(lightVector + eyeDir);
-	float specularLight = pow(max(0.0, dot(N.xzy, halfDir)), shininess);
+	float3 N =  tex2D(TexNormal, IN.NormalTC).xyz ;
+	//float3 N = normalize( tex2D(TexNormal, IN.NormalTC).xyz );      // Not working
 	
-	float4 specularColor = {0.9, 0.8, 0.4, 1.0};
-	float4 specular = specularColor * specularLight;
-
-	float4 reflection = IN.Color + specular;
+	float4 reflColor = tex2Dproj(TexReflect,IN.PosRefl);
+	float4 refrColor = tex2Dproj(TexRefract,IN.PosRefr);
 	
-	float fresnelFactor = fresnel(tsCamVec, N);
-    return float4(reflection.rgb, 1) * fresnelFactor + float4(watCol.rgb, 1) * (1 - fresnelFactor);
+	//float3 light_reflection = reflect(light_vector,N);     // Not working
+	//float3 light_reflection = normalize(reflect(-light_vector, N));      // Not working
+	
+	//float3 sunlight = max(pow(dot(light_reflection,eye_vector),shininess),0);
+	//float3 light = sunlight;
+	
+	/*	
+	// Fresnel effect
+    const float R = 0.20373;
+    const float distVar = 150;
+ 
+    float facing = 1.0 - max( dot(eye_vector, N ) ,0);
+    float fresnelWeight = max (R + (1.0 - R) * pow( facing ,3.0) , N);
+    fresnelWeight = min (( fresnelWeight + max(IN.Position.z / distVar , fresnelWeight ))*0.5 , 1);
+ 
+    reflColor *= (1- fresnelWeight );
+    refrColor *= fresnelWeight ;
 	*/
 	
-	float3 tc = IN.PosRef.xyw;
-	
-	return float4(tex2Dproj(TexReflect,tc));
-	//return float4(tex2Dproj(TexNormal,tc));
-	
-//	return float4(IN.CamVec.xyz, 1);
+    //color.rbg = light + reflColor.xyz + refrColor.xyz;
+	color = tex2Dproj(TexReflect,IN.PosRefl);
+	color.a = 1.0;
+	return color;
 }
 
 //---------------------------------------------------------------------------------

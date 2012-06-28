@@ -21,6 +21,7 @@ struct vert2frag
 	float4 PosRefl       : TEXCOORD0;
 	float4 PosRefr       : TEXCOORD1;
 	float2 NormalTC		 : TEXCOORD2; 
+	float3 Normal;
 	float4 Pos;
 };
 
@@ -61,7 +62,6 @@ vert2frag main (app2vert IN,
     vert2frag OUT;
 
 	float4 inPos = IN.Position;
-	float4 reflrefrTC;
 
 	//Grab xz position
 	float2 xzpos = mul(o2w, IN.Position).xz;
@@ -85,12 +85,15 @@ vert2frag main (app2vert IN,
 	inPos.x -= wdxz1.x + wdxz2.x + wdxz3.x;
 	inPos.z -= wdxz1.y + wdxz2.y + wdxz3.y;
 	inPos.y = wdy1 + wdy2 + wdy3;
-
+	
 	//Get real position again.
-	reflrefrTC = mul(ModelViewProj, inPos); 
+	float4 reflrefrTC = mul(ModelViewProj, inPos); 
+	float4 frTC = mul(ModelViewProj, IN.Position); 
 	OUT.Position = reflrefrTC;
 	OUT.Pos = reflrefrTC;
-	float3 reflScale = float3 (reflectXform.xy, 0.5);
+	OUT.Normal = normalize(reflrefrTC.xyz - frTC.xyz);
+	
+		float3 reflScale = float3 (reflectXform.xy, 0.5);
 	float3 reflXlate = float3 (reflectXform.zw, -0.5) * reflrefrTC.w;
 	
 	float3 refrScale = float3 (refractXform.xy, 0.5);
@@ -102,7 +105,6 @@ vert2frag main (app2vert IN,
 	OUT.PosRefr.wz = reflrefrTC.wz;
 
 	OUT.NormalTC = IN.TexCoord;
-	
 	OUT.Color = IN.Color;	
 	
     return OUT;

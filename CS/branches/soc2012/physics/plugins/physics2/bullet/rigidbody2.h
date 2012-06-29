@@ -31,7 +31,7 @@ using CS::Physics::iPhysicalBody;
 using CS::Physics::iRigidBody;
 using CS::Physics::iSoftBody;
 
-class csBulletRigidBody : public scfImplementationExt1<csBulletRigidBody, 
+class csBulletRigidBody : public scfVirtImplementationExt1<csBulletRigidBody, 
     csPhysicalBody, CS::Physics::iRigidBody>
 {
 friend class csBulletKinematicMotionState;

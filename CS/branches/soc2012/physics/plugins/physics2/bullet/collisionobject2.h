@@ -82,7 +82,7 @@ public:
   virtual void SetCollider (CS::Collisions::iCollider* collider);
 
   virtual void SetTransform (const csOrthoTransform& trans);
-  virtual const csOrthoTransform& GetTransform () const;
+  virtual csOrthoTransform GetTransform () const;
   virtual void SetRotation (const csMatrix3& rot);
   virtual void Rotate (const csVector3& v, float angle);
   virtual void IncreaseYaw(float yawDelta);

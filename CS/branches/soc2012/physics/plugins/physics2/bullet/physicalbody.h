@@ -20,6 +20,8 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "common2.h"
 #include "collisionobject2.h"
 
+#include "ivaria/physics.h"
+
 namespace CS 
 { 
 namespace Physics 

@@ -225,7 +225,7 @@ struct iCollisionObject : public virtual iBase
   virtual void SetTransform (const csOrthoTransform& trans) = 0;
 
   /// Get the transform.
-  virtual const csOrthoTransform& GetTransform () const = 0;
+  virtual csOrthoTransform GetTransform () const = 0;
   
   /// Returns the AABB of this object, centered at it's center of mass
   virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const = 0;

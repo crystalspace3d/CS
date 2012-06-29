@@ -208,7 +208,7 @@ void csBulletCollisionTerrain::LoadCellToCollider (iTerrainCell *cell)
 
   // Create the rigid body and add it to the world
 
-  RigidBodyProperties props(collider);
+  RigidBodyProperties props(collider, "heightfield cell");
   props.SetCollisionGroup(collSystem->FindCollisionGroup("Static"));
   csRef<iRigidBody> ibody = this->collSystem->CreateRigidBody(&props);
   csBulletRigidBody* body = dynamic_cast<csBulletRigidBody*> (&*ibody);

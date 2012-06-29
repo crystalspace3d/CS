@@ -894,7 +894,7 @@ void csWaterMeshObjectFactory::SetWaterType(waterMeshType waterType)
     SetMurkiness(0.2f);
     
     //Setup Ocean defaults
-    SetAmplitudes(0.1f, 0.03f, 0.05f);
+    SetAmplitudes(0.19f, 0.13f, 0.45f);
     SetFrequencies(2.0f, 1.7f, 1.6f);
     SetPhases(0.0f, 1.0f, 1.41f);
     

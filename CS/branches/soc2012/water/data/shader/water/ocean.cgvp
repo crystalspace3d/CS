@@ -86,6 +86,7 @@ vert2frag main (app2vert IN,
 	inPos.z -= wdxz1.y + wdxz2.y + wdxz3.y;
 	inPos.y = wdy1 + wdy2 + wdy3;
 	
+	
 	//Get real position again.
 	float4 reflrefrTC = mul(ModelViewProj, inPos); 
 	float4 frTC = mul(ModelViewProj, IN.Position); 

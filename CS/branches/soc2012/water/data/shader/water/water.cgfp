@@ -13,20 +13,6 @@ struct vert2frag
 	float4 Pos;
 };
 
-// Calculated from 1.3333, which is approx. refraction index for water
-// R0 is: 
-// float const R0 =  pow(1.0-refractionIndexRatio, 2.0)  
-//                 / pow(1.0+refractionIndexRatio, 2.0); 
-const float R0 = 0.02040781341208;
-
-// Copied this from a NVidia doc
-// http://developer.nvidia.com/object/fresnel_wp.html
-float fresnel(float3 view, float3 normal) 
-{ 
-    // light and normal are assumed to be normalized  
-    return saturate(R0 + (1.0-R0) * pow(1.0-dot(view, normal), 5.0));
-}
-
 // Water color
 const float3 watCol = float3(0.05, 0.15, 0.4);
 
@@ -59,12 +45,13 @@ float4 main (vert2frag IN,
 	float4 reflColor = tex2Dproj(TexReflect,IN.PosRefl);
 	float4 refrColor = tex2Dproj(TexRefract,IN.PosRefr);
 	
-	
 	float3 light_reflection = normalize(reflect(-light_vector, N));      
 	
 	float3 sunlight = max(pow(dot(light_reflection,eye_vector),shininess),0);
-	float3 light = sunlight;
 	
+	float3 specularColor = {0.2, 0.2, 0.3};
+	
+	float3 light = sunlight + specularColor;
 		
 	// Fresnel effect
     const float R = 0.20373;

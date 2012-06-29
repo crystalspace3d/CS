@@ -30,7 +30,7 @@
 #include "iengine/camera.h"
 #include "csutil/cscolor.h"
 #include "btBulletCollisionCommon.h"
-
+#include "motionstates.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
@@ -225,38 +225,6 @@ public:
     lines.Empty ();
   }
 };
-//------------------------ csBulletMotionState ----------------------
-
-class csBulletMotionState : public btDefaultMotionState
-{
-public:
-  csBulletCollisionObject* body;
-  // we save the inverse of the principal axis for performance reasons
-  btTransform inversePrincipalAxis;
-
-public:
-  csBulletMotionState (csBulletCollisionObject* body,
-		       const btTransform& initialTransform,
-		       const btTransform& principalAxis);
-
-  virtual void setWorldTransform (const btTransform& trans);
-};
-
-
-//------------------------ csBulletKinematicMotionState ----------------------
-
-class csBulletKinematicMotionState : public csBulletMotionState
-{
-  csOrthoTransform principalAxis;
-
-public:
-  csBulletKinematicMotionState (csBulletCollisionObject* body,
-		       const btTransform& initialTransform,
-				const btTransform& principalAxis);
-
-  virtual void getWorldTransform (btTransform& trans) const;
-};
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Some extra Bullet vector operations

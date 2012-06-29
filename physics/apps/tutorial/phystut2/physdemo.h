@@ -149,7 +149,7 @@ private:
   void SpawnRope();
   CS::Physics::iSoftBody* SpawnCloth();
   CS::Physics::iSoftBody* SpawnSoftBody (bool setVelocity = true);
-  void PhysDemo::SpawnBoxStacks(int stackNum = 4, int stackHeight = 4, float boxLen = .5f, float mass = 20.f);
+  void SpawnBoxStacks(int stackNum = 4, int stackHeight = 4, float boxLen = .5f, float mass = 20.f);
 
   void CreateBoxRoom();
   void CreatePortalRoom();
@@ -158,7 +158,7 @@ private:
   void CreateGhostCylinder();
   void GripContactBodies();
 
-  CS::Physics::iRigidBody* PhysDemo::SpawnRigidBody (
+  CS::Physics::iRigidBody* SpawnRigidBody (
     CS::Collisions::iCollider* collider,
     iMeshWrapper* mesh, 
     const csVector3& pos, 

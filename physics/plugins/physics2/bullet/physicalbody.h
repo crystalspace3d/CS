@@ -20,10 +20,14 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "common2.h"
 #include "collisionobject2.h"
 
-namespace CS { namespace Physics {
-  struct iRigidBody;
-  struct iSoftBody;
-} }
+namespace CS 
+{ 
+namespace Physics 
+{
+struct iRigidBody;
+struct iSoftBody;
+}
+}
 
 //enum PhysicalBodyType;
 

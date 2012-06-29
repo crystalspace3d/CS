@@ -37,7 +37,9 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csutil/csstring.h"
 
 
-namespace CS { namespace Collisions {
+namespace CS 
+{ 
+namespace Collisions {
   struct csConvexResult;
   struct iCollisionCallback;
   struct iCollisionObject;
@@ -132,5 +134,6 @@ namespace CS { namespace Collisions {
     }
 
   };
-} }
+} 
+}
 #endif

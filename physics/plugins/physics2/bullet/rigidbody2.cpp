@@ -447,7 +447,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (!btBody)
       return; 
 
-    csOrthoTransform trans =  csBulletCollisionObject::GetTransform ();
+    const csOrthoTransform& trans =  csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
     btBody->ADD_CENTRAL_FORCE (CSToBullet(absForce, system->getInternalScale ()));
     btBody->activate(true);
@@ -459,7 +459,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return; 
     btBody->activate(true);
 
-    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
+    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
     csVector3 absTorque = trans.This2Other (torque);
     btBody->applyTorque (CSToBullet(absTorque, system->getInternalScale () * system->getInternalScale ()));
   }
@@ -472,7 +472,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btBody->activate(true);
 
     btVector3 btForce(CSToBullet(force, system->getInternalScale ()));
-    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
+    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
     csVector3 relPos = trans.Other2This (pos);
     
     btBody->ADD_FORCE (btForce, CSToBullet(relPos, system->getInternalScale ()));
@@ -485,7 +485,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return; 
     
     btBody->activate(true);
-    csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
+    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
     csVector3 relPos = trans.Other2This (pos);
     btBody->ADD_FORCE (CSToBullet(force, system->getInternalScale ()), CSToBullet(relPos, system->getInternalScale ()));
   }
@@ -496,7 +496,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return; 
     
     btBody->activate(true);
-    csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
+    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
     csVector3 relPos = trans.Other2This (pos);
     btBody->ADD_FORCE (CSToBullet(absForce, system->getInternalScale ()),
@@ -510,7 +510,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return; 
     
     btBody->activate(true);
-    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
+    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
     btBody->ADD_FORCE (CSToBullet(absForce, system->getInternalScale ()),
       CSToBullet(pos, system->getInternalScale ()));

@@ -58,7 +58,7 @@ private:
   // Dynamic simulation related
   bool allStatic;
   bool pauseDynamic;
-  float dynamicSpeed;
+  float dynamicStepFactor;
 
   // Camera related
   CS::Physics::Bullet2::DebugMode debugMode;
@@ -134,7 +134,7 @@ VerySimple::VerySimple()
   : DemoApplication ("CrystalSpace.PhysTut2"),
   isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
   do_soft_debug (true), remainingStepDuration (0.0f), allStatic (false), 
-  pauseDynamic (false), dynamicSpeed (1.0f),
+  pauseDynamic (false), dynamicStepFactor (1.0f),
   debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
   physicalCameraMode (CAMERA_DYNAMIC), dragging (false), softDragging (false)
 {

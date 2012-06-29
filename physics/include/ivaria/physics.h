@@ -1078,6 +1078,36 @@ struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
   virtual void RemoveAnimatedMeshAnchor (size_t bodyVertexIndex) = 0;
 };
 
+
+/**
+ * TODO: This class should have a common base interface with iCollisionActor
+ * 
+ */
+struct iDynamicActor : public virtual iRigidBody
+{
+  SCF_INTERFACE (CS::Physics::iDynamicActor, 1, 0, 0);
+
+  /// Whether this actor touches the ground
+  virtual bool IsOnGround();
+
+  /// Applies an upward impulse to this actor
+  virtual void Jump();
+
+  /// Get the max vertical threshold that this actor can step over
+  virtual float GetStepHeight () const = 0;
+  /// Set the max vertical threshold that this actor can step over
+  virtual void SetStepHeight (float h) = 0;
+  
+  /// Get the jump speed
+  virtual float GetJumpSpeed () const = 0;
+  /// Set the jump speed
+  virtual void SetJumpSpeed (float s) = 0;
+  
+  /// Determines how much the actor can control movement when free falling
+  virtual float GetAirControlFactor () const = 0;
+  /// Determines how much the actor can control movement when free falling
+  virtual void SetAirControlFactor (float f) = 0;
+};
 }
 }
 #endif

@@ -15,16 +15,18 @@ PhysDemo::PhysDemo()
   : DemoApplication ("CrystalSpace.PhysTut2"),
     isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
     do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
-    pauseDynamic (false), dynamicSpeed (1.0f),
+    pauseDynamic (false), dynamicStepFactor (1.0f),
     debugMode (Bullet2::DEBUG_COLLIDERS),
     dragging (false), softDragging (false),
+    moveSpeed(7.f),
+    turnSpeed(2.f),
+    actorAirControl(.003f),
     //physicalCameraMode (CAMERA_ACTOR)
     physicalCameraMode (CAMERA_DYNAMIC)
     ,
     defaultEnvironmentName("terrain")
     //defaultEnvironmentName("portals")
 {
-  actorSpeed = 5;
 }
 
 PhysDemo::~PhysDemo()
@@ -359,7 +361,7 @@ void PhysDemo::UpdateCameraMode()
       cameraActor->SetTransform(trans);
       
       physicalSector->AddCollisionObject(cameraActor);
-      cameraActor->SetJumpSpeed(actorSpeed);
+      cameraActor->SetJumpSpeed(moveSpeed);
     }
     break;
 
@@ -403,6 +405,19 @@ void PhysDemo::UpdateCameraMode()
   default:
     break;
   }
+}
+
+bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const
+{
+  csVector3 to = pos - 10000 * UpVector;
+  HitBeamResult result = physicalSector->HitBeam(pos, to);
+
+  if (result.hasHit)
+  {
+    groundPos = result.isect;
+    return true;
+  }
+  return false;
 }
 
 

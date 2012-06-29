@@ -146,7 +146,7 @@ RagdollNode::~RagdollNode ()
 void RagdollNode::SetPhysicalSystem (CS::Physics::iPhysicalSystem* system)
 {
   physicalSystem = system;
-  collisionSystem = scfQueryInterface<CS::Collisions::iCollisionSystem> (system);
+  collisionSystem = dynamic_cast<CS::Physics::iPhysicalSystem*> (system);
 }
 
 CS::Physics::iPhysicalSystem* RagdollNode::GetPhysicalSystem () const
@@ -642,8 +642,10 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
     csOrthoTransform bodyTransform = boneTransform * animeshTransform;
     boneData->rigidBody->SetTransform (bodyTransform);
   }
-
-  boneData->rigidBody->RebuildObject ();
+  else
+  {
+    boneData->rigidBody->RebuildObject ();
+  }
   physicalSector->AddCollisionObject (boneData->rigidBody);
 
   // if the bone is in dynamic state
@@ -721,8 +723,11 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
     csOrthoTransform boneTransform (csMatrix3 (rotation.GetConjugate ()), offset); 
     skeleton->GetFactory ()->GetTransformBoneSpace (boneData->boneID, rotation, offset); 
     csOrthoTransform boneSTransform (csMatrix3 (rotation.GetConjugate ()), offset); 
-    boneData->joint->SetTransform (bodyBone->GetBoneJoint ()->GetTransform () * 
-      boneSTransform * boneTransform.GetInverse() * boneData->rigidBody->GetTransform ()); 
+
+    csOrthoTransform jt(bodyBone->GetBoneJoint ()->GetTransform ());
+    csReversibleTransform btinv(boneTransform.GetInverse());
+    csOrthoTransform bodyTrans(boneData->rigidBody->GetTransform ());
+    boneData->joint->SetTransform (jt * boneSTransform * btinv * bodyTrans); 
 
     // attach the rigid bodies to the joint
     boneData->joint->Attach (parentBoneData.rigidBody, boneData->rigidBody, false);

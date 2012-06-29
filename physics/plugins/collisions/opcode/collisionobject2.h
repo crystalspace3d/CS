@@ -80,7 +80,7 @@ public:
   virtual iCamera* GetAttachedCamera () const {return camera;}
 
   virtual void SetTransform (const csOrthoTransform& trans);
-  virtual const csOrthoTransform& GetTransform () const;
+  virtual csOrthoTransform GetTransform () const;
 
   virtual void SetRotation (const csMatrix3& rot);
   virtual void Rotate (const csVector3& v, float angle);

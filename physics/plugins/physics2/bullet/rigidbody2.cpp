@@ -1,6 +1,4 @@
 /*
-Copyright (C) 2011 by Liu Lu
-
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
 License as published by the Free Software Foundation; either
@@ -133,7 +131,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletRigidBody::RebuildObject () 
   { 
-    // TODO: This method is utterly useless
+    // See http://bulletphysics.org/Bullet/phpBB3/viewtopic.php?t=7988
+    /**
+     Quote:
+     It could be that contact points are not updated because you changed the collision shape. 
+     If you modify collision shapes, the best way is to remove the objects first, then make the modification, and re-insert it into the world. 
+     Alternatively, you can manually flush the contact points for a given object using an API call, for example:
+     world->getBroadphase()->getOverlappingPairCache()->cleanProxyFromPairs(object->getBroadphaseHandle(),world->getDispatcher());
+     */
 
     bool wasInWorld = insideWorld;
     if (insideWorld)
@@ -447,7 +452,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (!btBody)
       return; 
 
-    const csOrthoTransform& trans =  csBulletCollisionObject::GetTransform ();
+    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
     btBody->ADD_CENTRAL_FORCE (CSToBullet(absForce, system->getInternalScale ()));
     btBody->activate(true);
@@ -459,7 +464,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return; 
     btBody->activate(true);
 
-    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
+    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 absTorque = trans.This2Other (torque);
     btBody->applyTorque (CSToBullet(absTorque, system->getInternalScale () * system->getInternalScale ()));
   }
@@ -472,7 +477,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btBody->activate(true);
 
     btVector3 btForce(CSToBullet(force, system->getInternalScale ()));
-    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
+    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 relPos = trans.Other2This (pos);
     
     btBody->ADD_FORCE (btForce, CSToBullet(relPos, system->getInternalScale ()));
@@ -485,7 +490,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return; 
     
     btBody->activate(true);
-    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
+    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 relPos = trans.Other2This (pos);
     btBody->ADD_FORCE (CSToBullet(force, system->getInternalScale ()), CSToBullet(relPos, system->getInternalScale ()));
   }
@@ -496,7 +501,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return; 
     
     btBody->activate(true);
-    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
+    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
     csVector3 relPos = trans.Other2This (pos);
     btBody->ADD_FORCE (CSToBullet(absForce, system->getInternalScale ()),
@@ -510,7 +515,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return; 
     
     btBody->activate(true);
-    const csOrthoTransform& trans = csBulletCollisionObject::GetTransform ();
+    csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
     btBody->ADD_FORCE (CSToBullet(absForce, system->getInternalScale ()),
       CSToBullet(pos, system->getInternalScale ()));

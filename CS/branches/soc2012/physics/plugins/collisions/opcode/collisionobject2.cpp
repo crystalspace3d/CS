@@ -61,7 +61,7 @@ void csOpcodeCollisionObject::SetTransform (const csOrthoTransform& trans)
     camera->SetTransform (transform);
 }
 
-csOrthoTransform csOpcodeCollisionObject::GetTransform () const
+const csOrthoTransform& csOpcodeCollisionObject::GetTransform () const
 {
   if (movable)
     return movable->GetFullTransform ();

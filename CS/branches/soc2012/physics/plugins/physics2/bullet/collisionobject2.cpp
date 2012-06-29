@@ -71,7 +71,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btObject->setWorldTransform(btTrans);
   }
 
-  csOrthoTransform csBulletCollisionObject::GetTransform () const
+  const csOrthoTransform& csBulletCollisionObject::GetTransform () const
   {
     //float inverseScale = system->getInverseInternalScale ();
     CS_ASSERT(btObject);

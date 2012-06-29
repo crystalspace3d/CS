@@ -32,18 +32,29 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "ivaria/collisions.h"
 #include "ivaria/collisionproperties.h"
 
-namespace CS { namespace Mesh  {
+namespace CS 
+{ 
+namespace Mesh
+{
   struct iAnimatedMesh;
-} }
+}
+}
 
-namespace CS { namespace Collisions {
+namespace CS 
+{ 
+namespace Collisions 
+{
   struct iCollisionCallback;
   struct iCollisionObject;
   struct CollisionGroup;
   struct iCollisionObject;
-} }
+}
+}
 
-namespace CS { namespace Physics {
+namespace CS 
+{
+namespace Physics 
+{
   struct iJoint;
   struct iObject;
   struct iRigidBody;
@@ -172,5 +183,6 @@ namespace CS { namespace Physics {
     {}
   };
 
-} }
+}
+}
 #endif

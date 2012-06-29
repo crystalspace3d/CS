@@ -23,6 +23,14 @@
 #define ENVIRONMENT_BOX 2
 #define ENVIRONMENT_TERRAIN 3
 
+static const int KeyLeft = CSKEY_LEFT;
+static const int KeyRight = CSKEY_RIGHT;
+static const int KeyUp = CSKEY_PGUP;
+static const int KeyDown = CSKEY_PGDN;
+static const int KeyForward = CSKEY_UP;
+static const int KeyBack = CSKEY_DOWN;
+static const int KeyJump = CSKEY_SPACE;
+
 inline int GetEnvironmentByName(csString levelName)
 {
   if (levelName == "portals")
@@ -38,7 +46,7 @@ inline int GetEnvironmentByName(csString levelName)
 }
  
 //static const csVector3 ActorDimensions(0.8);
-static const csVector3 ActorDimensions(0.1, 0.8, 0.1);
+static const csVector3 ActorDimensions(0.1f, 0.8f, 0.1f);
 
 class PhysDemo : public CS::Utility::DemoApplication
 {
@@ -77,10 +85,12 @@ private:
   // Dynamic simulation related
   bool allStatic;
   bool pauseDynamic;
-  float dynamicSpeed;
+  float dynamicStepFactor;
 
-  // Camera related
+  // Camera & actors
   CS::Physics::Bullet2::DebugMode debugMode;
+  float actorAirControl;
+  float moveSpeed, turnSpeed;
   int physicalCameraMode;
   csRef<CS::Physics::iRigidBody> cameraBody;
   csRef<CS::Collisions::iCollisionActor> cameraActor;
@@ -226,6 +236,7 @@ public:
    */
   csVector3 GetPointInFrontOfFeetXZ(float distance) const { return GetActorFeetPos() + (GetCameraDirectionXZ() * distance); }
   
+  bool GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const;
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1

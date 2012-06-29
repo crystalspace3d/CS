@@ -30,8 +30,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,  csBulletGhostCollisionObject,  CS::Collisions::iCollisionActor>
 {
   btKinematicCharacterController* controller;
-  float pitch;
-  bool flying;
 
 public:
   void CreateCollisionActor(CS::Collisions::CollisionActorProperties* props);
@@ -50,23 +48,9 @@ public:
   virtual CS::Collisions::CollisionObjectType GetObjectType () const {return CS::Collisions::COLLISION_OBJECT_ACTOR;}
 
   virtual bool AddBulletObject();
-  
-  virtual void IncreaseYaw(float delta);
-  virtual void IncreasePitch(float delta);
 
   //iCollisionActor
-  virtual bool IsFlying () const { return flying; }
-
-  virtual void SetFlying (bool value) 
-  { 
-    flying = value; 
-    controller->setGravity(0);
-  }
-
   virtual bool IsOnGround () const { return controller->onGround(); }
-
-  /// Gets the pitch (up/down angle) to determine head pose and camera angle
-  virtual float GetPitch () const { return pitch; }
 
   virtual void SetAttachedCamera(iCamera* camera);
 

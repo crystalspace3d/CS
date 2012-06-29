@@ -330,16 +330,8 @@ struct iCollisionActor : public virtual iGhostCollisionObject
 {
   SCF_INTERFACE (CS::Collisions::iCollisionActor, 1, 0, 0);
 
-  /// Whether the actor is currently not bound by gravity
-  virtual bool IsFlying () const = 0;
-
-  /// Set whether the actor is currently not bound by gravity
-  virtual void SetFlying (bool flying) = 0;
-
   /// Check if we are on the ground.
   virtual bool IsOnGround () const = 0;
-
-  virtual float GetPitch () const = 0;
 
   /// Set the onground status.
   //virtual void SetOnGround (bool og) = 0;

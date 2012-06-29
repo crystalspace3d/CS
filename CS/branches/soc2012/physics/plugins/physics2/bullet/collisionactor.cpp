@@ -29,7 +29,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   }
 
   csBulletCollisionActor::csBulletCollisionActor(csBulletSystem* sys) : scfVirtImplementationExt1(this, sys),
-    controller(nullptr), pitch(0), flying(false)
+    controller(nullptr)
   {
   }
 
@@ -39,32 +39,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       delete controller;
     }
-  }
-  
-  void csBulletCollisionActor::IncreaseYaw(float delta)
-  {
-    bool reset = !IsFlying() && camera;
-    if (reset)
-    {
-      // align with up-axis before turning horizontally
-      camera->GetTransform().RotateThis(CS_VEC_TILT_UP, -pitch);
-    }
-    csBulletGhostCollisionObject::IncreaseYaw(delta);
-    if (reset)
-    {
-      // re-apply pitch
-      camera->GetTransform().RotateThis(CS_VEC_TILT_UP, pitch);
-    }
-  }
-  
-  void csBulletCollisionActor::IncreasePitch(float delta)
-  {
-    pitch += delta;
-    if (camera)
-    {
-      camera->GetTransform().RotateThis(CS_VEC_TILT_UP, delta);
-    }
-    //csBulletGhostCollisionObject::IncreasePitch(delta);
   }
 
   void csBulletCollisionActor::SetAttachedCamera (iCamera* camera)
@@ -108,10 +82,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (!controller) return;
 
-    if (!IsFlying())
-    {
-      controller->setGravity(-sector->GetGravity()[1]);
-    }
     controller->updateAction(sector->bulletWorld, delta);
     
     csVector3 pos = BulletToCS(controller->getGhostObject()->getWorldTransform().getOrigin(), this->system->getInverseInternalScale());

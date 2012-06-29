@@ -1222,10 +1222,11 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
   // Stacks are horizontally aligned with the viewing direction
 
   static const float anchorDist = 2;                  // distance from pos to stack area
-  static const float spacingFactor = 0.8f;            // how much of the box length is to be left as space between boxes
+  static const float hSpacingFactor = 0.9f;           // how much of the box length is to be left as space between boxes horizontally
+  static const float vSpacingFactor = 0.01f;          // how much of the box length is to be left as space between boxes vertically
 
   // position & direction
-  csVector3 pos = GetCameraPosition();
+  csVector3 pos = GetCameraPosition(); GetPointOnGroundBeneathPos(pos, pos);    // move to ground
   csVector3 dir = GetCameraDirection();
   
   csVector2 pos2 = HORIZONTAL_COMPONENT(pos);
@@ -1233,7 +1234,7 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
   csVector2 dirOrth2 = dir2;
   dirOrth2.Rotate(HALF_PI);
   
-  float hspace = spacingFactor * boxLen;                          // horizontal spacing between boxes
+  float hspace = hSpacingFactor * boxLen;                          // horizontal spacing between boxes
   float dist = boxLen + hspace;                                   // horizontal distance between two neighboring stacks
   csVector2 hdistDir = dist * dir2;                               // horizontal stack distance in dir
   csVector2 hdistOrth = dist * dirOrth2;                          // horizontal stack distance orthogonal to dir
@@ -1267,6 +1268,7 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
     for (int z = 0; z < numDir && n < stackNum; ++z)
     {
       csVector3 boxPos = HV_VECTOR3(boxPos2, pos[UpAxis]);
+      boxPos += (.5f * (1 + vSpacingFactor) * boxLen) * UpVector;
       for (int i = 0; i < stackHeight; ++i)
       {
         // TODO: Meshes can't be shared
@@ -1274,7 +1276,7 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
         csRef<iMeshWrapper> mesh = GeneralMeshBuilder::CreateFactoryAndMesh (engine, room, "box", "walls_factory", &tbox);
         mesh->GetMeshObject()->SetMaterialWrapper (mat);
         SpawnRigidBody(collider, mesh, boxPos, mass, false);
-        boxPos += 0.2f * dist * UpVector;
+        boxPos += ((1 + vSpacingFactor) * boxLen) * UpVector;
       }
       ++n;
       boxPos2 += hdistDir;

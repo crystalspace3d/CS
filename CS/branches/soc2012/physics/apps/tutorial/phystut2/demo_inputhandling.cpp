@@ -57,7 +57,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 'b')
     {
-      SpawnBoxStacks(5, 4, .5, 80);
+      SpawnBoxStacks(10, 5, .5, 80);
       return true;
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 'm')
@@ -157,14 +157,14 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     else if (csKeyEventHelper::GetCookedCode (&event) == 'o')
     {
       // Toggle speed of dynamic simulation
-      if (dynamicSpeed - 1.0 < EPSILON)
+      if (dynamicStepFactor - 1.0 < EPSILON)
       {
-        dynamicSpeed = 45.0;
+        dynamicStepFactor = 0.025f;
         printf ("Dynamic simulation slowed\n");
       }
       else
       {
-        dynamicSpeed = 1.0;
+        dynamicStepFactor = 1.0f;
         printf ("Dynamic simulation at normal speed\n");
       }
     }

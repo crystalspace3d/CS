@@ -71,8 +71,8 @@ float4 main (vert2frag IN,
     float fresnelWeight = max (R + (1.0 - R) * pow( facing ,3.0) , N);
     fresnelWeight = min (( fresnelWeight + max(IN.Pos.z / distVar , fresnelWeight ))*0.5 , 1);
  
-    reflColor *= (1- fresnelWeight );
-    refrColor *= fresnelWeight ;
+    reflColor *=  fresnelWeight;
+    refrColor *= (1-fresnelWeight) ;
 	
     color.xyz = light + reflColor.xyz + refrColor.xyz;
 	//color = tex2Dproj(TexReflect,IN.PosRefl);

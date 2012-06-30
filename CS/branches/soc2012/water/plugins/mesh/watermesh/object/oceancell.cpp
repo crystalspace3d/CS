@@ -89,7 +89,7 @@ void csOceanCell::SetupVertices()
 		   for(uint i = 0; i < maxi  ; ++i)
 		   {
 		     verts[k].Push(csVector3 ((i * wid / maxid), oHeight, (j * len / maxjd)));
-		     texs[k].Push(csVector2((i * wid / maxid) / 1.5, (j * len / maxjd) / 1.5));
+		     texs[k].Push(csVector2((i * wid / maxid), (j * len / maxjd)));
 			 cols[k].Push(csColor (0.17f,0.27f,0.26f));
 			 norms[k].Push(csVector3 (0, 1, 0));
 		   }

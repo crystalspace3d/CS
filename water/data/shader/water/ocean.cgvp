@@ -94,7 +94,7 @@ vert2frag main (app2vert IN,
 	OUT.Pos = reflrefrTC;
 	OUT.Normal = normalize(reflrefrTC.xyz - frTC.xyz);
 	
-		float3 reflScale = float3 (reflectXform.xy, 0.5);
+	float3 reflScale = float3 (reflectXform.xy, 0.5);
 	float3 reflXlate = float3 (reflectXform.zw, -0.5) * reflrefrTC.w;
 	
 	float3 refrScale = float3 (refractXform.xy, 0.5);

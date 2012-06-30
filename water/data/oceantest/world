@@ -66,8 +66,6 @@
     <material name="oceanMat">
       <shader type="standard">water</shader>
       <shadervar name="tex normal" type="texture">normal map 1</shadervar>
-	  <shadervar name="tex rfl" type="texture">sky_up</shadervar>
-	  <shadervar name="tex rfr" type="texture">sky_down</shadervar>
     </material>
     
     <material name="clouds">
@@ -335,8 +333,8 @@
             </params>
             <priority>wall</priority>
 		<move>
-                <v x="0.0" y="-10.0" z="0.0" />
-            </move>
+                <v x="0.0" y="-10.0" z="40.0" />
+        </move>
 
 </meshobj>
     

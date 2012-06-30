@@ -27,7 +27,7 @@
     <materials>        
         <material name="oceanMat">
      		<shader type="standard">water</shader>
-      		<shadervar name="tex normal" type="texture">normal map 2</shadervar>
+      		<shadervar name="tex normal" type="texture">normal map 1</shadervar>
    		</material>
     </materials>
     

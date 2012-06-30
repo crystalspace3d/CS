@@ -54,6 +54,8 @@ void csOceanCell::SetupVertices()
 
   if(!isSetup)
   {
+
+    //NOTE: Can be converted into a mathmethical statement instead of switch
     float gran;
     switch(type)
     {
@@ -79,8 +81,6 @@ void csOceanCell::SetupVertices()
     uint maxj = maxjd + 1;
     uint maxid = (uint) (wid * gran);
     uint maxi = maxid + 1;
-
-
 	
 	for (uint k = 0; k < 16 ; k++)
 	{

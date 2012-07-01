@@ -73,6 +73,9 @@ namespace lighter
     SwapManager* swapManager;
     RayDebugHelper rayDebug;
 
+    // Thread return array
+    csRefArray<iThreadReturn> sectorGroupProcess;
+
   protected:
     // Cleanup and prepare for shutdown
     void CleanUp (Statistics::Progress& progress);

@@ -81,7 +81,7 @@ namespace lighter
      * You must call this function before using the map with the
      * functions IrradianceEstimate, RadianceEstimate and LocatePhotons.
      **/
-    void Balance(Statistics::ProgressState &prog);
+    void Balance();
 
     /**
      * IrradianceEstimate
@@ -168,8 +168,7 @@ namespace lighter
       const size_t index,
 
       const size_t start,
-      const size_t end,
-      Statistics::ProgressState &prog);
+      const size_t end);
 
     void MedianSplit(
       Photon **p,
@@ -189,6 +188,8 @@ namespace lighter
 
     float bboxMin[3];         ///< Minimum value in each dimension for bounding box computation
     float bboxMax[3];         ///< Maximum value in each dimension for bounding box computation
+
+    CS::Threading::Mutex writeMutex;  //< Mutex for the store operations
 
     // Precomputed cosine and sine lookup tables for spherical coordinate conversion
     static bool directionTablesReady;

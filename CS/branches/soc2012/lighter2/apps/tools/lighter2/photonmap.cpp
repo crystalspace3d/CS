@@ -428,6 +428,8 @@ namespace lighter
                            const float pos[3],
                            const float dir[3] )
   {
+    CS::Threading::MutexScopedLock lock(writeMutex);
+
     // Check for storage and attempt to expand if needed
     if (storedPhotons>=maxPhotons && !Expand())
       return;
@@ -507,7 +509,7 @@ namespace lighter
    * This function should be called before the photon map
    * is used for rendering.
    */
-  void PhotonMap :: Balance(Statistics::ProgressState &prog)
+  void PhotonMap :: Balance()
   {
     if (storedPhotons>1) {
       // allocate two temporary arrays for the balancing procedure
@@ -517,7 +519,7 @@ namespace lighter
       for (size_t i=0; i<=storedPhotons; i++)
         pa2[i] = &(photons[i]);
 
-      BalanceSegment( pa1, pa2, 1, 1, storedPhotons, prog );
+      BalanceSegment( pa1, pa2, 1, 1, storedPhotons );
       free(pa2);
 
       // reorganize balanced kd-tree (make a heap)
@@ -602,11 +604,8 @@ namespace lighter
                                      Photon **porg,
                                      const size_t index,
                                      const size_t start,
-                                     const size_t end,
-                                     Statistics::ProgressState &prog)
+                                     const size_t end)
   {
-    prog.Advance();
-
     //--------------------
     // compute new median
     //--------------------
@@ -651,7 +650,7 @@ namespace lighter
       if ( start < median-1 ) {
         const float tmp=bboxMax[axis];
         bboxMax[axis] = pbal[index]->pos[axis];
-        BalanceSegment( pbal, porg, 2*index, start, median-1, prog );
+        BalanceSegment( pbal, porg, 2*index, start, median-1 );
         bboxMax[axis] = tmp;
       } else {
         pbal[ 2*index ] = porg[start];
@@ -663,7 +662,7 @@ namespace lighter
       if ( median+1 < end ) {
         const float tmp = bboxMin[axis];
         bboxMin[axis] = pbal[index]->pos[axis];
-        BalanceSegment( pbal, porg, 2*index+1, median+1, end, prog );
+        BalanceSegment( pbal, porg, 2*index+1, median+1, end );
         bboxMin[axis] = tmp;
       } else {
         pbal[ 2*index+1 ] = porg[end];

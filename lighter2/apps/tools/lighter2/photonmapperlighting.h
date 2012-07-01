@@ -83,17 +83,15 @@ namespace lighter
     * EmitPhotons
     * Emits photons in the given sector from the lights
     * /param sect - the sector to emit photons into 
-    * /param progress - the progress we are making in calculations
     */
-    void EmitPhotons(Sector *sect, Statistics::Progress& progress);
+    void EmitPhotons(Sector *sect);
 
     /**
     * BalancePhotons
     * Balance the photon map KD-Tree for the indicated sector
     * /param sect - the sector to balance 
-    * /param progress - the progress we are making in calculations
     */
-    void BalancePhotons(Sector *sect, Statistics::Progress& progress);
+    void BalancePhotons(Sector *sect);
 
     /**
     * ParseSector

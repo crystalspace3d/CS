@@ -83,6 +83,8 @@ namespace lighter
     size_t initialSize;     ///< Initial allocated sample array size
     size_t storedSamples;   ///< Number of samples stored in the internal array
     size_t maxSamples;      ///< Actual allocated size of sample array
+
+    CS::Threading::Mutex writeMutex;  //< Mutex for the store operations
   };
 };
 

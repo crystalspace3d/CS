@@ -52,6 +52,8 @@ namespace lighter
                            const float power[3],
                            const float mean)
   {
+    CS::Threading::MutexScopedLock lock(writeMutex);
+
     // Check for storage and attempt to expand if needed
     if (storedSamples>=maxSamples && !Expand())
       return;

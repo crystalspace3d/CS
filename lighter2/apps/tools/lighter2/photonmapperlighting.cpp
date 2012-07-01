@@ -169,15 +169,10 @@ namespace lighter
     return c;
   }
 
-  void PhotonmapperLighting::BalancePhotons(Sector *sect, Statistics::Progress& progress)
+  void PhotonmapperLighting::BalancePhotons(Sector *sect)
   {
     // Balance the PhotonMap KD-Trees
-    progress.SetProgress(0.0f);
-    Statistics::ProgressState progressState(progress, (int)(0.5*sect->GetPhotonCount()));
-
-    sect->BalancePhotons(progressState);
-
-    progress.SetProgress(0.0f);
+    sect->BalancePhotons();
 
     // Save the photon map if requested
     if(globalConfig.GetIndirectProperties ().savePhotonMap)
@@ -222,12 +217,8 @@ namespace lighter
     return causticSector;
   }
 
-  void PhotonmapperLighting::EmitPhotons(Sector *sect, Statistics::Progress& progress)
+  void PhotonmapperLighting::EmitPhotons(Sector *sect)
   {
-    progress.SetProgress(0.0f);
-
-    // Sleep Time
-	//Sleep(10000);
     // Determine maximum allowed photon recursion
     size_t maxDepth = 0;
     if(indirectLightEnabled)
@@ -238,7 +229,6 @@ namespace lighter
 
     // Iterate through all the non 'Pseudo Dynamic' light sources
     const LightRefArray& allNonPDLights = sect->allNonPDLights;
-    Statistics::ProgressState progressState(progress, numPhotonsPerSector);
 
     // Iterate over the lights to determine the total lumen power in the sector
     double sectorLumenPower = 0;
@@ -261,6 +251,9 @@ namespace lighter
       {
         numCausticPhotonsPerSector = 0;
         enableCaustics = false;
+      }
+      else
+      {
         sect->InitCausticPhotonMap();
       }
     }
@@ -384,7 +377,6 @@ namespace lighter
 			// Emit a single photon into the sector containing this light
 			const PhotonRay newPhoton = { photonOrigin, dir, color, power, curLight, RAY_TYPE_OTHER1, 1.0f };
 			EmitPhoton(sect, newPhoton, maxDepth, 0, !directLightEnabled, false);
-			progressState.Advance();
 		  }
 	  }
 
@@ -555,8 +547,6 @@ namespace lighter
     {
       sect->ScaleCausticPhotons(1.0/numCausticPhotonsPerSector);
     }
-
-    progress.SetProgress(1.0f);
   }
 
   void PhotonmapperLighting::EmitPhoton(Sector* &sect, const PhotonRay &photon,
@@ -608,13 +598,11 @@ namespace lighter
       {
         if(!produceCaustic)
         {
-	  #pragma omp critical
           sect->AddPhoton(reflColor, hit.hitPoint, L);
         }
         else if (!hitPtMaterial->produceCaustic)
         {
           // Add the photon to the caustic photon map
-	  #pragma omp critical
           sect->AddCausticPhoton(reflColor, hit.hitPoint, L);
           return;
         }

@@ -332,6 +332,9 @@ namespace lighter
 
     ProcessSectorGroups(enableRaytracer,enablePhotonMapper);
 
+    // Wait for the end of the calculation
+    //threadManager->Wait(sectorGroupProcess);
+
     /*
     // Build the KD-trees
     BuildKDTrees ();
@@ -483,7 +486,7 @@ namespace lighter
   {
     SectorGroupRefArray groups = scene->GetSectorGroups();
     SectorGroupRefArray::Iterator groupIt = groups.GetIterator();
-    
+      
     while (groupIt.HasNext())
     {
       csRef<SectorGroup> group = groupIt.Next();
@@ -491,7 +494,7 @@ namespace lighter
     }
 
   }
-
+    
   void Lighter::PrepareLighting ()
   {
     uvLayout->PrepareLighting (progPrepareLightingUVL);
@@ -562,6 +565,7 @@ namespace lighter
     progPostprocLM.SetProgress (0);
     csArray<LightmapPtrDelArray*> allLightmaps (scene->GetAllLightmaps());
     float lightmapStep = 1.0f / allLightmaps.GetSize();
+    
     for (size_t li = 0; li < allLightmaps.GetSize (); ++li)
     {
       LightmapPtrDelArray& lightmaps = *allLightmaps[li];
@@ -585,10 +589,11 @@ namespace lighter
           u = updateFreq;
         }
       }
+
       progLM->SetProgress (1);
       delete progLM;
     }
-    progPostprocLM.SetProgress (1);    
+    progPostprocLM.SetProgress (1);
   }
 
   void Lighter::LoadConfiguration ()

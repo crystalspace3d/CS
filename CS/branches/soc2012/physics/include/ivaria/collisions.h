@@ -320,9 +320,12 @@ struct iCollisionTerrain : public virtual iBase
 struct iActor
 {
   SCF_INTERFACE (CS::Collisions::iActor, 1, 0, 0);
-
-  /// Take care of actor-specific stuff
-  virtual void UpdateAction (float delta) = 0;
+  
+  /// Take care of actor-specific stuff, before the simulation step
+  virtual void UpdatePreStep (float delta) = 0;
+  
+  /// Take care of actor-specific stuff, after the simulation step
+  virtual void UpdatePostStep (float delta) = 0;
 
   /**
    * Start walking in the given direction with walk speed. 

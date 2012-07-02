@@ -70,8 +70,9 @@ public:
   virtual bool IsOnGround () const;
 
   virtual void SetAttachedCamera(iCamera* camera);
-
-  virtual void UpdateAction (float delta);
+  
+  virtual void UpdatePreStep (csScalar delta);
+  virtual void UpdatePostStep (csScalar delta);
 
   float GetGravity() const;
   void SetGravity(float gravity);

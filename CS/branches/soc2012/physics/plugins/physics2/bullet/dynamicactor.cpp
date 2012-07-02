@@ -220,16 +220,21 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       DoesGravityApply();               // and gravity applies
   }
 
-  void csBulletDynamicActor::UpdateAction(csScalar dt)
+  void csBulletDynamicActor::UpdatePreStep(csScalar dt)
   {
     onGround = TestOnGround();
 
-    if (!kinematicSteps) return;
-    
-    if (!IsFreeFalling())
+    if (kinematicSteps && !IsFreeFalling() && btBody->getLinearVelocity().length2() > 0)
     {
       stepUp(dt);
-      stepForwardAndStrafe(dt);
+      //stepForwardAndStrafe(dt);
+    }
+  }
+
+  void csBulletDynamicActor::UpdatePostStep(csScalar dt)
+  {
+    if (kinematicSteps && !IsFreeFalling() && btBody->getLinearVelocity().length2() > 0)
+    {
       stepDown(dt);
       SetLinearVelocity(0);              // stop moving
     }
@@ -243,138 +248,41 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   void csBulletDynamicActor::stepUp (csScalar dt)
   {
     btVector3& currentPosition = btObject->getWorldTransform().getOrigin();
-    m_targetPosition = currentPosition + BTUpVector * stepHeight;
-    
-    // TODO: This method tests intersections with objects beneath the object when moving upward. Seems highly unnecessary.
+    //m_targetPosition = currentPosition + BTUpVector * stepHeight;
+
+    currentPosition = currentPosition + BTUpVector * stepHeight;
+    // TODO: This method tests intersections with objects beneath the object when moving upward. Highly unnecessary.
 
     // phase 1: up
-    btTransform start;
-    start.setIdentity ();
-    start.setOrigin (currentPosition + BTUpVector * (GetConvexShape()->getMargin() + AddedMargin));
-    
-    btTransform end;
-    end.setIdentity ();
-    end.setOrigin (m_targetPosition);
+    //btTransform start;
+    //start.setIdentity ();
+    //start.setOrigin (currentPosition + BTUpVector * (GetConvexShape()->getMargin() + AddedMargin));
+    //
+    //btTransform end;
+    //end.setIdentity ();
+    //end.setOrigin (m_targetPosition);
 
-    csKinematicClosestNotMeConvexResultCallback callback (btObject, -BTUpVector, csScalar(DefaultGroundAngleCosThresh));
-    callback.m_collisionFilterGroup = collGroup.value;
-    callback.m_collisionFilterMask = collGroup.mask;
-    
-    sector->GetBulletWorld()->convexSweepTest (GetConvexShape(), start, end, callback);
+    //csKinematicClosestNotMeConvexResultCallback callback (btObject, -BTUpVector, csScalar(DefaultGroundAngleCosThresh));
+    //callback.m_collisionFilterGroup = collGroup.value;
+    //callback.m_collisionFilterMask = collGroup.mask;
+    //
+    //sector->GetBulletWorld()->convexSweepTest (GetConvexShape(), start, end, callback);
 
-    if (callback.hasHit())
-    {
-      // Only modify the position if the hit was a slope and not a wall or ceiling.
-      if(callback.m_hitNormalWorld.dot(BTUpVector) > 0.0)
-      {
-        // we moved up only a fraction of the step height, then hit something underneath us!?
-        currentPosition.setInterpolate3 (currentPosition, m_targetPosition, callback.m_closestHitFraction);
-      }
-      m_currentStepOffset = stepHeight * callback.m_closestHitFraction;
-    } 
-    else 
-    {
-      m_currentStepOffset = stepHeight;
-      currentPosition = m_targetPosition;
-    }
-  }
-
-  bool csBulletDynamicActor::adjustHorizontalMovement (const btVector3& hitNormal, btVector3& dist, csScalar normalMag, csScalar tangentMag)
-  {
-    btVector3& currentPosition = btObject->getWorldTransform().getOrigin();
-
-    csScalar movementLength2 = dist.length2();
-    if (movementLength2 > EPSILON)
-    {
-      csScalar movementLength = sqrt(movementLength2);
-      dist /= movementLength;              // normalize
-
-      btVector3 reflectDir = BtVectorComputeReflectionDirection(dist, hitNormal);
-      reflectDir.normalize();
-
-      btVector3 tangentialComponent = BtVectorTangentialComponent(reflectDir, hitNormal);
-
-      m_targetPosition = currentPosition;
-      //if (normalMag != 0.0)
-      //{
-      //  btVector3 parallelDir = parallelComponent (reflectDir, hitNormal);
-      //  btVector3 parComponent = parallelDir * csScalar (normalMag*movementLength);
-      //  //			printf("parComponent=%f,%f,%f\n",parComponent[0],parComponent[1],parComponent[2]);
-      //  m_targetPosition +=  parComponent;
-      //  dist += ...;
-      //}
-
-      //if (tangentMag != 0.0)
-      {
-        //			printf("perpComponent=%f,%f,%f\n",perpComponent[0],perpComponent[1],perpComponent[2]);
-        tangentialComponent *= csScalar (tangentMag*movementLength);
-        m_targetPosition = currentPosition + tangentialComponent;
-        dist = tangentialComponent;
-      }
-      return true;
-    } 
-    return false;
-  }
-
-  void csBulletDynamicActor::stepForwardAndStrafe (csScalar dt)
-  {
-    btVector3 dist = btBody->getLinearVelocity() * dt;
-    BulletVectorComponent(dist, UpAxis) = 0;         // only horizontal movement
-    
-    btVector3& currentPosition = btObject->getWorldTransform().getOrigin();
-
-    // printf("m_normalizedDirection=%f,%f,%f\n",
-    // 	m_normalizedDirection[0],m_normalizedDirection[1],m_normalizedDirection[2]);
-    // phase 2: forward and strafe
-    btTransform start, end;
-    m_targetPosition = currentPosition + dist;
-
-    start.setIdentity ();
-    end.setIdentity ();
-
-    csScalar fraction = 1.0;
-
-    int iterations = 10;
-
-    do
-    {
-      start.setOrigin (currentPosition);
-      end.setOrigin (m_targetPosition);
-      btVector3 sweepDirNegative(currentPosition - m_targetPosition);
-
-      csKinematicClosestNotMeConvexResultCallback callback (btObject, sweepDirNegative, csScalar(0.1));  // ignore anything facing down
-      callback.m_collisionFilterGroup = collGroup.value;
-      callback.m_collisionFilterMask = collGroup.mask;
-
-      csScalar margin = GetConvexShape()->getMargin();
-      GetConvexShape()->setMargin(margin + AddedMargin);
-
-      // Check for collisions along the path
-      sector->GetBulletWorld()->convexSweepTest (GetConvexShape(), start, end, callback, sector->GetBulletWorld()->getDispatchInfo().m_allowedCcdPenetration);
-
-      GetConvexShape()->setMargin(margin);
-
-      fraction -= callback.m_closestHitFraction;
-
-      if (callback.hasHit())
-      {	
-        // we hit something
-        onGround = true;
-
-        // currentPosition.setInterpolate3 (currentPosition, m_targetPosition, callback.m_closestHitFraction);
-
-        // move parallel to surface of hit object
-        if (!adjustHorizontalMovement (callback.m_hitNormalWorld, dist)) 
-          break;    // cannot move further
-      }
-      else 
-      {
-        // no obstruction
-        currentPosition = m_targetPosition;
-        break;
-      }
-    }
-    while (fraction > csScalar(0.01) && --iterations >= 0);
+    //if (callback.hasHit())
+    //{
+    //  // Only modify the position if the hit was a slope and not a wall or ceiling.
+    //  if(callback.m_hitNormalWorld.dot(BTUpVector) > 0.0)
+    //  {
+    //    // we moved up only a fraction of the step height, then hit something underneath us!?
+    //    currentPosition.setInterpolate3 (currentPosition, m_targetPosition, callback.m_closestHitFraction);
+    //  }
+    //  m_currentStepOffset = stepHeight * callback.m_closestHitFraction;
+    //} 
+    //else 
+    //{
+    //  m_currentStepOffset = stepHeight;
+    //  currentPosition = m_targetPosition;
+    //}
   }
 
   void csBulletDynamicActor::stepDown (csScalar dt)
@@ -385,14 +293,15 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     // phase 3: down
     
-    // we went up by m_currentStepOffset during the stepUp routine, and what goes up must come down!
-    BulletVectorComponent(m_targetPosition, UpAxis) -= m_currentStepOffset;
+    // we went up by stepHeight during the stepUp routine, and what goes up must come down!
+    btVector3 targetPosition = currentPosition;
+    BulletVectorComponent(targetPosition, UpAxis) -= stepHeight;
 
     start.setIdentity ();
     end.setIdentity ();
 
     start.setOrigin (currentPosition);
-    end.setOrigin (m_targetPosition);
+    end.setOrigin (targetPosition);
 
     csKinematicClosestNotMeConvexResultCallback callback (btObject, BTUpVector, DefaultGroundAngleCosThresh);
     callback.m_collisionFilterGroup = collGroup.value;
@@ -403,14 +312,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (callback.hasHit())
     {
       // we dropped a fraction of the height -> hit floor
-      currentPosition.setInterpolate3 (currentPosition, m_targetPosition, callback.m_closestHitFraction);
+      currentPosition.setInterpolate3 (currentPosition, targetPosition, callback.m_closestHitFraction);
     } 
     else 
     {
       // we dropped the full height without hitting anything
-      currentPosition = m_targetPosition;
+      currentPosition = targetPosition;
     }
   }
-
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

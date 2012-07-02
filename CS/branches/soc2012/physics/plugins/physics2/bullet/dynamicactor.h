@@ -49,10 +49,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     csScalar airControlFactor;
     bool onGround;
     bool kinematicSteps;
-    
-    // Stuff used for kinematic step correction
-    btVector3 m_targetPosition;
-    csScalar m_currentStepOffset;
 
   protected:
     void CreateDynamicActor(CS::Physics::DynamicActorProperties* props);
@@ -67,8 +63,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool RemoveBulletObject();
     void RebuildObject();
 
-    /// Recover from penetration
-    virtual void UpdateAction (csScalar delta);
+    /// Update actor
+    virtual void UpdatePreStep (csScalar delta);
+    virtual void UpdatePostStep (csScalar delta);
     
     /// Start walking in the given direction. Sets linear velocity. Takes air control into consideration.
     virtual void Walk(csVector3 dir);
@@ -125,13 +122,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
 
     // Kinematic stuff
-
     inline btConvexShape* GetConvexShape() const;
 
   protected:
     void stepUp(csScalar dt);
-    bool adjustHorizontalMovement(const btVector3& hit_normal, btVector3& vel, csScalar normalMag = csScalar(0.0), csScalar tangentMag = csScalar(1.0));
-    void stepForwardAndStrafe(csScalar dt);
     void stepDown(csScalar dt);
   };
 }

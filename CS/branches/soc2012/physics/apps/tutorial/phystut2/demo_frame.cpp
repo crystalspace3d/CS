@@ -205,9 +205,13 @@ void PhysDemo::Frame()
   {
     if (currentActor)
     {
-      currentActor->UpdateAction(timeMs * dynamicStepFactor);
+      currentActor->UpdatePreStep(timeMs * dynamicStepFactor);
     }
     physicalSector->Step (timeMs * dynamicStepFactor);
+    if (currentActor)
+    {
+      currentActor->UpdatePostStep(timeMs * dynamicStepFactor);
+    }
   }
 
   if (currentActor)

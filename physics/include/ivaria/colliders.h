@@ -99,6 +99,11 @@ struct iCollider : public virtual iBase
 
   /// Whether this collider (and all its children) can be used in a dynamic environment
   virtual bool IsDynamic () const = 0;
+
+  /// Get the frame of reference
+  virtual csOrthoTransform GetPrincipalAxisTransform() const = 0;
+  /// Set the frame of reference
+  virtual void SetPrincipalAxisTransform(const csOrthoTransform& trans) = 0;
   
 
   /// Add a child collider, fixed relative to this collider.

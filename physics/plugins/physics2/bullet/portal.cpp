@@ -92,7 +92,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       csBulletCollisionObject* newObject;
 
       // Static objects can't traverse portals
-      if (csBulletObj->GetObjectType() == COLLISION_OBJECT_PHYSICAL_STATIC) continue;
+      if (!csBulletObj || csBulletObj->GetObjectType() == COLLISION_OBJECT_PHYSICAL_STATIC) continue;
 
       
       // Phsical objects can traverse portals
@@ -131,8 +131,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           if (portal->GetSector () != sector->GetSector())
           {
             // Move the body to the new sector.
-            sector->RemoveSoftBody (sb);
-            targetSector->AddSoftBody (sb);
+            sector->RemoveCollisionObject (sb);
+            targetSector->AddCollisionObject (sb);
           }
           sb->SetLinearVelocity (warpTrans.GetT2O () * sb->GetLinearVelocity ());
           tr = CSToBullet (warpTrans, sector->sys->getInternalScale ()) * tr;
@@ -226,7 +226,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
                 for (size_t l = 0; l < jnts.GetSize (); l++)
                   sector->RemoveJoint (jnts[l]);
                 for (size_t l = 0; l < rbs.GetSize (); l++)
-                  sector->RemoveRigidBody (rbs[l]->QueryRigidBody ());
+                  sector->RemoveCollisionObject (rbs[l]->QueryRigidBody ());
                 for (size_t l = 0; l < rbs.GetSize (); l++)
                   targetSector->AddRigidBody (rbs[l]->QueryRigidBody ());
                 for (size_t l = 0; l < jnts.GetSize (); l++)

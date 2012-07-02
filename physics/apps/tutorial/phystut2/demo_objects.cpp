@@ -1215,7 +1215,6 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   return body;
 }
 
-
 void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float mass)
 {
   // Place stacks of boxes
@@ -1251,18 +1250,25 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
   int n = 0;
 
   // prepare collider and material
-  csRef<iColliderBox> collider = physicalSystem->CreateColliderBox (extents);
-
-  DensityTextureMapper mapper (0.3f);
-  TesselatedBox tbox (-extents/2, extents/2);
-  tbox.SetLevel (3);
-  tbox.SetMapper (&mapper);
-  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
+  if (!stackBoxCollider)
   {
-    ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
+    stackBoxCollider = physicalSystem->CreateColliderBox (extents);
   }
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
 
+  if (!stackBoxMeshFactory)
+  {
+    DensityTextureMapper mapper (0.3f);
+    TesselatedBox tbox (-extents/2, extents/2);
+    tbox.SetLevel (3);
+    tbox.SetMapper (&mapper);
+    if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
+    {
+      ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
+    }
+    stackBoxMeshFactory = GeneralMeshBuilder::CreateFactory(engine, "box factory", &tbox);
+  }
+  
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
   for (int x = 0; x < numOrth; ++x)
   {
     for (int z = 0; z < numDir && n < stackNum; ++z)
@@ -1271,11 +1277,10 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
       boxPos += (.5f * (1 + vSpacingFactor) * boxLen) * UpVector;
       for (int i = 0; i < stackHeight; ++i)
       {
-        // TODO: Meshes can't be shared
-        // Re-create mesh
-        csRef<iMeshWrapper> mesh = GeneralMeshBuilder::CreateFactoryAndMesh (engine, room, "box", "walls_factory", &tbox);
+        csRef<iMeshWrapper> mesh = stackBoxMeshFactory->CreateMeshWrapper();
+        mesh->QueryObject()->SetName("box");
         mesh->GetMeshObject()->SetMaterialWrapper (mat);
-        SpawnRigidBody(collider, mesh, boxPos, mass, false);
+        SpawnRigidBody(stackBoxCollider, mesh, boxPos, mass, false);
         boxPos += ((1 + vSpacingFactor) * boxLen) * UpVector;
       }
       ++n;

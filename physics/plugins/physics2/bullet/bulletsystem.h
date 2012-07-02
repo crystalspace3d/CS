@@ -60,6 +60,7 @@ class csBulletDebugDraw;
 class csBulletGhostCollisionObject;
 class csBulletRigidBody;
 class csBulletSoftBody;
+class csBulletDynamicActor;
 class csBulletCollisionObject;
 class csBulletCollisionActor;
 class csBulletCollider;
@@ -151,8 +152,9 @@ public:
     return csPtr<CS::Physics::iPhysicalSector>(scfQueryInterface<CS::Physics::iPhysicalSector>(
       csRef<CS::Collisions::iCollisionSector>(CreateCollisionSector())));
   }
-
+  
   virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody (CS::Physics::RigidBodyProperties* props);
+  virtual csPtr<CS::Physics::iDynamicActor> CreateDynamicActor (CS::Physics::DynamicActorProperties* props);
 
   virtual csPtr<CS::Physics::iJoint> CreateJoint ();
   virtual csPtr<CS::Physics::iJoint> CreateRigidP2PJoint (const csVector3 position);

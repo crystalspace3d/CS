@@ -69,6 +69,19 @@ public:
 
   virtual CS::Collisions::iCollider* GetCollider (size_t index) { return this; }
   virtual size_t GetColliderCount () { return 1;}
+  
+  /// Get the frame of reference
+  virtual csOrthoTransform GetPrincipalAxisTransform() const 
+  {
+    csOrthoTransform trans;
+    return trans;
+  }
+
+  /// Set the frame of reference
+  virtual void SetPrincipalAxisTransform(const csOrthoTransform& trans)
+  {
+    // Does nothing for now
+  }
 };
 
 class csOpcodeColliderTerrain : public scfVirtImplementationExt1<
@@ -90,6 +103,19 @@ public:
   
   virtual CS::Collisions::ColliderType GetColliderType () const {return CS::Collisions::COLLIDER_TERRAIN;}
   virtual iTerrainCell* GetCell() const { return cell; }
+
+  /// Get the frame of reference
+  virtual csOrthoTransform GetPrincipalAxisTransform() const 
+  {
+    csOrthoTransform trans;
+    return trans;
+  }
+
+  /// Set the frame of reference
+  virtual void SetPrincipalAxisTransform(const csOrthoTransform& trans)
+  {
+    // Does nothing for now
+  }
 };
 
 class csOpcodeCollisionTerrain : public scfVirtImplementation2<

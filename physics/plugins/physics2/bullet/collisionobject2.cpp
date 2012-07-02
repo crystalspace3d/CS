@@ -236,5 +236,29 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     Rotate (CS_VEC_ROT_RIGHT, yawDelta);
   }
+
+  bool csBulletCollisionObject::TestOnGround()
+  { 
+    static const float groundAngleCosThresh = .7f;
+
+    // Find any objects that can at least remotely support the object
+    csArray<CollisionData> collisions;
+    sector->CollisionTest(this, collisions);
+
+    int objBeneathCount = 0;
+    for (size_t i = 0; i < collisions.GetSize (); ++i)
+    {
+      CollisionData& coll = collisions[i];
+      
+      int dir = coll.objectA == this ? 1 : -1;
+
+      float groundAngleCos = coll.normalWorldOnB * UpVector;
+      if (dir * groundAngleCos > groundAngleCosThresh)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

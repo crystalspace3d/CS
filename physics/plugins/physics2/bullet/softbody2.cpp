@@ -47,7 +47,6 @@ csBulletSoftBody::csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body)
 
 csBulletSoftBody::~csBulletSoftBody ()
 {
-  RemoveBulletObject ();
   (sector->anchoredSoftBodies).Delete (this);
 }
 

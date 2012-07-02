@@ -47,18 +47,19 @@ void PhysDemo::Frame()
   float moveSpeed = environment == ENVIRONMENT_TERRAIN ? 30.0f : 4.0f;
 
   const float timeMs = elapsed_time / 1000.0;
+  
+  iCamera* cam = view->GetCamera();
+  csOrthoTransform& camTrans = cam->GetTransform();
 
-  // handle movement & camera rotation
+  // Rotate camera
   if (kbd->GetKeyState (KeyLeft) ||
     kbd->GetKeyState (KeyRight) ||
     kbd->GetKeyState (KeyUp) ||
     kbd->GetKeyState (KeyDown))
   {
-    // Rotate camera
     float turnAmount = turnSpeed * timeMs;
-    static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to up axis
+    static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis
 
-    csOrthoTransform& camTrans = view->GetCamera()->GetTransform();
     csVector3 camDir3 = camTrans.GetT2O() * csVector3(0, 0, 1);
     float vertCos = camDir3 * UpVector;
 
@@ -105,204 +106,117 @@ void PhysDemo::Frame()
   }
 
   // handle movement
-  bool gravityOff = fabs(physicalSector->GetGravity()[UpAxis]) < EPSILON;
-  if (physicalCameraMode == CAMERA_DYNAMIC)
+
+  // intended movement direction
+  bool gravityOff = physicalSector->GetGravity().SquaredNorm() == 0;
+
+  csVector3 newVel(0);
+  if (kbd->GetKeyState (KeyForward))
   {
-    // Check if actor is on ground
-    static const float groundAngleCosThresh = 0.7f;             // min cos of angle between ground and up-axis (45 degrees)
-    static const float jumpAccel = 15.f * cameraBody->GetMass();
+    newVel.z += 1;
+  }
+  if (kbd->GetKeyState (KeyBack))
+  {
+    newVel.z -= 1;
+  }
+  if (kbd->GetKeyState (KeyStrafeLeft))
+  {
+    newVel.x -= 1;
+  }
+  if (kbd->GetKeyState (KeyStrafeRight))
+  {
+    newVel.x += 1;
+  }
 
-    // Find any objects beneath the actor's feet
-    csArray<CollisionData> collisions;
-    physicalSector->CollisionTest(cameraBody, collisions);
-
-    int objBeneathCount = 0;
-    for (size_t i = 0; i < collisions.GetSize (); ++i)
+  bool hasMoveDir = newVel.x + newVel.z + newVel.z != 0;
+  bool wantsToMove = hasMoveDir | kbd->GetKeyState(KeyJump);
+  if (currentActor)
+  {
+    iCollisionObject* colCurrentActor = dynamic_cast<iCollisionObject*>(currentActor);
+    /*csVector3 aabbMin, aabbMax;
+    colCurrentActor->GetAABB(aabbMin, aabbMax);*/
+    
+    // move an actor
+    if (!wantsToMove)
     {
-      CollisionData& coll = collisions[i];
-
-      float groundAngleCos = coll.normalWorldOnB * UpVector;
-      if (groundAngleCos > groundAngleCosThresh)
-      {
-        ++objBeneathCount;
-      }
-    }
-
-    const csVector3& vel = cameraBody->GetLinearVelocity();
-    bool freeFall = !objBeneathCount && !gravityOff;
-    bool movingUp = vel[UpAxis] > 1;
-
-    if ((!movingUp || gravityOff || actorAirControl) &&
-      (kbd->GetKeyState (KeyForward) || kbd->GetKeyState (KeyBack) || kbd->GetKeyState(KeyJump)))
-    {
-      // actor is on ground, flying or has air control, and tries to move
-      if (kbd->GetKeyState (KeyForward) || kbd->GetKeyState (KeyBack))
-      {
-        // horizontal movement
-        csVector3 newVelRel(0);
-        if (kbd->GetKeyState (KeyForward))
-        {
-          newVelRel = csVector3(0, 0, 1);
-        }
-        else if (kbd->GetKeyState (KeyBack))
-        {
-          newVelRel = csVector3(0, 0, -1);
-        }
-
-        csVector3 newVel = view->GetCamera()->GetTransform().GetT2O() * newVelRel;
-
-        csVector2 newVel2 = HORIZONTAL_COMPONENT(newVel);   // horizontal component of velocity
-        newVel2.Normalize();
-        newVel2 *= moveSpeed;
-
-        if (freeFall || movingUp)
-        {
-          // cannot entirely control movement mid-air
-          newVel2 = actorAirControl * newVel2;
-          newVel2 += (1.f - actorAirControl) * HORIZONTAL_COMPONENT(vel);
-        }
-
-        newVel = HV_VECTOR3(newVel2, vel[UpAxis]);
-
-        cameraBody->SetLinearVelocity(newVel);
-      }
-      if (!freeFall && !movingUp && kbd->GetKeyState(KeyJump))
-      {
-        // jump
-
-        // we stand on top of something -> Apply force to both objects
-        // of course this is not quite correct, since the up force on the actor depends on the restitution of both objects
-        // (imagine jumping from a soft piece of cloth vs. jumping from concrete)
-        csVector3 force(jumpAccel * UpVector);
-
-        // jump accelerates the body upward
-        cameraBody->AddForce(force);
-
-        // apply inverse of force to objects beneath
-        float currentSpeed = vel.Norm();
-        if (currentSpeed > 1)
-        {
-          // apply a 45¢X backwards force on the other object when walking forward
-          force = UpVector * currentSpeed + vel;
-          force /= 2 * currentSpeed;
-          force.Normalize();
-          force *= -jumpAccel / objBeneathCount;   // split force between all objects beneath
-        }
-
-        for (size_t i = 0; i < collisions.GetSize (); ++i)
-        {
-          CollisionData& coll = collisions[i];
-
-          if (coll.normalWorldOnB * UpAxis < groundAngleCosThresh)
-          {
-            iPhysicalBody* pb = coll.objectB->QueryPhysicalBody();
-            pb->AddForce(force);
-          }
-        }
-      }
+      // stop any player-controlled movement
+      currentActor->StopMoving();
     }
     else
     {
-      if (!freeFall)
+      if (hasMoveDir)
       {
-        // no movement keys pressed and not drifting mid-air
-        // stop moving
-        cameraBody->SetLinearVelocity(0);
+        newVel = camTrans.GetT2O() * newVel;
       }
-    }
-  }
-  else if (physicalCameraMode == CAMERA_ACTOR)
-  {
-    if (cameraActor->IsOnGround() || gravityOff)    // actor can only be moved while on ground or when there is no gravity
-    {
-      if (kbd->GetKeyState (KeyForward))
+
+      bool freeFall = currentActor->IsFreeFalling();
+      bool gravityOff = physicalSector->GetGravity().SquaredNorm() == 0;
+
+      // actor is on ground, flying or has air control
+      if (hasMoveDir && (!freeFall || currentActor->GetAirControlFactor() > 0)) 
       {
-        cameraActor->SetPlanarVelocity(csVector2(moveSpeed, 0));
+        // wants to move and may move
+        if (!gravityOff)
+        {
+          // Only walk horizontally when gravity applies
+          csVector2 newVel2 = HORIZONTAL_COMPONENT(newVel);
+          currentActor->WalkHorizontal(newVel2);
+          //dynamicActor->Walk(newVel);
+        }
+        else
+        {
+          // move freely when gravity is off
+          currentActor->Walk(newVel);
+        }
       }
-      else if (kbd->GetKeyState (KeyBack))
+      if (!currentActor->IsFreeFalling() && kbd->GetKeyState(KeyJump))
       {
-        cameraActor->SetPlanarVelocity(csVector2(-moveSpeed, 0));
-      }
-      else
-      {
-        cameraActor->SetPlanarVelocity(csVector2(0, 0));
-      }
-      if (kbd->GetKeyState(KeyJump))
-      {
-        cameraActor->Jump();
+        // Jump
+        currentActor->Jump();
       }
     }
   }
   else
   {
-    // Camera is free
-    iCamera* c = view->GetCamera();
-
-    if (kbd->GetKeyState (CSKEY_SHIFT))
+    // Only move camera
+    if (kbd->GetKeyState(KeyJump))
     {
-      // If the user is holding down shift, the arrow keys will cause
-      // the camera to strafe up, down, left or right from it's
-      // current position.
-      if (kbd->GetKeyState (KeyRight))
-        c->Move (CS_VEC_RIGHT * moveSpeed * timeMs);
-      if (kbd->GetKeyState (KeyLeft))
-        c->Move (CS_VEC_LEFT * moveSpeed * timeMs);
-      if (kbd->GetKeyState (KeyForward))
-        c->Move (CS_VEC_UP * moveSpeed * timeMs);
-      if (kbd->GetKeyState (KeyBack))
-        c->Move (CS_VEC_DOWN * moveSpeed * timeMs);
+      // add upward movement
+      newVel[UpAxis] += moveSpeed;
     }
-    else
-    {
-      if (kbd->GetKeyState (KeyForward))
-        c->Move (CS_VEC_FORWARD * moveSpeed * timeMs);
-      if (kbd->GetKeyState (KeyBack))
-        c->Move (CS_VEC_BACKWARD * moveSpeed * timeMs);
-    }
+    cam->Move (newVel * moveSpeed * timeMs);
   }
 
   if (dragging)
   {
     // Keep the drag joint at the same distance to the camera
-    csRef<iCamera> camera = view->GetCamera();
     csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
-    csVector3 v3d = camera->InvPerspective (v2d, 10000);
-    csVector3 startBeam = camera->GetTransform().GetOrigin();
-    csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+    csVector3 v3d = cam->InvPerspective (v2d, 10000);
+    csVector3 startBeam = camTrans.GetOrigin();
+    csVector3 endBeam = camTrans.This2Other (v3d);
 
     csVector3 newPosition = endBeam - startBeam;
     newPosition.Normalize();
-    newPosition = camera->GetTransform().GetOrigin() + newPosition * dragDistance;
+    newPosition = camTrans.GetOrigin() + newPosition * dragDistance;
     dragJoint->SetPosition (newPosition);
   }
 
   if (!pauseDynamic)
   {
+    if (currentActor)
+    {
+      currentActor->UpdateAction(timeMs * dynamicStepFactor);
+    }
     physicalSector->Step (timeMs * dynamicStepFactor);
   }
 
-  GripContactBodies();
-
-
-  // update camera object
-  switch (physicalCameraMode)
+  if (currentActor)
   {
-  case CAMERA_DYNAMIC:
-    {
-      view->GetCamera()->GetTransform().SetOrigin(cameraBody->GetTransform().GetOrigin());
-      break;
-    }
-
-  case CAMERA_ACTOR:
-    {
-      if (cameraActor->IsInWorld())
-      {
-        cameraActor->UpdateAction(timeMs * dynamicStepFactor);
-      }
-      break;
-    }
+      // camera follows actor
+      camTrans.SetOrigin(dynamic_cast<iCollisionObject*>(currentActor)->GetTransform().GetOrigin());
   }
 
+  GripContactBodies();
 
   // Update the demo's state information
   hudManager->GetStateDescriptions()->Empty();
@@ -324,20 +238,17 @@ void PhysDemo::Frame()
 
   switch (physicalCameraMode)
   {
-  case CAMERA_DYNAMIC:
+  case ACTOR_DYNAMIC:
     hudManager->GetStateDescriptions()->Push (csString ("Camera mode: dynamic"));
     break;
 
-  case CAMERA_FREE:
+  case ACTOR_FREE_CAMERA:
     hudManager->GetStateDescriptions()->Push (csString ("Camera mode: free"));
     break;
 
-  case CAMERA_KINEMATIC:
+  case ACTOR_KINEMATIC:
     hudManager->GetStateDescriptions()->Push (csString ("Camera mode: kinematic"));
     break;
-
-  case CAMERA_ACTOR:
-    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: actor"));
 
   default:
     break;

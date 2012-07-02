@@ -96,12 +96,50 @@ static inline btVector3 CSToBullet (const csVector3& v,
 		    v.z * internalScale);
 }
 
+static inline btScalar& BulletVectorComponent(btVector3& v, int index)
+{
+  return v.m_floats[index];
+}
+
+static inline const btScalar& BulletVectorComponent(const btVector3& v, int index)
+{
+  return v.m_floats[index];
+}
+
 /**
  * Computes the index into a 1D bullet array, given a 2D CS index (in x/y)
  */
 static inline int CSToBulletIndex2D (int x, int y, int w, int h)
 {
   return (h-y-1) * w + x;
+}
+
+
+/*
+ * Returns the reflection direction of a ray going 'direction' hitting a surface with normal 'normal'
+ *
+ * from: http://www-cs-students.stanford.edu/~adityagp/final/node3.html
+ */
+static inline btVector3 BtVectorComputeReflectionDirection (const btVector3& direction, const btVector3& normal)
+{
+	return direction - (btScalar(2.0) * direction.dot(normal)) * normal;
+}
+
+/*
+ * Returns the portion of 'direction' that is parallel to 'normal'
+ */
+static inline btVector3 BtVectorNormalComponent (const btVector3& direction, const btVector3& normal)
+{
+  btScalar magnitude = direction.dot(normal);
+  return normal * magnitude;
+}
+
+/*
+ * Returns the portion of 'direction' that is perpendicular to 'normal'
+ */
+static inline btVector3 BtVectorTangentialComponent(const btVector3& direction, const btVector3& normal)
+{
+  return direction - BtVectorNormalComponent(direction, normal);
 }
 
 //----------------------- csBulletDebugDraw ----------------------------

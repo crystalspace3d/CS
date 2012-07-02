@@ -81,6 +81,7 @@ protected:
   float volume;
   btVector3 localInertia;
   btTransform principalAxisTransform;
+  bool customPrincipalAxis;
 
   virtual float ComputeShapeVolume() const = 0;
 
@@ -129,9 +130,22 @@ public:
     return localInertia; 
   }
 
-  inline const btTransform& GetPrincipalAxisTransform() const 
+  inline const btTransform& GetBtPrincipalAxisTransform() const 
   {
     return principalAxisTransform; 
+  }
+  
+  /// Get the frame of reference
+  virtual csOrthoTransform GetPrincipalAxisTransform() const
+  {
+    return BulletToCS(principalAxisTransform, 1);
+  }
+
+  /// Set the frame of reference
+  virtual void SetPrincipalAxisTransform(const csOrthoTransform& trans)
+  {
+    principalAxisTransform = CSToBullet(trans, 1);
+    customPrincipalAxis = true;
   }
 };
 

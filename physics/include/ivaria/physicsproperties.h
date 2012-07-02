@@ -138,10 +138,10 @@ namespace Physics
 
 
     /// Set the elasticity of this rigid body.
-    virtual void SetElasticity (float value) { elasticity = value; }
+    void SetElasticity (float value) { elasticity = value; }
 
     /// Get the elasticity of this rigid body.
-    virtual float GetElasticity () const { return elasticity; }
+    float GetElasticity () const { return elasticity; }
     /**
     * Set the linear Damping for this rigid body. The damping correspond to
     * how much the movements of the objects will be reduced. It is a value
@@ -151,10 +151,10 @@ namespace Physics
     * The default value is 0.
     * \sa iDynamicSystem::SetLinearDamping()
     */
-    virtual void SetLinearDamping (float d) { linearDamping = d; }
+    void SetLinearDamping (float d) { linearDamping = d; }
 
     /// Get the linear Damping for this rigid body.
-    virtual float GetLinearDamping () const { return linearDamping; }
+    float GetLinearDamping () const { return linearDamping; }
 
     /**
     * Set the angular Damping for this rigid body. The damping correspond to
@@ -164,10 +164,10 @@ namespace Physics
     * 1 means that the object will not move.
     * The default value is 0.
     */
-    virtual void SetAngularDamping (float d) { angularDamping = d; }
+    void SetAngularDamping (float d) { angularDamping = d; }
 
     /// Get the angular Damping for this rigid body.
-    virtual float GetAngularDamping () const { return angularDamping; }
+    float GetAngularDamping () const { return angularDamping; }
   };
 
   /**
@@ -183,6 +183,50 @@ namespace Physics
     {}
   };
 
+
+  class DynamicActorProperties : public RigidBodyProperties
+  {
+    float stepHeight;
+    float walkSpeed, jumpSpeed;
+    float airControlFactor;
+    bool kinematicSteps;
+
+  public:
+    DynamicActorProperties(CS::Collisions::iCollider* collider) : RigidBodyProperties(collider),
+      stepHeight(.1f),
+      walkSpeed(10.f),
+      jumpSpeed(10.f),
+      airControlFactor(0.04f),
+      kinematicSteps(true)
+    {
+      SetName("DynamicActor");
+    }
+
+    /// Get the max vertical threshold that this actor can step over
+    float GetStepHeight () const { return stepHeight; }
+    /// Set the max vertical threshold that this actor can step over
+    void SetStepHeight (float h) { stepHeight = h; }
+
+    /// Get the walk speed
+    float GetWalkSpeed () const { return walkSpeed; }
+    /// Set the walk speed
+    void SetWalkSpeed (float s) { walkSpeed = s; }
+
+    /// Get the jump speed
+    float GetJumpSpeed () const { return jumpSpeed; }
+    /// Set the jump speed
+    void SetJumpSpeed (float s) { jumpSpeed = s; }
+
+    /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
+    float GetAirControlFactor () const { return airControlFactor; }
+    /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
+    void SetAirControlFactor (float f) { airControlFactor = f; }
+    
+    /// Get whether to use a kinematic method for smooth steps
+    bool GetUseKinematicSteps() const { return kinematicSteps; }
+    /// Set whether to use a kinematic method for smooth steps
+    void SetUseKinematicSteps(bool u) { kinematicSteps = u; }
+  };
 }
 }
 #endif

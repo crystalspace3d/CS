@@ -151,7 +151,7 @@ void csBulletSector::SetGravity (const csVector3& v)
   // first re-activate all objects
   for (size_t i = 0; i < collisionObjects.GetSize(); ++i)
   {
-    if (collisionObjects[i]->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+    if (collisionObjects[i]->IsPhysicalObject())
     {
       collisionObjects[i]->btObject->activate(true);
     }
@@ -217,28 +217,25 @@ void csBulletSector::RemoveCollisionObject (CS::Collisions::iCollisionObject* ob
   if (!collObject)
     return;
 
-  if (collObject->IsPhysicalObject())
+  bool removed = collObject->RemoveBulletObject ();
+  if (removed)
   {
-    iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
-    if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
-    {
-      RemoveRigidBody (phyBody->QueryRigidBody ());
-    }
-    else
-    {
-      RemoveSoftBody (phyBody->QuerySoftBody ());
-    }
-  }
-  else
-  {
-    bool removed = collObject->RemoveBulletObject ();
+    collisionObjects.Delete (collObject);
+    RemoveMovableFromSector (object);
 
-    if (removed)
+    if (collObject->IsPhysicalObject())
     {
-      RemoveMovableFromSector (object);
+      iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
+      if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
+      {
+        rigidBodies.Delete(dynamic_cast<csBulletRigidBody*>(phyBody->QueryRigidBody ()));
+      }
+      else
+      {
+        softBodies.Delete(dynamic_cast<csBulletSoftBody*>(phyBody->QuerySoftBody ()));
+      }
     }
   }
-  collisionObjects.Delete (collObject);
 }
 
 CS::Collisions::iCollisionObject* csBulletSector::GetCollisionObject (size_t index)
@@ -461,8 +458,7 @@ bool csBulletSector::CollisionTest (CS::Collisions::iCollisionObject* object,
   {
     btPairCachingGhostObject* ghost = dynamic_cast<btPairCachingGhostObject*> (btGhostObject::upcast (collObject->btObject));
 
-    bulletWorld->getDispatcher()->dispatchAllCollisionPairs(
-      ghost->getOverlappingPairCache(), bulletWorld->getDispatchInfo(), bulletWorld->getDispatcher());
+    bulletWorld->getDispatcher()->dispatchAllCollisionPairs(ghost->getOverlappingPairCache(), bulletWorld->getDispatchInfo(), bulletWorld->getDispatcher());
 
     for (int i = 0; i < ghost->getOverlappingPairCache()->getNumOverlappingPairs(); i++)
     {
@@ -716,19 +712,6 @@ void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
   AddMovableToSector (body);
 }
 
-void csBulletSector::RemoveRigidBody (CS::Physics::iRigidBody* body)
-{
-  csBulletRigidBody* btBody = dynamic_cast<csBulletRigidBody*> (body);
-  CS_ASSERT (btBody);
-
-  bool removed = btBody->RemoveBulletObject ();
-  if (removed)
-  {
-    RemoveMovableFromSector (body);
-    rigidBodies.Delete (btBody);
-  }
-}
-
 CS::Physics::iRigidBody* csBulletSector::GetRigidBody (size_t index)
 {
   return rigidBodies[index]->QueryRigidBody ();
@@ -764,18 +747,6 @@ void csBulletSector::AddSoftBody (CS::Physics::iSoftBody* body)
   }
 }
 
-void csBulletSector::RemoveSoftBody (CS::Physics::iSoftBody* body)
-{
-  csBulletSoftBody* btBody = dynamic_cast<csBulletSoftBody*> (body);
-  CS_ASSERT (btBody);
-
-  bool removed = btBody->RemoveBulletObject ();
-  if (removed)
-  {
-    RemoveMovableFromSector (body);
-    softBodies.Delete (btBody);
-  }
-}
 
 CS::Physics::iSoftBody* csBulletSector::GetSoftBody (size_t index)
 {

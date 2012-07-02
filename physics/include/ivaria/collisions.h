@@ -36,6 +36,8 @@
 
 #define	SQRT2				1.41421356237f	
 
+typedef float csScalar;
+
 struct iTerrainSystem;
 struct iSector;
 struct iMeshWrapper;
@@ -58,14 +60,14 @@ namespace Collisions
 {
 static const int UpAxis = 1;
 static const int HorizontalAxis1 = 0;
-static const int HorizontalAxis2 = 0;
+static const int HorizontalAxis2 = 2;
 static const csVector3 UpVector(0, 1, 0);
 
 /// 3D vector defined by Horizontal (2D) and Vertical (1D) components
-#define HV_VECTOR3(horizontal2, vertical1) csVector3(horizontal2.x, vertical1, horizontal2.y)
+#define HV_VECTOR3(horizontal2, vertical1) csVector3((horizontal2).x, vertical1, (horizontal2).y)
 
 /// 2D horizontal components of the given 3D vector
-#define HORIZONTAL_COMPONENT(vec3) csVector2(vec3.x, vec3.z);
+#define HORIZONTAL_COMPONENT(vec3) csVector2((vec3).x, (vec3).z);
 
 struct csConvexResult;
 struct iCollisionCallback;
@@ -314,6 +316,63 @@ struct iCollisionTerrain : public virtual iBase
   // TODO: Methods to iterate over the terrain objects etc
 };
 
+
+struct iActor
+{
+  SCF_INTERFACE (CS::Collisions::iActor, 1, 0, 0);
+
+  /// Take care of actor-specific stuff
+  virtual void UpdateAction (float delta) = 0;
+
+  /**
+   * Start walking in the given direction with walk speed. 
+   * Sets linear velocity. 
+   * Takes air control into consideration.
+   * Adds the current vertical velocity to the given vertical velocity.
+   */
+  virtual void Walk(csVector3 dir) = 0;
+  
+  /**
+   * Start walking in the given horizontal direction with walk speed. 
+   * Sets linear velocity. 
+   * Takes air control into consideration.
+   * Does not influence vertical movement.
+   */
+  virtual void WalkHorizontal(csVector2 dir) = 0;
+
+  /// Applies an upward impulse to this actor, and an inverse impulse to objects beneath
+  virtual void Jump() = 0;
+
+  /// Stops any player-controlled movement
+  virtual void StopMoving() = 0;
+  
+  /// Whether the actor is not on ground and gravity applies
+  virtual bool IsFreeFalling() const = 0;
+
+  /// Whether this actor touches the ground
+  virtual bool IsOnGround() const = 0;
+
+  /// Get the max vertical threshold that this actor can step over
+  virtual float GetStepHeight () const = 0;
+  /// Set the max vertical threshold that this actor can step over
+  virtual void SetStepHeight (float h) = 0;
+
+  /// Get the walk speed
+  virtual float GetWalkSpeed () const = 0;
+  /// Set the walk speed
+  virtual void SetWalkSpeed (float s) = 0;
+  
+  /// Get the jump speed
+  virtual float GetJumpSpeed () const = 0;
+  /// Set the jump speed
+  virtual void SetJumpSpeed (float s) = 0;
+  
+  /// Determines how much the actor can control movement when free falling
+  virtual float GetAirControlFactor () const = 0;
+  /// Determines how much the actor can control movement when free falling
+  virtual void SetAirControlFactor (float f) = 0;
+};
+
 /**
  * A iCollisionActor is a kinematic collision object. It has a faster collision detection and response.
  * You can use it to create a player or character model with gravity handling.
@@ -326,40 +385,9 @@ struct iCollisionTerrain : public virtual iBase
  * \remark The collider of iCollisionActor must be a convex shape. For example, box, convex mesh.
  */
 // kickvb: most of this would have to be redesigned, let's do it later
-struct iCollisionActor : public virtual iGhostCollisionObject
+struct iCollisionActor : public virtual iGhostCollisionObject, public virtual iActor
 {
   SCF_INTERFACE (CS::Collisions::iCollisionActor, 1, 0, 0);
-
-  /// Check if we are on the ground.
-  virtual bool IsOnGround () const = 0;
-
-  /// Set the onground status.
-  //virtual void SetOnGround (bool og) = 0;
-
-  /// Move the actor.
-  virtual void UpdateAction (float delta) = 0;
-
-  /// Set the walking velocity of the actor in the forward and right direction for the given timeInterval.
-  virtual void SetPlanarVelocity (const csVector2& vel, float timeInterval = float(INT_MAX)) = 0;
-
-  /// Set the walking velocity of the actor in the forward and right direction for the given timeInterval.
-  virtual void SetVelocity (const csVector3& vel, float timeInterval = float(INT_MAX)) = 0;
-
-
-  /// Set the falling speed.
-  virtual void SetFallSpeed (float fallSpeed) = 0;
-
-  /// Set the jumping speed.
-  virtual void SetJumpSpeed (float jumpSpeed) = 0;
-
-  /// Set the max jump height an actor can have.
-  virtual void SetMaxJumpHeight (float maxJumpHeight) = 0;
-
-  /// Set the step up height an actor can have.
-  virtual void StepHeight (float stepHeight) = 0;
-
-  /// Let the actor jump.
-  virtual void Jump () = 0;
 
   /**
    * The max slope determines the maximum angle that the actor can walk up.

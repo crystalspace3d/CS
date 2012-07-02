@@ -20,13 +20,119 @@
 #include "common2.h"
 #include "rigidbody2.h"
 
+#include "kinematicactorcontroller.h"
+
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+  class csBulletActorMotionState : public csBulletMotionState
+  {
+  private:
+
+  public:
+    csBulletActorMotionState (csBulletRigidBody* body,
+		         const btTransform& initialTransform,
+		         const btTransform& principalAxis);
+
+    virtual void setWorldTransform (const btTransform& trans);
+  };
+
   class csBulletDynamicActor : public scfVirtImplementationExt1<csBulletDynamicActor,
 	csBulletRigidBody, 
         CS::Physics::iDynamicActor>
   {
+    friend class csBulletSystem;
+    friend class csBulletSector;
+
+  private:
+    csScalar stepHeight;
+    csScalar walkSpeed, jumpSpeed;
+    csScalar airControlFactor;
+    bool onGround;
+    bool kinematicSteps;
     
+    // Stuff used for kinematic step correction
+    btVector3 m_targetPosition;
+    csScalar m_currentStepOffset;
+
+  protected:
+    void CreateDynamicActor(CS::Physics::DynamicActorProperties* props);
+
+    virtual csBulletMotionState* CreateMotionState(const btTransform& trans);
+
+  public:
+    csBulletDynamicActor(csBulletSystem* sys);
+    virtual ~csBulletDynamicActor();
+
+    bool AddBulletObject();
+    bool RemoveBulletObject();
+    void RebuildObject();
+
+    /// Recover from penetration
+    virtual void UpdateAction (csScalar delta);
+    
+    /// Start walking in the given direction. Sets linear velocity. Takes air control into consideration.
+    virtual void Walk(csVector3 dir);
+  
+    /// Start walking in the given horizontal direction with walk speed. Sets linear velocity. Takes air control into consideration.
+    virtual void WalkHorizontal(csVector2 newVel2);
+
+    /// Applies an upward impulse to this actor, and an inverse impulse to objects beneath
+    virtual void Jump();
+
+    virtual void StopMoving()
+    {
+      if (!IsFreeFalling())
+      {
+        SetLinearVelocity(0);
+      }
+    }
+
+    /// Whether the actor is not on ground and gravity applies
+    virtual bool IsFreeFalling() const;
+
+    /// Whether this actor touches the ground
+    //virtual bool IsOnGround() const { return touchedGroundObjectCount > 0; }
+    virtual bool IsOnGround() const { return onGround; }
+
+    /// Get the max vertical threshold that this actor can step over
+    virtual csScalar GetStepHeight () const { return stepHeight; }
+    /// Set the max vertical threshold that this actor can step over
+    virtual void SetStepHeight (csScalar h) { stepHeight = h; }
+
+    /// Get the walk speed
+    virtual csScalar GetWalkSpeed () const { return walkSpeed; }
+    /// Set the walk speed
+    virtual void SetWalkSpeed (csScalar s) { walkSpeed = s; }
+
+    /// Get the jump speed
+    virtual csScalar GetJumpSpeed () const { return jumpSpeed; }
+    /// Set the jump speed
+    virtual void SetJumpSpeed (csScalar s) { jumpSpeed = s; }
+
+    /// Determines how much the actor can control movement when free falling
+    virtual csScalar GetAirControlFactor () const { return airControlFactor; }
+    /// Determines how much the actor can control movement when free falling
+    virtual void SetAirControlFactor (csScalar f) { airControlFactor = f; }
+    
+    /// Get whether to use a kinematic method for smooth steps
+    virtual bool GetUseKinematicSteps() const { return kinematicSteps; }
+    /// Set whether to use a kinematic method for smooth steps
+    virtual void SetUseKinematicSteps(bool u) { kinematicSteps = u; }
+
+
+    /// Override SetTransform
+    virtual void SetTransform(const csOrthoTransform& trans);
+
+
+    // Kinematic stuff
+
+    inline btConvexShape* GetConvexShape() const;
+
+  protected:
+    void stepUp(csScalar dt);
+    bool adjustHorizontalMovement(const btVector3& hit_normal, btVector3& vel, csScalar normalMag = csScalar(0.0), csScalar tangentMag = csScalar(1.0));
+    void stepForwardAndStrafe(csScalar dt);
+    void stepDown(csScalar dt);
   };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

@@ -62,6 +62,7 @@ struct iJoint;
 struct iObject;
 struct iRigidBody;
 struct iSoftBody;
+struct iDynamicActor;
 struct iKinematicCallback;
 struct iPhysicalSystem;
 struct iPhysicalSector;
@@ -186,21 +187,19 @@ struct iRigidBody : public virtual iPhysicalBody
   
   /// Set the current state of the body.
   virtual bool SetState (RigidBodyState state) = 0;
-
+  
+  /// Get the elasticity of this rigid body.
+  virtual float GetElasticity () = 0;
   /// Set the elasticity of this rigid body.
   virtual void SetElasticity (float elasticity) = 0;
 
-  /// Get the elasticity of this rigid body.
-  virtual float GetElasticity () = 0;
-
   /// Set the linear velocity (movement).
   virtual void SetLinearVelocity (const csVector3& vel) = 0;
-
-  /// Set the angular velocity (rotation).
-  virtual void SetAngularVelocity (const csVector3& vel) = 0;
-
+  
   /// Get the angular velocity (rotation)
   virtual csVector3 GetAngularVelocity () const = 0;
+  /// Set the angular velocity (rotation).
+  virtual void SetAngularVelocity (const csVector3& vel) = 0;
 
   /// Add a torque (world space) (active for one timestep).
   virtual void AddTorque (const csVector3& torque) = 0;
@@ -280,6 +279,9 @@ struct iRigidBody : public virtual iPhysicalBody
 
   /// Get the angular Damping for this rigid body.
   virtual float GetAngularDamping () = 0;
+  
+  virtual csVector3 GetAngularFactor() const = 0;
+  virtual void SetAngularFactor(const csVector3& f) = 0;
 };
 
 /**
@@ -725,7 +727,6 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
 
   /**
    * Create a rigid body.
-   * Need to call iCollisionObject::RebuildObject.
    */
   virtual csPtr<iRigidBody> CreateRigidBody (RigidBodyProperties* props) = 0;
 
@@ -845,6 +846,11 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   virtual csPtr<iSoftBody> CreateSoftBody (csVector3* vertices,
       size_t vertexCount, csTriangle* triangles,
       size_t triangleCount, const csOrthoTransform& bodyTransform) = 0;
+
+  /**
+   * Create a DynamicActor.
+   */
+  virtual csPtr<iDynamicActor> CreateDynamicActor (DynamicActorProperties* props) = 0;
 };
 
 /**
@@ -1082,31 +1088,28 @@ struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
 /**
  * TODO: This class should have a common base interface with iCollisionActor
  * 
+ * This is the interface for a Dynamic Actor.
+ * It allows the user to easily navigate a physical object on ground.
+ * The actual RigidBody that represents the actor always floats <step height> above the ground to be able to
+ * move smoothly over terrain and small obstacles.
+ * The air control factor determines whether and how well the actor can be controlled while not touching the ground.
+ * Air control is always 100% when gravity is off.
+ *
+ * Main creators of instances implementing this interface:
+ * - iPhysicalSystem::CreateDynamicActor()
+ * 
+ * Main users of this interface:
+ * - iPhysicalSector
+ *
  */
-struct iDynamicActor : public virtual iRigidBody
+struct iDynamicActor : public virtual iRigidBody, public virtual CS::Collisions::iActor
 {
   SCF_INTERFACE (CS::Physics::iDynamicActor, 1, 0, 0);
 
-  /// Whether this actor touches the ground
-  virtual bool IsOnGround();
-
-  /// Applies an upward impulse to this actor
-  virtual void Jump();
-
-  /// Get the max vertical threshold that this actor can step over
-  virtual float GetStepHeight () const = 0;
-  /// Set the max vertical threshold that this actor can step over
-  virtual void SetStepHeight (float h) = 0;
-  
-  /// Get the jump speed
-  virtual float GetJumpSpeed () const = 0;
-  /// Set the jump speed
-  virtual void SetJumpSpeed (float s) = 0;
-  
-  /// Determines how much the actor can control movement when free falling
-  virtual float GetAirControlFactor () const = 0;
-  /// Determines how much the actor can control movement when free falling
-  virtual void SetAirControlFactor (float f) = 0;
+  /// Get whether to use a kinematic method for smooth steps
+  virtual bool GetUseKinematicSteps() const = 0;
+  /// Set whether to use a kinematic method for smooth steps
+  virtual void SetUseKinematicSteps(bool u) = 0;
 };
 }
 }

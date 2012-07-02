@@ -21,6 +21,7 @@
 
 #include "common2.h"
 #include "physicalbody.h"
+#include "ivaria/collisions.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
@@ -48,13 +49,16 @@ using csPhysicalBody::Enable;
 using csPhysicalBody::Disable;
 using csPhysicalBody::IsEnabled;
 
-private:
+protected:
   btRigidBody* btBody;
   csBulletMotionState* motionState;
   CS::Physics::RigidBodyState physicalState;
   short anchorCount;
   csRef<CS::Physics::iKinematicCallback> kinematicCb;
   bool tempAddedColliders;    // we want to get rid of this as soon as possible
+
+protected:
+  virtual csBulletMotionState* CreateMotionState(const btTransform& trans);
 
 public:
   void CreateRigidBodyObject(CS::Physics::RigidBodyProperties* props);
@@ -150,6 +154,16 @@ public:
   
   virtual btScalar GetAngularDamping();
   virtual void SetAngularDamping(btScalar d);
+
+  virtual csVector3 GetAngularFactor() const;
+  virtual void SetAngularFactor(const csVector3& f);
+
+
+  // Some convinience methods
+  bool DoesGravityApply() const;
+  
+  bool IsMovingUpward() const;
+
 };
 
 class csBulletDefaultKinematicCallback : public scfImplementation1<

@@ -39,7 +39,7 @@ class Editor;
 class MenuManager;
 
 class MenuItem
-  : public scfImplementation1<MenuItem, iMenuItem>, public wxEvtHandler
+  : public wxEvtHandler, public scfImplementation1<MenuItem, iMenuItem>
 {
 public:
   MenuItem (MenuManager* menuManager, wxMenu* menu,
@@ -77,7 +77,7 @@ private:
 //---------------------------------------------------------------
 
 class SubMenu
-  : public scfImplementation1<SubMenu, iSubMenu>, public wxEvtHandler
+  : public wxEvtHandler, public scfImplementation1<SubMenu, iSubMenu>
 {
 public:
   SubMenu (MenuManager* menuManager, wxMenu* menu, const wxString& title);
@@ -100,7 +100,7 @@ private:
 //---------------------------------------------------------------
 
 class MenuManager
-  : public scfImplementation1<MenuManager, iMenuManager>, public wxEvtHandler
+  : public wxEvtHandler, public scfImplementation1<MenuManager, iMenuManager>
 {
 public:
   MenuManager (Editor* editor);

@@ -44,7 +44,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
 class Editor;
 
-struct BaseLayout : public scfImplementation1<BaseLayout,iLayout>, public wxEvtHandler
+struct BaseLayout
+  : public wxEvtHandler, public scfImplementation1<BaseLayout,iLayout>
 {
   BaseLayout (iObjectRegistry* obj_reg, Editor* editor);
  

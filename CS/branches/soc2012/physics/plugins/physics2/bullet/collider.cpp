@@ -37,7 +37,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   csBulletCollider::csBulletCollider ()
     : scfImplementationType (this), shape (nullptr), margin (0.0), volume (0.0), collSystem (nullptr), 
-    children(nullptr), usedShape(nullptr), dirty(true), localInertia(0, 0, 0)
+    children(nullptr), usedShape(nullptr), dirty(true), localInertia(0, 0, 0), customPrincipalAxis(false)
   {
     principalAxisTransform.setIdentity();
   }
@@ -192,8 +192,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       }
 
       // compute principal axis
-      btVector3 principalInertia;   // we don't care about this
-      children->compoundShape.calculatePrincipalAxisTransform(masses, principalAxisTransform, principalInertia);
+      if (!customPrincipalAxis)
+      {
+        btVector3 principalInertia;   // we don't care about this
+        children->compoundShape.calculatePrincipalAxisTransform(masses, principalAxisTransform, principalInertia);
+      }
 
       // Translate & rotate children relative to principal axis
       btTransform principalAxisTransformInverse = principalAxisTransform.inverse();

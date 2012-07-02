@@ -127,12 +127,39 @@ namespace Collisions {
 
   class CollisionActorProperties : public GhostCollisionObjectProperties
   {
+    float stepHeight;
+    float walkSpeed, jumpSpeed;
+    float airControlFactor;
+
   public:
-    CollisionActorProperties(iCollider* collider) : GhostCollisionObjectProperties(collider) 
+    CollisionActorProperties(iCollider* collider) : GhostCollisionObjectProperties(collider),
+      stepHeight(.5f),
+      walkSpeed(10.f),
+      jumpSpeed(10.f),
+      airControlFactor(0.04f)
     {
       SetName("Actor");
     }
 
+    /// Get the max vertical threshold that this actor can step over
+    float GetStepHeight () const { return stepHeight; }
+    /// Set the max vertical threshold that this actor can step over
+    void SetStepHeight (float h) { stepHeight = h; }
+
+    /// Get the walk speed
+    float GetWalkSpeed () const { return walkSpeed; }
+    /// Set the walk speed
+    void SetWalkSpeed (float s) { walkSpeed = s; }
+
+    /// Get the jump speed
+    float GetJumpSpeed () const { return jumpSpeed; }
+    /// Set the jump speed
+    void SetJumpSpeed (float s) { jumpSpeed = s; }
+
+    /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
+    float GetAirControlFactor () const { return airControlFactor; }
+    /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
+    void SetAirControlFactor (float f) { airControlFactor = f; }
   };
 } 
 }

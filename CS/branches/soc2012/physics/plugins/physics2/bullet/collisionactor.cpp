@@ -20,16 +20,30 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "BulletDynamics/Character/btKinematicCharacterController.h"
+
+#include "ivaria/collisions.h"
+
+using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {   
   void csBulletCollisionActor::CreateCollisionActor(CS::Collisions::CollisionActorProperties* props)
   {
     CreateGhostCollisionObject(props);
+    
+    btPairCachingGhostObject* go = GetPairCachingGhostObject();
+    btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
+    controller = new btKinematicCharacterController(go, convShape, 0.04f, UpAxis);
+    
+    SetStepHeight(props->GetStepHeight());
+    SetWalkSpeed(props->GetWalkSpeed());
+    SetJumpSpeed(props->GetJumpSpeed());
+    SetAirControlFactor(props->GetAirControlFactor());
   }
 
   csBulletCollisionActor::csBulletCollisionActor(csBulletSystem* sys) : scfVirtImplementationExt1(this, sys),
-    controller(nullptr)
+    controller(nullptr), airControlFactor(0)
   {
   }
 
@@ -48,33 +62,55 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //csVector3 upVec = camera->GetTransform ().GetUp ();
     //upVector.setValue (upVec.x, upVec.y, upVec.z);
   }
+  
+
+  void csBulletCollisionActor::SetTransform(const csOrthoTransform& trans)
+  {
+    csBulletCollisionObject::SetTransform(trans);
+  }
 
   bool csBulletCollisionActor::AddBulletObject()
   {
     if (csBulletGhostCollisionObject::AddBulletObject())
     {
-      if (!controller)
-      {
-        btPairCachingGhostObject* go = GetPairCachingGhostObject();
-        btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
-        controller = new btKinematicCharacterController(go, convShape, 0.04, 1);
-      }
       return true;
     }
     return false;
   }
 
-  void csBulletCollisionActor::SetPlanarVelocity (const csVector2& vel2, float timeInterval)
+  void csBulletCollisionActor::Walk(csVector3 vel)
+  {
+    vel.Normalize();
+    controller->setVelocityForTimeInterval(CSToBullet(walkSpeed * vel, system->getInternalScale()), INT_MAX);
+  }
+
+  void csBulletCollisionActor::WalkHorizontal (csVector2 newVel2)
   {
     if (!controller) return;
+    newVel2.Normalize();
+    newVel2 *= walkSpeed;
+    
+    //csVector3 vel = GetLinearVelocity(); TODO: Fix this
+    csVector3 vel(0);
+    if (IsFreeFalling())
+    {
+      // cannot entirely control movement mid-air
+      newVel2 = airControlFactor * newVel2;
+      newVel2 += (1.f - airControlFactor) * HORIZONTAL_COMPONENT(vel);
+    }
+    
+    // previous vertical movement is unchanged
+    csVector3 newVel = HV_VECTOR3(newVel2, vel[UpAxis]);
+    
+    controller->setVelocityForTimeInterval(CSToBullet(newVel, system->getInternalScale()), INT_MAX);
+  }
 
-    btTransform xform = GetBulletGhostObject()->getWorldTransform();
-
-    btVector3 walkDirection(CSToBullet(csVector3(vel2.y, 0.f, vel2.x), this->system->getInternalScale()));
-
-    btVector3 vel = quatRotate(xform.getRotation(), walkDirection);
-
-    controller->setVelocityForTimeInterval(vel, timeInterval);
+  void csBulletCollisionActor::StopMoving()
+  {
+    if (!IsFreeFalling())
+    {
+      controller->setVelocityForTimeInterval(btVector3(0, 0, 0), INT_MAX);
+    }
   }
 
   
@@ -82,6 +118,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (!controller) return;
 
+    controller->setGravity(-sector->GetBulletWorld()->getGravity()[UpAxis]);
     controller->updateAction(sector->bulletWorld, delta);
     
     csVector3 pos = BulletToCS(controller->getGhostObject()->getWorldTransform().getOrigin(), this->system->getInverseInternalScale());
@@ -95,6 +132,38 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       movable->SetFullPosition(pos);
     }
+  }
+
+  void csBulletCollisionActor::Jump ()
+  {
+    controller->jump();
+  }
+  
+  bool csBulletCollisionActor::IsOnGround () const { return controller->onGround(); }
+
+  void csBulletCollisionActor::SetMaxSlope (float slopeRadians) 
+  { 
+    controller->setMaxSlope(slopeRadians); 
+  }
+
+  float csBulletCollisionActor::GetMaxSlope () const 
+  {
+    return controller->getMaxSlope();
+  }
+
+  float csBulletCollisionActor::GetGravity() const
+  {
+    return controller->getGravity();
+  }
+
+  void csBulletCollisionActor::SetGravity(float gravity)
+  {
+    controller->setGravity(gravity);
+  }
+
+  void csBulletCollisionActor::SetJumpSpeed (float jumpSpeed) 
+  {
+    controller->setJumpSpeed(jumpSpeed * system->getInternalScale ());
   }
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

@@ -37,14 +37,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     density = props->GetDensity();
     
-    // create new motion state
-    btTransform principalAxis(collider->GetPrincipalAxisTransform());
-    //principalAxis.setIdentity();
-    motionState = new csBulletMotionState (this, principalAxis, principalAxis);
-
     // construct bullet object
+    btCollisionShape* shape = collider->GetOrCreateBulletShape();
     btScalar mass = density * collider->GetVolume();
-    btRigidBody::btRigidBodyConstructionInfo infos (mass, motionState, collider->GetOrCreateBulletShape(), mass * collider->GetLocalInertia());
+    btRigidBody::btRigidBodyConstructionInfo infos (mass, CreateMotionState(collider->GetBtPrincipalAxisTransform()), shape, mass * collider->GetLocalInertia());
 
     infos.m_friction = props->GetFriction();
     infos.m_restitution = props->GetElasticity();
@@ -81,6 +77,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
+  csBulletMotionState* csBulletRigidBody::CreateMotionState(const btTransform& trans)
+  {
+    return motionState = new csBulletMotionState (this, trans, collider->GetBtPrincipalAxisTransform());
+  }
+
   bool csBulletRigidBody::RemoveBulletObject ()
   {
     if (insideWorld)
@@ -100,7 +101,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
       csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (objectCopy);
       if (objectCopy)
-        rb->sector->RemoveRigidBody (rb);
+        rb->sector->RemoveCollisionObject (rb);
 
       rb = dynamic_cast<csBulletRigidBody*> (objectOrigin);
       if (objectOrigin)
@@ -152,13 +153,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     motionState->getWorldTransform (trans);
     trans = trans * motionState->inversePrincipalAxis;
     delete motionState;
-
-    btTransform principalAxis = collider->GetPrincipalAxisTransform();
-    //principalAxis.setIdentity();
-    motionState = new csBulletMotionState (this, trans * principalAxis, principalAxis);
-
+    
+    btCollisionShape* shape = collider->GetOrCreateBulletShape();
     btScalar mass = density * collider->GetVolume();
-    btRigidBody::btRigidBodyConstructionInfo infos (mass, motionState, collider->GetOrCreateBulletShape(), mass * collider->GetLocalInertia());
+    trans *= collider->GetBtPrincipalAxisTransform();
+    btRigidBody::btRigidBodyConstructionInfo infos (mass, CreateMotionState(trans), shape, mass * collider->GetLocalInertia());
 
     btVector3 linVel, angVel;
     infos.m_friction = GetFriction();
@@ -181,6 +180,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       AddBulletObject ();
     }
+  }
+
+  bool csBulletRigidBody::DoesGravityApply() const { return btBody->getGravity().length2() != 0; }
+  
+  bool csBulletRigidBody::IsMovingUpward() const 
+  { 
+    // TODO: Consider scaling threshold by actor size or similar
+    return BulletVectorComponent(btBody->getLinearVelocity(), UpAxis) > 1.f * system->getInternalScale(); 
   }
 
   void csBulletRigidBody::SetCollider (CS::Collisions::iCollider* collider)
@@ -220,7 +227,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
     else
     {
-      // scale pre-computed inertia with actual mass
+      // we scale pre-computed inertia with actual mass
       btBody->setMassProps(mass, mass * collider->GetLocalInertia());
     }
     btBody->updateInertiaTensor();
@@ -324,9 +331,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
           btTransform trans;
           motionState->getWorldTransform (trans);
-          trans = trans * motionState->inversePrincipalAxis;
-          btTransform principalAxis = collider->GetPrincipalAxisTransform();
-          motionState = new csBulletMotionState(this, trans * principalAxis, principalAxis);
+          trans *= motionState->inversePrincipalAxis;
+
+          trans *= collider->GetBtPrincipalAxisTransform();
+          motionState = CreateMotionState(trans);
           btBody->setMotionState (motionState);
         }
       }
@@ -556,6 +564,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     btBody->setDamping (GetLinearDamping(), d);
   }
+
+  csVector3 csBulletRigidBody::GetAngularFactor() const { return BulletToCS(btBody->getAngularFactor(), system->getInverseInternalScale()); }
+  void csBulletRigidBody::SetAngularFactor(const csVector3& f) { btBody->setAngularFactor(CSToBullet(f, system->getInternalScale())); }
 
   csBulletDefaultKinematicCallback::csBulletDefaultKinematicCallback ()
     : scfImplementationType (this)

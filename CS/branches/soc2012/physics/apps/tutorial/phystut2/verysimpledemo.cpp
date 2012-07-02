@@ -63,8 +63,8 @@ private:
   // Camera related
   CS::Physics::Bullet2::DebugMode debugMode;
   int physicalCameraMode;
-  csRef<CS::Physics::iRigidBody> cameraBody;
-  csRef<CS::Collisions::iCollisionActor> cameraActor;
+  csRef<CS::Physics::iRigidBody> dynamicActor;
+  csRef<CS::Collisions::iCollisionActor> kinematicActor;
 
   // Ragdoll related
   csRef<CS::Animation::iSkeletonRagdollNodeManager2> ragdollManager;
@@ -121,9 +121,9 @@ int runDebug(int argc, char* argv[])
 // ####################################################################################################
 // VerySimple implementation
 
-#define CAMERA_DYNAMIC 1
-#define CAMERA_KINEMATIC 2
-#define CAMERA_FREE 3
+#define ACTOR_DYNAMIC 1
+#define ACTOR_KINEMATIC 2
+#define ACTOR_FREE_CAMERA 3
 #define CAMERA_ACTOR 4
 
 #define ENVIRONMENT_PORTALS 1
@@ -136,7 +136,7 @@ VerySimple::VerySimple()
   do_soft_debug (true), remainingStepDuration (0.0f), allStatic (false), 
   pauseDynamic (false), dynamicStepFactor (1.0f),
   debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
-  physicalCameraMode (CAMERA_DYNAMIC), dragging (false), softDragging (false)
+  physicalCameraMode (ACTOR_DYNAMIC), dragging (false), softDragging (false)
 {
 }
 

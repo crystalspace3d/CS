@@ -49,6 +49,7 @@
 #include "collisionterrain.h"
 #include "rigidbody2.h"
 #include "softbody2.h"
+#include "dynamicactor.h"
 #include "collisionactor.h"
 #include "joint2.h"
 
@@ -92,10 +93,15 @@ csBulletSystem::csBulletSystem (iBase* iParent)
   copyGroup.mask = allFilter ^ CollisionGroupMaskValuePortalCopy;
   collGroups.Push (copyGroup);
 
-  CS::Collisions::CollisionGroup characterGroup ("Character");
+  CS::Collisions::CollisionGroup characterGroup ("Actor");
   characterGroup.value = CollisionGroupMaskValueActor;
-  characterGroup.mask = allFilter ^ CollisionGroupMaskValueActor;
+  characterGroup.mask = allFilter;
   collGroups.Push (characterGroup);
+
+  CS::Collisions::CollisionGroup characterGhostGroup ("ActorGhost");
+  characterGhostGroup.value = CollisionGroupMaskValueActor;
+  characterGhostGroup.mask = allFilter ^ CollisionGroupMaskValueActor;
+  collGroups.Push (characterGhostGroup);
   
   SetGroupCollision ("PortalCopy", "Static", false);
   SetGroupCollision ("Portal", "PortalCopy", false);
@@ -222,7 +228,7 @@ csPtr<CS::Collisions::iGhostCollisionObject> csBulletSystem::CreateGhostCollisio
 {
   csRef<csBulletGhostCollisionObject> collObject = csPtr<csBulletGhostCollisionObject>(new csBulletGhostCollisionObject (this));
 
-  collObject->CreateCollisionObject(props);
+  collObject->CreateGhostCollisionObject(props);
   collObject->RebuildObject ();
 
   //objects.Push (collObject);
@@ -411,6 +417,15 @@ csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateRigidBody (RigidBodyPropert
   
   //rigidBodies.Push (body);
   return csPtr<CS::Physics::iRigidBody>(body);
+}
+
+csPtr<CS::Physics::iDynamicActor> csBulletSystem::CreateDynamicActor (CS::Physics::DynamicActorProperties* props)
+{
+  csRef<csBulletDynamicActor> body = csPtr<csBulletDynamicActor>(new csBulletDynamicActor (this));
+
+  body->CreateDynamicActor(props);
+  
+  return csPtr<CS::Physics::iDynamicActor>(body);
 }
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateJoint ()

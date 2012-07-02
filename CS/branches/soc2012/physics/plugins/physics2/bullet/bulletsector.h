@@ -114,6 +114,13 @@ class csBulletSector : public scfImplementationExt2<
   void SetInformationToCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy,
     const csOrthoTransform& warpTrans);
   void GetInformationFromCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy);
+  
+
+  void AddCollisionActor (CS::Collisions::iCollisionActor* actor);
+
+  virtual void AddRigidBody (CS::Physics::iRigidBody* body);
+
+  virtual void AddSoftBody (CS::Physics::iSoftBody* body);
 
 public:
   csBulletSector (csBulletSystem* sys);
@@ -125,6 +132,8 @@ public:
   //iCollisionSector
   virtual void SetGravity (const csVector3& v);
   virtual csVector3 GetGravity () const {return gravity;}
+
+  inline btDynamicsWorld* GetBulletWorld() const { return bulletWorld; }
 
   virtual void AddCollisionObject(CS::Collisions::iCollisionObject* object);
   virtual void RemoveCollisionObject(CS::Collisions::iCollisionObject* object);
@@ -150,8 +159,6 @@ public:
   virtual bool CollisionTest(CS::Collisions::iCollisionObject* object, 
     csArray<CS::Collisions::CollisionData>& collisions);
 
-  virtual void AddCollisionActor (CS::Collisions::iCollisionActor* actor);
-
   /*virtual MoveResult MoveTest (iCollisionObject* object,
     const csOrthoTransform& fromWorld, const csOrthoTransform& toWorld);*/
 
@@ -170,15 +177,9 @@ public:
   virtual void SetAutoDisableParams (float linear,
     float angular, float time);
 
-  virtual void AddRigidBody (CS::Physics::iRigidBody* body);
-  virtual void RemoveRigidBody (CS::Physics::iRigidBody* body);
-
   virtual size_t GetRigidBodyCount () {return rigidBodies.GetSize ();}
   virtual CS::Physics::iRigidBody* GetRigidBody (size_t index);
   virtual CS::Physics::iRigidBody* FindRigidBody (const char* name);
-
-  virtual void AddSoftBody (CS::Physics::iSoftBody* body);
-  virtual void RemoveSoftBody (CS::Physics::iSoftBody* body);
 
   virtual size_t GetSoftBodyCount () {return softBodies.GetSize ();}
   virtual CS::Physics::iSoftBody* GetSoftBody (size_t index);
@@ -220,6 +221,8 @@ public:
   void AddMovableToSector (CS::Collisions::iCollisionObject* obj);
 
   void RemoveMovableFromSector (CS::Collisions::iCollisionObject* obj);
+
+  inline csScalar GetWorldTimeStep() const { return worldTimeStep; }
 };
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

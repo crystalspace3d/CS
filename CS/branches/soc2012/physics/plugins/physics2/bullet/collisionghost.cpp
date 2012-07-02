@@ -13,6 +13,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   void csBulletGhostCollisionObject::CreateGhostCollisionObject(CS::Collisions::GhostCollisionObjectProperties* props)
   {
     CreateCollisionObject(props);
+    
+    // create object and set shape and user pointer
+    btObject = new btPairCachingGhostObject ();
+    btObject->setCollisionShape (collider->GetOrCreateBulletShape());
+    btObject->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*> (this));
   }
 
   csBulletGhostCollisionObject::csBulletGhostCollisionObject(csBulletSystem* sys) : scfImplementationType(this, sys)
@@ -29,20 +34,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool wasInWorld = insideWorld;
     if (insideWorld)
     {
-      // TODO: Is it necessary to remove/re-insert the object?
       wasInWorld = true;
       RemoveBulletObject ();
     }
-
-    if (!btObject)
-    {
-      btObject = new btPairCachingGhostObject ();
-    }
-
-    // create and set shape
-    btObject->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*> (this));
+    
     btObject->setCollisionShape (collider->GetOrCreateBulletShape());
-
+    
     // set transform
     btTransform transform = btObject->getWorldTransform();
     if (movable)
@@ -68,7 +65,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       RemoveBulletObject ();
     
     sector->broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
-    sector->bulletWorld->addCollisionObject (btObject, collGroup.value, collGroup.mask);
+    sector->GetBulletWorld()->addCollisionObject (btObject, collGroup.value, collGroup.mask);
     insideWorld = true;
     return true;
   }

@@ -13,22 +13,30 @@
 #include "imesh/animnode/ragdoll2.h"
 #include "imesh/modifiableterrain.h"
 
-#define CAMERA_DYNAMIC 1
-#define CAMERA_KINEMATIC 2
-#define CAMERA_FREE 3
-#define CAMERA_ACTOR 4
+// Actor/Camera modes
+#define ACTOR_DYNAMIC 1
+#define ACTOR_KINEMATIC 2
+#define ACTOR_FREE_CAMERA 3
 
+// Levels
 #define ENVIRONMENT_NONE 0
 #define ENVIRONMENT_PORTALS 1
 #define ENVIRONMENT_BOX 2
 #define ENVIRONMENT_TERRAIN 3
 
-static const int KeyLeft = CSKEY_LEFT;
-static const int KeyRight = CSKEY_RIGHT;
+// Navigation input (use WASD controls)
 static const int KeyUp = CSKEY_PGUP;
 static const int KeyDown = CSKEY_PGDN;
-static const int KeyForward = CSKEY_UP;
-static const int KeyBack = CSKEY_DOWN;
+//static const int KeyLeft = CSKEY_LEFT;
+//static const int KeyRight = CSKEY_RIGHT;
+//static const int KeyForward = CSKEY_UP;
+//static const int KeyBack = CSKEY_DOWN;
+static const int KeyLeft = 'q';
+static const int KeyRight = 'e';
+static const int KeyForward = 'w';
+static const int KeyBack = 's';
+static const int KeyStrafeLeft = 'a';
+static const int KeyStrafeRight = 'd';
 static const int KeyJump = CSKEY_SPACE;
 
 inline int GetEnvironmentByName(csString levelName)
@@ -46,7 +54,8 @@ inline int GetEnvironmentByName(csString levelName)
 }
  
 //static const csVector3 ActorDimensions(0.8);
-static const csVector3 ActorDimensions(0.1f, 0.8f, 0.1f);
+//static const csVector3 ActorDimensions(0.1f, 0.6f, 0.1f);
+static const csVector3 ActorDimensions(0.3f, 1.8f, 0.3f);
 
 class PhysDemo : public CS::Utility::DemoApplication
 {
@@ -66,6 +75,9 @@ private:
   csRef<iMeshFactoryWrapper> boxFact;
   csRef<iMeshFactoryWrapper> meshFact;
   csRef<CS::Collisions::iColliderConcaveMesh> mainCollider;
+
+  csRef<iMeshFactoryWrapper> stackBoxMeshFactory;
+  csRef<CS::Collisions::iColliderBox> stackBoxCollider;
 
 
   // Static environment
@@ -92,8 +104,10 @@ private:
   float actorAirControl;
   float moveSpeed, turnSpeed;
   int physicalCameraMode;
-  csRef<CS::Physics::iRigidBody> cameraBody;
-  csRef<CS::Collisions::iCollisionActor> cameraActor;
+
+  CS::Collisions::iActor* currentActor;
+  csRef<CS::Physics::iDynamicActor> dynamicActor;
+  csRef<CS::Collisions::iCollisionActor> kinematicActor;
 
   // Ragdoll related
   csRef<CS::Animation::iSkeletonRagdollNodeManager2> ragdollManager;
@@ -236,7 +250,12 @@ public:
    */
   csVector3 GetPointInFrontOfFeetXZ(float distance) const { return GetActorFeetPos() + (GetCameraDirectionXZ() * distance); }
   
+
+  /// Find the ground contact point beneath pos
   bool GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const;
+
+  /// Test whether there are any objects beneath obj (that obj can collide with)
+  bool TestOnGround(CS::Collisions::iCollisionObject* obj);
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1

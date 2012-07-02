@@ -19,6 +19,23 @@ using namespace CS::Collisions;
 bool PhysDemo::OnKeyboard (iEvent &event)
 {
   DemoApplication::OnKeyboard (event);
+  
+  // TODO: Find keys to re-add these:
+    /*else if (csKeyEventHelper::GetCookedCode (&event) == 's')
+    {
+    SpawnSphere();
+    return true;
+    }*/
+   /* else if (csKeyEventHelper::GetCookedCode (&event) == 'e')
+    {
+      SpawnKrystalRagdoll();
+      return true;
+    }*/
+    /*else if (csKeyEventHelper::GetCookedCode (&event) == 'q')
+    {
+      SpawnCompound();
+      return true;
+    }*/
 
   csKeyEventType eventtype = csKeyEventHelper::GetEventType(&event);
   if (eventtype == csKeyEventTypeDown)
@@ -40,11 +57,6 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       SpawnCapsule();
       return true;
     }
-    /*else if (csKeyEventHelper::GetCookedCode (&event) == 's')
-    {
-    SpawnSphere();
-    return true;
-    }*/
     if (csKeyEventHelper::GetCookedCode (&event) == 'c')
     {
       SpawnCylinder();
@@ -71,11 +83,6 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       SpawnSphere();
       return true;
     }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'q')
-    {
-      SpawnCompound();
-      return true;
-    }
     else if (csKeyEventHelper::GetCookedCode (&event) == 'j')
     {
       SpawnJointed();
@@ -94,11 +101,6 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     else if (csKeyEventHelper::GetCookedCode (&event) == '\'')
     {
       SpawnFrankieRagdoll();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'e')
-    {
-      SpawnKrystalRagdoll();
       return true;
     }
     else if (csKeyEventHelper::GetCookedCode (&event) == 'y' && isSoftBodyWorld)
@@ -122,20 +124,16 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       // Toggle camera mode
       switch (physicalCameraMode)
       {
-      case CAMERA_DYNAMIC:
-        physicalCameraMode = CAMERA_FREE;
+      case ACTOR_DYNAMIC:
+        physicalCameraMode = ACTOR_KINEMATIC;
         break;
 
-      case CAMERA_FREE:
-        physicalCameraMode = CAMERA_ACTOR;
+      case ACTOR_KINEMATIC:
+        physicalCameraMode = ACTOR_FREE_CAMERA;
         break;
 
-      case CAMERA_ACTOR:
-      //  physicalCameraMode = CAMERA_KINEMATIC;
-      //  break;
-
-      //case CAMERA_KINEMATIC:
-        physicalCameraMode = CAMERA_DYNAMIC;
+      case ACTOR_FREE_CAMERA:
+        physicalCameraMode = ACTOR_DYNAMIC;
         break;
       }
 

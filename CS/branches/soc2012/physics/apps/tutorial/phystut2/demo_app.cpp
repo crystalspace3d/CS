@@ -20,9 +20,9 @@ PhysDemo::PhysDemo()
     dragging (false), softDragging (false),
     moveSpeed(7.f),
     turnSpeed(2.f),
-    actorAirControl(.003f),
-    //physicalCameraMode (CAMERA_ACTOR)
-    physicalCameraMode (CAMERA_DYNAMIC)
+    actorAirControl(.2f),
+    //physicalCameraMode (ACTOR_KINEMATIC)
+    physicalCameraMode (ACTOR_DYNAMIC)
     ,
     defaultEnvironmentName("terrain")
     //defaultEnvironmentName("portals")
@@ -128,7 +128,7 @@ bool PhysDemo::Application()
   {
   case ENVIRONMENT_PORTALS:
     CreatePortalRoom();
-    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -5));
+    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3.5f));
     break;
     
   case ENVIRONMENT_BOX:
@@ -271,134 +271,81 @@ void PhysDemo::GripContactBodies()
 
 void PhysDemo::UpdateCameraMode()
 {
+  const csOrthoTransform& tc = view->GetCamera()->GetTransform();
+  
+  if (currentActor)
+  {
+    // remove current actor
+    physicalSector->RemoveCollisionObject(dynamic_cast<iCollisionObject*>(currentActor));
+  }
+  
   switch (physicalCameraMode)
   {
     // The camera is controlled by a rigid body
-  case CAMERA_DYNAMIC:
+  case ACTOR_DYNAMIC:
     {
-      if (cameraActor)
-      {
-        physicalSector->RemoveCollisionObject(cameraActor);
-      }
-
-      const csOrthoTransform& tc = view->GetCamera()->GetTransform();
-
       // Check if there is already a rigid body created for the 'kinematic' mode
-      if (cameraBody)
+      if (!dynamicActor)
       {
-        cameraBody->SetState (STATE_DYNAMIC);
-
-        // Remove the attached camera (in this mode we want to control
-        // the orientation of the camera, so we update the camera
-        // position by ourselves)
-        cameraBody->SetAttachedCamera (0);
-
-        cameraBody->SetTransform (tc);
-      }
-
-      // Create a new rigid body
-      else
-      {
-        csRef<CS::Collisions::iColliderSphere> collider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
-          physicalSystem->CreateColliderSphere(ActorDimensions.y);
-        RigidBodyProperties props(collider, "Actor");
-        props.SetMass(80.f);
-        props.SetElasticity(0.1f);
-        props.SetFriction(1.f);
+        //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y);
+        csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
+        DynamicActorProperties props(collider);
+        props.SetMass(csScalar(80.));
+        props.SetElasticity(csScalar(0.1));
+        props.SetFriction(csScalar(1.));
         props.SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
         
-        cameraBody = physicalSystem->CreateRigidBody(&props);
-
-        csOrthoTransform trans(tc);
-        cameraBody->SetTransform (trans);
-
+        props.SetStepHeight(csScalar(0.1));
+        
+        dynamicActor = physicalSystem->CreateDynamicActor(&props);
       }
-      physicalSector->AddCollisionObject(cameraBody);
 
+      csOrthoTransform trans(tc);
+      dynamicActor->SetTransform (trans);
+      physicalSector->AddCollisionObject(dynamicActor);
+      
+      dynamicActor->SetAirControlFactor(actorAirControl);
+
+      currentActor = dynamicActor;
       break;
     }
 
     // The camera is free
-  case CAMERA_FREE:
+  case ACTOR_FREE_CAMERA:
     {
-      if (cameraBody)
-      {
-        physicalSector->RemoveCollisionObject(cameraBody);
-        cameraBody = nullptr;
-      }
-      if (cameraActor)
-      {
-        physicalSector->RemoveCollisionObject(cameraActor);
-      }
-
-      // Update the display of the dynamics debugger
-      //dynamicsDebugger->UpdateDisplay();
-
+      currentActor = nullptr;
       break;
     }
 
-  case CAMERA_ACTOR:
+  case ACTOR_KINEMATIC:
     {
-      if (cameraBody)
+      if (!kinematicActor)
       {
-        physicalSector->RemoveCollisionObject(cameraBody);
-        cameraBody = nullptr;
-      }
-
-      if (!cameraActor)
-      {
-        csRef<CS::Collisions::iColliderCylinder> actorCollider = //physicalSystem->CreateColliderSphere (ActorDimensions.x);
-          physicalSystem->CreateColliderCylinder(ActorDimensions.y, ActorDimensions.x);
-
-        CollisionActorProperties props(actorCollider);
+        //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y/2);
+        csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
+        //csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
+        
+        /*csOrthoTransform trans;
+        trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
+        csRef<CS::Collisions::iColliderCompound> parent = physicalSystem->CreateColliderCompound ();
+        parent->AddCollider(collider, trans);
+        CollisionActorProperties props(parent);*/
+        CollisionActorProperties props(collider);
         props.SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
         
-        cameraActor = physicalSystem->CreateCollisionActor(&props);
-        cameraActor->SetAttachedCamera(view->GetCamera());
+        kinematicActor = physicalSystem->CreateCollisionActor(&props);
       }
+
+      csOrthoTransform trans;
+      //trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
+      trans.SetOrigin(tc.GetOrigin());
+      kinematicActor->SetTransform(trans);
+      //kinematicActor->SetTransform(tc);
       
-      csOrthoTransform trans(view->GetCamera()->GetTransform());
-      cameraActor->SetTransform(trans);
+      physicalSector->AddCollisionObject(kinematicActor);
+      kinematicActor->SetJumpSpeed(moveSpeed);
       
-      physicalSector->AddCollisionObject(cameraActor);
-      cameraActor->SetJumpSpeed(moveSpeed);
-    }
-    break;
-
-    // The camera is kinematic
-  case CAMERA_KINEMATIC:
-    {
-      if (cameraActor)
-      {
-        physicalSector->RemoveCollisionObject(cameraActor);
-      }
-      // Create a body
-      if (!cameraBody)
-      {
-        csRef<CS::Collisions::iColliderSphere> sphere = physicalSystem->CreateColliderSphere (0.8f);
-        RigidBodyProperties props(sphere);
-
-        props.SetDensity (1.0f);
-        props.SetElasticity (0.8f);
-        props.SetFriction (100.0f);
-        
-        // create body
-        cameraBody = physicalSystem->CreateRigidBody(&props);
-
-        // set transform
-        const csOrthoTransform& tc = view->GetCamera()->GetTransform();
-        cameraBody->SetTransform (tc);
-      }
-
-      // Attach the camera to the body so as to benefit of the default
-      // kinematic callback
-      cameraBody->SetAttachedCamera (view->GetCamera());
-
-      // Make it kinematic
-      cameraBody->SetState (STATE_KINEMATIC);
-
-      physicalSector->AddCollisionObject (cameraBody);
-
+      currentActor = kinematicActor;
     }
     break;
 
@@ -420,6 +367,29 @@ bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groun
   return false;
 }
 
+bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
+{
+  static const float groundAngleCosThresh = .7f;
+  
+  // Find any objects that can at least remotely support the object
+  csArray<CollisionData> collisions;
+  physicalSector->CollisionTest(obj, collisions);
+
+  int objBeneathCount = 0;
+  for (size_t i = 0; i < collisions.GetSize (); ++i)
+  {
+    CollisionData& coll = collisions[i];
+    
+    int dir = coll.objectA == obj ? 1 : -1;
+
+    float groundAngleCos = coll.normalWorldOnB * UpVector;
+    if (dir * groundAngleCos > groundAngleCosThresh)
+    {
+      return true;
+    }
+  }
+  return false;
+}
 
 
 //---------------------------------------------------------------------------

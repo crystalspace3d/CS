@@ -115,6 +115,8 @@ public:
     sec->RemoveCollisionObject (objectCopy);
     objectCopy = nullptr;
   }
+
+  bool TestOnGround();
 };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

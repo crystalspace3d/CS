@@ -1,6 +1,4 @@
 /*
-  Copyright (C) 2011 by Liu Lu
-
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
   License as published by the Free Software Foundation; either
@@ -22,19 +20,38 @@
 #include "cssysdef.h"
 #include "common2.h"
 #include "collisionghost.h"
-#include "BulletDynamics/Character/btKinematicCharacterController.h"
+//#include "kinematicactorcontroller.h"
+
+class btKinematicCharacterController;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 
+ /**
+  * TODO: IsMovingUp
+  */
 class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,  csBulletGhostCollisionObject,  CS::Collisions::iCollisionActor>
 {
   btKinematicCharacterController* controller;
+  float airControlFactor;
+  float walkSpeed;
 
 public:
   void CreateCollisionActor(CS::Collisions::CollisionActorProperties* props);
 
 public:
+  
+  bool DoesGravityApply() const { return GetGravity() != 0; }
+  
+  /// Whether the actor is not on ground and gravity applies
+  virtual bool IsFreeFalling() const
+  { 
+    // kinematic character controller does not reveal its linear velocity
+    return 
+      (!IsOnGround()) &&                // not touching the ground
+      DoesGravityApply();               // and gravity applies
+  }
+
   csBulletCollisionActor (csBulletSystem* sys);
   virtual ~csBulletCollisionActor ();
 
@@ -50,63 +67,53 @@ public:
   virtual bool AddBulletObject();
 
   //iCollisionActor
-  virtual bool IsOnGround () const { return controller->onGround(); }
+  virtual bool IsOnGround () const;
 
   virtual void SetAttachedCamera(iCamera* camera);
 
   virtual void UpdateAction (float delta);
 
-  float GetGravity()
-  {
-    return controller->getGravity();
-  }
+  float GetGravity() const;
+  void SetGravity(float gravity);
 
-  void SetGravity(float gravity)
-  {
-    controller->setGravity(gravity);
-  }
+  virtual void SetTransform(const csOrthoTransform& trans);
 
-  virtual void SetVelocity (const csVector3& vel, float timeInterval)
-  {
-    controller->setVelocityForTimeInterval(CSToBullet(vel, system->getInternalScale()), timeInterval);
-  }
+  virtual void Walk(csVector3 vel);
   
-  virtual void SetPlanarVelocity (const csVector2& vel, float timeInterval = float(INT_MAX));
+  virtual void WalkHorizontal(csVector2 vel);
 
-  virtual void SetFallSpeed (float fallSpeed) 
-  {
-    controller->setFallSpeed(fallSpeed * system->getInternalScale ());
+  virtual void StopMoving();
+  
+  /// Determines how much the actor can control movement when free falling
+  virtual float GetAirControlFactor () const { return airControlFactor; }
+  /// Determines how much the actor can control movement when free falling
+  virtual void SetAirControlFactor (float f) { airControlFactor = f; }
+
+  
+  /// Get the jump speed. The kinematic controller does not have this method... OUCH!
+  virtual float GetJumpSpeed () const { return 0; }
+  virtual void SetJumpSpeed (float jumpSpeed);
+  
+  /// Get the max vertical threshold that this actor can step over
+  virtual float GetStepHeight () const 
+  { 
+    // not currently supported
+    return 0; 
   }
-
-  virtual void SetJumpSpeed (float jumpSpeed) 
-  {
-    controller->setJumpSpeed(jumpSpeed * system->getInternalScale ());
-  }
-
-  virtual void SetMaxJumpHeight (float maxJumpHeight)
-  {
-    controller->setMaxJumpHeight(maxJumpHeight * system->getInternalScale ());
-  }
-
-  virtual void StepHeight (float stepHeight)
+  virtual void SetStepHeight (float stepHeight)
   {
     //this->stepHeight = stepHeight * system->getInternalScale ();
   }
 
-  virtual void Jump ()
-  {
-    controller->jump();
-  }
+  /// Get the walk speed
+  virtual float GetWalkSpeed () const { return walkSpeed; }
+  /// Set the walk speed
+  virtual void SetWalkSpeed (float s) { walkSpeed = s; }
 
-  virtual void SetMaxSlope (float slopeRadians) 
-  { 
-    controller->setMaxSlope(slopeRadians); 
-  }
+  virtual void Jump ();
 
-  virtual float GetMaxSlope () const 
-  {
-    return controller->getMaxSlope();
-  }
+  virtual float GetMaxSlope () const;
+  virtual void SetMaxSlope (float slopeRadians);
 
   btPairCachingGhostObject* GetBulletGhostObject()
   {

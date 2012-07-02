@@ -113,8 +113,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
-  
-  void csBulletCollisionActor::UpdateAction(float delta)
+ 
+  void csBulletCollisionActor::UpdatePreStep (csScalar delta)
   {
     if (!controller) return;
 
@@ -132,6 +132,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       movable->SetFullPosition(pos);
     }
+  }
+  
+  void csBulletCollisionActor::UpdatePostStep (csScalar delta)
+  {
   }
 
   void csBulletCollisionActor::Jump ()

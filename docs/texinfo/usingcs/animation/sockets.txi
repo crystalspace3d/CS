@@ -1,5 +1,5 @@
 @c -*-texinfo-*-
-@node Socket Animation, Sequence Manager, GenMesh Animation, Animation
+@node Socket Animation, GenMesh Animation, SpriteCal3D Animation, Animation
 @subsection Socket Animation
 @cindex SpriteCal3D
 @cindex Sprite3D
@@ -11,8 +11,7 @@ has the concept of @dfn{sockets}.  Basically a socket is a triangle of the
 mesh on which you can attach other meshes.  So when the triangle moves (because
 the model animates) the other mesh (like a weapon) will move with it.
 At this moment both 3D sprites (@pxref{MeshObject Spr3D}, and Cal3D sprites
-(@pxref{MeshObject SprCal3D}) support this feature. For AniMeshes, see the
-@ref{Animesh General, specific section} on that topic.
+(@pxref{MeshObject SprCal3D}) support this feature.
 
 @subsubheading Defining the Socket
 

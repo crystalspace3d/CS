@@ -413,6 +413,7 @@ public:
   virtual bool DoFullInertiaRecalculation () const
   { return !correctInertiaWorkAround; }
   virtual void RecalculateFullInertia (csODECollider* thisCol) {/*Only static stuff, nothing to recalc*/}
+
 };
 
 class csODERigidBody;

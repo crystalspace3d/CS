@@ -283,7 +283,7 @@ struct iSkeletonFactory : public virtual iBase
  */
 struct iSkeleton : public virtual iBase
 {
-  SCF_INTERFACE(CS::Animation::iSkeleton, 1, 0, 3);
+  SCF_INTERFACE(CS::Animation::iSkeleton, 1, 0, 2);
 
   /**
    * Get the scene node associated with this skeleton
@@ -399,11 +399,6 @@ struct iSkeleton : public virtual iBase
    * Recreate the structure of the skeleton from the definition of the factory
    */
   virtual void RecreateSkeleton () = 0;
-
-  /**
-   * Recreate the animation tree from the factory.
-   */
-  virtual void RecreateAnimationTree () = 0;
 
   /**
    * Update the state skeleton. The animation blending tree will be stepped with the given duration.

@@ -220,7 +220,9 @@ bool csShaderGLAVP::LoadProgramStringToGL ()
   if(!ext->CS_GL_ARB_vertex_program)
     return false;
 
-  csRef<iDataBuffer> data = GetProgramData();
+  csRef<iDataBuffer> data = programBuffer;
+  if (!data)
+    data = GetProgramData();
   if (!data)
     return false;
 
@@ -323,9 +325,9 @@ bool csShaderGLAVP::Load (iShaderDestinationResolver*, iDocumentNode* program)
 }
 
 bool csShaderGLAVP::Load (iShaderDestinationResolver*, const char* program, 
-			  const csArray<csShaderVarMapping> &mappings)
+			  csArray<csShaderVarMapping> &mappings)
 {
-  programSource.programData.AttachNew (new CS::DataBuffer<> (CS::StrDup (program),
+  programBuffer.AttachNew (new csDataBuffer (csStrNew (program),
     strlen (program)));
 
   for (size_t i = 0; i < mappings.GetSize (); i++)

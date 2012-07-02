@@ -21,8 +21,6 @@
 
 #include "csunicode.h"
 
-#include "csgeom/math.h"
-
 /**\file 
  * Converter between UTF encodings.
  */
@@ -603,7 +601,7 @@ public:
     }				
     if ((dest != 0) && (destSize != 0))
     {
-      size_t len = csMin (destSize - 1, srcChars);
+      size_t len = MIN (destSize - 1, srcChars);
       memcpy (dest, source, size * sizeof (wchar_t));
       *(dest + len) = 0;
     }
@@ -634,7 +632,7 @@ public:
     }				
     if ((dest != 0) && (destSize != 0))
     {
-      size_t len = csMin (destSize - 1, srcChars);
+      size_t len = MIN (destSize - 1, srcChars);
       memcpy (dest, source, len * sizeof (wchar_t));
       *(dest + len) = 0;
     }
@@ -695,7 +693,7 @@ public:
     }				
     if ((dest != 0) && (destSize != 0))
     {
-      size_t len = csMin (destSize - 1, srcChars);
+      size_t len = MIN (destSize - 1, srcChars);
       memcpy (dest, source, len * sizeof (wchar_t));
       *(dest + len) = 0;
     }
@@ -738,7 +736,7 @@ public:
     }				
     if ((dest != 0) && (destSize != 0))
     {
-      size_t len = csMin (destSize - 1, srcChars);
+      size_t len = MIN (destSize - 1, srcChars);
       memcpy (dest, source, len * sizeof (wchar_t));
       *(dest + len) = 0;
     }
@@ -817,7 +815,7 @@ public:
     }				
     if ((dest != 0) && (destSize != 0))
     {
-      size_t len = csMin (destSize - 1, srcChars);
+      size_t len = MIN (destSize - 1, srcChars);
       memcpy (dest, source, len * sizeof (wchar_t));
       *(dest + len) = 0;
     }
@@ -848,7 +846,7 @@ public:
     }				
     if ((dest != 0) && (destSize != 0))
     {
-      size_t len = csMin (destSize - 1, srcChars);
+      size_t len = MIN (destSize - 1, srcChars);
       memcpy (dest, source, len * sizeof (wchar_t));
       *(dest + len) = 0;
     }
@@ -952,9 +950,9 @@ public:
   inline static int UTF16Skip (const utf16_char* str, size_t maxSkip)
   {
     if (CS_UC_IS_HIGH_SURROGATE (*str))
-      return (int)(csMin (maxSkip, (size_t)2));
+      return (int)(MIN(maxSkip, (size_t)2));
     else
-      return (int)(csMin (maxSkip, (size_t)1));
+      return (int)(MIN(maxSkip, (size_t)1));
   }
   
   /**
@@ -986,7 +984,7 @@ public:
   inline static int UTF32Skip (const utf32_char* str, size_t maxSkip)
   {
     (void)str; // silence gcc
-    return (int)(csMin (maxSkip, (size_t)1));
+    return (int)(MIN(maxSkip, (size_t)1));
   }
 
   /**

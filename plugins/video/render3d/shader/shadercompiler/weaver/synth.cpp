@@ -298,8 +298,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
             {
               csRef<iDocumentNode> messageNode (
                 shaderNode->CreateNodeBefore (CS_NODE_COMMENT));
-              messageNode->SetValue (csString().Format ("pass #%zu: %s", p,
-                                                        synthTech->GetStatus().message.GetData()));
+              messageNode->SetValue (synthTech->GetStatus().message);
             }
             allPassesSucceeded = false;
           }
@@ -394,7 +393,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       CS_ASSERT(snippetTechIter->HasNext());
       const Snippet::Technique* snipTech = snippetTechIter->Next();
       CS_ASSERT(!snippetTechIter->HasNext());
-      comb = &(static_cast<const Snippet::CompoundTechnique*> (snipTech)->GetCombiner());
+      comb = &snipTech->GetCombiner();
       
       csRef<WeaverCommon::iCombinerLoader> loader = 
 	csLoadPluginCheck<WeaverCommon::iCombinerLoader> (compiler->objectreg,
@@ -421,27 +420,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
     // Two outputs are needed: color (usually from the fragment part)...
     const Snippet::Technique* outTechniqueColor;
     Snippet::Technique::Output theColorOutput;
-    if (!(FindExplicitOutput(graph, "color0", "rgba", combiner, outTechniqueColor, theColorOutput)
-        || FindOutput (graph, "rgba", combiner, outTechniqueColor, theColorOutput)))
+    if (!FindOutput (graph, "rgba", combiner, outTechniqueColor, theColorOutput))
     {
       compiler->Report (CS_REPORTER_SEVERITY_WARNING, errorNode,
 	"No suitable color output found");
       return false;
     }
     
-    // Optional: additional color outputs
-    const Snippet::Technique* outTechniqueColors[rtaNumAttachments - rtaColor1];
-    Snippet::Technique::Output theColorOutputs[rtaNumAttachments - rtaColor1];
-    bool hasOutputColor[rtaNumAttachments - rtaColor1];
-    for (size_t i = 0; i < rtaNumAttachments - rtaColor1; ++i)
-      hasOutputColor[i] = FindExplicitOutput (graph, csString("color").Append(i+1), "rgba",
-                                     combiner, outTechniqueColors[i], theColorOutputs[i]);
-    
     // ...and position (usually from the vertex part).
     const Snippet::Technique* outTechniquePos;
     Snippet::Technique::Output thePosOutput;
-    if (!(FindExplicitOutput (graph, "position", "position4_screen", combiner, outTechniquePos, thePosOutput)
-        || FindOutput (graph, "position4_screen", combiner, outTechniquePos, thePosOutput)))
+    if (!FindOutput (graph, "position4_screen", combiner, outTechniquePos, thePosOutput))
     {
       compiler->Report (CS_REPORTER_SEVERITY_WARNING, errorNode,
 	"No suitable position output found");
@@ -451,7 +440,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
     // Optional: fragment depth
     const Snippet::Technique* outTechniqueDepth;
     Snippet::Technique::Output theDepthOutput;
-    bool hasOutputDepth = FindExplicitOutput (graph, "depth", "depth", combiner, outTechniqueDepth, theDepthOutput);
+    bool hasOutputDepth = FindOutput (graph, "depth", combiner,
+      outTechniqueDepth, theDepthOutput);
     
     
     // Generate special technique for output
@@ -463,30 +453,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       conn.from = outTechniqueColor;
       conn.to = generatedOutputColor;
       graph.AddConnection (conn);
-    }
-    csRefArray<Snippet::Technique> generatedOutputColors(rtaNumAttachments - rtaColor1);
-    for (size_t i = 0; i < rtaNumAttachments - rtaColor1; ++i)
-    {
-      csRef<Snippet::Technique> generatedOutput;
-      if (hasOutputColor[i])
-      {
-        csString outputName = csString("outputColor").Append(i+1);
-        generatedOutput.AttachNew(snippet->CreatePassthrough(outputName, "rgba"));
-        graph.AddTechnique (generatedOutput);
-        { // add connection
-	  TechniqueGraph::Connection conn;
-	  conn.from = outTechniqueColors[i];
-	  conn.to = generatedOutput;
-	  graph.AddConnection (conn);
-        }
-        { // add explicit connection to prevent confusion with color0 from same snippet
-          TechniqueGraph::ExplicitConnectionSource conn;
-          conn.from = outTechniqueColors[i];
-          conn.outputName = theColorOutputs[i].name;
-          graph.GetExplicitConnections(generatedOutput).Put(outputName, conn);
-        }
-      }
-      generatedOutputColors.Push(generatedOutput);
     }
     csRef<Snippet::Technique> generatedOutputDepth;
     generatedOutputDepth.AttachNew (
@@ -508,9 +474,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
      */
     SynthesizeNodeTree synthTree (*this);
     synthTree.AddAllInputNodes (graph, generatedOutputColor, combiner);
-    for (size_t i = 0; i < rtaNumAttachments - rtaColor1; ++i)
-      if (hasOutputColor[i])
-        synthTree.AddAllInputNodes (graph, generatedOutputColors[i], combiner);
     if (hasOutputDepth)
       synthTree.AddAllInputNodes (graph, generatedOutputDepth, combiner);
     synthTree.AddAllInputNodes (graph, outTechniquePos, combiner);
@@ -539,17 +502,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       {
         SynthesizeNodeTree::Node& node = nodeIt->Next();
         csString& nodeAnnotation = node.annotation;
-        
-        if (!node.tech->IsCompound())
-        {
-          if (!static_cast<const Snippet::AtomTechnique*> (node.tech)->HasCombiner (comb->classId))
-          {
-            synthResult.message.AppendFmt ("skipping b/c tech: %s<%d>  not having combiner: %s\n",
-                                           node.tech->snippetName, node.tech->priority,
-                                           comb->classId.GetData());
-            synthResult.status = false;
-          }
-        }
 
         /* For new connections introduced by input merging.
          * Connections are added delayed to avoid interference with
@@ -581,7 +533,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
           csString tag;
           if (!inp.noMerge)
           {
-            tag = GetInputTag (combiner, *comb, inp, node.tech);
+            tag = GetInputTag (combiner, *comb, node.tech->GetCombiner(), 
+              inp);
             if (!tag.IsEmpty())
             {
               TaggedInputHash::Iterator iter (
@@ -632,6 +585,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	        combiner->QueryCoerceChain (output->type, inp.type);
 	      // Ugly?
 	      Snippet::Technique::CombinerPlugin tempComb (*comb);
+	      tempComb.name = "combiner";
               // Subtle: may add nodes to the node tree
               synthTree.AugmentCoerceChain (compiler, tempComb, 
                 combiner, coerceChain, graph, node, inp.name,
@@ -714,7 +668,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 		    }
                     
                     csString inpOutputName;
-	            inpOutputName.Format ("_in_%s_", inp.name.GetData());
+	            inpOutputName.Format ("in_%s", inp.name.GetData());
                     node.inputLinks.Put (inp.name, inpOutputName);
                     
                   }
@@ -757,7 +711,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	  const Snippet::Technique::Block& block = 
 	    inp.complexBlocks[b];
 	  csRef<WeaverCommon::iCombiner> theCombiner (GetCombiner (
-	    combiner, *comb, block.combinerName, emitted.node->tech));
+	    combiner, *comb, emitted.node->tech->GetCombiner(),
+	    block.combinerName));
           if (theCombiner.IsValid())
           {
             csRef<iDocumentNode> node;
@@ -774,20 +729,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
             }
             else
               node = block.node;
-            if (!theCombiner->WriteBlock (block.location, node)
-                && (theCombiner != defaultCombiner))
-            {
-              /* HACK: Fall back to default combiner; done to be able to
-               * use locations of the default combiner, but filtered by
-               * the actual combiner being used (e.g. "cg:pass" or
-               * "glsl:pass"). */
-              defaultCombiner->WriteBlock (block.location, node);
-            }
+            theCombiner->WriteBlock (block.location, node);
           }
         }
 		  
         csString inpOutputName;
-	inpOutputName.Format ("_in_%s_", inp.name.GetData());
+	inpOutputName.Format ("in_%s", inp.name.GetData());
 	combiner->AddGlobal (inpOutputName, inp.type,
           GetAnnotation ("Unique name for default input %s tag %s",
 	    CS::Quote::Double (inp.name.GetData()), 
@@ -804,9 +751,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
     {
       csArray<const Snippet::Technique*> outputs;
       outputs.Push (generatedOutputColor);
-      for (size_t i = 0; i < rtaNumAttachments - rtaColor1; ++i)
-        if (hasOutputColor[i])
-          outputs.Push(generatedOutputColors[i]);
       if (hasOutputDepth) outputs.Push (generatedOutputDepth);
       outputs.Push (outTechniquePos);
       if (!synthTree.Rebuild (graph, outputs)) return false;
@@ -907,7 +851,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	  {
 	    const Snippet::Technique::Block& block = blockIt->Next();
 	    csRef<WeaverCommon::iCombiner> theCombiner (
-	      GetCombiner (combiner, *comb, block.combinerName, node.tech));
+	      GetCombiner (combiner, *comb, node.tech->GetCombiner(),
+	      block.combinerName));
 	    if (theCombiner.IsValid())
 	    {
 	      csRef<iDocumentNode> node;
@@ -915,15 +860,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	        node = EncloseInCondition (block.node, nodeCondition);
 	      else
 		node = block.node;
-              if (!theCombiner->WriteBlock (block.location, node)
-                  && (theCombiner != defaultCombiner))
-              {
-                /* HACK: Fall back to default combiner; done to be able to
-                 * use locations of the default combiner, but filtered by
-                 * the actual combiner being used (e.g. "cg:pass" or
-                 * "glsl:pass"). */
-                defaultCombiner->WriteBlock (block.location, node);
-              }
+	      theCombiner->WriteBlock (block.location, node);
 	    }
 	  }
 	}
@@ -941,19 +878,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       
       combiner->SetOutput (rtaColor0, outputRenamed,
         GetAnnotation ("Map color output"));
-    }
-    for (size_t i = 0; i < rtaNumAttachments - rtaColor1; ++i)
-    {
-      if (!hasOutputColor[i])
-        continue;
-
-      csString outputRenamed =
-        synthTree.GetNodeForTech (generatedOutputColors[i]).outputRenames.Get (
-          csString("outputColor").Append(i+1), (const char*)0);
-      CS_ASSERT(!outputRenamed.IsEmpty());
-      
-      combiner->SetOutput ((csRenderTargetAttachment)(rtaColor1+i), outputRenamed,
-        GetAnnotation ("Map color output %zu", i+1));
     }
     if (hasOutputDepth)
     {
@@ -1039,70 +963,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       }
     }
     
-    return outTechnique != 0;
-  }
-  
-  bool Synthesizer::SynthesizeTechnique::FindExplicitOutput (const TechniqueGraph& graph,
-    const char* outputName, const char* desiredType, WeaverCommon::iCombiner* combiner,
-    const Snippet::Technique*& outTechnique, Snippet::Technique::Output& theOutput)
-  {
-    const TechniqueGraph::ExplicitConnectionsHash* explicitConns =
-      graph.GetExplicitConnections (0); // connections to our fake output snippet
-    if (!explicitConns) return false;
-    
-    outTechnique = 0;
-    uint coerceCost = WeaverCommon::NoCoercion;
-    TechniqueGraph::ExplicitConnectionsHash::ConstIterator connIt (
-      explicitConns->GetIterator (outputName));
-    while (connIt.HasNext())
-    {
-      const TechniqueGraph::ExplicitConnectionSource* src =
-        &connIt.Next ();
-    
-      const WeaverCommon::TypeInfo* inputTypeInfo = 
-	WeaverCommon::QueryTypeInfo (desiredType);
-    
-      const Snippet::Technique* tech = src->from;
-      CS::Utility::ScopedDelete<BasicIterator<const Snippet::Technique::Output> > 
-	outputIt (tech->GetOutputs());
-      while (outputIt->HasNext())
-      {
-	const Snippet::Technique::Output& outp = outputIt->Next();
-	if (outp.name != src->outputName) continue;
-	if (outp.type == desiredType)
-	{
-	  outTechnique = tech;
-	  theOutput = outp;
-	  return true;
-	}
-	uint cost = combiner->CoerceCost (outp.type, desiredType);
-	if (cost < coerceCost)
-	{
-	  outTechnique = tech;
-	  theOutput = outp;
-	  coerceCost = cost;
-	}
-	// See if maybe we can just drop a property.
-	const WeaverCommon::TypeInfo* outputTypeInfo = 
-	  WeaverCommon::QueryTypeInfo (outp.type);
-	if (inputTypeInfo && outputTypeInfo
-	  && (outputTypeInfo->baseType == inputTypeInfo->baseType)
-	  && (outputTypeInfo->samplerIsCube == inputTypeInfo->samplerIsCube)
-	  && (outputTypeInfo->dimensions == inputTypeInfo->dimensions)
-	  && ((outputTypeInfo->semantics == inputTypeInfo->semantics)
-	    || (inputTypeInfo->semantics == WeaverCommon::TypeInfo::NoSemantics))
-	  && ((outputTypeInfo->space == inputTypeInfo->space)
-	    || (inputTypeInfo->space == WeaverCommon::TypeInfo::NoSpace))
-	  && ((outputTypeInfo->unit == inputTypeInfo->unit)
-	    || (!inputTypeInfo->unit)))
-	{
-	  outTechnique = tech;
-	  theOutput = outp;
-	  return true;
-	}
-      }
-    }
-
     return outTechnique != 0;
   }
       
@@ -1311,34 +1171,23 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
   WeaverCommon::iCombiner* Synthesizer::SynthesizeTechnique::GetCombiner (
       WeaverCommon::iCombiner* used, 
       const Snippet::Technique::CombinerPlugin& comb,
-      const char* requestedName,
-      const Snippet::Technique* tech)
+      const Snippet::Technique::CombinerPlugin& requested,
+      const char* requestedName)
   {
     if ((requestedName == 0) || (strlen (requestedName) == 0))
       return defaultCombiner;
-
-    csString combinerClassId;
-    csRef<iDocumentNode> combiner_params;
-    const Snippet::Technique::CombinerPlugin* requested (tech->GetCombiner(requestedName));
-    if(requested)
-    {
-      combinerClassId = requested->classId;
-      combiner_params = requested->params;
-    }
-    else
-    {
-      combinerClassId = requestedName;
-    }
-    if (comb.classId != combinerClassId) return 0;
-    if (combiner_params && !used->CompatibleParams (combiner_params)) return 0;
+      
+    if (comb.classId != requested.classId) return 0;
+    if (requested.name != requestedName) return 0;
+    if (!used->CompatibleParams (requested.params)) return 0;
     return used;
   }
 
   csString Synthesizer::SynthesizeTechnique::GetInputTag (
     WeaverCommon::iCombiner* combiner,
     const Snippet::Technique::CombinerPlugin& comb, 
-    const Snippet::Technique::Input& input,
-    const Snippet::Technique* tech)
+    const Snippet::Technique::CombinerPlugin& combTech,
+    const Snippet::Technique::Input& input)
   {
     csString tag;
     if (input.defaultType == Snippet::Technique::Input::Complex)
@@ -1347,6 +1196,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       for (size_t b = 0; b < input.complexBlocks.GetSize(); b++)
       {
         const Snippet::Technique::Block& block = input.complexBlocks[b];
+        if (!block.combinerName.IsEmpty()) continue;
         csRef<iString> newTag = defaultCombiner->QueryInputTag (block.location,
           block.node);
         if (!newTag.IsValid() || newTag->IsEmpty()) continue;
@@ -1362,9 +1212,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
         {
           const Snippet::Technique::Block& block = input.complexBlocks[b];
           if (block.combinerName.IsEmpty()) continue;
-          csRef<WeaverCommon::iCombiner> theCombiner (GetCombiner (
-            combiner, comb, block.combinerName, tech));
-          if (!theCombiner) continue;
+          csRef<WeaverCommon::iCombiner> theCmbiner (GetCombiner (
+            combiner, comb, combTech, block.combinerName));
           csRef<iString> newTag = combiner->QueryInputTag (block.location,
             block.node);
           if (!newTag.IsValid() || newTag->IsEmpty()) continue;

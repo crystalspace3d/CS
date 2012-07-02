@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <!--
   Copyright (C) 2008 by Frank Richter
 
@@ -19,7 +18,6 @@
 <snippet>
   <technique priority="100">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
-    <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
     
     <input name="a" type="float" />
       
@@ -29,14 +27,6 @@
 
     <block location="cg:vertexMain">
       result = 1-a;
-    </block>
-
-    <block location="glsl:fragmentMain">
-      result = 1.0-a;
-    </block>
-
-    <block location="glsl:vertexMain">
-      result = 1.0-a;
     </block>
     
     <output name="result" type="float" />

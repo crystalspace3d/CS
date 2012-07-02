@@ -108,12 +108,6 @@ iMaterialWrapper* StdLoaderContext::FindNamedMaterial (const char* name,
 }
 
 
-iLightFactory* StdLoaderContext::FindLightFactory (const char* name, bool notify)
-{
-  iLightFactory* fact = Engine->FindLightFactory (name);
-  return fact;
-}
-
 iMeshFactoryWrapper* StdLoaderContext::FindMeshFactory (const char* name, bool notify)
 {
   iMeshFactoryWrapper* fact = Engine->FindMeshFactory (name, 0);

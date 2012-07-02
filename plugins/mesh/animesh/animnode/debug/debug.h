@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2010-12 Christian Van Brussel, Institute of Information
+  Copyright (C) 2010 Christian Van Brussel, Institute of Information
       and Communication Technologies, Electronics and Applied Mathematics
       at Universite catholique de Louvain, Belgium
       http://www.uclouvain.be/en-icteam.html
@@ -68,9 +68,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(DebugNode)
     inline virtual bool GetRandomColor () const
     { return boneRandomColor; }
 
-    virtual void SetBoneOffset (CS::Animation::BoneID boneID, csVector3 offset);
-    virtual csVector3 GetBoneOffset (CS::Animation::BoneID boneID) const;
-
     //-- CS::Animation::SkeletonAnimNodeFactorySingle
     csPtr<CS::Animation::SkeletonAnimNodeSingleBase> ActualCreateInstance (
       CS::Animation::iSkeletonAnimPacket* packet, CS::Animation::iSkeleton* skeleton);
@@ -82,7 +79,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(DebugNode)
     csBitArray boneMask;
     bool leafBonesDisplayed;
     bool boneRandomColor;
-    csHash<csVector3, CS::Animation::BoneID> boneOffsets;
 
     friend class DebugNode;
   };
@@ -101,31 +97,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(DebugNode)
 
     //-- CS::Animation::iSkeletonDebugNode
     virtual void Draw (iCamera* camera, csColor color = csColor (1.0f, 0.0f, 1.0f));
-
-    //-- CS::Animation::iSkeletonAnimNode
-    virtual void Stop ();
-    virtual void BlendState (CS::Animation::AnimatedMeshState* state,
-			     float baseWeight = 1.0f);
-
   private:
-    void AnalyzeSkeleton ();
-    void RemoveBoneMeshes ();
-
-  private:
-
-    csArray<csVector3> childPositions;
-    csArray<int> childCounts;
-
-    struct BoneData
-    {
-      CS::Animation::BoneID boneID;
-      csRef<iMeshWrapper> mesh;
-    };
-
-    csArray<BoneData> boneData;
-    csRefArray<iMaterialWrapper> materials;
-    csColor lastColor;
-
     friend class DebugNodeFactory;
   };
 

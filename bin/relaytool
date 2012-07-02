@@ -318,10 +318,10 @@ EOF
         "        movl " ASM_VAR (ptrs) ", %eax\n" \\
         "        movl " #index "(%eax), %eax\n" \\
         "        test %eax, %eax\n" \\
-        "        jnz  JS" name "\n" \\
+        "        jnz  JS" #index "\n" \\
         "        push \$" #index "\n" \\
         "        call " ASM_FUNC (_relaytool_stubcall_${libname}) "\n" \\
-        "JS" name ":    jmp *%eax\n");
+        "JS" #index ":    jmp *%eax\n");
 
 
 #elif defined( __x86_64__ )
@@ -336,10 +336,10 @@ EOF
         "        movq (%r11), %r11\n" \\
         "        movq " #index "(%r11), %r11\n" \\
         "        test %r11, %r11\n" \\
-        "        jnz  JS" name "\n" \\
+        "        jnz  JS" #index "\n" \\
         "        push $" #index "\n" \\
         "        call " ASM_FUNC (_relaytool_stubcall_${libname}) "\n" \\
-        "JS" name ":    jmp *%r11\n");
+        "JS" #index ":    jmp *%r11\n");
 #elif defined( __powerpc__ )
 
 #define JUMP_SLOT(name, index) \                                \
@@ -437,34 +437,19 @@ EOF
     
 }
 
-function pointer_size() {
-    # Stub file name
-    outfile="$outdir/_test_pointer_size_$$.c"
-
-    cat <<EOF >"$outfile"
-#if defined( __x86_64__ )
-POINTER_SIZE=8
-#else
-POINTER_SIZE=4
-#endif
-EOF
-    
-    ${CC:-gcc} ${CFLAGS} -E "$outfile" | grep POINTER_SIZE | sed 's/.*=//'
-    
-    rm $outfile
-}
-
 no_replace=false
 replace_all=false
 arch_ok=false
-arch_ptr_size=$(pointer_size)
+arch_ptr_size=0
 case `uname -m` in
     i386 | i486 | i586 | i686 )
         arch_ok=true
+        arch_ptr_size=4
         searchpath=( "/usr/lib" "/usr/local/lib" "/lib" `pwd` )
         ;;
     x86_64)
         arch_ok=true
+        arch_ptr_size=8
         searchpath=( "/usr/lib" "/usr/local/lib" "/lib" "/usr/lib64" "/usr/local/lib64" "/lib64" `pwd` )
         ;;                                   
 esac
@@ -577,8 +562,6 @@ while (( i <= $# )); do
                         stubobj=$( echo "$stubfile" | sed 's/\.c$/\.o/' )
             # remove -include flags from CFLAGS, if any
             CFLAGS=$( echo $CFLAGS | sed 's/-include .*\.h//g' )
-                        # Do not let stub object partake in LTO optimizations
-                        CFLAGS=$( echo $CFLAGS | sed 's/-flto//g' )
                         # ${CC:-gcc} ${CFLAGS} -fPIC -DPIC -c -o "$stubobj" "$stubfile" 2>/dev/tty
             ${CC:-gcc} ${CFLAGS} -fPIC -DPIC -c -o "$stubobj" "$stubfile"
             # We may have to patch the GOT at runtime; instruct

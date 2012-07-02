@@ -73,7 +73,7 @@ public:
   
 private:
   iMeshFactoryWrapper* logparent_factory;
-  csRef<iMeshObjectType> nullmesh_type;
+  iMeshObjectType* nullmesh_type;
   iObjectModel* collision_data;
   float radius;
   csBox3 box;

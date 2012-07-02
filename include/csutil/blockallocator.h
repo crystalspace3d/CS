@@ -193,7 +193,7 @@ public:
   ~csBlockAllocator()
   {
     ObjectDispose dispose (*this, false);
-    this->DisposeAll (dispose);
+    DisposeAll (dispose);
   }
 
   /**
@@ -204,7 +204,7 @@ public:
   void Empty ()
   {
     ObjectDispose dispose (*this, true);
-    this->FreeAll (dispose);
+    FreeAll (dispose);
   }
 
   /**
@@ -215,7 +215,7 @@ public:
   void DeleteAll ()
   {
     ObjectDispose dispose (*this, true);
-    this->DisposeAll (dispose);
+    DisposeAll (dispose);
   }
 
   /**

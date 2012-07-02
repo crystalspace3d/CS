@@ -124,11 +124,7 @@ bool PostEffectManager::SetupView (uint width, uint height,
     newData.dim = key;
     currentDimData = dimCache.AddActive (newData);
     currentDimData->buckets.SetSize (buckets.GetSize());
-    if (!currentDimData->AllocatePingpongTextures (*this))
-    {
-      // @@@ Allocating pingpong textures failed.
-      return false;
-    }
+    currentDimData->AllocatePingpongTextures (*this);
     currentDimData->SetupRenderInfo (*this);
     currentDimData->UpdateSVContexts (*this);
     
@@ -395,7 +391,7 @@ void PostEffectManager::SetChainedOutput (PostEffectManager* nextEffects)
   }
 }
 
-bool PostEffectManager::DimensionData::AllocatePingpongTextures (
+void PostEffectManager::DimensionData::AllocatePingpongTextures (
   PostEffectManager& pfx)
 {
   size_t layer0bucket = pfx.GetBucketIndex (pfx.postLayers[0]->options);
@@ -411,14 +407,8 @@ bool PostEffectManager::DimensionData::AllocatePingpongTextures (
     csRef<iTextureHandle> t;
     int texW = dim.x >> pfx.buckets[b].options.downsample;
     int texH = dim.y >> pfx.buckets[b].options.downsample;
-    t = pfx.graphics3D->GetTextureManager ()->CreateTexture (texW, texH,
+    t = pfx.graphics3D->GetTextureManager ()->CreateTexture (texW, texH, 
       csimg2D, pfx.textureFmt, texFlags);
-    if (!t)
-    {
-      printf ("Error creating texture for post effects! The application will soon crash!\nTODO: Proper reporting...\n");
-      fflush (stdout);
-      return false;
-    }
     if (pfx.buckets[b].options.maxMipmap >= 0)
       t->SetMipmapLimits (pfx.buckets[b].options.maxMipmap);
     buckets[b].textures.SetSize (pfx.buckets[b].textureNum);
@@ -457,7 +447,6 @@ bool PostEffectManager::DimensionData::AllocatePingpongTextures (
       buckets[b].textures.Put (i, t);
     }
   }
-  return true;
 }
 
 void PostEffectManager::DimensionData::SetupRenderInfo (PostEffectManager& pfx)

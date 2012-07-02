@@ -590,8 +590,8 @@ csPtr<iBase> csCheckerTextureLoader::Parse (iDocumentNode* node,
       {
 	ctx->GetSize (w, h);
 	int a = csLog2 (w), b = csLog2 (h);
-	depth = csMin (a, b);
-	depth = csMin (depth, 8);
+	depth = MIN (a, b);
+	depth = MIN (depth, 8);
       }
     }
   }

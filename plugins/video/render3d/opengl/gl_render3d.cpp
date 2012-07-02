@@ -89,7 +89,7 @@ csGLGraphics3D::csGLGraphics3D (iBase *parent) :
   glProfiling (false), explicitProjection (false), needMatrixUpdate (true),
   multisampleEnabled (false),
   imageUnits (0), activeVertexAttribs (0), wantToSwap (false),
-  delayClearFlags (0), use_patches (false), currentAttachments (0)
+  delayClearFlags (0), currentAttachments (0)
 {
   verbose = false;
   frustum_valid = false;
@@ -266,7 +266,6 @@ csZBufMode csGLGraphics3D::GetZModePass2 (csZBufMode mode)
   {
     case CS_ZBUF_NONE:
     case CS_ZBUF_TEST:
-    case CS_ZBUF_INVERT:
     case CS_ZBUF_EQUAL:
       return mode;
     case CS_ZBUF_FILL:
@@ -892,8 +891,7 @@ bool csGLGraphics3D::Open ()
   ext->InitGL_AMD_seamless_cubemap_per_texture ();
   ext->InitGL_ARB_half_float_vertex ();
   ext->InitGL_ARB_instanced_arrays ();
-  ext->InitGL_ARB_tessellation_shader (); // glPatchParameteri()
-
+  
   /* Some of the exts checked for above affect the state cache,
      so let it grab the state again */
   statecache->currentContext->InitCache();
@@ -1260,7 +1258,7 @@ void csGLGraphics3D::SetupShaderVariables()
       if (fogindex2 == (CS_FOGTABLE_SIZE - 1))
         fogalpha2 = 255;
       transientfogdata[(fogindex1+fogindex2*CS_FOGTABLE_SIZE)].alpha = 
-        csMin (fogalpha1, fogalpha2);
+        MIN(fogalpha1, fogalpha2);
     }
   }
 
@@ -1521,12 +1519,6 @@ bool csGLGraphics3D::BeginDraw (int drawflags)
   int i = 0;
   for (i = numImageUnits; i-- > 0;)
     DeactivateTexture (i);
-
-  /* If render attachments are set, but no depth attachment is given
-   * (ie default depth is used), implicitly clear the depth buffer. */
-  if ((currentAttachments != 0)
-      && ((currentAttachments & (1 << rtaDepth)) == 0))
-    drawflags |= CSDRAW_CLEARZBUFFER;
 
   // if 2D graphics is not locked, lock it
   if ((drawflags & (CSDRAW_2DGRAPHICS | CSDRAW_3DGRAPHICS))
@@ -2019,7 +2011,6 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
   if (needMatrix)
   {
     float matrix[16];
-    //makeGLMatrixInverted (o2w, matrix);
     makeGLMatrix (o2w, matrix);
     statecache->SetMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
@@ -2053,11 +2044,9 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
 
   GLenum primitivetype = GL_TRIANGLES;
   int primNum_divider = 1, primNum_sub = 0;
-  int primVertices = -1;
   switch (mymesh->meshtype)
   {
     case CS_MESHTYPE_QUADS:
-      primVertices = 4;
       primNum_divider = 2;
       primitivetype = GL_QUADS;
       break;
@@ -2070,7 +2059,6 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
       primitivetype = GL_TRIANGLE_FAN;
       break;
     case CS_MESHTYPE_POINTS:
-      primVertices = 1;
       primitivetype = GL_POINTS;
       break;
     case CS_MESHTYPE_POINT_SPRITES:
@@ -2079,12 +2067,10 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
       {
         break;
       }
-      primVertices = 1;
       primitivetype = GL_POINTS;
       break;
     }
     case CS_MESHTYPE_LINES:
-      primVertices = 2;
       primNum_divider = 2;
       primitivetype = GL_LINES;
       break;
@@ -2094,7 +2080,6 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
       break;
     case CS_MESHTYPE_TRIANGLES:
     default:
-      primVertices = 3;
       primNum_divider = 3;
       primitivetype = GL_TRIANGLES;
       break;
@@ -2105,14 +2090,6 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
       statecache->Enable_GL_POINT_SPRITE_ARB();
     else
       statecache->Disable_GL_POINT_SPRITE_ARB();
-  }
-
-  if (use_patches && primVertices > 0)
-  {
-    csGLGraphics3D::ext->glPatchParameteri (GL_PATCH_VERTICES_ARB,
-      primVertices);
-    // update primitive type
-    primitivetype = GL_PATCHES_ARB;
   }
 
   // Based on the kind of clipping we need we set or clip mask.
@@ -4162,7 +4139,7 @@ void csGLGraphics3D::DumpZBuffer (const char* path)
 	zv *= zMul;
 	float cif = zv * (float)colorMax;
 	int ci = csQint (cif);
-	ci = csMax (0, csMin (ci, colorMax));
+	ci = MAX (0, MIN (ci, colorMax));
 	if (ci == colorMax)
 	{
 	  (imgPtr++)->Set (zBufColors[ci][0], zBufColors[ci][1],
@@ -4236,7 +4213,6 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
   if (needMatrix)
   {
     float matrix[16];
-    //makeGLMatrixInverted (o2w, matrix);
     makeGLMatrix (o2w, matrix);
     statecache->SetMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
@@ -4269,11 +4245,9 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
 
   GLenum primitivetype = GL_TRIANGLES;
   int primNum_divider = 1, primNum_sub = 0;
-  int primVertices = -1;
   switch (mymesh->meshtype)
   {
     case CS_MESHTYPE_QUADS:
-      primVertices = 4;
       primNum_divider = 2;
       primitivetype = GL_QUADS;
       break;
@@ -4286,7 +4260,6 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
       primitivetype = GL_TRIANGLE_FAN;
       break;
     case CS_MESHTYPE_POINTS:
-      primVertices = 1;
       primitivetype = GL_POINTS;
       break;
     case CS_MESHTYPE_POINT_SPRITES:
@@ -4295,12 +4268,10 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
       {
         break;
       }
-      primVertices = 1;
       primitivetype = GL_POINTS;
       break;
     }
     case CS_MESHTYPE_LINES:
-      primVertices = 2;
       primNum_divider = 2;
       primitivetype = GL_LINES;
       break;
@@ -4310,7 +4281,6 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
       break;
     case CS_MESHTYPE_TRIANGLES:
     default:
-      primVertices = 3;
       primNum_divider = 3;
       primitivetype = GL_TRIANGLES;
       break;
@@ -4321,14 +4291,6 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
       statecache->Enable_GL_POINT_SPRITE_ARB();
     else
       statecache->Disable_GL_POINT_SPRITE_ARB();
-  }
-
-  if (use_patches && primVertices > 0)
-  {
-    csGLGraphics3D::ext->glPatchParameteri (GL_PATCH_VERTICES_ARB,
-      primVertices);
-    // update primitive type
-    primitivetype = GL_PATCHES_ARB;
   }
 
   // Based on the kind of clipping we need we set or clip mask.

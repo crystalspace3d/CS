@@ -350,8 +350,6 @@ bool KrystalScene::CreateAvatar ()
   if (!materialWrapper)
     hairTest->ReportError ("Can't find marschner material!");
 
-  avatarMesh->SetFlagsRecursive(CS_ENTITY_NOSHADOWCAST);
-
   // Create the fur properties for the hairs
   csRef<CS::Mesh::iFurMeshMaterialProperties> hairMeshProperties = 
     furMeshType->CreateHairMeshMarschnerProperties ("krystal_marschner");

@@ -546,16 +546,16 @@ float csColliderHelper::TraceBeam (iCollideSystem* cdsys, iSector* sector,
           obj_isect, 0, &polygon_idx))
       {
         if (!movable->IsFullTransformIdentity ())
-    	  obj_isect = trans.This2Other (obj_isect);
-	float squared_dist = csSquaredDist::PointPoint (obj_isect, start);
-  	if (squared_dist < best_squared_dist)
-  	{
-    	  have_hit = true;
-    	  best_squared_dist = squared_dist;
-    	  closest_isect = obj_isect;
-    	  last_portal_index = polygon_idx;
-    	  best_mesh = mesh;
-  	}
+    obj_isect = trans.This2Other (obj_isect);
+  float squared_dist = csSquaredDist::PointPoint (obj_isect, start);
+  if (squared_dist < best_squared_dist)
+  {
+    have_hit = true;
+    best_squared_dist = squared_dist;
+    closest_isect = obj_isect;
+    last_portal_index = polygon_idx;
+    best_mesh = mesh;
+  }
       }
     }
   }
@@ -632,18 +632,18 @@ void csColliderActor::InitializeColliders (
   csColliderActor::shift = shift;
   bottomSize = legs;
   topSize = body;
-  intervalSize.x = csMin (topSize.x, bottomSize.x);
-  intervalSize.y = csMin (topSize.y, bottomSize.y);
-  intervalSize.z = csMin (topSize.z, bottomSize.z);
+  intervalSize.x = MIN(topSize.x, bottomSize.x);
+  intervalSize.y = MIN(topSize.y, bottomSize.y);
+  intervalSize.z = MIN(topSize.z, bottomSize.z);
 
-  float maxX = csMax (body.x, legs.x)+shift.x;
-  float maxZ = csMax (body.z, legs.z)+shift.z;
-  float maxDim = csMax (maxX, maxZ);
+  float maxX = MAX(body.x, legs.x)+shift.x;
+  float maxZ = MAX(body.z, legs.z)+shift.z;
+  float maxDim = MAX(maxX, maxZ);
 
   csRef<iTriangleMesh> pm;
 
-  float bX2 = csMax (body.x, legs.x) / 2.0f;
-  float bZ2 = csMax (body.z, legs.z) / 2.0f;
+  float bX2 = MAX(body.x, legs.x) / 2.0f;
+  float bZ2 = MAX(body.z, legs.z) / 2.0f;
   float bYtop = legs.y + body.y;
 
   csBox3 top (csVector3 (-bX2, -legs.y/2.0f, -bZ2) + shift,  // Extend the bottom so we can check collision on stepping down
@@ -713,7 +713,7 @@ static float GetAngle (float x, float y)
 
   float angle = acos (x);
   if (y < 0)
-    angle = TWO_PI - angle;
+    angle = 2*PI - angle;
 
   return angle;
 }
@@ -1077,7 +1077,7 @@ bool csColliderActor::AdjustForCollisions (
 	if(fabs(unit.y) >= 0.7f)
           onground = true;
         // This is a ground triangle so we can move on top of it
-        max_y = csMin (csMax (csMax (line[0].y, line[1].y),max_y), jumpY);
+        max_y = MIN(MAX(MAX(line[0].y, line[1].y),max_y), jumpY);
       }
       
 
@@ -1517,7 +1517,7 @@ static float ComputeLocalMaxInterval (
   const csVector3& intervalSize)
 {
   float local_max_interval =
-    csMin (csMin ((fabs (bodyVel.y) < SMALL_EPSILON)
+    MIN (MIN ((fabs (bodyVel.y) < SMALL_EPSILON)
     ? MAX_CD_INTERVAL
   : fabs (intervalSize.y/bodyVel.y), (fabs (bodyVel.x) < SMALL_EPSILON)
     ? MAX_CD_INTERVAL

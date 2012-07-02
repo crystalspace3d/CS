@@ -818,10 +818,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
           cacheFile.Invalidate();
       }
 
-      csRef<iDocumentNode> processedSource (compiler->PreprocessedNode (source));
-
       // Scan techniques on node w/ expanded templates
-      shaderRoot = processedSource;
+      {
+	csRef<csWrappedDocumentNode> wrappedNode;
+        wrappedNode.AttachNew (
+          compiler->wrapperFact->CreateWrapperStatic (source, 
+          0, 0, wdnfpoExpandTemplates));
+        shaderRoot = wrappedNode;
+      }
       shaderRootStripped = StripShaderRoot (shaderRoot);
     
       csArray<TechniqueKeeper> techniquesTmp;
@@ -850,17 +854,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
         tree.SetGrowsBy (0);
         wrappedNode.AttachNew (compiler->wrapperFact->CreateWrapper (shaderRoot, 
           techsResolver, techsResolver->evaluator, extraNodes, &tree, 
-          wdnfpoHandleConditions | wdnfpoOnlyOneLevelConditions));
+          wdnfpoHandleConditions | wdnfpoOnlyOneLevelConditions
+          | wdnfpoExpandTemplates));
         techsResolver->DumpConditionTree (tree);
         csString filename;
         filename.Format ("/tmp/shader/cond_%s_techs.txt",
-          processedSource->GetAttributeValue ("name"));
+          source->GetAttributeValue ("name"));
         compiler->vfs->WriteFile (filename, tree.GetData(), tree.Length ());
       }
       else
         wrappedNode.AttachNew (compiler->wrapperFact->CreateWrapper (shaderRoot, 
           techsResolver, techsResolver->evaluator, extraNodes, 0,
-          wdnfpoHandleConditions | wdnfpoOnlyOneLevelConditions));
+          wdnfpoHandleConditions | wdnfpoOnlyOneLevelConditions
+          | wdnfpoExpandTemplates));
       shaderRoot = wrappedNode;
       
       PrepareTechVars (shaderRoot, techniquesTmp, forcepriority);
@@ -1891,8 +1897,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
     const Technique* technique = TechniqueForTicket (variant);
     if (technique == 0) return 0;
     csShaderConditionResolver* resolver = technique->resolver;
-
-    programRoot = compiler->PreprocessedNode (programRoot);
 
     csRef<iDocumentNode> programNode;
     if (compiler->doDumpConds)

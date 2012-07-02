@@ -305,21 +305,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       csRef<iMaterialWrapper> pointMaterial;
       csRef<iMaterialWrapper> spotMaterial;
       csRef<iMaterialWrapper> directionalMaterial;
-      csRef<iMaterialWrapper> depthMaterial;
-      csRef<iMaterialWrapper> outputMaterial;
+      csRef<iMaterialWrapper> ambientMaterial;
 
       /* Shader for drawing light volumes. */
       csRef<iShader> lightVolumeShader;
       csRef<csShaderVariable> lightVolumeColorSV;
-
-      /* depth only shader */
-      csRef<iShader> zOnly;
-
-      /* String IDs for shader types and variable names */
-      csStringID gbufUse;
-      CS::ShaderVarStringID lightPos;
-      CS::ShaderVarStringID lightDir;
-      csShaderVariable* scale;
 
       /**
        * Initialize persistent data, must be called once before using the
@@ -337,26 +327,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         csRef<iShaderManager> shaderManager = csQueryRegistry<iShaderManager> (objRegistry);
         csRef<iStringSet> stringSet = csQueryRegistryTagInterface<iStringSet> (objRegistry, 
           "crystalspace.shared.stringset");
-        iShaderVarStringSet *svStringSet = shaderManager->GetSVNameStringset ();
 
         csConfigAccess cfg (objRegistry);
-
-        // populate string IDs
-        gbufUse = stringSet->Request ("gbuffer use");
-	lightPos = svStringSet->Request ("light position view");
-	lightDir = svStringSet->Request ("light direction view");
-	scale = shaderManager->GetVariableAdd(svStringSet->Request("gbuffer scaleoffset"));
-	zOnly = shaderManager->GetShader("z_only");
-	if(!zOnly)
-	{
-	  if (!loader->LoadShader ("/shader/early_z/z_only.xml"))
-	  {
-	    csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
-	      messageID, "Could not load z_only shader");
-	  }
-	  zOnly = shaderManager->GetShader("z_only");
-	}
-	CS_ASSERT(zOnly);
 
         // Builds the sphere.
         csEllipsoid ellipsoid(csVector3 (0.0f, 0.0f, 0.0f), csVector3 (1.0f, 1.0f, 1.0f));
@@ -384,7 +356,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         }
 
         iShader *pointLightShader = shaderManager->GetShader ("deferred_point_light");
-        pointMaterial->GetMaterial ()->SetShader (gbufUse, pointLightShader);
+        pointMaterial->GetMaterial ()->SetShader (stringSet->Request ("gbuffer use"), pointLightShader);
 
         // Builds the cone.
         int coneDetail = cfg->GetInt ("RenderManager.Deferred.ConeDetail", 16);
@@ -410,7 +382,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         }
 
         iShader *spotLightShader = shaderManager->GetShader ("deferred_spot_light");
-        spotMaterial->GetMaterial ()->SetShader (gbufUse, spotLightShader);
+        spotMaterial->GetMaterial ()->SetShader (stringSet->Request ("gbuffer use"), spotLightShader);
 
         // Builds the box.
         csBox3 box;
@@ -438,43 +410,39 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         }
 
         iShader *directionalLightShader = shaderManager->GetShader ("deferred_directional_light");
-        directionalMaterial->GetMaterial ()->SetShader (gbufUse, directionalLightShader);
+        directionalMaterial->GetMaterial ()->SetShader (stringSet->Request ("gbuffer use"), 
+          directionalLightShader);
 
         // Builds the quad.
+        float w = graphics3D->GetDriver2D ()->GetWidth ();
+        float h = graphics3D->GetDriver2D ()->GetHeight ();
+
+        quadVerts[0] = csVector3 (0.0f, 0.0f, 0.0f);
+        quadVerts[1] = csVector3 (0.0f,    h, 0.0f);
+        quadVerts[2] = csVector3 (   w,    h, 0.0f);
+        quadVerts[3] = csVector3 (   w, 0.0f, 0.0f);
+
         quadMesh.meshtype = CS_MESHTYPE_TRIANGLEFAN;
-        quadMesh.vertices = nullptr;
+        quadMesh.vertices = quadVerts;
         quadMesh.vertexCount = 4;
-        quadMesh.mixmode = CS_FX_COPY;
+        quadMesh.z_buf_mode = CS_ZBUF_NONE;
+        quadMesh.mixmode = CS_FX_ADD;
         quadMesh.alphaType.autoAlphaMode = false;
         quadMesh.alphaType.alphaType = csAlphaMode::alphaNone;
 
         // Creates the ambient material.
-        depthMaterial = engine->CreateMaterial (
-          "crystalspace.rendermanager.deferred.lightrender.depth", 
+        ambientMaterial = engine->CreateMaterial (
+          "crystalspace.rendermanager.deferred.lightrender.ambient", 
           NULL);
 
-        if (!loader->LoadShader ("/shader/deferred/depth.xml"))
+        if (!loader->LoadShader ("/shader/deferred/ambient_light.xml"))
         {
           csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
-            messageID, "Could not load deferred_depth shader");
+            messageID, "Could not load deferred_ambient_light shader");
         }
 
-        iShader *depthShader = shaderManager->GetShader ("deferred_depth");
-        depthMaterial->GetMaterial ()->SetShader (gbufUse, depthShader);
-
-	// Creates the output material.
-	outputMaterial = engine->CreateMaterial (
-	  "crystalspace.rendermanager.deferred.lightrender.output",
-	  NULL);
-
-	if (!loader->LoadShader ("/shader/deferred/output.xml"))
-	{
-	  csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
-	    messageID, "Could not load deffererd_output shader");
-	}
-
-	iShader *outputShader = shaderManager->GetShader ("deferred_output");
-	outputMaterial->GetMaterial()->SetShader(gbufUse, outputShader);
+        iShader *ambientLightShader = shaderManager->GetShader ("deferred_ambient_light");
+        ambientMaterial->GetMaterial ()->SetShader (stringSet->Request ("gbuffer use"), ambientLightShader);
 
         // Loads the light volume shader.
         if (!loader->LoadShader ("/shader/deferred/dbg_light_volume.xml"))
@@ -484,8 +452,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         }
 
         lightVolumeShader = shaderManager->GetShader ("deferred_dbg_light_volume");
+
+        iShaderVarStringSet *svStringSet = shaderManager->GetSVNameStringset ();
         lightVolumeColorSV = lightVolumeShader->GetVariableAdd (svStringSet->Request("static color"));
       }
+
+      private:
+        csVector3 quadVerts[4];
     };
 
     DeferredLightRenderer(iGraphics3D *g3d, 
@@ -507,25 +480,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     ~DeferredLightRenderer() {}
 
     /**
-     * Outputs the depth from the gbuffer.
+     * Outputs the ambient light present in the gbuffer. Call once per-frame.
      */
-    void OutputDepth()
+    void OutputAmbientLight()
     {
-      iMaterial *mat = persistentData.depthMaterial->GetMaterial ();
-      iShader *shader = mat->GetShader (persistentData.gbufUse);
-
-      DrawFullscreenQuad (shader, CS_ZBUF_FILL);
-    }
-
-    /**
-     * Outputs the final results using the accumulation buffers and the gbuffer
-     */
-    void OutputResults()
-    {
-      iMaterial *mat = persistentData.outputMaterial->GetMaterial();
-      iShader *shader = mat->GetShader (persistentData.gbufUse);
-
-      DrawFullscreenQuad (shader, CS_ZBUF_FILL);
+      RenderAmbientLight ();
     }
 
     /**
@@ -567,33 +526,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
      */
     void operator()(iLight *light)
     {
-      iMeshWrapper* mesh = nullptr;
-      iMaterialWrapper* material = nullptr;
-
       switch (light->GetType ())
       {
       case CS_LIGHT_POINTLIGHT:
-	mesh = persistentData.sphereMesh;
-	material = persistentData.pointMaterial;
+        RenderPointLight (light);
         break;
       case CS_LIGHT_DIRECTIONAL:
-	mesh = persistentData.boxMesh;
-	material = persistentData.directionalMaterial;
+        RenderDirectionalLight (light);
         break;
       case CS_LIGHT_SPOTLIGHT:
-	mesh = persistentData.coneMesh;
-	material = persistentData.spotMaterial;
+        RenderSpotLight (light);
         break;
       default:
         CS_ASSERT(false);
       };
-
-      CS_ASSERT(mesh);
-      CS_ASSERT(material);
-
-      RenderLight(light, mesh->GetMeshObject(), material->GetMaterial());
     }
-
+   
   private:
 
     /**
@@ -603,6 +551,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     {
       const csReversibleTransform &world2camera = graphics3D->GetWorldToCamera ();
 
+      iShaderVarStringSet *svStringSet = shaderMgr->GetSVNameStringset ();
       iShaderVariableContext *lightSVContext = light->GetSVContext ();
       iMovable *movable = light->GetMovable ();
       csLightType type = light->GetType ();
@@ -614,7 +563,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         lightPos = world2camera.This2Other (lightPos);
 
         csShaderVariable *lightPosSV = lightSVContext->GetVariableAdd (
-          persistentData.lightPos);
+          svStringSet->Request ("light position view"));
         lightPosSV->SetValue (lightPos);
       }
 
@@ -625,9 +574,38 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         lightDir = world2camera.GetT2O () * lightDir;
 
         csShaderVariable *lightDirSV = lightSVContext->GetVariableAdd (
-          persistentData.lightDir);
+          svStringSet->Request ("light direction view"));
         lightDirSV->SetValue (csVector3::Unit (lightDir));
       }
+    }
+
+    void RenderPointLight(iLight *light)
+    {
+      RenderLight (light,
+                   persistentData.sphereMesh->GetMeshObject (),
+                   persistentData.pointMaterial->GetMaterial ());
+    }
+
+    void RenderSpotLight(iLight *light)
+    {
+      RenderLight (light,
+                   persistentData.coneMesh->GetMeshObject (),
+                   persistentData.spotMaterial->GetMaterial ());
+    }
+
+    void RenderDirectionalLight(iLight *light)
+    {
+      RenderLight (light,
+                   persistentData.boxMesh->GetMeshObject (),
+                   persistentData.directionalMaterial->GetMaterial ());
+    }
+
+    void RenderAmbientLight()
+    {
+      iMaterial *mat = persistentData.ambientMaterial->GetMaterial ();
+      iShader *shader = mat->GetShader (stringSet->Request ("gbuffer use"));
+
+      DrawFullscreenQuad (shader, CS_ZBUF_NONE);
     }
 
     /**
@@ -656,8 +634,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       iCamera *cam = rview->GetCamera ();
       csVector3 camPos = cam->GetTransform ().This2Other (csVector3 (0.0f, 0.0f, 1.0f));
 
-      DrawLightMesh (meshes, num, CreateLightTransform (light), 
-                     shader, svStack, CS_FX_ALPHA);
+      DrawLightMesh (meshes, 
+                     num,
+                     CreateLightTransform (light), 
+                     shader, 
+                     svStack,
+                     CS_FX_ALPHA,
+                     IsPointInsideLight (camPos, light));
     }
 
     /**
@@ -679,7 +662,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       // Update shader stack.
       csShaderVariableStack svStack = shaderMgr->GetShaderVariableStack ();
-      iShader *shader = mat->GetShader (persistentData.gbufUse);
+      iShader *shader = mat->GetShader (stringSet->Request ("gbuffer use"));
       iShaderVariableContext *lightSVContext = light->GetSVContext ();
 
       svStack.Clear ();
@@ -691,28 +674,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       iCamera *cam = rview->GetCamera ();
       csVector3 camPos = cam->GetTransform ().This2Other (csVector3 (0.0f, 0.0f, 1.0f));
       
-      bool insideLight = IsPointInsideLight (camPos, light);
-      csReversibleTransform trans = CreateLightTransform (light);
-
-      if(!insideLight)
-      {
-	// fill stencil buffer
-	graphics3D->SetShadowState(CS_SHADOW_VOLUME_BEGIN);
-
-	// mark passing front faces
-	graphics3D->SetShadowState(CS_SHADOW_VOLUME_FAIL1);
-        DrawLightMesh (meshes, num, trans, persistentData.zOnly, svStack, CS_FX_TRANSPARENT, true);
-
-	// use stencil test
-	graphics3D->SetShadowState(CS_SHADOW_VOLUME_USE);
-      }
-
-      DrawLightMesh (meshes, num, trans, shader, svStack, CS_FX_ADD);
-
-      if(!insideLight)
-      {
-	graphics3D->SetShadowState(CS_SHADOW_VOLUME_FINISH);
-      }
+      DrawLightMesh (meshes, 
+                     num, 
+                     CreateLightTransform (light), 
+                     shader, 
+                     svStack,
+                     CS_FX_ADD,
+                     IsPointInsideLight (camPos, light));
     }
 
     /**
@@ -724,19 +692,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                        iShader *shader,
                        csShaderVariableStack &svStack,
                        uint mixmode,
-		       bool stencil = false)
+                       bool insideLight)
     {
       CS_ASSERT (n > 0);
 
       const size_t ticket = shader->GetTicket (*meshes[0], svStack);
       const size_t numPasses = shader->GetNumberOfPasses (ticket);
 
-      CS::Graphics::MeshCullMode cullMode = CS::Graphics::cullFlipped;
-      csZBufMode zMode = CS_ZBUF_INVERT;
-      if(stencil)
-      {
-	zMode = CS_ZBUF_TEST;
-      }
+      CS::Graphics::MeshCullMode cullMode = CS::Graphics::cullNormal;
+      if (insideLight)
+        cullMode = CS::Graphics::cullFlipped;
 
       for (size_t p = 0; p < numPasses; p++)
       {
@@ -753,7 +718,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
           m->mixmode = mixmode;
           m->cullMode = cullMode;
           m->object2world = transform;
-	  m->z_buf_mode = zMode;
 
           graphics3D->DrawMesh (m, *m, svStack);
 
@@ -774,16 +738,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       graphics3D->SetWorldToCamera (csReversibleTransform ());
       graphics3D->SetProjectionMatrix (CreateOrthoProj (graphics3D));
-      int w = graphics3D->GetWidth();
-      int h = graphics3D->GetHeight();
       
-      csVector3 quadVerts[4];
-      quadVerts[0] = csVector3 (0.0f, 0.0f, 0.0f);
-      quadVerts[1] = csVector3 (0.0f,    h, 0.0f);
-      quadVerts[2] = csVector3 (   w,    h, 0.0f);
-      quadVerts[3] = csVector3 (   w, 0.0f, 0.0f);
-
-      persistentData.quadMesh.vertices = quadVerts;
       persistentData.quadMesh.shader = shader;
       persistentData.quadMesh.z_buf_mode = zmode;
       

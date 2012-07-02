@@ -29,8 +29,8 @@
 #include "iengine/rendersteps/irenderstep.h"
 #include "ivideo/shader/shader.h"
 
-#include "basesteptype.h"
-#include "basesteploader.h"
+#include "csplugincommon/renderstep/basesteptype.h"
+#include "csplugincommon/renderstep/basesteploader.h"
 
 class csFullScreenQuadRSType :
   public scfImplementationExt0<csFullScreenQuadRSType, csBaseRenderStepType>
@@ -49,7 +49,7 @@ private:
   iObjectRegistry* object_reg;
 
 public:
-  csFullScreenQuadRenderStepFactory (iBase* scfParent, iObjectRegistry* object_reg);
+  csFullScreenQuadRenderStepFactory (iObjectRegistry* object_reg);
   virtual ~csFullScreenQuadRenderStepFactory ();
 
   virtual csPtr<iRenderStep> Create ();
@@ -82,7 +82,7 @@ private:
   //csFullscreenQuad* fullquad;
 
 public:
-  csFullScreenQuadRenderStep (iBase* scfParent, iObjectRegistry* object_reg);
+  csFullScreenQuadRenderStep (iObjectRegistry* object_reg);
   virtual ~csFullScreenQuadRenderStep ();
 
   virtual void Perform (iRenderView* rview, iSector* sector,

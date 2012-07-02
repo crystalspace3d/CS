@@ -25,11 +25,6 @@ static char const metainfo_slcombiner[] =
 "        <implementation>ShaderCombinerLoaderCg</implementation>"
 "        <description>Cg-specific combiner for shader snippets</description>"
 "      </class>"
-"      <class>"
-"        <name>crystalspace.graphics3d.shader.combiner.glsl</name>"
-"        <implementation>ShaderCombinerLoaderGLSL</implementation>"
-"        <description>GLSL-specific combiner for shader snippets</description>"
-"      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
@@ -38,10 +33,6 @@ static char const metainfo_slcombiner[] =
   #define ShaderCombinerLoaderCg_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(ShaderCombinerLoaderCg) 
   #endif
-  #ifndef ShaderCombinerLoaderGLSL_FACTORY_REGISTER_DEFINED 
-  #define ShaderCombinerLoaderGLSL_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(ShaderCombinerLoaderGLSL) 
-  #endif
 
 class slcombiner
 {
@@ -49,10 +40,6 @@ SCF_REGISTER_STATIC_LIBRARY(slcombiner,metainfo_slcombiner)
   #ifndef ShaderCombinerLoaderCg_FACTORY_REGISTERED 
   #define ShaderCombinerLoaderCg_FACTORY_REGISTERED 
     ShaderCombinerLoaderCg_StaticInit ShaderCombinerLoaderCg_static_init__; 
-  #endif
-  #ifndef ShaderCombinerLoaderGLSL_FACTORY_REGISTERED 
-  #define ShaderCombinerLoaderGLSL_FACTORY_REGISTERED 
-    ShaderCombinerLoaderGLSL_StaticInit ShaderCombinerLoaderGLSL_static_init__; 
   #endif
 public:
  slcombiner();

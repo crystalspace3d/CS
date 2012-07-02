@@ -23,10 +23,6 @@
   <block location="cg:vertexIn">
     <varying type="float3x4" name="instancingTransforms" />
   </block>
-  <block location="glsl:inputs">
-    <varying type="float4x3" name="in_instancingTransforms" />
-  </block>
-  <block location="glsl:version">120</block>
   
   <block location="cg:vertexMain">
     instancingTransforms = float4x4 (vertexIn.instancingTransforms[0],
@@ -34,27 +30,13 @@
       vertexIn.instancingTransforms[2],
       float4 (0, 0, 0, 1));
   </block>
-  <block location="glsl:vertexMain">
-    instancingTransforms = transpose (
-      mat4 (in_instancingTransforms[0],
-            in_instancingTransforms[1],
-            in_instancingTransforms[2],
-            vec4 (0.0, 0.0, 0.0, 1.0)));
-  </block>
 
-  <block location="cg:pass">
+  <block location="pass">
     <!-- meshgen puts number of instances into the SV "instances num",
 	 must be used for correct rendering -->
     <instancesnum>instances num</instancesnum>
     <instanceparam source="instancing transforms"
       destination="vertexIn.instancingTransforms" />
-  </block>
-  <block location="glsl:pass">
-    <!-- meshgen puts number of instances into the SV "instances num",
-	 must be used for correct rendering -->
-    <instancesnum>instances num</instancesnum>
-    <instanceparam source="instancing transforms"
-      destination="in_instancingTransforms" />
   </block>
 </input>
 

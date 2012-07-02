@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2010-2012 Christian Van Brussel, Institute of Information
+  Copyright (C) 2010 Christian Van Brussel, Institute of Information
       and Communication Technologies, Electronics and Applied Mathematics
       at Universite catholique de Louvain, Belgium
       http://www.uclouvain.be/en-icteam.html
@@ -67,8 +67,7 @@ enum SkeletonDebugMode
   DEBUG_SQUARES = 1 << 2,     /*!< The debug shapes displayed are 2D squares at the bone positions. */
   DEBUG_IMAGES  = 1 << 3,     /*!< The debug shapes displayed are images at the bone positions.
 			       *   SetDebugImage() must therefore be used. */
-  DEBUG_BBOXES  = 1 << 4,     /*!< The debug shapes displayed are the bounding boxes of the bones. */
-  DEBUG_ELLIPSOIDS  = 1 << 5  /*!< The debug shapes displayed are 3D ellipsoids. */
+  DEBUG_BBOXES  = 1 << 4      /*!< The debug shapes displayed are the bounding boxes of the bones. */
 };
 
 /**
@@ -76,7 +75,7 @@ enum SkeletonDebugMode
  */
 struct iSkeletonDebugNodeFactory : public virtual iSkeletonAnimNodeFactory
 {
-  SCF_INTERFACE(CS::Animation::iSkeletonDebugNodeFactory, 2, 0, 1);
+  SCF_INTERFACE(CS::Animation::iSkeletonDebugNodeFactory, 2, 0, 0);
 
   /**
    * Set the combination of visualization modes to be used for displaying the animation.
@@ -131,18 +130,6 @@ struct iSkeletonDebugNodeFactory : public virtual iSkeletonAnimNodeFactory
    * Return whether or not random colors are used to display the bone data
    */
   virtual bool GetRandomColor () const = 0;
-
-  /**
-   * Set an offset to be applied on the final position of the given bone when
-   * the debug primitives are drawn. The default offset is null.
-   */
-  virtual void SetBoneOffset (BoneID boneID, csVector3 offset) = 0;
-
-  /**
-   * Get the offset that is applied on the final position of the given bone when
-   * the debug primitives are drawn.
-   */
-  virtual csVector3 GetBoneOffset (BoneID boneID) const = 0;
 };
 
 /**

@@ -565,7 +565,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(VProc_std)
 
   bool csVProcStandardProgram::Load (iShaderDestinationResolver*, 
     const char*, 
-    const csArray<csShaderVarMapping>&)
+    csArray<csShaderVarMapping>&)
   {
     return false;
   }

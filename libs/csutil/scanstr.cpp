@@ -43,17 +43,6 @@ int csScanStr (const char* in, const char* format, ...)
     if (c[0] == '%')
     {
       format++;
-      // When encountering a string output, allocated memory for caller
-      bool string_alloc (false);
-      // Handle modifiers
-      switch (*format)
-      {
-      case 'a':
-        string_alloc = true;
-        format++;
-        break;
-      }
-      // Handle format proper
       switch (*format)
       {
         case 'n':
@@ -155,7 +144,7 @@ int csScanStr (const char* in, const char* format, ...)
 	}
 	case 's':
 	{
-          csString outputStr;
+	  char* a = va_arg (arg, char*);
 	  in += strspn (in, CS_WHITE);
 	  if (*in == '\'')
 	  {
@@ -163,12 +152,13 @@ int csScanStr (const char* in, const char* format, ...)
 	    const char* in2 = strchr (in, '\'');
 	    if (in2)
 	    {
-              outputStr.Append (in, in2-in);
+	      memcpy (a, in, (int)(in2-in));
+	      a[(int)(in2-in)] = 0;
 	      in = in2+1;
 	    }
 	    else
 	    {
-	      outputStr = in;
+	      strcpy (a, in);
 	      in = strchr (in, 0);
 	    }
 	    num++;
@@ -177,28 +167,17 @@ int csScanStr (const char* in, const char* format, ...)
 	  {
 	    const char* in2 = in + strspn (in, "abcdefghijklmnopqrstuvwxyz"
 	      "ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789./-");
-            outputStr.Append (in, in2-in);
+	    memcpy (a, in, (int)(in2-in));
+	    a[(int)(in2-in)] = 0;
 	    in = in2;
 	    num++;
 	  }
 	  in += strspn (in, CS_WHITE);
-          
-          if (string_alloc)
-          {
-            char** string_ptr = va_arg (arg, char**);
-            *string_ptr = (char*)cs_malloc (outputStr.Length() + 1);
-            strcpy (*string_ptr, outputStr.GetDataSafe());
-          }
-          else
-          {
-            char* a = va_arg (arg, char*);
-            strcpy (a, outputStr.GetDataSafe());
-          }
 	  break;
 	}
 	case 'S':
 	{
-          csString outputStr;
+	  char* a = va_arg (arg, char*);
 	  in += strspn (in, CS_WHITE);
 	  if (*in == '\"')
 	  {
@@ -211,47 +190,38 @@ int csScanStr (const char* in, const char* format, ...)
 		switch (*in)
 		{
 		  case '\\':
-		    outputStr += '\\';
+		    *a++ = '\\';
 		    break;
 		  case 'n':
-		    outputStr += '\n';
+		    *a++ = '\n';
 		    break;
 		  case 'r':
-		    outputStr += '\r';
+		    *a++ = '\r';
 		    break;
 		  case 't':
-		    outputStr += '\t';
+		    *a++ = '\t';
 		    break;
 		  case '"':
-		    outputStr += '"';
+		    *a++ = '"';
 		    break;
 		  default:
-		    outputStr += '\\';
-		    outputStr += *in;
+		    *a++ = '\\';
+		    *a++ = *in;
 		    break;
 		} //switch
 		in++;
 	      }
 	      else
 	      {
-		outputStr += *in++;
+		*a++ = *in++;
 	      }
 	    } //while in string
 	    in++;
 	    num++;
 	  } //if string started
 
-          if (string_alloc)
-          {
-            char** string_ptr = va_arg (arg, char**);
-            *string_ptr = (char*)cs_malloc (outputStr.Length() + 1);
-            strcpy (*string_ptr, outputStr.GetDataSafe());
-          }
-          else
-          {
-            char* a = va_arg (arg, char*);
-            strcpy (a, outputStr.GetDataSafe());
-          }
+	  //terminate string
+	  *a = '\0';
 	  break;
 	}
       }
@@ -263,7 +233,7 @@ int csScanStr (const char* in, const char* format, ...)
       in += strspn (in, CS_WHITE);
     }
     else if (*in == *format) { format++; in++; }
-    else { break; }
+    else { num = -1; break; }
   }
 
   va_end (arg);

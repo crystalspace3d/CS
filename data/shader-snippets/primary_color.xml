@@ -18,7 +18,6 @@
 <snippet>
   <technique priority="100">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
-    <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
     
     <input file="/shader-snippets/primaryColor.inp" private="yes" />
       
@@ -26,15 +25,7 @@
       result = primaryColor;
     </block>
 
-    <block location="glsl:fragmentMain">
-      result = primaryColor;
-    </block>
-
     <block location="cg:vertexMain">
-      result = primaryColor;
-    </block>
-
-    <block location="glsl:vertexMain">
       result = primaryColor;
     </block>
     

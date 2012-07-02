@@ -32,15 +32,6 @@ struct iLoaderContext;
 struct iSyntaxService;
 struct iVFS;
 
-namespace CS
-{
-  namespace DocSystem
-  {
-    struct iDocumentPreprocessor;
-  } // namespace DocSystem
-} // namespace CS
-
-
 CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 {
 
@@ -91,9 +82,6 @@ public:
   csPtr<iDocumentNode> ReadNodeFromBuf (iDataBuffer* buf);
   csPtr<iDataBuffer> WriteNodeToBuf (iDocument* doc);
   csPtr<iDocument> CreateCachingDoc ();
-
-  /// Preprocess a node using docpreproc plugin
-  csPtr<iDocumentNode> PreprocessedNode (iDocumentNode* node);
 public:
   bool do_verbose;
   bool doDumpXML;
@@ -110,7 +98,6 @@ public:
   csWeakRef<iGraphics3D> g3d;
   csRef<iSyntaxService> synldr;
   csRef<iVFS> vfs;
-  csRef<CS::DocSystem::iDocumentPreprocessor> docpp;
   csWeakRef<iEngine> engine; // only needed for frame number ...
   csWrappedDocumentNodeFactory* wrapperFact;
   /// Condition constants

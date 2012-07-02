@@ -70,7 +70,7 @@ private:
 #undef CS_TOKEN_ITEM_FILE
 
   csWeakRef<iGraphics3D> g3d;
-  csRef<csGLShader_FIXED> shaderPlug;
+  csGLShader_FIXED* shaderPlug;
   csGLExtensionManager* ext;
 
   enum GlLightParam
@@ -166,7 +166,7 @@ public:
 
   /// Loads from raw text
   virtual bool Load (iShaderDestinationResolver*, const char*, 
-    const csArray<csShaderVarMapping> &)
+    csArray<csShaderVarMapping> &)
   { return false; }
 
   /// Compile a program

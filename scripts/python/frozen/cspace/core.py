@@ -409,7 +409,6 @@ class iSCF(iBase):
     def GetClassDescription(*args): return _core.iSCF_GetClassDescription(*args)
     def GetClassDependencies(*args): return _core.iSCF_GetClassDependencies(*args)
     def GetPluginMetadata(*args): return _core.iSCF_GetPluginMetadata(*args)
-    def GetPluginMetadataNode(*args): return _core.iSCF_GetPluginMetadataNode(*args)
     def UnloadUnusedModules(*args): return _core.iSCF_UnloadUnusedModules(*args)
     def RegisterClass(*args): return _core.iSCF_RegisterClass(*args)
     def RegisterFactoryFunc(*args): return _core.iSCF_RegisterFactoryFunc(*args)
@@ -1173,9 +1172,6 @@ class iVirtualClock(iBase):
     def Resume(*args): return _core.iVirtualClock_Resume(*args)
     def GetElapsedTicks(*args): return _core.iVirtualClock_GetElapsedTicks(*args)
     def GetCurrentTicks(*args): return _core.iVirtualClock_GetCurrentTicks(*args)
-    def GetElapsedMicroTicks(*args): return _core.iVirtualClock_GetElapsedMicroTicks(*args)
-    def GetElapsedSeconds(*args): return _core.iVirtualClock_GetElapsedSeconds(*args)
-    def GetCurrentMicroTicks(*args): return _core.iVirtualClock_GetCurrentMicroTicks(*args)
     scfGetVersion = staticmethod(_core.iVirtualClock_scfGetVersion)
     scfGetName = staticmethod(_core.iVirtualClock_scfGetName)
     __swig_destroy__ = _core.delete_iVirtualClock

@@ -30,7 +30,6 @@ private:
   csRef<iMeshFactoryWrapper> fact;
   csRef<iMeshFactoryWrapper> waterfact;
   csRef<iView> view;
-  csRef<FramePrinter> printer;
 
   /**
    * A reference to the 3D renderer plugin.

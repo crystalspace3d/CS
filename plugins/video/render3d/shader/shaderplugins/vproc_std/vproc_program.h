@@ -63,7 +63,7 @@ public:
 
   /// Loads from raw text
   virtual bool Load (iShaderDestinationResolver* resolve, 
-    const char* program, const csArray<csShaderVarMapping>& mappings);
+    const char* program, csArray<csShaderVarMapping>& mappings);
 
 
   /// Compile a program
@@ -71,7 +71,7 @@ public:
 
   virtual void GetUsedShaderVars (csBitArray& bits) const;
 private:
-  csRef<csVProc_Std> shaderPlugin;
+  csVProc_Std *shaderPlugin;
 
   csStringHash tokens;
 #define CS_TOKEN_ITEM_FILE \

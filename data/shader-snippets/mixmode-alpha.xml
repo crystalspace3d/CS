@@ -19,7 +19,6 @@
 <snippet>
   <technique priority="100">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
-    <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
     
     <input name="inputColor" type="rgba" />
     
@@ -27,9 +26,6 @@
       <block location="cg:variablemap">
 	<variablemap variable="mixmode alpha" destination="vertexIn.mixModeAlpha" />
 	<variablemap variable="mixmode alpha" destination="fragmentIn.mixModeAlpha" />
-      </block>
-      <block location="glsl:variablemap">
-        <variablemap variable="mixmode alpha" destination="in_mixModeAlpha" />
       </block>
       
       <block location="cg:vertexIn">
@@ -45,24 +41,12 @@
 	<uniform type="float4" name="mixModeAlpha" />
       </block>
       
-      <block location="glsl:inputs">
-        <uniform type="float" name="in_mixModeAlpha" />
-      </block>
-
       <block location="cg:vertexMain">
 	mixModeAlpha = vertexIn.mixModeAlpha;
       </block>
       
-      <block location="glsl:vertexMain">
-        mixModeAlpha = in_mixModeAlpha;
-      </block>
-      
       <block location="cg:fragmentMain">
 	mixModeAlpha = fragmentIn.mixModeAlpha.a;
-      </block>
-
-      <block location="glsl:fragmentMain">
-        mixModeAlpha = in_mixModeAlpha;
       </block>
     </input>
     
@@ -71,17 +55,7 @@
       outputColor.a = inputColor.a * mixModeAlpha;
     </block>
     
-    <block location="glsl:vertexMain">
-      outputColor.rgb = inputColor.rgb;
-      outputColor.a = inputColor.a * mixModeAlpha;
-    </block>
-    
     <block location="cg:fragmentMain">
-      outputColor.rgb = inputColor.rgb;
-      outputColor.a = inputColor.a * mixModeAlpha;
-    </block>
-    
-    <block location="glsl:fragmentMain">
       outputColor.rgb = inputColor.rgb;
       outputColor.a = inputColor.a * mixModeAlpha;
     </block>

@@ -31,9 +31,7 @@ WALKALL.PLUGINLIST =
   csopcode
   csparser
   cssynldr
-  cstgaimg
   decal
-  docpreproc
   dsplex
   dynavis
   particles
@@ -54,7 +52,6 @@ WALKALL.PLUGINLIST =
   skeleton2
   skeleton2ldr
   skelldr
-  slcombiner
   vproc_std
   haze
   hazeldr
@@ -117,7 +114,7 @@ if $(X11.AVAILABLE) = "yes"
 
 if $(GL.AVAILABLE) = "yes"
 {
-  WALKALL.PLUGINLIST += gl3d glshader_arb glshader_fixed glshader_glsl ;
+  WALKALL.PLUGINLIST += gl3d glshader_arb glshader_fixed ;
   
   # GL canvases
   if $(GLX.AVAILABLE) = "yes" { WALKALL.PLUGINLIST += glx2d ; }

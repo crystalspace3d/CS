@@ -57,7 +57,6 @@ VFS.Mount.lev/castle-staticlit/bindata = $(CS_MAPDIR)$/castle-staticlit$/bindata
 VFS.Mount.lev/oceantest = $(CS_MAPDIR)$/oceantest$/
 VFS.Mount.lev/island = $(CS_MAPDIR)$/island$/world.zip
 VFS.Mount.lev/lodtest = $(CS_MAPDIR)$/lodtest$/
-VFS.Mount.lev/selfshadow = $(CS_MAPDIR)$/selfshadow.zip
 
 ; Mount all libraries under the /lib/ directory
 VFS.Mount.lib/shadermgr-defaults = $(CS_DATADIR)$/shadermgr-defaults.zip

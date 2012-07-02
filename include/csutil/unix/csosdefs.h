@@ -23,9 +23,6 @@
 #include <math.h>
 #include <unistd.h>
 #include <sys/types.h>
-#ifdef CS_HAVE_SYS_PARAM_H
-#include <sys/param.h> // For MAXPATHLEN
-#endif
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <dirent.h>

@@ -34,11 +34,12 @@ class csShaderGLAVP :
   public scfImplementationExt0<csShaderGLAVP, csShaderProgram>
 {
 private:
-  csRef<csGLShader_ARB> shaderPlug;
+  csGLShader_ARB* shaderPlug;
 
   GLuint program_num;
 
   bool validProgram;
+  csRef<iDataBuffer> programBuffer;
 
   void Report (int severity, const char* msg, ...);
 public:
@@ -84,7 +85,7 @@ public:
 
   /// Loads from raw text
   virtual bool Load (iShaderDestinationResolver*, const char*, 
-    const csArray<csShaderVarMapping> &);
+    csArray<csShaderVarMapping> &);
 
   /// Compile a program
   virtual bool Compile (iHierarchicalCache*, csRef<iString>*);

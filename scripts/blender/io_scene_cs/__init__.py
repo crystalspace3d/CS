@@ -4,7 +4,7 @@ bl_info = {
     "name": "Export Crystal Space 3D format",
     "description": "Export meshes, scenes and animations",
     "author": "The Crystal Space team",
-    "version": (2, 1),
+    "version": (2, 0),
     "blender": (2, 5, 9),
     "api": 39685,
     "location": "The main panel is in 'Properties > Render'",

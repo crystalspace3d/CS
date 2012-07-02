@@ -129,7 +129,6 @@ class iGraphics2D(core.iBase):
     def GetHWGLVersion(*args): return _ivideo.iGraphics2D_GetHWGLVersion(*args)
     def GetHWVendor(*args): return _ivideo.iGraphics2D_GetHWVendor(*args)
     def DrawLineProjected(*args): return _ivideo.iGraphics2D_DrawLineProjected(*args)
-    def DrawBoxProjected(*args): return _ivideo.iGraphics2D_DrawBoxProjected(*args)
     scfGetVersion = staticmethod(_ivideo.iGraphics2D_scfGetVersion)
     scfGetName = staticmethod(_ivideo.iGraphics2D_scfGetName)
     __swig_destroy__ = _ivideo.delete_iGraphics2D
@@ -426,8 +425,6 @@ class iGraphics3D(core.iBase):
     def DrawMeshBasic(*args): return _ivideo.iGraphics3D_DrawMeshBasic(*args)
     def SetEdgeDrawing(*args): return _ivideo.iGraphics3D_SetEdgeDrawing(*args)
     def GetEdgeDrawing(*args): return _ivideo.iGraphics3D_GetEdgeDrawing(*args)
-    def SetTessellation(*args): return _ivideo.iGraphics3D_SetTessellation(*args)
-    def GetTessellation(*args): return _ivideo.iGraphics3D_GetTessellation(*args)
     scfGetVersion = staticmethod(_ivideo.iGraphics3D_scfGetVersion)
     scfGetName = staticmethod(_ivideo.iGraphics3D_scfGetName)
     __swig_destroy__ = _ivideo.delete_iGraphics3D

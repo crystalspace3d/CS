@@ -5,13 +5,7 @@ import shutil
 
 
 def EmptyDependencies():
-  # 'T'  -> textures
-  # 'M'  -> materials
-  # 'TM' -> texture materials (created for meshes with UV texture but no material)
-  # 'A'  -> armatures
-  # 'F'  -> meshes
-  # 'G'  -> groups of objects
-  return {'T':{}, 'M':{}, 'TM':{}, 'A':{}, 'F':{}, 'G':{}, }
+  return {'T':{}, 'M':{}, 'A':{}, 'F':{}, 'G':{}, }
 
   
 def MergeDependencies(dep1, dep2):
@@ -96,8 +90,7 @@ def find (f, seq):
 # Utility method to decompose a matrix
 def DecomposeMatrix (matrix):
   ''' Return the location, rotation and scale parts of a transformation matrix '''
-  m = matrix.to_4x4()
-  loc, quat, scale = m.decompose()
+  loc, quat, scale = matrix.decompose()
   # transform quaternion to a 4x4 rotation matrix
   rot = quat.to_matrix().to_4x4()
   return loc, rot, scale

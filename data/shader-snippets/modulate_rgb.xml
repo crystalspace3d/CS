@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?> 
 <!--
   Copyright (C) 2007 by Frank Richter
 	    (C) 2007 by Jorrit Tyberghein
@@ -20,7 +19,6 @@
 <snippet>
   <technique priority="100">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
-    <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
     
     <input name="a" type="rgb" />
     <input name="b" type="rgb" />
@@ -30,14 +28,6 @@
     </block>
 
     <block location="cg:vertexMain">
-      result = a*b;
-    </block>
-
-    <block location="glsl:fragmentMain">
-      result = a*b;
-    </block>
-
-    <block location="glsl:vertexMain">
       result = a*b;
     </block>
     

@@ -437,7 +437,7 @@ namespace lighter
 
               if (spRadius >= parallelDist)
               {
-                float tempDist = csMax (0.f, parallelDist + radius - spRadius);
+                float tempDist = MAX(0,parallelDist + radius - spRadius);
                 pseudoPos = pos + radVector*(1 - tempDist/(parallelDist*2.0f));
                 spRadius = radius - tempDist/2.0f;
               }
@@ -680,7 +680,7 @@ namespace lighter
 
     // Compute the angles of rotation around the optical axis
     double theta = acos(cosTheta)*e1;
-    double phi = TWO_PI * e2;
+    double phi = 2.0*PI*e2;
 
     return RotateAroundN(dir, theta, phi);
   }
@@ -696,7 +696,7 @@ namespace lighter
 
     // Compute the angles of rotation around the optical axis
     double theta = outerFalloffAngle*e1;
-    double phi = TWO_PI * e2;
+    double phi = 2.0*PI*e2;
 
     return RotateAroundN(dir, theta, phi);
   }
@@ -712,9 +712,9 @@ namespace lighter
     double e2 = randGen.Get();
 
     // Compute the angle of rotation around the normal
-    double phi = TWO_PI * e1;
+    double phi = 2.0*PI*e1;
 
-    csVector3 deflectionDir = RotateAroundN(dir, HALF_PI, phi);
+    csVector3 deflectionDir = RotateAroundN(dir, PI/2, phi);
 
     return pos + deflectionDir*(spRadius*e2);
 
@@ -731,8 +731,8 @@ namespace lighter
 
     // Compute the angles of rotation around the normal
     // Up to 90 and 360 respectively.
-    double theta = HALF_PI * e1;
-    double phi = TWO_PI * e2;
+    double theta = PI/2.0*e1;
+    double phi = 2.0*PI*e2;
 
     return RotateAroundN(n, theta, phi);
   }
@@ -749,7 +749,7 @@ namespace lighter
     // Compute the angles of rotation around the normal
     // Note: altitude is weighted by cosine just like Lambert's law
     double theta = acos(sqrt(e1));
-    double phi = TWO_PI * e2;
+    double phi = 2.0*PI*e2;
 
     return RotateAroundN(n, theta, phi);
   }
@@ -768,7 +768,7 @@ namespace lighter
     // jittered samples in a grid across the hemisphere weighted
     // by the cos function again (lambert's law).
     double theta = acos(sqrt((j-e1)/M));
-    double phi = TWO_PI * ( (i-e2)/N );
+    double phi = 2.0*PI*( (i-e2)/N );
 
     return RotateAroundN(n, theta, phi);
   }

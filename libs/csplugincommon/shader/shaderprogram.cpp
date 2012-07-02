@@ -321,96 +321,85 @@ bool csShaderProgram::ParseCommon (iDocumentNode* child)
   csStringID id = commonTokens.Request (value);
   switch (id)
   {
-  case XMLTOKEN_VARIABLEMAP:
-    {
-      //@@ REWRITE
-      const char* destname = child->GetAttributeValue ("destination");
-      if (!destname)
+    case XMLTOKEN_VARIABLEMAP:
       {
-        synsrv->Report ("crystalspace.graphics3d.shader.common",
-          CS_REPORTER_SEVERITY_WARNING, child,
-          "<variablemap> has no %s attribute",
-          CS::Quote::Single ("destination"));
-        return false;
-      }
+        //@@ REWRITE
+	const char* destname = child->GetAttributeValue ("destination");
+	if (!destname)
+	{
+	  synsrv->Report ("crystalspace.graphics3d.shader.common",
+	    CS_REPORTER_SEVERITY_WARNING, child,
+	    "<variablemap> has no %s attribute",
+	    CS::Quote::Single ("destination"));
+	  return false;
+	}
 
-      const char* varname = child->GetAttributeValue ("variable");
-      if (!varname)
+	const char* varname = child->GetAttributeValue ("variable");
+	if (!varname)
+	{
+	  // "New style" variable mapping
+	  VariableMapEntry vme (CS::InvalidShaderVarStringID, destname);
+	  if (!ParseProgramParam (child, vme.mappingParam,
+	    ParamFloat | ParamVector2 | ParamVector3 | ParamVector4))
+	    return false;
+	  variablemap.Push (vme);
+	}
+	else
+	{
+	  // "Classic" variable mapping
+	  CS::Graphics::ShaderVarNameParser nameParse (varname);
+	  VariableMapEntry vme (
+	    stringsSvName->Request (nameParse.GetShaderVarName()),
+	    destname);
+	  for (size_t n = 0; n < nameParse.GetIndexNum(); n++)
+	  {
+	    vme.mappingParam.indices.Push (nameParse.GetIndexValue (n));
+	  }
+	  variablemap.Push (vme);
+	}
+      }
+      break;
+    case XMLTOKEN_PROGRAM:
       {
-        // "New style" variable mapping
-        VariableMapEntry vme (CS::InvalidShaderVarStringID, destname);
-        if (!ParseProgramParam (child, vme.mappingParam,
-          ParamInt | ParamFloat | ParamVector2 | ParamVector3 | ParamVector4))
-          return false;
-        variablemap.Push (vme);
+	const char* filename = child->GetAttributeValue ("file");
+	if (filename != 0)
+	{
+	  programFileName = filename;
+
+	  csRef<iVFS> vfs = csQueryRegistry<iVFS> (objectReg);
+	  csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
+	  if (!file.IsValid())
+	  {
+	    synsrv->Report ("crystalspace.graphics3d.shader.common",
+	      CS_REPORTER_SEVERITY_WARNING, child,
+	      "Could not open %s", CS::Quote::Single (filename));
+	    return false;
+	  }
+
+	  programFile = file;
+	}
+	else
+	  programNode = child;
       }
-      else
-      {
-        // "Classic" variable mapping
-        CS::Graphics::ShaderVarNameParser nameParse (varname);
-        VariableMapEntry vme (
-          stringsSvName->Request (nameParse.GetShaderVarName()),
-          destname);
-        for (size_t n = 0; n < nameParse.GetIndexNum(); n++)
-        {
-          vme.mappingParam.indices.Push (nameParse.GetIndexValue (n));
-        }
-        variablemap.Push (vme);
-      }
-    }
-    break;
-  case XMLTOKEN_PROGRAM:
-    {
-      if (!ParseProgramNode (child, programSource))
-        return false;
-    }
-    break;
+      break;
 
-  case XMLTOKEN_DESCRIPTION:
-    description = child->GetContentsValue();
-    break;
-  default:
-    synsrv->ReportBadToken (child);
-    return false;
-  }
-  return true;
-}
-
-bool csShaderProgram::ParseProgramNode (iDocumentNode* child, ProgramSource& parsedSource)
-{
-  const char* filename = child->GetAttributeValue ("file");
-  if (filename != 0)
-  {
-    parsedSource.programFileName = filename;
-
-    csRef<iVFS> vfs = csQueryRegistry<iVFS> (objectReg);
-    csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
-    if (!file.IsValid())
-    {
-      synsrv->Report ("crystalspace.graphics3d.shader.common",
-        CS_REPORTER_SEVERITY_WARNING, child,
-        "Could not open %s", CS::Quote::Single (filename));
+    case XMLTOKEN_DESCRIPTION:
+      description = child->GetContentsValue();
+      break;
+    default:
+      synsrv->ReportBadToken (child);
       return false;
-    }
-
-    parsedSource.programData = file->GetAllData();
-    parsedSource.programNode.Invalidate ();
-  }
-  else
-  {
-    parsedSource.programNode = child;
-    parsedSource.programData.Invalidate ();
   }
   return true;
 }
 
 #include "csutil/custom_new_disable.h"
-iDocumentNode* csShaderProgram::GetProgramNode (ProgramSource& programSource)
+iDocumentNode* csShaderProgram::GetProgramNode ()
 {
-  if (programSource.programNode.IsValid ())
-    return programSource.programNode;
+  if (programNode.IsValid ())
+    return programNode;
 
-  if (programSource.programData.IsValid ())
+  if (programFile.IsValid ())
   {
     csRef<iDocumentSystem> docsys =  
       csQueryRegistry<iDocumentSystem> (objectReg);
@@ -418,33 +407,33 @@ iDocumentNode* csShaderProgram::GetProgramNode (ProgramSource& programSource)
       docsys.AttachNew (new csTinyDocumentSystem ());
     csRef<iDocument> doc (docsys->CreateDocument ());
 
-    const char* err = doc->Parse (programSource.programData, true);
+    const char* err = doc->Parse (programFile, true);
     if (err != 0)
     {
       csReport (objectReg,
 	CS_REPORTER_SEVERITY_WARNING, 
 	"crystalspace.graphics3d.shader.common",
-	"Error parsing %s: %s", programSource.programFileName.GetData(), err);
+	"Error parsing %s: %s", programFileName.GetData(), err);
       return 0;
     }
-    programSource.programNode = doc->GetRoot ();
-    programSource.programData.Invalidate();
-    return programSource.programNode;
+    programNode = doc->GetRoot ();
+    programFile = 0;
+    return programNode;
   }
 
-  return nullptr;
+  return 0;
 }
 
-csPtr<iDataBuffer> csShaderProgram::GetProgramData (ProgramSource& programSource)
+csPtr<iDataBuffer> csShaderProgram::GetProgramData ()
 {
-  if (programSource.programData.IsValid())
+  if (programFile.IsValid())
   {
-    return csPtr<iDataBuffer> (programSource.programData);
+    return programFile->GetAllData ();
   }
 
-  if (programSource.programNode.IsValid())
+  if (programNode.IsValid())
   {
-    char* data = CS::StrDup (programSource.programNode->GetContentsValue ());
+    char* data = CS::StrDup (programNode->GetContentsValue ());
 
     csRef<iDataBuffer> newbuff;
     newbuff.AttachNew (new CS::DataBuffer<> (data, data ? strlen (data) : 0));
@@ -459,7 +448,7 @@ void csShaderProgram::DumpProgramInfo (csString& output)
 {
   output << "Program description: " << 
     (description.Length () ? description.GetData () : "<none>") << "\n";
-  output << "Program file name: " << programSource.programFileName << "\n";
+  output << "Program file name: " << programFileName << "\n";
 }
 
 void csShaderProgram::DumpVariableMappings (csString& output)

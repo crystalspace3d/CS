@@ -49,7 +49,7 @@ csTargetRSType::csTargetRSType (iBase* p) :
 csPtr<iRenderStepFactory> csTargetRSType::NewFactory()
 {
   return csPtr<iRenderStepFactory> 
-    (new csTargetRenderStepFactory (this, object_reg));
+    (new csTargetRenderStepFactory (object_reg));
 }
 
 //---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ csPtr<iBase> csTargetRSLoader::Parse (iDocumentNode* node,
 				       iBase* /*context*/)
 {
   csRef<iRenderStep> newstep;
-  csTargetRenderStep* step = new csTargetRenderStep (this, object_reg);
+  csTargetRenderStep* step = new csTargetRenderStep (object_reg);
   newstep.AttachNew (step);
 
   csRef<iRenderStepContainer> steps =
@@ -146,8 +146,8 @@ csPtr<iBase> csTargetRSLoader::Parse (iDocumentNode* node,
 //---------------------------------------------------------------------------
 
 csTargetRenderStepFactory::csTargetRenderStepFactory (
-  iBase* scfParent, iObjectRegistry* object_reg) :
-  scfImplementationType (this, scfParent)
+  iObjectRegistry* object_reg) :
+  scfImplementationType (this)
 {
   csTargetRenderStepFactory::object_reg = object_reg;
 }
@@ -159,14 +159,14 @@ csTargetRenderStepFactory::~csTargetRenderStepFactory ()
 csPtr<iRenderStep> csTargetRenderStepFactory::Create ()
 {
   return csPtr<iRenderStep> 
-    (new csTargetRenderStep (this, object_reg));
+    (new csTargetRenderStep (object_reg));
 }
 
 //---------------------------------------------------------------------------
 
 csTargetRenderStep::csTargetRenderStep (
-  iBase* scfParent, iObjectRegistry* object_reg) :
-  scfImplementationType (this, scfParent)
+  iObjectRegistry* object_reg) :
+  scfImplementationType (this)
 {
   engine = csQueryRegistry<iEngine> (object_reg);
   doCreate = false;

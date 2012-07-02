@@ -22,45 +22,33 @@
   <?Template Lighting_Variablemaps?>
     <!-- Cg shader plugin magic makes arrays work -->
     <variablemap variable="light count" 
-		 destination="lightProps_count" />
+		 destination="lightProps.count" />
     <variablemap variable="light position world" 
-		 destination="lightProps_posWorld" />
+		 destination="lightProps.posWorld" />
     <variablemap variable="light diffuse" 
-		 destination="lightProps_colorDiffuse" />
+		 destination="lightProps.colorDiffuse" />
     <variablemap variable="light specular" 
-		 destination="lightProps_colorSpecular" />
+		 destination="lightProps.colorSpecular" />
     <variablemap variable="light attenuation" 
-		 destination="lightProps_attenuationVec" />
+		 destination="lightProps.attenuationVec" />
     <variablemap variable="light inner falloff" 
-		 destination="lightProps_falloffInner" />
+		 destination="lightProps.falloffInner" />
     <variablemap variable="light outer falloff" 
-		 destination="lightProps_falloffOuter" />
+		 destination="lightProps.falloffOuter" />
     <variablemap variable="light transform world" 
-		 destination="lightProps_transform" />
+		 destination="lightProps.transform" />
     <variablemap variable="light transform world inverse" 
-		 destination="lightProps_transformInv" />
+		 destination="lightProps.transformInv" />
   <?Endtemplate?>
   
   <?Template Lighting_ShadowMap_Variablemaps?>
     <variablemap variable="light shadow map projection" 
-		 destination="lightPropsSM_shadowMapTF" />
+		 destination="lightPropsSM.shadowMapTF" />
     <variablemap variable="light shadow map pixel size" 
-		 destination="lightPropsSM_shadowMapPixels" />
+		 destination="lightPropsSM.shadowMapPixels" />
     <variablemap variable="light shadow map unscale" 
-		 destination="lightPropsSM_shadowMapUnscale" />
+		 destination="lightPropsSM.shadowMapUnscale" />
   <?Endtemplate?>
-  
-<!--  
-  Copying properties for opacity shadow maps
--->
-  <?Template Lighting_OpacityMap_Variablemaps?> 
-    <variablemap variable="light shadow map projection" 
-		 destination="lightPropsOM_opacityMapTF" />
-    <variablemap variable="light numSplits" 
-		 destination="lightPropsOM_opacityMapNumSplits" />		       
-    <variablemap variable="light shadow map size" 
-		 destination="lightPropsOM_size" />		      
-  <?Endtemplate?>  
   
   <?SEndIf?>
 </include>

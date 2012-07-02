@@ -37,13 +37,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     DeferredShaderSetup(CS::RenderManager::ShaderArrayType &shaderArray, 
                         const LayerConfigType &layerConfig,
                         int deferredLayer,
-			int lightingLayer,
                         int zonlyLayer)
       : 
     shaderArray(shaderArray), 
     layerConfig(layerConfig), 
     deferredLayer(deferredLayer),
-    lightingLayer(lightingLayer),
     zonlyLayer(zonlyLayer)
     {}
 
@@ -69,20 +67,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         typename RenderTree::MeshNode::SingleMesh &mesh = node->meshes[i];
         csRenderMesh *rm = mesh.renderMesh;
 
-        // Setup the deferred layer(s).
+        // Setup the deferred layer.
         size_t layerOffset = deferredLayer * totalMeshes;
         shaderArray[mesh.contextLocalId + layerOffset] = nullptr;
-	if(lightingLayer >= 0)
-	{
-	  layerOffset = lightingLayer * totalMeshes;
-	  shaderArray[mesh.contextLocalId + layerOffset] = nullptr;
-	}
 
         // Setup the forward rendering layers.
         const size_t layerCount = layerConfig.GetLayerCount ();
         for (size_t layer = 0; layer < layerCount; layer++)
         {
-          if ((int)layer == deferredLayer || (int)layer == lightingLayer)
+          if ((int)layer == deferredLayer)
             continue;
 
           iShader *shader = nullptr;
@@ -118,13 +111,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         csRenderMesh *rm = mesh.renderMesh;
 
         // Setup the deferred and zonly layers.
-        size_t layers[3] = { deferredLayer, zonlyLayer, lightingLayer };
+        size_t layers[2] = { deferredLayer, zonlyLayer };
         const size_t count = sizeof(layers) / sizeof(size_t);
         for (size_t k = 0; k < count; k++)
         {
           size_t layer = layers[k];
-	  if((int)layer < 0)
-	    continue;
 
           iShader *shader = nullptr;
           if (rm->material)
@@ -146,7 +137,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         const size_t layerCount = layerConfig.GetLayerCount ();
         for (size_t layer = 0; layer < layerCount; layer++)
         {
-          if ((int)layer == deferredLayer || (int)layer == lightingLayer || (int)layer == zonlyLayer)
+          if ((int)layer == deferredLayer || (int)layer == zonlyLayer)
             continue;
 
           size_t layerOffset = layer * totalMeshes;
@@ -159,7 +150,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     CS::RenderManager::ShaderArrayType &shaderArray;
     const LayerConfigType &layerConfig;
     int deferredLayer;
-    int lightingLayer;
     int zonlyLayer;
   };
 
@@ -171,7 +161,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                            iShaderManager *shaderManager,
                            const LayerConfigType &layerConfig,
                            int deferredLayer,
-			   int lightingLayer,
                            int zonlyLayer)
   {
     context.shaderArray.SetSize (context.totalRenderMeshes * layerConfig.GetLayerCount ());
@@ -180,7 +169,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     typedef typename ContextNodeType::TreeType Tree;
 
     DeferredShaderSetup<Tree, LayerConfigType>
-      shaderSetup (context.shaderArray, layerConfig, deferredLayer, lightingLayer, zonlyLayer);
+      shaderSetup (context.shaderArray, layerConfig, deferredLayer, zonlyLayer);
 
     ForEachMeshNode (context, shaderSetup);
   }

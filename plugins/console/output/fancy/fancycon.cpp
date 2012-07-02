@@ -319,21 +319,21 @@ void csFancyConsole::DrawBorder (int x, int y, int width, int height,
     switch (align)
     {
       case 1:
-        height = csMin (height, h);
+        height = MIN (height, h);
         h = height;
         break;
       case 2:
-        x += csMax (0, width - w);
-        width = csMin (width, w);
+        x += MAX (0, width - w);
+        width = MIN (width, w);
         w = width;
         break;
       case 3:
-        y += csMax (0, height - h);
-        height = csMin (h, height);
+        y += MAX (0, height - h);
+        height = MIN (h, height);
         h = height;
         break;
       case 4:
-        width = csMin (width, w);
+        width = MIN (width, w);
         w = width;
         break;
     }

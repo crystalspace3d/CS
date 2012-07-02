@@ -28,7 +28,7 @@
 				ProgramDataBaseFileName="..\..\out\release9\build\libcrystalspace\Win32\crystalspace.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/MP "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\release9\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\release9\build\libcrystalspace\"
@@ -99,10 +99,10 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDatabaseFileName="..\..\out\release9\build\libcrystalspace\Win32\crystalspace-2.1-vc9.pdb"
+				ProgramDatabaseFileName="..\..\out\release9\build\libcrystalspace\Win32\crystalspace-2.0-vc9.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/MP "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\release9\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\release9\build\libcrystalspace\"
@@ -123,9 +123,9 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-                        OutputFile="..\..\crystalspace-2.1-vc9.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9.dll"
 				ImportLibrary="..\..\out\release9\libs\libcrystalspace.lib"
-				ProgramDatabaseFile="..\..\out\release9\build\libcrystalspace\Win32\crystalspace-2.1-vc9.pdb"
+				ProgramDatabaseFile="..\..\out\release9\build\libcrystalspace\Win32\crystalspace-2.0-vc9.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -246,7 +246,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.1-vc9_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.0-vc9_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -268,9 +268,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\crystalspace-2.1-vc9_d.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9_d.dll"
 				ImportLibrary="..\..\out\debug9\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.1-vc9_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.0-vc9_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -391,7 +391,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.1-vc9_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.0-vc9_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -413,9 +413,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\crystalspace-2.1-vc9_d.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9_d.dll"
 				ImportLibrary="..\..\out\debug9\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.1-vc9_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.0-vc9_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -536,7 +536,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.1-vc9_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.0-vc9_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -558,9 +558,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\crystalspace-2.1-vc9_d.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9_d.dll"
 				ImportLibrary="..\..\out\debug9\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.1-vc9_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.0-vc9_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -681,7 +681,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.1-vc9_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.0-vc9_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -703,9 +703,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\crystalspace-2.1-vc9_d.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9_d.dll"
 				ImportLibrary="..\..\out\debug9\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.1-vc9_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug9\build\libcrystalspace\Win32\crystalspace-2.0-vc9_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -757,7 +757,7 @@
 				ProgramDataBaseFileName="..\..\out\release9-x64\build\libcrystalspace\x64\crystalspace.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/MP "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\libcrystalspace\"
@@ -828,10 +828,10 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDatabaseFileName="..\..\out\release9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64.pdb"
+				ProgramDatabaseFileName="..\..\out\release9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions="/MP "
+				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\libs\csutil\ptmalloc\sysdeps\win32"
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\libcrystalspace\libcrystalspace.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\libcrystalspace\"
@@ -852,9 +852,9 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-                        OutputFile="..\..\crystalspace-2.1-vc9-x64.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9-x64.dll"
 				ImportLibrary="..\..\out\release9-x64\libs\libcrystalspace.lib"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64.pdb"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -975,7 +975,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -997,9 +997,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\crystalspace-2.1-vc9-x64_d.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9-x64_d.dll"
 				ImportLibrary="..\..\out\debug9-x64\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1120,7 +1120,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -1142,9 +1142,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\crystalspace-2.1-vc9-x64_d.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9-x64_d.dll"
 				ImportLibrary="..\..\out\debug9-x64\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1265,7 +1265,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -1287,9 +1287,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\crystalspace-2.1-vc9-x64_d.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9-x64_d.dll"
 				ImportLibrary="..\..\out\debug9-x64\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1410,7 +1410,7 @@
 				RuntimeLibrary="3"
 
 
-				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64_d.pdb"
+				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64_d.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION=\&quot;VC_9\&quot;;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
@@ -1432,9 +1432,9 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\crystalspace-2.1-vc9-x64_d.dll"
+                        OutputFile="..\..\crystalspace-2.0-vc9-x64_d.dll"
 				ImportLibrary="..\..\out\debug9-x64\libs\libcrystalspace_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.1-vc9-x64_d.pdb"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\libcrystalspace\x64\crystalspace-2.0-vc9-x64_d.pdb"
 				AdditionalOptions=" "
 				AdditionalDependencies="zlib.lib"
 				SuppressStartupBanner="TRUE"
@@ -1707,6 +1707,15 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\viscullcommon.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\renderstep\basesteploader.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\renderstep\basesteptype.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\renderstep\parserenderstep.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\script\scriptcommon.cpp">
@@ -2315,9 +2324,6 @@
 				RelativePath="..\..\libs\csutil\win32\setenv.cpp">
 			</File>
 			<File
-				RelativePath="..\..\libs\csutil\win32\stat.cpp">
-			</File>
-			<File
 				RelativePath="..\..\libs\csutil\win32\syminit.cpp">
 			</File>
 			<File
@@ -2680,6 +2686,15 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\viscullcommon.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteploader.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteptype.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\parserenderstep.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\script\scriptcommon.h">

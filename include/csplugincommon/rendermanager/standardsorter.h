@@ -59,7 +59,7 @@ namespace RenderManager
       : engine (engine), cameraOrigin (0,0,0)
     {
       // Build table of sorting options
-      renderPriorityCount = uint (engine->GetRenderPriorityCount ());
+      renderPriorityCount = engine->GetRenderPriorityCount ();
       sortingTypeTable = new int[renderPriorityCount];
       
       for (uint i = 0; i < renderPriorityCount; ++i)

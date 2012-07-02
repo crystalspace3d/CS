@@ -2,17 +2,17 @@
    make changes _there_ instead */
 /*
     Copyright (C) 1998-2007 by Jorrit Tyberghein
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -34,7 +34,7 @@
  * Also affects the version number - unstable versions have the RCS revision
  *  as the 'build' version component.
  */
-#define CS_VERSION_UNSTABLE
+//#define CS_VERSION_UNSTABLE
 
 /**
  * Build version based off SVN revision.
@@ -55,9 +55,9 @@
  *
  * The relative SVN revision is computed by the script `rcsrev`.
  */
-//CS_RCSREV_OFFSET 513
+//CS_RCSREV_OFFSET 0
 #ifndef CS_VERSION_RCSREV
-#define CS_VERSION_RCSREV	2676
+#define CS_VERSION_RCSREV	0
 #endif
 
 /**\name Version number definitions (numeric)
@@ -65,7 +65,7 @@
 /// Major version
 #define CS_VERSION_NUM_MAJOR  	2
 /// Minor version (even are stable versions, odd are development versions)
-#define CS_VERSION_NUM_MINOR  	1
+#define CS_VERSION_NUM_MINOR  	0
 /// Maintenance release
 #define CS_VERSION_NUM_RELEASE	0
 /**
@@ -95,7 +95,7 @@
 /// Build number
 #define CS_VERSION_BUILD	CS_VER_QUOTE(CS_VERSION_NUM_BUILD)
 /// Date of release
-#define CS_RELEASE_DATE		CS_VER_QUOTE_(Mon 9-Jun-2008)
+#define CS_RELEASE_DATE		CS_VER_QUOTE_(Tue 03-July-2012)
 /** @} */
 
 #define CS_VER_QUOTE_(X) #X

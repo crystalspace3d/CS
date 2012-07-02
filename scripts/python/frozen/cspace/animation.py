@@ -138,7 +138,6 @@ class iSkeleton(core.iBase):
     def GetAnimationPacket(*args): return _animation.iSkeleton_GetAnimationPacket(*args)
     def SetAnimationPacket(*args): return _animation.iSkeleton_SetAnimationPacket(*args)
     def RecreateSkeleton(*args): return _animation.iSkeleton_RecreateSkeleton(*args)
-    def RecreateAnimationTree(*args): return _animation.iSkeleton_RecreateAnimationTree(*args)
     def UpdateSkeleton(*args): return _animation.iSkeleton_UpdateSkeleton(*args)
     def GetSkeletonStateVersion(*args): return _animation.iSkeleton_GetSkeletonStateVersion(*args)
     def SetAnimatedMesh(*args): return _animation.iSkeleton_SetAnimatedMesh(*args)
@@ -172,10 +171,6 @@ class AnimatedMeshState(core.csRefCount):
 AnimatedMeshState_swigregister = _animation.AnimatedMeshState_swigregister
 AnimatedMeshState_swigregister(AnimatedMeshState)
 
-COLLIDER_BOX = _animation.COLLIDER_BOX
-COLLIDER_SPHERE = _animation.COLLIDER_SPHERE
-COLLIDER_CYLINDER = _animation.COLLIDER_CYLINDER
-COLLIDER_CAPSULE = _animation.COLLIDER_CAPSULE
 class iBodyManager(core.iBase):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
@@ -192,28 +187,6 @@ iBodyManager_swigregister(iBodyManager)
 iBodyManager_scfGetVersion = _animation.iBodyManager_scfGetVersion
 iBodyManager_scfGetName = _animation.iBodyManager_scfGetName
 
-class iBoneIDIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def HasNext(*args): return _animation.iBoneIDIterator_HasNext(*args)
-    def Next(*args): return _animation.iBoneIDIterator_Next(*args)
-    __swig_destroy__ = _animation.delete_iBoneIDIterator
-    __del__ = lambda self : None;
-iBoneIDIterator_swigregister = _animation.iBoneIDIterator_swigregister
-iBoneIDIterator_swigregister(iBoneIDIterator)
-
-class iBodyChainIterator(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def HasNext(*args): return _animation.iBodyChainIterator_HasNext(*args)
-    def Next(*args): return _animation.iBodyChainIterator_Next(*args)
-    __swig_destroy__ = _animation.delete_iBodyChainIterator
-    __del__ = lambda self : None;
-iBodyChainIterator_swigregister = _animation.iBodyChainIterator_swigregister
-iBodyChainIterator_swigregister(iBodyChainIterator)
-
 class iBodySkeleton(core.iBase):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
@@ -222,17 +195,11 @@ class iBodySkeleton(core.iBase):
     def GetSkeletonFactory(*args): return _animation.iBodySkeleton_GetSkeletonFactory(*args)
     def ClearAll(*args): return _animation.iBodySkeleton_ClearAll(*args)
     def CreateBodyBone(*args): return _animation.iBodySkeleton_CreateBodyBone(*args)
-    def FindBodyBone(*args): return _animation.iBodySkeleton_FindBodyBone(*args)
-    def GetBodyBones(*args): return _animation.iBodySkeleton_GetBodyBones(*args)
-    def RemoveBodyBone(*args): return _animation.iBodySkeleton_RemoveBodyBone(*args)
     def ClearBodyBones(*args): return _animation.iBodySkeleton_ClearBodyBones(*args)
     def CreateBodyChain(*args): return _animation.iBodySkeleton_CreateBodyChain(*args)
     def FindBodyChain(*args): return _animation.iBodySkeleton_FindBodyChain(*args)
-    def GetBodyChains(*args): return _animation.iBodySkeleton_GetBodyChains(*args)
-    def RemoveBodyChain(*args): return _animation.iBodySkeleton_RemoveBodyChain(*args)
     def ClearBodyChains(*args): return _animation.iBodySkeleton_ClearBodyChains(*args)
-    def PopulateDefaultColliders(*args): return _animation.iBodySkeleton_PopulateDefaultColliders(*args)
-    def PopulateDefaultBodyChains(*args): return _animation.iBodySkeleton_PopulateDefaultBodyChains(*args)
+    def FindBodyBone(*args): return _animation.iBodySkeleton_FindBodyBone(*args)
     scfGetVersion = staticmethod(_animation.iBodySkeleton_scfGetVersion)
     scfGetName = staticmethod(_animation.iBodySkeleton_scfGetName)
     __swig_destroy__ = _animation.delete_iBodySkeleton
@@ -463,7 +430,6 @@ class iSkeletonAnimation(core.iBase):
     def RemoveChannel(*args): return _animation.iSkeletonAnimation_RemoveChannel(*args)
     def AddOrSetKeyFrame(*args): return _animation.iSkeletonAnimation_AddOrSetKeyFrame(*args)
     def BlendState(*args): return _animation.iSkeletonAnimation_BlendState(*args)
-    def ApplyTimeShift(*args): return _animation.iSkeletonAnimation_ApplyTimeShift(*args)
     scfGetVersion = staticmethod(_animation.iSkeletonAnimation_scfGetVersion)
     scfGetName = staticmethod(_animation.iSkeletonAnimation_scfGetName)
     __swig_destroy__ = _animation.delete_iSkeletonAnimation
@@ -740,7 +706,6 @@ DEBUG_2DLINES = _animation.DEBUG_2DLINES
 DEBUG_SQUARES = _animation.DEBUG_SQUARES
 DEBUG_IMAGES = _animation.DEBUG_IMAGES
 DEBUG_BBOXES = _animation.DEBUG_BBOXES
-DEBUG_ELLIPSOIDS = _animation.DEBUG_ELLIPSOIDS
 class iSkeletonDebugNodeFactory(iSkeletonAnimNodeFactory):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
@@ -755,8 +720,6 @@ class iSkeletonDebugNodeFactory(iSkeletonAnimNodeFactory):
     def GetChildNode(*args): return _animation.iSkeletonDebugNodeFactory_GetChildNode(*args)
     def SetRandomColor(*args): return _animation.iSkeletonDebugNodeFactory_SetRandomColor(*args)
     def GetRandomColor(*args): return _animation.iSkeletonDebugNodeFactory_GetRandomColor(*args)
-    def SetBoneOffset(*args): return _animation.iSkeletonDebugNodeFactory_SetBoneOffset(*args)
-    def GetBoneOffset(*args): return _animation.iSkeletonDebugNodeFactory_GetBoneOffset(*args)
     scfGetVersion = staticmethod(_animation.iSkeletonDebugNodeFactory_scfGetVersion)
     scfGetName = staticmethod(_animation.iSkeletonDebugNodeFactory_scfGetName)
     __swig_destroy__ = _animation.delete_iSkeletonDebugNodeFactory

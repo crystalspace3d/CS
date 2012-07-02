@@ -64,8 +64,6 @@ private:
   /// Event handlers to draw and print the 3D canvas on each frame
   csRef<FramePrinter> printer;
 
-  csRef<iTextureHandle> handle;
-
 public:
   bool SetupModules ();
 

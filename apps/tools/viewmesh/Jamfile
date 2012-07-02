@@ -47,7 +47,6 @@ if $(CEGUI.AVAILABLE) = "yes"
     csparser
     cssaver
     cssynldr
-    docpreproc
     dsplex
     emit
     emitldr

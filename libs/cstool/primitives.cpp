@@ -257,7 +257,7 @@ void Primitives::GenerateCylinder (float l, float r, uint sides,
 {
   const uint n = sides * 4;
   l *= 0.5;
-  float a = TWO_PI / float(n);
+  float a = float(PI*2.0)/float(n);
   float sa = (float) sin(a);
   float ca = (float) cos(a);
 
@@ -319,7 +319,7 @@ void Primitives::GenerateCapsule (float l, float r, uint sides,
 {
   const uint n = sides * 4;
   l *= 0.5;
-  float a = TWO_PI / float(n);
+  float a = float(PI*2.0)/float(n);
   float sa = (float) sin(a);
   float ca = (float) cos(a);
 
@@ -438,7 +438,7 @@ void Primitives::GenerateCone (float l, float r, uint sides,
    * centered on the origin. */
 
   // Make sure we have enough sides to actually make a cone.
-  sides = csMax (uint (3), sides);
+  sides = MAX(3, sides);
 
   // The top-point.
   mesh_vertices.Push (csVector3 (0, l, 0));

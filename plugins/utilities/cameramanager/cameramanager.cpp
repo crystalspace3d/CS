@@ -212,7 +212,7 @@ void CameraManager::Frame ()
 	cameraOrigin.y -= motionDelta;
 
       camera->GetTransform ().SetOrigin (cameraOrigin);
-      camera->GetTransform ().LookAt (GetCameraTarget () - cameraOrigin, csVector3 (0,1,0));
+      camera->GetTransform ().LookAt (cameraTarget - cameraOrigin, csVector3 (0,1,0));
 
       break;
     }
@@ -273,7 +273,7 @@ bool CameraManager::OnMouseDown (iEvent& event)
   {
   case 0:
     cameraModePan = true;
-    panCameraTarget = GetCameraTarget ();
+    panCameraTarget = cameraTarget;
     break;
   case 1:
     cameraModeRotate = true;
@@ -363,7 +363,7 @@ void CameraManager::SetCameraMode (CS::Utility::CameraMode cameraMode)
   this->cameraMode = cameraMode;
 }
 
-CS::Utility::CameraMode CameraManager::GetCameraMode () const
+CS::Utility::CameraMode CameraManager::GetCameraMode ()
 {
   return cameraMode;
 }
@@ -374,7 +374,7 @@ void CameraManager::SetStartPosition (csVector3 position)
   hasStartPosition = true;
 }
 
-csVector3 CameraManager::GetStartPosition () const
+csVector3 CameraManager::GetStartPosition ()
 {
   if (hasStartPosition)
     return startPosition;
@@ -386,7 +386,7 @@ void CameraManager::ClearStartPosition ()
   hasStartPosition = false;
 }
 
-bool CameraManager::HasStartPosition () const
+bool CameraManager::HasStartPosition ()
 {
   return hasStartPosition;
 }
@@ -402,17 +402,11 @@ void CameraManager::SwitchCameraPosition ()
 void CameraManager::SetCameraTarget (csVector3 position)
 {
   cameraTarget = position;
-  movableTarget = nullptr;
 }
 
-void CameraManager::SetCameraTarget (iMovable* target)
+csVector3 CameraManager::GetCameraTarget ()
 {
-  movableTarget = target;
-}
-
-csVector3 CameraManager::GetCameraTarget () const
-{
-  return movableTarget ? movableTarget->GetPosition () : cameraTarget;
+  return cameraTarget;
 }
 
 void CameraManager::SetCameraMinimumDistance (float distance)
@@ -420,7 +414,7 @@ void CameraManager::SetCameraMinimumDistance (float distance)
   minimumDistance = distance;
 }
 
-float CameraManager::GetCameraMinimumDistance () const
+float CameraManager::GetCameraMinimumDistance ()
 {
   return minimumDistance;
 }
@@ -430,7 +424,7 @@ void CameraManager::SetMouseMoveEnabled (bool enabled)
   mouseMoveEnabled = enabled;
 }
 
-bool CameraManager::GetMouseMoveEnabled () const
+bool CameraManager::GetMouseMoveEnabled ()
 {
   return mouseMoveEnabled;
 }
@@ -462,7 +456,7 @@ void CameraManager::SetMotionSpeed (float speed)
   motionSpeed = speed;
 }
 
-float CameraManager::GetMotionSpeed () const
+float CameraManager::GetMotionSpeed ()
 {
   return motionSpeed;
 }
@@ -472,7 +466,7 @@ void CameraManager::SetRotationSpeed (float speed)
   rotationSpeed = speed;
 }
 
-float CameraManager::GetRotationSpeed () const
+float CameraManager::GetRotationSpeed ()
 {
   return rotationSpeed;
 }
@@ -480,7 +474,6 @@ float CameraManager::GetRotationSpeed () const
 void CameraManager::UpdatePositionParameters (const csVector3& newPosition)
 {
   // Compute the distance, yaw, and pitch values from the target to the new position
-  const csVector3 cameraTarget = GetCameraTarget ();
   cameraDistance = (cameraTarget - newPosition).Norm ();
 
   if (fabs (cameraDistance) < EPSILON)
@@ -518,7 +511,7 @@ void CameraManager::ApplyPositionParameters ()
 {
   // Apply the distance, yaw, and pitch values to the camera
   csVector3 position;
-  csVector3 target = cameraModePan ? panCameraTarget : GetCameraTarget ();
+  csVector3 target = cameraModePan ? panCameraTarget : cameraTarget;
 
   position.x = target.x
     - cameraDistance * (float) cos (cameraPitch) * (float) sin (cameraYaw);

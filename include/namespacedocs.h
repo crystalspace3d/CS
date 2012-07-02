@@ -41,12 +41,6 @@ namespace CS
   {}
 
   /**
-   * Collision detection and utilities
-   */
-  namespace Collisions
-  {}
-
-  /**
    * Container classes
    */
   namespace Container
@@ -69,19 +63,6 @@ namespace CS
    * Document system / XML helper classes
    */
   namespace DocSystem
-  {}
-
-  /**
-   * General tools for the edition of Crystal Space objects.
-   */
-  namespace Editor
-  {}
-
-  /**
-   * Objects and tools specific to the Crystal Space editor. Most of
-   * these tools need the wxWidgets dependency.
-   */
-  namespace EditorApp
   {}
 
   /**

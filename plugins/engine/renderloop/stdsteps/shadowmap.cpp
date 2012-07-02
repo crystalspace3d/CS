@@ -70,7 +70,7 @@ csShadowmapRSType::csShadowmapRSType (iBase* p) :
 csPtr<iRenderStepFactory> csShadowmapRSType::NewFactory()
 {
   return csPtr<iRenderStepFactory> 
-    (new csShadowmapRenderStepFactory (this, object_reg));
+    (new csShadowmapRenderStepFactory (object_reg));
 }
 
 //---------------------------------------------------------------------------
@@ -100,7 +100,7 @@ csPtr<iBase> csShadowmapRSLoader::Parse (iDocumentNode* node,
 				       iBase*)
 {
   csShadowmapRenderStep* newstep = 
-    new csShadowmapRenderStep (this, object_reg);
+    new csShadowmapRenderStep (object_reg);
   csRef<iRenderStep> step;
   step.AttachNew (newstep);    
 
@@ -164,8 +164,8 @@ bool csShadowmapRSLoader::ParseStep (iLoaderContext* ldr_context,
 //---------------------------------------------------------------------------
 
 csShadowmapRenderStepFactory::csShadowmapRenderStepFactory (
-  iBase* scfParent, iObjectRegistry* object_reg) :
-  scfImplementationType (this, scfParent)
+  iObjectRegistry* object_reg) :
+  scfImplementationType (this)
 {
   csShadowmapRenderStepFactory::object_reg = object_reg;
 }
@@ -177,14 +177,14 @@ csShadowmapRenderStepFactory::~csShadowmapRenderStepFactory ()
 csPtr<iRenderStep> csShadowmapRenderStepFactory::Create ()
 {
   return csPtr<iRenderStep> 
-    (new csShadowmapRenderStep (this, object_reg));
+    (new csShadowmapRenderStep (object_reg));
 }
 
 //---------------------------------------------------------------------------
 
 csShadowmapRenderStep::csShadowmapRenderStep (
-  iBase* scfParent, iObjectRegistry* object_reg) :
-  scfImplementationType (this, scfParent)
+  iObjectRegistry* object_reg) :
+  scfImplementationType (this)
 {
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
   csRef<iShaderVarStringSet> strings = csQueryRegistryTagInterface<iShaderVarStringSet> 

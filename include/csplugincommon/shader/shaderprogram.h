@@ -202,22 +202,14 @@ protected:
   /// Program description
   csString description;
 
-  /**
-   * Information to obtain the program source data.
-   */
-  struct ProgramSource
-  {
-    /// iDocumentNode the program is loaded from
-    csRef<iDocumentNode> programNode;
-    /// Data buffer with program data, if loaded from external source
-    csRef<iDataBuffer> programData;
+  /// iDocumentNode the program is loaded from
+  csRef<iDocumentNode> programNode;
+  /// File the program is loaded from (if any)
+  csRef<iFile> programFile;
 
-    /// Filename of program
-    csString programFileName;
-  };
-  /// Program source information parsed by ParseCommon()
-  ProgramSource programSource;
-
+  /// Filename of program
+  csString programFileName;
+  
   /**
    * Whether the shader program should report additional information during
    * runtime.
@@ -226,26 +218,10 @@ protected:
 
   /// Parse common properties and variablemapping
   bool ParseCommon (iDocumentNode* child);
-  /// Parse a program node
-  bool ParseProgramNode (iDocumentNode* child, ProgramSource& parsedSource);
-  //@{
-  /**
-   * Get the program node.
-   * If a program file is specified will attempt to parse the program file.
-   */
-  iDocumentNode* GetProgramNode (ProgramSource& programSource);
-  iDocumentNode* GetProgramNode ()
-  { return GetProgramNode (programSource); }
-  //@}
-  //@{
-  /**
-   * Get the raw program data.
-   * If a program file is specified will return the the program file data unparsed.
-   */
-  csPtr<iDataBuffer> GetProgramData (ProgramSource& programSource);
-  csPtr<iDataBuffer> GetProgramData ()
-  { return GetProgramData (programSource); }
-  //@}
+  /// Get the program node
+  iDocumentNode* GetProgramNode ();
+  /// Get the raw program data
+  csPtr<iDataBuffer> GetProgramData ();
 
   /// Dump all program info to output
   void DumpProgramInfo (csString& output);

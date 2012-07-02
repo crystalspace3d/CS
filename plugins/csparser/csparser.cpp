@@ -456,11 +456,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     return true;
   }
 
-  csPtr<iLight> csThreadedLoader::ParseStatlight (iLoaderContext* ldr_context,
+  iLight* csThreadedLoader::ParseStatlight (iLoaderContext* ldr_context,
     iDocumentNode* node)
   {
     const char* lightname = node->GetAttributeValue ("name");
-    iLightFactory* lightFactory = 0;
 
     csVector3 pos;
 
@@ -476,12 +475,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     float distbright = 1;
 
     float influenceRadius = 0;
+    bool influenceOverride = false;
 
     csLightAttenuationMode attenuation = CS_ATTN_LINEAR;
     float dist = 0;
 
     csColor color;
     csColor specular (0, 0, 0);
+    bool userSpecular = false;
     csLightDynamicType dyn;
     csRefArray<csShaderVariable> shader_variables;
     struct csHaloDef
@@ -524,15 +525,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
 
     dist = 1;
 
-    bool typeGiven = false;
-    bool radiusGiven = false;
-    bool colorGiven = false;
-    bool userSpecular = false;
-    bool dynamicGiven = false;
-    bool attenuationGiven = false;
-    bool influenceOverride = false;
-    bool flagsGiven = false;
-    bool spotlightGiven = false;
 
     csRef<iDocumentNodeIterator> it = node->GetNodes ();
     while (it->HasNext ())
@@ -543,29 +535,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
       csStringID id = xmltokens.Request (value);
       switch (id)
       {
-      case XMLTOKEN_FACTORY:
-	{
-          lightFactory = ldr_context->FindLightFactory (
-            child->GetContentsValue ());
-          if (!lightFactory)
-          {
-            SyntaxService->ReportError (
-              "crystalspace.maploader.load.light",
-              child, "Can't find light factory %s!", CS::Quote::Single (child->GetContentsValue ()));
-            return 0;
-          }
-	}
-	break;
       case XMLTOKEN_RADIUS:
         {
-	  radiusGiven = true;
           dist = child->GetContentsValueAsFloat ();
           csRef<iDocumentAttribute> attr;
           if (attr = child->GetAttribute ("brightness"))
           {
             distbright = attr->GetValueAsFloat();
-            ReportWarning ("crystalspace.maploader",
-              "'brightness' attribute for lights is deprecated!");
           }
         }
         break;
@@ -574,7 +550,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
           return 0;
         break;
       case XMLTOKEN_COLOR:
-	colorGiven = true;
         if (!SyntaxService->ParseColor (child, color))
           return 0;
         break;
@@ -585,7 +560,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         break;
       case XMLTOKEN_DYNAMIC:
         {
-	  dynamicGiven = true;
           bool d;
           if (!SyntaxService->ParseBool (child, d, true))
             return 0;
@@ -597,7 +571,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         break;
       case XMLTOKEN_KEY:
         if (!ParseKey (child, &Keys))
-          return 0;
+          return false;
         break;
       case XMLTOKEN_HALO:
         {
@@ -734,7 +708,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         break;
       case XMLTOKEN_ATTENUATION:
         {
-	  attenuationGiven = true;
           const char* att = child->GetContentsValue();
           if (att)
           {
@@ -772,7 +745,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         break;
       case XMLTOKEN_ATTENUATIONVECTOR:
         {
-	  attenuationGiven = true;
           //@@@ should be scrapped in favor of specification via
           // "attenuation".
           if (!SyntaxService->ParseVector (child, attenvec))
@@ -782,7 +754,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         break;
       case XMLTOKEN_TYPE:
         {
-	  typeGiven = true;
           const char* t = child->GetContentsValue ();
           if (t)
           {
@@ -808,7 +779,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
           {
             csMatrix3 m;
             if (!SyntaxService->ParseMatrix (matrix_node, m))
-              return 0;
+              return false;
             light_transf.SetO2T (m);
           }
           csRef<iDocumentNode> vector_node = child->GetNode ("v");
@@ -816,7 +787,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
           {
             csVector3 v;
             if (!SyntaxService->ParseVector (vector_node, v))
-              return 0;
+              return false;
             use_light_transf_vector = true;
             light_transf.SetO2TTranslation (v);
           }
@@ -829,7 +800,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         return 0;
       case XMLTOKEN_SPOTLIGHTFALLOFF:
         {
-	  spotlightGiven = true;
           spotfalloffInner = child->GetAttributeValueAsFloat ("inner");
           spotfalloffInner *= (PI/180);
           spotfalloffInner = cosf(spotfalloffInner);
@@ -858,10 +828,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         break;
       case XMLTOKEN_NOSHADOWS:
         {
-	  flagsGiven = true;
           bool flag;
           if (!SyntaxService->ParseBool (child, flag, true))
-            return 0;
+            return false;
           lightFlags.SetBool (CS_LIGHT_NOSHADOWS, flag);
         }
         break;
@@ -879,18 +848,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
       else dist = color.blue;
     }
 
-    csRef<iLight> l;
-    if (lightFactory)
-      l = Engine->CreateLight (lightname, pos, lightFactory);
-    else
-      l = Engine->CreateLight (lightname, pos, dist, color, dyn);
+    csRef<iLight> l = Engine->CreateLight (lightname, pos,
+      dist, color, dyn);
     ldr_context->AddToCollection(l->QueryObject ());
-    if (!lightFactory || typeGiven)
-      l->SetType (type);
-    if (!lightFactory || flagsGiven)
-      l->GetFlags() = lightFlags;
-    if (!lightFactory || spotlightGiven)
-      l->SetSpotLightFalloff (spotfalloffInner, spotfalloffOuter);
+    l->SetType (type);
+    l->GetFlags() = lightFlags;
+    l->SetSpotLightFalloff (spotfalloffInner, spotfalloffOuter);
 
     for (size_t i = 0; i < shader_variables.GetSize (); i++)
     {
@@ -944,32 +907,28 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
       }
       break;
     }
-    if (!lightFactory || attenuationGiven)
+    l->SetAttenuationMode (attenuation);
+    if (attenuation == CS_ATTN_CLQ)
     {
-      l->SetAttenuationMode (attenuation);
-      if (attenuation == CS_ATTN_CLQ)
+      if (attenvec.IsZero())
       {
-        if (attenvec.IsZero())
-        {
-          //@@TODO:
-        }
-        else
-        {
-          l->SetAttenuationConstants (csVector4 (attenvec, 0));
-        }
+        //@@TODO:
+      }
+      else
+      {
+        l->SetAttenuationConstants (csVector4 (attenvec, 0));
       }
     }
 
-    if (influenceOverride)
-      l->SetCutoffDistance (influenceRadius);
-    else if (!lightFactory || radiusGiven)
-      l->SetCutoffDistance (dist);
+    if (influenceOverride) l->SetCutoffDistance (influenceRadius);
+    else l->SetCutoffDistance (dist);
 
     // Move the key-value pairs from 'Keys' to the light object
     l->QueryObject ()->ObjAddChildren (&Keys);
     Keys.ObjRemoveAll ();
 
-    return csPtr<iLight> (l);
+    l->IncRef ();	// To make sure smart pointer doesn't release.
+    return l;
   }
 
   bool csThreadedLoader::ParseShaderList (csLoaderContext* ldr_context)
@@ -1371,10 +1330,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         break;
       case XMLTOKEN_LIGHT:
         {
-          csRef<iLight> sl = ParseStatlight (ldr_context, child);
+          iLight* sl = ParseStatlight (ldr_context, child);
           if (!sl) return 0;
           AddLightToList(sl, sl->QueryObject()->GetName());
           threadReturns.Push(sector->AddLight (sl));
+          sl->DecRef ();
         }
         break;
       case XMLTOKEN_NODE:

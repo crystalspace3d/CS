@@ -1532,32 +1532,20 @@
 				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\beautify.cpp">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\beautify_cg.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_cg.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_common.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_glsl.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\beautify.h">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\beautify_cg.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_cg.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_common.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_glsl.h">
 			</File>
 		</Filter>
 		<Filter
@@ -1571,7 +1559,7 @@
 			Name="Other Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_common.tok">
+				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\combiner_cg.tok">
 			</File>
 			<File
 				RelativePath="..\..\plugins\video\render3d\shader\shaderplugins\slcombiner\slcombiner.csplugin">

@@ -32,7 +32,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 
   class csXMLShaderCompiler;
   class csXMLShader;
-  class csXMLShaderWrapper;
 
   struct CachedPlugin;
   struct CachedPlugins;
@@ -42,7 +41,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
   {
   private:
     friend class csXMLShader;
-    friend class csXMLShaderWrapper;
     friend struct PassActionPrecache;
 
     struct ShaderPassPerTag : public CS::Memory::CustomAllocated
@@ -93,10 +91,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       };
       csArray<TextureMapping> textures;
 
-      // Program that describes (almost) the whole pipeline using shaders:
-      // vertex, fragment, etc.
-      csRef<iShaderProgram> program;
-      // Hook
+      // programs
+      csRef<iShaderProgram> vp;
+      csRef<iShaderProgram> fp;
       csRef<iShaderProgram> vproc;
 
     };
@@ -183,9 +180,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       iShaderDestinationResolver* resolveVP);
     bool ParseTextures (ShaderPassPerTag& pass, 
       iDocumentNode* node, LoadHelpers& helpers, iShaderDestinationResolver* resolveFP);
-    bool ParseInstances (ShaderPassPerTag& pass, int passNum,
-      iDocumentNode* node, LoadHelpers& helpers, 
-      iShaderDestinationResolver* resolveFP, iShaderDestinationResolver* resolveVP);
 
     bool WritePass (ShaderPass* pass, const CachedPlugins& plugins,
       iFile* cacheFile);
@@ -195,6 +189,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
     bool ReadPass (ShaderPass* pass, iFile* cacheFile,
       CachedPlugins& plugins);
 
+    bool WritePassPerTag (const ShaderPassPerTag& pass, 
+      iFile* cacheFile);
+    bool ReadPassPerTag (ShaderPassPerTag& pass, iFile* cacheFile);
+    
     bool WriteShadervarName (CS::ShaderVarStringID svid, iFile* cacheFile);
     CS::ShaderVarStringID ReadShadervarName (iFile* cacheFile);
 
@@ -212,13 +210,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
   	iDocumentNode *node, size_t variant,
         iHierarchicalCache* cacheTo, CachedPlugin& cacheInfo,
         csRef<iBase>& progObj, const char* tag);
-  bool GetProgramPlugins (iDocumentNode *node, CachedPlugins& cacheInfo,
+  void GetProgramPlugins (iDocumentNode *node, CachedPlugins& cacheInfo,
     size_t variant);
-  bool GetProgramPlugin (iDocumentNode *node, CachedPlugin& cacheInfo,
+  void GetProgramPlugin (iDocumentNode *node, CachedPlugin& cacheInfo,
     size_t variant);
   
   iShaderProgram::CacheLoadResult LoadProgramFromCache (iBase* previous,
-    iHierarchicalCache* cache, const CachedPlugin& cacheInfo,
+    size_t variant, iHierarchicalCache* cache, const CachedPlugin& cacheInfo,
     csRef<iShaderProgram>& prog, csString& tag, int passNumber);
   // Set reason for failure.
   void SetFailReason (const char* reason, ...) CS_GNUC_PRINTF (2, 3);

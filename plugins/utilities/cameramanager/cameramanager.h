@@ -25,10 +25,8 @@
 #include "csgeom/vector3.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/eventhandlers.h"
-#include "csutil/weakref.h"
 #include "iengine/camera.h"
 #include "iengine/engine.h"
-#include "iengine/movable.h"
 #include "iutil/comp.h"
 #include "iutil/csinput.h"
 #include "iutil/eventh.h"
@@ -64,31 +62,30 @@ public:
   virtual iCamera* GetCamera ();
 
   virtual void SetCameraMode (CS::Utility::CameraMode cameraMode);
-  virtual CS::Utility::CameraMode GetCameraMode () const;
+  virtual CS::Utility::CameraMode GetCameraMode ();
 
   virtual void SetStartPosition (csVector3 position);
-  virtual csVector3 GetStartPosition () const;
+  virtual csVector3 GetStartPosition ();
   virtual void ClearStartPosition ();
-  virtual bool HasStartPosition () const;
+  virtual bool HasStartPosition ();
   virtual void SwitchCameraPosition ();
 
   virtual void SetCameraTarget (csVector3 position);
-  virtual void SetCameraTarget (iMovable* target);
-  virtual csVector3 GetCameraTarget () const;
+  virtual csVector3 GetCameraTarget ();
 
   virtual void SetCameraMinimumDistance (float distance);
-  virtual float GetCameraMinimumDistance () const;
+  virtual float GetCameraMinimumDistance ();
 
   virtual void SetMouseMoveEnabled (bool enabled);
-  virtual bool GetMouseMoveEnabled () const;
+  virtual bool GetMouseMoveEnabled ();
 
   virtual void ResetCamera ();
 
   virtual void SetMotionSpeed (float speed);
-  virtual float GetMotionSpeed () const;
+  virtual float GetMotionSpeed ();
 
   virtual void SetRotationSpeed (float speed);
-  virtual float GetRotationSpeed () const;
+  virtual float GetRotationSpeed ();
 
 private:
   void Frame ();
@@ -123,7 +120,6 @@ private:
   size_t currentCameraPosition;  
 
   csVector3 cameraTarget;
-  csWeakRef<iMovable> movableTarget;
   float minimumDistance;
 
   csVector3 panCameraTarget;

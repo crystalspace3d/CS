@@ -37,8 +37,8 @@
 
 #include "cstool/rendermeshlist.h"
 
-#include "basesteptype.h"
-#include "basesteploader.h"
+#include "csplugincommon/renderstep/basesteptype.h"
+#include "csplugincommon/renderstep/basesteploader.h"
 
 class csGenericRSType :
   public scfImplementationExt0<csGenericRSType, csBaseRenderStepType>
@@ -73,7 +73,7 @@ private:
   iObjectRegistry* object_reg;
 
 public:
-  csGenericRenderStepFactory (iBase* scfParent, iObjectRegistry* object_reg);
+  csGenericRenderStepFactory (iObjectRegistry* object_reg);
   virtual ~csGenericRenderStepFactory ();
 
   virtual csPtr<iRenderStep> Create ();
@@ -134,7 +134,7 @@ private:
   static CS::ShaderVarStringID light_ambient;
 
 public:
-  csGenericRenderStep (iBase* scfParent, iObjectRegistry* object_reg);
+  csGenericRenderStep (iObjectRegistry* object_reg);
   virtual ~csGenericRenderStep ();
 
   virtual void Perform (iRenderView* rview, iSector* sector,

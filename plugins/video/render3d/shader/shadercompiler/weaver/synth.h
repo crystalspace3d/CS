@@ -152,11 +152,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	CS::PluginCommon::ShaderWeaver::iCombiner* combiner,
 	const Snippet::Technique*& outTechnique,
 	Snippet::Technique::Output& theOutput);
-      bool FindExplicitOutput (const TechniqueGraph& graph,
-	const char* outputName, const char* desiredType,
-	CS::PluginCommon::ShaderWeaver::iCombiner* combiner,
-	const Snippet::Technique*& outTechnique,
-	Snippet::Technique::Output& theOutput);
 	
       typedef csSet<csConstPtrKey<Snippet::Technique::Output> > UsedOutputsHash;
       bool FindInput (const TechniqueGraph& graph,
@@ -178,13 +173,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       CS::PluginCommon::ShaderWeaver::iCombiner* GetCombiner (
 	CS::PluginCommon::ShaderWeaver::iCombiner* used, 
 	const Snippet::Technique::CombinerPlugin& comb,
-	const char* requestedName,
-        const Snippet::Technique* tech);
+	const Snippet::Technique::CombinerPlugin& requested,
+	const char* requestedName);
       
       csString GetInputTag (CS::PluginCommon::ShaderWeaver::iCombiner* combiner,
 	const Snippet::Technique::CombinerPlugin& comb,
-	const Snippet::Technique::Input& input,
-    const Snippet::Technique* tech);
+	const Snippet::Technique::CombinerPlugin& combTech,
+	const Snippet::Technique::Input& input);
 	
       csPtr<iDocumentNode> EncloseInCondition (iDocumentNode* node,
         const char* condition) const;

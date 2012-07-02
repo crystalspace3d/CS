@@ -999,13 +999,13 @@ public:
   }
 
   /// Get Min component for 0 (x), 1 (y), or 2 (z).
-  inline float GetMin (size_t idx) const
+  inline float GetMin (size_t idx)
   {
     return minbox[idx];
   }
 
   /// Get Max component for 0 (x), 1 (y), or 2 (z).
-  inline float GetMax (size_t idx) const
+  inline float GetMax (size_t idx)
   {
     return maxbox[idx];
   }

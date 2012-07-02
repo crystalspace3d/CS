@@ -585,7 +585,7 @@ struct SoftBodyHelper
 
     // Create the vertices of the genmesh
     size_t vertexCount = cloth->GetVertexCount ();
-    gmstate->SetVertexCount (int (vertexCount * 2));
+    gmstate->SetVertexCount (vertexCount * 2);
     csVector3* vertices = gmstate->GetVertices ();
     for (size_t i = 0; i < vertexCount; i++)
     {
@@ -594,15 +594,15 @@ struct SoftBodyHelper
     }
 
     // Create the triangles of the genmesh
-    gmstate->SetTriangleCount (int (cloth->GetTriangleCount () * 2));
+    gmstate->SetTriangleCount (cloth->GetTriangleCount () * 2);
     csTriangle* triangles = gmstate->GetTriangles ();
     for (size_t i = 0; i < cloth->GetTriangleCount (); i++)
     {
       csTriangle triangle = cloth->GetTriangle (i);
       triangles[i * 2] = triangle;
-      triangles[i * 2 + 1] = csTriangle (int (triangle[2] + vertexCount),
-					 int (triangle[1] + vertexCount),
-					 int (triangle[0] + vertexCount));
+      triangles[i * 2 + 1] = csTriangle (triangle[2] + vertexCount,
+					 triangle[1] + vertexCount,
+					 triangle[0] + vertexCount);
     }
 
     gmstate->CalculateNormals ();
@@ -734,7 +734,7 @@ struct iKinematicCallback : public virtual iBase
  */
 struct iPivotJoint : public virtual iBase
 {
-  SCF_INTERFACE (CS::Physics::Bullet::iPivotJoint, 1, 0, 1);
+  SCF_INTERFACE (CS::Physics::Bullet::iPivotJoint, 1, 0, 0);
 
   /**
    * Attach a rigid body to the joint.
@@ -757,18 +757,6 @@ struct iPivotJoint : public virtual iBase
    * Get the current position of the joint, in world coordinates.
    */
   virtual csVector3 GetPosition () const = 0;
-
-  /**
-   * Set pivot joint parameters.
-   */
-  virtual void SetParameters (float impulseClamp, float tau, float damping) = 0;
-
-  /// Get impulse clamp.
-  virtual float GetImpulseClamp () const = 0;
-  /// Get tau.
-  virtual float GetTau () const = 0;
-  /// Get damping.
-  virtual float GetDamping () const = 0;
 };
 
 /**

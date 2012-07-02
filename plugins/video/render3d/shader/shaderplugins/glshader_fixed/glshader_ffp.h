@@ -42,7 +42,7 @@ private:
 
   csWeakRef<iGraphics3D> g3d;
   csGLExtensionManager* ext;
-  csRef<csGLShader_FIXED> shaderPlug;
+  csGLShader_FIXED* shaderPlug;
 
   csGLStateCache* statecache;
 
@@ -157,7 +157,7 @@ public:
 
   /// Loads from raw text
   virtual bool Load (iShaderDestinationResolver*, const char*, 
-    const csArray<csShaderVarMapping> &)
+    csArray<csShaderVarMapping> &)
   { return false; }
 
   /// Compile a program

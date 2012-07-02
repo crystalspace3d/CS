@@ -369,7 +369,6 @@ csPtr<iBase> csGeneralFactoryLoader::Parse (iDocumentNode* node,
   bool auto_normals = false;
   bool auto_normals_nocompress = false;
   bool compress = false;
-  csRefArray<csShaderVariable> shadervars;
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -424,25 +423,17 @@ csPtr<iBase> csGeneralFactoryLoader::Parse (iDocumentNode* node,
 	break;
       case XMLTOKEN_MATERIAL:
 	{
-	  const char* matname = child->GetContentsValue ();
-	  iMaterialWrapper* mat = ldr_context->FindMaterial (matname);
-	  if (!mat)
-	  {
-	    synldr->ReportError (
-	      "crystalspace.genmeshfactoryloader.parse.unknownmaterial",
-	      child, "Couldn't find material %s!", CS::Quote::Single (matname));
-	    return 0;
-	  }
-	  fact->SetMaterialWrapper (mat);
-	}
-	break;
-      case XMLTOKEN_SHADERVAR:
-	{
-	  csRef<csShaderVariable> sv;
-	  sv.AttachNew (new csShaderVariable);
-	  if (!synldr->ParseShaderVar (ldr_context, child, *sv)) return 0;
-	  shadervars.Push (sv);
-	}
+    const char* matname = child->GetContentsValue ();
+    iMaterialWrapper* mat = ldr_context->FindMaterial (matname);
+    if (!mat)
+    {
+      synldr->ReportError (
+        "crystalspace.genmeshfactoryloader.parse.unknownmaterial",
+        child, "Couldn't find material %s!", CS::Quote::Single (matname));
+      return 0;
+    }
+    fact->SetMaterialWrapper (mat);
+  }
 	break;
       case XMLTOKEN_BOX:
         {
@@ -872,15 +863,6 @@ csPtr<iBase> csGeneralFactoryLoader::Parse (iDocumentNode* node,
     state->Compress ();
   if (auto_normals)
     state->CalculateNormals (!auto_normals_nocompress);
-
-  if (shadervars.GetSize () && state->GetSubMeshCount ())
-  {
-    iGeneralMeshSubMesh* submesh = state->GetSubMesh (0);
-    csRef<iShaderVariableContext> svc = 
-      scfQueryInterface<iShaderVariableContext> (submesh);
-    for (size_t i = 0; i < shadervars.GetSize(); i++)
-      svc->AddVariable (shadervars[i]);
-  }
 
   return csPtr<iBase> (fact);
 }

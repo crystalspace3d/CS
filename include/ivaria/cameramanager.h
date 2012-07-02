@@ -33,7 +33,6 @@
 #include "csutil/scf.h"
 
 struct iCamera;
-struct iMovable;
 class csVector3;
 
 namespace CS {
@@ -61,7 +60,7 @@ enum CameraMode
  */
 struct iCameraManager : public virtual iBase
 {
-  SCF_INTERFACE (CS::Utility::iCameraManager, 2, 0, 0);
+  SCF_INTERFACE (CS::Utility::iCameraManager, 1, 0, 0);
 
   /// Set the camera to be controlled by this manager. This can be nullptr.
   virtual void SetCamera (iCamera* camera) = 0;
@@ -71,7 +70,7 @@ struct iCameraManager : public virtual iBase
   /// Set the camera mode to be used. The default value is CS::Utility::CAMERA_MOVE_NORMAL.
   virtual void SetCameraMode (CameraMode cameraMode) = 0;
   /// Return the current camera mode.
-  virtual CameraMode GetCameraMode () const = 0;
+  virtual CameraMode GetCameraMode () = 0;
 
   /**
    * Set the starting position of the camera. This position is used when ResetCamera() is called.
@@ -82,7 +81,7 @@ struct iCameraManager : public virtual iBase
   /**
    * Get the starting position of the camera. This position is used when ResetCamera() is called.
    */
-  virtual csVector3 GetStartPosition () const = 0;
+  virtual csVector3 GetStartPosition () = 0;
 
   /**
    * Clear the starting position of the camera. The next calls to ResetCamera() will now use the
@@ -93,7 +92,7 @@ struct iCameraManager : public virtual iBase
   /**
    * Return whether or not a starting position has been defined by SetStartPosition().
    */
-  virtual bool HasStartPosition () const = 0;
+  virtual bool HasStartPosition () = 0;
 
   /**
    * Switch to the next engine camera position (see iEngine::GetCameraPositions()). This position
@@ -112,10 +111,9 @@ struct iCameraManager : public virtual iBase
   /**
    * Get the target of the camera, ie what it is looking at. This is relevant
    * only for the CS::Utility::CAMERA_MOVE_LOOKAT and CS::Utility::CAMERA_ROTATE camera
-   * modes. If the target of the camera is a iMovable, then this method will return the
-   * current position of the iMovable.
+   * modes.
    */
-  virtual csVector3 GetCameraTarget () const = 0;
+  virtual csVector3 GetCameraTarget () = 0;
 
   /**
    * Set the closest distance there can be between the camera and its
@@ -129,7 +127,7 @@ struct iCameraManager : public virtual iBase
    * target. This is relevant only for the CS::Utility::CAMERA_MOVE_LOOKAT and
    * CS::Utility::CAMERA_ROTATE camera modes.
    */
-  virtual float GetCameraMinimumDistance () const = 0;
+  virtual float GetCameraMinimumDistance () = 0;
 
   /**
    * Set whether the camera can be moved or not through the mouse.
@@ -147,7 +145,7 @@ struct iCameraManager : public virtual iBase
   /**
    * Return whether the camera can be moved or not through the mouse.
    */
-  virtual bool GetMouseMoveEnabled () const = 0;
+  virtual bool GetMouseMoveEnabled () = 0;
 
   /**
    * Reset the camera position to its initial position. This position is either the one defined by
@@ -165,7 +163,7 @@ struct iCameraManager : public virtual iBase
   /**
    * Get the speed of the camera's motion, in unit per second.
    */
-  virtual float GetMotionSpeed () const = 0;
+  virtual float GetMotionSpeed () = 0;
 
   /**
    * Set the rotation speed of the camera, in radian per second. The default value is 2.
@@ -176,14 +174,7 @@ struct iCameraManager : public virtual iBase
   /**
    * Get the speed of the camera's motion, in radian per second.
    */
-  virtual float GetRotationSpeed () const = 0;
-
-  /**
-   * Set the target of the camera, ie what it is looking at. This is relevant
-   * only for the CS::Utility::CAMERA_MOVE_LOOKAT and CS::Utility::CAMERA_ROTATE camera
-   * modes.
-   */
-  virtual void SetCameraTarget (iMovable* target) = 0;
+  virtual float GetRotationSpeed () = 0;
 };
 
 } //namespace Utility

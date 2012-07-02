@@ -30,7 +30,6 @@ struct iCameraPosition;
 struct iMaterialWrapper;
 struct iMeshWrapper;
 struct iMeshFactoryWrapper;
-struct iLightFactory;
 struct iObject;
 struct iSector;
 struct iTextureWrapper;
@@ -87,12 +86,6 @@ struct iCollection : public virtual iBase
    * nullptr if the mesh factory is not found.
    */
   virtual iMeshFactoryWrapper* FindMeshFactory (const char *name) = 0;
-
-  /**
-   * Find the light factory with the given name in this collection. Returns
-   * nullptr if the light factory is not found.
-   */
-  virtual iLightFactory* FindLightFactory (const char *name) = 0;
 
   /**
    * Find the texture with the given name in this collection. Returns

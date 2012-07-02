@@ -288,12 +288,3 @@ These are the objects @code{CS::Animation::iSkeletonDebugNode} and
 This node currently simply allows to display the state of part or the whole skeleton. It
 is useful if you want to visualize either the skeleton of your mesh or the actual effects
 of the animations and animation nodes that you have defined.
-
-@subsubheading Noise
-
-These are the objects @code{CS::Animation::iSkeletonNoiseNode} and
-@code{CS::Animation::iSkeletonNoiseNodeFactory}.
-
-This node can generate animations through pseudo-random noise functions such as
-the Perlin noise. This allows to breathe life into an entity by adding some random
-variations in its motion.

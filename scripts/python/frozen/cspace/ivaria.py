@@ -684,6 +684,14 @@ class iRigidBody(core.iBase):
 iRigidBody_swigregister = _ivaria.iRigidBody_swigregister
 iRigidBody_swigregister(iRigidBody)
 
+NO_GEOMETRY = _ivaria.NO_GEOMETRY
+BOX_COLLIDER_GEOMETRY = _ivaria.BOX_COLLIDER_GEOMETRY
+PLANE_COLLIDER_GEOMETRY = _ivaria.PLANE_COLLIDER_GEOMETRY
+TRIMESH_COLLIDER_GEOMETRY = _ivaria.TRIMESH_COLLIDER_GEOMETRY
+CONVEXMESH_COLLIDER_GEOMETRY = _ivaria.CONVEXMESH_COLLIDER_GEOMETRY
+CYLINDER_COLLIDER_GEOMETRY = _ivaria.CYLINDER_COLLIDER_GEOMETRY
+CAPSULE_COLLIDER_GEOMETRY = _ivaria.CAPSULE_COLLIDER_GEOMETRY
+SPHERE_COLLIDER_GEOMETRY = _ivaria.SPHERE_COLLIDER_GEOMETRY
 class iDynamicsColliderCollisionCallback(core.iBase):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
@@ -1351,172 +1359,6 @@ iSequenceManager_swigregister = _ivaria.iSequenceManager_swigregister
 iSequenceManager_swigregister(iSequenceManager)
 iSequenceManager_scfGetVersion = _ivaria.iSequenceManager_scfGetVersion
 iSequenceManager_scfGetName = _ivaria.iSequenceManager_scfGetName
-
-class iImageModifier(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def GetName(*args): return _ivaria.iImageModifier_GetName(*args)
-    def Modify(*args): return _ivaria.iImageModifier_Modify(*args)
-    scfGetVersion = staticmethod(_ivaria.iImageModifier_scfGetVersion)
-    scfGetName = staticmethod(_ivaria.iImageModifier_scfGetName)
-    __swig_destroy__ = _ivaria.delete_iImageModifier
-    __del__ = lambda self : None;
-iImageModifier_swigregister = _ivaria.iImageModifier_swigregister
-iImageModifier_swigregister(iImageModifier)
-iImageModifier_scfGetVersion = _ivaria.iImageModifier_scfGetVersion
-iImageModifier_scfGetName = _ivaria.iImageModifier_scfGetName
-
-class iBlobImage(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    scfGetVersion = staticmethod(_ivaria.iBlobImage_scfGetVersion)
-    scfGetName = staticmethod(_ivaria.iBlobImage_scfGetName)
-    __swig_destroy__ = _ivaria.delete_iBlobImage
-    __del__ = lambda self : None;
-iBlobImage_swigregister = _ivaria.iBlobImage_swigregister
-iBlobImage_swigregister(iBlobImage)
-iBlobImage_scfGetVersion = _ivaria.iBlobImage_scfGetVersion
-iBlobImage_scfGetName = _ivaria.iBlobImage_scfGetName
-
-class iMovingObject(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def SetViewPort(*args): return _ivaria.iMovingObject_SetViewPort(*args)
-    def GetViewPort(*args): return _ivaria.iMovingObject_GetViewPort(*args)
-    def GetID(*args): return _ivaria.iMovingObject_GetID(*args)
-    def GetName(*args): return _ivaria.iMovingObject_GetName(*args)
-    def GetLayer(*args): return _ivaria.iMovingObject_GetLayer(*args)
-    def Update(*args): return _ivaria.iMovingObject_Update(*args)
-    def Draw(*args): return _ivaria.iMovingObject_Draw(*args)
-    def Move(*args): return _ivaria.iMovingObject_Move(*args)
-    def Scale(*args): return _ivaria.iMovingObject_Scale(*args)
-    def In(*args): return _ivaria.iMovingObject_In(*args)
-    def GetX(*args): return _ivaria.iMovingObject_GetX(*args)
-    def GetY(*args): return _ivaria.iMovingObject_GetY(*args)
-    def GetWidth(*args): return _ivaria.iMovingObject_GetWidth(*args)
-    def GetHeight(*args): return _ivaria.iMovingObject_GetHeight(*args)
-    def GetRealX(*args): return _ivaria.iMovingObject_GetRealX(*args)
-    def GetRealY(*args): return _ivaria.iMovingObject_GetRealY(*args)
-    def Hide(*args): return _ivaria.iMovingObject_Hide(*args)
-    def Show(*args): return _ivaria.iMovingObject_Show(*args)
-    def IsHidden(*args): return _ivaria.iMovingObject_IsHidden(*args)
-    def SetClickable(*args): return _ivaria.iMovingObject_SetClickable(*args)
-    def IsClickable(*args): return _ivaria.iMovingObject_IsClickable(*args)
-    def SetLineMover(*args): return _ivaria.iMovingObject_SetLineMover(*args)
-    def SetPathMover(*args): return _ivaria.iMovingObject_SetPathMover(*args)
-    def AddPathSegment(*args): return _ivaria.iMovingObject_AddPathSegment(*args)
-    scfGetVersion = staticmethod(_ivaria.iMovingObject_scfGetVersion)
-    scfGetName = staticmethod(_ivaria.iMovingObject_scfGetName)
-    __swig_destroy__ = _ivaria.delete_iMovingObject
-    __del__ = lambda self : None;
-iMovingObject_swigregister = _ivaria.iMovingObject_swigregister
-iMovingObject_swigregister(iMovingObject)
-iMovingObject_scfGetVersion = _ivaria.iMovingObject_scfGetVersion
-iMovingObject_scfGetName = _ivaria.iMovingObject_scfGetName
-
-class iGeom(iMovingObject):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Box(*args): return _ivaria.iGeom_Box(*args)
-    def Line(*args): return _ivaria.iGeom_Line(*args)
-    def Text(*args): return _ivaria.iGeom_Text(*args)
-    def Blob(*args): return _ivaria.iGeom_Blob(*args)
-    def Remove(*args): return _ivaria.iGeom_Remove(*args)
-    def ChangeColor(*args): return _ivaria.iGeom_ChangeColor(*args)
-    def ChangeText(*args): return _ivaria.iGeom_ChangeText(*args)
-    def ChangeBlobImage(*args): return _ivaria.iGeom_ChangeBlobImage(*args)
-    def ScaleGeom(*args): return _ivaria.iGeom_ScaleGeom(*args)
-    def GetGeomWidth(*args): return _ivaria.iGeom_GetGeomWidth(*args)
-    def GetGeomHeight(*args): return _ivaria.iGeom_GetGeomHeight(*args)
-    scfGetVersion = staticmethod(_ivaria.iGeom_scfGetVersion)
-    scfGetName = staticmethod(_ivaria.iGeom_scfGetName)
-    __swig_destroy__ = _ivaria.delete_iGeom
-    __del__ = lambda self : None;
-iGeom_swigregister = _ivaria.iGeom_swigregister
-iGeom_swigregister(iGeom)
-iGeom_scfGetVersion = _ivaria.iGeom_scfGetVersion
-iGeom_scfGetName = _ivaria.iGeom_scfGetName
-
-class iBlob(iMovingObject):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def AddImage(*args): return _ivaria.iBlob_AddImage(*args)
-    def RemoveSecondaryImages(*args): return _ivaria.iBlob_RemoveSecondaryImages(*args)
-    def SetModifier(*args): return _ivaria.iBlob_SetModifier(*args)
-    def ClearModifier(*args): return _ivaria.iBlob_ClearModifier(*args)
-    def SetAlpha(*args): return _ivaria.iBlob_SetAlpha(*args)
-    def AnimateAlpha(*args): return _ivaria.iBlob_AnimateAlpha(*args)
-    def SetHorizontalSwap(*args): return _ivaria.iBlob_SetHorizontalSwap(*args)
-    def AddAnimationImage(*args): return _ivaria.iBlob_AddAnimationImage(*args)
-    def PlayAnimation(*args): return _ivaria.iBlob_PlayAnimation(*args)
-    def StopAnimations(*args): return _ivaria.iBlob_StopAnimations(*args)
-    scfGetVersion = staticmethod(_ivaria.iBlob_scfGetVersion)
-    scfGetName = staticmethod(_ivaria.iBlob_scfGetName)
-    __swig_destroy__ = _ivaria.delete_iBlob
-    __del__ = lambda self : None;
-iBlob_swigregister = _ivaria.iBlob_swigregister
-iBlob_swigregister(iBlob)
-iBlob_scfGetVersion = _ivaria.iBlob_scfGetVersion
-iBlob_scfGetName = _ivaria.iBlob_scfGetName
-
-class iBlobViewPort(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def SetScrollSpeed(*args): return _ivaria.iBlobViewPort_SetScrollSpeed(*args)
-    def GetScrollSpeed(*args): return _ivaria.iBlobViewPort_GetScrollSpeed(*args)
-    def Scroll(*args): return _ivaria.iBlobViewPort_Scroll(*args)
-    def GetScrollX(*args): return _ivaria.iBlobViewPort_GetScrollX(*args)
-    def GetScrollY(*args): return _ivaria.iBlobViewPort_GetScrollY(*args)
-    def ScrollRelative(*args): return _ivaria.iBlobViewPort_ScrollRelative(*args)
-    def ScrollVisible(*args): return _ivaria.iBlobViewPort_ScrollVisible(*args)
-    def ClearModifier(*args): return _ivaria.iBlobViewPort_ClearModifier(*args)
-    def SetModifier(*args): return _ivaria.iBlobViewPort_SetModifier(*args)
-    scfGetVersion = staticmethod(_ivaria.iBlobViewPort_scfGetVersion)
-    scfGetName = staticmethod(_ivaria.iBlobViewPort_scfGetName)
-    __swig_destroy__ = _ivaria.delete_iBlobViewPort
-    __del__ = lambda self : None;
-iBlobViewPort_swigregister = _ivaria.iBlobViewPort_swigregister
-iBlobViewPort_swigregister(iBlobViewPort)
-iBlobViewPort_scfGetVersion = _ivaria.iBlobViewPort_scfGetVersion
-iBlobViewPort_scfGetName = _ivaria.iBlobViewPort_scfGetName
-
-class iBlobManager(core.iBase):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
-    __repr__ = _swig_repr
-    def Update(*args): return _ivaria.iBlobManager_Update(*args)
-    def GetGrayScaleImageModifier(*args): return _ivaria.iBlobManager_GetGrayScaleImageModifier(*args)
-    def GetColorizedImageModifier(*args): return _ivaria.iBlobManager_GetColorizedImageModifier(*args)
-    def GetBlurImageModifier(*args): return _ivaria.iBlobManager_GetBlurImageModifier(*args)
-    def GetCombinedImageModifier(*args): return _ivaria.iBlobManager_GetCombinedImageModifier(*args)
-    def LoadTexture(*args): return _ivaria.iBlobManager_LoadTexture(*args)
-    def MapTexture(*args): return _ivaria.iBlobManager_MapTexture(*args)
-    def CreateBlobViewPort(*args): return _ivaria.iBlobManager_CreateBlobViewPort(*args)
-    def FindMovingObject(*args): return _ivaria.iBlobManager_FindMovingObject(*args)
-    def CreateBlobImage(*args): return _ivaria.iBlobManager_CreateBlobImage(*args)
-    def RemoveBlobImage(*args): return _ivaria.iBlobManager_RemoveBlobImage(*args)
-    def RemoveBlobImages(*args): return _ivaria.iBlobManager_RemoveBlobImages(*args)
-    def FindBlobImage(*args): return _ivaria.iBlobManager_FindBlobImage(*args)
-    def CreateBlob(*args): return _ivaria.iBlobManager_CreateBlob(*args)
-    def CreateGeom(*args): return _ivaria.iBlobManager_CreateGeom(*args)
-    def RemoveMovingObject(*args): return _ivaria.iBlobManager_RemoveMovingObject(*args)
-    def RemoveMovingObjects(*args): return _ivaria.iBlobManager_RemoveMovingObjects(*args)
-    def MovingObjectToFront(*args): return _ivaria.iBlobManager_MovingObjectToFront(*args)
-    def CheckCollision(*args): return _ivaria.iBlobManager_CheckCollision(*args)
-    scfGetVersion = staticmethod(_ivaria.iBlobManager_scfGetVersion)
-    scfGetName = staticmethod(_ivaria.iBlobManager_scfGetName)
-    __swig_destroy__ = _ivaria.delete_iBlobManager
-    __del__ = lambda self : None;
-iBlobManager_swigregister = _ivaria.iBlobManager_swigregister
-iBlobManager_swigregister(iBlobManager)
-iBlobManager_scfGetVersion = _ivaria.iBlobManager_scfGetVersion
-iBlobManager_scfGetName = _ivaria.iBlobManager_scfGetName
 
 class iScriptValue(core.iBase):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')

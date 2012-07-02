@@ -78,7 +78,7 @@ public:
 
   /// Loads from raw text
   virtual bool Load (iShaderDestinationResolver*, const char*, 
-    const csArray<csShaderVarMapping> &);
+    csArray<csShaderVarMapping> &);
 
   /// Compile a program
   virtual bool Compile (iHierarchicalCache*, csRef<iString>*);

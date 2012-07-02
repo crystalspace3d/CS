@@ -25,7 +25,6 @@
 #define __CS_CSUTIL_PARASITICDATABUFFER_H__
 
 #include "csextern.h"
-#include "csgeom/math.h"
 #include "csutil/pooledscfclass.h"
 #include "csutil/scf_implementation.h"
 #include "iutil/databuff.h"
@@ -49,7 +48,7 @@ protected:
     if (size == (size_t)~0)
       csParasiticDataBufferBase::size = parRemaining;
     else
-      csParasiticDataBufferBase::size = csMin (size, parRemaining);
+      csParasiticDataBufferBase::size = MIN(size, parRemaining);
   }
 
   csParasiticDataBufferBase (iDataBuffer* parent, size_t offs, 

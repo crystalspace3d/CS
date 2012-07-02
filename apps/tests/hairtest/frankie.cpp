@@ -317,10 +317,6 @@ bool FrankieScene::CreateAvatar ()
 
   csRef<iMeshObject> imo = frankieFurmeshObject->GetMeshObject();
 
-  // Disable selfshadows for scene
-  avatarMesh->SetFlagsRecursive(CS_ENTITY_NOSHADOWCAST);
-  imo->GetMeshWrapper()->SetFlagsRecursive(CS_ENTITY_NOSHADOWCAST);
-
   // Get reference to the iFurMesh interface
   furMesh = scfQueryInterface<CS::Mesh::iFurMesh>(imo);
 

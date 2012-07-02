@@ -92,7 +92,7 @@ void CS::Animation::BVHMocapParser::SetAnimationName (const char* name)
   animationName = name;
 }
 
-bool CS::Animation::BVHMocapParser::SetResourceFile (const char* filename)
+bool CS::Animation::BVHMocapParser::SetRessourceFile (const char* filename)
 {
   if (!vfs)
     return false;
@@ -160,7 +160,7 @@ CS::Animation::MocapParserResult CS::Animation::BVHMocapParser::ParseData ()
   if (!vfs)
     goto parsing_failed;
 
-  // Open the resource file
+  // Open the ressource file
   file = vfs->Open (filenameVFS.GetData (), VFS_FILE_READ);
   if (!file)
   {

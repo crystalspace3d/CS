@@ -213,6 +213,17 @@ namespace CS
 #define VFS_STATUS_NOTIMPLEMENTED	7
 /** @} */
 
+/**\name File positioning modes
+ * @{ */
+/// Absolute positioning, starting from 0
+#define VFS_POS_ABSOLUTE	0
+/// Same as VFS_POS_ABSOLUTE
+#define VFS_POS_BEGINNING	VFS_POS_ABSOLUTE
+/// Relative positioning from current cursor position
+#define VFS_POS_CURRENT		1
+/// Relative positioning from the end
+#define VFS_POS_END		2
+/** @} */
 
 /**
  * A replacement for FILE type in the virtual file space.
@@ -270,7 +281,7 @@ struct iFile : public virtual iBase
    * \param newpos New position in file.
    * \return True if the operation succeeded, else false.
    */
-  virtual bool SetPos (off64_t newpos, int ref = 0) = 0;
+  virtual bool SetPos (off64_t newpos, int ref = VFS_POS_ABSOLUTE) = 0;
 
   /**
    * Request whole content of the file as a single data buffer.

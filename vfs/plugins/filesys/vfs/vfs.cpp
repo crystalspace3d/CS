@@ -2120,6 +2120,19 @@ bool csVFS::Sync ()
   return true;
 }
 
+// Move a file from old virtual path to new virtual path
+bool csVFS::MoveFile (const char *OldPath, const char *NewPath)
+{
+  // TODO: implement feature
+  // 1. if two virtual path is within same iFileSystem, use iFileSystem::Move()
+  // 2. if copy between two different system can be done efficiently, (e.g.
+  // between two native filesystem) take advantage of it (solution required)
+  // 3. otherwise, fall back to copy & delete operation
+  // iFileSystem for OldPath is determined using the same resolving algorithm
+  // while that for NewPath is the first writable instance of highest priority
+  return false;
+}
+
 csPtr<iDataBuffer> csVFS::ReadFile (const char *FileName, bool nullterm)
 {
   csRef<iFile> F (Open (FileName, VFS_FILE_READ));

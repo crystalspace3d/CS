@@ -88,6 +88,10 @@ class NativeFile : public scfImplementation1<NativeFile, iFile>
 
   // Constructor
   NativeFile (const char *VFSPath, const char *RealPath, int Mode);
+  // Set last error to specified value
+  bool SetLastError (int ErrorCode);
+  // Update last error code from system call
+  void UpdateError ();
 public:
   // Destructor
   virtual ~NativeFile ();
@@ -132,6 +136,12 @@ class NativeFS : public scfImplementation1<NativeFS, iFileSystem>
 
   // Construct a NativeFS instance with 'RealPath' as mount root.
   NativeFS (const char *RealPath);
+  // Convert relative virtual path to real path
+  csString ToRealPath (const char *VirtualPath);
+  // Set last error to specified value
+  bool SetLastError (int ErrorCode);
+  // Update last error code from system call
+  void UpdateError ();
 
 public:
 
@@ -267,6 +277,38 @@ NativeFile::~NativeFile ()
   cs_free(RealPath);
 }
 
+// Set last error to specified value
+bool NativeFile::SetLastError (int ErrorCode)
+{
+  // If new status is VFS_STATUS_OK, do it anyway.
+  // Otherwise, update error code if and only if previous error is cleared.
+  if (ErrorCode == VFS_STATUS_OK || LastError == VFS_STATUS_OK)
+  {
+    LastError = ErrorCode;
+    return true;
+  }
+  // previous error was not cleared
+  return false;
+}
+
+// Update last error code from system call
+void NativeFile::UpdateError ()
+{
+  // Update error code if and only if previous error is cleared.
+  if (LastError == VFS_STATUS_OK)
+    return;
+
+  // Skip if handle is invalid
+  if (!Handle)
+    return;
+
+  switch (errno)
+  {
+  default:
+    break;
+  }
+}
+
 // Reset and return last error status
 int NativeFile::GetStatus ()
 {
@@ -280,6 +322,7 @@ size_t NativeFile::Read (char *Data, size_t DataSize)
 {
   if (!ReadOnly)
   {
+    // cannot read a file opened with write permission; thus access denied
     LastError = VFS_STATUS_ACCESSDENIED;
   }
 
@@ -291,22 +334,316 @@ size_t NativeFile::Write (const char *Data, size_t DataSize)
 {
   if (ReadOnly)
   {
+    // cannot write to a read-only file: access denied.
     LastError = VFS_STATUS_ACCESSDENIED;
   }
 
   return 0;
 }
 
-// NativeFS methods
-
-NativeFS::NativeFS (const char *RealPath) : scfImplementationType(this)
+// Flush strem
+void NativeFile::Flush ()
 {
-  //
+  if (Handle)
+    fflush (Handle);
 }
 
+// Check whether pointer is at End of File
+bool NativeFile::AtEOF ()
+{
+  // if feof returns nonzero, file is at EOF
+  if (Handle)
+    return feof (Handle) != 0;
+
+  return true;
+}
+
+// Query file pointer (absolute position)
+uint64_t NativeFile::GetPos ()
+{
+  // TODO: ensure large file compatibility
+  if (Handle)
+    return ftell (Handle);
+
+  return (uint64_t)-1;
+}
+
+// Set file pointer (relative position; absolute by default)
+bool NativeFile::SetPos (off64_t NewPos, int RelativeTo)
+{
+  // currently, null handle will simply fail...
+  if (!Handle)
+    return false;
+
+  int mode; // seek mode for fseek ()
+
+  // TODO: introduce appropriate enumeration constants
+  switch (RelativeTo)
+  {
+    case 0:
+    default:
+      // absolute mode requested, or unknown constant
+      mode = SEEK_SET;
+      break;
+  }
+
+  // TODO: ensure large file compatibility
+  // try seek
+  if (fseek (Handle, NewPos, mode) != 0)
+  {
+    UpdateError ();
+    return false;
+  }
+
+  return true;
+}
+
+// Get all data into a single buffer.
+csPtr<iDataBuffer> NativeFile::GetAllData (bool NullTerminated)
+{
+  // TODO: this is currently a stub; implement feature
+  iDataBuffer *buffer = nullptr;
+
+  return csPtr<iDataBuffer> (buffer);
+}
+
+// Get all data into a single buffer with custom allocator.
+csPtr<iDataBuffer> NativeFile::GetAllData (CS::Memory::iAllocator *allocator)
+{
+  // TODO: this is currently a stub; implement feature
+  iDataBuffer *buffer = nullptr;
+
+  return csPtr<iDataBuffer> (buffer);
+}
+
+// Get subset of file as iFile
+csPtr<iFile> NativeFile::GetPartialView (uint64_t offset, uint64_t size)
+{
+  // TODO: this is currently a stub; implement feature
+  iFile *file = nullptr;
+
+  return csPtr<iFile> (file);
+}
+
+// NativeFS methods
+
+// NativeFS constructor
+NativeFS::NativeFS (const char *RealPath) : scfImplementationType(this)
+{
+  // Store mount root (real path) of this instance
+  size_t MountRootLen = strlen(RealPath) + 1; // +1 for null-terminator
+  MountRoot = (char *)cs_malloc(MountRootLen);
+  memcpy(MountRoot, RealPath, MountRootLen);
+  // Set last error to VFS_STATUS_OK
+  LastError = VFS_STATUS_OK;
+}
+
+// NativeFS destructor
 NativeFS::~NativeFS ()
 {
-  //
+  // clean up resources
+  cs_free(MountRoot);
+}
+
+// Convert virtual path to real path
+csString NativeFS::ToRealPath (const char *VirtualPath)
+{
+  // string constants to use
+  static const char search[] = { VFS_PATH_SEPARATOR, 0 };
+  static const char replace[] = { CS_PATH_SEPARATOR, 0 };
+
+  csString path (MountRoot);
+  csString suffix (VirtualPath);
+  // replace virtual path separators to platform specific ones
+  suffix.ReplaceAll (search, replace);
+  // append rest of the path to the base
+  path << suffix;
+
+  return path;
+}
+
+// Set last error status
+bool NativeFS::SetLastError (int ErrorCode)
+{
+  // If new status is VFS_STATUS_OK, do it anyway.
+  // Otherwise, update error code if and only if previous error is cleared.
+  if (ErrorCode == VFS_STATUS_OK || LastError == VFS_STATUS_OK)
+  {
+    LastError = ErrorCode;
+    return true;
+  }
+  // previous error was not cleared
+  return false;
+}
+
+// Update error code from last system call
+void NativeFS::UpdateError ()
+{  
+  // Update error code if and only if previous error is cleared.
+  if (LastError == VFS_STATUS_OK)
+    return;
+
+  switch (errno)
+  {
+  default:
+    break;
+  }
+}
+
+// Open a particular file
+csPtr<iFile> NativeFS::Open (const char *Path,
+                             const char *PathPrefix,
+                             int Mode,
+                             bool UseCaching)
+{
+  // TODO: implement checks for boundary cases
+
+
+  // setup required parameters;
+  csString RealPath (ToRealPath (Path));
+  csString VFSPath (PathPrefix);
+
+  // append VFS path separator if needed
+  if ((VFSPath[VFSPath.Length ()-1] != VFS_PATH_SEPARATOR)
+      && (Path[0] != VFS_PATH_SEPARATOR))
+    VFSPath << VFS_PATH_SEPARATOR;
+
+  // append rest of the path to the base
+  VFSPath << Path;
+
+  // try creating an instance
+  iFile *file = new NativeFile (VFSPath, RealPath, Mode);
+
+  // did it go well?
+  switch (LastError = file->GetStatus ())
+  {
+    case VFS_STATUS_OK:
+      // ok!
+      break;
+    default:
+      // error happened; invalidate csPtr
+      delete file;
+      file = nullptr;
+      break;
+  }
+
+  return csPtr<iFile> (file);
+}
+
+// Move file from OldPath to NewPath
+bool NativeFS::Move (const char *OldPath, const char *NewPath)
+{
+  // This only works within current file system.
+  SetLastError (VFS_STATUS_NOTIMPLEMENTED);
+  return false;
+}
+
+// Get permission set of a file
+bool NativeFS::GetPermission (const char *FileName, csFilePermission &oPerm)
+{
+  csString path (ToRealPath (FileName));
+  struct stat info;
+
+#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__CYGWIN32__)
+  // TODO: implement Win32 emulated permission
+  SetLastError (VFS_STATUS_UNSUPPORTED);
+  return false;
+#endif
+  if (stat (path, &info) != 0)
+  {
+    // stat() failed... update error status
+    UpdateError ();
+    return false;
+  }
+
+  // Using obtained information, fill in the structure
+  csFilePermission permission (info.st_mode);
+  // done; copy contents
+  oPerm = permission;
+
+  return true;
+}
+
+// Set permission set of a file
+bool NativeFS::SetPermission (const char *FileName,
+                              const csFilePermission &iPerm)
+{
+  // TODO: implement feature
+  SetLastError (VFS_STATUS_NOTIMPLEMENTED);
+  return false;
+}
+
+// Set file time
+bool NativeFS::GetTime (const char *FileName, csFileTime &oTime)
+{
+  csString path (ToRealPath (FileName));
+  struct stat info;
+
+  // retrieve file information with stat()
+  int result = stat (path, &info);
+
+  if (result != 0)
+  {
+    // stat() failed... update error status
+    UpdateError ();
+    return false;
+  }
+
+  // Using obtained information, fill in the structure
+  const time_t mtime = info.st_mtime;
+  struct tm *localtm = localtime (&mtime);
+  oTime = *localtm;
+
+  return true;
+}
+
+// Get file time
+bool NativeFS::SetTime (const char *FileName, const csFileTime &iTime)
+{
+  // TODO: implement feature
+  csString path (ToRealPath (FileName));
+  struct tm curtm = iTime;
+  struct utimbuf times;
+
+  times.actime = mktime (&curtm); // access time
+  times.modtime = times.actime;  // modification time
+
+  // try updating time...
+  int result = utime (path, &times);
+
+  if (result != 0)
+  {
+    // operation failed.
+    UpdateError ();
+    return false;
+  }
+  return true;
+}
+
+// Get file size
+bool NativeFS::GetSize (const char *FileName, uint64_t &oSize)
+{
+  csString path (ToRealPath (FileName));
+  struct stat info;
+  // TODO: ensure large file compatibility
+  if (stat (path, &info) != 0)
+  {
+    // failure; update error code
+    UpdateError ();
+    return false;
+  }
+  // copy the information
+  oSize = info.st_size;
+
+  return true;
+}
+
+// Query and reset last error status
+int NativeFS::GetStatus ()
+{
+  int status = LastError;
+  LastError = VFS_STATUS_OK;
+  return status;
 }
 
 }

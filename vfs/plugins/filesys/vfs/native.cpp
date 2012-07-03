@@ -112,7 +112,7 @@ public:
   // Query file pointer (absolute position)
   virtual uint64_t GetPos ();
   // Set file pointer (relative position; absolute by default)
-  virtual bool SetPos (off64_t NewPos, int RelativeTo = 0);
+  virtual bool SetPos (off64_t NewPos, int RelativeTo = VFS_POS_ABSOLUTE);
   // Get all data into a single buffer.
   virtual csPtr<iDataBuffer> GetAllData (bool NullTerminated = false);
   // Get all data into a single buffer with custom allocator.
@@ -377,10 +377,15 @@ bool NativeFile::SetPos (off64_t NewPos, int RelativeTo)
 
   int mode; // seek mode for fseek ()
 
-  // TODO: introduce appropriate enumeration constants
   switch (RelativeTo)
   {
-    case 0:
+    case VFS_POS_CURRENT:
+      mode = SEEK_CUR;
+      break;
+    case VFS_POS_END:
+      mode = SEEK_END;
+      break;
+    case VFS_POS_ABSOLUTE:
     default:
       // absolute mode requested, or unknown constant
       mode = SEEK_SET;

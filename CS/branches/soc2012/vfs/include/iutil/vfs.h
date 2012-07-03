@@ -193,20 +193,24 @@ namespace CS
 /**\name File status codes
  * @{ */
 /// File status ok
-#define	VFS_STATUS_OK		0
+#define	VFS_STATUS_OK			0
 /// Unclassified error
-#define VFS_STATUS_OTHER	1
+#define VFS_STATUS_OTHER		1
 /// Device has no more space for file data
-#define	VFS_STATUS_NOSPACE	2
+#define	VFS_STATUS_NOSPACE		2
 /// Not enough system resources
-#define VFS_STATUS_RESOURCES	3
+#define VFS_STATUS_RESOURCES		3
 /**
  * Access denied: either you have no write access, the filesystem is read-only
  * or you tried to read a file opened for write access
  */
-#define VFS_STATUS_ACCESSDENIED	4
+#define VFS_STATUS_ACCESSDENIED		4
 /// An error occured during reading or writing data
-#define VFS_STATUS_IOERROR	5
+#define VFS_STATUS_IOERROR		5
+/// Requested operation is not supported on current system
+#define VFS_STATUS_UNSUPPORTED		6
+/// Requested operation should be supported, but not implemented yet
+#define VFS_STATUS_NOTIMPLEMENTED	7
 /** @} */
 
 

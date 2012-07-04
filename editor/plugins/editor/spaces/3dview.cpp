@@ -17,38 +17,18 @@
 */
 
 #include "cssysdef.h"
+#include "cstool/csview.h"
 #include "cstool/initapp.h"
 #include "csutil/scf.h"
-
-#include "cstool/enginetools.h"
-#include "csgeom/plane3.h"
-#include "csgeom/math3d.h"
-#include "csutil/event.h"
-#include "csutil/sysfunc.h"
-#include "cstool/csview.h"
-#include "iutil/csinput.h"
-#include "iutil/eventq.h"
-#include "iutil/objreg.h"
-#include "iutil/plugin.h"
-#include "iutil/virtclk.h"
+#include "ieditor/context.h"
+#include "iengine/camera.h"
 #include "iengine/campos.h"
 #include "iengine/sector.h"
-#include "iengine/scenenode.h"
-#include "iengine/mesh.h"
-#include "iengine/movable.h"
-#include "iengine/engine.h"
-#include "iengine/camera.h"
-#include "imesh/object.h"
-#include "imesh/objmodel.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/graph2d.h"
-#include "ivideo/natwin.h"
 #include "ivideo/wxwin.h"
 
 #include "3dview.h"
-
-#include "ieditor/context.h"
-#include "ieditor/operator.h"
 
 #include <wx/wx.h>
 
@@ -62,29 +42,25 @@ END_EVENT_TABLE()
 SCF_IMPLEMENT_FACTORY (CS3DSpace)
 
 CS3DSpace::CS3DSpace (iBase* parent)
- : scfImplementationType (this, parent), object_reg (0)
-{  
+  : scfImplementationType (this, parent), object_reg (0),
+  frameListener (nullptr)
+{
 }
 
 CS3DSpace::~CS3DSpace()
 {
-  printf("CS3DSpace::~CS3DSpace\n");
+  delete frameListener;
 }
 
-// TODO: remove parent
-bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent)
+bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+			    iSpaceFactory* fact, wxWindow* parent)
 {
   object_reg = obj_reg;
   this->editor = editor;
   factory = fact;
   
-  // TODO: remove initapp CS_REQUEST_SOFTWARE3D
-
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
   engine = csQueryRegistry<iEngine> (object_reg);
-  vc = csQueryRegistry<iVirtualClock> (object_reg);
-  kbd = csQueryRegistry<iKeyboardDriver> (obj_reg);
-  queue = csQueryRegistry<iEventQueue> (object_reg);
 
   disabled = false;
 
@@ -100,7 +76,8 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFac
     return false;
   }
 
-  window = new CS3DSpace::Space (this, parent, -1, wxPoint(0,0), wxSize(-1,-1));
+  window = new CS3DSpace::Space
+    (this, parent, -1, wxPoint(0,0), wxSize(-1,-1));
   wxwin->SetParent (window);
   
   //window->SetDropTarget (new MyDropTarget (this));
@@ -110,21 +87,22 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFac
   view->SetAutoResize (false);
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
 
-  csRef<iContextCamera> cameraContext = scfQueryInterface<iContextCamera> (editor->GetContext ());
+  csRef<iContextCamera> cameraContext =
+    scfQueryInterface<iContextCamera> (editor->GetContext ());
   cameraContext->SetCamera (view->GetCamera ());
 
-  // Register the event handler
-  iEventNameRegistry* registry = csEventNameRegistry::GetRegistry (object_reg);
-  eventSetCollection = registry->GetID ("crystalspace.editor.context.setcollection");
+  // Register this event handler to the editor events
+  iEventNameRegistry* registry =
+    csEventNameRegistry::GetRegistry (object_reg);
+  RegisterQueue (editor->GetContext ()->GetEventQueue (),
+		 registry->GetID ("crystalspace.editor.context.setcollection"));
 
-  csEventID events[] = {
-    csevFrame (object_reg),
-    eventSetCollection,
-    CS_EVENTLIST_END
-  };
-  RegisterQueue (editor->GetContext ()->GetEventQueue (), events);
-  
-  csRef<iPluginManager> pluginManager = csQueryRegistry<iPluginManager> (object_reg);
+  // Register a frame listener to the global event queue
+  frameListener = new CS3DSpace::FrameListener (this);
+
+  // Setup the camera manager
+  csRef<iPluginManager> pluginManager =
+    csQueryRegistry<iPluginManager> (object_reg);
 
   cameraManager = csLoadPlugin<CS::Utility::iCameraManager>
     (pluginManager, "crystalspace.utilities.cameramanager");
@@ -137,8 +115,6 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFac
   }
   cameraManager->SetCamera (view->GetCamera ());
 
-  printf ("CS3DSpace::Initialize end\n");
-
   return true;
 }
 
@@ -149,23 +125,8 @@ wxWindow* CS3DSpace::GetwxWindow ()
 
 bool CS3DSpace::HandleEvent (iEvent& ev)
 {
-  //printf ("CS3DSpace::HandleEvent\n");
-  iEventNameRegistry* name_reg = csEventNameRegistry::GetRegistry (object_reg);
-  
-  // Frame event
-  if (ev.Name == csevFrame(name_reg))
+  if (ev.Name == eventSetCollection)
   {
-    //printf ("CS3DSpace::HandleEvent frame\n");
-    ProcessFrame ();
-    //if (!disabled) FinishFrame ();
-    FinishFrame ();
-    return false; //Let other handlers have a say too
-  }
-
-  else if (ev.Name == eventSetCollection)
-  {
-    printf ("CS3DSpace::HandleEvent eventSetCollection\n");
-
     csRef<iContextFileLoader> fileLoaderContext =
       scfQueryInterface<iContextFileLoader> (editor->GetContext ());
     const iCollection* collection = fileLoaderContext->GetCollection ();
@@ -199,28 +160,16 @@ bool CS3DSpace::HandleEvent (iEvent& ev)
     if (!room)
     {
       // We didn't find a valid starting position. So we default
-      // to going to the sector called 'room', or the first sector, at position (0,0,0).
+      // to going to the sector called 'room', or the first sector,
+      // at position (0,0,0).
       room = engine->GetSectors ()->FindByName ("room");
       if (!room) room = engine->GetSectors ()->Get (0);
       pos = csVector3 (0, 0, 0);
     }
-/*
-    iGraphics2D* g2d = g3d->GetDriver2D ();
 
-    view.Invalidate ();
-    view = csPtr<iView> (new csView (engine, g3d));
-    view->SetAutoResize (false);  
-
-    view->GetPerspectiveCamera ()->SetFOV ((float) (g2d->GetHeight ()) / (float) (g2d->GetWidth ()), 1.0f);
-    view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
-*/
     view->GetCamera ()->SetSector (room);
     view->GetCamera ()->GetTransform ().SetOrigin (pos);
-/*
-    // TODO: remove
-    csRef<iContextCamera> cameraContext = scfQueryInterface<iContextCamera> (editor->GetContext ());
-    cameraContext->SetCamera (view->GetCamera ());
-*/
+
     // Put back the focus on the window
     csRef<iWxWindow> wxwin = scfQueryInterface<iWxWindow> (g3d->GetDriver2D ());
     if (wxwin->GetWindow ())
@@ -234,34 +183,28 @@ bool CS3DSpace::HandleEvent (iEvent& ev)
   return false;
 }
 
-void CS3DSpace::ProcessFrame ()
+void CS3DSpace::UpdateFrame ()
 {
-  // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_CLEARSCREEN | CSDRAW_3DGRAPHICS))
-    return;
+  if (!disabled) {
+    // Tell 3D driver we're going to display 3D things.
+    if (!g3d->BeginDraw (CSDRAW_CLEARSCREEN | CSDRAW_3DGRAPHICS))
+      return;
 
-  // Tell the camera to render into the frame buffer.
-  view->Draw ();
-}
+    // Tell the camera to render into the frame buffer.
+    view->Draw ();
 
-void CS3DSpace::FinishFrame ()
-{
-  g3d->FinishDraw ();
-  g3d->Print (0);
+    // Finish the drawing
+    g3d->FinishDraw ();
+    g3d->Print (0);
+  }
 }
 
 void CS3DSpace::Update ()
 {
-  //printf ("CS3DSpace::Update\n");
-  vc->Advance ();
-  //printf ("ticks %i\n", (int) vc->GetCurrentTicks ());
-  queue->Process ();
-  //wxYield();
 }
 
 void CS3DSpace::OnSize (wxSizeEvent& event)
 {
-  printf ("CS3DSpace::OnSize %i %i\n", event.GetSize().x, event.GetSize().y);
   if (!g3d.IsValid () || !g3d->GetDriver2D () || !view.IsValid ())
     return;
   
@@ -284,6 +227,20 @@ void CS3DSpace::OnSize (wxSizeEvent& event)
   view->SetRectangle (0, 0, size.x, size.y);
 
   event.Skip();
+}
+
+CS3DSpace::FrameListener::FrameListener (CS3DSpace* space)
+  : space (space)
+{
+  csRef<iEventQueue> eventQueue =
+    csQueryRegistry<iEventQueue> (space->object_reg);
+  RegisterQueue (eventQueue, csevFrame (space->object_reg));
+}
+
+bool CS3DSpace::FrameListener::HandleEvent (iEvent &event)
+{
+  space->UpdateFrame ();
+  return false;
 }
 
 }

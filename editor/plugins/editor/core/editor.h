@@ -19,23 +19,15 @@
 #ifndef __EDITOR_H__
 #define __EDITOR_H__
 
-#include "csutil/stringquote.h"
-#include "csutil/weakrefarr.h"
 #include "ieditor/editor.h"
-//#include "imap/loader.h"
-//#include "iutil/document.h"
 #include "iutil/comp.h"
 
 #include <wx/bitmap.h>
 #include <wx/frame.h>
 #include <wx/timer.h>
 
-/*
-struct iObjectRegistry;
-struct iSaver;
-struct iVFS;
-struct csSimpleRenderMesh;
-*/
+struct iVirtualClock;
+
 using namespace CS::EditorApp;
 
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
@@ -72,16 +64,36 @@ public:
   virtual iEditor* GetEditor (size_t index);
   virtual size_t GetEditorCount () const;
 
+private:
+  void Update ();
+
 public:
   iObjectRegistry* object_reg;
   csArray<Editor*> editors;
+  csRef<iVirtualClock> vc;
+  csRef<iEventQueue> eventQueue;
+
+private:
+  class Pump : public wxTimer
+  {
+  public:
+    Pump (EditorManager* editorManager) : editorManager (editorManager) {}
+    
+    virtual void Notify ()
+    { editorManager->Update (); }
+
+  private:
+    EditorManager* editorManager;
+  };
+  Pump* pump;
 };
 
 class Editor
   : public scfImplementation1<Editor, iEditor>, public wxFrame
 {
 public:
-  Editor (EditorManager* manager, const char* name, const char* title, iContext* context);
+  Editor (EditorManager* manager, const char* name,
+	  const char* title, iContext* context);
   ~Editor ();
 
   //-- iEditor
@@ -102,35 +114,20 @@ public:
 
 public:
   void Init ();
+  void Update ();
 
 protected:
   void OnQuit (wxCommandEvent& event);
-  void Update ();
 
 public:
   csString name;
   EditorManager* manager;
-  csRef<iEventQueue> eventQueue;
   csRef<iContext> context;
   csRef<ActionManager> actionManager;
   csRef<MenuManager> menuManager;
   csRef<OperatorManager> operatorManager;
   csRef<SpaceManager> spaceManager;
   StatusBar* statusBar;
-
-private:
-  class Pump : public wxTimer
-  {
-  public:
-    Pump (Editor* editor) : editor (editor) {}
-    
-    virtual void Notify ()
-    { editor->Update (); }
-
-  private:
-    Editor* editor;
-  };
-  Pump* pump;
 };
 
 }

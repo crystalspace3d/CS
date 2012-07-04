@@ -35,10 +35,13 @@ namespace EditorApp {
 Context2::Context2 (iObjectRegistry* obj_reg)
   : scfImplementationType (this), object_reg (obj_reg)
 {
-  // TODO: Create a new event queue
-  //eventQueue.AttachNew (new csEventQueue (object_reg));
-  eventQueue = csQueryRegistry<iEventQueue> (object_reg);
-  CS_ASSERT (eventQueue);
+  // Create a new event queue (and hack around the fact that a new
+  // csEventQueue instance will be registered to the object registry,
+  // hence overwriting the global event queue).
+  csRef<iEventQueue> mainEventQueue =
+    csQueryRegistry<iEventQueue> (object_reg);
+  eventQueue.AttachNew (new csEventQueue (object_reg));
+  object_reg->Register (mainEventQueue);
 
   // Initialize the event ID's
   csRef<iEventNameRegistry> registry = csQueryRegistry<iEventNameRegistry> (object_reg);
@@ -177,7 +180,7 @@ void Context2::SetCollection (iCollection* collection)
   PostEvent (eventSetCollection);
 }
 
-const iCollection* Context2::GetCollection () const
+iCollection* Context2::GetCollection () const
 {
   return collection;
 }

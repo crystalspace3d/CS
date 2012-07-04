@@ -15,9 +15,8 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-#ifndef __CORE_PROPERTIESSPACE_H__
-#define __CORE_PROPERTIESSPACE_H__
+#ifndef __SPACE_PROPERTIES_H__
+#define __SPACE_PROPERTIES_H__
 
 #include "ieditor/space.h"
 
@@ -36,21 +35,21 @@ using namespace CS::EditorApp;
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
 
-class PropertiesSpace : public scfImplementation1<PropertiesSpace,iSpace>
+class PropertiesSpace : public scfImplementation1<PropertiesSpace, iSpace>
 {
 public:
   PropertiesSpace (iBase* parent);
   virtual ~PropertiesSpace();
 
   // iSpace
-  virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent);
+  virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+			   iSpaceFactory* fact, wxWindow* parent);
   virtual iSpaceFactory* GetFactory () const { return factory; }
   virtual wxWindow* GetwxWindow ();
   virtual void DisableUpdates (bool val) { }
   virtual void Update ();
 
   void OnSize (wxSizeEvent& event);
-
   
 private:
   iObjectRegistry* object_reg;
@@ -78,4 +77,4 @@ private:
 }
 CS_PLUGIN_NAMESPACE_END(CSEditor)
 
-#endif
+#endif // __SPACE_PROPERTIES_H__

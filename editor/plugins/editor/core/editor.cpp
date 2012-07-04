@@ -19,8 +19,8 @@
 #include "cssysdef.h"
 #include "cstool/initapp.h"
 #include "csutil/scf.h"
-
-//#include "ivideo/graph2d.h"
+#include "csutil/stringquote.h"
+#include "iutil/virtclk.h"
 
 #include "actionmanager.h"
 #include "editor.h"
@@ -38,12 +38,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 SCF_IMPLEMENT_FACTORY (EditorManager)
 
 EditorManager::EditorManager (iBase* parent)
-  : scfImplementationType (this, parent)
+  : scfImplementationType (this, parent), pump (nullptr)
 {
 }
 
 EditorManager::~EditorManager ()
 {
+  delete pump;
+
   // The deletion of the iEditor instances is managed automatically
   // by wxWidgets
 }
@@ -75,6 +77,10 @@ bool EditorManager::Initialize (iObjectRegistry* reg)
   object_reg = reg;
   //StartEngine ();
 
+  // Find references to the virtual clock and the main event queue
+  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  eventQueue = csQueryRegistry<iEventQueue> (object_reg);
+
   return true;
 }
 
@@ -105,6 +111,10 @@ bool EditorManager::StartApplication ()
   // TODO: remove this hack?
   for (size_t i = 0; i < editors.GetSize (); i++)
     editors[i]->Init ();
+
+  // Initialize the pump (the refresh rate is in millisecond)
+  pump = new Pump (this);
+  pump->Start (20);
 
   return true;
 }
@@ -146,6 +156,18 @@ size_t EditorManager::GetEditorCount () const
   return editors.GetSize ();
 }
 
+void EditorManager::Update ()
+{
+  // Update the virtual clock and the global event queue
+  vc->Advance ();
+  eventQueue->Process ();
+  //wxYield();
+
+  // Update each editor instance
+  for (size_t i = 0; i < editors.GetSize (); i++)
+    editors[i]->Update ();
+}
+
 //------------------------------------  Editor  ------------------------------------
 
 Editor::Editor (EditorManager* manager, const char* name, const char* title,
@@ -154,7 +176,7 @@ Editor::Editor (EditorManager* manager, const char* name, const char* title,
   : scfImplementationType (this),
   wxFrame (nullptr, -1, wxString::FromAscii (title), wxDefaultPosition,
 	   wxSize (1024, 768)),
-  name (name), manager (manager), context (context), pump (nullptr)
+  name (name), manager (manager), context (context)
 {
   // Create the main objects and managers
   actionManager.AttachNew (new ActionManager (manager->object_reg, this));
@@ -179,7 +201,6 @@ Editor::~Editor ()
   manager->editors.Delete (this);
 
   delete statusBar;
-  delete pump;
 }
 
 iContext* Editor::GetContext () const
@@ -244,11 +265,7 @@ void Editor::Init ()
   box->SetSizeHints (this);
 
   // Reset the window size
-  SetSize (wxSize (1024, 768));
-
-  // Initialize the pump (the refresh rate is in millisecond)
-  pump = new Pump(this);
-  pump->Start (20);
+  //SetSize (wxSize (1024, 768));
 
   SetStatusText (wxT ("Ready"));
 }

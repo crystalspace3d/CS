@@ -41,23 +41,28 @@ using namespace CS::EditorApp;
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
 
-class CS3DSpace : public scfImplementation1<CS3DSpace, iSpace>, public csBaseEventHandler
+class CS3DSpace : public scfImplementation1<CS3DSpace, iSpace>,
+    public csBaseEventHandler
 {
 public:
   CS3DSpace (iBase* parent);
   virtual ~CS3DSpace();
 
   //-- iSpace
-  virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* factory, wxWindow* parent);
+  virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+			   iSpaceFactory* factory, wxWindow* parent);
   virtual iSpaceFactory* GetFactory () const { return factory; }
   virtual wxWindow* GetwxWindow ();
-  virtual void DisableUpdates (bool val) { disabled = val; }
+  virtual void DisableUpdates (bool val) { printf ("DisableUpdates %i\n", (int) val);disabled = val; }
   virtual void Update ();
 
   //-- iEventHandler
   bool HandleEvent (iEvent &event);
 
   void OnSize (wxSizeEvent& event);
+  
+private:
+  virtual void UpdateFrame ();
   
 private:
   iObjectRegistry* object_reg;
@@ -69,32 +74,41 @@ private:
   
   csRef<iEngine> engine;
   csRef<iGraphics3D> g3d;
-  csRef<iVirtualClock> vc;
-  csRef<iKeyboardDriver> kbd;
-  csRef<iEventQueue> queue;
   csRef<iWxWindow> wxwin;
   csRef<iView> view;
   csRef<CS::Utility::iCameraManager> cameraManager;
 
-  virtual void ProcessFrame ();
-  virtual void FinishFrame ();
-  
+  csEventID eventSetCollection;
+
+  struct FrameListener : public csBaseEventHandler
+  {
+    FrameListener (CS3DSpace* space);
+
+    //-- iEventHandler
+    bool HandleEvent (iEvent &event);
+
+  private:
+    CS3DSpace* space;
+  };
+  FrameListener* frameListener;
+
   class Space : public wxPanel
   {
     public:
-      Space(CS3DSpace* p, wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize)
+      Space (CS3DSpace* p, wxWindow* parent, wxWindowID id = wxID_ANY,
+	    const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize)
       : wxPanel (parent, id, pos, size), space(p)
       {}
     
+      //-- wxPanel
       virtual void OnSize (wxSizeEvent& ev)
       { if (space) space->OnSize (ev); }
+
     private:
       CS3DSpace* space;
       
-      DECLARE_EVENT_TABLE()
+      DECLARE_EVENT_TABLE ();
   };
-
-  csEventID eventSetCollection;
 };
 
 }

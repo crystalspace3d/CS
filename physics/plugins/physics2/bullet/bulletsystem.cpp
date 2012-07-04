@@ -98,10 +98,10 @@ csBulletSystem::csBulletSystem (iBase* iParent)
   characterGroup.mask = allFilter;
   collGroups.Push (characterGroup);
 
-  CS::Collisions::CollisionGroup characterGhostGroup ("ActorGhost");
-  characterGhostGroup.value = CollisionGroupMaskValueActor;
-  characterGhostGroup.mask = allFilter ^ CollisionGroupMaskValueActor;
-  collGroups.Push (characterGhostGroup);
+  CS::Collisions::CollisionGroup noneGroup ("None");
+  noneGroup.value = 0;
+  noneGroup.mask = 0;
+  collGroups.Push (noneGroup);
   
   SetGroupCollision ("PortalCopy", "Static", false);
   SetGroupCollision ("Portal", "PortalCopy", false);

@@ -691,26 +691,6 @@ CS::Physics::iJoint* PhysDemo::SpawnJointed()
   return joint;
 }
 
-CS::Physics::iRigidBody* PhysDemo::SpawnFilterBody (bool setVelocity)
-{
-  CS::Physics::iRigidBody* rb;
-  if (rand() % 2)
-  {
-    rb = SpawnSphere (setVelocity);
-    rb->SetCollisionGroup ("BoxFiltered");
-  }
-  else
-  {
-    rb = SpawnBox (setVelocity);
-    // This is another way to avoid sphere collide with box.
-    // We usually put these things in the same group.
-    //rb->SetCollisionGroup ("BoxFiltered");
-    rb->SetCollisionGroup ("Box");
-  }
-
-  return rb;
-}
-
 void ConstraintJoint (CS::Physics::iJoint* joint)
 {
   // If the axis is constrained. You should set it with axis and pass min and max value to it.

@@ -123,7 +123,7 @@ int runDebug(int argc, char* argv[])
 
 #define ACTOR_DYNAMIC 1
 #define ACTOR_KINEMATIC 2
-#define ACTOR_FREE_CAMERA 3
+#define ACTOR_NOCLIP 3
 #define CAMERA_ACTOR 4
 
 #define ENVIRONMENT_PORTALS 1

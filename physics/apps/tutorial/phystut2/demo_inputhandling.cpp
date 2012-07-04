@@ -19,371 +19,300 @@ using namespace CS::Collisions;
 bool PhysDemo::OnKeyboard (iEvent &event)
 {
   DemoApplication::OnKeyboard (event);
-  
-  // TODO: Find keys to re-add these:
-    /*else if (csKeyEventHelper::GetCookedCode (&event) == 's')
-    {
-    SpawnSphere();
-    return true;
-    }*/
-   /* else if (csKeyEventHelper::GetCookedCode (&event) == 'e')
-    {
-      SpawnKrystalRagdoll();
-      return true;
-    }*/
-    /*else if (csKeyEventHelper::GetCookedCode (&event) == 'q')
-    {
-      SpawnCompound();
-      return true;
-    }*/
 
   csKeyEventType eventtype = csKeyEventHelper::GetEventType(&event);
-  if (eventtype == csKeyEventTypeDown)
+  if (eventtype != csKeyEventTypeDown) return false;
+
+  utf32_char code = csKeyEventHelper::GetCookedCode (&event);
+  if (code >= CSKEY_F1 && code <= CSKEY_F12)
   {
-    if (csKeyEventHelper::GetCookedCode (&event) == 'r')
+    // An F-key has been pressed -> Use tool
+    if (selectedItem)
     {
-      // reset
-      for (int i = physicalSector->GetCollisionObjectCount() - 1; i >= 0; --i)
+      ItemFunction* func = selectedItem->GetTemplate().GetSecondaryFunction(code - CSKEY_F1);
+      if (func)
       {
-        iCollisionObject* obj = physicalSector->GetCollisionObject(i);
-        if (obj->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
-        {
-          physicalSector->RemoveCollisionObject(obj);
-        }
+        return func->Use(selectedItem);
       }
     }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 't')
+    return false;
+  }
+  else if (code >= '1' && code <= '9')
+  {
+    int i = code - '1';
+    if (player.GetInventory().GetItem(i))
     {
-      SpawnCapsule();
+      // A different item has been selected: Select it and update HUD descriptions
+      selectedItem = player.GetInventory().GetItem(i);
+      SetupHUD();
       return true;
     }
-    if (csKeyEventHelper::GetCookedCode (&event) == 'c')
+    return false;
+  }
+
+  else if (code == 'r')
+  {
+    // reset
+    physDemo.ResetWorld();
+  }
+  else if (code == 'c')
+  {
+    // Toggle camera mode
+    switch (physicalCameraMode)
     {
-      SpawnCylinder();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'n')
-    {
-      SpawnCone();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'b')
-    {
-      SpawnBoxStacks(10, 5, .5, 80);
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'm')
-    {
-      SpawnConcaveMesh();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'v')
-    {
-      //SpawnConvexMesh();
-      SpawnSphere();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'j')
-    {
-      SpawnJointed();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'k')
-    {
-      SpawnFilterBody();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'h')
-    {
-      SpawnChain();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == '\'')
-    {
-      SpawnFrankieRagdoll();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'y' && isSoftBodyWorld)
-    {
-      SpawnRope();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'u' && isSoftBodyWorld)
-    {
-      SpawnCloth();
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'i' && isSoftBodyWorld)
-    {
-      SpawnSoftBody();
-      return true;
+    case ACTOR_KINEMATIC:
+      physicalCameraMode = ACTOR_DYNAMIC;
+      break;
+
+    case ACTOR_DYNAMIC:
+      physicalCameraMode = ACTOR_NOCLIP;
+      break;
+
+    case ACTOR_NOCLIP:
+      physicalCameraMode = ACTOR_KINEMATIC;
+      break;
     }
 
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'f')
+    UpdateCameraMode();
+    return true;
+  }
+
+  else if (code == 'p')
+  {
+    // Toggle pause mode for dynamic simulation
+    pauseDynamic = !pauseDynamic;
+    if (pauseDynamic)
+      printf ("Dynamic simulation paused\n");
+    else
+      printf ("Dynamic simulation resumed\n");
+    return true;
+  }
+
+  else if (code == 'o')
+  {
+    // Toggle speed of dynamic simulation
+    if (dynamicStepFactor - 1.0 < EPSILON)
     {
-      // Toggle camera mode
-      switch (physicalCameraMode)
+      dynamicStepFactor = 0.025f;
+      printf ("Dynamic simulation slowed\n");
+    }
+    else
+    {
+      dynamicStepFactor = 1.0f;
+      printf ("Dynamic simulation at normal speed\n");
+    }
+  }
+
+  else if (code == 'l')
+  {
+    // Toggle dynamic system visual debug mode
+    // TODO
+    if (do_bullet_debug)
+    {
+      switch (debugMode)
       {
-      case ACTOR_DYNAMIC:
-        physicalCameraMode = ACTOR_KINEMATIC;
+      case CS::Physics::Bullet2::DEBUG_NOTHING:
+        debugMode = CS::Physics::Bullet2::DEBUG_COLLIDERS;
         break;
-
-      case ACTOR_KINEMATIC:
-        physicalCameraMode = ACTOR_FREE_CAMERA;
+      case CS::Physics::Bullet2::DEBUG_COLLIDERS:
+        debugMode = CS::Physics::Bullet2::DEBUG_AABB;
         break;
-
-      case ACTOR_FREE_CAMERA:
-        physicalCameraMode = ACTOR_DYNAMIC;
+      case CS::Physics::Bullet2::DEBUG_AABB:
+        debugMode = CS::Physics::Bullet2::DEBUG_JOINTS;
+        break;
+      case CS::Physics::Bullet2::DEBUG_JOINTS:
+        debugMode = CS::Physics::Bullet2::DEBUG_NOTHING;
         break;
       }
-
-      UpdateCameraMode();
-      return true;
+      bulletSector->SetDebugMode (debugMode);
     }
-
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'p')
+    return true;
+  }
+  else if (code == 'k')
+  {
+    // Toggle collision debug mode
+    if (do_bullet_debug)
     {
-      // Toggle pause mode for dynamic simulation
-      pauseDynamic = !pauseDynamic;
-      if (pauseDynamic)
-        printf ("Dynamic simulation paused\n");
-      else
-        printf ("Dynamic simulation resumed\n");
-      return true;
+      do_bullet_debug = false;
+      do_soft_debug = true;
     }
+    else if (do_soft_debug)
+      do_soft_debug = false;
+    else
+      do_bullet_debug = true;
 
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'o')
+    return true;
+  }
+  else if (code == 'g')
+  {
+    // Toggle gravity.
+    physicalSector->SetGravity (physicalSector->GetGravity().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
+    return true;
+  }
+
+  // Cut operation
+  else if (csKeyEventHelper::GetRawCode (&event) == 'x'
+    && kbd->GetKeyState (CSKEY_CTRL))
+  {
+    // Trace a beam to find if a rigid body was under the mouse cursor
+    csRef<iCamera> camera = view->GetCamera();
+    csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
+    csVector3 v3d = camera->InvPerspective (v2d, 10000);
+    csVector3 startBeam = camera->GetTransform().GetOrigin();
+    csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+
+    CS::Collisions::HitBeamResult hitResult =
+      physicalSector->HitBeam (startBeam, endBeam);
+    if (hitResult.hasHit && hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
     {
-      // Toggle speed of dynamic simulation
-      if (dynamicStepFactor - 1.0 < EPSILON)
-      {
-        dynamicStepFactor = 0.025f;
-        printf ("Dynamic simulation slowed\n");
-      }
-      else
-      {
-        dynamicStepFactor = 1.0f;
-        printf ("Dynamic simulation at normal speed\n");
-      }
-    }
+      // Remove the body and the mesh from the simulation, and put them in the clipboard
 
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'l')
-    {
-      // Toggle dynamic system visual debug mode
-      // TODO
-      if (do_bullet_debug)
-      {
-        switch (debugMode)
-        {
-        case CS::Physics::Bullet2::DEBUG_NOTHING:
-          debugMode = CS::Physics::Bullet2::DEBUG_COLLIDERS;
-          break;
-        case CS::Physics::Bullet2::DEBUG_COLLIDERS:
-          debugMode = CS::Physics::Bullet2::DEBUG_AABB;
-          break;
-        case CS::Physics::Bullet2::DEBUG_AABB:
-          debugMode = CS::Physics::Bullet2::DEBUG_JOINTS;
-          break;
-        case CS::Physics::Bullet2::DEBUG_JOINTS:
-          debugMode = CS::Physics::Bullet2::DEBUG_NOTHING;
-          break;
-        }
-        bulletSector->SetDebugMode (debugMode);
-      }
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == '?')
-    {
-      // Toggle collision debug mode
-      if (do_bullet_debug)
-      {
-        do_bullet_debug = false;
-        do_soft_debug = true;
-      }
-      else if (do_soft_debug)
-        do_soft_debug = false;
-      else
-        do_bullet_debug = true;
+      clipboardBody = hitResult.object->QueryPhysicalBody();
+      clipboardMovable = hitResult.object->GetAttachedMovable();
 
-      return true;
-    }
-    else if (csKeyEventHelper::GetCookedCode (&event) == 'g')
-    {
-      // Toggle gravity.
-      physicalSector->SetGravity (physicalSector->GetGravity().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
-      return true;
-    }
-
-    // Cut operation
-    else if (csKeyEventHelper::GetRawCode (&event) == 'x'
-      && kbd->GetKeyState (CSKEY_CTRL))
-    {
-      // Trace a beam to find if a rigid body was under the mouse cursor
-      csRef<iCamera> camera = view->GetCamera();
-      csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
-      csVector3 v3d = camera->InvPerspective (v2d, 10000);
-      csVector3 startBeam = camera->GetTransform().GetOrigin();
-      csVector3 endBeam = camera->GetTransform().This2Other (v3d);
-
-      CS::Collisions::HitBeamResult hitResult =
-        physicalSector->HitBeam (startBeam, endBeam);
-      if (hitResult.hasHit && hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
-      {
-        // Remove the body and the mesh from the simulation, and put them in the clipboard
-
-        clipboardBody = hitResult.object->QueryPhysicalBody();
-        clipboardMovable = hitResult.object->GetAttachedMovable();
-
-        if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
-        {
-          CS::Physics::iRigidBody* rigidBody = clipboardBody->QueryRigidBody();
-          if (rigidBody->GetState() == CS::Physics::STATE_DYNAMIC)
-          {
-            size_t count = physicalSector->GetRigidBodyCount();
-            physicalSector->RemoveCollisionObject (clipboardBody->QueryRigidBody());
-            //room->GetMeshes()->Remove (clipboardMovable->GetSceneNode()->QueryMesh());
-            if (physicalSector->GetRigidBodyCount() == count)
-              clipboardBody.Invalidate();
-          }
-        }
-        else
-        {
-          CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-          physicalSector->RemoveCollisionObject (softBody);
-        }
-
-        // Update the display of the dynamics debugger
-        //dynamicsDebugger->UpdateDisplay();
-      }
-    }
-
-    // Paste operation
-    else if (csKeyEventHelper::GetRawCode (&event) == 'v'
-      && kbd->GetKeyState (CSKEY_CTRL)
-      && clipboardBody.IsValid())
-    {
-      // Compute the new position of the body
-      csRef<iCamera> camera = view->GetCamera();
-      csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
-      csVector3 v3d = camera->InvPerspective (v2d, 10000);
-      csVector3 startBeam = camera->GetTransform().GetOrigin();
-      csVector3 endBeam = camera->GetTransform().This2Other (v3d);
-
-      csVector3 newPosition = endBeam - startBeam;
-      newPosition.Normalize();
-      csOrthoTransform newTransform = camera->GetTransform();
-      newTransform.SetOrigin (newTransform.GetOrigin() + newPosition * 1.5f);
-
-      // Put back the body from the clipboard to the simulation
       if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {
-        clipboardBody->SetTransform (newTransform);
-        physicalSector->AddCollisionObject (clipboardBody->QueryRigidBody());
+        CS::Physics::iRigidBody* rigidBody = clipboardBody->QueryRigidBody();
+        if (rigidBody->GetState() == CS::Physics::STATE_DYNAMIC)
+        {
+          size_t count = physicalSector->GetRigidBodyCount();
+          physicalSector->RemoveCollisionObject (clipboardBody->QueryRigidBody());
+          //room->GetMeshes()->Remove (clipboardMovable->GetSceneNode()->QueryMesh());
+          if (physicalSector->GetRigidBodyCount() == count)
+            clipboardBody.Invalidate();
+        }
       }
       else
       {
         CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-        physicalSector->AddCollisionObject (softBody);
+        physicalSector->RemoveCollisionObject (softBody);
       }
-
-      clipboardBody = 0;
-      clipboardMovable = 0;
 
       // Update the display of the dynamics debugger
       //dynamicsDebugger->UpdateDisplay();
     }
-    /*
-    #ifdef CS_HAVE_BULLET_SERIALIZER
-    // Save a .bullet file
-    else if (csKeyEventHelper::GetRawCode (&event) == 's'
-    && kbd->GetKeyState (CSKEY_CTRL))
-    {
-    const char* filename = "phystut_world.bullet";
-    if (bulletDynamicSystem->SaveBulletWorld (filename))
-    printf ("Dynamic world successfully saved as file %s\n", filename);
-    else
-    printf ("Problem saving dynamic world to file %s\n", filename);
-
-    return true;
-    }
-    #endif
-    */
-    else if (csKeyEventHelper::GetRawCode (&event) == 'i'
-      && kbd->GetKeyState (CSKEY_CTRL))
-    {
-      printf ("Starting profile...\n");
-      bulletSector->StartProfile();
-      return true;
-    }
-
-    else if (csKeyEventHelper::GetRawCode (&event) == 'o'
-      && kbd->GetKeyState (CSKEY_CTRL))
-    {
-      printf ("Stopping profile...\n");
-      bulletSector->StopProfile();
-      return true;
-    }
-
-    else if (csKeyEventHelper::GetRawCode (&event) == 'p'
-      && kbd->GetKeyState (CSKEY_CTRL))
-    {
-      bulletSector->DumpProfile();
-      return true;
-    }
   }
 
-  if (eventtype == csKeyEventTypeUp)
+  // Paste operation
+  else if (csKeyEventHelper::GetRawCode (&event) == 'v'
+    && kbd->GetKeyState (CSKEY_CTRL)
+    && clipboardBody.IsValid())
   {
-    // Terrain stuff
-    if (terrainFeeder)
-    {
-      if (//kbd->GetKeyState (CSKEY_SHIFT) &&
-        csKeyEventHelper::GetCookedCode (&event) == ']')
-      {
-        if (!terrainMod)
-        {
-          csRef<iCamera> camera = view->GetCamera();
-          csVector3 pos = camera->GetTransform().GetOrigin();
+    // Compute the new position of the body
+    csRef<iCamera> camera = view->GetCamera();
+    csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
+    csVector3 v3d = camera->InvPerspective (v2d, 10000);
+    csVector3 startBeam = camera->GetTransform().GetOrigin();
+    csVector3 endBeam = camera->GetTransform().This2Other (v3d);
 
-          float len = 1;
-          float height = 3;
-          terrainMod = terrainFeeder->AddModifier(pos, len, height);
-        }
-        else
-        {
-          terrainFeeder->RemoveModifier(terrainMod);
-          terrainMod = nullptr;
-        }
+    csVector3 newPosition = endBeam - startBeam;
+    newPosition.Normalize();
+    csOrthoTransform newTransform = camera->GetTransform();
+    newTransform.SetOrigin (newTransform.GetOrigin() + newPosition * 1.5f);
+
+    // Put back the body from the clipboard to the simulation
+    if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
+    {
+      clipboardBody->SetTransform (newTransform);
+      physicalSector->AddCollisionObject (clipboardBody->QueryRigidBody());
+    }
+    else
+    {
+      CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
+      physicalSector->AddCollisionObject (softBody);
+    }
+
+    clipboardBody = 0;
+    clipboardMovable = 0;
+
+    // Update the display of the dynamics debugger
+    //dynamicsDebugger->UpdateDisplay();
+  }
+  else if (csKeyEventHelper::GetRawCode (&event) == 'i'
+    && kbd->GetKeyState (CSKEY_CTRL))
+  {
+    printf ("Starting profile...\n");
+    bulletSector->StartProfile();
+    return true;
+  }
+
+  else if (csKeyEventHelper::GetRawCode (&event) == 'o'
+    && kbd->GetKeyState (CSKEY_CTRL))
+  {
+    printf ("Stopping profile...\n");
+    bulletSector->StopProfile();
+    return true;
+  }
+
+  else if (csKeyEventHelper::GetRawCode (&event) == 'p'
+    && kbd->GetKeyState (CSKEY_CTRL))
+  {
+    bulletSector->DumpProfile();
+    return true;
+  }
+
+  // Terrain stuff
+  if (terrainFeeder)
+  {
+    if (//kbd->GetKeyState (CSKEY_SHIFT) &&
+      code == ']')
+    {
+      if (!terrainMod)
+      {
+        csRef<iCamera> camera = view->GetCamera();
+        csVector3 pos = camera->GetTransform().GetOrigin();
+
+        float len = 1;
+        float height = 3;
+        terrainMod = terrainFeeder->AddModifier(pos, len, height);
+      }
+      else
+      {
+        terrainFeeder->RemoveModifier(terrainMod);
+        terrainMod = nullptr;
       }
     }
+    return true;
+  }
 
-    // particle stuff
-    if (//kbd->GetKeyState (CSKEY_SHIFT) &&
-      csKeyEventHelper::GetCookedCode (&event) == '[')
-    {
-      // spawn particles at the actor's feet
-      float dist = 2 * ActorDimensions.y;
-      float colliderRadius = dist/6;
+  // particle stuff
+  if (//kbd->GetKeyState (CSKEY_SHIFT) &&
+    code == '[')
+  {
+    // spawn particles at the actor's feet
+    float dist = 2 * ActorDimensions.y;
+    float colliderRadius = dist/6;
 
-      csRef<iCamera> cam = view->GetCamera();
-      csVector3 pos = GetPointInFrontOfFeetXZ(dist);
-      csVector3 origin = pos + csVector3 (0, dist, 0);
-      //csVector3 origin = cam->GetTransform().GetOrigin() + csVector3 (0, ActorDimensions.y, 2);
+    csRef<iCamera> cam = view->GetCamera();
+    csVector3 pos = GetPointInFrontOfFeetXZ(dist);
+    csVector3 origin = pos + csVector3 (0, dist, 0);
+    //csVector3 origin = cam->GetTransform().GetOrigin() + csVector3 (0, ActorDimensions.y, 2);
 
-      AddParticles(origin, -1);
+    AddParticles(origin, -1);
 
-      // add collider
-      SpawnSphere(pos + csVector3(0, colliderRadius + EPSILON, 0), colliderRadius, false);
-    }
+    // add collider
+    SpawnSphere(pos + csVector3(0, colliderRadius + EPSILON, 0), colliderRadius, false);
+    return true;
   }
 
   return false;
 }
 
-
 bool PhysDemo::OnMouseDown (iEvent &event)
 {
-  if (csMouseEventHelper::GetButton (&event) == 0)
+  int button = csMouseEventHelper::GetButton (&event);
+  if (selectedItem && selectedItem->GetTemplate().GetPrimaryFunctions().GetSize())
+  {
+    // Use tool
+    ItemFunction* func = selectedItem->GetTemplate().GetPrimaryFunction(button);
+    if (func)
+    {
+      return func->Use(selectedItem);
+    }
+  }
+
+  // Tool has no mouse button overrides
+  if (button == 0)
   {
     // Find the rigid body that was clicked on
     // Compute the end beam points
@@ -435,7 +364,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
   }
 
   // Right mouse button: dragging
-  else if (csMouseEventHelper::GetButton (&event) == 1)
+  else if (button == 1)
   {
     // Find the rigid body that was clicked on
     // Compute the end beam points

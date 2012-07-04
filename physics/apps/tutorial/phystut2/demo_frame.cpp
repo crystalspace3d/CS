@@ -45,6 +45,8 @@ void PhysDemo::Frame()
   csTicks elapsed_time = vc->GetElapsedTicks();
 
   float moveSpeed = environment == ENVIRONMENT_TERRAIN ? 30.0f : 4.0f;
+  
+  static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
 
   const float timeMs = elapsed_time / 1000.0;
   
@@ -52,23 +54,22 @@ void PhysDemo::Frame()
   csOrthoTransform& camTrans = cam->GetTransform();
 
   // Rotate camera
-  if (kbd->GetKeyState (KeyLeft) ||
-    kbd->GetKeyState (KeyRight) ||
+  if (kbd->GetKeyState (KeyLeft) || kbd->GetKeyState(CSKEY_LEFT) ||
+    kbd->GetKeyState (KeyRight) || kbd->GetKeyState(CSKEY_RIGHT) ||
     kbd->GetKeyState (KeyUp) ||
     kbd->GetKeyState (KeyDown))
   {
     float turnAmount = turnSpeed * timeMs;
-    static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis
 
     csVector3 camDir3 = camTrans.GetT2O() * csVector3(0, 0, 1);
     float vertCos = camDir3 * UpVector;
 
     float leftRightAmount = 0;
-    if (kbd->GetKeyState (KeyLeft))
+    if (kbd->GetKeyState (KeyLeft) || kbd->GetKeyState(CSKEY_LEFT))
     {
       leftRightAmount -= turnAmount;
     }
-    if (kbd->GetKeyState (KeyRight))
+    if (kbd->GetKeyState (KeyRight) || kbd->GetKeyState(CSKEY_RIGHT))
     {
       leftRightAmount += turnAmount;
     }
@@ -111,11 +112,11 @@ void PhysDemo::Frame()
   bool gravityOff = physicalSector->GetGravity().SquaredNorm() == 0;
 
   csVector3 newVel(0);
-  if (kbd->GetKeyState (KeyForward))
+  if (kbd->GetKeyState (KeyForward) || kbd->GetKeyState(CSKEY_UP))
   {
     newVel.z += 1;
   }
-  if (kbd->GetKeyState (KeyBack))
+  if (kbd->GetKeyState (KeyBack) || kbd->GetKeyState(CSKEY_DOWN))
   {
     newVel.z -= 1;
   }
@@ -130,9 +131,9 @@ void PhysDemo::Frame()
 
   bool hasMoveDir = newVel.x + newVel.z + newVel.z != 0;
   bool wantsToMove = hasMoveDir | kbd->GetKeyState(KeyJump);
-  if (currentActor)
+  if (player.GetActor())
   {
-    iCollisionObject* colCurrentActor = dynamic_cast<iCollisionObject*>(currentActor);
+    iCollisionObject* colCurrentActor = player.GetObject();
     /*csVector3 aabbMin, aabbMax;
     colCurrentActor->GetAABB(aabbMin, aabbMax);*/
     
@@ -140,7 +141,7 @@ void PhysDemo::Frame()
     if (!wantsToMove)
     {
       // stop any player-controlled movement
-      currentActor->StopMoving();
+      player.GetActor()->StopMoving();
     }
     else
     {
@@ -149,30 +150,30 @@ void PhysDemo::Frame()
         newVel = camTrans.GetT2O() * newVel;
       }
 
-      bool freeFall = currentActor->IsFreeFalling();
+      bool freeFall = player.GetActor()->IsFreeFalling();
       bool gravityOff = physicalSector->GetGravity().SquaredNorm() == 0;
 
       // actor is on ground, flying or has air control
-      if (hasMoveDir && (!freeFall || currentActor->GetAirControlFactor() > 0)) 
+      if (hasMoveDir && (!freeFall || player.GetActor()->GetAirControlFactor() > 0)) 
       {
         // wants to move and may move
         if (!gravityOff)
         {
           // Only walk horizontally when gravity applies
           csVector2 newVel2 = HORIZONTAL_COMPONENT(newVel);
-          currentActor->WalkHorizontal(newVel2);
+          player.GetActor()->WalkHorizontal(newVel2);
           //dynamicActor->Walk(newVel);
         }
         else
         {
           // move freely when gravity is off
-          currentActor->Walk(newVel);
+          player.GetActor()->Walk(newVel);
         }
       }
-      if (!currentActor->IsFreeFalling() && kbd->GetKeyState(KeyJump))
+      if (!player.GetActor()->IsFreeFalling() && kbd->GetKeyState(KeyJump))
       {
         // Jump
-        currentActor->Jump();
+        player.GetActor()->Jump();
       }
     }
   }
@@ -203,21 +204,21 @@ void PhysDemo::Frame()
 
   if (!pauseDynamic)
   {
-    if (currentActor)
+    if (player.GetActor())
     {
-      currentActor->UpdatePreStep(timeMs * dynamicStepFactor);
+      player.GetActor()->UpdatePreStep(timeMs * dynamicStepFactor);
     }
     physicalSector->Step (timeMs * dynamicStepFactor);
-    if (currentActor)
+    if (player.GetActor())
     {
-      currentActor->UpdatePostStep(timeMs * dynamicStepFactor);
+      player.GetActor()->UpdatePostStep(timeMs * dynamicStepFactor);
     }
   }
 
-  if (currentActor)
+  if (player.GetActor())
   {
       // camera follows actor
-      camTrans.SetOrigin(dynamic_cast<iCollisionObject*>(currentActor)->GetTransform().GetOrigin());
+    camTrans.SetOrigin(player.GetObject()->GetTransform().GetOrigin());
   }
 
   GripContactBodies();
@@ -246,7 +247,7 @@ void PhysDemo::Frame()
     hudManager->GetStateDescriptions()->Push (csString ("Camera mode: dynamic"));
     break;
 
-  case ACTOR_FREE_CAMERA:
+  case ACTOR_NOCLIP:
     hudManager->GetStateDescriptions()->Push (csString ("Camera mode: free"));
     break;
 

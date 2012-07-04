@@ -73,6 +73,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
+  bool csBulletCollisionPortal::CanTraverse(csBulletCollisionObject* obj)
+  {
+    // Static objects can't traverse portals
+    return obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL && !obj->QueryPhysicalBody()->IsStatic();
+  }
+
   void csBulletCollisionPortal::UpdateCollisions (csBulletSector* sector)
   {
     csRefArray<csBulletCollisionObject> oldObjects (objects);
@@ -86,19 +92,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     for (int j = 0; j < ghostPortal->getNumOverlappingObjects (); j++)
     {
       //btTransform tran = ghostPortal->getWorldTransform ();
-      btCollisionObject* obj = ghostPortal->getOverlappingObject (j);
-      iCollisionObject* csObj = static_cast<iCollisionObject*> (obj->getUserPointer ());
-      csBulletCollisionObject* csBulletObj = dynamic_cast<csBulletCollisionObject*> (csObj);
+      btCollisionObject* btObj = ghostPortal->getOverlappingObject (j);
+      iCollisionObject* iObj = static_cast<iCollisionObject*> (btObj->getUserPointer ());
+      csBulletCollisionObject* obj = dynamic_cast<csBulletCollisionObject*> (iObj);
       csBulletCollisionObject* newObject;
 
-      // Static objects can't traverse portals
-      if (!csBulletObj || csBulletObj->GetObjectType() == COLLISION_OBJECT_PHYSICAL_STATIC) continue;
+      if (!CanTraverse(obj)) continue;
 
       
       // Phsical objects can traverse portals
-      if (csBulletObj->GetObjectType () == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+      if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
       {
-        iPhysicalBody* pb = csObj->QueryPhysicalBody ();
+        iPhysicalBody* pb = obj->QueryPhysicalBody ();
         if (pb->GetBodyType () == BODY_SOFT)
         {
           //use AABB
@@ -255,11 +260,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       } // Physical body.
 
       // Single object.
-      size_t index = oldObjects.Find (csBulletObj);
+      size_t index = oldObjects.Find (obj);
       if (index != csArrayItemNotFound)
       {
         // Check if it has traversed the portal
-        csOrthoTransform transform = csObj->GetTransform ();
+        csOrthoTransform transform = obj->GetTransform ();
         csVector3 newPosition = transform.GetOrigin ();
         //csVector3 oldPosition = oldTrans[index].GetOrigin ();
         csVector3 orien1 = newPosition - portal->GetWorldSphere ().GetCenter ();
@@ -272,38 +277,38 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           if (portal->GetSector () != sector->GetSector())
           {
             // Move the body to the new sector.
-            targetSector->RemoveCollisionObject (csBulletObj->objectCopy);
-            sector->RemoveCollisionObject (csObj);
-            targetSector->AddCollisionObject (csObj);
+            targetSector->RemoveCollisionObject (obj->objectCopy);
+            sector->RemoveCollisionObject (obj);
+            targetSector->AddCollisionObject (obj);
           }
-          if (csObj->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+          if (obj->QueryPhysicalBody() && obj->QueryPhysicalBody()->QueryRigidBody())
           {
-            iPhysicalBody* pb = csObj->QueryPhysicalBody ();
+            iPhysicalBody* pb = obj->QueryPhysicalBody ();
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
             rb->SetLinearVelocity (warpTrans.GetT2O () * rb->GetLinearVelocity ());
             rb->SetAngularVelocity (warpTrans.GetT2O () * rb->GetAngularVelocity ()); 
             /*rb->SetLinearDamping (rb->GetLinearDamping ());
             rb->SetAngularDamping (rb->GetAngularDamping ());*/
           }
-          csObj->SetTransform (transform);
+          obj->SetTransform (transform);
 
           continue;
         }
         else
         {
-          AddObject (csBulletObj);
-          newObject = csBulletObj->objectCopy;
+          AddObject (obj);
+          newObject = obj->objectCopy;
         }
 
       }
       // Create a new copy.
       else
       {
-        AddObject (csBulletObj);
-        if (csObj->IsPhysicalObject())
+        AddObject (obj);
+        if (obj->IsPhysicalObject())
         {
           btVector3 localInertia (0.0f, 0.0f, 0.0f);
-          iPhysicalBody* pb = csObj->QueryPhysicalBody ();
+          iPhysicalBody* pb = obj->QueryPhysicalBody ();
           if (pb->GetBodyType () == BODY_RIGID)
           {
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
@@ -337,9 +342,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
             //TODO Soft Body
           }
         }
-        else if (csObj->GetObjectType () == COLLISION_OBJECT_GHOST || csObj->GetObjectType () == COLLISION_OBJECT_ACTOR)
+        else if (obj->GetObjectType () == COLLISION_OBJECT_GHOST || obj->GetObjectType () == COLLISION_OBJECT_ACTOR)
         {
-          GhostCollisionObjectProperties props(csBulletObj->GetCollider());
+          GhostCollisionObjectProperties props(obj->GetCollider());
           props.SetName ("ghost copy");
           props.SetCollisionGroup (sector->sys->FindCollisionGroup("Portal"));
           
@@ -349,9 +354,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
 
           // TODO: When traversing forth and back, it might still have a copy that is saved in the other portal
-          CS_ASSERT (!csBulletObj->objectCopy);
-          csBulletObj->objectCopy = newObject;
-          newObject->objectOrigin = csBulletObj;
+          CS_ASSERT (!obj->objectCopy);
+          obj->objectCopy = newObject;
+          newObject->objectOrigin = obj;
 
           targetSector->AddCollisionObject (co);
         }
@@ -359,12 +364,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       }
 
       // And set the transform and record old transforms.
-      SetInformationToCopy (csBulletObj, newObject, warpTrans);
-      if (csBulletObj->movable)
+      SetInformationToCopy (obj, newObject, warpTrans);
+      if (obj->movable)
       {
-        csBulletObj->movable->GetSceneNode ()->QueryMesh ()->PlaceMesh ();
+        obj->movable->GetSceneNode ()->QueryMesh ()->PlaceMesh ();
       }
-      transforms.Push (csObj->GetTransform ());
+      transforms.Push (obj->GetTransform ());
     }
 
     // Remove the rest objects from portal list. 

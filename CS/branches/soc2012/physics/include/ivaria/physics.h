@@ -151,6 +151,12 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual csVector3 GetLinearVelocity (size_t index = 0) const = 0;
 
   /**
+   * Get whether this object is static (or dynamic, if false).
+   * Static objects are not moved by any simulation.
+   */
+  virtual bool IsStatic() const = 0;
+
+  /**
    * Set the friction of this body.
    * [0,1] for soft body.
    */
@@ -183,7 +189,7 @@ struct iRigidBody : public virtual iPhysicalBody
   SCF_INTERFACE (CS::Physics::iRigidBody, 1, 0, 0);
 
   /// Get the current state of the body.
-  virtual RigidBodyState GetState () = 0;
+  virtual RigidBodyState GetState () const = 0;
   
   /// Set the current state of the body.
   virtual bool SetState (RigidBodyState state) = 0;

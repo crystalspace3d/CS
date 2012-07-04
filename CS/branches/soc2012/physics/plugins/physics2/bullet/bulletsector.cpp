@@ -180,8 +180,7 @@ void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* objec
       AddCollisionActor(static_cast<csBulletCollisionActor*>(obj));
     }
     break;
-  case CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC:
-  case CS::Collisions::COLLISION_OBJECT_PHYSICAL_STATIC:
+  case CS::Collisions::COLLISION_OBJECT_PHYSICAL:
     {
       iPhysicalBody* phyBody = obj->QueryPhysicalBody();
       //int cflags = obj->btObject->getCollisionFlags();

@@ -55,9 +55,10 @@ public:
 
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return this;}
   
-  virtual CS::Collisions::CollisionObjectType GetObjectType () const {return CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC;}
+  virtual CS::Collisions::CollisionObjectType GetObjectType () const {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
 
   virtual CS::Physics::PhysicalBodyType GetBodyType () const = 0;
+  virtual bool IsStatic() const { return false; }
 
   virtual CS::Physics::iRigidBody* QueryRigidBody () = 0;
   virtual CS::Physics::iSoftBody* QuerySoftBody () = 0;

@@ -41,7 +41,6 @@ friend class csBulletJoint;
 friend class csBulletSector;
 friend class csBulletCollisionPortal;
   
-using csBulletCollisionObject::QueryCollisionObject;
 using csPhysicalBody::GetFriction;
 using csPhysicalBody::SetFriction;
   

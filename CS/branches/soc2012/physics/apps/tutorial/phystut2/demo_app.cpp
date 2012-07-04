@@ -11,21 +11,24 @@
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
+PhysDemo physDemo;
+
 PhysDemo::PhysDemo()
   : DemoApplication ("CrystalSpace.PhysTut2"),
-    isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
-    do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
-    pauseDynamic (false), dynamicStepFactor (1.0f),
-    debugMode (Bullet2::DEBUG_COLLIDERS),
-    dragging (false), softDragging (false),
-    moveSpeed(7.f),
-    turnSpeed(2.f),
-    actorAirControl(.2f),
-    //physicalCameraMode (ACTOR_KINEMATIC)
-    physicalCameraMode (ACTOR_DYNAMIC)
-    ,
-    defaultEnvironmentName("terrain")
-    //defaultEnvironmentName("portals")
+  isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
+  do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
+  pauseDynamic (false), dynamicStepFactor (1.0f),
+  debugMode (Bullet2::DEBUG_COLLIDERS),
+  dragging (false), softDragging (false),
+  moveSpeed(7.f),
+  turnSpeed(2.f),
+  selectedItem(nullptr),
+  actorAirControl(.2f),
+  //physicalCameraMode (ACTOR_KINEMATIC)
+  physicalCameraMode (ACTOR_DYNAMIC)
+  ,
+  defaultEnvironmentName("terrain")
+  //defaultEnvironmentName("portals")
 {
 }
 
@@ -46,7 +49,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   // Checking for choosen dynamic system
   csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
   phys_engine_name = clp->GetOption ("phys_engine");
-  
+
   phys_engine_name = "Bullet";
   csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry());
   physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet2");
@@ -77,14 +80,14 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   environment = GetEnvironmentByName(levelName);
   if (!environment)
   {
-      csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to \"%s\"\n",
-          CS::Quote::Single (levelName.GetData()),
-          CS::Quote::Single ("portals"),
-          CS::Quote::Single ("box"),
-          CS::Quote::Single ("terrain"),
-          defaultEnvironmentName.GetData());
-      //environment = ENVIRONMENT_PORTALS;
-      environment = GetEnvironmentByName(defaultEnvironmentName);
+    csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to \"%s\"\n",
+      CS::Quote::Single (levelName.GetData()),
+      CS::Quote::Single ("portals"),
+      CS::Quote::Single ("box"),
+      CS::Quote::Single ("terrain"),
+      defaultEnvironmentName.GetData());
+    //environment = ENVIRONMENT_PORTALS;
+    environment = GetEnvironmentByName(defaultEnvironmentName);
   }
 
   if (!physicalSystem)
@@ -130,12 +133,12 @@ bool PhysDemo::Application()
     CreatePortalRoom();
     view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3.5f));
     break;
-    
+
   case ENVIRONMENT_BOX:
     CreateBoxRoom();
     view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3));
     break;
-    
+
   case ENVIRONMENT_TERRAIN:
     CreateTerrainRoom();
     //view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 30, -3));
@@ -172,70 +175,96 @@ bool PhysDemo::Application()
   // Initialize the camera
   UpdateCameraMode();
 
-  //CreateGhostCylinder();
-
-  // Initialize the HUD manager
-  hudManager->GetKeyDescriptions()->Empty();
-  hudManager->GetKeyDescriptions()->Push ("r: reset");
-
-  //hudManager->GetKeyDescriptions()->Push ("b: spawn a box");
-  //hudManager->GetKeyDescriptions()->Push ("a: spawn a capsule");
-  hudManager->GetKeyDescriptions()->Push ("c: spawn a cylinder");
-  hudManager->GetKeyDescriptions()->Push ("n: spawn a cone");
- 
-  hudManager->GetKeyDescriptions()->Push ("t: spawn capsule");
-  hudManager->GetKeyDescriptions()->Push ("v: spawn a sphere");
-  //hudManager->GetKeyDescriptions()->Push ("v: spawn a convex mesh");
-  hudManager->GetKeyDescriptions()->Push ("m: spawn a static concave mesh");
-  
-  hudManager->GetKeyDescriptions()->Push ("q: spawn a compound body");
-  hudManager->GetKeyDescriptions()->Push ("j: spawn a joint");
-  hudManager->GetKeyDescriptions()->Push ("k: spawn a filter body");
-  
-  hudManager->GetKeyDescriptions()->Push ("h: spawn a chain");
-  hudManager->GetKeyDescriptions()->Push ("e: spawn a Krystal's ragdoll");
-  hudManager->GetKeyDescriptions()->Push ("': spawn a Frankie's ragdoll");
-
-  if (isSoftBodyWorld)
+  // Initialize Player items
+  CreateItemTemplates();
+  for (size_t i = 0; i < ItemMgr::Instance->GetTemplateCount(); ++i)
   {
-    hudManager->GetKeyDescriptions()->Push ("y: spawn a rope");
-    hudManager->GetKeyDescriptions()->Push ("u: spawn a cloth");
-    hudManager->GetKeyDescriptions()->Push ("i: spawn a soft body");
+    ItemTemplate& templ = ItemMgr::Instance->GetTemplate(i);
+    player.GetInventory().AddItem(templ);
   }
-  hudManager->GetKeyDescriptions()->Push ("SPACE: Jump");
-  
-  hudManager->GetKeyDescriptions()->Push ("left mouse: fire!");
-  hudManager->GetKeyDescriptions()->Push ("right mouse: drag object");
-  hudManager->GetKeyDescriptions()->Push ("CTRL-x: cut selected object");
-  hudManager->GetKeyDescriptions()->Push ("CTRL-v: paste object");
 
-  hudManager->GetKeyDescriptions()->Push ("f: toggle camera modes");
-  hudManager->GetKeyDescriptions()->Push ("p: pause the simulation");
-  hudManager->GetKeyDescriptions()->Push ("o: toggle speed of simulation");
-  hudManager->GetKeyDescriptions()->Push ("l: toggle Bullet debug display");
-  
-  hudManager->GetKeyDescriptions()->Push ("?: toggle display of collisions");
-  hudManager->GetKeyDescriptions()->Push ("g: toggle gravity");
-/*  
-#ifdef CS_HAVE_BULLET_SERIALIZER
-  if (phys_engine_id == BULLET_ID)
-    hudManager->GetKeyDescriptions()->Push ("CTRL-s: save the dynamic world");
-#endif
-*/
-  /*
-  if (phys_engine_id == BULLET_ID)
-    hudManager->GetKeyDescriptions()->Push ("CTRL-n: next environment");
-  */
-  
-  hudManager->GetKeyDescriptions()->Push ("CTRL-i: start profiling");
-  hudManager->GetKeyDescriptions()->Push ("CTRL-o: stop profiling");
-  hudManager->GetKeyDescriptions()->Push ("CTRL-p: dump profile");
-  
+  // Initialize HUD
+  SetupHUD();
+
 
   // Run the application
   Run();
 
   return true;
+}
+
+void PhysDemo::SetupHUD()
+{
+  // Setup the descriptions in the HUD
+  iStringArray& desc = *hudManager->GetKeyDescriptions();
+  desc.Empty();
+  
+  if (selectedItem && selectedItem->GetTemplate().GetPrimaryFunctions().GetSize())
+  {
+    ItemFunction* func;
+    func = selectedItem->GetTemplate().GetPrimaryFunction(0);
+    desc.Push (csString("Left Mouse Button: ") + func->GetName());
+    func = selectedItem->GetTemplate().GetPrimaryFunction(1);
+    desc.Push (csString("Right Mouse Button: ") + func->GetName());
+  }
+  else
+  {
+    desc.Push ("Left Mouse: fire!");
+    desc.Push ("Right Mouse: drag object");
+  }
+  
+  desc.Push ("Q, E, PGUP, PGDN: Pan Camera");
+  desc.Push ("W, A, S, D: Move");
+  desc.Push ("SPACE: Jump");
+
+  desc.Push ("R: reset");
+
+  desc.Push ("CTRL-x: cut selected object");
+  desc.Push ("CTRL-v: paste object");
+
+  desc.Push ("C: toggle camera modes");
+  desc.Push ("P: pause the simulation");
+  desc.Push ("O: toggle speed of simulation");
+  desc.Push ("L: toggle Bullet debug display");
+
+  desc.Push ("K: toggle display of collisions");
+  desc.Push ("G: toggle gravity");
+  /*  
+  #ifdef CS_HAVE_BULLET_SERIALIZER
+  if (phys_engine_id == BULLET_ID)
+  desc.Push ("CTRL-s: save the dynamic world");
+  #endif
+  */
+  /*
+  if (phys_engine_id == BULLET_ID)
+  desc.Push ("CTRL-n: next environment");
+  */
+
+  desc.Push ("CTRL-i: start profiling");
+  desc.Push ("CTRL-o: stop profiling");
+  desc.Push ("CTRL-p: dump profile");
+  
+  if (selectedItem)
+  {
+    ItemTemplate& templ = selectedItem->GetTemplate();
+    desc.Push ("--Current Tool (" + templ.GetName() + ")--");
+    for (size_t i = 0; i < templ.GetFunctionCount(); ++i)
+    {
+      ItemFunction* func = templ.GetSecondaryFunction(i);
+      desc.Push (csString().Format(" F%d: %s", i+1, func->GetName().GetData()));
+    }
+  }
+  else
+  {
+    desc.Push ("--(No Tool selected)--");
+  }
+
+  desc.Push ("--Tools--");
+  for (size_t i = 0; i < player.GetInventory().GetItems().GetSize(); ++i)
+  {
+    Item* item = player.GetInventory().GetItem(i);
+    desc.Push (csString().Format(" %d: %s", i+1, item->GetName()));
+  }
 }
 
 
@@ -262,7 +291,7 @@ void PhysDemo::GripContactBodies()
       else
       {
         iSoftBody* sb = pb->QuerySoftBody();
-	sb->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
+        sb->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
         //sb->SetLinearVelocity (csVector3 (0,0,-1.0f));
       }
     }
@@ -272,13 +301,9 @@ void PhysDemo::GripContactBodies()
 void PhysDemo::UpdateCameraMode()
 {
   const csOrthoTransform& tc = view->GetCamera()->GetTransform();
-  
-  if (currentActor)
-  {
-    // remove current actor
-    physicalSector->RemoveCollisionObject(dynamic_cast<iCollisionObject*>(currentActor));
-  }
-  
+
+  iCollisionObject* lastActorObj = player.GetObject();
+
   switch (physicalCameraMode)
   {
     // The camera is controlled by a rigid body
@@ -293,27 +318,18 @@ void PhysDemo::UpdateCameraMode()
         props.SetMass(csScalar(80.));
         props.SetElasticity(csScalar(0.1));
         props.SetFriction(csScalar(1.));
-        props.SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
-        
+
+        props.SetAirControlFactor(actorAirControl);
         props.SetStepHeight(csScalar(0.1));
-        
+
         dynamicActor = physicalSystem->CreateDynamicActor(&props);
       }
 
       csOrthoTransform trans(tc);
       dynamicActor->SetTransform (trans);
       physicalSector->AddCollisionObject(dynamicActor);
-      
-      dynamicActor->SetAirControlFactor(actorAirControl);
 
-      currentActor = dynamicActor;
-      break;
-    }
-
-    // The camera is free
-  case ACTOR_FREE_CAMERA:
-    {
-      currentActor = nullptr;
+      player.SetObject(dynamicActor);
       break;
     }
 
@@ -324,15 +340,16 @@ void PhysDemo::UpdateCameraMode()
         //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y/2);
         csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
         //csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
-        
+
         /*csOrthoTransform trans;
         trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
         csRef<CS::Collisions::iColliderCompound> parent = physicalSystem->CreateColliderCompound ();
         parent->AddCollider(collider, trans);
         CollisionActorProperties props(parent);*/
         CollisionActorProperties props(collider);
-        props.SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
-        
+        props.SetAirControlFactor(actorAirControl);
+        props.SetJumpSpeed(moveSpeed);
+
         kinematicActor = physicalSystem->CreateCollisionActor(&props);
       }
 
@@ -341,16 +358,59 @@ void PhysDemo::UpdateCameraMode()
       trans.SetOrigin(tc.GetOrigin());
       kinematicActor->SetTransform(trans);
       //kinematicActor->SetTransform(tc);
-      
+
       physicalSector->AddCollisionObject(kinematicActor);
-      kinematicActor->SetJumpSpeed(moveSpeed);
-      
-      currentActor = kinematicActor;
+      kinematicActor->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
+
+      player.SetObject(kinematicActor);
     }
     break;
 
   default:
     break;
+  }
+
+  if (physicalCameraMode != ACTOR_NOCLIP)
+  {   
+    if (lastActorObj)
+    {
+      // remove previous actor
+      physicalSector->RemoveCollisionObject(lastActorObj);
+    }
+    player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
+  }
+  else
+  {
+    // The camera is free
+    player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("None"));
+    physicalSector->SetGravity(0);
+  }
+}
+
+bool PhysDemo::IsDynamic(CS::Collisions::iCollisionObject* obj) const
+{
+  return 
+    obj->QueryPhysicalBody() &&
+    (
+    !obj->QueryPhysicalBody()->QueryRigidBody() || 
+    obj->QueryPhysicalBody()->QueryRigidBody()->GetState() == STATE_DYNAMIC
+    );
+}
+
+bool PhysDemo::IsActor(CS::Collisions::iCollisionObject* obj) const
+{
+  return obj->QueryActor();
+}
+
+void PhysDemo::ResetWorld()
+{
+  for (int i = physicalSector->GetCollisionObjectCount() - 1; i >= 0; --i)
+  {
+    iCollisionObject* obj = physicalSector->GetCollisionObject(i);
+    if (IsDynamic(obj) && !IsActor(obj))
+    {
+      physicalSector->RemoveCollisionObject(obj);
+    }
   }
 }
 
@@ -370,7 +430,7 @@ bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groun
 bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
 {
   static const float groundAngleCosThresh = .7f;
-  
+
   // Find any objects that can at least remotely support the object
   csArray<CollisionData> collisions;
   physicalSector->CollisionTest(obj, collisions);
@@ -379,7 +439,7 @@ bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
   for (size_t i = 0; i < collisions.GetSize (); ++i)
   {
     CollisionData& coll = collisions[i];
-    
+
     int dir = coll.objectA == obj ? 1 : -1;
 
     float groundAngleCos = coll.normalWorldOnB * UpVector;
@@ -396,7 +456,7 @@ bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
 
 CS_IMPLEMENT_APPLICATION
 
-int main (int argc, char* argv[])
+  int main (int argc, char* argv[])
 {
-  return PhysDemo().Main(argc, argv);
+  return physDemo.Main(argc, argv);
 }

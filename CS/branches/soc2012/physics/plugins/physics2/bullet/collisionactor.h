@@ -56,9 +56,10 @@ public:
   virtual ~csBulletCollisionActor ();
 
   virtual iObject* QueryObject (void) { return (iObject*) this; }
+
   //iCollisionObject
-  virtual CS::Collisions::iCollisionObject* QueryCollisionObject () {return dynamic_cast<csBulletCollisionObject*> (this);}
-  virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return nullptr;}
+  virtual CS::Collisions::iCollisionObject* QueryCollisionObject () { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
+  virtual CS::Collisions::iActor* QueryActor () { return dynamic_cast<CS::Collisions::iActor*>(this); }
 
   virtual bool IsPhysicalObject() const { return false; }
 

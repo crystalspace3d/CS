@@ -36,8 +36,6 @@ class csBulletSoftBody : public scfImplementationExt2<csBulletSoftBody,
   friend class csBulletJoint;
   friend class csBulletSector;
   friend class csBulletCollisionPortal;
-  
-  using csBulletCollisionObject::QueryCollisionObject;
 
   using csPhysicalBody::Enable;
   using csPhysicalBody::Disable;

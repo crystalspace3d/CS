@@ -53,6 +53,7 @@ public:
   virtual iObject* QueryObject (void) { return (iObject*) this; }
   virtual CS::Collisions::iCollisionObject* QueryCollisionObject () { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return nullptr;}
+  virtual CS::Collisions::iActor* QueryActor () {return nullptr;}
 
   /// Returns the sector to which is this object has been added or nullptr, if not in world
   virtual CS::Collisions::iCollisionSector* GetSector () const { return sector; }

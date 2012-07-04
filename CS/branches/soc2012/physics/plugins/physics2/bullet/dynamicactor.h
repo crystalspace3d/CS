@@ -63,6 +63,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool RemoveBulletObject();
     void RebuildObject();
 
+    // ##########################################################################
+    // iActor stuff
+    virtual CS::Collisions::iCollisionObject* QueryCollisionObject() { return dynamic_cast<CS::Collisions::iCollisionObject*>(this); }
+    
+    virtual CS::Collisions::iActor* QueryActor () { return dynamic_cast<CS::Collisions::iActor*>(this); }
+
     /// Update actor
     virtual void UpdatePreStep (csScalar delta);
     virtual void UpdatePostStep (csScalar delta);
@@ -80,7 +86,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       if (!IsFreeFalling())
       {
-        SetLinearVelocity(0);
+        csVector3 zero(0);
+
+        SetLinearVelocity(zero);
       }
     }
 

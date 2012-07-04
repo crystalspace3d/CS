@@ -13,10 +13,12 @@
 #include "imesh/animnode/ragdoll2.h"
 #include "imesh/modifiableterrain.h"
 
+#include "agent.h"
+
 // Actor/Camera modes
 #define ACTOR_DYNAMIC 1
 #define ACTOR_KINEMATIC 2
-#define ACTOR_FREE_CAMERA 3
+#define ACTOR_NOCLIP 3
 
 // Levels
 #define ENVIRONMENT_NONE 0
@@ -59,6 +61,7 @@ static const csVector3 ActorDimensions(0.3f, 1.8f, 0.3f);
 
 class PhysDemo : public CS::Utility::DemoApplication
 {
+public:
 private:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
 
@@ -105,7 +108,8 @@ private:
   float moveSpeed, turnSpeed;
   int physicalCameraMode;
 
-  CS::Collisions::iActor* currentActor;
+  Agent player;
+  Item* selectedItem;
   csRef<CS::Physics::iDynamicActor> dynamicActor;
   csRef<CS::Collisions::iCollisionActor> kinematicActor;
 
@@ -144,6 +148,7 @@ private:
   bool OnMouseDown (iEvent &event);
   bool OnMouseUp (iEvent &event);
 
+public:
   // Camera
   void UpdateCameraMode();
 
@@ -164,7 +169,6 @@ private:
   CS::Physics::iRigidBody* SpawnConvexMesh (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCompound (bool setVelocity = true);
   CS::Physics::iJoint* SpawnJointed();
-  CS::Physics::iRigidBody* SpawnFilterBody (bool setVelocity = true);
   void SpawnChain();
   void LoadFrankieRagdoll();
   void LoadKrystalRagdoll();
@@ -193,6 +197,9 @@ private:
   // particles
   void AddParticles(const csVector3& origin, float yFactor = 1, int num = 256);
 
+  // removes everything and resets things
+  void ResetWorld();
+
 public:
   PhysDemo();
   virtual ~PhysDemo();
@@ -201,9 +208,13 @@ public:
   bool OnInitialize (int argc, char* argv[]);
   bool Application();
 
+  void SetupHUD();
+
   friend class MouseAnchorAnimationControl;
   csRef<CS::Physics::iAnchorAnimationControl> grabAnimationControl;
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Transformation utilities
 
   /**
    * The location of the actor's head, i.e. the location of the camera
@@ -249,13 +260,26 @@ public:
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
   csVector3 GetPointInFrontOfFeetXZ(float distance) const { return GetActorFeetPos() + (GetCameraDirectionXZ() * distance); }
-  
 
   /// Find the ground contact point beneath pos
   bool GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const;
+  
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Object utilities
 
   /// Test whether there are any objects beneath obj (that obj can collide with)
   bool TestOnGround(CS::Collisions::iCollisionObject* obj);
+
+  bool IsDynamic(CS::Collisions::iCollisionObject* obj) const;
+
+  bool IsActor(CS::Collisions::iCollisionObject* obj) const;
+  
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Items
+
+  void CreateItemTemplates();
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1
@@ -270,5 +294,7 @@ public:
 private:
   PhysDemo* simple;
 };
+
+extern PhysDemo physDemo;
 
 #endif

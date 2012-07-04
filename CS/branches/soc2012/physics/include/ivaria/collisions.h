@@ -72,6 +72,7 @@ static const csVector3 UpVector(0, 1, 0);
 struct csConvexResult;
 struct iCollisionCallback;
 struct iCollisionObject;
+struct iActor;
 struct iCollisionSector;
 struct iCollisionSystem;
 
@@ -186,6 +187,9 @@ struct iCollisionObject : public virtual iBase
 
   /// Return the physical body pointer if it's a physical body, or NULL.
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () = 0;
+
+  /// Return the actor pointer if it's an actor, or NULL.
+  virtual iActor* QueryActor () = 0;
 
   /// Returns the sector to which is this object has been added or nullptr, if not in world
   virtual iCollisionSector* GetSector () const = 0;
@@ -317,10 +321,12 @@ struct iCollisionTerrain : public virtual iBase
 };
 
 
-struct iActor
+struct iActor : public virtual iBase
 {
   SCF_INTERFACE (CS::Collisions::iActor, 1, 0, 0);
   
+  virtual iCollisionObject* QueryCollisionObject() = 0;
+
   /// Take care of actor-specific stuff, before the simulation step
   virtual void UpdatePreStep (float delta) = 0;
   

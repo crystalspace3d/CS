@@ -16,10 +16,9 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __COMPONENTS_BASE_H__
-#define __COMPONENTS_BASE_H__
+#ifndef __COMPONENTS_CS3DENGINE_H__
+#define __COMPONENTS_CS3DENGINE_H__
 
-#include "csutil/csbaseeventh.h"
 #include "csutil/scf_implementation.h"
 #include "ieditor/editor.h"
 #include "ieditor/menu.h"
@@ -32,8 +31,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
 
 class CS3DEngine
-  : public scfImplementation1<CS3DEngine, iEditorComponent>,
-    public csBaseEventHandler
+  : public scfImplementation1<CS3DEngine, iEditorComponent>
 {
 public:
   CS3DEngine (iBase* parent);
@@ -45,9 +43,6 @@ public:
   virtual void Save (iDocumentNode* node) const;
   virtual bool Load (iDocumentNode* node);
   
-  //-- iEventHandler
-  virtual bool HandleEvent (iEvent &event);
-
 private:
   bool ReportError (const char* description, ...) const
   {
@@ -77,11 +72,9 @@ private:
 
   csRef<iSubMenu> fileMenu;
   csRef<iSubMenu> editMenu;
-  csRef<iMenuItem> separator;
-  csRef<iMenuItem> quitItem;
 };
 
 }
 CS_PLUGIN_NAMESPACE_END(CSEditor)
 
-#endif // __COMPONENTS_BASE_H__
+#endif // __COMPONENTS_CS3DENGINE_H__

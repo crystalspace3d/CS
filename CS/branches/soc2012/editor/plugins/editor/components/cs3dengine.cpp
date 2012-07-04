@@ -82,19 +82,11 @@ bool CS3DEngine::Initialize (iEditor* editor)
   fileMenu = editor->GetMenuManager ()->GetSubMenu ("&File");
   editMenu = editor->GetMenuManager ()->GetSubMenu ("&Edit");
 
-/*
-  separator = fileMenu->AppendSeparator ();
-  quitItem = fileMenu->AppendItem ("&Quit", "quit");
-
-  csEventID events[] = { quitItem->GetEventID (), CS_EVENTLIST_END };
-  RegisterQueue (editor->GetEventQueue (), events);
-*/
   return true;
 }
 
 void CS3DEngine::Update ()
 {
-
 }
 
 void CS3DEngine::Save (iDocumentNode* node) const
@@ -103,11 +95,6 @@ void CS3DEngine::Save (iDocumentNode* node) const
 }
 
 bool CS3DEngine::Load (iDocumentNode* node)
-{
-  return false;
-}
-
-bool CS3DEngine::HandleEvent (iEvent &event)
 {
   return false;
 }

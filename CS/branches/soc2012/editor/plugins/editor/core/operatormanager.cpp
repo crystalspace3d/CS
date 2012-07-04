@@ -20,6 +20,7 @@
 #include "csutil/csevent.h"
 #include "csutil/objreg.h"
 #include "csutil/scf.h"
+#include "csutil/stringquote.h"
 
 #include "ieditor/context.h"
 #include "iutil/document.h"
@@ -40,7 +41,8 @@ OperatorManager::OperatorManager (iObjectRegistry* obj_reg, Editor* editor)
   editor->GetContext ()->GetEventQueue ()->RegisterListener (this);
 
   // Register for the input events, for Handle ().
-  editor->GetContext ()->GetEventQueue ()->RegisterListener (this, nameRegistry->GetID ("crystalspace.input"));
+  editor->GetContext ()->GetEventQueue ()->RegisterListener
+    (this, nameRegistry->GetID ("crystalspace.input"));
 }
 
 OperatorManager::~OperatorManager ()

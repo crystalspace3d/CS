@@ -38,7 +38,8 @@ BEGIN_EVENT_TABLE (Window, wxSplitterWindow)
   EVT_SIZE (Window::OnSize)
 END_EVENT_TABLE ()
 
-Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, bool hor)
+Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent,
+		bool hor)
   : wxSplitterWindow (parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
 		      wxSP_3D | wxSP_LIVE_UPDATE | wxCLIP_CHILDREN), 
   object_reg (obj_reg), editor (editor), horizontal (hor)
@@ -47,7 +48,8 @@ Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, boo
   Initialize (control);
 }
 
-Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, ViewControl* control, bool hor)
+Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent,
+		ViewControl* control, bool hor)
   : wxSplitterWindow (parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
 		      wxSP_3D | wxSP_LIVE_UPDATE | wxCLIP_CHILDREN), 
   object_reg (obj_reg), editor (editor), horizontal (hor)
@@ -104,8 +106,6 @@ void Window::OnSize (wxSizeEvent& event)
 }
 
 // ----------------------------------------------------------------------------
-
-//#include "data/editor/images/sceneIcon.xpm"
 
 BEGIN_EVENT_TABLE (ViewControl, wxPanel)
   EVT_SIZE (ViewControl::OnSize)
@@ -193,14 +193,18 @@ void ViewControl::OnSize (wxSizeEvent& event)
 
 // ----------------------------------------------------------------------------
 
-SpaceComboBox::SpaceComboBox (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, ViewControl* ctrl)
-  : wxBitmapComboBox (parent, wxID_ANY, wxEmptyString,wxDefaultPosition, wxSize (50, 20),0, NULL, wxCB_READONLY),
+SpaceComboBox::SpaceComboBox
+  (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, ViewControl* ctrl)
+  : wxBitmapComboBox (parent, wxID_ANY, wxEmptyString,wxDefaultPosition,
+		      wxSize (50, 20),0, NULL, wxCB_READONLY),
     object_reg (obj_reg), editor (editor), control (ctrl)
 {
   iSpaceManager* imgr = editor->GetSpaceManager ();
   SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
   bool instanced = false;
-  csHash<csRef<iSpaceFactory>, csString>::ConstGlobalIterator spaces = mgr->GetSpaceFactories ().GetIterator ();
+  csHash<csRef<iSpaceFactory>, csString>::ConstGlobalIterator spaces =
+    mgr->GetSpaceFactories ().GetIterator ();
+
   size_t i = 0;
   while (spaces.HasNext ())
   {
@@ -218,7 +222,8 @@ SpaceComboBox::SpaceComboBox (iObjectRegistry* obj_reg, iEditor* editor, wxWindo
     }
   }
 
-  Connect (GetId (), wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler (SpaceComboBox::OnSelected), 0, this);  
+  Connect (GetId (), wxEVT_COMMAND_COMBOBOX_SELECTED,
+	   wxCommandEventHandler (SpaceComboBox::OnSelected), 0, this);  
 }
 
 SpaceComboBox::~SpaceComboBox ()
@@ -230,13 +235,17 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
   printf ("SpaceComboBox::OnSelected %s\n", (const char*)GetValue ().mb_str (wxConvUTF8));
   iSpaceManager* imgr = editor->GetSpaceManager ();
   SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
-  csHash<csRef<iSpaceFactory>, csString>::ConstGlobalIterator spaces = mgr->GetSpaceFactories ().GetIterator ();
+
+  csHash<csRef<iSpaceFactory>, csString>::ConstGlobalIterator spaces =
+    mgr->GetSpaceFactories ().GetIterator ();
+
   size_t i = 0;
   while (spaces.HasNext ())
   {
     i++;
     iSpaceFactory* f = spaces.Next ();
     wxString label (f->GetLabel (), wxConvUTF8);
+
     if (GetValue () == label)
     {
       if (f->GetMultipleAllowed () || f->GetCount () == 0)
@@ -254,7 +263,7 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
 
       else
       {
-        printf ("SpaceComboBox::OnSelected FAILED\n");
+        printf ("SpaceComboBox::OnSelected FAILED %s\n", f->GetLabel ());
       }
 
       break;

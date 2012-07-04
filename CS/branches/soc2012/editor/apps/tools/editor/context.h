@@ -66,7 +66,7 @@ public:
   virtual void SetFilename (const char* filename);
   virtual const char* GetFilename ();
   virtual void SetCollection (iCollection* collection);
-  virtual const iCollection* GetCollection () const;
+  virtual iCollection* GetCollection () const;
 
 private:
   void PostEvent (csEventID eventID);

@@ -99,7 +99,7 @@ struct iContextFileLoader : public virtual iBase
   virtual void SetFilename (const char* filename) = 0;
   virtual const char* GetFilename () = 0;
   virtual void SetCollection (iCollection* collection) = 0;
-  virtual const iCollection* GetCollection () const = 0;
+  virtual iCollection* GetCollection () const = 0;
 };
 
 } // namespace EditorApp

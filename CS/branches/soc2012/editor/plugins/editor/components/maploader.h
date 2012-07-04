@@ -20,23 +20,19 @@
 #define __COMPONENTS_MAPLOADER_H__
 
 #include "csutil/csbaseeventh.h"
-//#include "csutil/parray.h"
 #include "csutil/scf_implementation.h"
 #include "ieditor/editor.h"
 #include "ieditor/menu.h"
-//#include "iutil/comp.h"
 #include "ivaria/reporter.h"
-/*
-#include "iutil/event.h"
-#include "iutil/eventh.h"
-#include "csutil/eventnames.h"
-*/
+
 using namespace CS::EditorApp;
 
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
 
-class MapLoader : public scfImplementation1<MapLoader, iEditorComponent>, public csBaseEventHandler
+class MapLoader
+  : public scfImplementation1<MapLoader, iEditorComponent>,
+    public csBaseEventHandler
 {
 public:
   MapLoader (iBase* parent);

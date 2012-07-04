@@ -46,6 +46,8 @@ public:
   csBulletCollisionPortal (iPortal* portal, const csOrthoTransform& meshTrans, csBulletSector* sourceSector);
   ~csBulletCollisionPortal ();
 
+  bool CanTraverse(csBulletCollisionObject* obj);
+
   void AddObject (csRef<csBulletCollisionObject> object)
     { objects.Push (object); }
 

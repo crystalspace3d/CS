@@ -277,7 +277,7 @@ void PhysDemo::GripContactBodies()
   for (size_t i = 0; i < count; i++)
   {
     iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody();
-    if (pb && pb->GetObjectType() == COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+    if (pb && IsDynamic(pb))
     {
       if (pb->GetBodyType() == BODY_RIGID)
       {

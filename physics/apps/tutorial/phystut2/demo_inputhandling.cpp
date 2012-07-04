@@ -163,7 +163,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
     CS::Collisions::HitBeamResult hitResult =
       physicalSector->HitBeam (startBeam, endBeam);
-    if (hitResult.hasHit && hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+    if (hitResult.hasHit && IsDynamic(hitResult.object))
     {
       // Remove the body and the mesh from the simulation, and put them in the clipboard
 
@@ -329,7 +329,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
       return false;
 
     // Add a force at the point clicked
-    if (hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+    if (IsDynamic(hitResult.object))
     {
       csVector3 force = endBeam - startBeam;
       force.Normalize();
@@ -378,9 +378,9 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     CS::Collisions::HitBeamResult hitResult = physicalSector->HitBeam (startBeam, endBeam);
     if (!hitResult.hasHit || !hitResult.object) return false;
 
-    // Check if we hit a rigid body
-    if (hitResult.object->GetObjectType() == CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC)
+    if (IsDynamic(hitResult.object))
     {
+      // Check if we hit a rigid body
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
       if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {

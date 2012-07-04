@@ -68,13 +68,8 @@ public:
   virtual ~csBulletRigidBody ();
 
   virtual iObject* QueryObject () { return (iObject*) this; }
+
   //iCollisionObject
-
-  virtual CS::Collisions::CollisionObjectType GetObjectType() const
-  { 
-    return physicalState == CS::Physics::STATE_DYNAMIC ? CS::Collisions::COLLISION_OBJECT_PHYSICAL_DYNAMIC : CS::Collisions::COLLISION_OBJECT_PHYSICAL_STATIC; 
-  }
-
   virtual void RebuildObject ();
 
   virtual void SetCollider (CS::Collisions::iCollider* collider);
@@ -115,9 +110,11 @@ public:
 
   virtual csVector3 GetLinearVelocity (size_t index = 0) const;
   virtual void SetLinearVelocity (const csVector3& vel);
+  
+  virtual bool IsStatic() const { return GetState() == CS::Physics::STATE_STATIC; }
 
   //iRigidBody
-  virtual CS::Physics::RigidBodyState GetState () {return physicalState;}
+  virtual CS::Physics::RigidBodyState GetState () const {return physicalState;}
   virtual bool SetState (CS::Physics::RigidBodyState state);
 
   virtual void SetElasticity (float elasticity);

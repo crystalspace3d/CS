@@ -147,7 +147,6 @@ public:
 
 private:
   void OnSize (wxSizeEvent& ev);
-  void OnChanged (wxCollapsiblePaneEvent& ev);
 
   DECLARE_EVENT_TABLE ();
 

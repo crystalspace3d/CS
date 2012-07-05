@@ -390,11 +390,14 @@ void SpaceManager::ReDraw (iSpace* space)
           
           CollapsiblePane* collpane = new CollapsiblePane
 	    (editor->manager->object_reg, win, fact->QueryDescription ());
-          sz->Add (collpane, 0, wxGROW|wxALL, 10);
           
-          layout.AttachNew (new PanelLayout (editor->manager->object_reg, editor, collpane->GetPane ()));
+          layout.AttachNew (new PanelLayout (editor->manager->object_reg,
+					     editor, collpane->GetPane ()));
           collpane->SetLayout (layout);
           panel->Draw (editor->context, layout);
+
+	  collpane->Expand ();
+          sz->Add (collpane, 0, wxGROW|wxALL, 10);
         }
       }
 

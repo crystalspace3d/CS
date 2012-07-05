@@ -118,44 +118,39 @@ ViewControl::ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* p
   box = new wxBoxSizer (wxVERTICAL);
   
   wxPanel* menuBar = new wxPanel (this, wxID_ANY, wxDefaultPosition, wxSize (-1, -1));
+  wxBoxSizer* bar = new wxBoxSizer (wxHORIZONTAL);
+  wxToolBar* tb1 = new wxToolBar (menuBar, wxID_ANY);
+      
+  // Create the space combo box
+  SpaceComboBox* m_combobox = new SpaceComboBox (obj_reg, editor, tb1, this);
+  tb1->AddControl (m_combobox);
+
+  if (space && space->GetwxWindow ())
+    box->Add (space->GetwxWindow (), 1, wxEXPAND | wxALL, 0);
+      
+  tb1->Realize ();
+  bar->Add (tb1, 0, /*wxEXPAND |*/ wxALIGN_LEFT, 0);
+
+  toolbar = new wxPanel (menuBar, wxID_ANY);
+  bar->Add (toolbar, 1, wxEXPAND | wxALL, 0);
+
   {
-    wxBoxSizer* bar = new wxBoxSizer (wxHORIZONTAL);
-    {
-      wxToolBar* tb1 = new wxToolBar (menuBar, wxID_ANY);
-      
-      SpaceComboBox* m_combobox = new SpaceComboBox (obj_reg, editor, tb1, this);
-      
-      if (space) box->Add (space->GetwxWindow (), 1, wxEXPAND | wxALL, 0);              
-      
-      tb1->AddControl (m_combobox);
-      
-      tb1->Realize ();
-      bar->Add (tb1, 0, /*wxEXPAND |*/ wxALIGN_LEFT, 0);
-    }
-
-    {
-      toolbar = new wxPanel (menuBar, wxID_ANY);
-      bar->Add (toolbar, 1, wxEXPAND | wxALL, 0);
-    }
-
-    {
-      wxToolBar* tb1 = new wxToolBar (menuBar, wxID_ANY);
-      tb1->AddTool (1, wxT ("Split"), wxArtProvider::GetBitmap (wxART_MISSING_IMAGE));
-      tb1->Connect (1, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (ViewControl::OnClicked), 0, this);
-      tb1->AddTool (2, wxT ("Duplicate"), wxArtProvider::GetBitmap (wxART_MISSING_IMAGE));
-      tb1->Connect (2, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (ViewControl::OnClicked), 0, this);
-      /*tb1->AddTool (1, wxT ("Test"), wxArtProvider::GetBitmap (wxART_ERROR));
+    wxToolBar* tb1 = new wxToolBar (menuBar, wxID_ANY);
+    tb1->AddTool (1, wxT ("Split"), wxArtProvider::GetBitmap (wxART_MISSING_IMAGE));
+    tb1->Connect (1, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (ViewControl::OnClicked), 0, this);
+    tb1->AddTool (2, wxT ("Duplicate"), wxArtProvider::GetBitmap (wxART_MISSING_IMAGE));
+    tb1->Connect (2, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (ViewControl::OnClicked), 0, this);
+    /*tb1->AddTool (1, wxT ("Test"), wxArtProvider::GetBitmap (wxART_ERROR));
       tb1->AddSeparator ();
       tb1->AddTool (2, wxT ("Test"), wxArtProvider::GetBitmap (wxART_QUESTION));
       tb1->AddTool (3, wxT ("Test"), wxArtProvider::GetBitmap (wxART_INFORMATION));
       tb1->AddTool (4, wxT ("Test"), wxArtProvider::GetBitmap (wxART_WARNING));
       tb1->AddTool (5, wxT ("Test"), wxArtProvider::GetBitmap (wxART_MISSING_IMAGE));*/
-      tb1->Realize ();
-      bar->Add (tb1, 0, /*wxEXPAND |*/ wxALIGN_RIGHT, 0);
-    }
-
-    menuBar->SetSizer (bar);
+    tb1->Realize ();
+    bar->Add (tb1, 0, /*wxEXPAND |*/ wxALIGN_RIGHT, 0);
   }
+
+  menuBar->SetSizer (bar);
 
   box->Add (menuBar, 0, wxEXPAND);
   SetSizer (box);
@@ -199,20 +194,26 @@ SpaceComboBox::SpaceComboBox
 		      wxSize (50, 20),0, NULL, wxCB_READONLY),
     object_reg (obj_reg), editor (editor), control (ctrl)
 {
+  // Build the list of menu entries for all spaces
   iSpaceManager* imgr = editor->GetSpaceManager ();
   SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
-  bool instanced = false;
   csHash<csRef<iSpaceFactory>, csString>::ConstGlobalIterator spaces =
     mgr->GetSpaceFactories ().GetIterator ();
 
   size_t i = 0;
+  bool instanced = false;
   while (spaces.HasNext ())
   {
     i++;
+
+    // Add the menu entry for this space
     iSpaceFactory* f = spaces.Next ();
     wxString label (f->GetLabel (), wxConvUTF8);
     Append (label, f->GetIcon ());
+
+    // Create the default space if not yet made
     if (instanced) continue;
+
     if (f->GetMultipleAllowed () || f->GetCount () == 0)
     {
       printf ("SpaceComboBox::SpaceComboBox Creating %s\n", f->GetLabel ());
@@ -222,6 +223,7 @@ SpaceComboBox::SpaceComboBox
     }
   }
 
+  // Listen to the OnSelected event
   Connect (GetId (), wxEVT_COMMAND_COMBOBOX_SELECTED,
 	   wxCommandEventHandler (SpaceComboBox::OnSelected), 0, this);  
 }
@@ -233,6 +235,8 @@ SpaceComboBox::~SpaceComboBox ()
 void SpaceComboBox::OnSelected (wxCommandEvent& event)
 {
   printf ("SpaceComboBox::OnSelected %s\n", (const char*)GetValue ().mb_str (wxConvUTF8));
+
+  // Search the space that is being selected
   iSpaceManager* imgr = editor->GetSpaceManager ();
   SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
 
@@ -248,6 +252,7 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
 
     if (GetValue () == label)
     {
+      // Create an instance of the selected space
       if (f->GetMultipleAllowed () || f->GetCount () == 0)
       {
         printf ("SpaceComboBox::SpaceComboBox Creating %s\n", f->GetLabel ());
@@ -257,12 +262,13 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
         control->box->Insert (0, control->space->GetwxWindow (), 1, wxEXPAND, 0);
         SetSelection (i - 1);
         mgr->ReDraw (control->space);
-        //control->SetBackgroundColour (*wxBLUE); //TODO: why isnt  control->space->GetwxWindow () expanding??
+	control->space->GetwxWindow ()->Layout ();
         editor->GetwxFrame ()->Layout ();
       }
 
       else
       {
+	// TODO: put back the previous selection
         printf ("SpaceComboBox::OnSelected FAILED %s\n", f->GetLabel ());
       }
 

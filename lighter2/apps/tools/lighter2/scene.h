@@ -61,17 +61,17 @@ namespace lighter
     { return objReg; }
 
     THREADED_CALLABLE_DECL2(SectorProcessor,BuildKDTree,csThreadReturn,
-      csRef<Sector>,sector,Statistics::Progress*, progress,QueueType::THREADED,false,false);
+      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,false);
 
     THREADED_CALLABLE_DECL2(SectorProcessor,BuildPhotonMaps,csThreadReturn,
-      csRef<Sector>,sector,Statistics::Progress*, progress,QueueType::THREADED,true,false);
+      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,true,false);
 
     THREADED_CALLABLE_DECL4(SectorProcessor,ComputeSectorLighting,csThreadReturn,
       csRef<Sector>,sector,bool, enableRaytracer,bool, enablePhotonMapper,
-      Statistics::Progress*, progress, QueueType::THREADED,false,false);
+      Statistics::Progress*, progress, THREADED,false,false);
 
     THREADED_CALLABLE_DECL1(SectorProcessor,SaveLightmaps,csThreadReturn,
-      csRef<SectorGroup>,sectorGroup,QueueType::THREADED,false,false);
+      csRef<SectorGroup>,sectorGroup,THREADED,false,false);
 
   private :
     iObjectRegistry* objReg;

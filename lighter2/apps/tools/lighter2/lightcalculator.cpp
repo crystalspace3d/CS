@@ -103,9 +103,9 @@ namespace lighter
     int numPasses = 
       globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
 
-    // We multiply the number of thread by 1.5 because sometimes all the jobs
+    // We multiply the number of thread by 2.0 because sometimes all the jobs
     // don't request the same amount of time
-    const int numJobs = ((float)globalConfig.GetLighterProperties().numThreads)*1.5f;
+    const int numJobs = ((float)globalConfig.GetLighterProperties().numThreads)*2.0f;
 
     csRefArray<iThreadReturn> returns;
 
@@ -118,7 +118,7 @@ namespace lighter
 
       for (int i =0; i < numJobs; i++)
       {
-        objectsThreadTab.Push(new csArray<csRef<lighter::Object>>());
+        objectsThreadTab.Push(new csArray<csRef<lighter::Object> >());
         LightCalculator* lighting =  new LightCalculator(bases[p],p);
 
         // Add components to the light calculator

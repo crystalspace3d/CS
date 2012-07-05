@@ -71,6 +71,13 @@ void PhysDemo::CreateItemTemplates()
     AddItemFunction(Secondary, SpawnCloth, "Spawn Cloth", physDemo.SpawnCloth());
     AddItemFunction(Secondary, SpawnSoftBody, "Spawn Soft Ball", physDemo.SpawnSoftBody());
   }
+  
+  {
+    // Does some cool gravity stuff
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Gravity Manipulator");
+
+    AddItemFunction(Secondary, PullObject, "Pull Object", physDemo.PullObject());
+  }
 }
 
 /**

@@ -228,12 +228,12 @@ public:
   /**
    * The location of the actor's head, i.e. the location of the camera
    */
-  csVector3 GetActorHeadPos() const { return view->GetCamera()->GetTransform().GetOrigin(); }
+  csVector3 GetActorPos() const { return player.GetObject()->GetTransform().GetOrigin(); }
 
   /**
    * The location where the actor stands
    */
-  csVector3 GetActorFeetPos() const { return GetActorHeadPos() - csVector3(0, ActorDimensions.y, 0); }
+  csVector3 GetActorFeetPos() const { return GetActorPos() - csVector3(0, csScalar(.5) * ActorDimensions.y, 0); }
 
   /**
    * Position of the camera
@@ -253,7 +253,7 @@ public:
   /**
    * Point in the given distance in front of the camera
    */
-  csVector3 GetPointInFront(float distance) const { return GetActorHeadPos() + (GetCameraDirection() * distance); }
+  csVector3 GetPointInFront(float distance) const { return GetActorPos() + (GetCameraDirection() * distance); }
 
   /**
    * Point in the given distance in front of the actor's feet
@@ -263,7 +263,7 @@ public:
   /**
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
-  csVector3 GetPointInFrontXZ(float distance) const { return GetActorHeadPos() + (GetCameraDirectionXZ() * distance); }
+  csVector3 GetPointInFrontXZ(float distance) const { return GetActorPos() + (GetCameraDirectionXZ() * distance); }
 
   /**
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
@@ -289,6 +289,12 @@ public:
   // Items
 
   void CreateItemTemplates();
+
+  //
+  // Other
+  bool GetObjectInFrontOfMe(CS::Collisions::HitBeamResult& result);
+
+  void PullObject();
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1

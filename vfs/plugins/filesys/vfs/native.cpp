@@ -328,9 +328,22 @@ size_t NativeFile::Read (char *data, size_t dataSize)
   {
     // cannot read a file opened with write permission; thus access denied
     lastError = VFS_STATUS_ACCESSDENIED;
+    return 0;
   }
 
-  return 0;
+  if (!handle)
+  {
+    // TODO: double check for handling this case
+    return 0;
+  }
+  // try reading...
+  size_t bytesRead = fread (data, 1, dataSize, handle);
+  if (bytesRead < dataSize)
+  {
+    // read less... what happened?
+    UpdateError ();
+  }
+  return bytesRead;
 }
 
 // Write DataSize bytes to file
@@ -340,9 +353,22 @@ size_t NativeFile::Write (const char *data, size_t dataSize)
   {
     // cannot write to a read-only file: access denied.
     lastError = VFS_STATUS_ACCESSDENIED;
+    return 0;
   }
 
-  return 0;
+  if (!handle)
+  {
+    // TODO: double check for handling this case
+    return 0;
+  }
+  // try writing
+  size_t bytesWritten = fwrite (data, 1, dataSize, handle);
+  if (bytesWritten < dataSize)
+  {
+    // written less... what happened?
+    UpdateError ();
+  }
+  return bytesWritten;
 }
 
 // Flush strem

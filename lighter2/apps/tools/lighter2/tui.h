@@ -106,6 +106,9 @@ namespace lighter
     // Last printed task
     csString lastTask; float lastTaskProgress;
 
+    // Draw mutex
+    CS::Threading::Mutex drawMutex;
+
     iObjectRegistry* GetObjectRegistry() const { return object_reg; }
     iObjectRegistry* object_reg;
   };

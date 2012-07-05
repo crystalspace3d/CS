@@ -28,9 +28,9 @@
 #include "photonmap.h"
 #include "irradiancecache.h"
 
-#include "photonmapperlighting.h"
-#include "raytracerlighting.h"
 #include "lightcalculator.h"
+
+#include "photonmapperlighting.h"
 
 #include <functional>
 
@@ -41,10 +41,7 @@ namespace lighter
   Sector::~Sector()
   {
     delete kdTree;
-    if (photonMap != NULL)
-    {
-      delete photonMap;
-    }
+    FreePhotonMappingData();
   }
 
   void Sector::Initialize (Statistics::Progress& progress)
@@ -104,7 +101,7 @@ namespace lighter
     // Build KD-tree
     ObjectHash::GlobalIterator objIt = allObjects.GetIterator ();
     KDTreeBuilder builder;
-    kdTree = builder.BuildTree (objIt, progress);
+    kdTree = builder.BuildTree (objIt,progress);
   }
 
   void Sector::InitPhotonMap()
@@ -122,6 +119,24 @@ namespace lighter
     {
       causticPhotonMap = new PhotonMap(
         2 * globalConfig.GetIndirectProperties().numCausticPhotons);
+    }
+  }
+
+  void Sector::FreePhotonMappingData()
+  { 
+    if(photonMap != NULL)
+    {
+      delete photonMap;
+      photonMap = NULL;
+
+      delete irradianceCache;
+      irradianceCache = NULL;
+
+      if (causticPhotonMap != NULL)
+      {
+        delete causticPhotonMap;
+        causticPhotonMap = NULL;
+      }
     }
   }
 
@@ -204,7 +219,7 @@ namespace lighter
   csColor Sector::SamplePhoton(const csVector3 point, const csVector3 normal,
                     const float searchRad)
   {
-    if(photonMap == NULL) return csColor(0, 0, 0);
+    if (photonMap == NULL) return csColor(0, 0, 0);
 
     // Local copy of the global options
     const static size_t densitySamples =
@@ -216,7 +231,7 @@ namespace lighter
     float fNorm[3] = { normal.x, normal.y, normal.z };
     photonMap->IrradianceEstimate(result, fPos, fNorm, searchRad, densitySamples);
     
-    if (causticPhotonMap != NULL)
+    if ((causticPhotonMap != NULL) && (causticPhotonMap->GetPhotonCount() > 0))
     {
       float causticIrradiance[3] = {0,0,0};
       causticPhotonMap->IrradianceEstimate(causticIrradiance,fPos,fNorm,searchRad,densitySamples);
@@ -237,23 +252,23 @@ namespace lighter
     float fNorm[3] = { normal.x, normal.y, normal.z };
 
     // Add sample to the irradiance cache for reuse
-    if(irradianceCache == NULL)
-    {
-      irradianceCache = new IrradianceCache(
-        photonMap->GetBBoxMin(), photonMap->GetBBoxMax(), 1000);
-    }
-
     irradianceCache->Store(fPos, fNorm, fPow, mean);
   }
 
   void Sector::SavePhotonMap(const char* filename)
   {
-    if(photonMap != NULL) photonMap->SaveToFile(filename);
+    if((photonMap != NULL)&&(photonMap->GetPhotonCount() > 0))
+    {
+      photonMap->SaveToFile(filename);
+    }
   }
 
   void Sector::SaveCausticPhotonMap(const char* filename)
   {
-    if(causticPhotonMap != NULL) causticPhotonMap->SaveToFile(filename);
+    if((causticPhotonMap != NULL)&&(causticPhotonMap->GetPhotonCount() > 0))
+    {
+      causticPhotonMap->SaveToFile(filename);
+    }
   }
 
   //-------------------------------------------------------------------------
@@ -297,7 +312,7 @@ namespace lighter
     }
   }
 
-  void SectorGroup::BuildKDTreeAndPhotonMaps(bool buildPhotonMaps)
+  void SectorGroup::BuildKDTreeAndPhotonMaps(bool buildPhotonMaps, Statistics::Progress& progress)
   {
     csRefArray<iThreadReturn> returns;
 
@@ -305,42 +320,64 @@ namespace lighter
     while (sectIt.HasNext())
     {
       csRef<Sector> sect = sectIt.Next();
-      returns.Push(sectorProcessor->BuildKDTree(sect));
-
-      if(buildPhotonMaps)
-      {
-        returns.Push(sectorProcessor->BuildPhotonMaps(sect));
-      }
-    }
-
-    globalLighter->threadManager->Wait(returns,true);
-  }
-
-  void SectorGroup::ComputeLighting(bool enableRaytracer, bool enablePhotonMapper)
-  { 
-    int numPasses = 
-      globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
-
-    csRefArray<iThreadReturn> returns;
-    SectorHash::GlobalIterator sectIt = sectors.GetIterator();
-    while (sectIt.HasNext())
-    {
-      csRef<Sector> sect = sectIt.Next();
-
-      returns.Push(sectorProcessor->ComputeSectorLighting(sect,numPasses,enableRaytracer,enablePhotonMapper));
+      returns.Push(sectorProcessor->BuildKDTree(sect,&progress));
     }
 
     globalLighter->threadManager->Wait(returns);
-    globalLighter->threadManager->Wait(lightComputations);
+    
+    if(buildPhotonMaps)
+    {
+      returns.DeleteAll();
+      sectIt.Reset();
+      while (sectIt.HasNext())
+      {
+        csRef<Sector> sect = sectIt.Next();
+        returns.Push(sectorProcessor->BuildPhotonMaps(sect,&progress));
+      }
+
+      globalLighter->threadManager->Wait(returns);
+    }
   }
 
-  void SectorGroup::Process(bool enableRaytracer, bool enablePhotonMapper)
+  void SectorGroup::ComputeLighting(bool enableRaytracer, bool enablePhotonMapper,
+    Statistics::Progress& progress)
+  { 
+    csRefArray<iThreadReturn> returns;
+    SectorHash::GlobalIterator sectIt = sectors.GetIterator();
+    while (sectIt.HasNext())
+    {
+      csRef<Sector> sect = sectIt.Next();
+      returns.Push(
+        sectorProcessor->ComputeSectorLighting(sect,
+        enableRaytracer,enablePhotonMapper,&progress));
+    }
+    
+    // We should way for the returns so the compute lighting array is populated
+    globalLighter->threadManager->Wait(returns,false);
+  }
+
+  void SectorGroup::Process(bool enableRaytracer, bool enablePhotonMapper, Statistics::Progress& progress)
   {
-    BuildKDTreeAndPhotonMaps(enablePhotonMapper);
-    ComputeLighting(enableRaytracer,enablePhotonMapper);
+    BuildKDTreeAndPhotonMaps(enablePhotonMapper,progress);
+    ComputeLighting(enableRaytracer,enablePhotonMapper,progress);
+
+    // We ask for the lightmaps to be saved once the compute lighting will be finished
+    globalLighter->sectorGroupProcess.Push(sectorProcessor->SaveLightmaps(this));
   }
 
+  void SectorGroup::SaveLightmaps()
+  {
+    SectorHash::GlobalIterator sectIt = sectors.GetIterator();
+    // First Release all the photon mapping memory
+    while (sectIt.HasNext())
+    {
+      csRef<Sector> sect = sectIt.Next();
+      sect->FreePhotonMappingData();
+    }
 
+    // TODO: Then save lightmaps HERE
+
+  }
 
   //-------------------------------------------------------------------------
 
@@ -349,68 +386,41 @@ namespace lighter
   {
   }
 
-  THREADED_CALLABLE_IMPL1(SectorProcessor,BuildKDTree, csRef<Sector> sector)
+  THREADED_CALLABLE_IMPL2(SectorProcessor,BuildKDTree, csRef<Sector> sector,
+    Statistics::Progress* progress)
   {
-    Statistics::Progress progress("Build KdTree",2);
-    sector->BuildKDTree(progress);
+    sector->BuildKDTree(*progress);
     return true;
-  }
+  } 
 
-  THREADED_CALLABLE_IMPL1(SectorProcessor,BuildPhotonMaps, csRef<Sector> sector)
+  THREADED_CALLABLE_IMPL2(SectorProcessor,BuildPhotonMaps, csRef<Sector> sector,
+    Statistics::Progress* progress)
   {
-    Statistics::Progress progress("Build Photons Maps",2);
     sector->InitPhotonMap();
     PhotonmapperLighting lighting;
 
-    lighting.EmitPhotons(sector,progress);
-    lighting.BalancePhotons(sector,progress);
+    lighting.EmitPhotons(sector,*progress);
+    lighting.BalancePhotons(sector,*progress);
     return true;
   }
 
   THREADED_CALLABLE_IMPL4(SectorProcessor,ComputeSectorLighting,
-        csRef<Sector> sector,const int numPasses, bool enableRaytracer, bool enablePhotonMapper)
+        csRef<Sector> sector,bool enableRaytracer,
+        bool enablePhotonMapper,Statistics::Progress* progress)
   {
-    const csVector3 bases[4] =
-    {
-      csVector3 (0, 0, 1),
-      csVector3 (/* -1/sqrt(6) */ -0.408248f, /* 1/sqrt(2) */ 0.707107f, /* 1/sqrt(3) */ 0.577350f),
-      csVector3 (/* sqrt(2/3) */ 0.816497f, 0, /* 1/sqrt(3) */ 0.577350f),
-      csVector3 (/* -1/sqrt(6) */ -0.408248f, /* -1/sqrt(2) */ -0.707107f, /* 1/sqrt(3) */ 0.577350f)
-    };
+    sector->sectorGroup->lightComputations.Merge(
+      LightCalculator::ComputeSectorStaticLighting(sector,
+        enableRaytracer,enablePhotonMapper,*progress));
 
-    csRefArray<iThreadReturn> returns;
+    return true;
+  }
 
-    // Loop through lighting calculation for directional dependencies
-    for (int p = 0; p < numPasses; p++)
-    {
-      // Construct a light calculator
-      LightCalculator* lighting = new LightCalculator(bases[p], p);
+  THREADED_CALLABLE_IMPL1(SectorProcessor,SaveLightmaps,csRef<SectorGroup> sectorGroup)
+  {
+    globalLighter->threadManager->Wait(sectorGroup->lightComputations);
 
-      // Add components to the light calculator
-      RaytracerLighting *raytracerComponent = NULL;
-      PhotonmapperLighting *photonmapperComponent = NULL;
+    sectorGroup->SaveLightmaps();
 
-      if(enableRaytracer)
-      {
-        raytracerComponent = new RaytracerLighting (bases[p], p);
-        lighting->addComponent(raytracerComponent, 1.0f, 0.0f);
-      }
-
-      if(enablePhotonMapper)
-      {
-        photonmapperComponent = new PhotonmapperLighting();
-        lighting->addComponent(photonmapperComponent, 1.0f, 0.0f);
-      }
-      
-      Statistics::Progress progress("Lighting computation",100);
-      // Compute the lighting
-      returns.Merge(lighting->ComputeSectorStaticLighting(sector,progress));
-
-      if(raytracerComponent != NULL) delete raytracerComponent;
-      if(photonmapperComponent != NULL) delete photonmapperComponent;
-    }
-
-    sector->sectorGroup->lightComputations.Merge(returns);
     return true;
   }
 
@@ -1703,11 +1713,11 @@ namespace lighter
     
       if (globalConfig.GetLighterProperties().specularDirectionMaps)
       {
-	textureFilename.Format ("lightmaps/%s_%zu_sd%%d",
-	  fileInfo->levelName.GetData(), i);
-	directionMapBaseNames.Push (textureFilename);
-	for (int x = 0; x < specDirectionMapCount; x++)
-	  texturesToSave.Push (GetDirectionMapFilename ((uint)i, x));
+        textureFilename.Format ("lightmaps/%s_%zu_sd%%d",
+	        fileInfo->levelName.GetData(), i);
+        directionMapBaseNames.Push (textureFilename);
+        for (int x = 0; x < specDirectionMapCount; x++)
+	        texturesToSave.Push (GetDirectionMapFilename ((uint)i, x));
       }
     }
   }

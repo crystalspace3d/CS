@@ -51,21 +51,20 @@ namespace lighter
 
     // Loop through all objects in a sector and calculate the
     // static light using all attached LightComponents
-    csRefArray<iThreadReturn> ComputeSectorStaticLighting (Sector* sector, 
-            Statistics::Progress& progress);
+    static csRefArray<iThreadReturn> ComputeSectorStaticLighting (Sector* sector,
+      bool enableRaytracer, bool enablePhotonMapper,
+      Statistics::Progress& progress);
 
-    THREADED_CALLABLE_DECL2(LightCalculator,ComputeObjectGroupLighting,csThreadReturn,
+    THREADED_CALLABLE_DECL3(LightCalculator,ComputeObjectGroupLighting,csThreadReturn,
       Sector*,sector,csArray<csRef<lighter::Object> >*, objGroup,
-      QueueType::THREADED,true,false);
+      Statistics::Progress*, progress, QueueType::THREADED,false,false);
 
   private:
     void ComputeObjectStaticLightingForLightmap (Sector* sector,
-        Object* obj, SamplerSequence<2>& masterSampler,
-        Statistics::ProgressState& progress);
+        Object* obj, SamplerSequence<2>& masterSampler);
 
     void ComputeObjectStaticLightingForVertex (Sector* sector,
-        Object* obj, SamplerSequence<2>& masterSampler,
-        Statistics::ProgressState& progress);
+        Object* obj, SamplerSequence<2>& masterSampler);
 
     void ComputeAffectingLights (Object* obj);
 

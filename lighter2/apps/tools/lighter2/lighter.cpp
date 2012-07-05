@@ -51,7 +51,7 @@ namespace lighter
       progLightmapLayout ("Lightmap layout", 5),
       progSaveFactories ("Saving mesh factories", 7),
 
-      // Generate empty light maps, KD-tree & photon maps (10)
+      // Generate empty light maps, KD-tree & photon maps (5)
       progInitializeMain ("Initialize objects", 10),
         progInitialize (0, 3, &progInitializeMain),
         progInitializeLightmaps ("Lightmaps", 3, &progInitializeMain),
@@ -61,12 +61,9 @@ namespace lighter
         progSaveMeshesMain ("Saving mesh objects", 3, &progInitializeMain),
           progSaveMeshes (0, 99, &progSaveMeshesMain),
           progSaveFinish (0, 1, &progSaveMeshesMain),
-        progBuildKDTree ("Building KD-Tree", 10, &progInitializeMain),
-        progPhotonEmission ("Emitting Photons", 7, &progInitializeMain),
-        progPhotonBalancing ("Balancing Photons", 3, &progInitializeMain),
 
-      // Fill the lightmaps (50)
-      progCalcLighting ("Calculating Lighting Components", 50),
+      // Fill the lightmaps (55)
+      progCalcLighting ("Calculating Lighting Components", 55),
 
       // Postprocess lightmaps (10)
       progPostproc ("Postprocessing lightmaps", 10),
@@ -333,21 +330,7 @@ namespace lighter
     ProcessSectorGroups(enableRaytracer,enablePhotonMapper);
 
     // Wait for the end of the calculation
-    //threadManager->Wait(sectorGroupProcess);
-
-    /*
-    // Build the KD-trees
-    BuildKDTrees ();
-
-    // Build & Balance Photon Maps if needed
-    if(enablePhotonMapper)
-    {
-      BuildPhotonMaps();
-      BalancePhotonMaps();
-    }*/
-   
-    // Compute all lighting components (fill lightmaps)
-    //ComputeLighting(enableRaytracer, enablePhotonMapper);
+    threadManager->Wait(sectorGroupProcess);
 
     // Postprocessing of ligthmaps
     PostprocessLightmaps ();
@@ -486,13 +469,14 @@ namespace lighter
   {
     SectorGroupRefArray groups = scene->GetSectorGroups();
     SectorGroupRefArray::Iterator groupIt = groups.GetIterator();
-      
+
+    progCalcLighting.SetProgress(0);
+
     while (groupIt.HasNext())
     {
       csRef<SectorGroup> group = groupIt.Next();
-      group->Process(enableRayTracer, enablePhotonMapping);
+      group->Process(enableRayTracer, enablePhotonMapping,progCalcLighting);
     }
-
   }
     
   void Lighter::PrepareLighting ()

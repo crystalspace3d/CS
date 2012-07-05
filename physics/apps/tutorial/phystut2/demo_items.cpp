@@ -49,6 +49,7 @@ void PhysDemo::CreateItemTemplates()
     AddItemFunction(Secondary, SpawnCone, "Spawn Cone", physDemo.SpawnCone());
     AddItemFunction(Secondary, SpawnBoxStacks, "Spawn Box Stacks", physDemo.SpawnBoxStacks(10, 5, .5, 80));
   }
+
   {
     // Primitive Object Spawner
     ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Complex Object Spawner");

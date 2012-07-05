@@ -141,7 +141,7 @@ void csBulletJoint::SetPosition (const csVector3& position, bool forceUpdate)
     if (!body1->btBody)
       return;
     
-    btGeneric6DofConstraint* dof6 = dynamic_cast<btGeneric6DofConstraint*> (rigidJoint);
+    btGeneric6DofConstraint* dof6 = static_cast<btGeneric6DofConstraint*> (rigidJoint);
     frB = dof6->getFrameOffsetB ();
     dof6->setFrames (jointTransform, frB);
 

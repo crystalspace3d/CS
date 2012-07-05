@@ -333,7 +333,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     {
       csVector3 force = endBeam - startBeam;
       force.Normalize();
-      force *= 2.0f;
+        force *= 100.f;
 
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
       if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
@@ -384,9 +384,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
       if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {
-        csRef<CS::Physics::iRigidBody> bulletBody =
-          scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);
-        if (bulletBody->GetState() != CS::Physics::STATE_DYNAMIC) return false;
+        csRef<CS::Physics::iRigidBody> bulletBody = scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);
 
         // Create a p2p joint at the point clicked
         dragJoint = physicalSystem->CreateRigidPivotJoint (bulletBody, hitResult.isect);
@@ -443,7 +441,7 @@ bool PhysDemo::OnMouseUp (iEvent &event)
   {
     softDragging = false;
     draggedBody->RemoveAnchor (draggedVertex);
-    draggedBody = 0;
+    draggedBody = nullptr;
   }
 
   return false;

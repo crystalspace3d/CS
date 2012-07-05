@@ -49,16 +49,10 @@ namespace lighter
   };
   typedef csRefArray<Portal> PortalRefArray;
 
-  class iSectorProcessor : public virtual iBase
-  {
-    THREADED_INTERFACE1(BuildKDTree,csRef<Sector>);
-    THREADED_INTERFACE1(BuildPhotonMaps,csRef<Sector>);
-    THREADED_INTERFACE4(ComputeSectorLighting,csRef<Sector>,int,bool,bool);
-  };
+
 
   class SectorProcessor : ThreadedCallable<SectorProcessor>,
-                     public scfImplementation1<SectorProcessor,
-                                               iSectorProcessor>
+                     public scfImplementation0<SectorProcessor>
   {
   public:
     SectorProcessor(iObjectRegistry *objReg);
@@ -66,15 +60,18 @@ namespace lighter
     iObjectRegistry* GetObjectRegistry() const
     { return objReg; }
 
-    THREADED_CALLABLE_DECL1(SectorProcessor,BuildKDTree,csThreadReturn,
-      csRef<Sector>,sector,QueueType::THREADED,true,false);
+    THREADED_CALLABLE_DECL2(SectorProcessor,BuildKDTree,csThreadReturn,
+      csRef<Sector>,sector,Statistics::Progress*, progress,QueueType::THREADED,false,false);
 
-    THREADED_CALLABLE_DECL1(SectorProcessor,BuildPhotonMaps,csThreadReturn,
-      csRef<Sector>,sector,QueueType::THREADED,true,false);
+    THREADED_CALLABLE_DECL2(SectorProcessor,BuildPhotonMaps,csThreadReturn,
+      csRef<Sector>,sector,Statistics::Progress*, progress,QueueType::THREADED,true,false);
 
     THREADED_CALLABLE_DECL4(SectorProcessor,ComputeSectorLighting,csThreadReturn,
-      csRef<Sector>,sector,int,numPasses,bool, enableRaytracer,bool, enablePhotonMapper,
-      QueueType::THREADED,false,false);
+      csRef<Sector>,sector,bool, enableRaytracer,bool, enablePhotonMapper,
+      Statistics::Progress*, progress, QueueType::THREADED,false,false);
+
+    THREADED_CALLABLE_DECL1(SectorProcessor,SaveLightmaps,csThreadReturn,
+      csRef<SectorGroup>,sectorGroup,QueueType::THREADED,false,false);
 
   private :
     iObjectRegistry* objReg;
@@ -105,6 +102,10 @@ namespace lighter
     void InitPhotonMap();
 
     void InitCausticPhotonMap();
+
+    // Release the photonmapping data this mean photonmap,
+    // caustic map and irradiance cache
+    void FreePhotonMappingData();
 
     void AddPhoton(const csColor power, const csVector3 pos,
       const csVector3 dir );
@@ -174,21 +175,24 @@ namespace lighter
       
       void addSector(csRef<Sector> sector);
 
-      void Process(bool enableRaytracer, bool enablePhotonMapper);
+      void Process(bool enableRaytracer, bool enablePhotonMapper,
+        Statistics::Progress& progress);
+
+      void SaveLightmaps();
 
       csRefArray<iThreadReturn> lightComputations;
 
     private :
 
-      inline void BuildKDTreeAndPhotonMaps(bool buildPhotonMaps);
+      inline void BuildKDTreeAndPhotonMaps(bool buildPhotonMaps,Statistics::Progress& progress);
 
-      inline void ComputeLighting(bool enableRaytracer, bool enablePhotonMapper);
+      inline void ComputeLighting(bool enableRaytracer, bool enablePhotonMapper,Statistics::Progress& progress);
 
       SectorHash sectors;
       csRef<SectorProcessor> sectorProcessor;
   };
 
-  typedef csArray<csRef<SectorGroup>> SectorGroupRefArray;
+  typedef csArray< csRef<SectorGroup> > SectorGroupRefArray;
 
   class Scene
   {

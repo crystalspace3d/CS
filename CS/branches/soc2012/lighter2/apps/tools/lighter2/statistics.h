@@ -122,10 +122,11 @@ namespace lighter
       float progressStep;
 
     public:
-      ProgressState (Statistics::Progress& progress, size_t total) : 
+      // Factor is percent of filling
+      ProgressState (Statistics::Progress& progress, size_t total, float factor = 1.0f) : 
         progress (progress), 
         updateFreq (progress.GetUpdateFrequency (total)), u (updateFreq),
-        progressStep (float (updateFreq) / total) {}
+        progressStep (float (updateFreq)*factor / total) {}
 
       CS_FORCEINLINE void Advance ()
       {
@@ -134,6 +135,17 @@ namespace lighter
           progress.IncProgress (progressStep);
           u = updateFreq;
           globalTUI.Redraw (TUI::TUI_DRAW_RAYCORE | TUI::TUI_DRAW_PMCORE);
+        }
+      }
+
+      CS_FORCEINLINE void Finish()
+      {
+        if (u != 0)
+        {
+          u=0;/*
+          float ratio = float(updateFreq-u) / float(updateFreq);
+          progress.IncProgress(progressStep*ratio);
+          globalTUI.Redraw (TUI::TUI_DRAW_RAYCORE | TUI::TUI_DRAW_PMCORE);*/
         }
       }
     };

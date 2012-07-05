@@ -169,10 +169,12 @@ namespace lighter
     return c;
   }
 
-  void PhotonmapperLighting::BalancePhotons(Sector *sect)
+  void PhotonmapperLighting::BalancePhotons(Sector *sect, Statistics::Progress& progress)
   {
+    Statistics::ProgressState progressState(progress, (int)(0.6*globalStats.photonmapping.numStoredPhotons),0.02f);
+
     // Balance the PhotonMap KD-Trees
-    sect->BalancePhotons();
+    sect->BalancePhotons(progressState);
 
     // Save the photon map if requested
     if(globalConfig.GetIndirectProperties ().savePhotonMap)
@@ -183,6 +185,8 @@ namespace lighter
       sect->SavePhotonMap(filename);
       secCount++;
     }
+
+    progressState.Finish();
   }
 
   bool PhotonmapperLighting::ParseSector(Sector *sect)
@@ -217,7 +221,7 @@ namespace lighter
     return causticSector;
   }
 
-  void PhotonmapperLighting::EmitPhotons(Sector *sect)
+  void PhotonmapperLighting::EmitPhotons(Sector *sect, Statistics::Progress& progress)
   {
     // Determine maximum allowed photon recursion
     size_t maxDepth = 0;
@@ -229,6 +233,7 @@ namespace lighter
 
     // Iterate through all the non 'Pseudo Dynamic' light sources
     const LightRefArray& allNonPDLights = sect->allNonPDLights;
+    Statistics::ProgressState progressState(progress, numPhotonsPerSector*globalStats.scene.numSectors,0.03f);
 
     // Iterate over the lights to determine the total lumen power in the sector
     double sectorLumenPower = 0;
@@ -377,6 +382,7 @@ namespace lighter
 			// Emit a single photon into the sector containing this light
 			const PhotonRay newPhoton = { photonOrigin, dir, color, power, curLight, RAY_TYPE_OTHER1, 1.0f };
 			EmitPhoton(sect, newPhoton, maxDepth, 0, !directLightEnabled, false);
+			progressState.Advance();
 		  }
 	  }
 
@@ -547,6 +553,8 @@ namespace lighter
     {
       sect->ScaleCausticPhotons(1.0/numCausticPhotonsPerSector);
     }
+
+    progressState.Finish();
   }
 
   void PhotonmapperLighting::EmitPhoton(Sector* &sect, const PhotonRay &photon,

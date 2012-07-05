@@ -57,7 +57,7 @@ namespace lighter
 
     THREADED_CALLABLE_DECL3(LightCalculator,ComputeObjectGroupLighting,csThreadReturn,
       Sector*,sector,csArray<csRef<lighter::Object> >*, objGroup,
-      Statistics::Progress*, progress, QueueType::THREADED,false,false);
+      Statistics::Progress*, progress, THREADED,false,false);
 
   private:
     void ComputeObjectStaticLightingForLightmap (Sector* sector,

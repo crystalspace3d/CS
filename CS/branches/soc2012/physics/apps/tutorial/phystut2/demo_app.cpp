@@ -23,7 +23,8 @@ PhysDemo::PhysDemo()
   moveSpeed(7.f),
   turnSpeed(2.f),
   selectedItem(nullptr),
-  actorAirControl(.2f),
+  actorAirControl(1.f),
+  camFollowMode(CamFollowMode1stPerson),
   //physicalCameraMode (ACTOR_KINEMATIC)
   physicalCameraMode (ACTOR_DYNAMIC)
   ,
@@ -221,8 +222,9 @@ void PhysDemo::SetupHUD()
 
   desc.Push ("CTRL-x: cut selected object");
   desc.Push ("CTRL-v: paste object");
-
-  desc.Push ("C: toggle camera modes");
+  
+  desc.Push ("C: switch between actor modes (dynamic, kinematic, noclip)");
+  desc.Push ("V: switch between camera follow modes (1st person, 3rd person)");
   desc.Push ("P: pause the simulation");
   desc.Push ("O: toggle speed of simulation");
   desc.Push ("L: toggle Bullet debug display");

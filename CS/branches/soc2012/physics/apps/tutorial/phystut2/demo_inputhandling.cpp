@@ -103,7 +103,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     }
   }
 
-  else if (code == 'l')
+  else if (code == 'k')
   {
     // Toggle dynamic system visual debug mode
     // TODO
@@ -128,7 +128,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     }
     return true;
   }
-  else if (code == 'k')
+  else if (code == 'l')
   {
     // Toggle collision debug mode
     if (do_bullet_debug)
@@ -250,12 +250,13 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     bulletSector->DumpProfile();
     return true;
   }
-
-  // Terrain stuff
-  if (terrainFeeder)
+  
+  csRef<iCamera> cam = view->GetCamera();
+  switch (code)
   {
-    if (//kbd->GetKeyState (CSKEY_SHIFT) &&
-      code == ']')
+  case ']':
+    // Terrain stuff
+    if (terrainFeeder)
     {
       if (!terrainMod)
       {
@@ -273,26 +274,31 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       }
     }
     return true;
-  }
 
-  // particle stuff
-  if (//kbd->GetKeyState (CSKEY_SHIFT) &&
-    code == '[')
-  {
-    // spawn particles at the actor's feet
-    float dist = 2 * ActorDimensions.y;
-    float colliderRadius = dist/6;
+    // particle stuff
+  case '[':
+    {
+      // spawn particles at the actor's feet
+      float dist = 2 * ActorDimensions.y;
+      float colliderRadius = dist/6;
 
-    csRef<iCamera> cam = view->GetCamera();
-    csVector3 pos = GetPointInFrontOfFeetXZ(dist);
-    csVector3 origin = pos + csVector3 (0, dist, 0);
-    //csVector3 origin = cam->GetTransform().GetOrigin() + csVector3 (0, ActorDimensions.y, 2);
+      csVector3 pos = GetPointInFrontOfFeetXZ(dist);
+      csVector3 origin = pos + csVector3 (0, dist, 0);
+      //csVector3 origin = cam->GetTransform().GetOrigin() + csVector3 (0, ActorDimensions.y, 2);
 
-    AddParticles(origin, -1);
+      AddParticles(origin, -1);
 
-    // add collider
-    SpawnSphere(pos + csVector3(0, colliderRadius + EPSILON, 0), colliderRadius, false);
+      // add collider
+      SpawnSphere(pos + csVector3(0, colliderRadius + EPSILON, 0), colliderRadius, false);
+      return true;
+    }
+  case 'v':
+    {
+    // Update camera follow mode
+    camFollowMode = CamFollowMode(((int)camFollowMode + 1) % (int)CamFollowModeCount);
+    cam->GetTransform().LookAt(cam->GetTransform().GetT2O() * csVector3(0, 0, 1), UpVector);
     return true;
+    }
   }
 
   return false;

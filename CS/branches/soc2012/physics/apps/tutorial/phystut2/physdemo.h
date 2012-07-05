@@ -26,6 +26,14 @@
 #define ENVIRONMENT_BOX 2
 #define ENVIRONMENT_TERRAIN 3
 
+enum CamFollowMode
+{
+  CamFollowMode1stPerson,
+  CamFollowMode3rdPerson,
+  CamFollowMode3rdPersonFar,
+  CamFollowModeCount
+};
+
 // Navigation input (use WASD controls)
 static const int KeyUp = CSKEY_PGUP;
 static const int KeyDown = CSKEY_PGDN;
@@ -107,6 +115,7 @@ private:
   float actorAirControl;
   float moveSpeed, turnSpeed;
   int physicalCameraMode;
+  CamFollowMode camFollowMode;
 
   Agent player;
   Item* selectedItem;

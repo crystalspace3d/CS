@@ -52,6 +52,8 @@ void PhysDemo::Frame()
   
   iCamera* cam = view->GetCamera();
   csOrthoTransform& camTrans = cam->GetTransform();
+  // player.GetObject()->SetTransform(actorTrans);
+  csOrthoTransform actorTrans = player.GetObject()->GetTransform();
 
   // Rotate camera
   if (kbd->GetKeyState (KeyLeft) || kbd->GetKeyState(CSKEY_LEFT) ||
@@ -61,6 +63,7 @@ void PhysDemo::Frame()
   {
     float turnAmount = turnSpeed * timeMs;
 
+    csVector3 actorDir3 = actorTrans.GetT2O() * csVector3(0, 0, 1);
     csVector3 camDir3 = camTrans.GetT2O() * csVector3(0, 0, 1);
     float vertCos = camDir3 * UpVector;
 
@@ -73,37 +76,52 @@ void PhysDemo::Frame()
     {
       leftRightAmount += turnAmount;
     }
-
-    float upDownAmount = 0;
-    if (kbd->GetKeyState (KeyUp))
-    {
-      if (vertCos + turnAmount < MaxVertCos) upDownAmount -= turnAmount;
-    }
-    if (kbd->GetKeyState (KeyDown))
-    {
-      if (vertCos - turnAmount > -MaxVertCos) upDownAmount += turnAmount;
-    }
-
-    csVector2 camDir2 = HORIZONTAL_COMPONENT(camDir3);
+    
+    csVector2 actorDir2 = HORIZONTAL_COMPONENT(actorDir3);
     if (leftRightAmount)
     {
+      actorDir2.Rotate(leftRightAmount);
+
+      csVector2 camDir2 = HORIZONTAL_COMPONENT(camDir3);
       camDir2.Rotate(leftRightAmount);
       camDir3 = HV_VECTOR3(camDir2, camDir3[UpAxis]);
-    }
-    camDir3.Normalize();
 
-    if (upDownAmount)
+      // Update horizontal panning of actor
+      actorDir3 = HV_VECTOR3(actorDir2, 0);
+      actorDir3.Normalize();
+      actorTrans.LookAt(actorDir3, UpVector);
+      player.GetObject()->SetTransform(actorTrans);
+    }
+
+    // Update up/down camera panning
+    // TODO: Zoom out/in when in 3rd person mode
+    if (camFollowMode == CamFollowMode1stPerson)
     {
-      camDir2.Rotate(HALF_PI);
-      csVector3 camOrth3 = HV_VECTOR3(camDir2, 0);
-      camOrth3.Normalize();
+      camDir3.Normalize();
+      
+      csScalar upDownAmount = 0;
+      if (kbd->GetKeyState (KeyUp))
+      {
+        if (vertCos + turnAmount < MaxVertCos) upDownAmount -= turnAmount;
+      }
+      if (kbd->GetKeyState (KeyDown))
+      {
+        if (vertCos - turnAmount > -MaxVertCos) upDownAmount += turnAmount;
+      }
 
-      // rotate by quaternion
-      csQuaternion q;
-      q.SetAxisAngle(camOrth3, upDownAmount);
-      camDir3 = q.Rotate(camDir3);
+      if (upDownAmount)
+      {
+        actorDir2.Rotate(HALF_PI);
+        csVector3 camOrth3 = HV_VECTOR3(actorDir2, 0);
+        camOrth3.Normalize();
+
+        // rotate by quaternion
+        csQuaternion q;
+        q.SetAxisAngle(camOrth3, upDownAmount);
+        camDir3 = q.Rotate(camDir3);
+      }
+      camTrans.LookAt(camDir3, UpVector);
     }
-    camTrans.LookAt(camDir3, UpVector);
   }
 
   // handle movement
@@ -137,7 +155,6 @@ void PhysDemo::Frame()
     /*csVector3 aabbMin, aabbMax;
     colCurrentActor->GetAABB(aabbMin, aabbMax);*/
     
-    // move an actor
     if (!wantsToMove)
     {
       // stop any player-controlled movement
@@ -145,6 +162,7 @@ void PhysDemo::Frame()
     }
     else
     {
+      // move actor
       if (hasMoveDir)
       {
         newVel = camTrans.GetT2O() * newVel;
@@ -202,6 +220,7 @@ void PhysDemo::Frame()
     dragJoint->SetPosition (newPosition);
   }
 
+  // Dynamics and actor simulation
   if (!pauseDynamic)
   {
     if (player.GetActor())
@@ -217,8 +236,32 @@ void PhysDemo::Frame()
 
   if (player.GetActor())
   {
-      // camera follows actor
-    camTrans.SetOrigin(player.GetObject()->GetTransform().GetOrigin());
+    // adjust camera relative to actor
+    csVector3 targetPos = player.GetObject()->GetTransform().GetOrigin();
+
+    if (camFollowMode != CamFollowMode1stPerson)
+    {
+      csVector3 pos = camTrans.GetOrigin();
+      
+      // camera follows behind the actor, looking over the shoulder
+      csScalar camDistFactor = camFollowMode == CamFollowMode3rdPersonFar ? 3 : 1;
+      csScalar camDistance = 2 * camDistFactor * ActorDimensions.Norm();
+
+      targetPos -= camDistance * actorTrans.GetT2O() * csVector3(0, -1, 1); // * (1 / SQRT2)
+      
+      // interpolate between current pos and target pos
+      static const csScalar targetWeight = csScalar(0.1);
+      targetPos = targetWeight * targetPos + (1 - targetWeight) * pos;
+      camTrans.SetOrigin(targetPos);
+
+      // let the camera look in front of the actor
+      csVector3 lookAtPos = actorTrans.GetOrigin() + actorTrans.GetT2O() * csVector3(0, 0, 1) - targetPos;
+      camTrans.LookAt(lookAtPos, UpVector);
+    }
+    else
+    {
+      camTrans.SetOrigin(targetPos);
+    }
   }
 
   GripContactBodies();

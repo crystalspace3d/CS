@@ -771,6 +771,16 @@ void csBulletSector::RemoveJoint (CS::Physics::iJoint* joint)
   csBulletJoint* btJoint = dynamic_cast<csBulletJoint*> (joint);
   CS_ASSERT(btJoint);
 
+  // re-activate the now free bodies
+  if (btJoint->bodies[0])
+  {
+    dynamic_cast<csBulletCollisionObject*>(btJoint->bodies[0])->btObject->activate(true);
+  }
+  if (btJoint->bodies[1])
+  {
+    dynamic_cast<csBulletCollisionObject*>(btJoint->bodies[1])->btObject->activate(true);
+  }
+
   btJoint->RemoveBulletJoint ();
   joints.Delete (btJoint);
 }

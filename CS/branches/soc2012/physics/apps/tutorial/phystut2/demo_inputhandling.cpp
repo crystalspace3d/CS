@@ -322,35 +322,20 @@ bool PhysDemo::OnMouseDown (iEvent &event)
   {
     // Find the rigid body that was clicked on
     // Compute the end beam points
-    csRef<iCamera> camera = view->GetCamera();
-    csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
-    csVector3 v3d = camera->InvPerspective (v2d, 10000);
-    csVector3 startBeam = camera->GetTransform().GetOrigin();
-    csVector3 endBeam = camera->GetTransform().This2Other (v3d);
-
-    // Trace the physical beam
-    CS::Collisions::HitBeamResult hitResult =
-      physicalSector->HitBeamPortal (startBeam, endBeam);
-    if (!hitResult.hasHit)
-      return false;
-
-    // Add a force at the point clicked
-    if (IsDynamic(hitResult.object))
+    HitBeamResult hitResult;
+    if (GetObjectInFrontOfMe(hitResult) && IsDynamic(hitResult.object))
     {
-      csVector3 force = endBeam - startBeam;
+      // Add a force at the point clicked
+      csVector3 force = hitResult.isect - GetActorPos();
       force.Normalize();
-        force *= 100.f;
+      force *= 100.f;
 
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
       if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
       {
         csOrthoTransform trans = physicalBody->GetTransform();
         // Check if the body hit is not static or kinematic
-        csRef<CS::Physics::iRigidBody> bulletBody =
-          scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);
-        if (bulletBody->GetState() != CS::Physics::STATE_DYNAMIC)
-          return false;
-
+        csRef<CS::Physics::iRigidBody> bulletBody = scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);
         physicalBody->QueryRigidBody()->AddForceAtPos (force, hitResult.isect);
 
         // This would work too

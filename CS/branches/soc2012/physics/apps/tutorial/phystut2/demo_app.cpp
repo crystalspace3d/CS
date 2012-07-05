@@ -315,7 +315,8 @@ void PhysDemo::UpdateCameraMode()
       if (!dynamicActor)
       {
         //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y);
-        csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
+        //csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
+        csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
         DynamicActorProperties props(collider);
         props.SetMass(csScalar(80.));
         props.SetElasticity(csScalar(0.1));
@@ -451,6 +452,42 @@ bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
     }
   }
   return false;
+}
+
+bool PhysDemo::GetObjectInFrontOfMe(CS::Collisions::HitBeamResult& result)
+{ 
+  // Find the rigid body that was clicked on
+  // Compute the end beam points
+  csRef<iCamera> camera = view->GetCamera();
+  csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
+  csVector3 v3d = camera->InvPerspective (v2d, 10000);
+  csVector3 startBeam = camera->GetTransform().GetOrigin();
+  csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+
+  // Trace the physical beam
+  return (result = physicalSector->HitBeamPortal (startBeam, endBeam)).hasHit;
+}
+
+void PhysDemo::PullObject()
+{
+  HitBeamResult result;
+  if (GetObjectInFrontOfMe(result) && IsDynamic(result.object))
+  {
+    iPhysicalBody* pb = result.object->QueryPhysicalBody();
+
+    csVector3 posCorrection(2  * UpVector);
+
+    csVector3 force(GetActorPos() - result.isect - posCorrection);
+    force.Normalize();
+    force *= 30 * pb->GetMass();
+
+    // prevent sliding problem
+    csOrthoTransform trans = pb->GetTransform();
+    trans.SetOrigin(trans.GetOrigin() + posCorrection);
+    pb->SetTransform(trans);
+
+    pb->QueryRigidBody()->AddForce (force);
+  }
 }
 
 

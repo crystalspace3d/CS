@@ -71,7 +71,6 @@ public:
 
 private:
   void OnClicked (wxCommandEvent& event);
-  
   void OnSize (wxSizeEvent& ev);
 
   DECLARE_EVENT_TABLE();

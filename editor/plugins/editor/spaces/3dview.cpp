@@ -94,8 +94,10 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   // Register this event handler to the editor events
   iEventNameRegistry* registry =
     csEventNameRegistry::GetRegistry (object_reg);
+  eventSetCollection = 
+    registry->GetID ("crystalspace.editor.context.setcollection");
   RegisterQueue (editor->GetContext ()->GetEventQueue (),
-		 registry->GetID ("crystalspace.editor.context.setcollection"));
+		 eventSetCollection);
 
   // Register a frame listener to the global event queue
   frameListener = new CS3DSpace::FrameListener (this);
@@ -185,7 +187,7 @@ bool CS3DSpace::HandleEvent (iEvent& ev)
 
 void CS3DSpace::UpdateFrame ()
 {
-  if (!disabled) {
+  if (!disabled) { // TODO: or check for the availability of a parent?
     // Tell 3D driver we're going to display 3D things.
     if (!g3d->BeginDraw (CSDRAW_CLEARSCREEN | CSDRAW_3DGRAPHICS))
       return;
@@ -197,6 +199,8 @@ void CS3DSpace::UpdateFrame ()
     g3d->FinishDraw ();
     g3d->Print (0);
   }
+
+  else disabled = false;
 }
 
 void CS3DSpace::Update ()

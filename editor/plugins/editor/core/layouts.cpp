@@ -265,11 +265,11 @@ wxWindow* PanelLayout::GetwxWindow ()
 
 BEGIN_EVENT_TABLE (CollapsiblePane, wxCollapsiblePane)
   EVT_SIZE (CollapsiblePane::OnSize)
-  EVT_COLLAPSIBLEPANE_CHANGED (wxID_ANY, CollapsiblePane::OnChanged)
 END_EVENT_TABLE ()
 
 CollapsiblePane::CollapsiblePane (iObjectRegistry* obj_reg, wxWindow* parent, const char* label)
-  : wxCollapsiblePane (parent, wxID_ANY, wxString (label, wxConvUTF8), wxDefaultPosition, wxDefaultSize, wxCP_NO_TLW_RESIZE),
+  : wxCollapsiblePane (parent, wxID_ANY, wxString (label, wxConvUTF8),
+		       wxDefaultPosition, wxDefaultSize, wxCP_NO_TLW_RESIZE),
   object_reg (obj_reg)
 {
 
@@ -281,16 +281,7 @@ CollapsiblePane::~CollapsiblePane ()
 
 void CollapsiblePane::OnSize (wxSizeEvent& event)
 {
-  printf ("CollapsiblePane::OnSize %d - %d\n", event.GetSize ().GetWidth (), event.GetSize ().GetHeight ());
-  //SetSize (event.GetSize ());
   Layout ();
-  event.Skip ();
-}
-
-void CollapsiblePane::OnChanged (wxCollapsiblePaneEvent& event)
-{
-  printf ("CollapsiblePane::OnChanged\n");
-  GetParent ()->Layout ();
   event.Skip ();
 }
 

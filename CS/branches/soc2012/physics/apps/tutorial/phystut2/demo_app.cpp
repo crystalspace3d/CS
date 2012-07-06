@@ -28,8 +28,8 @@ PhysDemo::PhysDemo()
   //physicalCameraMode (ACTOR_KINEMATIC)
   physicalCameraMode (ACTOR_DYNAMIC)
   ,
-  defaultEnvironmentName("terrain")
-  //defaultEnvironmentName("portals")
+  //defaultEnvironmentName("terrain")
+  defaultEnvironmentName("portals")
 {
 }
 
@@ -104,15 +104,20 @@ bool PhysDemo::Application()
   if (!DemoApplication::Application())
     return false;
 
-  physicalSystem->CreateCollisionGroup ("Box");
-  physicalSystem->CreateCollisionGroup ("BoxFiltered");
-
-  bool coll = physicalSystem->GetGroupCollision ("Box", "BoxFiltered");
-  if (coll)
-    physicalSystem->SetGroupCollision ("Box", "BoxFiltered", false);
+  // Prepare engine (whatever that means)
+  engine->Prepare();
+  
+  // Preload some meshes and materials
+  if (!loader->LoadTexture ("spark", "/lib/std/spark.png")) return ReportError ("Error loading texture: spark");
+  if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
+  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif")) return ReportError ("Could not load texture: stone");
 
   // Create the dynamic system
+  
+  // TODO: Every physical sector should *ALWAYS* have a render sector
+  room = engine->CreateSector ("room");
   physicalSector = physicalSystem->CreatePhysicalSector();
+  physicalSector->SetSector(room);
 
   // Set some linear and angular dampening in order to have a reduction of
   // the movements of the objects
@@ -121,11 +126,13 @@ bool PhysDemo::Application()
 
   // Enable soft bodies
   if (isSoftBodyWorld)
+  {
     physicalSector->SetSoftBodyEnabled (true);
+  }
 
   bulletSector = scfQueryInterface<Bullet2::iPhysicalSector> (physicalSector);
   bulletSector->SetDebugMode (debugMode);
-  physicalSector->SetGravity(0);
+
 
   // Create the environment
   switch (environment)
@@ -133,11 +140,6 @@ bool PhysDemo::Application()
   case ENVIRONMENT_PORTALS:
     CreatePortalRoom();
     view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3.5f));
-    break;
-
-  case ENVIRONMENT_BOX:
-    CreateBoxRoom();
-    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3));
     break;
 
   case ENVIRONMENT_TERRAIN:
@@ -149,12 +151,6 @@ bool PhysDemo::Application()
   default:
     break;
   }
-
-  physicalSector->SetSector (room);
-
-  // Preload some meshes and materials
-  if (!loader->LoadTexture ("spark", "/lib/std/spark.png")) return ReportError ("Error loading texture: spark");
-  if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
 
   // Load the box mesh factory.
   boxFact = loader->LoadMeshObjectFactory ("/lib/std/sprite1");

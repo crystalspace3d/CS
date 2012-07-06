@@ -22,15 +22,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "ivaria/physics.h"
 
-namespace CS 
-{ 
-namespace Physics 
-{
-struct iRigidBody;
-struct iSoftBody;
-}
-}
-
 //enum PhysicalBodyType;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
@@ -58,7 +49,7 @@ public:
   virtual CS::Collisions::CollisionObjectType GetObjectType () const {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
 
   virtual CS::Physics::PhysicalBodyType GetBodyType () const = 0;
-  virtual bool IsStatic() const { return false; }
+  virtual bool IsDynamic() const { return true; }
 
   virtual CS::Physics::iRigidBody* QueryRigidBody () = 0;
   virtual CS::Physics::iSoftBody* QuerySoftBody () = 0;

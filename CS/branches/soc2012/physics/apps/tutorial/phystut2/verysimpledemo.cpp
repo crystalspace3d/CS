@@ -127,8 +127,7 @@ int runDebug(int argc, char* argv[])
 #define CAMERA_ACTOR 4
 
 #define ENVIRONMENT_PORTALS 1
-#define ENVIRONMENT_BOX 2
-#define ENVIRONMENT_TERRAIN 3
+#define ENVIRONMENT_TERRAIN 2
 
 VerySimple::VerySimple()
   : DemoApplication ("CrystalSpace.PhysTut2"),

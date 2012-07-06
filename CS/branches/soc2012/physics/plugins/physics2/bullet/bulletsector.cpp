@@ -151,7 +151,7 @@ void csBulletSector::SetGravity (const csVector3& v)
   // first re-activate all objects
   for (size_t i = 0; i < collisionObjects.GetSize(); ++i)
   {
-    if (collisionObjects[i]->IsPhysicalObject())
+    if (collisionObjects[i]->IsPhysicalObject() && collisionObjects[i]->QueryPhysicalBody()->IsDynamic())
     {
       collisionObjects[i]->btObject->activate(true);
     }
@@ -704,9 +704,9 @@ void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
   // TODO: Body might have set its own damping
   bulletBody->SetLinearDamping(linearDampening);
   bulletBody->SetAngularDamping(angularDampening);
-  bulletBody->AddBulletObject ();
   bulletBody->btBody->setSleepingThresholds (linearDisableThreshold, angularDisableThreshold);
   bulletBody->btBody->setDeactivationTime (timeDisableThreshold);
+  bulletBody->AddBulletObject ();
 
   AddMovableToSector (body);
 }

@@ -19,6 +19,79 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
+csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const csString& name, const csOrthoTransform& trans,
+  csScalar friction, csScalar density)
+{ 
+  RigidBodyProperties props(Collider, name);
+  props.SetDensity (density);
+  props.SetElasticity (0.8f);
+  props.SetFriction (friction);
+  csRef<CS::Physics::iRigidBody> body = physDemo.physicalSystem->CreateRigidBody(&props);
+  body->SetTransform(trans);
+  
+  iMaterialWrapper* mat = physDemo.engine->GetMaterialList()->FindByName ("stone");
+  csRef<iMeshWrapper> mesh = MeshFactory->CreateMeshWrapper();
+  mesh->QueryObject()->SetName(name.GetData());
+  mesh->GetMeshObject()->SetMaterialWrapper (mat);
+  body->SetAttachedMovable(mesh->GetMovable());
+
+  // Add to world
+  physDemo.physicalSector->AddCollisionObject(body);
+
+  return csPtr<CS::Physics::iRigidBody>(body);
+}
+
+void PhysDemo::CreateBoxMeshColliderPair(RenderMeshColliderPair& pair, const csVector3& extents)
+{
+  DensityTextureMapper mapper (0.3f);
+  TesselatedBox tbox (-extents/2, extents/2);
+  tbox.SetLevel (3);
+  tbox.SetMapper (&mapper);
+  
+  pair.MeshFactory = GeneralMeshBuilder::CreateFactory(engine, "box", &tbox);
+  pair.Collider = csRef<iColliderBox>(physicalSystem->CreateColliderBox (extents));
+}
+
+csRef<CS::Physics::iRigidBody> PhysDemo::SpawnBox (bool setVelocity /* = true */)
+{
+  csVector3 extents(0.4f, 0.8f, 0.4f);
+  csVector3 pos = view->GetCamera()->GetTransform().GetOrigin() + csScalar(1.5) * GetCameraDirection();
+  return SpawnBox(extents, pos, setVelocity);
+}
+
+csRef<CS::Physics::iRigidBody> PhysDemo::SpawnBox (const csVector3& extents, const csVector3& pos, bool setVelocity /* = true */)
+{
+  // Create a box collider & mesh and then the actual box object
+  RenderMeshColliderPair pair;
+  CreateBoxMeshColliderPair(pair, extents);
+  return SpawnRigidBody(pair, pos, "box", setVelocity);
+}
+
+csRef<CS::Physics::iRigidBody> PhysDemo::SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos,
+  const csString& name, csScalar friction, csScalar density, bool setVelocity)
+{
+  //static csRandomFloatGen randGen;
+
+  //trans.RotateThis(UpVector, randGen.GetAngle());
+
+  // Create body
+  
+
+  // Set transform
+  csOrthoTransform trans; trans.SetOrigin(pos);
+  csRef<CS::Physics::iRigidBody> body = pair.SpawnRigidBody(name, trans, friction, density);
+
+  if (setVelocity)
+  {
+    // Fling the body.
+    const csOrthoTransform& tc = view->GetCamera()->GetTransform();
+    body->SetLinearVelocity (tc.GetT2O() * csVector3 (0, 0, 5));
+    body->SetAngularVelocity (tc.GetT2O() * csVector3 (5, 0, 0));
+  }
+
+  return body;
+}
+
 void PhysDemo::CreateGhostCylinder()
 {
   // Create the cylinder mesh factory.
@@ -64,84 +137,6 @@ void PhysDemo::CreateGhostCylinder()
   physicalSector->AddCollisionObject (ghostObject);
 }
 
-void PhysDemo::CreateBoxCollider (csRef<CS::Collisions::iColliderBox>& collider, csRef<iMeshWrapper>& mesh, const csVector3& extents)
-{
-  DensityTextureMapper mapper (0.3f);
-  TesselatedBox tbox (-extents/2, extents/2);
-  tbox.SetLevel (3);
-  tbox.SetMapper (&mapper);
-
-  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
-  {
-    ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
-  }
-
-  mesh = GeneralMeshBuilder::CreateFactoryAndMesh (engine, room, "walls", "walls_factory", &tbox);
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
-  mesh->GetMeshObject()->SetMaterialWrapper (mat);
-
-  // Create and attach a box collider
-  collider = physicalSystem->CreateColliderBox (extents);
-
-}
-
-CS::Physics::iRigidBody* PhysDemo::SpawnBox (bool setVelocity /* = true */)
-{
-  csVector3 extents(0.4f, 0.8f, 0.4f);
-  csVector3 pos = view->GetCamera()->GetTransform().GetOrigin() + GetCameraDirection();
-  return SpawnBox(extents, pos, 15, setVelocity);
-}
-
-CS::Physics::iRigidBody* PhysDemo::SpawnBox (const csVector3& extents, const csVector3& pos, float mass, bool setVelocity /* = true */)
-{
-  static csRandomFloatGen randGen;
-
-  // Create a box collider & mesh
-  csRef<iColliderBox> box;
-  csRef<iMeshWrapper> mesh;
-  CreateBoxCollider(box, mesh, extents);
-
-  return SpawnRigidBody(box, mesh, pos, mass, setVelocity);
-}
-
-CS::Physics::iRigidBody* PhysDemo::SpawnRigidBody (
-  CS::Collisions::iCollider* collider,
-  iMeshWrapper* mesh, 
-  const csVector3& pos, 
-  float mass, 
-  bool setVelocity /* = true */)
-{
-  static csRandomFloatGen randGen;
-  
-  // Create a body
-  RigidBodyProperties props(collider, mesh->QueryObject ()->GetName ());
-  props.SetMass (mass);
-  props.SetElasticity (0.8f);
-  props.SetFriction (10.0f);
-  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
-  
-  // Set transform, attach mesh and add to world
-  const csOrthoTransform& tc = view->GetCamera()->GetTransform();
-  csOrthoTransform trans = tc;
-  trans.RotateThis(UpVector, randGen.GetAngle());
-  trans.SetOrigin (pos);
-  rb->SetTransform (trans);
-
-  rb->SetAttachedMovable (mesh->GetMovable());
-  physicalSector->AddCollisionObject (rb);
-
-  if (setVelocity)
-  {
-    // Fling the body.
-    rb->SetLinearVelocity (tc.GetT2O() * csVector3 (0, 0, 5));
-    rb->SetAngularVelocity (tc.GetT2O() * csVector3 (5, 0, 0));
-  }
-
-  // Update the display of the dynamics debugger
-  //dynamicsDebugger->UpdateDisplay();
-
-  return rb;
-}
 
 CS::Physics::iRigidBody* PhysDemo::SpawnSphere (bool setVelocity /* = true */)
 {
@@ -154,8 +149,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   const csOrthoTransform& tc = view->GetCamera()->GetTransform();
 
   // Create the ball mesh factory.
-  csRef<iMeshFactoryWrapper> ballFact = engine->CreateMeshFactory(
-    "crystalspace.mesh.object.genmesh", "ballFact");
+  csRef<iMeshFactoryWrapper> ballFact = engine->CreateMeshFactory("crystalspace.mesh.object.genmesh", "ballFact");
   if (!ballFact)
   {
     ReportError ("Error creating mesh object factory!");
@@ -188,7 +182,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   RigidBodyProperties props(sphere, "sphere");
   props.SetDensity (10.0f);
   props.SetElasticity (0.8f);
-  props.SetFriction (10.0f);
+  props.SetFriction (1.0f);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
   
   rb->SetAttachedMovable (mesh->GetMovable());
@@ -230,7 +224,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   RigidBodyProperties props(cone, "cone");
   props.SetDensity (10.0f);
   props.SetElasticity (0.8f);
-  props.SetFriction (10.0f);
+  props.SetFriction (1.0f);
 
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
@@ -261,8 +255,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   const csOrthoTransform& tc = view->GetCamera()->GetTransform();
 
   // Create the cylinder mesh factory.
-  csRef<iMeshFactoryWrapper> cylinderFact = engine->CreateMeshFactory(
-    "crystalspace.mesh.object.genmesh", "cylinderFact");
+  csRef<iMeshFactoryWrapper> cylinderFact = engine->CreateMeshFactory("crystalspace.mesh.object.genmesh", "cylinderFact");
   if (!cylinderFact)
   {
     ReportError ("Error creating mesh object factory!");
@@ -296,7 +289,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   RigidBodyProperties props(cylinder, "cylinder");
   props.SetDensity (10.0f);
   props.SetElasticity (0.8f);
-  props.SetFriction (10.0f);
+  props.SetFriction (1.0f);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
   csOrthoTransform trans = tc;
@@ -327,8 +320,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   const csOrthoTransform& tc = view->GetCamera()->GetTransform();
 
   // Create the capsule mesh factory.
-  csRef<iMeshFactoryWrapper> capsuleFact = engine->CreateMeshFactory (
-    "crystalspace.mesh.object.genmesh", "capsuleFact");
+  csRef<iMeshFactoryWrapper> capsuleFact = engine->CreateMeshFactory ("crystalspace.mesh.object.genmesh", "capsuleFact");
   if (!capsuleFact)
   {
     ReportError ("Error creating mesh object factory!");
@@ -352,7 +344,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   RigidBodyProperties props(capsule, "capsule");
   props.SetDensity (10.0f);
   props.SetElasticity (0.8f);
-  props.SetFriction (10.0f);
+  props.SetFriction (1.0f);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
   // set transform
@@ -467,7 +459,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   RigidBodyProperties props(collider, "convexmesh");
   props.SetDensity (10.0f);
   props.SetElasticity (0.8f);
-  props.SetFriction (10.0f);
+  props.SetFriction (1.0f);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
   // Set transform
@@ -1229,23 +1221,12 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
 
   int n = 0;
 
-  // prepare collider and material
-  if (!stackBoxCollider)
+  // prepare collider and render mesh
+  csRef<CS::Collisions::iCollider> collider = stackBoxMeshPair.Collider;
+  if (!collider || 
+    fabs(dynamic_cast<iColliderBox*>(&*collider)->GetBoxGeometry().x - boxLen) > EPSILON)
   {
-    stackBoxCollider = physicalSystem->CreateColliderBox (extents);
-  }
-
-  if (!stackBoxMeshFactory)
-  {
-    DensityTextureMapper mapper (0.3f);
-    TesselatedBox tbox (-extents/2, extents/2);
-    tbox.SetLevel (3);
-    tbox.SetMapper (&mapper);
-    if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif"))
-    {
-      ReportWarning ("Could not load texture %s", CS::Quote::Single ("stone"));
-    }
-    stackBoxMeshFactory = GeneralMeshBuilder::CreateFactory(engine, "box factory", &tbox);
+    CreateBoxMeshColliderPair(stackBoxMeshPair, extents);
   }
   
   iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
@@ -1257,10 +1238,7 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
       boxPos += (.5f * (1 + vSpacingFactor) * boxLen) * UpVector;
       for (int i = 0; i < stackHeight; ++i)
       {
-        csRef<iMeshWrapper> mesh = stackBoxMeshFactory->CreateMeshWrapper();
-        mesh->QueryObject()->SetName("box");
-        mesh->GetMeshObject()->SetMaterialWrapper (mat);
-        SpawnRigidBody(stackBoxCollider, mesh, boxPos, mass, false);
+        SpawnRigidBody(stackBoxMeshPair, boxPos, "box", 5, 30, false);
         boxPos += ((1 + vSpacingFactor) * boxLen) * UpVector;
       }
       ++n;

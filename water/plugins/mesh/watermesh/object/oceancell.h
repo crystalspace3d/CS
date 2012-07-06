@@ -107,7 +107,7 @@ namespace WaterMesh
   {
   public:    
     csVector2 gc;
-    csOceanNode(csVector2 pos, float len, float wid);
+    csOceanNode(csVector2 pos, float len, float wid, float height);
     ~csOceanNode();
     
     csBox3 GetBBox () { return bbox; }

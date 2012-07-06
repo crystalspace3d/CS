@@ -215,6 +215,11 @@ void csWaterMeshObject::SetupObject ()
 	PlaneReflection->SetType(csShaderVariable::VECTOR4);
 	PlaneReflection->SetValue(csVector4(0.0, -1.0, 0.0, 0.0));
 
+	// Setting Height 
+	csVector3 coord;
+	coord = logparent->GetMovable()->GetPosition();
+	waterHeight = coord.y;
+
   }
 
   if(factory->murkChanged)
@@ -445,7 +450,7 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     mesh_colors_dirty_flag = true;
   }
 
-  //Commenting these 2 lines are swithching these values to default
+  //Commenting these 2 lines are switching these values to default
   //logparent->SetZBufMode(CS_ZBUF_TEST);
   //logparent->SetRenderPriority (factory->engine->GetRenderPriority ("alpha"));
 
@@ -478,7 +483,9 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     
     renderMeshes.DeleteAll();
     
-    csOceanNode start (csVector2(nearX, nearZ), CELL_LEN, CELL_WID);
+	csPrintf("%f",waterHeight);
+
+    csOceanNode start (csVector2(nearX, nearZ), CELL_LEN, CELL_WID, waterHeight);
     
     DrawFromNode(start, camPos, planes, frustum_mask);
     

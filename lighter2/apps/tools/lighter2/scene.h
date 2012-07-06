@@ -64,7 +64,7 @@ namespace lighter
       csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,false);
 
     THREADED_CALLABLE_DECL2(SectorProcessor,BuildPhotonMaps,csThreadReturn,
-      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,true,false);
+      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,false);
 
     THREADED_CALLABLE_DECL4(SectorProcessor,ComputeSectorLighting,csThreadReturn,
       csRef<Sector>,sector,bool, enableRaytracer,bool, enablePhotonMapper,

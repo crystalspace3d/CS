@@ -75,7 +75,7 @@ void csBulletJoint::Attach (CS::Physics::iPhysicalBody* body1, CS::Physics::iPhy
       if (body2->GetBodyType () == CS::Physics::BODY_RIGID)
       {
         jointFlag &= ~JOINT_SOFT;
-        bool static2 = (body2->IsStatic());
+        bool static2 = (!body2->IsDynamic());
 
         // The static body should be the first body.
         if (!static2)

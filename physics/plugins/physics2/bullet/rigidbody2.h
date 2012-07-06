@@ -111,7 +111,7 @@ public:
   virtual csVector3 GetLinearVelocity (size_t index = 0) const;
   virtual void SetLinearVelocity (const csVector3& vel);
   
-  virtual bool IsStatic() const { return GetState() == CS::Physics::STATE_STATIC; }
+  virtual bool IsDynamic() const { return GetState() == CS::Physics::STATE_DYNAMIC; }
 
   //iRigidBody
   virtual CS::Physics::RigidBodyState GetState () const {return physicalState;}

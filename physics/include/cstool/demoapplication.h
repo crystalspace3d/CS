@@ -151,7 +151,7 @@ class CS_CRYSTALSPACE_EXPORT DemoApplication : public csApplicationFramework,
   /// Image format of the screenshots
   csString screenshotFormat;
 
- protected:
+ public:
   /// Reference to the engine
   csRef<iEngine> engine;
   /// Reference to the loader

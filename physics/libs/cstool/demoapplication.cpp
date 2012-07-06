@@ -175,9 +175,6 @@ void DemoApplication::PrintHelp ()
 
 bool DemoApplication::CreateRoom ()
 {
-  // Create the main sector
-  room = engine->CreateSector ("room");
-
   // Setup the camera
   view->GetCamera ()->SetSector (room);
   cameraManager->SetCamera (view->GetCamera ());

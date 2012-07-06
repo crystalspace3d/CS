@@ -65,7 +65,7 @@ public:
 
   virtual void SetAttachedMovable (iMovable* movable) 
   {
-    this->movable = movable; if (movable) movable->SetTransform(GetTransform());
+    this->movable = movable; if (movable) movable->SetFullTransform(GetTransform());
   }
 
   virtual iMovable* GetAttachedMovable () { return movable; }

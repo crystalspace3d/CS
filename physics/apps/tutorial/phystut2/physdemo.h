@@ -23,8 +23,7 @@
 // Levels
 #define ENVIRONMENT_NONE 0
 #define ENVIRONMENT_PORTALS 1
-#define ENVIRONMENT_BOX 2
-#define ENVIRONMENT_TERRAIN 3
+#define ENVIRONMENT_TERRAIN 2
 
 enum CamFollowMode
 {
@@ -49,13 +48,27 @@ static const int KeyStrafeLeft = 'a';
 static const int KeyStrafeRight = 'd';
 static const int KeyJump = CSKEY_SPACE;
 
+
+class PhysDemo;
+
+/**
+ * Re-usable pair of a collider with a render mesh. 
+ * Can be used to create new RigidBody objects.
+ */
+class RenderMeshColliderPair
+{
+public:
+  csRef<CS::Collisions::iCollider> Collider;
+  csRef<iMeshFactoryWrapper> MeshFactory;
+
+  /// Creates a new RigidBody from the given collider and render mesh
+  csPtr<CS::Physics::iRigidBody> SpawnRigidBody(const csString& name, const csOrthoTransform& trans, csScalar friction = 1, csScalar density = 30);
+};
+
 inline int GetEnvironmentByName(csString levelName)
 {
   if (levelName == "portals")
       return ENVIRONMENT_PORTALS;
-
-  else if (levelName == "box")
-      return ENVIRONMENT_BOX;
 
   else if (levelName == "terrain")
       return ENVIRONMENT_TERRAIN;
@@ -70,7 +83,6 @@ static const csVector3 ActorDimensions(0.3f, 1.8f, 0.3f);
 class PhysDemo : public CS::Utility::DemoApplication
 {
 public:
-private:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
 
   csRef<CS::Physics::iPhysicalSector> physicalSector;
@@ -87,8 +99,7 @@ private:
   csRef<iMeshFactoryWrapper> meshFact;
   csRef<CS::Collisions::iColliderConcaveMesh> mainCollider;
 
-  csRef<iMeshFactoryWrapper> stackBoxMeshFactory;
-  csRef<CS::Collisions::iColliderBox> stackBoxCollider;
+  RenderMeshColliderPair stackBoxMeshPair;
 
 
   // Static environment
@@ -166,8 +177,9 @@ public:
 
   void CreateBoxCollider (csRef<CS::Collisions::iColliderBox>& colliderPtr, csRef<iMeshWrapper>& meshPtr, const csVector3& extents);
 
-  CS::Physics::iRigidBody* SpawnBox (bool setVelocity = true);
-  CS::Physics::iRigidBody* SpawnBox (const csVector3& extents, const csVector3& pos, float mass = 30, bool setVelocity = true);
+  csRef<CS::Physics::iRigidBody> SpawnBox (bool setVelocity = true);
+  csRef<CS::Physics::iRigidBody> SpawnBox (const csVector3& extents, const csVector3& pos, bool setVelocity = true);
+  CS::Physics::iRigidBody* SpawnBox (const RenderMeshColliderPair& pair, const csVector3& pos, bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnSphere (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnSphere (const csVector3& pos, float radius, bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCone (bool setVelocity = true);
@@ -188,19 +200,15 @@ public:
   CS::Physics::iSoftBody* SpawnSoftBody (bool setVelocity = true);
   void SpawnBoxStacks(int stackNum = 4, int stackHeight = 4, float boxLen = .5f, float mass = 20.f);
 
-  void CreateBoxRoom();
   void CreatePortalRoom();
   void CreateTerrainRoom();
 
   void CreateGhostCylinder();
   void GripContactBodies();
 
-  CS::Physics::iRigidBody* SpawnRigidBody (
-    CS::Collisions::iCollider* collider,
-    iMeshWrapper* mesh, 
-    const csVector3& pos, 
-    float mass, 
-    bool setVelocity = true);
+  /// Creates a new rigid body, places it at the given pos and, optionally, gives it some initial momentum
+  csRef<CS::Physics::iRigidBody> SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos, 
+    const csString& name, csScalar friction = 1, csScalar density = 30, bool setVelocity = false);
 
 
   // particles
@@ -289,6 +297,10 @@ public:
   // Items
 
   void CreateItemTemplates();
+
+  //
+  // Mesh & Collider Utilities
+  void CreateBoxMeshColliderPair(RenderMeshColliderPair& pair, const csVector3& extents);
 
   //
   // Other

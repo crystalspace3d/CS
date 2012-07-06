@@ -76,7 +76,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   bool csBulletCollisionPortal::CanTraverse(csBulletCollisionObject* obj)
   {
     // Static objects can't traverse portals
-    return obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL && !obj->QueryPhysicalBody()->IsStatic();
+    return obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL && obj->QueryPhysicalBody()->IsDynamic();
   }
 
   void csBulletCollisionPortal::UpdateCollisions (csBulletSector* sector)

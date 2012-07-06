@@ -97,7 +97,7 @@ struct iCollider : public virtual iBase
   /// Get the volume of this collider
   virtual float GetVolume () const = 0;
 
-  /// Whether this collider (and all its children) can be used in a dynamic environment
+  /// Whether this collider (and all its children) can be used for dynamic simulation
   virtual bool IsDynamic () const = 0;
 
   /// Get the frame of reference

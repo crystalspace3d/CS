@@ -151,10 +151,10 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual csVector3 GetLinearVelocity (size_t index = 0) const = 0;
 
   /**
-   * Get whether this object is static (or dynamic, if false).
-   * Static objects are not moved by any simulation.
+   * Get whether this object is dynamic.
+   * Dynamic objects are moved by dynamics simulation.
    */
-  virtual bool IsStatic() const = 0;
+  virtual bool IsDynamic() const = 0;
 
   /**
    * Set the friction of this body.

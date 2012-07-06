@@ -483,9 +483,7 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     
     renderMeshes.DeleteAll();
     
-	csPrintf("%f",waterHeight);
-
-    csOceanNode start (csVector2(nearX, nearZ), CELL_LEN, CELL_WID, waterHeight);
+	csOceanNode start (csVector2(nearX, nearZ), CELL_LEN, CELL_WID, waterHeight);
     
     DrawFromNode(start, camPos, planes, frustum_mask);
     

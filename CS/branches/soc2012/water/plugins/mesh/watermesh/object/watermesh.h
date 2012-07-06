@@ -132,6 +132,8 @@ private:
   uint32 current_features;
   csFlags flags;
 
+  float waterHeight;
+
   float fuzz;
 
   // This flag is set to false initially and will be set to true

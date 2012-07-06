@@ -448,14 +448,16 @@ void csOceanCell::SetupBufferHolder()
 ////////////// csOceanNode //////////////////
 
 
-csOceanNode::csOceanNode(csVector2 pos, float len, float wid)
+csOceanNode::csOceanNode(csVector2 pos, float len, float wid, float height)
 {
   gc = pos;
   this->len = len;
   this->wid = wid;
-  oHeight = 0;
+  oHeight = 0.0;
   
   bbox = csBox3(gc.x, oHeight - 1.0, gc.y, gc.x + len, oHeight + 1.0, gc.y + wid);
+
+  oHeight = height;
 }
 
 csOceanNode::~csOceanNode()
@@ -465,22 +467,22 @@ csOceanNode::~csOceanNode()
 
 csOceanNode csOceanNode::GetLeft() const
 {
-  return csOceanNode(csVector2(gc.x - len, gc.y), len, wid);
+  return csOceanNode(csVector2(gc.x - len, gc.y), len, wid, oHeight);
 }
 
 csOceanNode csOceanNode::GetRight() const
 {
-  return csOceanNode(csVector2(gc.x + len, gc.y), len, wid);
+  return csOceanNode(csVector2(gc.x + len, gc.y), len, wid, oHeight);
 }
 
 csOceanNode csOceanNode::GetUp() const
 {
-  return csOceanNode(csVector2(gc.x, gc.y + wid), len, wid);
+  return csOceanNode(csVector2(gc.x, gc.y + wid), len, wid, oHeight);
 }
 
 csOceanNode csOceanNode::GetDown() const
 {
-  return csOceanNode(csVector2(gc.x, gc.y - wid), len, wid);
+  return csOceanNode(csVector2(gc.x, gc.y - wid), len, wid, oHeight);
 }
 
 csVector3 csOceanNode::GetCenter() const

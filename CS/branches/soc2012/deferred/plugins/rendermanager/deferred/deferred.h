@@ -28,6 +28,7 @@
 #include "csplugincommon/rendermanager/renderlayers.h"
 #include "csplugincommon/rendermanager/autofx_framebuffertex.h"
 #include "csplugincommon/rendermanager/autofx_reflrefr.h"
+#include "csplugincommon/rendermanager/shadow_pssm.h"
 #include "csplugincommon/rendermanager/posteffectssupport.h"
 #include "csplugincommon/rendermanager/hdrexposure.h"
 #include "csplugincommon/rendermanager/viscullcommon.h"
@@ -37,9 +38,7 @@
 #include "iengine/rendermanager.h"
 #include "itexture.h"
 
-#include "gbuffer.h"
 #include "deferredtreetraits.h"
-#include "deferredlightrender.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 {
@@ -88,20 +87,29 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       targets.MarkAsUsed (target);
     }
 
-    typedef StandardContextSetup<RenderTreeType, CS::RenderManager::MultipleRenderLayer> 
+    typedef RMDeferred
+      ThisType;
+
+    typedef CS::RenderManager::MultipleRenderLayer
+      RenderLayerType;
+
+    typedef CS::RenderManager::ShadowPSSM<RenderTreeType, RenderLayerType>
+      ShadowType;
+
+    typedef StandardContextSetup<RenderTreeType, RenderLayerType> 
       ContextSetupType;
 
     typedef CS::RenderManager::StandardPortalSetup<RenderTreeType, ContextSetupType> 
       PortalSetupType;
 
-    typedef CS::RenderManager::LightSetup<RenderTreeType, CS::RenderManager::MultipleRenderLayer> 
+    typedef CS::RenderManager::LightSetup<RenderTreeType, RenderLayerType, ShadowType> 
       LightSetupType;
 
-    typedef CS::RenderManager::DependentTargetManager<RenderTreeType, RMDeferred>
+    typedef CS::RenderManager::DependentTargetManager<RenderTreeType, ThisType>
       TargetManagerType;
 
-    typedef CS::RenderManager::AutoFX::ReflectRefract<RenderTreeType, 
-      ContextSetupType> AutoReflectRefractType;
+    typedef CS::RenderManager::AutoFX::ReflectRefract<RenderTreeType, ContextSetupType>
+      AutoReflectRefractType;
 
     typedef CS::RenderManager::AutoFX::FramebufferTex<RenderTreeType>
       AutoFramebufferTexType;

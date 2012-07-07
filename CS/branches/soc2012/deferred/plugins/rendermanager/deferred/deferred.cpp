@@ -52,12 +52,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 SCF_IMPLEMENT_FACTORY(RMDeferred);
 
 //----------------------------------------------------------------------
+
 template<typename RenderTreeType, typename LayerConfigType>
 class StandardContextSetup
 {
 public:
   typedef StandardContextSetup<RenderTreeType, LayerConfigType> ThisType;
   typedef StandardPortalSetup<RenderTreeType, ThisType> PortalSetupType;
+  typedef typename RMDeferred::LightSetupType LightSetupType;
+  typedef typename LightSetupType::ShadowHandlerType ShadowType;
 
   StandardContextSetup(RMDeferred *rmanager, const LayerConfigType &layerConfig)
     : 
@@ -94,6 +97,7 @@ public:
 
     // @@@ This is somewhat "boilerplate" sector/rview setup.
     sector->PrepareDraw (rview);
+
     // Make sure the clip-planes are ok
     CS::RenderViewClipper::SetupClipPlanes (rview->GetRenderContext ());
 
@@ -140,18 +144,30 @@ public:
     // Setup shaders and tickets
     DeferredSetupShader (context, shaderManager, layerConfig, deferredLayer, lightingLayer, zonlyLayer);
 
-    // Setup lighting (only needed for transparent objects)
-    RMDeferred::LightSetupType::ShadowParamType shadowParam;
-    RMDeferred::LightSetupType lightSetup (rmanager->lightPersistent, 
-                                           rmanager->lightManager,
-                                           context.svArrays, 
-                                           layerConfig, 
-                                           shadowParam);
+    // Setup shadows and lighting
+    {
+      typename ShadowType::ShadowParameters shadowParam (rmanager->lightPersistent.shadowPersist, context.owner, rview);
 
-    ForEachForwardMeshNode (context, lightSetup);
+      // setup shadows for all lights
+      ForEachLight (context, shadowParam);
 
-    // Setup shaders and tickets
-    SetupStandardTicket (context, shaderManager, lightSetup.GetPostLightingLayers ());
+      // setup shadows for all meshes
+      ForEachMeshNode (context, shadowParam);
+
+      // finish shadow setup
+      shadowParam();
+
+      LightSetupType lightSetup (rmanager->lightPersistent, 
+				 rmanager->lightManager,
+				 context.svArrays, 
+				 layerConfig, 
+				 shadowParam);
+
+      ForEachForwardMeshNode (context, lightSetup);
+
+      // Setup shaders and tickets
+      SetupStandardTicket (context, shaderManager, lightSetup.GetPostLightingLayers ());
+    }
 
     {
       ThisType ctxRefl (*this, layerConfig);
@@ -365,6 +381,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
 
   treePersistent.Initialize (shaderManager);
   portalPersistent.Initialize (shaderManager, graphics3D, treePersistent.debugPersist);
+  lightPersistent.shadowPersist.SetConfigPrefix ("RenderManager.Deferred");
   lightPersistent.Initialize (registry, treePersistent.debugPersist);
   lightRenderPersistent.Initialize (registry);
 
@@ -427,7 +444,7 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
   framebufferTexPersistent.UpdateNewFrame ();
 
   iEngine *engine = view->GetEngine ();
-  engine->UpdateNewFrame ();  
+  engine->UpdateNewFrame ();
   engine->FireStartFrame (rview);
 
   iSector *startSector = rview->GetThisSector ();
@@ -637,7 +654,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     return true;
   }
 
-  return false;
+  return RMDebugCommon::DebugCommand(cmd);
 }
 
 }

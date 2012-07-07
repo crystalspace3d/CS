@@ -230,9 +230,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         }
 
 	// deferred pass
-        // @@@TODO: we could check for CS_ENTITY_NOLIGHTING here
-        //          and use it to fill the stencil buffer so those
-        //          meshes can be skipped during the lighting pass
+        // @@@TODO: we could check for CS_ENTITY_NOLIGHTING and
+        //          CS_ENTITY_NOSHADOWS here and use it to fill
+        //          the stencil buffer so those parts can be
+        //          skipped during the lighting pass
 	RenderLayer<true>(deferredLayer, ctxCount);
 
 	// clear clipper

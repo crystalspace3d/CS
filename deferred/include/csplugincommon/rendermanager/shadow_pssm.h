@@ -103,16 +103,16 @@ namespace RenderManager
       typedef StandardPortalSetup<RenderTreeType, ThisType> PortalSetupType;
 
       ShadowContextSetup(const SingleRenderLayer& layerConfig, iShaderManager* shaderManager,
-	typename PortalSetupType::PersistentData& portalPersist, int maxPortalRecurse)
+	typename PortalSetupType::PersistentData& portalPersist, int maxPortalRecurse, bool debugSplits)
 	: layerConfig(layerConfig), shaderManager(shaderManager), portalPersist(portalPersist),
-	  recurseCount(0), maxPortalRecurse(maxPortalRecurse)
+	  recurseCount(0), maxPortalRecurse(maxPortalRecurse), debugSplits(debugSplits)
       {
       }
 
       ShadowContextSetup(const ThisType &other, const LayerConfigType &layerConfig)
 	: layerConfig(other.layerConfig), shaderManager(other.shaderManager),
 	  portalPersist(other.portalPersist), recurseCount(other.recurseCount),
-	  maxPortalRecurse(other.maxPortalRecurse)
+	  maxPortalRecurse(other.maxPortalRecurse), debugSplits(other.debugSplits)
       {
       }
     
@@ -130,6 +130,9 @@ namespace RenderManager
 
 	// Make sure the clip-planes are ok
 	CS::RenderViewClipper::SetupClipPlanes(rview->GetRenderContext ());
+
+	if(debugSplits)
+	  context.owner.AddDebugClipPlanes (rview);
 	
 	// Do the culling
 	iVisibilityCuller* culler = sector->GetVisibilityCuller();
@@ -183,6 +186,7 @@ namespace RenderManager
 
       int recurseCount;
       int maxPortalRecurse;
+      bool debugSplits;
     };
 
     // Data used by the shadow handler that needs to persist over multiple frames.
@@ -250,11 +254,8 @@ namespace RenderManager
 	  doFixedCloseShadow = fixedCloseShadow > 0 && fixedCloseShadow < farZ;
 
 	  // read debug settings
-	  dbgSplitFrustumCam = dbgPersist.RegisterDebugFlag("draw.pssm.split.frustum.cam");
-	  dbgSplitFrustumLight = dbgPersist.RegisterDebugFlag("draw.pssm.split.frustum.light");
-	  dbgLightBBox = dbgPersist.RegisterDebugFlag("draw.pssm.lightbbox");
+	  dbgSplit = dbgPersist.RegisterDebugFlag("draw.pssm.split.frustum");
 	  dbgShadowTex = dbgPersist.RegisterDebugFlag("textures.shadow");
-	  dbgFlagShadowClipPlanes = dbgPersist.RegisterDebugFlag("draw.clipplanes.shadow");
 	}
 
 	// initialize empty SMs
@@ -332,11 +333,8 @@ namespace RenderManager
       int shadowMapResC; // close up
 
       // debug settings
-      uint dbgSplitFrustumCam;
-      uint dbgSplitFrustumLight;
-      uint dbgLightBBox;
+      uint dbgSplit;
       uint dbgShadowTex;
-      uint dbgFlagShadowClipPlanes;
 
       // runtime data
 
@@ -488,7 +486,7 @@ namespace RenderManager
       struct Frustum
       {
 	// transform This == frustum Other == light
-	csTransform frust2light;
+	csReversibleTransform frust2light;
 
 	// bounding box of this frustum in light space
 	csBox3 boxLS;
@@ -510,7 +508,7 @@ namespace RenderManager
       // actual light data
 
       // transform This == light Other == world
-      csTransform light2world;
+      csReversibleTransform light2world;
 
       // projection matrix
       CS::Math::Matrix4 project;
@@ -594,7 +592,7 @@ namespace RenderManager
 	  };
 
 	  // get transform with This == Frustum and Other == View
-	  csTransform frust2view = frustum.frust2light * lightData.light2world * cam->GetTransform().GetInverse();
+	  csTransform frust2view = frustum.frust2light * lightData.light2world / cam->GetTransform();
 
 	  // set the slice data
 	  for(size_t s = 0; s < slices.GetSize(); ++s)
@@ -606,7 +604,6 @@ namespace RenderManager
 
 	    // create slice box in frustum space
 	    csBox3 boxFS;
-	    boxFS.StartBoundingBox();
 	    for(int c = 0; c < 4; ++c)
 	    {
 	      const csVector2& corner = view[c];
@@ -618,9 +615,16 @@ namespace RenderManager
 		// transform to frustum space
 		csVector3 vFS = frust2view * vVS;
 
-		// add corner to box
+		// add corner to frustum space box
 		boxFS.AddBoundingVertex(vFS);
 	      }
+	    }
+
+	    if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
+	    {
+	      renderTree.AddDebugBBox(boxFS,
+		(frustum.frust2light * lightData.light2world).GetInverse(),
+		csColor(0, 1, 0));
 	    }
 
 	    // check if this is the fixed close up shadow slice if there is any
@@ -630,11 +634,18 @@ namespace RenderManager
 	      boxFS *= frustum.frust2light * frustum.boxLS;
 	    }
 
+	    if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
+	    {
+	      renderTree.AddDebugBBox(boxFS,
+		(frustum.frust2light * lightData.light2world).GetInverse(),
+		csColor(1, 0, 0));
+	    }
+
 	    // transform box to projection space
 	    slice.boxPS = ProjectBox(boxFS, csTransform(), lightData.project);
 
 	    // check whether this slice will be drawn
-	    slice.draw = !boxFS.Empty();
+	    slice.draw = !slice.boxPS.Empty();
 	  }
 	}
       }
@@ -814,6 +825,18 @@ namespace RenderManager
 	  nearZ = csMin(objectBox.MinZ(), slice.boxPS.MinZ());
 	  // + EPSILON in case nearZ == farZ
 	  farZ = csMin(objectBox.MaxZ(), slice.boxPS.MaxZ()) + EPSILON;
+
+	  // draw cropped box if debugging splits
+	  if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
+	  {
+	    csBox3 debugBox = objectBox * slice.boxPS;
+	    debugBox.SetMin(2, nearZ);
+	    debugBox.SetMax(2, farZ);
+
+	    renderTree.AddDebugBBox(ProjectBox(debugBox, csTransform(), lightData.project.GetInverse()),
+	      (frustum.frust2light * lightData.light2world).GetInverse(),
+	      csColor(0, 0, 1));
+	  }
 	}
 
 	// set unscale
@@ -922,7 +945,8 @@ namespace RenderManager
     
 	// setup the new context
 	ShadowContextSetup contextSetup(persist.layerConfig, persist.shaderManager,
-					persist.portalPersist, persist.maxPortalRecurse);
+					persist.portalPersist, persist.maxPortalRecurse,
+					renderTree.IsDebugFlagEnabled(persist.dbgSplit));
 	contextSetup(*context, portalData);
       }
 

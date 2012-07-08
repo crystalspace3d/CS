@@ -24,10 +24,6 @@
 #include "scene.h"
 #include "lightmap.h"
 
-
-#include "photonmapperlighting.h"
-#include "raytracerlighting.h"
-
 namespace lighter
 {
   //--------------------------------------------------------------------------
@@ -46,13 +42,17 @@ namespace lighter
     componentOffset.push_back(offset);
   }
 
-  THREADED_CALLABLE_IMPL3(LightCalculator,ComputeObjectGroupLighting,
-      Sector* sector, csArray<csRef<lighter::Object> >* objGroup, Statistics::Progress* progress)
+  void LightCalculator::ComputeObjectGroupLighting( csArray<csRef<lighter::Object> >* objGroup,
+    Statistics::ProgressState& progState)
   {
-    Statistics::ProgressState progState(*progress,globalStats.scene.numObjects,0.85f);
-
     // Initialize the sampler
     SamplerSequence<2> masterSampler;
+
+    Sector* sector = objGroup->Get(0)->GetSector();
+
+    // Resize the effecting light list in each component
+    for(size_t i=0; i<component.size(); i++)
+      component[i]->resizeAffectingLights( sector->allNonPDLights.GetSize ());
 
     // Reset the object looper and loop though all object again
     csArray<csRef<lighter::Object> >::Iterator objIterator = objGroup->GetIterator();
@@ -71,128 +71,21 @@ namespace lighter
         if (obj->lightPerVertex)
         {
           ComputeObjectStaticLightingForVertex (
-            sector, obj, masterSampler);
+            sector, obj, masterSampler,progState);
         }
         else
         {
           ComputeObjectStaticLightingForLightmap (
-            sector, obj, masterSampler);
+            sector, obj, masterSampler,progState);
         }
-      }
-      progState.Advance();
-    }
-    progState.Finish();
-
-    delete objGroup;
-
-    return true;
-  }
-
-  csRefArray<iThreadReturn> LightCalculator::ComputeSectorStaticLighting (
-    Sector* sector,bool enableRaytracer, bool enablePhotonMapper,
-    Statistics::Progress& progress)
-  {
-    const csVector3 bases[4] =
-    {
-      csVector3 (0, 0, 1),
-      csVector3 (/* -1/sqrt(6) */ -0.408248f, /* 1/sqrt(2) */ 0.707107f, /* 1/sqrt(3) */ 0.577350f),
-      csVector3 (/* sqrt(2/3) */ 0.816497f, 0, /* 1/sqrt(3) */ 0.577350f),
-      csVector3 (/* -1/sqrt(6) */ -0.408248f, /* -1/sqrt(2) */ -0.707107f, /* 1/sqrt(3) */ 0.577350f)
-    };
-
-    int numPasses = 
-      globalConfig.GetLighterProperties().directionalLMs ? 4 : 1;
-
-    // We multiply the number of thread by 2.0 because sometimes all the jobs
-    // don't request the same amount of time
-    const int numJobs = ((float)globalConfig.GetLighterProperties().numThreads)*2.0f;
-
-    csRefArray<iThreadReturn> returns;
-
-    // Loop through lighting calculation for directional dependencies
-    for (int p = 0; p < numPasses; p++)
-    {
-      size_t totalElements = 0;
-      csArray<csArray<csRef<lighter::Object> >*> objectsThreadTab;
-      csArray<LightCalculator*> lightCalculators;
-
-      for (int i =0; i < numJobs; i++)
-      {
-        objectsThreadTab.Push(new csArray<csRef<lighter::Object> >());
-        LightCalculator* lighting =  new LightCalculator(bases[p],p);
-
-        // Add components to the light calculator
-        RaytracerLighting *raytracerComponent = NULL;
-        PhotonmapperLighting *photonmapperComponent = NULL;
-
-        if(enableRaytracer)
-        {
-          raytracerComponent = new RaytracerLighting (bases[p],p);
-          lighting->addComponent(raytracerComponent, 1.0f, 0.0f);
-        }
-
-        if(enablePhotonMapper)
-        {
-          photonmapperComponent = new PhotonmapperLighting();
-          lighting->addComponent(photonmapperComponent, 1.0f, 0.0f);
-        }
-
-        // Resize the effecting light list in each component
-        for(size_t i=0; i<lighting->component.size(); i++)
-          lighting->component[i]->resizeAffectingLights( sector->allNonPDLights.GetSize ());
-
-        lightCalculators.Push(lighting);
-      }
-
-      int assignedThread=0;
-
-      // Sum up total amount of elements for progress display purposes
-      ObjectHash::GlobalIterator giter = sector->allObjects.GetIterator ();
-      while (giter.HasNext ())
-      {
-        // Get the next object and skip unlight objects
-        csRef<Object> obj = giter.Next ();
-        if (!obj->GetFlags ().Check (OBJECT_FLAG_NOLIGHT))
-        {
-
-          // Count elements (vertices or primitives depending on global settings)
-          if (obj->lightPerVertex)
-            totalElements += obj->GetVertexData().positions.GetSize();
-
-          else
-          {
-            // Loop through submesses to get a count all primitives
-            csArray<PrimitiveArray>& submeshArray = obj->GetPrimitives ();
-            for (size_t submesh = 0; submesh < submeshArray.GetSize (); ++submesh)
-            {
-              PrimitiveArray& primArray = submeshArray[submesh];
-
-              for (size_t pidx = 0; pidx < primArray.GetSize (); ++pidx)
-              {
-                Primitive& prim = primArray[pidx];
-                totalElements += prim.GetElementCount();
-              }
-            }
-          }
-
-          objectsThreadTab[assignedThread]->Push(obj);
-          assignedThread = (assignedThread+1)%numJobs;
-        }
-
-      }
-
-      for (int i =0; i < numJobs; i++)
-      {
-        returns.Push(lightCalculators[i]->ComputeObjectGroupLighting(sector,objectsThreadTab[i],&progress));
       }
     }
-
-    return returns;
   }
 
   void LightCalculator::ComputeObjectStaticLightingForLightmap (
     Sector* sector, Object* obj, 
-    SamplerSequence<2>& masterSampler)
+    SamplerSequence<2>& masterSampler,
+    Statistics::ProgressState& progState)
   {
     // Get submesh list for looping through elements
     csArray<PrimitiveArray>& submeshArray = obj->GetPrimitives ();
@@ -321,9 +214,12 @@ namespace lighter
             }
 
             // Update this light's light map
-	  #pragma omp critical
             lm->SetAddPixel (u, v, c * pixelAreaPart);
           }
+
+          // Done with one primitive element
+          // Advance the task progress indicator
+          progState.Advance ();
         }
 
         // Release the locks on the pseudo-dynamic light maps
@@ -339,7 +235,8 @@ namespace lighter
 
   void LightCalculator::ComputeObjectStaticLightingForVertex (
     Sector* sector, Object* obj, 
-    SamplerSequence<2>& masterSampler)
+    SamplerSequence<2>& masterSampler,
+    Statistics::ProgressState& progState)
   {
     const LightRefArray& allPDLights = sector->allPDLights;
     LightRefArray PDLights;
@@ -397,6 +294,7 @@ namespace lighter
         }
       }
 #endif
+      progState.Advance ();
     }
   }
 

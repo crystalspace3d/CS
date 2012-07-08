@@ -142,10 +142,10 @@ namespace lighter
       {
         if (u != 0)
         {
-          u=0;/*
+          u=0;
           float ratio = float(updateFreq-u) / float(updateFreq);
           progress.IncProgress(progressStep*ratio);
-          globalTUI.Redraw (TUI::TUI_DRAW_RAYCORE | TUI::TUI_DRAW_PMCORE);*/
+          globalTUI.Redraw (TUI::TUI_DRAW_RAYCORE | TUI::TUI_DRAW_PMCORE);
         }
       }
     };

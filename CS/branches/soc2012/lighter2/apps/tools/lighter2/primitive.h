@@ -24,12 +24,13 @@
 #include "common.h"
 #include "swappable.h"
 #include "vertexdata.h"
+#include "material.h"
 
 namespace lighter
 {
   class Object;
+  class Portal;
   struct ElementProxy;
-  struct RadMaterial;
 
   class Primitive;
   
@@ -256,6 +257,10 @@ namespace lighter
     inline const Object* GetObject () const { return radObject; }
     inline Object* GetObject () { return radObject; }
     inline void SetObject (Object *obj) { radObject = obj; }
+
+    inline const Portal* GetPortal () const { return portal; }
+    inline Portal* GetPortal () { return portal; }
+    inline void SetPortal (Portal *port) { portal = port; }
     
     inline uint GetGroupID () const { return groupID; }
 
@@ -288,6 +293,9 @@ protected:
 
     /// Original object
     Object* radObject;
+
+    /// If this primitive is from Portal
+    Portal* portal;
     
     /// Primitive group ID (a primitive group was lightmapped together)
     uint groupID;

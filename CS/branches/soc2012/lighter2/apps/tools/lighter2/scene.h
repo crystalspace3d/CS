@@ -41,9 +41,42 @@ namespace lighter
     Portal ()
     {}
 
+    void computePrimitives()
+    {
+      const int verticesCount = vertexData.positions.GetSize();
+
+      // First compute the center of the polygon
+      csVector3 center = vertexData.positions[0];
+      for (int i=1; i<verticesCount;i++)
+      {
+        center += vertexData.positions[i];
+      }
+
+      center *= 1/verticesCount;
+      vertexData.positions.Push(center);
+
+      for (int i=0; i<verticesCount;i++)
+      {
+        Primitive prim(vertexData,0);
+
+        Primitive::TriangleType t;
+        t.a = i;
+        t.b = verticesCount;
+        t.c = (i+1)%verticesCount;
+
+        prim.SetTriangle(t);
+        prim.ComputePlane();
+        portalPrimitives.Push(prim);
+      }
+      
+    }
+
     Sector* sourceSector;
     Sector* destSector;
+
     csReversibleTransform wrapTransform;
+    PrimitiveArray portalPrimitives;
+    ObjectVertexData vertexData;
     Vector3DArray worldVertices;
     csPlane3 portalPlane;
   };
@@ -61,17 +94,17 @@ namespace lighter
     { return objReg; }
 
     THREADED_CALLABLE_DECL2(SectorProcessor,BuildKDTree,csThreadReturn,
-      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,false);
+      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,true);
 
     THREADED_CALLABLE_DECL2(SectorProcessor,BuildPhotonMaps,csThreadReturn,
-      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,false);
+      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,true);
 
-    THREADED_CALLABLE_DECL4(SectorProcessor,ComputeSectorLighting,csThreadReturn,
-      csRef<Sector>,sector,bool, enableRaytracer,bool, enablePhotonMapper,
-      Statistics::Progress*, progress, THREADED,false,false);
+    THREADED_CALLABLE_DECL7(SectorProcessor,ComputeObjectGroupLighting,csThreadReturn,
+      csArray<csRef<Object> >*,objectsBatch, bool, enableRaytracer, bool, enablePhotonMapper,int,pass,
+      Statistics::Progress*, progress,int, totalPrimitives, float, progressFactor,THREADED,false,true);
 
     THREADED_CALLABLE_DECL1(SectorProcessor,SaveLightmaps,csThreadReturn,
-      csRef<SectorGroup>,sectorGroup,THREADED,false,false);
+      csRef<SectorGroup>,sectorGroup,THREADED,false,true);
 
   private :
     iObjectRegistry* objReg;
@@ -129,6 +162,9 @@ namespace lighter
 
     void AddToIRCache(const csVector3 point, const csVector3 normal,
                       const csColor irrad, const float mean);
+
+    // Return 1.5 * numThread group of object to be lighted
+    csArray<csArray<csRef<Object> > *> getObjectBatches(size_t& primitivesCount);
 
     // Hash of all mesh names and materials
 

@@ -382,7 +382,7 @@ namespace RenderManager
 	    project = CS::Math::Projections::Ortho(
 	      cutoff, -cutoff,
 	      cutoff, -cutoff,
-	     -cutoff,  SMALL_Z);
+	     -cutoff, -SMALL_Z);
 	  }
 	  else
 	  {

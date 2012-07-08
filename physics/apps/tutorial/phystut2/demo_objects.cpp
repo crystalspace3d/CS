@@ -19,12 +19,15 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
+static const csScalar DefaultFriction(10);
+static const csScalar DefaultElasticity(0.1f);
+
 csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const csString& name, const csOrthoTransform& trans,
   csScalar friction, csScalar density)
 { 
   RigidBodyProperties props(Collider, name);
   props.SetDensity (density);
-  props.SetElasticity (0.8f);
+  props.SetElasticity (DefaultElasticity);
   props.SetFriction (friction);
   csRef<CS::Physics::iRigidBody> body = physDemo.physicalSystem->CreateRigidBody(&props);
   body->SetTransform(trans);
@@ -114,7 +117,7 @@ void PhysDemo::CreateGhostCylinder()
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (cylinderFact, "cylinder"));
 
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("spark");
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("objtexture");
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh
@@ -173,7 +176,18 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (ballFact, "ball"));
 
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("spark");
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("objtexture");
+  if (!mat)
+  {
+    // something went wrong
+    ReportWarning("Could not find material: objtexture - Alternatives are:");
+    for (int i = 0; i < engine->GetMaterialList()->GetCount(); ++i)
+    {
+      iMaterialWrapper* wrap =  engine->GetMaterialList()->Get(i);
+      csString str = wrap->QueryObject ()->GetName();
+      ReportWarning(" %s", str.GetData());
+    }
+  }
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh and attach a sphere collider.
@@ -181,8 +195,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   sphere->SetLocalScale (radius);
   RigidBodyProperties props(sphere, "sphere");
   props.SetDensity (10.0f);
-  props.SetElasticity (0.8f);
-  props.SetFriction (1.0f);
+  props.SetElasticity (DefaultElasticity);
+  props.SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
   
   rb->SetAttachedMovable (mesh->GetMovable());
@@ -223,8 +237,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   // Create object
   RigidBodyProperties props(cone, "cone");
   props.SetDensity (10.0f);
-  props.SetElasticity (0.8f);
-  props.SetFriction (1.0f);
+  props.SetElasticity (DefaultElasticity);
+  props.SetFriction (DefaultFriction);
 
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
@@ -279,7 +293,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
     cylinderFact, "cylinder"));
 
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("spark");
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("objtexture");
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh.
@@ -288,8 +302,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
 
   RigidBodyProperties props(cylinder, "cylinder");
   props.SetDensity (10.0f);
-  props.SetElasticity (0.8f);
-  props.SetFriction (1.0f);
+  props.SetElasticity (DefaultElasticity);
+  props.SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
   csOrthoTransform trans = tc;
@@ -336,15 +350,15 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
     capsuleFact, "capsule"));
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("spark");
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("objtexture");
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body
   csRef<CS::Collisions::iColliderCapsule> capsule = physicalSystem->CreateColliderCapsule (length, radius);
   RigidBodyProperties props(capsule, "capsule");
   props.SetDensity (10.0f);
-  props.SetElasticity (0.8f);
-  props.SetFriction (1.0f);
+  props.SetElasticity (DefaultElasticity);
+  props.SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
   // set transform
@@ -451,15 +465,15 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
     capsuleFact, "capsule"));
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("spark");
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("objtexture");
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh.
   csRef<CS::Collisions::iColliderConvexMesh> collider = physicalSystem->CreateColliderConvexMesh (mesh);
   RigidBodyProperties props(collider, "convexmesh");
   props.SetDensity (10.0f);
-  props.SetElasticity (0.8f);
-  props.SetFriction (1.0f);
+  props.SetElasticity (DefaultElasticity);
+  props.SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
 
   // Set transform
@@ -1165,7 +1179,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   gmstate->SetAnimationControlFactory (softBodyAnimationFactory);
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
     ballFact, "soft_body"));
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("spark");
+  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("objtexture");
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   body->SetAttachedMovable (mesh->GetMovable());

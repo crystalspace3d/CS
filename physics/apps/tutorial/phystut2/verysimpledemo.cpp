@@ -231,7 +231,7 @@ bool VerySimple::Application ()
   bulletSector->SetDebugMode (debugMode);
 
   // Preload some meshes and materials
-  iTextureWrapper* txt = loader->LoadTexture ("spark",
+  iTextureWrapper* txt = loader->LoadTexture ("objtexture",
     "/lib/std/spark.png");
   if (!txt) return ReportError ("Error loading texture!");
 
@@ -325,7 +325,7 @@ CS::Physics::iSoftBody* VerySimple::SpawnSoftBody (bool setVelocity /* = true */
   // Create the mesh
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
     ballFact, "soft_body"));
-  iMaterialWrapper* mat = engine->GetMaterialList ()->FindByName ("spark");
+  iMaterialWrapper* mat = engine->GetMaterialList ()->FindByName ("objtexture");
   mesh->GetMeshObject ()->SetMaterialWrapper (mat);
 
   body->SetAttachedMovable (mesh->GetMovable ());

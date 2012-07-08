@@ -41,6 +41,7 @@
 #include "csutil/util.h"
 #include "csutil/platformfile.h"
 #include "csutil/vfsplat.h"
+#include "csutil/databuf.h"
 
 // local helper functions
 namespace
@@ -65,67 +66,6 @@ namespace
 CS_PLUGIN_NAMESPACE_BEGIN(VFS)
 {
 
-// Forward declaration
-class NativeFS;
-
-// OS Native iFile
-class NativeFile : public scfImplementation1<NativeFile, iFile>
-{
-  class NativeFileView;
-
-  // Fully-qualified VFS path of file
-  char *virtualPath;
-  // Real path
-  char *realPath;
-  // File size
-  uint64_t size;
-  // Last error
-  int lastError;
-  // Native file handle
-  FILE *handle;
-  // Read-only?
-  bool readOnly;
-
-  // Constructor
-  NativeFile (const char *virtualPath, const char *realPath, int mode);
-  // Set last error to specified value
-  bool SetLastError (int errorCode);
-  // Update last error code from system call
-  void UpdateError ();
-public:
-  // Destructor
-  virtual ~NativeFile ();
-  // Query VFS filename
-  virtual const char *GetName () { return virtualPath; }
-  // Query file size
-  virtual uint64_t GetSize () { return size; }
-  // Query and reset last error status
-  virtual int GetStatus ();
-  // Read Length bytes into the buffer at which Data points.
-  virtual size_t Read (char *data, size_t length);
-  // Write Length bytes from the buffer at which Data points.
-  virtual size_t Write (const char *data, size_t length);
-  // Flush strem
-  virtual void Flush ();
-  // Check whether pointer is at End of File
-  virtual bool AtEOF ();
-  // Query file pointer (absolute position)
-  virtual uint64_t GetPos ();
-  // Set file pointer (relative position; absolute by default)
-  virtual bool SetPos (off64_t newPos, int relativeTo = VFS_POS_ABSOLUTE);
-  // Get all data into a single buffer.
-  virtual csPtr<iDataBuffer> GetAllData (bool nullTerminated = false);
-  // Get all data into a single buffer with custom allocator.
-  virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator *allocator);
-  // Get subset of file as iFile
-  virtual csPtr<iFile> GetPartialView (uint64_t offset,
-                                       uint64_t size = ~(uint64_t)0);
-
-  friend class NativeFileView;
-  friend class NativeFS;
-};
-
-
 // OS Native iFileSystem
 class NativeFS : public scfImplementation1<NativeFS, iFileSystem>
 {
@@ -133,6 +73,8 @@ class NativeFS : public scfImplementation1<NativeFS, iFileSystem>
   char *mountRoot;
   // Last error status
   int lastError;
+  // Allocator heap for this filesystem
+  //csRef<HeapRefCounted> heap;
 
   // Construct a NativeFS instance with 'RealPath' as mount root.
   NativeFS (const char *realPath);
@@ -169,22 +111,121 @@ public:
   virtual int GetStatus ();
 };
 
+// OS Native iFile
+class NativeFile : public scfImplementation1<NativeFile, iFile>
+{
+  class View;
+
+  friend class View;
+  friend class NativeFS;
+
+  // Fully-qualified VFS path of file
+  char *virtualPath;
+  // Real path
+  char *realPath;
+  // File size
+  uint64_t size;
+  // Last error
+  int lastError;
+  // Native file handle
+  FILE *handle;
+  // Read-only?
+  bool readOnly;
+
+  // Constructor
+  NativeFile (NativeFS *parent,
+              const char *virtualPath,
+              const char *realPath,
+              int mode);
+  // Set last error to specified value
+  bool SetLastError (int errorCode);
+  // Update last error code from system call
+  void UpdateError ();
+public:
+  // Destructor
+  virtual ~NativeFile ();
+  // Query VFS filename
+  virtual const char *GetName () { return virtualPath; }
+  // Query file size
+  virtual uint64_t GetSize () { return size; }
+  // Query and reset last error status
+  virtual int GetStatus ();
+  // Read Length bytes into the buffer at which Data points.
+  virtual size_t Read (char *data, size_t length);
+  // Write Length bytes from the buffer at which Data points.
+  virtual size_t Write (const char *data, size_t length);
+  // Flush strem
+  virtual void Flush ();
+  // Check whether pointer is at End of File
+  virtual bool AtEOF ();
+  // Query file pointer (absolute position)
+  virtual uint64_t GetPos ();
+  // Set file pointer (relative position; absolute by default)
+  virtual bool SetPos (off64_t newPos, int relativeTo = VFS_POS_ABSOLUTE);
+  // Get all data into a single buffer.
+  virtual csPtr<iDataBuffer> GetAllData (bool nullTerminated = false);
+  // Get all data into a single buffer with custom allocator.
+  virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator *allocator);
+  // Get subset of file as iFile
+  virtual csPtr<iFile> GetPartialView (uint64_t offset,
+                                       uint64_t size = ~(uint64_t)0);
+};
+
 // View for NativeFile
-class NativeFile::NativeFileView :
- public scfImplementation1<NativeFileView, iFile>
+class NativeFile::View : public scfImplementation1<View, iFile>
 {
   friend class NativeFile;
 
-  NativeFileView ();
-public:
+  // parent NativeFile
+  csRef<NativeFile> parent;
+  // zero-based offset of parent NativeFile
+  uint64_t offset;
+  // length of this view
+  uint64_t size;
+  // zero-based position of this view
+  uint64_t pos;
+  // last error status of this view
+  int lastError;
 
-  ~NativeFileView ();
+  // Constructor
+  View (NativeFile *parent, uint64_t offset, uint64_t size);
+public:
+  // Destructor
+  virtual ~View ();
+  // Query filename
+  virtual const char *GetName () { return "#View"; }
+  // Query file size
+  virtual uint64_t GetSize () { return size; }
+  // Query and reset last error status
+  virtual int GetStatus ();
+  // Read Length bytes into the buffer at which Data points.
+  virtual size_t Read (char *data, size_t length);
+  // Write Length bytes from the buffer at which Data points.
+  virtual size_t Write (const char *data, size_t length);
+  // Flush strem
+  virtual void Flush ();
+  // Check whether pointer is at End of File
+  virtual bool AtEOF ();
+  // Query file pointer (absolute position)
+  virtual uint64_t GetPos ();
+  // Set file pointer (relative position; absolute by default)
+  virtual bool SetPos (off64_t newPos, int relativeTo = VFS_POS_ABSOLUTE);
+  // Get all data into a single buffer.
+  virtual csPtr<iDataBuffer> GetAllData (bool nullTerminated = false);
+  // Get all data into a single buffer with custom allocator.
+  virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator *allocator);
+  // Get subset of file as iFile
+  virtual csPtr<iFile> GetPartialView (uint64_t offset,
+                                       uint64_t size = ~(uint64_t)0);
 };
+
 
 // NativeFile methods
 // NativeFile Constructor
-NativeFile::NativeFile (const char *virtualPath, const char *realPath, int mode) :
- scfImplementationType(this)
+NativeFile::NativeFile (NativeFS *parent,
+                        const char *virtualPath,
+                        const char *realPath, int mode) :
+ scfImplementationType (this)
 {
   // TODO: Add debug messages
 
@@ -434,19 +475,79 @@ bool NativeFile::SetPos (off64_t newPos, int relativeTo)
 }
 
 // Get all data into a single buffer.
-csPtr<iDataBuffer> NativeFile::GetAllData (bool NullTerminated)
+csPtr<iDataBuffer> NativeFile::GetAllData (bool nullTerminated)
 {
-  // TODO: this is currently a stub; implement feature
-  iDataBuffer *buffer = nullptr;
+  // we need read permission... check it
+  if (!readOnly)
+  {
+    // update error code
+    lastError = VFS_STATUS_ACCESSDENIED;
+    return csPtr<iDataBuffer> (nullptr);
+  }
 
-  return csPtr<iDataBuffer> (buffer);
+  // TODO: implement mmap () feature
+  // TODO: check how csVFS::heap works and fix if necessary.
+  // it uses malloc () for now
+
+  // Since client code doesn't know about buffer length, nullTerminated is
+  // useless for now.
+
+  char *data = (char *)cs_malloc(size + 1);
+  if (!data)
+  {
+    // TODO: update error code
+    return csPtr<iDataBuffer> (nullptr);
+  }
+
+  // backup pointer
+  uint64_t oldPos = GetPos ();
+  // set pointer at beginning
+  SetPos (0);
+  // read!
+  size_t bytesRead = Read (data, size);
+  data[bytesRead] = 0; // null-terminated.
+
+  // TODO: add handling if bytesRead < size ?
+
+  // restore pointer
+  SetPos (oldPos);
+
+  // increment the size to include null-terminator if required
+  if (nullTerminated)
+    ++bytesRead;
+
+  return csPtr<iDataBuffer> (
+    new CS::DataBuffer<Memory::AllocatorMalloc> (data, bytesRead));
 }
 
 // Get all data into a single buffer with custom allocator.
 csPtr<iDataBuffer> NativeFile::GetAllData (CS::Memory::iAllocator *allocator)
 {
-  // TODO: this is currently a stub; implement feature
-  iDataBuffer *buffer = nullptr;
+  using CS::Memory::AllocatorInterface;
+
+  // create iDataBuffer instance with custom allocator
+  iDataBuffer *buffer =
+    new CS::DataBuffer<AllocatorInterface> (size,
+                                            AllocatorInterface (allocator));
+
+  char *data = buffer->GetData();
+  if (!data)
+  {
+    // TODO: update error code
+    return csPtr<iDataBuffer> (nullptr);
+  }
+
+  // backup pointer
+  uint64_t oldPos = GetPos ();
+  // set pointer at beginning
+  SetPos (0);
+  // read!
+  size_t bytesRead = Read (data, size);
+
+  // TODO: add handling if bytesRead < size ?
+
+  // restore pointer
+  SetPos (oldPos);
 
   return csPtr<iDataBuffer> (buffer);
 }
@@ -454,10 +555,208 @@ csPtr<iDataBuffer> NativeFile::GetAllData (CS::Memory::iAllocator *allocator)
 // Get subset of file as iFile
 csPtr<iFile> NativeFile::GetPartialView (uint64_t offset, uint64_t size)
 {
-  // TODO: this is currently a stub; implement feature
-  iFile *file = nullptr;
+  // this doesn't really work with iFile not opened for read access
+  if (!readOnly)
+  {
+    lastError = VFS_STATUS_ACCESSDENIED;
+    return csPtr<iFile> (nullptr);
+  }
 
-  return csPtr<iFile> (file);
+  // TODO: check boundary conditions more thoroughly
+  // make sure offset is within [0, file size]
+  if (offset > this->size)
+    offset = this->size;
+
+  // make sure offset+size is within [offset, file size]
+  // this is safe since offset <= this->size
+  if (size > this->size - offset)
+    size = this->size - offset;
+
+  // only pass safe values to View constructor
+  return csPtr<iFile> (new View (this, offset, size));
+}
+
+// NativeFile::View methods
+// View Constructor
+NativeFile::View::View (NativeFile *parent,
+                        uint64_t offset,
+                        uint64_t size) :
+ scfImplementationType (this, parent),
+ pos (0),
+ lastError (VFS_STATUS_OK)
+{
+  // assign members as appropriate
+  this->parent = parent;
+  this->offset = offset;
+  this->size   = size;
+}
+
+// NativeFile::View destructor
+NativeFile::View::~View ()
+{
+  // Free memory and resources
+  parent = 0;
+}
+
+// Reset and return last error status
+int NativeFile::View::GetStatus ()
+{
+  int status = lastError;
+  lastError = VFS_STATUS_OK;
+  return status;
+}
+
+// Read DataSize bytes from file
+size_t NativeFile::View::Read (char *data, size_t dataSize)
+{
+  // Save last error status
+  int parentError = parent->lastError;
+  // Save last position
+  uint64_t lastPos = parent->GetPos ();
+
+  // Apply offset of this view
+  parent->SetPos (offset + pos);
+  // Reset parent error so we can collect status info
+  parent->lastError = VFS_STATUS_OK;
+  // make sure read doesn't exceed view boundary
+  size_t toRead = (size - pos < dataSize) ? size - pos : dataSize;
+
+  // try reading...
+  size_t bytesRead = Read (data, toRead);
+  // update last error of this view..
+  lastError = parent->lastError;
+
+  // restore last position
+  parent->SetPos (lastPos);
+  // restore last error
+  parent->lastError = parentError;
+
+  return bytesRead;
+}
+
+// Write DataSize bytes to file
+size_t NativeFile::View::Write (const char *data, size_t dataSize)
+{
+  // partial view is read-only; access denied.
+  lastError = VFS_STATUS_ACCESSDENIED;
+  return 0;
+}
+
+// Flush strem
+void NativeFile::View::Flush ()
+{
+  // you can't flush a read-only view
+  // therefore do nothing.
+}
+
+// Check whether pointer is at End of File
+bool NativeFile::View::AtEOF ()
+{
+  return pos >= size;
+}
+
+// Query file pointer (absolute position)
+uint64_t NativeFile::View::GetPos ()
+{
+  return pos;
+}
+
+// Set file pointer (relative position; absolute by default)
+bool NativeFile::View::SetPos (off64_t newPos, int relativeTo)
+{
+  // is newPos negative (backwards)
+  bool negative = newPos < 0;
+  // take absolute value
+  uint64_t distance = negative ? -newPos : newPos;
+  // only virtual pointer is moved
+  switch (relativeTo)
+  {
+    case VFS_POS_CURRENT:
+    // relative to current position
+      if (negative) // remember, this is unsigned arithmetic
+        pos = (pos < distance) ? 0 : pos - distance;
+      else
+        pos += distance;
+      break;
+    case VFS_POS_END:
+    // relative to end of view
+      if (negative)
+        pos = (size < distance) ? 0 : size - distance;
+      else
+        pos = size;
+      break;
+    case VFS_POS_ABSOLUTE:
+    default:
+      // absolute mode requested, or unknown constant
+      pos = ((uint64_t)newPos > size) ? size : newPos;
+      break;
+  }
+
+  return true;
+}
+
+// Get all data into a single buffer.
+csPtr<iDataBuffer> NativeFile::View::GetAllData (bool nullTerminated)
+{
+  // TODO: implement mmap () feature
+  // TODO: use private heap for allocation
+  // it uses malloc () for now
+
+  // Since client code doesn't know about buffer length, nullTerminated is
+  // useless for now.
+
+  char *data = (char *)cs_malloc(size + 1);
+  if (!data)
+  {
+    // TODO: update error code
+    return csPtr<iDataBuffer> (nullptr);
+  }
+
+  // backup pointer
+  uint64_t oldPos = GetPos ();
+  // set pointer at beginning
+  SetPos (0);
+  // read!
+  size_t bytesRead = Read (data, size);
+  data[bytesRead] = 0; // null-terminated.
+
+  // TODO: add handling if bytesRead < size ?
+
+  // restore pointer
+  SetPos (oldPos);
+
+  if (nullTerminated)
+    ++bytesRead;
+
+  return csPtr<iDataBuffer> (
+    new CS::DataBuffer<Memory::AllocatorMalloc> (data, bytesRead));
+}
+
+// Get all data into a single buffer with custom allocator.
+csPtr<iDataBuffer> 
+NativeFile::View::GetAllData (CS::Memory::iAllocator *allocator)
+{
+
+  lastError = VFS_STATUS_NOTIMPLEMENTED;
+  return csPtr<iDataBuffer> (nullptr);
+}
+
+// Get subset of file as iFile
+csPtr<iFile> NativeFile::View::GetPartialView (uint64_t offset,
+                                               uint64_t size)
+{
+  // TODO: check boundary conditions more thoroughly
+  // make sure offset is within [0, current view size]
+  if (offset > this->size)
+    offset = this->size;
+
+  // make sure offset+size is within [offset, current view size]
+  // this is safe since offset <= this->size
+  if (size > this->size - offset)
+    size = this->size - offset;
+
+  // only pass safe values to View constructor
+  return csPtr<iFile> (new View (parent, this->offset + offset, size));
 }
 
 // NativeFS methods
@@ -547,7 +846,7 @@ csPtr<iFile> NativeFS::Open (const char *path,
   vfsPath << path;
 
   // try creating an instance
-  iFile *file = new NativeFile (vfsPath, realPath, mode);
+  iFile *file = new NativeFile (this, vfsPath, realPath, mode);
 
   // did it go well?
   switch (lastError = file->GetStatus ())

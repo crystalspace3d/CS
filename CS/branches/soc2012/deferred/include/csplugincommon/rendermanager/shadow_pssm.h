@@ -861,6 +861,17 @@ namespace RenderManager
 	if(empty)
 	{
 	  // set textures to empty ones
+	  for(size_t t = 0; t < targets.GetSize(); ++t)
+	  {
+	    // setup target
+	    ShadowSettings::Target* target = targets[t];
+	    iTextureHandle* tex = emptSM[target->attachment];
+	    slice.textureSV[target->attachment]->SetValue(tex);
+
+	    // add debug draw if wanted
+	    if(renderTree.IsDebugFlagEnabled(persist.dbgShadowTex))
+	      renderTree.AddDebugTexture(tex);
+	  }
 	  return;
 	}
 

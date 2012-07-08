@@ -554,9 +554,9 @@ namespace RenderManager
 	uint currentFrame = rview->GetCurrentFrameNumber();
 
 	// go over all frustums
-	for(size_t i = 0; i < lightData.frustums.GetSize(); ++i)
+	for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
 	{
-	  LightData::Frustum& frustum = lightData.frustums[i];
+	  LightData::Frustum& frustum = lightData.frustums[f];
 
 	  // check whether we already have slices set up
 	  if(frustum.slicesHash.Contains(cam))
@@ -597,9 +597,9 @@ namespace RenderManager
 	  csTransform frust2view = frustum.frust2light * lightData.light2world * cam->GetTransform().GetInverse();
 
 	  // set the slice data
-	  for(size_t i = 0; i < slices.GetSize(); ++i)
+	  for(size_t s = 0; s < slices.GetSize(); ++s)
 	  {
-	    LightData::Slice& slice = slices[i];
+	    LightData::Slice& slice = slices[s];
 
 	    // clear receiver data
 	    slice.receiversPS.StartBoundingBox();
@@ -610,10 +610,10 @@ namespace RenderManager
 	    for(int c = 0; c < 4; ++c)
 	    {
 	      const csVector2& corner = view[c];
-	      for(int s = 0; s < 2; ++s)
+	      for(int side = 0; side < 2; ++side)
 	      {
 		// get corner in view space
-		csVector3 vVS = cam->InvPerspective(corner, persist.splitDists[i+s]);
+		csVector3 vVS = cam->InvPerspective(corner, persist.splitDists[s+side]);
 
 		// transform to frustum space
 		csVector3 vFS = frust2view * vVS;
@@ -624,7 +624,7 @@ namespace RenderManager
 	    }
 
 	    // check if this is the fixed close up shadow slice if there is any
-	    if(!(persist.doFixedCloseShadow && i == 0))
+	    if(!(persist.doFixedCloseShadow && s == 0))
 	    {
 	      // intersect with frustum box for non-fixed slices
 	      boxFS *= frustum.frust2light * frustum.boxLS;

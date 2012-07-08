@@ -820,9 +820,9 @@ namespace RenderManager
 	slice.unscaleSV->SetValue(unscale);
 
 	// set final projection
-	crop = (CS::Math::Projections::Ortho(-1, 1, 1, -1, farZ, nearZ) * crop);
-	crop = crop * lightData.project * CS::Math::Matrix4(frustum.frust2light);
-	slice.projectSV->SetValue(crop);
+	CS::Math::Matrix4 project = CS::Math::Projections::Ortho(-1, 1, 1, -1, farZ, nearZ) * crop;
+	project = project * lightData.project * CS::Math::Matrix4(frustum.frust2light);
+	slice.projectSV->SetValue(project);
 
 	// get our shadow map size
 	int mapSize;
@@ -865,7 +865,7 @@ namespace RenderManager
 	  {
 	    // setup target
 	    ShadowSettings::Target* target = targets[t];
-	    iTextureHandle* tex = emptSM[target->attachment];
+	    iTextureHandle* tex = persist.emptySM[target->attachment];
 	    slice.textureSV[target->attachment]->SetValue(tex);
 
 	    // add debug draw if wanted
@@ -877,18 +877,18 @@ namespace RenderManager
 
 	// create camera
 	csRef<iCustomMatrixCamera> shadowCam = rview->GetEngine()->CreateCustomMatrixCamera();
-	shadowCam->SetProjectionMatrix(crop);
+	shadowCam->SetProjectionMatrix(project);
 	shadowCam->GetCamera()->SetTransform(lightData.light2world);
 
 	// create render view
 	csRef<CS::RenderManager::RenderView> shadowView;
 	shadowView = renderTree.GetPersistentData().renderViews.CreateRenderView();
 	shadowView->SetEngine(rview->GetEngine());
-	shadowView->SetThisSector(light->GetMovable()->GetSectors()->Get(0));
+	shadowView->SetThisSector(rview->GetThisSector());
 
 	// set cam on our new view
 	shadowView->SetCamera(shadowCam->GetCamera());
-	shadowView->SetOriginalCamera(shadowCam->GetCamera());
+	shadowView->SetOriginalCamera(rview->GetOriginalCamera());
 
 	// create context
 	typename RenderTreeType::ContextNode* context = renderTree.CreateContext(shadowView);

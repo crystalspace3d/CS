@@ -200,6 +200,10 @@ public:
   CS::Physics::iSoftBody* SpawnSoftBody (bool setVelocity = true);
   void SpawnBoxStacks(int stackNum = 4, int stackHeight = 4, float boxLen = .5f, float mass = 20.f);
 
+  /**
+   * Room is the inside of a cuboid of the given size, and wall thickness
+   */
+  void CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos = csVector3(0), csScalar wallThickness = 5);
   void CreatePortalRoom();
   void CreateTerrainRoom();
 

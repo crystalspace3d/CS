@@ -32,7 +32,11 @@
 #include "iutil/object.h"
 #include "iutil/stringarray.h"
 
+#include "ivaria/collisions.h"
+#include "iengine/movable.h"
+#include "iengine/sector.h"
 
+using namespace CS::Collisions;
 
 template<>
 class csHashComputer<iParticleEmitter*> : public csHashComputerIntegral<iParticleEmitter*> {};
@@ -240,7 +244,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
       break;
     case XMLTOKEN_EFFECTOR:
       {
-        csRef<iParticleEffector> effector = ParseEffector (node);
+        csRef<iParticleEffector> effector = ParseEffector (node, baseObject);
 
         if (!effector)
         {
@@ -527,7 +531,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
 
 
   csPtr<iParticleEffector> ParticlesBaseLoader::ParseEffector (
-    iDocumentNode* node)
+    iDocumentNode* node,
+    iParticleSystemBase* baseObject
+    )
   {
     const char* effectorType = node->GetAttributeValue ("type");
 
@@ -553,7 +559,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
 
     if (!strcasecmp (effectorType, "force"))
     {
-      effector = ParseEffectorForce(node, factory);
+      effector = ParseEffectorForce(node, baseObject, factory);
     }
     else if (!strcasecmp (effectorType, "linear"))
     {
@@ -752,20 +758,46 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
     return csPtr<iParticleEffector> (effector);
   }
 
-  csPtr<iParticleEffector> ParticlesBaseLoader::ParseEffectorForce (iDocumentNode* node, csRef<iParticleBuiltinEffectorFactory> factory)
+  csPtr<iParticleEffector> ParticlesBaseLoader::ParseEffectorForce (
+    iDocumentNode* node, iParticleSystemBase* baseObject, csRef<iParticleBuiltinEffectorFactory> factory)
   {
     bool forceWithColl = node->GetAttribute("collisions") != nullptr;
-    
+
     csRef<iParticleBuiltinEffectorForce> forceEffector;
     if (forceWithColl)
     {
-      forceEffector = factory->CreateForce ();
+      csRef<iCollisionSystem> colSys = csQueryRegistry<iCollisionSystem> (objectRegistry);
+      if (colSys)
+      {
+        // get mesh
+        csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (baseObject);
+        iMovable* movable = mesh->GetMeshWrapper()->GetMovable();
+        
+        if (movable)
+        {
+          // get iSector(s)
+          // TODO: Since the object could be in multiple sectors at once, 
+          //        it might have to check against collisions in all of them
+          iSector* sect = movable->GetSectors()->Get(0);
+          
+          // get iCollisionSector from iSector
+          iCollisionSector* colSect = colSys->GetCollisionSector (sect);
+          if (colSect)
+          {
+            // create particles that respect physical boundaries
+            csRef<iParticleBuiltinEffectorForce> forceWithColl(
+              csRef<iParticleBuiltinEffectorForceWithCollisions>(
+              factory->CreateForceWithCollisions(colSect)));
+            
+            forceEffector = csPtr<iParticleBuiltinEffectorForce>(forceWithColl);
+          }
+        }
+      }
     }
-    else
+
+    if (!forceEffector)
     {
-      // TODO: How to get an instance of iCollisionSector?
-      return csPtr<iParticleEffector> (nullptr);
-      //forceEffector = factory->CreateForceWithCollisions ();
+      forceEffector = factory->CreateForce ();
     }
 
     csRef<iDocumentNodeIterator> it = node->GetNodes ();
@@ -849,7 +881,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
     csRef<iMeshObjectFactory> factoryObj = type->NewFactory ();
     csRef<iParticleSystemFactory> particleFact = 
       scfQueryInterfaceSafe<iParticleSystemFactory> (factoryObj);
-
+    
     csRef<iDocumentNodeIterator> it = node->GetNodes ();
     while (it->HasNext ())
     {

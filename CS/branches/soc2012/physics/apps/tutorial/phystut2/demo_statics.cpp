@@ -12,131 +12,176 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
+const static csScalar StaticElasticity(0.1);
+
 using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
-void PhysDemo::CreatePortalRoom()
+/**
+ * Utility function - Should eventually be added to csPoly3D.
+ * Rotates polyIn by rotation and stores it in polyOut.
+ */
+void RotatePoly3D(const csPoly3D& polyIn, csPoly3D& polyOut, const csMatrix3& rotation)
 {
-  // Parameters to use for customizing the room
-  // Room is the inside of a cuboid of the given size, and wall thickness
-  static const csScalar WallThickness = 5;
-  static const csVector3 RoomExtents(20);
+  polyOut.SetVertexCount(polyIn.GetVertexCount());
+  for (size_t i = 0; i < polyIn.GetVertexCount(); ++i)
+  {
+    csVector3 vert = polyIn[i];
+    //vert = rotation * vert;
+    polyOut[i] = vert;
+  }
+}
 
-  printf ("Creating portal room...\n");
 
-  // Default behavior from DemoApplication for the creation of the scene
-  if (!DemoApplication::CreateRoom())
-    return;
-
+void PhysDemo::CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos, csScalar wallThickness)
+{
   // The boxes that make up floor and ceiling
-  // AABB of these is the entire room
+  // AABB over these two is the entire room, including walls
   csVector3 yExtents(
-    RoomExtents[HorizontalAxis1] + 2 * WallThickness,
-    WallThickness,
-    RoomExtents[HorizontalAxis2] + 2 * WallThickness);
+    roomExtents[HorizontalAxis1] + 2 * wallThickness,
+    wallThickness,
+    roomExtents[HorizontalAxis2] + 2 * wallThickness);
   RenderMeshColliderPair yLimitingPair;
   CreateBoxMeshColliderPair(yLimitingPair, yExtents);
 
   // The boxes that make up one pair of walls
-  // AABB of these is the y-limited part of the room
+  // AABB over these two is the y-limited part of the room
   csVector3 xExtents(
-    WallThickness,
-    RoomExtents[HorizontalAxis1],
-    RoomExtents[HorizontalAxis2] + 2 * WallThickness);
+    wallThickness,
+    roomExtents[HorizontalAxis1],
+    roomExtents[HorizontalAxis2] + 2 * wallThickness);
   RenderMeshColliderPair xLimitingPair;
   CreateBoxMeshColliderPair(xLimitingPair, xExtents);
 
   // The boxes that make up the other pair of walls
-  // AABB of these is the y- and x- limited part of the room
+  // AABB over these two is the y- and x- limited part of the room
   csVector3 zExtents(
-    RoomExtents[HorizontalAxis2],
-    RoomExtents[HorizontalAxis1],
-    WallThickness);
+    roomExtents[HorizontalAxis2],
+    roomExtents[HorizontalAxis1],
+    wallThickness);
   RenderMeshColliderPair zLimitingPair;
   CreateBoxMeshColliderPair(zLimitingPair, zExtents);
   
-  // TODO: Create box objects and allow for their hole digging for a portal and restoring of original shape after portal is gone
+  csVector3 halfRoomExtents = roomExtents / 2;
+  csVector3 distances = (roomExtents + csVector3(wallThickness)) / 2;
+
+  SpawnRigidBody(xLimitingPair, pos + csVector3(distances[HorizontalAxis1], 0, 0), "wall", 0, 0)->SetElasticity(StaticElasticity);
+  SpawnRigidBody(xLimitingPair, pos + csVector3(-distances[HorizontalAxis1], 0, 0), "wall", 0, 0)->SetElasticity(StaticElasticity);
+
+  SpawnRigidBody(yLimitingPair, pos + csVector3(0, distances[UpAxis], 0), "ceiling", 0, 0)->SetElasticity(StaticElasticity);
+  SpawnRigidBody(yLimitingPair, pos + csVector3(0, -distances[UpAxis], 0), "floor", 15, 0)->SetElasticity(StaticElasticity);
+
+  SpawnRigidBody(zLimitingPair, pos + csVector3(0, 0, distances[HorizontalAxis2]), "wall", 0, 0)->SetElasticity(StaticElasticity);
+  SpawnRigidBody(zLimitingPair, pos + csVector3(0, 0, -distances[HorizontalAxis2]), "wall", 0, 0)->SetElasticity(StaticElasticity);
   
-  csVector3 halfRoomExtents = RoomExtents / 2;
-  csVector3 distances = (RoomExtents + csVector3(WallThickness)) / 2;
-  SpawnRigidBody(xLimitingPair, csVector3(distances[HorizontalAxis1], 0, 0), "wall", 0, 0); 
-  SpawnRigidBody(xLimitingPair, csVector3(-distances[HorizontalAxis1], 0, 0), "wall", 0, 0);
+}
 
-  SpawnRigidBody(yLimitingPair, csVector3(0, distances[UpAxis], 0), "ceiling", 0, 0);
-  SpawnRigidBody(yLimitingPair, csVector3(0, -distances[UpAxis], 0), "floor", 15, 0);
-
-  SpawnRigidBody(zLimitingPair, csVector3(0, 0, distances[HorizontalAxis2]), "wall", 0, 0);
-  SpawnRigidBody(zLimitingPair, csVector3(0, 0, -distances[HorizontalAxis2]), "wall", 0, 0);
-
-  // Debug the identity transform
-  CS::Debug::VisualDebuggerHelper::DebugTransform (GetObjectRegistry(), csOrthoTransform(), true);
+void PhysDemo::CreatePortalRoom()
+{
+  // Room parameters
+  csVector3 roomExtents(20); csVector3 halfRoomExtents(csScalar(.5) * roomExtents);
+  csVector3 roomPos(0);
+  csScalar wallThickness = 5;
   
+  // Portal parameters
+  csScalar portalEpsilon = csScalar(0.01);
+  csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
+  csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two
+  
+  // Positions of the portals
+  csVector3 portal1Pos = csVector3(
+    halfRoomExtents.x - portalEpsilon, 
+    -halfRoomExtents.y + halfPortalExtents.y, 
+    0.0f);
+
+  csVector3 portal2Pos = csVector3(
+    0, 
+    -halfRoomExtents.y + portalEpsilon , 
+    0);
+  
+  printf ("Creating portal room...\n");       // let's go
+  
+  
+  // Default behavior from DemoApplication for the creation of the scene
+  if (!DemoApplication::CreateRoom()) return;
+
+  // Create room
+  CreateBoxRoom(roomExtents, roomPos, wallThickness);
   
   // Add portals
   // TODO: Add mechanism to more easily create a portal pair
+  
+  //csMatrix3 rotation = csYRotMatrix3 (-HALF_PI) * csZRotMatrix3 (HALF_PI);
+  csMatrix3 rotationInv = rotation.GetInverse();
 
-  csScalar portalEpsilon = csScalar(0.01);
-  csVector2 halfPortalExtents(2, 2); halfPortalExtents /= 2;      // a portal has size 2 x 2
-
-  csOrthoTransform portal1Trans;
-  portal1Trans.SetOrigin(
-    csVector3(halfRoomExtents.x - portalEpsilon, -halfRoomExtents.y + halfPortalExtents.y, 0.0f));
-  csOrthoTransform portal2Trans(
-    csYRotMatrix3 (-HALF_PI) * csZRotMatrix3 (HALF_PI),
-    csVector3(0, -halfRoomExtents.y - 2 , 0));
-
-  // Define the plane of the first poly
+  // Define the plane of the wall poly
   csPoly3D poly;
   poly.AddVertex (csVector3 (0.0f, -halfPortalExtents.y, halfPortalExtents.x));
   poly.AddVertex (csVector3 (0.0f, halfPortalExtents.y, halfPortalExtents.x));
   poly.AddVertex (csVector3 (0.0f, halfPortalExtents.y, -halfPortalExtents.x));
   poly.AddVertex (csVector3 (0.0f, -halfPortalExtents.y, -halfPortalExtents.x));
-  
-  iPortal* portal;
-  csRef<iMeshWrapper> portalMesh = engine->CreatePortal ("right_wall", 
+
+  // Portal transformations are absolute
+  csOrthoTransform portal1Trans(
+    csMatrix3(),
+    portal1Pos);
+  csOrthoTransform portal2Trans(
+    rotation,
+    portal2Pos);
+
+  // Warps are relative to the portal
+  csOrthoTransform warp1Trans(
+    //rotation,
+    csMatrix3(),
+    portal1Trans.GetOrigin() - portal2Pos);
+
+  //csOrthoTransform warp2Trans(
+  //  portal2Trans.GetT2O() * portal1Trans.GetO2T(),
+  //  -portal2Trans.GetOrigin() + portal1Trans.GetOrigin());
+  csOrthoTransform warp2Trans(csMatrix3(), csVector3(1, 0, 0));
+
+  iPortal *portal1, *portal2;
+
+  // Create the portal meshes
+  csRef<iMeshWrapper> portalMesh1 = engine->CreatePortal ("right_wall", 
     room,
     csVector3(0),
     room, 
     poly.GetVertices(), 
     (int) poly.GetVertexCount(),
-    portal);
+    portal1);
 
-  portalMesh->QuerySceneNode()->GetMovable()->SetTransform(portal1Trans);
+  //csRef<iMeshWrapper> portalMesh2 = engine->CreatePortal ("floor", 
+  //  room,
+  //  csVector3(0),
+  //  room, 
+  //  poly.GetVertices(), 
+  //  (int) poly.GetVertexCount(),
+  //  portal2);
   
-  portal->GetFlags().Set (CS_PORTAL_ZFILL);
-  portal->GetFlags().Set (CS_PORTAL_CLIPDEST);
-  portal->SetWarp (portal2Trans);
-
-  // Create a collision portal
-  //physicalSector->AddPortal (portal, portalMesh->GetMovable()->GetFullTransform());
-
-  // Debug the inverse of the warp transform
-  CS::Debug::VisualDebuggerHelper::DebugTransform
-    (GetObjectRegistry(), portal2Trans.GetInverse(), true);
-
-  // Create the portal on the floor
-  csRef<iMeshWrapper> portalMesh2 = engine->CreatePortal ("floor", 
-    room,
-    csVector3(0),
-    room, 
-    poly.GetVertices(), 
-    (int) poly.GetVertexCount(),
-    portal);
+  // place & configure portals and warp transforms
+  portalMesh1->QuerySceneNode()->GetMovable()->SetTransform(portal1Trans);
+  //portalMesh2->QuerySceneNode()->GetMovable()->SetTransform(portal2Trans);
   
-  portalMesh2->QuerySceneNode()->GetMovable()->SetTransform(portal2Trans);
+  portal1->GetFlags().Set (CS_PORTAL_ZFILL);
+  portal1->GetFlags().Set (CS_PORTAL_CLIPDEST);
+  portal1->SetWarp (warp1Trans);
 
-  portal->GetFlags().Set (CS_PORTAL_ZFILL);
-  portal->GetFlags().Set (CS_PORTAL_CLIPDEST);
-  portal->SetWarp (portal1Trans);
+  //portal2->GetFlags().Set (CS_PORTAL_ZFILL);
+  //portal2->GetFlags().Set (CS_PORTAL_CLIPDEST);
+  //portal2->SetWarp (warp2Trans);
+  
+  // Create collision portals
+  physicalSector->AddPortal (portal1, portal1Trans);
+  //physicalSector->AddPortal (portal2, portal2Trans);
 
-  // Create a collision portal
-  //physicalSector->AddPortal (portal, portalMesh2->GetMovable()->GetFullTransform());
+  // Debug-draw the warp locations
+  CS::Debug::VisualDebuggerHelper::DebugTransform(GetObjectRegistry(), warp1Trans.GetInverse(), true);
+  CS::Debug::VisualDebuggerHelper::DebugTransform(GetObjectRegistry(), warp2Trans.GetInverse(), true);
 
-  // Debug the inverse of the warp transform
-  CS::Debug::VisualDebuggerHelper::DebugTransform
-    (GetObjectRegistry(), (csOrthoTransform (csZRotMatrix3 (-PI * 0.5f) * csYRotMatrix3 (PI * 0.5f),
-					      csVector3 (0.0f, -4.999f, -1.0f))).GetInverse(), true);
+  // Debug-draw the identity transform
+  CS::Debug::VisualDebuggerHelper::DebugTransform (GetObjectRegistry(), csOrthoTransform(), true);
 
   // Set up some lights
   room->SetDynamicAmbientLight (csColor (0.3f, 0.3f, 0.3f));
@@ -166,17 +211,25 @@ void PhysDemo::CreatePortalRoom()
 void PhysDemo::CreateTerrainRoom()
 {
   printf ("Loading terrain level...\n");
+  
+  // Default behavior from DemoApplication for the creation of the scene
+  if (!DemoApplication::CreateRoom()) return;
 
   // Load the level file
   csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry()));
+
+  // TODO: Since texture loading might be running in the background, 
+  //      changing the CWD, can cause race conditions
+  const char* dir = VFS->GetCwd();
   VFS->ChDir ("/lev/terraini");
 
-  if (!loader->LoadMapFile ("worldmod"))
+  if (!loader->LoadMapFile ("worldmod", false))
   //if (!loader->LoadMapFile ("world"))
   {
     ReportError("Error couldn't load terrain level!");
     return;
   }
+  VFS->ChDir(dir);    // reset CWD
 
   // Setup the sector
   room = engine->FindSector ("room");

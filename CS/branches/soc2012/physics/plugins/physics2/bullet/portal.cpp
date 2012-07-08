@@ -28,31 +28,36 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   {
     targetSector = dynamic_cast<csBulletSector*>(sourceSector->sys->GetCollisionSector(portal->GetSector()));
 
-    csVector3 normal = portal->GetObjectPlane ().GetNormal ();
-
-    // Compute the warp transform of the portal
-    warpTrans = meshTrans.GetInverse () * portal->GetWarp ().GetInverse () * meshTrans;
-
     // Create a ghost collisder for the portal
     ghostPortal = new btGhostObject ();
 
     // compute the size of the portal
+    // WARNING: GetWorldVertices() initializes the portal plane - Always call this before GetNormal()!
     const csVector3* vert = portal->GetWorldVertices ();
     csBox3 box;
     for (int i = 0; i < portal->GetVertexIndicesCount (); i++)
+    {
       box.AddBoundingVertex (vert[portal->GetVertexIndices ()[i]]);
+    }
+
+    // Compute the warp transform of the portal
+    warpTrans = portal->GetWarp ().GetInverse ();
+    warpTrans = meshTrans.GetInverse () * warpTrans * meshTrans;
+    csVector3 normal = portal->GetObjectPlane ().GetNormal ();
+    normal = meshTrans.GetT2O() * normal;              // rotate normal
 
     float maxEdge = csMax (box.GetSize ().x, box.GetSize ().y);
     maxEdge = csMax (maxEdge, box.GetSize ().z);
-    
-    float thresh = maxEdge * 0.1f;
-    box.AddBoundingVertex (vert[0] + normal * thresh);
+    float thresh = maxEdge * 0.05f;
     
     // place the portal at the center of the box that represents it
-    csVector3 size = 0.499f * box.GetSize ();
-    csVector3 centerDist = 1.f * size * normal;
-    csOrthoTransform realTrans = meshTrans;
-    realTrans.Translate(centerDist);
+    csVector3 size = 0.499f * box.GetSize ();           // compute "flat" box size
+    size = meshTrans.GetT2O() * size;                   // rotate box
+    size += normal * thresh;                            // add thickness to box
+    csVector3 centerDist = (size * normal) * normal;    // move origin into the center of the box
+    
+    csOrthoTransform realTrans;                         // no rotation necessary, since we already rotated everything
+    realTrans.SetOrigin(meshTrans.GetOrigin() + centerDist);
     ghostPortal->setWorldTransform (CSToBullet (realTrans, sourceSector->sys->getInternalScale ()));
 
     // give the portal it's shape and add it to the world
@@ -127,6 +132,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           //csVector3 center = BulletToCS (dis * 2.0f, sys->getInverseInternalScale ());
           // Do not use SetTransform...Use transform in btSoftBody.
           btVector3 norm = CSToBullet (portal->GetObjectPlane ().GetNormal (), 1.0f);
+
+          // TODO: Transform normal
           float length = dis.dot(norm);
           
           btTransform tr;

@@ -260,11 +260,10 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     {
       if (!terrainMod)
       {
-        csRef<iCamera> camera = view->GetCamera();
-        csVector3 pos = camera->GetTransform().GetOrigin();
+        csVector3 pos(0);
 
-        float len = 1;
-        float height = 3;
+        float len = 10;
+        float height = 3000;
         terrainMod = terrainFeeder->AddModifier(pos, len, height);
       }
       else
@@ -296,7 +295,10 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     {
     // Update camera follow mode
     camFollowMode = CamFollowMode(((int)camFollowMode + 1) % (int)CamFollowModeCount);
-    cam->GetTransform().LookAt(cam->GetTransform().GetT2O() * csVector3(0, 0, 1), UpVector);
+    csVector3 dir(cam->GetTransform().GetT2O() * csVector3(0, 0, 1));
+    dir[UpAxis] = 0;
+    dir.Normalize();
+    cam->GetTransform().LookAt(dir, UpVector);
     return true;
     }
   }

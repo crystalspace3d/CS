@@ -28,8 +28,8 @@ PhysDemo::PhysDemo()
   //physicalCameraMode (ACTOR_KINEMATIC)
   physicalCameraMode (ACTOR_DYNAMIC)
   ,
-  //defaultEnvironmentName("terrain")
-  defaultEnvironmentName("portals")
+  defaultEnvironmentName("terrain")
+  //defaultEnvironmentName("portals")
 {
 }
 
@@ -106,15 +106,9 @@ bool PhysDemo::Application()
 
   // Prepare engine (whatever that means)
   engine->Prepare();
-  
-  // Preload some meshes and materials
-  if (!loader->LoadTexture ("spark", "/lib/std/spark.png")) return ReportError ("Error loading texture: spark");
-  if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
-  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif")) return ReportError ("Could not load texture: stone");
+
 
   // Create the dynamic system
-  
-  // TODO: Every physical sector should *ALWAYS* have a render sector
   room = engine->CreateSector ("room");
   physicalSector = physicalSystem->CreatePhysicalSector();
   physicalSector->SetSector(room);
@@ -132,7 +126,11 @@ bool PhysDemo::Application()
 
   bulletSector = scfQueryInterface<Bullet2::iPhysicalSector> (physicalSector);
   bulletSector->SetDebugMode (debugMode);
-
+  
+  // Preload some meshes and materials
+  if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
+  if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif")) return ReportError ("Could not load texture: stone");
+  if (!loader->LoadTexture ("objtexture", "/lib/std/blobby.jpg")) return ReportError ("Error loading texture: blobby");
 
   // Create the environment
   switch (environment)
@@ -315,7 +313,7 @@ void PhysDemo::UpdateCameraMode()
         csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
         DynamicActorProperties props(collider);
         props.SetMass(csScalar(80.));
-        props.SetElasticity(csScalar(0.1));
+        props.SetElasticity(csScalar(0));
         props.SetFriction(csScalar(1.));
 
         props.SetAirControlFactor(actorAirControl);

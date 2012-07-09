@@ -624,7 +624,8 @@ size_t NativeFile::View::Read (char *data, size_t dataSize)
   // try reading...
   size_t bytesRead = Read (data, toRead);
   // update last error of this view..
-  lastError = parent->lastError;
+  if (lastError == VFS_STATUS_OK)
+    lastError = parent->lastError;
 
   // restore last position
   parent->SetPos (lastPos);
@@ -737,8 +738,33 @@ csPtr<iDataBuffer>
 NativeFile::View::GetAllData (CS::Memory::iAllocator *allocator)
 {
 
-  lastError = VFS_STATUS_NOTIMPLEMENTED;
-  return csPtr<iDataBuffer> (nullptr);
+  using CS::Memory::AllocatorInterface;
+
+  // create iDataBuffer instance with custom allocator
+  iDataBuffer *buffer =
+    new CS::DataBuffer<AllocatorInterface> (size,
+                                            AllocatorInterface (allocator));
+
+  char *data = buffer->GetData();
+  if (!data)
+  {
+    // TODO: update error code
+    return csPtr<iDataBuffer> (nullptr);
+  }
+
+  // backup pointer
+  uint64_t oldPos = GetPos ();
+  // set pointer at beginning
+  SetPos (0);
+  // read!
+  size_t bytesRead = Read (data, size);
+
+  // TODO: add handling if bytesRead < size ?
+
+  // restore pointer
+  SetPos (oldPos);
+
+  return csPtr<iDataBuffer> (buffer);
 }
 
 // Get subset of file as iFile

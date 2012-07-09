@@ -113,7 +113,6 @@ namespace lighter
       // Loop through all element primitives    
       PrimitiveArray& primArray = submeshArray[submesh];
 
-    #pragma omp parallel for
       for (size_t pidx = 0; pidx < primArray.GetSize (); ++pidx)
       {
         // Get next primitive
@@ -151,7 +150,6 @@ namespace lighter
         const size_t vOffs = size_t (floorf (minUV.y));
 
         // Iterate all primitive elements
-      #pragma omp parallel for
         for (size_t eidx = 0; eidx < numElements; ++eidx)
         {
           // Skip empty elements

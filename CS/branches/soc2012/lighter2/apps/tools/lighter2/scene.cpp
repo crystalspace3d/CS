@@ -508,7 +508,7 @@ namespace lighter
 
   THREADED_CALLABLE_IMPL7(SectorProcessor,ComputeObjectGroupLighting, csArray<csRef<Object> >* objectsBatches,
     bool enableRaytracer, bool enablePhotonMapper, int pass,
-    Statistics::Progress* progress, int totalPrimitives, float progressFactor)
+    Statistics::Progress* progress, size_t totalPrimitives, float progressFactor)
   {
     const csVector3 bases[4] =
     {
@@ -1733,7 +1733,8 @@ namespace lighter
     
   bool Scene::ParseMaterial (iMaterialWrapper* material)
   {
-    RadMaterial radMat;
+    csRef<RadMaterial> radMat;
+    radMat.AttachNew(new RadMaterial());
     
     // Material properties from key-value-pairs
     // Right now the only key value pair used is for caustics
@@ -1749,7 +1750,7 @@ namespace lighter
       {
         if(strcmp (kvp->GetValue(),"produce caustic")==0)
         {
-          radMat.produceCaustic=true;
+          radMat->produceCaustic=true;
         }
       }
     }
@@ -1768,7 +1769,7 @@ namespace lighter
     {
       float refrIndex = 0.0f;
       svRefrIndex->GetValue(refrIndex);
-      radMat.SetRefractiveIndex(refrIndex);
+      radMat->SetRefractiveIndex(refrIndex);
     }
     if (svTex.IsValid())
     {
@@ -1777,11 +1778,11 @@ namespace lighter
       if (texwrap != 0)
       {
         iImage* teximg = texwrap->GetImageFile ();
-        radMat.SetTextureImage(teximg);
+        radMat->SetTextureImage(teximg);
         if (teximg != 0)
         {
           if (teximg->GetFormat() & CS_IMGFMT_ALPHA)
-			radMat.ComputeFilterImage (teximg);
+			      radMat->ComputeFilterImage (teximg);
         }
       }
     }

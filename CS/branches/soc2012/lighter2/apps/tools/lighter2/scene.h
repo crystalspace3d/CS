@@ -43,7 +43,7 @@ namespace lighter
 
     void computePrimitives()
     {
-      const int verticesCount = vertexData.positions.GetSize();
+      const size_t verticesCount = vertexData.positions.GetSize();
 
       // First compute the center of the polygon
       csVector3 center = vertexData.positions[0];
@@ -101,7 +101,7 @@ namespace lighter
 
     THREADED_CALLABLE_DECL7(SectorProcessor,ComputeObjectGroupLighting,csThreadReturn,
       csArray<csRef<Object> >*,objectsBatch, bool, enableRaytracer, bool, enablePhotonMapper,int,pass,
-      Statistics::Progress*, progress,int, totalPrimitives, float, progressFactor,THREADED,false,true);
+      Statistics::Progress*, progress,size_t, totalPrimitives, float, progressFactor,THREADED,false,true);
 
     THREADED_CALLABLE_DECL1(SectorProcessor,SaveLightmaps,csThreadReturn,
       csRef<SectorGroup>,sectorGroup,THREADED,false,true);
@@ -163,7 +163,7 @@ namespace lighter
     void AddToIRCache(const csVector3 point, const csVector3 normal,
                       const csColor irrad, const float mean);
 
-    // Return 1.5 * numThread group of object to be lighted
+    // Return 2.0 * numThread group of object to be lighted
     csArray<csArray<csRef<Object> > *> getObjectBatches(size_t& primitivesCount);
 
     // Hash of all mesh names and materials
@@ -294,7 +294,7 @@ namespace lighter
     const RadMaterial* GetRadMaterial (iMaterialWrapper* matWrap) const
     {
       if (matWrap == 0) return 0;
-      return radMaterials.GetElementPointer (
+      return *radMaterials.GetElementPointer (
         matWrap->QueryObject()->GetName());
     }
 

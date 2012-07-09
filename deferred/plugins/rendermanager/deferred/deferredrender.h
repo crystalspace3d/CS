@@ -375,7 +375,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if(deferredOnly)
 	RenderObjects<RenderType, ForEachDeferredMeshNode>(layer, ctxCount, meshRender);
       else
-	RenderObjects<RenderType, ForEachMeshNode>(layer, ctxCount, meshRender);
+	RenderObjects<RenderType, CS::RenderManager::ForEachMeshNode>(layer, ctxCount, meshRender);
     }
 
     template<typename T>

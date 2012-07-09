@@ -120,7 +120,7 @@ namespace RenderManager
 		      typename PortalSetupType::ContextSetupData& portalSetupData,
 		      bool recursePortals = true)
       {
-	if (recurseCount > maxPortalRecurse) return;
+	if(recurseCount > maxPortalRecurse) return;
 
 	CS::RenderManager::RenderView* rview = context.renderView;
 	iSector* sector = rview->GetThisSector();
@@ -129,17 +129,17 @@ namespace RenderManager
 	sector->PrepareDraw(rview);
 
 	// Make sure the clip-planes are ok
-	CS::RenderViewClipper::SetupClipPlanes(rview->GetRenderContext ());
+	CS::RenderViewClipper::SetupClipPlanes(rview->GetRenderContext());
 
 	if(debugSplits)
-	  context.owner.AddDebugClipPlanes (rview);
+	  context.owner.AddDebugClipPlanes(rview);
 	
 	// Do the culling
 	iVisibilityCuller* culler = sector->GetVisibilityCuller();
 	Viscull<RenderTreeType>(context, rview, culler);
 	
 	// Set up all portals
-	if (recursePortals)
+	if(recursePortals)
 	{
 	  recurseCount++;
 	  PortalSetupType portalSetup(portalPersist, *this);
@@ -149,8 +149,8 @@ namespace RenderManager
 
 	// Sort the mesh lists  
 	{
-	  StandardMeshSorter<RenderTreeType> mySorter(rview->GetEngine ());
-	  mySorter.SetupCameraLocation (rview->GetCamera()->GetTransform().GetOrigin());
+	  StandardMeshSorter<RenderTreeType> mySorter(rview->GetEngine());
+	  mySorter.SetupCameraLocation(rview->GetCamera()->GetTransform().GetOrigin());
 	  ForEachMeshNode(context, mySorter);
 	}
     
@@ -215,7 +215,7 @@ namespace RenderManager
       {
 	// get shader manager and graphics3d handles
 	graphics3D = csQueryRegistry<iGraphics3D>(objectReg);
-	shaderManager = csQueryRegistry<iShaderManager> (objectReg);
+	shaderManager = csQueryRegistry<iShaderManager>(objectReg);
 	{
 	  // initialize SV IDs
 	  iShaderVarStringSet* strings = shaderManager->GetSVNameStringset();
@@ -231,7 +231,7 @@ namespace RenderManager
 
 	// start with reading config settings
 	{
-	  csConfigAccess cfg (objectReg);
+	  csConfigAccess cfg(objectReg);
 
 	  csString prefix(configPrefix);
 	  prefix += '.';
@@ -243,7 +243,7 @@ namespace RenderManager
 	  limitedShadow = cfg->GetBool(prefix + csString("LimitedShadow"), false);
 	  // @@@QUESTION: old PSSM just increased numSplits by 1 unconditionally - why?
 	  numSplits = cfg->GetInt(prefix + csString("NumSplits"), 2);
-	  farZ = cfg->GetFloat (prefix + csString("FarZ"), 100);
+	  farZ = cfg->GetFloat(prefix + csString("FarZ"), 100);
 	  maxPortalRecurse = cfg->GetInt(prefix + csString("MaxShadowPortalRecurse", 3));
 	  int shadowMapRes = cfg->GetInt(prefix + csString("ShadowMapResolution"), 512);
 	  shadowMapResD = cfg->GetInt(prefix + csString("ShadowMapResolution.Directional"), shadowMapRes);
@@ -385,7 +385,7 @@ namespace RenderManager
 	  else
 	  {
 	    // @@@QUESTION: why is this needed?
-	    CS::Math::Matrix4 flipZW (
+	    CS::Math::Matrix4 flipZW(
 	      1, 0, 0, 0,
 	      0, 1, 0, 0,
 	      0, 0, -1, 0,
@@ -401,21 +401,21 @@ namespace RenderManager
 	static const csMatrix3 rotations[] =
 	{
 	  csMatrix3(), // identity
-          csMatrix3 (1,  0, 0, // -90° about x
-		     0,  0, 1,
-		     0, -1, 0),
-          csMatrix3 (1,  0, 0, // +90° about x
-		     0,  0,-1,
-		     0,  1, 0),
-          csMatrix3 (0,  0,-1, // -90° about y
-		     0,  1, 0,
-		     1,  0, 0),
-          csMatrix3 (0,  0, 1, // +90° about y
-		     0,  1, 0,
-		    -1,  0, 0),
-          csMatrix3 (1,  0, 0, // 180° about x
-		     0, -1, 0,
-		     0,  0, -1)
+          csMatrix3(1,  0, 0, // -90° about x
+		    0,  0, 1,
+		    0, -1, 0),
+          csMatrix3(1,  0, 0, // +90° about x
+		    0,  0,-1,
+		    0,  1, 0),
+          csMatrix3(0,  0,-1, // -90° about y
+		    0,  1, 0,
+		    1,  0, 0),
+          csMatrix3(0,  0, 1, // +90° about y
+		    0,  1, 0,
+		   -1,  0, 0),
+          csMatrix3(1,  0, 0, // 180° about x
+		    0, -1, 0,
+		    0,  0, -1)
 	};
 
 	// get light bounding box
@@ -434,7 +434,7 @@ namespace RenderManager
 	  frustum.setupFrame = 0;
 
 	  // set mesh filter mode
-	  if (persist.limitedShadow)
+	  if(persist.limitedShadow)
 	    frustum.meshFilter.SetFilterMode(CS::Utility::MESH_FILTER_INCLUDE);
 
 	  // set transform
@@ -442,8 +442,8 @@ namespace RenderManager
 	  frustum.frust2light = frust2light;
 
 	  // create unbounded frustum bounding box in frustum space
-	  csBox3 boxFS = csBox3(csVector3 (-FLT_MAX, -FLT_MAX, 0),
-			        csVector3 (FLT_MAX, FLT_MAX, FLT_MAX));;
+	  csBox3 boxFS = csBox3(csVector3(-FLT_MAX, -FLT_MAX, 0),
+			        csVector3(FLT_MAX, FLT_MAX, FLT_MAX));;
 
 	  // transform box to light space
 	  frustum.boxLS = boxFS / frustum.frust2light;
@@ -589,10 +589,10 @@ namespace RenderManager
 	  int viewHeight = persist.graphics3D->GetHeight();
 	  csVector2 view[4] =
 	  {
-	    csVector2 (0, 0),
-	    csVector2 (viewWidth, 0),
-	    csVector2 (viewWidth, viewHeight),
-	    csVector2 (0, viewHeight)
+	    csVector2(0, 0),
+	    csVector2(viewWidth, 0),
+	    csVector2(viewWidth, viewHeight),
+	    csVector2(0, viewHeight)
 	  };
 
 	  // get transform with This == Frustum and Other == View
@@ -657,7 +657,7 @@ namespace RenderManager
       // handles setup for a mesh node (simply forwards processing to HandleMesh for all contained meshes)
       void operator()(typename RenderTreeType::MeshNode* node)
       {
-	for (size_t i = 0; i < node->meshes.GetSize (); ++i)
+	for(size_t i = 0; i < node->meshes.GetSize(); ++i)
 	{
 	  HandleMesh(node->meshes[i]);
 	}
@@ -921,9 +921,9 @@ namespace RenderManager
 
 	// set clipper
 	{
-	  csBox2 clipBox (0, 0, mapSize, mapSize);
+	  csBox2 clipBox(0, 0, mapSize, mapSize);
 	  csRef<iClipper2D> clipper;
-	  clipper.AttachNew(new csBoxClipper (clipBox));
+	  clipper.AttachNew(new csBoxClipper(clipBox));
 	  shadowView->SetClipper(clipper);
 	}
 
@@ -974,8 +974,8 @@ namespace RenderManager
 	csRef<iCamera> cam = rview->GetCamera();
 
 	// check whether the mesh casts shadows in our mode
-	bool casting = (!persist.limitedShadow && !mesh.meshFlags.Check (CS_ENTITY_NOSHADOWCAST))
-		    || ( persist.limitedShadow &&  mesh.meshFlags.Check (CS_ENTITY_LIMITEDSHADOWCAST));
+	bool casting = (!persist.limitedShadow && !mesh.meshFlags.Check(CS_ENTITY_NOSHADOWCAST))
+		    || ( persist.limitedShadow &&  mesh.meshFlags.Check(CS_ENTITY_LIMITEDSHADOWCAST));
 
 	// check whether we want this mesh filtered:
 	//   for limited casting casters are included
@@ -1078,7 +1078,7 @@ namespace RenderManager
       csLightShaderVarCache& svNames;
     };
 
-    ShadowPSSM (PersistentData& persist,
+    ShadowPSSM(PersistentData& persist,
       const LayerConfigType& layerConfig,
       typename RenderTreeType::MeshNode* node, 
       ShadowParameters& param) : persist(persist), rview(node->GetOwner().renderView)
@@ -1086,10 +1086,10 @@ namespace RenderManager
     }
 
     // set up shadowing for a mesh-light combination - used by light setup
-    uint HandleOneLight (typename RenderTreeType::MeshNode::SingleMesh& mesh,
-                         iLight* light, CachedLightData&,
-                         csShaderVariableStack* lightStacks,
-                         uint l, uint f)
+    uint HandleOneLight(typename RenderTreeType::MeshNode::SingleMesh& mesh,
+                        iLight* light, CachedLightData&,
+                        csShaderVariableStack* lightStacks,
+                        uint l, uint f)
     {
       // check whether the light creates shadows (in this case there's nothing to be done)
       if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
@@ -1161,11 +1161,11 @@ namespace RenderManager
 
     // final pass called by light setup for each light
     // if we returned true for NeedFinalHandleLight
-    void FinalHandleLight (iLight*, CachedLightData&) { }
+    void FinalHandleLight(iLight*, CachedLightData&) { }
 
     // return which flags should be masked out for light comparison
     // by light setup
-    csFlags GetLightFlagsMask () const { return csFlags(0); }
+    csFlags GetLightFlagsMask() const { return csFlags(0); }
     
     // return up to how many layers shadows for a light may need in light setup
     size_t GetLightLayerSpread() const { return persist.numSplits; }

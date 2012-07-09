@@ -433,6 +433,10 @@ namespace RenderManager
 	  // init setup frame to minimum
 	  frustum.setupFrame = 0;
 
+	  // set mesh filter mode
+	  if (persist.limitedShadow)
+	    frustum.meshFilter.SetFilterMode(CS::Utility::MESH_FILTER_INCLUDE);
+
 	  // set transform
 	  csReversibleTransform frust2light(rotations[i], csVector3(0));
 	  frustum.frust2light = frust2light;
@@ -585,10 +589,10 @@ namespace RenderManager
 	  int viewHeight = persist.graphics3D->GetHeight();
 	  csVector2 view[4] =
 	  {
-	    csVector2 (0, viewHeight),
 	    csVector2 (0, 0),
+	    csVector2 (viewWidth, 0),
 	    csVector2 (viewWidth, viewHeight),
-	    csVector2 (viewWidth, 0)
+	    csVector2 (0, viewHeight)
 	  };
 
 	  // get transform with This == Frustum and Other == View
@@ -622,8 +626,8 @@ namespace RenderManager
 
 	    if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
 	    {
-	      renderTree.AddDebugBBox(boxFS,
-		(frustum.frust2light * lightData.light2world).GetInverse(),
+	      renderTree.AddDebugBBox(frustum.boxLS,
+		lightData.light2world.GetInverse(),
 		csColor(0, 1, 0));
 	    }
 
@@ -908,10 +912,20 @@ namespace RenderManager
 	shadowView = renderTree.GetPersistentData().renderViews.CreateRenderView();
 	shadowView->SetEngine(rview->GetEngine());
 	shadowView->SetThisSector(rview->GetThisSector());
+	shadowView->SetMeshFilter(frustum.meshFilter);
+	shadowView->SetViewDimensions(mapSize, mapSize);
 
 	// set cam on our new view
 	shadowView->SetCamera(shadowCam->GetCamera());
 	shadowView->SetOriginalCamera(rview->GetOriginalCamera());
+
+	// set clipper
+	{
+	  csBox2 clipBox (0, 0, mapSize, mapSize);
+	  csRef<iClipper2D> clipper;
+	  clipper.AttachNew(new csBoxClipper (clipBox));
+	  shadowView->SetClipper(clipper);
+	}
 
 	// create context
 	typename RenderTreeType::ContextNode* context = renderTree.CreateContext(shadowView);
@@ -1082,7 +1096,7 @@ namespace RenderManager
 	return 0; // @@@TODO: we should use a default SV set here (empty SM, etc.)
 
       // check whether the mesh receives shadows (else there's nothing to be done)
-      if(mesh.meshFlags.Check (CS_ENTITY_NOSHADOWRECEIVE))
+      if(mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
 	return 0; // @@@TODO: we should use a default SV set here (empty SM, etc.)
 
       // get mesh box in view space
@@ -1122,8 +1136,10 @@ namespace RenderManager
 	// we'll use this one, setup SVs
 	svHelper.MergeAsArrayItem(lightStacks[index], slice.projectSV, l);
 	svHelper.MergeAsArrayItem(lightStacks[index], slice.unscaleSV, l);
-	svHelper.MergeAsArrayItem(lightStacks[index], slice.clipSV, l);
 	svHelper.MergeAsArrayItem(lightStacks[index], slice.dimSV, l);
+	// @@@TODO: why this if?
+	if(lightStacks[s].GetSize() > slice.clipSV->GetName())
+	  lightStacks[s][slice.clipSV->GetName()] = slice.clipSV;
 
 	const ShadowSettings::TargetArray& targets = persist.settings.targets;
 	for(size_t t = 0; t < targets.GetSize(); ++t)

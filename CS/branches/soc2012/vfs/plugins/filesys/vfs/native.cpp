@@ -352,7 +352,7 @@ bool NativeFile::SetLastError (int errorCode)
 void NativeFile::UpdateError ()
 {
   // Update error code if and only if previous error is cleared.
-  if (lastError == VFS_STATUS_OK)
+  if (lastError != VFS_STATUS_OK)
     return;
 
   // Skip if handle is invalid
@@ -867,7 +867,7 @@ bool NativeFS::SetLastError (int errorCode)
 void NativeFS::UpdateError ()
 {  
   // Update error code if and only if previous error is cleared.
-  if (lastError == VFS_STATUS_OK)
+  if (lastError != VFS_STATUS_OK)
     return;
 
   switch (errno)

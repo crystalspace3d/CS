@@ -558,7 +558,7 @@ namespace RenderManager
 	// go over all frustums
 	for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
 	{
-	  LightData::Frustum& frustum = lightData.frustums[f];
+	  typename LightData::Frustum& frustum = lightData.frustums[f];
 
 	  // check whether we already have slices set up
 	  if(frustum.slicesHash.Contains(cam))
@@ -572,14 +572,14 @@ namespace RenderManager
 	  }
 	  else
 	  {
-	    frustum.slicesHash.Put(cam, LightData::Slices());
+	    frustum.slicesHash.Put(cam, typename LightData::Slices());
 	  }
 
 	  // update frame setup
 	  frustum.slicesHash[cam]->setupFrame = currentFrame;
 
 	  // get slice array
-	  csArray<LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
+	  csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
 
 	  // set size to num of slices we want
 	  slices.SetSize(persist.numSplits);
@@ -601,7 +601,7 @@ namespace RenderManager
 	  // set the slice data
 	  for(size_t s = 0; s < slices.GetSize(); ++s)
 	  {
-	    LightData::Slice& slice = slices[s];
+	    typename LightData::Slice& slice = slices[s];
 
 	    // clear receiver data
 	    slice.receiversPS.StartBoundingBox();
@@ -684,7 +684,7 @@ namespace RenderManager
 	  for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
 	  {
 	    // get our frustum
-	    LightData::Frustum& frustum = lightData.frustums[f];
+	    typename LightData::Frustum& frustum = lightData.frustums[f];
 
 	    // keep track whether any slice will be drawn at all
 	    bool draw = false;
@@ -694,10 +694,10 @@ namespace RenderManager
 	    //          for the combined check here instead of writing the combined checks
 	    //          into the original positions as that'd make the info about empty slices
 	    //          lost
-	    csArray<LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
+	    csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
 	    for(size_t s = 0; s < slices.GetSize(); ++s)
 	    {
-	      LightData::Slice& slice = slices[s];
+	      typename LightData::Slice& slice = slices[s];
 
 	      // check whether this slice will be used
 	      slice.draw &= !slice.receiversPS.Empty();
@@ -718,7 +718,7 @@ namespace RenderManager
 	    // setup the slices that'll be used
 	    for(size_t s = 0; s < slices.GetSize(); ++s)
 	    {
-	      LightData::Slice& slice = slices[s];
+	      typename LightData::Slice& slice = slices[s];
 
 	      // not used, skip
 	      if(!slice.draw)
@@ -955,7 +955,7 @@ namespace RenderManager
 	}
 
 	// create portal data
-	ShadowContextSetup::PortalSetupType::ContextSetupData portalData(context);
+	typename ShadowContextSetup::PortalSetupType::ContextSetupData portalData(context);
     
 	// setup the new context
 	ShadowContextSetup contextSetup(persist.layerConfig, persist.shaderManager,
@@ -989,7 +989,7 @@ namespace RenderManager
 	csTransform world2object = mesh.renderMesh->object2world.GetInverse();
 
 	// for all lights
-	PersistentData::LightHash::GlobalIterator it = persist.lightHash.GetIterator();
+	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash.GetIterator();
 	while(it.HasNext())
 	{
 	  // get light data
@@ -1003,7 +1003,7 @@ namespace RenderManager
 	  for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
 	  {
 	    // get the frustum to process
-	    LightData::Frustum& frustum = lightData.frustums[f];
+	    typename LightData::Frustum& frustum = lightData.frustums[f];
 
 	    // calculate object -> world -> light -> frustum transform
 	    csTransform frust2object = frustum.frust2light * light2object;
@@ -1040,13 +1040,13 @@ namespace RenderManager
 
 	      // get view-dependent furstum slices
 	      CS_ASSERT(frustum.slicesHash[cam]);
-	      csArray<LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
+	      csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
 
 	      // for all slices
 	      for(size_t s = 0; s < slices.GetSize(); ++s)
 	      {
 		// get frustum slice to process
-		LightData::Slice& slice = slices[s];
+		typename LightData::Slice& slice = slices[s];
 
 		// skip this slice if it won't be drawn
 		if(!slice.draw)
@@ -1112,18 +1112,18 @@ namespace RenderManager
 
       // get our frustum
       CS_ASSERT(f < lightData.frustums.GetSize());
-      LightData::Frustum& frustum = lightData.frustums[f];
+      typename LightData::Frustum& frustum = lightData.frustums[f];
 
       // get the slices for our view
       CS_ASSERT(frustum.slicesHash.Contains(rview->GetCamera()));
-      csArray<LightData::Slice>& slices = frustum.slicesHash[rview->GetCamera()]->slices;
+      csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview->GetCamera()]->slices;
 
       // go over the slices and check which ones will be used for this mesh
       uint spread = 0;
       uint index = 0;
       for(size_t s = 0; s < slices.GetSize(); ++s)
       {
-	LightData::Slice& slice = slices[s];
+	typename LightData::Slice& slice = slices[s];
 
 	// check whether this slice is active
 	if(!slice.draw)

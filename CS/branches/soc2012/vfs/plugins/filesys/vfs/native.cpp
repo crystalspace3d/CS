@@ -221,7 +221,15 @@ public:
 
 
 // NativeFile methods
-// NativeFile Constructor
+/* NativeFile Constructor
+ - takes parent      (pointer to filesystem which invoked the constructor)
+         virtualPath (full VFS path to file)
+         realPath    (full real path to file. must be formatted beforehand)
+         mode        (bitflag combination of VFS_FILE constants)
+ - Remarks: While mode is bitflag parameter, VFS_FILE_READ, VFS_FILE_APPEND
+              and VFS_FILE_WRITE are mutually exclusive.
+            This filesystem does not support VFS_FILE_UNCOMPRESSED.
+ */
 NativeFile::NativeFile (NativeFS *parent,
                         const char *virtualPath,
                         const char *realPath, int mode) :
@@ -230,14 +238,14 @@ NativeFile::NativeFile (NativeFS *parent,
   // TODO: Add debug messages
 
   // Measure required length
-  size_t virtualPathLen  = strlen (virtualPath) + 1;
-  size_t realPathLen = strlen (realPath) + 1;
+  size_t virtualPathLen = strlen (virtualPath) + 1;
+  size_t realPathLen    = strlen (realPath) + 1;
   // Allocate buffer
-  this->virtualPath  = (char *)cs_malloc (virtualPathLen);
-  this->realPath = (char *)cs_malloc (realPathLen);
+  this->virtualPath = (char *)cs_malloc (virtualPathLen);
+  this->realPath    = (char *)cs_malloc (realPathLen);
   // Copy string content
-  memcpy (this->virtualPath,  virtualPath,  virtualPathLen);
-  memcpy (this->realPath, realPath, realPathLen);
+  memcpy (this->virtualPath, virtualPath, virtualPathLen);
+  memcpy (this->realPath,    realPath,    realPathLen);
 
   bool retry = false;
   int fileMode = mode & VFS_FILE_MODE;
@@ -322,7 +330,11 @@ NativeFile::~NativeFile ()
   cs_free(realPath);
 }
 
-// Set last error to specified value
+/* Set last error to specified value
+ - takes errorCode (any constant in VFS_STATUS_* enumeration)
+ - returns true if error code is updated, or stayed VFS_STATUS_OK
+           false if status unchanged due to lastError wasn't VFS_STATUS_OK
+ */
 bool NativeFile::SetLastError (int errorCode)
 {
   // If new status is VFS_STATUS_OK, do it anyway.
@@ -577,7 +589,13 @@ csPtr<iFile> NativeFile::GetPartialView (uint64_t offset, uint64_t size)
 }
 
 // NativeFile::View methods
-// View Constructor
+/* View Constructor
+ - takes parent (underlying NativeFile instance)
+         offset (offset in parent NativeFile where this view starts)
+         size   (size of this view)
+  All parameters must be valid. The constructor assumes they are, and
+  bypasses any checks boundary conditions.
+ */ 
 NativeFile::View::View (NativeFile *parent,
                         uint64_t offset,
                         uint64_t size) :
@@ -627,9 +645,9 @@ size_t NativeFile::View::Read (char *data, size_t dataSize)
   if (lastError == VFS_STATUS_OK)
     lastError = parent->lastError;
 
-  // restore last position
+  // restore parent's last position
   parent->SetPos (lastPos);
-  // restore last error
+  // restore parent's last error
   parent->lastError = parentError;
 
   return bytesRead;
@@ -734,6 +752,8 @@ csPtr<iDataBuffer> NativeFile::View::GetAllData (bool nullTerminated)
 }
 
 // Get all data into a single buffer with custom allocator.
+// - takes pointer of iAllocator interface to be used for memory allocation
+// - returns smart pointer to iDataBuffer containing requested data
 csPtr<iDataBuffer> 
 NativeFile::View::GetAllData (CS::Memory::iAllocator *allocator)
 {
@@ -786,9 +806,12 @@ csPtr<iFile> NativeFile::View::GetPartialView (uint64_t offset,
 }
 
 // NativeFS methods
-
-// NativeFS constructor
-NativeFS::NativeFS (const char *realPath) : scfImplementationType(this)
+/* NativeFS constructor
+ - takes realPath (real path as mount root of this particular instance)
+ - Remarks: realPath is assumed to be non-null and end with trailing path
+     separator (e.g. slash, backslash) before null-terminator
+ */
+NativeFS::NativeFS (const char *realPath) : scfImplementationType (this)
 {
   // Store mount root (real path) of this instance
   size_t mountRootLen = strlen(realPath) + 1; // +1 for null-terminator
@@ -805,7 +828,11 @@ NativeFS::~NativeFS ()
   cs_free(mountRoot);
 }
 
-// Convert virtual path to real path
+/* Convert virtual path to real path
+ - takes virtualPath (virtual path to convert)
+ - returns csString containing full native path corresponding to given
+           virtual path
+ */
 csString NativeFS::ToRealPath (const char *virtualPath)
 {
   // string constants to use
@@ -960,8 +987,7 @@ bool NativeFS::GetTime (const char *fileName, csFileTime &oTime)
 // Get file time
 bool NativeFS::SetTime (const char *fileName, const csFileTime &iTime)
 {
-  // TODO: implement feature
-  csString path (ToRealPath (fileName));
+  csString path (ToRealPath (fileName)); // obtain real path from fileName
   struct tm curtm = iTime;
   struct utimbuf times;
 

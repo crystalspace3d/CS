@@ -111,10 +111,8 @@ namespace lighter
     bool isTexImageValid;
     bool produceCaustic;
 	   
-    RadMaterial() {
-      refractiveIndex = 1; isTexImageValid=false; produceCaustic= false;
-      lockMutex = new CS::Threading::Mutex();
-    }
+    RadMaterial():refractiveIndex(1),isTexImageValid(false),produceCaustic(false) {}
+
     bool IsTransparent () const { return filterImage.IsValid(); }
     void ComputeFilterImage (iImage* img);
     void SetTextureImage (iImage * img);
@@ -124,9 +122,9 @@ namespace lighter
 
     //Returns the color at uv coordinates in original texture
     csColor GetTextureValue(csVector2 uv) const;
-    mutable CS::Threading::Mutex* lockMutex;
+    mutable CS::Threading::Mutex lockMutex;
   };
-  typedef csHash<RadMaterial, csString> MaterialHash;
+  typedef csHash<csRef<RadMaterial>, csString> MaterialHash;
 } // namespace lighter
 
 #endif // __MATERIAL_H__

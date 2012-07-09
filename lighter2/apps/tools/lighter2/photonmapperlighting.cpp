@@ -22,10 +22,6 @@
 #include "material.h"
 #include "scene.h"
 
-#if defined(_OPENMP)
-#include "omp.h"
-#endif
-
 namespace lighter
 {
   PhotonmapperLighting::PhotonmapperLighting ()
@@ -153,7 +149,6 @@ namespace lighter
         // Cache the results if we accumulated some energy
         if(rayCount > 0)
         {
-          #pragma omp critical
           sector->AddToIRCache(point, normal, c, rayCount/meanDist);
           globalStats.photonmapping.irCachePrimary++;
         }
@@ -202,7 +197,7 @@ namespace lighter
       csRef<Object> obj = objIt.Next ();
       csString matName = obj->materialName;
       Scene * curScene = sect->scene;
-      lighter::RadMaterial * radMat = curScene->radMaterials[matName];
+      lighter::RadMaterial * radMat = *curScene->radMaterials[matName];
       
       if (radMat)
       {
@@ -337,14 +332,8 @@ namespace lighter
       }
 
       // Loop to generate the requested number of photons for this light source
-    #if defined(_OPENMP)
-      omp_set_num_threads(omp_get_num_procs()*2);
-    #endif
-
 	  if(!stop)
 	  {
-
-		  #pragma omp parallel for
 		  for (size_t num = 0; num < photonsForCurLight; ++num)
 		  {
 			// Get direction to emit the photon
@@ -498,7 +487,6 @@ namespace lighter
 
 		  if(!stop)
 		  {
-			  #pragma omp parallel for
 			  for (size_t cnum = 0; cnum < causticPhotonsForMesh; ++cnum)
 			  {
 				// Get direction to emit the photon
@@ -572,7 +560,6 @@ namespace lighter
     hit.distance = FLT_MAX*0.9f;
     lighter::Ray ray = photon.getRay();
     bool hitResult;
-    #pragma omp critical
     hitResult = lighter::Raytracer::TraceClosestHit(sect->kdTree, ray, hit); 
 
     if (hitResult)

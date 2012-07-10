@@ -1026,6 +1026,8 @@ bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
   SetLastError (VFS_STATUS_UNSUPPORTED);
   return false;
 #else // POSIX-compliant platform assumed
+
+  // use stat() to get file information...
   if (stat (path, &info) != 0)
   {
     // stat() failed... update error status
@@ -1033,7 +1035,8 @@ bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
     return false;
   }
 
-  // Using obtained information, fill in the structure
+  // Using obtained information, fill in the structure using constructor
+  // st_mode is bitwise compatible with traditional octal representation
   csFilePermission permission (info.st_mode);
   // done; copy contents
   oPerm = permission;
@@ -1055,7 +1058,7 @@ bool NativeFS::SetPermission (const char *fileName,
   return false;
 #else // POSIX-compliant platform assumed
 
-  // FIXME: currently it only supports r/w/x permissions.
+  // FIXME: currently it only supports user/group/others r/w/x permissions.
   // what about S_ISUID, S_ISGID, S_ISVTX and such special fields?
 
   // generate numeric mode_t parameter from csFilePermission
@@ -1085,13 +1088,12 @@ bool NativeFS::SetPermission (const char *fileName,
 // Set file time
 bool NativeFS::GetTime (const char *fileName, csFileTime &oTime)
 {
+  // get real path from given virtual filename
   csString path (ToRealPath (fileName));
-  struct stat info;
+  struct stat info; // struct to store file information
 
   // retrieve file information with stat()
-  int result = stat (path, &info);
-
-  if (result != 0)
+  if (stat (path, &info) != 0)
   {
     // stat() failed... update error status
     UpdateError ();

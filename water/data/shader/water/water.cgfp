@@ -25,6 +25,7 @@ float4 main (vert2frag IN,
 			 uniform float4 lightCol,
 			 uniform float shininess,
 			 uniform float waterAlpha,
+			 uniform sampler2D TexFoam,
 			 uniform sampler2D TexNormal,
 			 uniform sampler2D TexReflect,
 			 uniform sampler2D TexRefract,
@@ -74,8 +75,11 @@ float4 main (vert2frag IN,
     reflColor *=  fresnelWeight;
     refrColor *= (1-fresnelWeight);
 	
-    color.xyz = light + reflColor.xyz + refrColor.xyz;
+	float3 foam = tex2D(TexFoam,IN.NormalTC);
+	foam = foam * 0.5;
+    color.xyz = light + reflColor.xyz + refrColor.xyz + foam ;
 	//color = tex2D(TexNormal,IN.NormalTC);
+	//color = tex2D(TexFoam,IN.NormalTC);
 	color.a = 1.0;
 	return color;
 }

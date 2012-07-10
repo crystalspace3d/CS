@@ -68,6 +68,7 @@
                 </cgvp>
       </vp>
 
+	  <texture name="tex foam" destination="TexFoam"/>
       <texture name="tex normal" destination="TexNormal" />
 	  <texture name="tex plane reflect" destination="TexReflect" />
 	  <texture name="tex plane refract" destination="TexRefract" />

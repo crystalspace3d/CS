@@ -65,14 +65,17 @@ struct iContextObjectSelection : public virtual iBase
 {
   SCF_INTERFACE (iContextObjectSelection, 1, 0, 0);
   
-  virtual iObject* GetActiveObject () = 0;
-  
-  virtual const csWeakRefArray<iObject>& GetSelectedObjects () const = 0;
+  virtual void SetActiveObject (iObject* object) = 0;
+  virtual iObject* GetActiveObject () const = 0;
 
-  // TODO: array of iObject* instead
+  virtual const csWeakRefArray<iObject>& GetSelectedObjects () const = 0;
+/*
+  virtual void SetSelectedObjects
+    (const csWeakRefArray<iObject>& objects) = 0;
+*/
+
   virtual void AddSelectedObject (iObject*) = 0;
   virtual void RemoveSelectedObject (iObject*) = 0;
-
   virtual void ClearSelectedObjects () = 0;
 };
 
@@ -83,8 +86,8 @@ struct iContextCamera : public virtual iBase
 {
   SCF_INTERFACE (iContextCamera, 1, 0, 0);
   
-  virtual iCamera* GetCamera () = 0; // const?
   virtual void SetCamera (iCamera*) = 0;
+  virtual iCamera* GetCamera () = 0; // const?
 };
 
 /**

@@ -60,7 +60,6 @@ Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent,
 
 Window::~Window ()
 {
-  printf ("Window::~Window\n");
 }
 
 bool Window::Split ()
@@ -70,17 +69,14 @@ bool Window::Split ()
   Window* w1 = new Window (object_reg, editor, this, c, !horizontal);
   Window* w2 = new Window (object_reg, editor, this, !horizontal);
   
-  printf ("Window::Split 1\n");
   if (horizontal) SplitHorizontally (w1, w2);
   else SplitVertically (w1, w2);
-  printf ("Window::Split 2\n");
 
   return true;
 }
 
 void Window::OnDClick (wxSplitterEvent& event)
 {
-  printf ("Window::OnDClick\n");
   event.Veto ();
   wxWindow* w1 = GetWindow1 ();
   wxWindow* w2 = GetWindow2 ();
@@ -93,7 +89,6 @@ void Window::OnDClick (wxSplitterEvent& event)
 
 void Window::OnUnsplitEvent (wxSplitterEvent& event)
 {
-  printf ("Window::OnUnsplitEvent\n");
   wxWindow* w = event.GetWindowBeingRemoved ();
   if (w) w->Destroy ();
 }
@@ -159,12 +154,10 @@ ViewControl::ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* p
 
 ViewControl::~ViewControl ()
 {
-  printf ("ViewControl::~ViewControl\n");
 }
 
 void ViewControl::OnClicked (wxCommandEvent& event)
 {
-  printf ("ViewControl::OnClicked %d\n", event.GetId ());
   if (event.GetId () == 1)
   {
     space->DisableUpdates (true);
@@ -216,7 +209,6 @@ SpaceComboBox::SpaceComboBox
 
     if (f->GetMultipleAllowed () || f->GetCount () == 0)
     {
-      printf ("SpaceComboBox::SpaceComboBox Creating %s\n", f->GetLabel ());
       ctrl->space = f->CreateInstance (control);
       SetSelection (i-1);
       instanced = true;
@@ -236,8 +228,6 @@ SpaceComboBox::~SpaceComboBox ()
 
 void SpaceComboBox::OnSelected (wxCommandEvent& event)
 {
-  printf ("SpaceComboBox::OnSelected %s\n", (const char*)GetValue ().mb_str (wxConvUTF8));
-
   // Search the space that is being selected
   iSpaceManager* imgr = editor->GetSpaceManager ();
   SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
@@ -257,7 +247,6 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
       // Create an instance of the selected space
       if (f->GetMultipleAllowed () || f->GetCount () == 0)
       {
-        printf ("SpaceComboBox::SpaceComboBox Creating %s\n", f->GetLabel ());
         control->layout.Invalidate ();
         control->box->Detach (control->space->GetwxWindow ());
         control->space = f->CreateInstance (control);
@@ -271,7 +260,6 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
       else
       {
 	// TODO: put back the previous selection
-        printf ("SpaceComboBox::OnSelected FAILED %s\n", f->GetLabel ());
       }
 
       break;

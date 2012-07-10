@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2012 by Christian Van Brussel
+    Copyright (C) 2007 by Seth Yastrov
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,16 +24,11 @@
 #include "csutil/csbaseeventh.h"
 #include "csutil/eventnames.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/weakref.h"
 #include "ieditor/editor.h"
 #include "ieditor/space.h"
 #include "iutil/event.h"
 #include "iutil/eventh.h"
 #include "iutil/comp.h"
-#include "ivaria/cameramanager.h"
-
-#include <wx/event.h>
-#include <wx/dnd.h>
 
 class wxWindow;
 
@@ -76,8 +72,8 @@ private:
   csRef<iGraphics3D> g3d;
   csRef<iWxWindow> wxwin;
   csRef<iView> view;
-  csRef<CS::Utility::iCameraManager> cameraManager;
 
+  csEventID eventSetCamera;
   csEventID eventSetCollection;
 
   struct FrameListener : public csBaseEventHandler

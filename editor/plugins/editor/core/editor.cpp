@@ -243,7 +243,8 @@ csPtr<iProgressMeter> Editor::CreateProgressMeter () const
 void Editor::ReportStatus (const char* text)
 {
   SetStatusText (wxString::FromUTF8 (text));
-  csReport (manager->object_reg, CS_REPORTER_SEVERITY_NOTIFY, "status", text);
+  csReport (manager->object_reg, CS_REPORTER_SEVERITY_NOTIFY,
+	    "status", text, nullptr);
 }
 
 wxFrame* Editor::GetwxFrame ()
@@ -271,7 +272,7 @@ void Editor::Init ()
   box->SetSizeHints (this);
 
   // Reset the window size
-  //SetSize (wxSize (1024, 768));
+  SetSize (wxSize (1024, 768));
   PositionStatusBar ();
 
   ReportStatus ("Ready");

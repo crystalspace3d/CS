@@ -335,7 +335,6 @@ bool SpaceManager::RegisterPanel (const char* pluginName)
       return false;
     }
 
-    printf ("SpaceManager::Register panel %s\n", space->GetContentsValue ());
     // TODO: check space valid
     panels.Put (space->GetContentsValue (), panel);
     return true;
@@ -355,8 +354,6 @@ iEditorComponent* SpaceManager::FindComponent (const char* pluginName) const
 
 bool SpaceManager::HandleEvent (iEvent &event)
 {
-  printf ("SpaceManager::HandleEvent\n");
-
   for (csRefArray<SpaceFactory>::Iterator it = spaceFactories.GetIterator (); it.HasNext (); )
   {
     iSpaceFactory* n = it.Next ();
@@ -383,7 +380,6 @@ void SpaceManager::ReDraw (iSpace* space)
 {
   if (!space || !space->GetFactory ()) return;
   const char* id = space->GetFactory ()->GetIdentifier ();
-  printf ("SpaceManager::ReDraw %s\n", id);
 
   // Draw header
   csRef<iHeader> header = headers.Get (id, csRef<iHeader>());
@@ -395,7 +391,6 @@ void SpaceManager::ReDraw (iSpace* space)
       ViewControl* ctrl = static_cast<ViewControl*>(win->GetParent ());
       if (ctrl)
       {
-        printf ("SpaceManager::ReDraw CTRL %s\n", id);
         ctrl->SetLayout (0);
         csRef<iLayout> layout;
         layout.AttachNew (new HeaderLayout (editor->manager->object_reg, editor, ctrl->GetRegion ()));
@@ -423,7 +418,6 @@ void SpaceManager::ReDraw (iSpace* space)
         iPanel* panel = panelsit.Next ();
         if (panel && panel->Poll (editor->context))
         {
-          printf ("SpaceManager::ReDraw PANEL %s\n", id);
           csRef<iLayout> layout;
           
           csRef<iFactory> fact = scfQueryInterface<iFactory> (panel);

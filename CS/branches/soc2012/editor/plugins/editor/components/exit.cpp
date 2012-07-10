@@ -30,12 +30,10 @@ SCF_IMPLEMENT_FACTORY (Exit)
 Exit::Exit (iBase* parent)
   : scfImplementationType (this, parent)
 {
-
 }
 
 Exit::~Exit()
 {
-
 }
 
 bool Exit::Initialize (iEditor* editor)
@@ -51,19 +49,18 @@ bool Exit::Initialize (iEditor* editor)
   RegisterQueue (editor->GetContext ()->GetEventQueue (), events);
 
   // Connect to the closing window event
-  editor->GetwxFrame ()->Connect (wxEVT_CLOSE_WINDOW, wxCommandEventHandler (Exit::OnQuit), 0, this);
+  editor->GetwxFrame ()->Connect
+    (wxEVT_CLOSE_WINDOW, wxCommandEventHandler (Exit::OnQuit), 0, this);
 
   return true;
 }
 
 void Exit::Update ()
 {
-
 }
 
 void Exit::Save (iDocumentNode* node) const
 {
-
 }
 
 bool Exit::Load (iDocumentNode* node)

@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2012 by Christian Van Brussel
+    Copyright (C) 2007 by Seth Yastrov
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,8 +23,6 @@
 #include "csutil/scf.h"
 #include "ieditor/context.h"
 #include "iengine/camera.h"
-#include "iengine/campos.h"
-#include "iengine/sector.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/graph2d.h"
 #include "ivideo/wxwin.h"
@@ -55,33 +54,34 @@ CS3DSpace::~CS3DSpace()
 bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
 			    iSpaceFactory* fact, wxWindow* parent)
 {
+  // Initialize the main pointers
   object_reg = obj_reg;
   this->editor = editor;
   factory = fact;
-  
+
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
   engine = csQueryRegistry<iEngine> (object_reg);
 
   disabled = false;
 
+  // Setup the 2D canvas
   iGraphics2D* g2d = g3d->GetDriver2D ();
   g2d->AllowResize (true);
 
   wxwin = scfQueryInterface<iWxWindow> (g2d);
-  if( !wxwin )
+  if (!wxwin)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.application.editor",
-              "Canvas is no iWxWindow plugin!");
+              "crystalspace.editor.space.3dview",
+              "The 2D canvas is not a iWxWindow interface!");
     return false;
   }
 
+  // Create the main wx window
   window = new CS3DSpace::Space
     (this, parent, -1, wxPoint (0,0), wxSize (-1,-1));
   wxwin->SetParent (window);
   
-  //window->SetDropTarget (new MyDropTarget (this));
-
   // Setup the view and the camera context
   view = csPtr<iView> (new csView (engine, g3d));
   view->SetAutoResize (false);
@@ -94,6 +94,8 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   // Register this event handler to the editor events
   iEventNameRegistry* registry =
     csEventNameRegistry::GetRegistry (object_reg);
+  eventSetCamera =
+    registry->GetID ("crystalspace.editor.context.setcamera");
   eventSetCollection = 
     registry->GetID ("crystalspace.editor.context.setcollection");
   RegisterQueue (editor->GetContext ()->GetEventQueue (),
@@ -101,21 +103,6 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
 
   // Register a frame listener to the global event queue
   frameListener = new CS3DSpace::FrameListener (this);
-
-  // Setup the camera manager
-  csRef<iPluginManager> pluginManager =
-    csQueryRegistry<iPluginManager> (object_reg);
-
-  cameraManager = csLoadPlugin<CS::Utility::iCameraManager>
-    (pluginManager, "crystalspace.utilities.cameramanager");
-  if (!cameraManager)
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-              "crystalspace.editor.space.3dview",
-              "Failed to locate camera manager!");
-    return false;
-  }
-  cameraManager->SetCamera (view->GetCamera ());
 
   return true;
 }
@@ -125,53 +112,10 @@ wxWindow* CS3DSpace::GetwxWindow ()
   return window;
 }
 
-bool CS3DSpace::HandleEvent (iEvent& ev)
+bool CS3DSpace::HandleEvent (iEvent& event)
 {
-  if (ev.Name == eventSetCollection)
+  if (event.Name == eventSetCollection)
   {
-    csRef<iContextFileLoader> fileLoaderContext =
-      scfQueryInterface<iContextFileLoader> (editor->GetContext ());
-    const iCollection* collection = fileLoaderContext->GetCollection ();
-
-    if (!collection)
-    {
-      view->GetCamera ()->SetSector (nullptr);
-      return false;
-    }
-
-    // TODO: read all of this from the context's collection
-    // If there are no sectors then invalidate the camera
-    if (!engine->GetSectors ()->GetCount ())
-    {
-      view->GetCamera ()->SetSector (nullptr);
-      return false;
-    }
-
-    // Move the camera to the starting sector/position
-    csRef<iSector> room;
-    csVector3 pos;
-  
-    if (engine->GetCameraPositions ()->GetCount () > 0)
-    {
-      // There is a valid starting position defined in the level file.
-      iCameraPosition* campos = engine->GetCameraPositions ()->Get (0);
-      room = engine->GetSectors ()->FindByName (campos->GetSector ());
-      pos = campos->GetPosition ();
-    }
-
-    if (!room)
-    {
-      // We didn't find a valid starting position. So we default
-      // to going to the sector called 'room', or the first sector,
-      // at position (0,0,0).
-      room = engine->GetSectors ()->FindByName ("room");
-      if (!room) room = engine->GetSectors ()->Get (0);
-      pos = csVector3 (0, 0, 0);
-    }
-
-    view->GetCamera ()->SetSector (room);
-    view->GetCamera ()->GetTransform ().SetOrigin (pos);
-
     // Put back the focus on the window
     csRef<iWxWindow> wxwin = scfQueryInterface<iWxWindow> (g3d->GetDriver2D ());
     if (wxwin->GetWindow ())
@@ -179,8 +123,6 @@ bool CS3DSpace::HandleEvent (iEvent& ev)
 
     return false;
   }
-
-  DisableUpdates (false);
 
   return false;
 }
@@ -225,9 +167,10 @@ void CS3DSpace::OnSize (wxSizeEvent& event)
   
   wxwin->GetWindow()->SetSize (size);
   
-  // Update the space ratio
-  // TODO: check perspective
-  view->GetPerspectiveCamera ()->SetFOV ((float) (size.y) / (float) (size.x), 1.0f);
+  // Update the view ratio
+  if (view->GetPerspectiveCamera ())
+    view->GetPerspectiveCamera ()->SetFOV
+      ((float) (size.y) / (float) (size.x), 1.0f);
   view->SetRectangle (0, 0, size.x, size.y);
 
   event.Skip();

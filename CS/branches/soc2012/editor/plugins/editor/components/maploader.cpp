@@ -180,12 +180,8 @@ bool MapLoader::Load (iDocumentNode* node)
 
 bool MapLoader::HandleEvent (iEvent &event)
 {
-  printf ("Base::HandleEvent\n");
-
   if (event.GetName () == openItem->GetEventID ())
   {
-    printf ("Open!\n");
-
     // Ask the user to specify a file from the file dialog
     VFSFileDialog dialog ((wxWindow*) editor->GetwxFrame (), -1, _("Select file to open"),
 			  wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE,
@@ -203,7 +199,6 @@ bool MapLoader::HandleEvent (iEvent &event)
 
   else if (event.GetName () == reloadItem->GetEventID ())
   {
-    printf ("Reload!\n");
     if (!lastResource.file.IsEmpty ())
       resourceData.Push (lastResource);
 
@@ -212,7 +207,7 @@ bool MapLoader::HandleEvent (iEvent &event)
 
   else if (event.GetName () == saveItem->GetEventID ())
   {
-    printf ("Save!\n");
+    printf ("TODO: Save!\n");
     return true;
   }
 

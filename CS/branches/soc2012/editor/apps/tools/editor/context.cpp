@@ -32,7 +32,7 @@
 namespace CS {
 namespace EditorApp {
 
-Context2::Context2 (iObjectRegistry* obj_reg)
+Context::Context (iObjectRegistry* obj_reg)
   : scfImplementationType (this), object_reg (obj_reg)
 {
   // Create a new event queue (and hack around the fact that a new
@@ -44,26 +44,37 @@ Context2::Context2 (iObjectRegistry* obj_reg)
   object_reg->Register (mainEventQueue);
 
   // Initialize the event ID's
-  csRef<iEventNameRegistry> registry = csQueryRegistry<iEventNameRegistry> (object_reg);
-  eventSetCamera = registry->GetID ("crystalspace.editor.context.setcamera");
-  eventSetCollection = registry->GetID ("crystalspace.editor.context.setcollection");
+  csRef<iEventNameRegistry> registry =
+    csQueryRegistry<iEventNameRegistry> (object_reg);
+  eventSetActiveObject =
+    registry->GetID ("crystalspace.editor.context.setactiveobject");
+  eventAddSelectedObject =
+    registry->GetID ("crystalspace.editor.context.addselectedobject");
+  eventRemoveSelectedObject =
+    registry->GetID ("crystalspace.editor.context.removeselectedobject");
+  eventClearSelectedObjects =
+    registry->GetID ("crystalspace.editor.context.clearselectedobjects");
+  eventSetCamera =
+    registry->GetID ("crystalspace.editor.context.setcamera");
+  eventSetCollection =
+    registry->GetID ("crystalspace.editor.context.setcollection");
 }
 
-Context2::~Context2 ()
+Context::~Context ()
 {
 }
 
-iObjectRegistry* Context2::GetObjectRegistry ()
+iObjectRegistry* Context::GetObjectRegistry ()
 {
   return object_reg;
 }
 
-iEventQueue* Context2::GetEventQueue ()
+iEventQueue* Context::GetEventQueue ()
 {
   return eventQueue;
 }
 
-void Context2::RegisterData (csStringID id, iBase* data)
+void Context::RegisterData (csStringID id, iBase* data)
 {
   ContextData cdata;
   cdata.data = data;
@@ -71,7 +82,7 @@ void Context2::RegisterData (csStringID id, iBase* data)
   contextData.PutUnique (id, cdata);
 }
 
-void Context2::SetData (csStringID id, iBase* data)
+void Context::SetData (csStringID id, iBase* data)
 {
   ContextData* cdata = contextData.GetElementPointer (id);
 
@@ -89,7 +100,7 @@ void Context2::SetData (csStringID id, iBase* data)
   // TODO: callbacks
 }
 
-iBase* Context2::GetData (csStringID id)
+iBase* Context::GetData (csStringID id)
 {
   ContextData* cdata = contextData.GetElementPointer (id);
 
@@ -106,81 +117,95 @@ iBase* Context2::GetData (csStringID id)
   return cdata->data;
 }
 
-void Context2::PostEvent (csEventID eventID)
+void Context::PostEvent (csEventID eventID)
 {
   csRef<iEvent> event = eventQueue->CreateEvent (eventID);
   eventQueue->Post (event);
   eventQueue->Process ();
 }
 
-iObject* Context2::GetActiveObject ()
+void Context::SetActiveObject (iObject* object)
+{
+  active = object;
+  PostEvent (eventSetActiveObject);
+}
+
+iObject* Context::GetActiveObject () const
 {
   return active;
 }
 
-const csWeakRefArray<iObject>& Context2::GetSelectedObjects () const
+void Context::AddSelectedObject (iObject* obj)
 {
-  return selection;
-}
-
-void Context2::AddSelectedObject (iObject* obj)
-{
-  if (selection.Find(obj) == csArrayItemNotFound)
+  if (selection.Find (obj) == csArrayItemNotFound)
   {
-    selection.Push(obj);
+    selection.Push (obj);
   }
-  active = obj;
+  PostEvent (eventAddSelectedObject);
 }
 
-void Context2::RemoveSelectedObject (iObject* obj)
+void Context::RemoveSelectedObject (iObject* obj)
 {
-  selection.Delete(obj);
-  active = obj;
+  selection.Delete (obj);
+  PostEvent (eventRemoveSelectedObject);
 }
 
-void Context2::ClearSelectedObjects ()
+void Context::ClearSelectedObjects ()
 {
-  selection.DeleteAll();
+  selection.DeleteAll ();
+  PostEvent (eventClearSelectedObjects);
 }
 
-iCamera* Context2::GetCamera ()
+/*
+void Context::SetSelectedObjects
+    (const csWeakRefArray<iObject>& objects)
 {
-  return camera;
+  selection = objects;
+}
+*/
+const csWeakRefArray<iObject>& Context::GetSelectedObjects () const
+{
+  return selection; 
 }
 
-void Context2::SetCamera (iCamera* cam)
+void Context::SetCamera (iCamera* cam)
 {
   camera = cam;
   PostEvent (eventSetCamera);
 }
 
-void Context2::SetPath (const char* path)
+iCamera* Context::GetCamera ()
+{
+  return camera;
+}
+
+void Context::SetPath (const char* path)
 {
   this->path = path;
 }
 
-const char* Context2::GetPath ()
+const char* Context::GetPath ()
 {
   return path;
 }
 
-void Context2::SetFilename (const char* filename)
+void Context::SetFilename (const char* filename)
 {
   this->filename = filename;
 }
 
-const char* Context2::GetFilename ()
+const char* Context::GetFilename ()
 {
   return filename;
 }
 
-void Context2::SetCollection (iCollection* collection)
+void Context::SetCollection (iCollection* collection)
 {
   this->collection = collection;
   PostEvent (eventSetCollection);
 }
 
-iCollection* Context2::GetCollection () const
+iCollection* Context::GetCollection () const
 {
   return collection;
 }

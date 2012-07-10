@@ -133,7 +133,7 @@ bool EditorApp::OnInit (void)
 
   // Create the context of the editor
   csRef<iContext> context;
-  context.AttachNew (new Context2 (object_reg));
+  context.AttachNew (new Context (object_reg));
 
   // Create an instance of the editor
   iEditor* editor = editorManager->CreateEditor ("cseditor", "Crystal Space Editor", context);
@@ -144,8 +144,10 @@ bool EditorApp::OnInit (void)
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.logger")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.maploader")) return false;
+  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.scenemanager")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.exit")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.3dview")) return false;
+  if (!spaceManager->RegisterSpace ("crystalspace.editor.space.scenetree")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.textlog")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.properties")) return false;
   if (!spaceManager->RegisterPanel ("crystalspace.editor.panel.camera")) return false;
@@ -159,7 +161,6 @@ bool EditorApp::OnInit (void)
 
 int EditorApp::OnExit ()
 {
-  printf ("EditorApp::OnExit\n");
   // Send the general Crystal Space 'quit' event
   csRef<iEventQueue> queue (csQueryRegistry<iEventQueue> (object_reg));
   if (queue) queue->GetEventOutlet ()->Broadcast (csevQuit (object_reg));

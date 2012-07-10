@@ -30,16 +30,16 @@ struct iObjectRegistry;
 namespace CS {
 namespace EditorApp {
 
-class Context2
-  : public scfImplementation4<Context2,
+class Context
+  : public scfImplementation4<Context,
     iContext,
     iContextObjectSelection,
     iContextCamera,
     iContextFileLoader>
 {
 public:
-  Context2 (iObjectRegistry* obj_reg);
-  virtual ~Context2 ();
+  Context (iObjectRegistry* obj_reg);
+  virtual ~Context ();
   
   //-- iContext
   virtual iObjectRegistry* GetObjectRegistry ();
@@ -50,15 +50,20 @@ public:
   virtual iBase* GetData (csStringID id);
 
   //-- iContextObjectSelection
-  virtual iObject* GetActiveObject ();
+  virtual void SetActiveObject (iObject* object);
+  virtual iObject* GetActiveObject () const;
   virtual const csWeakRefArray<iObject>& GetSelectedObjects () const;
+/*
+  virtual void SetSelectedObjects
+    (const csWeakRefArray<iObject>& objects);
+*/
   virtual void AddSelectedObject (iObject*);
   virtual void RemoveSelectedObject (iObject*);
   virtual void ClearSelectedObjects ();
-  
+
   //-- iContextCamera
-  virtual iCamera* GetCamera ();
   virtual void SetCamera (iCamera*);
+  virtual iCamera* GetCamera ();
   
   //-- iContextFileLoader
   virtual void SetPath (const char* path);
@@ -91,6 +96,11 @@ private:
   //-- iContextObjectSelection
   csWeakRef<iObject> active;
   csWeakRefArray<iObject> selection;
+
+  csEventID eventSetActiveObject;
+  csEventID eventAddSelectedObject;
+  csEventID eventRemoveSelectedObject;
+  csEventID eventClearSelectedObjects;
 
   //-- iContextCamera
   csWeakRef<iCamera> camera;

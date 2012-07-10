@@ -16,6 +16,12 @@
         <allowMultiple>true</allowMultiple>
       </class>
       <class>
+        <name>crystalspace.editor.space.scenetree</name>
+        <implementation>SceneTree</implementation>
+        <description>Display of the scene tree</description>
+        <allowMultiple>true</allowMultiple>
+      </class>
+      <class>
         <name>crystalspace.editor.space.textlog</name>
         <implementation>TextLog</implementation>
         <description>Logs</description>

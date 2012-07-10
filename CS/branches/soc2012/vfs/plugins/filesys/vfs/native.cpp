@@ -1025,7 +1025,7 @@ bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
   // TODO: implement Win32 emulated permission
   SetLastError (VFS_STATUS_UNSUPPORTED);
   return false;
-#endif
+#else // POSIX-compliant platform assumed
   if (stat (path, &info) != 0)
   {
     // stat() failed... update error status
@@ -1039,15 +1039,47 @@ bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
   oPerm = permission;
 
   return true;
+#endif
 }
 
 // Set permission set of a file
 bool NativeFS::SetPermission (const char *fileName,
                               const csFilePermission &iPerm)
 {
-  // TODO: implement feature
-  SetLastError (VFS_STATUS_NOTIMPLEMENTED);
+  // get real path from given virtual filename
+  csString path (ToRealPath (fileName));
+
+#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__CYGWIN32__)
+  // TODO: implement Win32 emulated permission
+  SetLastError (VFS_STATUS_UNSUPPORTED);
   return false;
+#else // POSIX-compliant platform assumed
+
+  // FIXME: currently it only supports r/w/x permissions.
+  // what about S_ISUID, S_ISGID, S_ISVTX and such special fields?
+
+  // generate numeric mode_t parameter from csFilePermission
+  // multiplication is used to reduce branching
+  mode_t mode = (S_IRUSR * (iPerm.user_read      != 0))
+             || (S_IWUSR * (iPerm.user_write     != 0))
+             || (S_IXUSR * (iPerm.user_execute   != 0))
+             || (S_IRGRP * (iPerm.group_read     != 0))
+             || (S_IWGRP * (iPerm.group_write    != 0))
+             || (S_IXGRP * (iPerm.group_execute  != 0))
+             || (S_IROTH * (iPerm.others_read    != 0))
+             || (S_IWOTH * (iPerm.others_write   != 0))
+             || (S_IXOTH * (iPerm.others_execute != 0));
+
+  // use chmod () to apply desired permission
+  if (chmod (path, mode) != 0)
+  {
+    // chmod () failed...
+    UpdateError ();
+    return false;
+  }
+
+  return true;
+#endif
 }
 
 // Set file time

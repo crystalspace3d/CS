@@ -816,12 +816,12 @@ namespace RenderManager
 	  );
 
 	  // calculate uncrop scale
-	  unscale.x =  0.5f * (maxX - minX);
-	  unscale.y =  0.5f * (maxY - minY);
+	  unscale.x = 0.5f * (maxX - minX);
+	  unscale.y = 0.5f * (maxY - minY);
 
 	  // calculate uncrop shift
-	  unscale.z = -0.5f * (minX + maxX);
-	  unscale.w = -0.5f * (minY + maxY);
+	  unscale.z = 0.5f * (minX + maxX);
+	  unscale.w = 0.5f * (minY + maxY);
 
 	  // draw cropped box if debugging splits
 	  if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
@@ -1130,8 +1130,8 @@ namespace RenderManager
 	svHelper.MergeAsArrayItem(lightStacks[index], slice.unscaleSV, l);
 	svHelper.MergeAsArrayItem(lightStacks[index], slice.dimSV, l);
 	// @@@TODO: why this if?
-	if(lightStacks[s].GetSize() > slice.clipSV->GetName())
-	  lightStacks[s][slice.clipSV->GetName()] = slice.clipSV;
+	if(lightStacks[index].GetSize() > slice.clipSV->GetName())
+	  lightStacks[index][slice.clipSV->GetName()] = slice.clipSV;
 
 	const ShadowSettings::TargetArray& targets = persist.settings.targets;
 	for(size_t t = 0; t < targets.GetSize(); ++t)

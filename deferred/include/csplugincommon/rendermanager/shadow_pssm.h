@@ -108,13 +108,6 @@ namespace RenderManager
 	  recurseCount(0), maxPortalRecurse(maxPortalRecurse), debugSplits(debugSplits)
       {
       }
-
-      ShadowContextSetup(const ThisType &other, const LayerConfigType &layerConfig)
-	: layerConfig(other.layerConfig), shaderManager(other.shaderManager),
-	  portalPersist(other.portalPersist), recurseCount(other.recurseCount),
-	  maxPortalRecurse(other.maxPortalRecurse), debugSplits(other.debugSplits)
-      {
-      }
     
       void operator()(typename RenderTreeType::ContextNode& context,
 		      typename PortalSetupType::ContextSetupData& portalSetupData,

@@ -1084,6 +1084,9 @@ namespace RenderManager
                         csShaderVariableStack* lightStacks,
                         uint l, uint f)
     {
+      // @@@FIXME: light setup is broken and cannot handle different layer spreads for different lights
+      return 1;
+
       // check whether the light creates shadows (in this case there's nothing to be done)
       if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
 	return 0; // @@@TODO: we should use a default SV set here (empty SM, etc.)

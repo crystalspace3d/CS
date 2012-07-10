@@ -30,6 +30,8 @@
 #include "statusbar.h"
 #include "window.h"
 
+#include <wx/log.h>
+
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
@@ -91,14 +93,12 @@ bool EditorManager::StartEngine ()
         CS_REQUEST_VFS,
         CS_REQUEST_FONTSERVER,
         CS_REQUEST_REPORTER,
-        CS_REQUEST_REPORTERLISTENER,
         CS_REQUEST_END))
-    return ReportError ("Can't initialize standard Crystal Space plugins!");
-/*
-  // Open the main system. This will open all the previously loaded plug-ins.
-  if (!csInitializer::OpenApplication (object_reg))
-    return ReportError ("Error opening system!");
-*/
+  {
+    wxLogError (wxT ("Can't initialize standard Crystal Space plugins!"));
+    return false;
+  }
+
   return true;
 }
 
@@ -188,7 +188,7 @@ Editor::Editor (EditorManager* manager, const char* name, const char* title,
   statusBar = new StatusBar (this);
   SetStatusBar (statusBar);
 
-  PositionStatusBar ();
+  //PositionStatusBar ();
   statusBar->Show ();
 
   // Make this window visible
@@ -240,6 +240,12 @@ csPtr<iProgressMeter> Editor::CreateProgressMeter () const
   return csPtr<iProgressMeter> (meter);
 }
 
+void Editor::ReportStatus (const char* text)
+{
+  SetStatusText (wxString::FromUTF8 (text));
+  csReport (manager->object_reg, CS_REPORTER_SEVERITY_NOTIFY, "status", text);
+}
+
 wxFrame* Editor::GetwxFrame ()
 {
   return this;
@@ -266,8 +272,9 @@ void Editor::Init ()
 
   // Reset the window size
   //SetSize (wxSize (1024, 768));
+  PositionStatusBar ();
 
-  SetStatusText (wxT ("Ready"));
+  ReportStatus ("Ready");
 }
 
 void Editor::Update ()

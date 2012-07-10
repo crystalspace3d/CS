@@ -106,6 +106,7 @@ public:
   virtual iSpaceManager* GetSpaceManager () const;
 
   virtual csPtr<iProgressMeter> CreateProgressMeter () const;
+  virtual void ReportStatus (const char* text);
 
   virtual wxFrame* GetwxFrame ();
 

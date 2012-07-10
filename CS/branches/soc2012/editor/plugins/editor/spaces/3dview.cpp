@@ -77,7 +77,7 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   }
 
   window = new CS3DSpace::Space
-    (this, parent, -1, wxPoint(0,0), wxSize(-1,-1));
+    (this, parent, -1, wxPoint (0,0), wxSize (-1,-1));
   wxwin->SetParent (window);
   
   //window->SetDropTarget (new MyDropTarget (this));

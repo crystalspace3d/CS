@@ -63,9 +63,7 @@ class EditorApp : public wxApp
   {
     va_list arg;
     va_start (arg, description);
-    csReportV (object_reg, CS_REPORTER_SEVERITY_ERROR,
-	       "crystalspace.editor",
-	       description, arg);
+    wxLogError (wxString::FromUTF8 (csString ().FormatV (description, arg)));
     va_end (arg);
     return false;
   }
@@ -74,9 +72,16 @@ class EditorApp : public wxApp
   {
     va_list arg;
     va_start (arg, description);
-    csReportV (object_reg, CS_REPORTER_SEVERITY_WARNING,
-	       "crystalspace.editor",
-	       description, arg);
+    wxLogWarning (wxString::FromUTF8 (csString ().FormatV (description, arg)));
+    va_end (arg);
+    return false;
+  }
+
+  bool ReportInfo (const char* description, ...)
+  {
+    va_list arg;
+    va_start (arg, description);
+    wxLogMessage (wxString::FromUTF8 (csString ().FormatV (description, arg)));
     va_end (arg);
     return false;
   }
@@ -100,10 +105,10 @@ bool EditorApp::OnInit (void)
   wxInitAllImageHandlers ();
 
   // Create the Crystal Space environment
-#if defined(wxUSE_UNICODE) && wxUSE_UNICODE
+#if defined (wxUSE_UNICODE) && wxUSE_UNICODE
   char** csargv;
-  csargv = (char**)cs_malloc(sizeof(char*) * argc);
-  for(int i = 0; i < argc; i++) 
+  csargv = (char**) cs_malloc (sizeof (char*) * argc);
+  for (int i = 0; i < argc; i++) 
   {
     csargv[i] = strdup (wxString(argv[i]).mb_str().data());
   }
@@ -136,10 +141,12 @@ bool EditorApp::OnInit (void)
   // Load the specific plugins for the Crystal Space editor
   iSpaceManager* spaceManager = editor->GetSpaceManager ();
 
+  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.logger")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.maploader")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.exit")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.3dview")) return false;
+  if (!spaceManager->RegisterSpace ("crystalspace.editor.space.textlog")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.properties")) return false;
   if (!spaceManager->RegisterPanel ("crystalspace.editor.panel.camera")) return false;
   if (!spaceManager->RegisterHeader ("crystalspace.editor.header.3dheader")) return false;

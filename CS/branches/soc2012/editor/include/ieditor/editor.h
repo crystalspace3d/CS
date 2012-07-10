@@ -76,6 +76,7 @@ struct iEditor : public virtual iBase
   // TODO: icon/image manager
 
   virtual csPtr<iProgressMeter> CreateProgressMeter () const = 0;
+  virtual void ReportStatus (const char* text) = 0;
 
   virtual void Save (iDocumentNode* node) const = 0;
   virtual bool Load (iDocumentNode* node) = 0;

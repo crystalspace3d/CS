@@ -635,7 +635,7 @@ namespace RenderManager
 	    if(!(persist.doFixedCloseShadow && s == 0))
 	    {
 	      // intersect with frustum box for non-fixed slices
-	      boxFS *= frustum.frust2light * frustum.boxLS;
+	      boxFS = boxFS * (frustum.frust2light * frustum.boxLS);
 	    }
 
 	    if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
@@ -649,7 +649,7 @@ namespace RenderManager
 	    slice.boxPS = ProjectBox(boxFS, csTransform(), lightData.project);
 
 	    // check whether this slice will be drawn
-	    slice.draw = !slice.boxPS.Empty();
+	    slice.draw = !boxFS.Empty();
 	  }
 	}
       }
@@ -778,7 +778,6 @@ namespace RenderManager
 	}
 
 	// calculate crop matrix and unscale transform
-	float nearZ, farZ;
 	CS::Math::Matrix4 crop;
 	csVector4 unscale;
 
@@ -787,14 +786,17 @@ namespace RenderManager
 	if(empty)
 	{
 	  // nothing to be done for crop - it's already identity
+	  crop = CS::Math::Projections::Ortho(-1,1,1,-1,1.0f - EPSILON, 1.0f);
 
 	  unscale = csVector4(1,1,0,0);
-
-	  nearZ = 1.0f - EPSILON;
-	  farZ = 1.0f;
 	}
 	else
 	{
+	  // set our z-range properly
+	  float nearZ = csMin(objectBox.MinZ(), slice.boxPS.MinZ());
+	  // + EPSILON in case nearZ == farZ
+	  float farZ = csMin(objectBox.MaxZ(), slice.boxPS.MaxZ()) + EPSILON;
+
 	  // convenience copies of some variables
 	  const float& minX = objectBox.MinX();
 	  const float& minY = objectBox.MinY();
@@ -804,17 +806,19 @@ namespace RenderManager
 	  // calculate crop scale
 	  float cropScaleX = 2.0f/(maxX - minX);
 	  float cropScaleY = 2.0f/(maxY - minY);
+	  float cropScaleZ = 1.0f/(farZ - nearZ);
 
 	  // calculate crop shift
 	  float cropShiftX = (minX + maxX)/(minX - maxX);
 	  float cropShiftY = (minY + maxY)/(minY - maxY);
+	  float cropShiftZ = -nearZ * cropScaleZ;
 
 	  // assemble matrix
 	  crop = CS::Math::Matrix4(
-	    cropScaleX, 0,          0, cropShiftX,
-	    0,          cropScaleY, 0, cropShiftY,
-	    0,          0,          1, 0,
-	    0,          0,          0, 1
+	    cropScaleX,	0,	    0,		cropShiftX,
+	    0,		cropScaleY, 0,		cropShiftY,
+	    0,		0,	    cropScaleZ,	cropShiftZ,
+	    0,		0,	    0,		1
 	  );
 
 	  // calculate uncrop scale
@@ -824,11 +828,6 @@ namespace RenderManager
 	  // calculate uncrop shift
 	  unscale.z = -0.5f * (minX + maxX);
 	  unscale.w = -0.5f * (minY + maxY);
-
-	  // set our z-range properly
-	  nearZ = csMin(objectBox.MinZ(), slice.boxPS.MinZ());
-	  // + EPSILON in case nearZ == farZ
-	  farZ = csMin(objectBox.MaxZ(), slice.boxPS.MaxZ()) + EPSILON;
 
 	  // draw cropped box if debugging splits
 	  if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
@@ -847,8 +846,7 @@ namespace RenderManager
 	slice.unscaleSV->SetValue(unscale);
 
 	// set final projection
-	CS::Math::Matrix4 project = CS::Math::Projections::Ortho(-1, 1, 1, -1, farZ, nearZ) * crop;
-	project = project * lightData.project * CS::Math::Matrix4(frustum.frust2light);
+	CS::Math::Matrix4 project = crop * lightData.project * CS::Math::Matrix4(frustum.frust2light);
 	slice.projectSV->SetValue(project);
 
 	// get our shadow map size

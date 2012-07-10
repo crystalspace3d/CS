@@ -359,10 +359,55 @@ void NativeFile::UpdateError ()
   if (!handle)
     return;
 
+  // the following code is from old vfs.cpp code
   switch (errno)
   {
-  default:
-    break;
+    case 0:
+      lastError = VFS_STATUS_OK;
+      break;
+#ifdef ENOSPC
+    case ENOSPC:
+      lastError = VFS_STATUS_NOSPACE;
+      break;
+#endif
+#ifdef EMFILE
+    case EMFILE:
+#endif
+#ifdef ENFILE
+    case ENFILE:
+#endif
+#ifdef ENOMEM
+    case ENOMEM:
+#endif
+#if defined( EMFILE ) || defined( ENFILE ) || defined( ENOMEM )
+      lastError = VFS_STATUS_RESOURCES;
+      break;
+#endif
+#ifdef ETXTBSY
+    case ETXTBSY:
+#endif
+#ifdef EROFS
+    case EROFS:
+#endif
+#ifdef EPERM
+   case EPERM:
+#endif
+#ifdef EACCES
+   case EACCES:
+#endif
+#if defined( ETXTBSY ) || defined( EROFS ) || defined( EPERM ) || \
+    defined( EACCES )
+      lastError = VFS_STATUS_ACCESSDENIED;
+      break;
+#endif
+#ifdef EIO
+    case EIO:
+      lastError = VFS_STATUS_IOERROR;
+      break;
+#endif
+    default:
+      lastError = VFS_STATUS_OTHER;
+      break;
   }
 }
 
@@ -870,10 +915,55 @@ void NativeFS::UpdateError ()
   if (lastError != VFS_STATUS_OK)
     return;
 
+  // the following code is from old vfs.cpp code
   switch (errno)
   {
-  default:
-    break;
+    case 0:
+      lastError = VFS_STATUS_OK;
+      break;
+#ifdef ENOSPC
+    case ENOSPC:
+      lastError = VFS_STATUS_NOSPACE;
+      break;
+#endif
+#ifdef EMFILE
+    case EMFILE:
+#endif
+#ifdef ENFILE
+    case ENFILE:
+#endif
+#ifdef ENOMEM
+    case ENOMEM:
+#endif
+#if defined( EMFILE ) || defined( ENFILE ) || defined( ENOMEM )
+      lastError = VFS_STATUS_RESOURCES;
+      break;
+#endif
+#ifdef ETXTBSY
+    case ETXTBSY:
+#endif
+#ifdef EROFS
+    case EROFS:
+#endif
+#ifdef EPERM
+   case EPERM:
+#endif
+#ifdef EACCES
+   case EACCES:
+#endif
+#if defined( ETXTBSY ) || defined( EROFS ) || defined( EPERM ) || \
+    defined( EACCES )
+      lastError = VFS_STATUS_ACCESSDENIED;
+      break;
+#endif
+#ifdef EIO
+    case EIO:
+      lastError = VFS_STATUS_IOERROR;
+      break;
+#endif
+    default:
+      lastError = VFS_STATUS_OTHER;
+      break;
   }
 }
 

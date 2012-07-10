@@ -173,12 +173,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	doDeferred &= useDeferredShading || layerCount > lightingLayer;
       }
 
-      // not a deferred stack, use regular renderer
+      // not a deferred stack, use simple renderer
       if(!doDeferred)
       {
 	CS::RenderManager::SimpleTreeRenderer<RenderTree> treeRender(graphics3D, shaderMgr);
 	for(size_t i = 0; i < ctxCount; ++i)
 	  treeRender(i, contextStack[i]);
+
+	contextStack.Empty ();
 
 	return;
       }

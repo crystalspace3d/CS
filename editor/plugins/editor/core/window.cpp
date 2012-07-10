@@ -197,7 +197,7 @@ SpaceComboBox::SpaceComboBox
   // Build the list of menu entries for all spaces
   iSpaceManager* imgr = editor->GetSpaceManager ();
   SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
-  csHash<csRef<iSpaceFactory>, csString>::ConstGlobalIterator spaces =
+  csRefArray<SpaceFactory>::ConstIterator spaces =
     mgr->GetSpaceFactories ().GetIterator ();
 
   size_t i = 0;
@@ -223,6 +223,8 @@ SpaceComboBox::SpaceComboBox
     }
   }
 
+  // TODO: create a default space if not yet made
+
   // Listen to the OnSelected event
   Connect (GetId (), wxEVT_COMMAND_COMBOBOX_SELECTED,
 	   wxCommandEventHandler (SpaceComboBox::OnSelected), 0, this);  
@@ -240,7 +242,7 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
   iSpaceManager* imgr = editor->GetSpaceManager ();
   SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
 
-  csHash<csRef<iSpaceFactory>, csString>::ConstGlobalIterator spaces =
+  csRefArray<SpaceFactory>::ConstIterator spaces =
     mgr->GetSpaceFactories ().GetIterator ();
 
   size_t i = 0;

@@ -128,79 +128,98 @@ SpaceManager::~SpaceManager ()
 
 bool SpaceManager::RegisterComponent (const char* pluginName)
 {
-  csRef<iEditorComponent>* component =
-    components.GetElementPointer (pluginName);
-  if (!component)
+  // Check if this component is already registered
+  if (components.Contains (pluginName))
   {
-    csRef<iBase> base = iSCF::SCF->CreateInstance (pluginName);
-    if (!base)
-    {
-      if (!iSCF::SCF->ClassRegistered  (pluginName))
-	csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
-		  "crystalspace.editor.core.spacemanager",
-		  "The editor component %s is not registered",
-		  CS::Quote::Single (pluginName));
-
-      else csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
-		     "crystalspace.editor.core.spacemanager",
-		     "Failed to instantiate editor component %s",
-		     CS::Quote::Single (pluginName));
-
-      return false;
-    }
-
-    csRef<iEditorComponent> ref = scfQueryInterface<iEditorComponent> (base);
-    if (!ref)
-    {
-      csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
-		"crystalspace.editor.core.spacemanager",
-		"The instanciation of the editor component %s is not of type iEditorComponent",
-		CS::Quote::Single (pluginName));
-      return false;
-    }
-
-    base->DecRef ();
-    if (!ref->Initialize (editor))
-      return false;
-
-    components.PutUnique (pluginName, ref);
+    csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_WARNING,
+	      "crystalspace.editor.core.spacemanager",
+	      "The editor component %s is already registered",
+	      CS::Quote::Single (pluginName));
     return true;
   }
 
-  return false;
+  // Create the editor component
+  csRef<iBase> base = iSCF::SCF->CreateInstance (pluginName);
+  if (!base)
+  {
+    if (!iSCF::SCF->ClassRegistered  (pluginName))
+      csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+		"crystalspace.editor.core.spacemanager",
+		"The editor component %s is not registered",
+		CS::Quote::Single (pluginName));
+
+    else csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+		   "crystalspace.editor.core.spacemanager",
+		   "Failed to instantiate editor component %s",
+		   CS::Quote::Single (pluginName));
+
+    return false;
+  }
+
+  csRef<iEditorComponent> ref = scfQueryInterface<iEditorComponent> (base);
+  if (!ref)
+  {
+    csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+	      "crystalspace.editor.core.spacemanager",
+	      "The instanciation of the editor component %s is not of type iEditorComponent",
+	      CS::Quote::Single (pluginName));
+    return false;
+  }
+
+  base->DecRef ();
+  if (!ref->Initialize (editor))
+    return false;
+
+  components.PutUnique (pluginName, ref);
+  return true;
 }
 
 bool SpaceManager::RegisterSpace (const char* pluginName)
 {
-  csRef<iSpaceFactory> fact = spaceFactories.Get (pluginName, csRef<iSpaceFactory> ());
-  if (!fact)
-  {
-    csRef<iDocumentNode> klass = iSCF::SCF->GetPluginMetadataNode (pluginName);
-    if (klass)
+  // Check if this space is already registered
+  for (size_t i = 0; i < spaceFactories.GetSize (); i++)
+    if (spaceFactories[i]->identifier == pluginName)
     {
-      csRef<SpaceFactory> f; f.AttachNew (new SpaceFactory (editor));
-      f->identifier = pluginName;
-      csRef<iDocumentNode> m = klass->GetNode ("allowMultiple");
-      if (m) f->allowMultiple = strcmp (m->GetContentsValue (), "true") == 0;
-      csRef<iDocumentNode> label = klass->GetNode ("description");
-      if (label) f->label = label->GetContentsValue ();
-      
-      spaceFactories.PutUnique (pluginName, f);
+      csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_WARNING,
+		"crystalspace.editor.core.spacemanager",
+		"The space %s is already registered",
+		CS::Quote::Single (pluginName));
       return true;
     }
 
+  // Create the space factory
+  csRef<iDocumentNode> klass = iSCF::SCF->GetPluginMetadataNode (pluginName);
+  if (klass)
+  {
+    csRef<SpaceFactory> f;
+    f.AttachNew (new SpaceFactory (editor));
+    f->identifier = pluginName;
+    csRef<iDocumentNode> m = klass->GetNode ("allowMultiple");
+    if (m) f->allowMultiple = strcmp (m->GetContentsValue (), "true") == 0;
+    csRef<iDocumentNode> label = klass->GetNode ("description");
+    if (label) f->label = label->GetContentsValue ();
+      
+    spaceFactories.Push (f);
+    return true;
+  }
+
+  // Report for the missing plugin metadata node
+  if (!iSCF::SCF->ClassRegistered  (pluginName))
     csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
 	      "crystalspace.editor.core.spacemanager",
-	      "Failed to register space factory %s",
+	      "The space component %s is not registered to SCF",
 	      CS::Quote::Single (pluginName));
-  }
+
+  else csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+		 "crystalspace.editor.core.spacemanager",
+		 "No SCF metadata found for the space component %s",
+		 CS::Quote::Single (pluginName));
 
   return false;
 }
 
 bool SpaceManager::RegisterHeader (const char* pluginName)
 {
-  printf ("SpaceManager::Register header \n");
   csRef<iBase> base = iSCF::SCF->CreateInstance (pluginName);
   if (!base)
   {
@@ -243,8 +262,25 @@ bool SpaceManager::RegisterHeader (const char* pluginName)
       return false;
     }
 
-    printf ("SpaceManager::Register header %s\n", space->GetContentsValue ());
-    // TODO: check space valid
+    // Check that the space is valid
+    bool spaceValid = false;
+    for (size_t i = 0; i < spaceFactories.GetSize (); i++)
+      if (spaceFactories[i]->identifier == space->GetContentsValue ())
+      {
+	spaceValid = true;
+	break;
+      }
+
+    if (!spaceValid)
+    {
+      csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
+		"crystalspace.editor.core.spacemanager",
+		"The space defined in the plugin metadata of the header %s is not valid (%s)",
+		CS::Quote::Single (pluginName), CS::Quote::Single (space->GetContentsValue ()));
+      return false;
+    }
+
+    // Register the header
     headers.Put (space->GetContentsValue (), header);
     return true;
   }
@@ -257,7 +293,6 @@ bool SpaceManager::RegisterHeader (const char* pluginName)
 
 bool SpaceManager::RegisterPanel (const char* pluginName)
 {
-  printf ("SpaceManager::Register panel \n");
   csRef<iBase> base = iSCF::SCF->CreateInstance (pluginName);
   if (!base)
   {
@@ -313,11 +348,16 @@ bool SpaceManager::RegisterPanel (const char* pluginName)
   return false;
 }
 
+iEditorComponent* SpaceManager::FindComponent (const char* pluginName) const
+{
+  return *components.GetElementPointer (pluginName);
+}
+
 bool SpaceManager::HandleEvent (iEvent &event)
 {
   printf ("SpaceManager::HandleEvent\n");
 
-  for (csHash<csRef<iSpaceFactory>, csString>::GlobalIterator it = spaceFactories.GetIterator (); it.HasNext (); )
+  for (csRefArray<SpaceFactory>::Iterator it = spaceFactories.GetIterator (); it.HasNext (); )
   {
     iSpaceFactory* n = it.Next ();
     SpaceFactory* f = static_cast<SpaceFactory*> (n);
@@ -333,7 +373,7 @@ bool SpaceManager::HandleEvent (iEvent &event)
   return false;
 }
 
-const csHash<csRef<iSpaceFactory>, csString>& SpaceManager::GetSpaceFactories ()
+const csRefArray<SpaceFactory>& SpaceManager::GetSpaceFactories ()
 {
   return spaceFactories;
 }
@@ -417,7 +457,7 @@ void SpaceManager::Update ()
   }
 
   // Update the spaces
-  for (csHash<csRef<iSpaceFactory>, csString>::GlobalIterator it = spaceFactories.GetIterator (); it.HasNext (); )
+  for (csRefArray<SpaceFactory>::Iterator it = spaceFactories.GetIterator (); it.HasNext (); )
   {
     iSpaceFactory* n = it.Next ();
     SpaceFactory* f = static_cast<SpaceFactory*> (n);

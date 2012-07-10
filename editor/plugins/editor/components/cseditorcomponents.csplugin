@@ -18,6 +18,11 @@
         <implementation>Exit</implementation>
         <description>Management of application exit</description>
       </class>
+      <class>
+        <name>crystalspace.editor.component.logger</name>
+        <implementation>Logger</implementation>
+        <description>Logging of report messages</description>
+      </class>
     </classes>
   </scf>
 </plugin>

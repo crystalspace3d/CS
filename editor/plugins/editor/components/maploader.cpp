@@ -105,10 +105,10 @@ void MapLoader::Update ()
   {
     if (loadingReturn->WasSuccessful ())
     {
-      // TODO: UTF8 + CS::Quote instead
-      csString text = "File \"";
-      text += loadingResource->path + loadingResource->file + "\" was loaded successfully";
-      editor->GetwxFrame ()->SetStatusText (wxString::FromAscii (text.GetData ()));
+      csString text;
+      text.Format ("File %s%s was loaded successfully", CS::Quote::SingleLeft (loadingResource->path.GetData ()),
+		   CS::Quote::SingleRight (loadingResource->file.GetData ()));
+      editor->ReportStatus (text.GetData ());
 
       csRef<iContextFileLoader> fileLoaderContext =
 	scfQueryInterface<iContextFileLoader> (editor->GetContext ());
@@ -119,9 +119,10 @@ void MapLoader::Update ()
 
     else
     {
-      csString text = "Failed to load file \"";
-      text += loadingResource->path + loadingResource->file + "\"";
-      editor->GetwxFrame ()->SetStatusText (wxString::FromAscii (text.GetData ()));
+      csString text;
+      text.Format ("Failed to load file %s%s", CS::Quote::SingleLeft (loadingResource->path.GetData ()),
+		   CS::Quote::SingleRight (loadingResource->file.GetData ()));
+      editor->ReportStatus (text.GetData ());
     }
 
     //loadingReturn->IncRef ();
@@ -140,9 +141,10 @@ void MapLoader::Update ()
     resourceData.DeleteIndex (0);
 
     // Set the status text
-    csString text = "Loading file \"";
-    text += loadingResource->path + loadingResource->file + "\"...";
-    editor->GetwxFrame ()->SetStatusText (wxString::FromAscii (text.GetData ()));
+    csString text;
+    text.Format ("Loading file %s%s", CS::Quote::SingleLeft (loadingResource->path.GetData ()),
+		 CS::Quote::SingleRight (loadingResource->file.GetData ()));
+    editor->ReportStatus (text.GetData ());
 
     // Create a progress meter
     progressMeter = editor->CreateProgressMeter ();

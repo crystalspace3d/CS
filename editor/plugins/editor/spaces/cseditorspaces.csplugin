@@ -15,6 +15,12 @@
         <description>Properties panel</description>
         <allowMultiple>true</allowMultiple>
       </class>
+      <class>
+        <name>crystalspace.editor.space.textlog</name>
+        <implementation>TextLog</implementation>
+        <description>Logs</description>
+        <allowMultiple>true</allowMultiple>
+      </class>
     </classes>
   </scf>
 </plugin>

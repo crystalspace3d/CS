@@ -71,18 +71,20 @@ public:
   virtual bool RegisterSpace (const char* pluginName);
   virtual bool RegisterHeader (const char* pluginName);
   virtual bool RegisterPanel (const char* pluginName);
+
+  virtual iEditorComponent* FindComponent (const char* pluginName) const;
   
   //-- iEventHandler
   bool HandleEvent (iEvent &event);
 
-  virtual const csHash<csRef<iSpaceFactory>, csString>& GetSpaceFactories ();
+  const csRefArray<SpaceFactory>& GetSpaceFactories ();
   void ReDraw (iSpace* space);
-  virtual void Update ();
+  void Update ();
 
 private:
   Editor* editor;
   csHash<csRef<iEditorComponent>, csString> components;
-  csHash<csRef<iSpaceFactory>, csString> spaceFactories;
+  csRefArray<SpaceFactory> spaceFactories;
   csHash<csRef<iHeader>, csString> headers;
   csHash<csRef<iPanel>, csString> panels;
 };

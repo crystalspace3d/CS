@@ -31,6 +31,7 @@ namespace CS {
 namespace EditorApp {
 
 struct iEditor;
+struct iEditorComponent;
 struct iHeader;
 struct iPanel;
 struct iSpaceFactory;
@@ -42,7 +43,7 @@ struct iSpaceFactory;
  */
 struct iSpace : public virtual iBase
 {
-  SCF_INTERFACE (iSpace, 0, 0, 1);
+  SCF_INTERFACE (iSpace, 1, 0, 0);
 
   virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* factory, wxWindow* parent) = 0;
 
@@ -61,7 +62,7 @@ struct iSpace : public virtual iBase
  */
 struct iSpaceFactory : public virtual iBase
 {
-  SCF_INTERFACE (iSpaceFactory, 0, 0, 1);
+  SCF_INTERFACE (iSpaceFactory, 1, 0, 0);
 
   virtual csPtr<iSpace> CreateInstance (wxWindow* parent) = 0;
 
@@ -81,7 +82,7 @@ struct iSpaceFactory : public virtual iBase
  */
 struct iSpaceManager : public virtual iBase
 {
-  SCF_INTERFACE (iSpaceManager, 0, 1, 0);
+  SCF_INTERFACE (iSpaceManager, 1, 0, 0);
 
   virtual bool RegisterComponent (const char* pluginName) = 0;
 
@@ -90,6 +91,8 @@ struct iSpaceManager : public virtual iBase
   virtual bool RegisterHeader (const char* pluginName) = 0;
 
   virtual bool RegisterPanel (const char* pluginName) = 0;
+
+  virtual iEditorComponent* FindComponent (const char* pluginName) const = 0;
 };
 
 } // namespace EditorApp

@@ -82,7 +82,13 @@ namespace CS
    * these tools need the wxWidgets dependency.
    */
   namespace EditorApp
-  {}
+  {
+    /**
+     * Default components for the cseditor framework.
+     */
+    namespace Component
+    {}
+  }
 
   /**
    * Geometry and mesh tools related classes.

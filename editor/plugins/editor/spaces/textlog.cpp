@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2011 by Jelle Hellemans
+    Copyright (C) 2012 by Christian Van Brussel
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -15,60 +15,59 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "cssysdef.h"
 #include "csutil/scf.h"
-#include "ieditor/context.h"
-#include "ieditor/operator.h"
+#include "ieditor/editor.h"
 
-#include "properties.h"
+#include "textlog.h"
 
 #include <wx/wx.h>
 
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
-BEGIN_EVENT_TABLE (PropertiesSpace::Space, wxPanel)
-  EVT_SIZE (PropertiesSpace::Space::OnSize)
-END_EVENT_TABLE ()
+SCF_IMPLEMENT_FACTORY (TextLog)
 
-SCF_IMPLEMENT_FACTORY (PropertiesSpace)
-
-PropertiesSpace::PropertiesSpace (iBase* parent)
- : scfImplementationType (this, parent), object_reg (0)
+TextLog::TextLog (iBase* parent)
+ : scfImplementationType (this, parent)
 {  
 }
 
-bool PropertiesSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent)
+bool TextLog::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+			  iSpaceFactory* fact, wxWindow* parent)
 {
   object_reg = obj_reg;
   factory = fact;
 
-  window = new PropertiesSpace::Space (this, parent, -1, wxPoint (0,0), wxSize (-1,-1));
-  //window->SetBackgroundColour (*wxRED);
-  
+  // Find the logger component and 
+  iEditorComponent* component = editor->GetSpaceManager ()->FindComponent
+    ("crystalspace.editor.component.logger");
+  if (!component)
+    return ReportError ("The logger component is not registered to the space manager");
+
+  csRef<CS::EditorApp::Component::iLogger> logger =
+    scfQueryInterface<CS::EditorApp::Component::iLogger> (component);
+  if (!logger)
+    return ReportError ("The logger component does not implement the iLogger interface");
+
+  // Create the log text control
+  window = logger->CreateTextCtrl (parent);
+
   return true;
 }
 
-PropertiesSpace::~PropertiesSpace ()
+TextLog::~TextLog ()
 {
   window->Destroy ();
 }
 
-wxWindow* PropertiesSpace::GetwxWindow ()
+wxWindow* TextLog::GetwxWindow ()
 {
   return window;
 }
 
-void PropertiesSpace::Update ()
+void TextLog::Update ()
 {
-}
-
-void PropertiesSpace::OnSize (wxSizeEvent& event)
-{
-  window->SetSize (event.GetSize ());
-  window->Layout ();
-  event.Skip ();
 }
 
 }

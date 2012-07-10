@@ -694,6 +694,7 @@ namespace RenderManager
 	    //          for the combined check here instead of writing the combined checks
 	    //          into the original positions as that'd make the info about empty slices
 	    //          lost
+	    CS_ASSERT(frustum.slicesHash.Contains(cam));
 	    csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
 	    for(size_t s = 0; s < slices.GetSize(); ++s)
 	    {
@@ -907,7 +908,7 @@ namespace RenderManager
 
 	// create render view
 	csRef<CS::RenderManager::RenderView> shadowView;
-	shadowView = renderTree.GetPersistentData().renderViews.CreateRenderView();
+	shadowView = renderTree.GetPersistentData().renderViews.CreateRenderView(rview);
 	shadowView->SetEngine(rview->GetEngine());
 	shadowView->SetThisSector(rview->GetThisSector());
 	shadowView->SetMeshFilter(frustum.meshFilter);

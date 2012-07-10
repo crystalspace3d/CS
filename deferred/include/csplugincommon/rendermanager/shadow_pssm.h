@@ -308,6 +308,7 @@ namespace RenderManager
 
       // typedefs
       typedef csHash<LightData, csPtrKey<iLight> > LightHash;
+      typedef csHash<LightHash, csPtrKey<iSector> > LightHashHash;
 
       // config settings
       csString configPrefix;
@@ -345,7 +346,7 @@ namespace RenderManager
       csRef<iTextureHandle> emptySM[rtaNumAttachments];
 
       // hash holding the data for all known lights
-      LightHash lightHash;
+      LightHashHash lightHash;
 
       // array holding our splitting distances - those are constant for PSSM
       csArray<float> splitDists;
@@ -499,7 +500,7 @@ namespace RenderManager
 	CS::Utility::MeshFilter meshFilter;
 
 	// hash with the slice arrays for various views
-	csHash<Slices, csRef<iCamera> > slicesHash;
+	csHash<Slices, csPtrKey<iCamera> > slicesHash;
       };
 
       // actual light data
@@ -520,8 +521,13 @@ namespace RenderManager
     {
     public:
       ShadowParameters(PersistentData& persist, RenderTreeType& renderTree, CS::RenderManager::RenderView* rview) :
-	persist(persist), renderTree(renderTree), rview(rview), svHelper(persist.lightVarsPersist), svNames(persist.svNames)
+	persist(persist), renderTree(renderTree), rview(rview), cam(rview->GetCamera()), sector(rview->GetThisSector()),
+	svHelper(persist.lightVarsPersist), svNames(persist.svNames)
       {
+	if(!persist.lightHash.Contains(sector))
+	{
+	  persist.lightHash.Put(sector, typename PersistentData::LightHash());
+	}
       }
 
       // handle setup for a light - should be done before meshes are handled
@@ -532,18 +538,17 @@ namespace RenderManager
 	if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
 	  return;
 
-	// get our camera
-	csRef<iCamera> cam = rview->GetCamera();
+	typename PersistentData::LightHash& lightHash = *persist.lightHash[sector];
 
 	// check whether this light is known already
-	if(!persist.lightHash.Contains(light))
+	if(!lightHash.Contains(light))
 	{
 	  // new light, add it to cache
-	  persist.lightHash.Put(light, LightData(light, persist));
+	  lightHash.Put(light, LightData(light, persist));
 	}
 
 	// get light data
-	LightData& lightData = *persist.lightHash[light];
+	LightData& lightData = *lightHash[light];
 
 	// get current frame
 	uint currentFrame = rview->GetCurrentFrameNumber();
@@ -660,14 +665,11 @@ namespace RenderManager
       // creates SVs required for light setup for all non-empty slices
       void operator()()
       {
-	// get our camera
-	csRef<iCamera> cam = rview->GetCamera();
-
 	// get current frame
 	uint currentFrame = rview->GetCurrentFrameNumber();
 
 	// go over all lights and get the frustums
-	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash.GetIterator();
+	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash[sector]->GetIterator();
 	while(it.HasNext())
 	{
 	  // get light data
@@ -962,9 +964,6 @@ namespace RenderManager
       // cropping for improved shadow map usage
       void HandleMesh(typename RenderTreeType::MeshNode::SingleMesh& mesh)
       {
-	// get our camera
-	csRef<iCamera> cam = rview->GetCamera();
-
 	// check whether the mesh casts shadows in our mode
 	bool casting = (!persist.limitedShadow && !mesh.meshFlags.Check(CS_ENTITY_NOSHADOWCAST))
 		    || ( persist.limitedShadow &&  mesh.meshFlags.Check(CS_ENTITY_LIMITEDSHADOWCAST));
@@ -981,7 +980,7 @@ namespace RenderManager
 	csTransform world2object = mesh.renderMesh->object2world.GetInverse();
 
 	// for all lights
-	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash.GetIterator();
+	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash[sector]->GetIterator();
 	while(it.HasNext())
 	{
 	  // get light data
@@ -1065,6 +1064,8 @@ namespace RenderManager
       PersistentData& persist;
       RenderTreeType& renderTree;
       CS::RenderManager::RenderView* rview;
+      iCamera* cam;
+      iSector* sector;
 
       LightingVariablesHelper svHelper;
       csLightShaderVarCache& svNames;
@@ -1091,6 +1092,8 @@ namespace RenderManager
       if(mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
 	return 0; // @@@TODO: we should use a default SV set here (empty SM, etc.)
 
+      iSector* sector = rview->GetThisSector();
+
       // get mesh box in view space
       csTransform view2object = rview->GetCamera()->GetTransform() / mesh.renderMesh->object2world;
       csBox3 boxView = view2object * mesh.renderMesh->bbox;
@@ -1099,8 +1102,8 @@ namespace RenderManager
       LightingVariablesHelper svHelper(persist.lightVarsPersist);
 
       // get our light data for that light
-      CS_ASSERT(persist.lightHash.Contains(light));
-      LightData& lightData = *persist.lightHash[light];
+      CS_ASSERT(persist.lightHash[sector]->Contains(light));
+      LightData& lightData = *persist.lightHash[sector]->GetElementPointer(light);
 
       // get our frustum
       CS_ASSERT(f < lightData.frustums.GetSize());

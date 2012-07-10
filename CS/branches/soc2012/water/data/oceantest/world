@@ -22,9 +22,9 @@
   
   <textures> 
 
-        <texture name="bricks">
-            <file>/water/bricks.png</file>
-        </texture>
+    <texture name="bricks">
+        <file>/water/bricks.png</file>
+    </texture>
    
     <texture name="normal map 1">
       <file>/water/723-normal.jpg</file>
@@ -37,6 +37,10 @@
     <texture name="normal map 3">
       <file>/water/940-bump.jpg</file>
     </texture>
+	
+	<texture name="foam">
+		<file>/water/foam.jpg</file>
+	</texture>
     
     <texture name="clouds">
       <file>/lev/terrainf/clouddome.jpg</file>
@@ -66,6 +70,7 @@
     <material name="oceanMat">
       <shader type="standard">water</shader>
       <shadervar name="tex normal" type="texture">normal map 1</shadervar>
+	  <shadervar name="tex foam" type="texture">foam</shadervar>
     </material>
     
     <material name="clouds">
@@ -314,8 +319,6 @@
 
 
   <sector name="room">
-
-
 
     <meshobj name="ocean">
       <plugin>water</plugin>

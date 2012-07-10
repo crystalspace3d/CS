@@ -155,9 +155,35 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       return newContext->renderView == rview;
     }
 
+    void SetupTargets()
+    {
+      // check whether we have any targets to attach
+      if(hasTarget)
+      {
+	// check whether we need persistent targets
+	bool persist = !(context->drawFlags & CSDRAW_CLEARSCREEN);
+
+	// do the attachment
+	for (int a = 0; a < rtaNumAttachments; a++)
+	  graphics3D->SetRenderTarget (context->renderTargets[a].texHandle, persist,
+	      context->renderTargets[a].subtexture, csRenderTargetAttachment (a));
+
+	// validate the targets
+	CS_ASSERT(graphics3D->ValidateRenderTargets ());
+      }
+    }
+
     void RenderContextStack()
     {
+      // obtain some variables we'll need
       const size_t ctxCount = contextStack.GetSize ();
+      iCamera *cam = rview->GetCamera ();
+
+      // seriously, we need those
+      CS_ASSERT(cam);
+
+      // shared setup for all passes - projection only
+      CS::Math::Matrix4 projMatrix = context->perspectiveFixup * cam->GetProjectionMatrix();
 
       bool doDeferred = true;
       size_t layerCount = 0;
@@ -173,23 +199,40 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	doDeferred &= useDeferredShading || layerCount > lightingLayer;
       }
 
-      // not a deferred stack, use simple renderer
+      // not a deferred stack, just render by layer
       if(!doDeferred)
       {
-	CS::RenderManager::SimpleTreeRenderer<RenderTree> treeRender(graphics3D, shaderMgr);
-	for(size_t i = 0; i < ctxCount; ++i)
-	  treeRender(i, contextStack[i]);
+	// setup projection matrix
+	graphics3D->SetProjectionMatrix (projMatrix);
+
+	// attach targets
+	SetupTargets();
+
+	// setup clipper
+	graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+
+        int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
+	drawFlags |= CSDRAW_CLEARZBUFFER;
+
+	// start the draw
+        CS::RenderManager::BeginFinishDrawScope bd (graphics3D, drawFlags);
+
+	// we don't have a z-buffer, yet, use pass 1 modes
+	graphics3D->SetZMode (CS_ZBUF_MESH);
+
+	// render out all layers
+	for(size_t i = 0; i < layerCount; ++i)
+	{
+	  RenderLayer<false>(i, ctxCount);
+	}
+
+	// clear clipper
+	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
 
 	contextStack.Empty ();
 
 	return;
       }
-
-      // obtain some variables we'll need
-      iCamera *cam = rview->GetCamera ();
-
-      // seriously, we need those
-      CS_ASSERT(cam);
 
       // create the light render here as we'll use it a lot
       DeferredLightRenderer lightRender (graphics3D,
@@ -199,14 +242,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                                          gbuffer,
                                          lightRenderPersistent);
 
-      // set tex scale to default
-      lightRenderPersistent.scale->SetValue(csVector4(0.5,0.5,0.5,0.5));
-
-      // shared setup for all passes - projection only
-      CS::Math::Matrix4 projMatrix = context->perspectiveFixup * cam->GetProjectionMatrix();
-
       // shared setup for deferred passes
       graphics3D->SetProjectionMatrix (context->gbufferFixup * projMatrix);
+
+      // set tex scale to default
+      lightRenderPersistent.scale->SetValue(csVector4(0.5,0.5,0.5,0.5));
 
       // gbuffer fill step
       {
@@ -279,19 +319,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       graphics3D->SetProjectionMatrix (projMatrix);
 
       // attach output render targets if any.
-      if(hasTarget)
-      {
-	// check whether we need persistent targets
-	bool persist = !(context->drawFlags & CSDRAW_CLEARSCREEN);
-
-	// do the attachment
-	for (int a = 0; a < rtaNumAttachments; a++)
-	  graphics3D->SetRenderTarget (context->renderTargets[a].texHandle, persist,
-	      context->renderTargets[a].subtexture, csRenderTargetAttachment (a));
-
-	// validate the targets
-	CS_ASSERT(graphics3D->ValidateRenderTargets ());
-      }
+      SetupTargets();
       {
 	// setup clipper
 	graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);

@@ -221,7 +221,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	graphics3D->SetZMode (CS_ZBUF_MESH);
 
 	// render out all layers
-	for(size_t i = 0; i < layerCount; ++i)
+	for(int i = 0; i < layerCount; ++i)
 	{
 	  RenderLayer<false>(i, ctxCount);
 	}

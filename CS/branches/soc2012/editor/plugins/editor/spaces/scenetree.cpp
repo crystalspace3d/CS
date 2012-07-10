@@ -49,17 +49,6 @@ BEGIN_EVENT_TABLE (SceneTree, wxPanel)
   EVT_SIZE (SceneTree::OnSize)
 END_EVENT_TABLE ()
 
-/*
-BEGIN_EVENT_TABLE (SceneTreeCtrl, wxTreeCtrl)
-  EVT_TREE_BEGIN_LABEL_EDIT (SceneTree_Ctrl, SceneTreeCtrl::OnBeginLabelEdit)
-  EVT_TREE_END_LABEL_EDIT (SceneTree_Ctrl, SceneTreeCtrl::OnEndLabelEdit)
-  EVT_TREE_BEGIN_DRAG (SceneTree_Ctrl, SceneTreeCtrl::OnBeginDrag)
-  EVT_TREE_END_DRAG (SceneTree_Ctrl, SceneTreeCtrl::OnEndDrag)
-  EVT_TREE_KEY_DOWN (SceneTree_Ctrl, SceneTreeCtrl::OnKeyDown)
-  EVT_TREE_SEL_CHANGED (SceneTree_Ctrl, SceneTreeCtrl::OnSelChanged)
-END_EVENT_TABLE ()
-*/
-
 BEGIN_EVENT_TABLE (SceneTreeCtrl, wxTreeCtrl)
   EVT_TREE_ITEM_ACTIVATED (SceneTree_Ctrl, SceneTreeCtrl::OnItemActivated)
   EVT_TREE_SEL_CHANGED (SceneTree_Ctrl, SceneTreeCtrl::OnSelChanged)
@@ -314,7 +303,11 @@ void SceneTreeCtrl::AppendObject (iObject* object, ObjectType type)
 void SceneTreeCtrl::OnItemActivated (wxTreeEvent& event)
 {
   wxTreeItemData* itemData = GetItemData (event.GetItem ());
-  if (!itemData) return;
+  if (!itemData)
+  {
+    Toggle (event.GetItem ());
+    return;
+  }
 
   SceneTreeItemData* data =
     static_cast<SceneTreeItemData*> (itemData);

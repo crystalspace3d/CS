@@ -59,7 +59,7 @@ private:
   csArray<AnimatedAnchor> animatedAnchors;
 
 public:
-  void CreateSoftBodyObject(CS::Physics::SoftBodyProperties* props);
+  void CreateSoftBodyObject(CS::Physics::iSoftBodyProperties* props);
 
 public:
   csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body);

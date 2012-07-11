@@ -64,36 +64,37 @@ namespace Physics
   struct iPhysicalSector;
 
   /**
+  * The type of a physical body.
+  */
+  enum PhysicalBodyType
+  {
+    BODY_RIGID = 0,
+    BODY_SOFT
+  };
+
+  /**
    * Collection of all properties of a physical object
    */
-  class PhysicalObjectProperties : public CS::Collisions::CollisionObjectProperties
+  struct iPhysicalObjectProperties : public virtual CS::Collisions::iCollisionObjectProperties
   {
-  protected:
-    float density;
-    float friction;
-
-  public:
-    PhysicalObjectProperties(CS::Collisions::iCollider* collider) : 
-        CollisionObjectProperties(collider), 
-        density(0),     // static objects
-        friction(10)
-    {}
+    /// Get the PhysicalBodyType of the object whose data is stored in this properties object
+    virtual PhysicalBodyType GetPhysicalBodyType() const = 0;
 
     /// Get the density of all objects that will be constructed with these properties
-    float GetDensity() const { return density; }
+    virtual float GetDensity() const = 0;
     /// Set the density of all objects that will be constructed with these properties
-    void SetDensity(float value) { density = value; }
+    virtual void SetDensity(float value) = 0;
     
     /// Get the mass of all objects that will be constructed with these properties
-    float GetMass() const { return density * collider->GetVolume(); }
+    virtual float GetMass() const = 0;
     /// Set the mass of all objects that will be constructed with these properties
-    void SetMass(float value) { density = value / collider->GetVolume(); }
+    virtual void SetMass(float value) = 0;
 
     /// Set the friction of all objects that will be constructed with these properties
-    void SetFriction(float value) { friction = value; }
+    virtual void SetFriction(float value) = 0;
 
     /// Get the friction of all objects that will be constructed with these properties
-    float GetFriction() const { return friction; }
+    virtual float GetFriction() const = 0;
   };
 
   // TODO: There are a lot more configurable parameters - See btRigidBodyConstructionInfo:
@@ -118,30 +119,13 @@ namespace Physics
   /**
    * Collection of all properties of a rigid body
    */
-  class RigidBodyProperties : public PhysicalObjectProperties
+  struct iRigidBodyProperties : public virtual iPhysicalObjectProperties
   {
-  protected:
-    float elasticity;
-    float linearDamping, angularDamping;
-
-  public:
-    RigidBodyProperties(CS::Collisions::iCollider* collider) : PhysicalObjectProperties(collider),
-      elasticity(0.5f), linearDamping(0.01f), angularDamping(0.01f)
-    {
-    }
-    
-    RigidBodyProperties(CS::Collisions::iCollider* collider, const char* name) : PhysicalObjectProperties(collider),
-      elasticity(0.5f), linearDamping(0.01f), angularDamping(0.01f)
-    {
-      SetName(name);
-    }
-
-
     /// Set the elasticity of this rigid body.
-    void SetElasticity (float value) { elasticity = value; }
+    virtual void SetElasticity (float value) = 0;
 
     /// Get the elasticity of this rigid body.
-    float GetElasticity () const { return elasticity; }
+    virtual float GetElasticity () const = 0;
     /**
     * Set the linear Damping for this rigid body. The damping correspond to
     * how much the movements of the objects will be reduced. It is a value
@@ -151,10 +135,10 @@ namespace Physics
     * The default value is 0.
     * \sa iDynamicSystem::SetLinearDamping()
     */
-    void SetLinearDamping (float d) { linearDamping = d; }
+    virtual void SetLinearDamping (float d) = 0;
 
     /// Get the linear Damping for this rigid body.
-    float GetLinearDamping () const { return linearDamping; }
+    virtual float GetLinearDamping () const = 0;
 
     /**
     * Set the angular Damping for this rigid body. The damping correspond to
@@ -164,68 +148,96 @@ namespace Physics
     * 1 means that the object will not move.
     * The default value is 0.
     */
-    void SetAngularDamping (float d) { angularDamping = d; }
+    virtual void SetAngularDamping (float d) = 0;
 
     /// Get the angular Damping for this rigid body.
-    float GetAngularDamping () const { return angularDamping; }
+    virtual float GetAngularDamping () const = 0;
   };
 
   /**
    * Collection of all properties of a soft body
    */
-  class SoftBodyProperties : public PhysicalObjectProperties
+  struct iSoftBodyProperties : public virtual iPhysicalObjectProperties
   {
-  protected:
+  };
 
-  public:
-    SoftBodyProperties(CS::Collisions::iCollider* collider) : 
-        PhysicalObjectProperties(collider) 
-    {}
+  /**
+   * Used to create a one-dimensional softbody
+   */
+  struct iSoftRopeProperties : public virtual iSoftBodyProperties
+  {
+    /// Start position of the rope
+    virtual const csVector3& GetStart() const = 0;
+    virtual void SetStart(const csVector3& v) = 0;
+    
+    /// End position of the rope
+    virtual const csVector3& GetEnd() const = 0;
+    virtual void SetEnd(const csVector3& v) = 0;
+    
+    /// Amount of nodes along the rope
+    virtual size_t GetNodeCount() const = 0;
+    virtual void SetNodeCount(size_t c) = 0;
+  };
+
+  /**
+   * Used to create a two-dimensional softbody
+   */
+  struct iSoftClothProperties : public virtual iSoftBodyProperties
+  {
+    /// Get the four corners of the cloth
+    virtual const csVector3* GetCorners() const = 0;
+    /// Set the four corners of the cloth
+    virtual void SetCorners(csVector3 corners[4]) = 0;
+
+    /// Get the two segment counts along the two primary axes
+    virtual void GetSegmentCounts(size_t& count1, size_t& count2) const = 0;
+    /// Set the two segment counts along the two primary axes
+    virtual void SetSegmentCounts(size_t count1, size_t count2) = 0;
+    
+    /// Whether there must be diagonal segments in the cloth
+    virtual bool GetWithDiagonals() const = 0;
+    virtual void SetWithDiagonals(bool d) = 0;
+  };
+  
+  /**
+   * Used to create an arbitrary softbody defined by a given mesh
+   */
+  struct iSoftMeshProperties : public virtual iSoftBodyProperties
+  {
+    /// Get the factory that contains the mesh to define the softbody
+    virtual iGeneralFactoryState* GetGenmeshFactory() const = 0;
+    /// Set the factory that contains the mesh to define the softbody
+    virtual void SetGenmeshFactory(iGeneralFactoryState* s) = 0;
+
   };
 
 
-  class DynamicActorProperties : public RigidBodyProperties
+  struct iDynamicActorProperties : public virtual iRigidBodyProperties
   {
-    float stepHeight;
-    float walkSpeed, jumpSpeed;
-    float airControlFactor;
-    bool kinematicSteps;
-
-  public:
-    DynamicActorProperties(CS::Collisions::iCollider* collider) : RigidBodyProperties(collider),
-      stepHeight(.1f),
-      walkSpeed(10.f),
-      jumpSpeed(10.f),
-      airControlFactor(0.04f),
-      kinematicSteps(true)
-    {
-      SetName("DynamicActor");
-    }
-
     /// Get the max vertical threshold that this actor can step over
-    float GetStepHeight () const { return stepHeight; }
+    virtual float GetStepHeight () const = 0;
     /// Set the max vertical threshold that this actor can step over
-    void SetStepHeight (float h) { stepHeight = h; }
+    virtual void SetStepHeight (float h) = 0;
 
     /// Get the walk speed
-    float GetWalkSpeed () const { return walkSpeed; }
+    virtual float GetWalkSpeed () const = 0;
     /// Set the walk speed
-    void SetWalkSpeed (float s) { walkSpeed = s; }
+    virtual void SetWalkSpeed (float s) = 0;
 
     /// Get the jump speed
-    float GetJumpSpeed () const { return jumpSpeed; }
+    virtual float GetJumpSpeed () const = 0;
     /// Set the jump speed
-    void SetJumpSpeed (float s) { jumpSpeed = s; }
+    virtual void SetJumpSpeed (float s) = 0;
 
     /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-    float GetAirControlFactor () const { return airControlFactor; }
+    virtual float GetAirControlFactor () const = 0;
     /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-    void SetAirControlFactor (float f) { airControlFactor = f; }
+    virtual void SetAirControlFactor (float f) = 0;
     
     /// Get whether to use a kinematic method for smooth steps
-    bool GetUseKinematicSteps() const { return kinematicSteps; }
+    virtual bool GetUseKinematicSteps() const = 0;
     /// Set whether to use a kinematic method for smooth steps
-    void SetUseKinematicSteps(bool u) { kinematicSteps = u; }
+    virtual void SetUseKinematicSteps(bool u) = 0;
   };
 }
 }

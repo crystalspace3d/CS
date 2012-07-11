@@ -10,7 +10,7 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void csBulletGhostCollisionObject::CreateGhostCollisionObject(CS::Collisions::GhostCollisionObjectProperties* props)
+  void csBulletGhostCollisionObject::CreateGhostCollisionObject(CS::Collisions::iGhostCollisionObjectProperties* props)
   {
     CreateCollisionObject(props);
     

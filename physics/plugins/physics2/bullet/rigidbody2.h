@@ -60,7 +60,7 @@ protected:
   virtual csBulletMotionState* CreateMotionState(const btTransform& trans);
 
 public:
-  void CreateRigidBodyObject(CS::Physics::RigidBodyProperties* props);
+  void CreateRigidBodyObject(CS::Physics::iRigidBodyProperties* props);
 
 
 public:

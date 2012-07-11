@@ -87,8 +87,18 @@ void PhysDemo::CreatePortalRoom()
   // Portal parameters
   csScalar portalEpsilon = csScalar(0.01);
   csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
+  
+  //csMatrix3 rotation = csYRotMatrix3 (-HALF_PI) * csZRotMatrix3 (HALF_PI);
   csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two
   
+  // Default behavior from DemoApplication for the creation of the scene
+  if (!DemoApplication::CreateRoom()) return;
+
+  // Create room
+  CreateBoxRoom(roomExtents, roomPos, wallThickness);
+
+  // Create a collision portal
+
   // Positions of the portals
   csVector3 portal1Pos = csVector3(
     halfRoomExtents.x - portalEpsilon, 
@@ -103,17 +113,8 @@ void PhysDemo::CreatePortalRoom()
   printf ("Creating portal room...\n");       // let's go
   
   
-  // Default behavior from DemoApplication for the creation of the scene
-  if (!DemoApplication::CreateRoom()) return;
-
-  // Create room
-  CreateBoxRoom(roomExtents, roomPos, wallThickness);
-  
   // Add portals
   // TODO: Add mechanism to more easily create a portal pair
-  
-  //csMatrix3 rotation = csYRotMatrix3 (-HALF_PI) * csZRotMatrix3 (HALF_PI);
-  csMatrix3 rotationInv = rotation.GetInverse();
 
   // Define the plane of the wall poly
   csPoly3D poly;
@@ -131,15 +132,8 @@ void PhysDemo::CreatePortalRoom()
     portal2Pos);
 
   // Warps are relative to the portal
-  csOrthoTransform warp1Trans(
-    //rotation,
-    csMatrix3(),
-    portal1Trans.GetOrigin() - portal2Pos);
-
-  //csOrthoTransform warp2Trans(
-  //  portal2Trans.GetT2O() * portal1Trans.GetO2T(),
-  //  -portal2Trans.GetOrigin() + portal1Trans.GetOrigin());
-  csOrthoTransform warp2Trans(csMatrix3(), csVector3(1, 0, 0));
+  csOrthoTransform warp1Trans((portal2Trans / portal1Trans).GetInverse());
+  csOrthoTransform warp2Trans((portal1Trans / portal2Trans).GetInverse());
 
   iPortal *portal1, *portal2;
 
@@ -152,36 +146,33 @@ void PhysDemo::CreatePortalRoom()
     (int) poly.GetVertexCount(),
     portal1);
 
-  //csRef<iMeshWrapper> portalMesh2 = engine->CreatePortal ("floor", 
-  //  room,
-  //  csVector3(0),
-  //  room, 
-  //  poly.GetVertices(), 
-  //  (int) poly.GetVertexCount(),
-  //  portal2);
+  csRef<iMeshWrapper> portalMesh2 = engine->CreatePortal ("floor", 
+    room,
+    csVector3(0),
+    room, 
+    poly.GetVertices(), 
+    (int) poly.GetVertexCount(),
+    portal2);
   
   // place & configure portals and warp transforms
   portalMesh1->QuerySceneNode()->GetMovable()->SetTransform(portal1Trans);
-  //portalMesh2->QuerySceneNode()->GetMovable()->SetTransform(portal2Trans);
+  portalMesh2->QuerySceneNode()->GetMovable()->SetTransform(portal2Trans);
   
   portal1->GetFlags().Set (CS_PORTAL_ZFILL);
   portal1->GetFlags().Set (CS_PORTAL_CLIPDEST);
-  portal1->SetWarp (warp1Trans);
+  //portal1->SetWarp (warp1Trans);
+  portal1->SetWarp (csOrthoTransform (csYRotMatrix3 (-PI * 0.5f) * csZRotMatrix3 (PI * 0.5f),
+				     csVector3 (1.0f, 0.0f, 4.999f)));
 
-  //portal2->GetFlags().Set (CS_PORTAL_ZFILL);
-  //portal2->GetFlags().Set (CS_PORTAL_CLIPDEST);
+  portal2->GetFlags().Set (CS_PORTAL_ZFILL);
+  portal2->GetFlags().Set (CS_PORTAL_CLIPDEST);
   //portal2->SetWarp (warp2Trans);
+  portal2->SetWarp (csOrthoTransform (csZRotMatrix3 (-PI * 0.5f) * csYRotMatrix3 (PI * 0.5f),
+				     csVector3 (0.0f, -4.999f, -1.0f)));
   
   // Create collision portals
   physicalSector->AddPortal (portal1, portal1Trans);
-  //physicalSector->AddPortal (portal2, portal2Trans);
-
-  // Debug-draw the warp locations
-  CS::Debug::VisualDebuggerHelper::DebugTransform(GetObjectRegistry(), warp1Trans.GetInverse(), true);
-  CS::Debug::VisualDebuggerHelper::DebugTransform(GetObjectRegistry(), warp2Trans.GetInverse(), true);
-
-  // Debug-draw the identity transform
-  CS::Debug::VisualDebuggerHelper::DebugTransform (GetObjectRegistry(), csOrthoTransform(), true);
+  physicalSector->AddPortal (portal2, portal2Trans);
 
   // Set up some lights
   room->SetDynamicAmbientLight (csColor (0.3f, 0.3f, 0.3f));

@@ -37,7 +37,7 @@ class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisio
   float walkSpeed;
 
 public:
-  void CreateCollisionActor(CS::Collisions::CollisionActorProperties* props);
+  void CreateCollisionActor(CS::Collisions::iCollisionActorProperties* props);
 
 public:
   

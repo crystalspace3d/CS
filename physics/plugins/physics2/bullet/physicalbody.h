@@ -38,7 +38,7 @@ class csPhysicalBody : public scfVirtImplementationExt1<
 protected:
   btScalar density;
 
-  void CreatePhysicalBodyObject(CS::Physics::PhysicalObjectProperties* props);
+  void CreatePhysicalBodyObject(CS::Physics::iPhysicalObjectProperties* props);
 
 public:
   csPhysicalBody (csBulletSystem* sys);

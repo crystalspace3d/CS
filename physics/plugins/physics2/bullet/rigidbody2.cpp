@@ -29,11 +29,11 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void csBulletRigidBody::CreateRigidBodyObject(CS::Physics::RigidBodyProperties* props)
+  void csBulletRigidBody::CreateRigidBodyObject(CS::Physics::iRigidBodyProperties* props)
   {
     //CreatePhysicalBodyObject(props);
     SetCollider(props->GetCollider());
-    SetName(props->GetName());
+    SetName(props->QueryObject()->GetName());
 
     density = props->GetDensity();
     

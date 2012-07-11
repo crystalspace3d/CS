@@ -38,9 +38,9 @@
       <?Include /shader-snippets/deferred/lighting-common.glsli?>
     </block>
 
-    <input name="positionW" type="position4_camera" />
+    <input name="position" type="position4_camera" />
     <!-- Surface normal -->
-    <input name="normal" type="normal_tangent" />
+    <input name="normal" type="normal_camera" />
 	
     <!-- Shader might be used together with shadowmap shader... -->
     <block location="cg:clips"
@@ -71,7 +71,7 @@
       float3 L = -lightDirection;
 
       // Since we are in view space we know that the eye position is at the origin.
-      float3 V = -normalize (positionW.xyz); 
+      float3 V = -normalize (position.xyz); 
       float3 H = normalize (L + V);
 
       // Compute phong lighting.
@@ -88,7 +88,7 @@
       vec3 L = -lightDirection;
 
       // Since we are in view space we know that the eye position is at the origin.
-      vec3 V = -normalize (positionW.xyz); 
+      vec3 V = -normalize (position.xyz); 
       vec3 H = normalize (L + V);
 
       // Compute phong lighting.

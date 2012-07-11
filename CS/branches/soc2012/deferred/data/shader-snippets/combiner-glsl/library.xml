@@ -297,21 +297,13 @@
   <!------------------------------------------------------------------------->
   
   <coerciontemplate name="normalize" cost="3">
-    <block location="vertexMain">
-      result = normalize (value);
-    </block>
-    
-    <block location="fragmentMain">
+    <block location="vertexMain;fragmentMain">
       result = normalize (value);
     </block>
   </coerciontemplate>
   
   <coerciontemplate name="passthrough" cost="0">
-    <block location="vertexMain">
-      result = value;
-    </block>
-    
-    <block location="fragmentMain">
+    <block location="vertexMain;fragmentMain">
       result = value;
     </block>
   </coerciontemplate>

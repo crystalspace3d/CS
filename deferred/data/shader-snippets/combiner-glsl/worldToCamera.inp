@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <!--
-  Copyright (C) 2007 by Frank Richter
-	    (C) 2007 by Jorrit Tyberghein
+  Copyright (C) 2021 by Matthieu Kraus
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -19,21 +18,21 @@
 -->
 <!-- Slightly dirty: float4x4 is no weaver type, so gets written out 
      verbatim -->
-<input name="objectToWorld" type="float4x4" default="complex">
+<input name="worldToCamera" type="float4x4" default="complex">
   <block location="inputs">
-    <uniform type="float4x4" name="in_objectToWorld" />
+    <uniform type="float4x4" name="in_worldToCamera" />
   </block>
   
   <block location="vertexMain">
-    objectToWorld = in_objectToWorld;
+    worldToCamera = in_worldToCamera;
   </block>
 
   <block location="fragmentMain">
-    objectToWorld = in_objectToWorld;
+    worldToCamera = in_worldToCamera;
   </block>
 
   <block location="variablemap">
-    <variablemap variable="object2world transform" 
-      destination="in_objectToWorld" />
+    <variablemap variable="world2camera transform" 
+      destination="in_worldToCamera" />
   </block>
 </input>

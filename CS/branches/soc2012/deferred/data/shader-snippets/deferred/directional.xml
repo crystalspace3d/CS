@@ -38,7 +38,7 @@
       <?Include /shader-snippets/deferred/lighting-common.glsli?>
     </block>
 
-    <input name="positionW" type="position4_world" />
+    <input name="positionW" type="position4_camera" />
     <!-- Surface normal -->
     <input name="normal" type="normal_tangent" />
 	

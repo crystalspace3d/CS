@@ -176,7 +176,7 @@
     <output name="normal" type="normal_tangent">
       <attribute name="perfragment" type="bool" />
     </output>
-    <output name="position" type="position4_world">
+    <output name="position" type="position4_camera">
       <attribute name="perfragment" type="bool" />
     </output>
     <output name="depth" type="depth">

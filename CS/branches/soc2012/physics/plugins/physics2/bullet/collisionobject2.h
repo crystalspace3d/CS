@@ -43,7 +43,7 @@ protected:
   
   bool insideWorld;
 
-  void CreateCollisionObject(CS::Collisions::CollisionObjectProperties* props);
+  void CreateCollisionObject(CS::Collisions::iCollisionObjectProperties* props);
 
 public:
   csBulletCollisionObject (csBulletSystem* sys);

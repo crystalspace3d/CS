@@ -25,11 +25,11 @@ static const csScalar DefaultElasticity(0.1f);
 csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const csString& name, const csOrthoTransform& trans,
   csScalar friction, csScalar density)
 { 
-  RigidBodyProperties props(Collider, name);
-  props.SetDensity (density);
-  props.SetElasticity (DefaultElasticity);
-  props.SetFriction (friction);
-  csRef<CS::Physics::iRigidBody> body = physDemo.physicalSystem->CreateRigidBody(&props);
+  csRef<iRigidBodyProperties> props = physDemo.physicalSystem->CreateRigidBodyProperties(Collider, name);
+  props->SetDensity (density);
+  props->SetElasticity (DefaultElasticity);
+  props->SetFriction (friction);
+  csRef<CS::Physics::iRigidBody> body = physDemo.physicalSystem->CreateCollisionObject(props);
   body->SetTransform(trans);
   
   iMaterialWrapper* mat = physDemo.engine->GetMaterialList()->FindByName ("stone");
@@ -122,8 +122,10 @@ void PhysDemo::CreateGhostCylinder()
 
   // Create a body and attach the mesh
   csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
-  GhostCollisionObjectProperties props(cylinder);
-  ghostObject = physicalSystem->CreateGhostCollisionObject(&props);
+  csRef<iGhostCollisionObjectProperties> props = physicalSystem->CreateGhostCollisionObjectProperties(cylinder);
+
+  iCollisionSystem* colSys = physicalSystem;
+  ghostObject = colSys->CreateCollisionObject(&*props);
   
   csYRotMatrix3 m (PI/2.0);
   csOrthoTransform trans (m, csVector3 (0, -3, 5));
@@ -193,11 +195,11 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   // Create a body and attach the mesh and attach a sphere collider.
   csRef<CS::Collisions::iColliderSphere> sphere = physicalSystem->CreateColliderSphere (1.0);
   sphere->SetLocalScale (radius);
-  RigidBodyProperties props(sphere, "sphere");
-  props.SetDensity (10.0f);
-  props.SetElasticity (DefaultElasticity);
-  props.SetFriction (DefaultFriction);
-  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+  csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(sphere, "sphere");
+  props->SetDensity (10.0f);
+  props->SetElasticity (DefaultElasticity);
+  props->SetFriction (DefaultFriction);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateCollisionObject(props);
   
   rb->SetAttachedMovable (mesh->GetMovable());
   csOrthoTransform trans = tc;
@@ -235,12 +237,12 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   cone->SetLocalScale (csVector3 (rand()%5/10. + .2, rand()%5/10. + .2, rand()%5/10. + .2));
 
   // Create object
-  RigidBodyProperties props(cone, "cone");
-  props.SetDensity (10.0f);
-  props.SetElasticity (DefaultElasticity);
-  props.SetFriction (DefaultFriction);
+  csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(cone, "cone");
+  props->SetDensity (10.0f);
+  props->SetElasticity (DefaultElasticity);
+  props->SetFriction (DefaultFriction);
 
-  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateCollisionObject(props);
 
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
@@ -300,11 +302,11 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
   csMatrix3 m;
 
-  RigidBodyProperties props(cylinder, "cylinder");
-  props.SetDensity (10.0f);
-  props.SetElasticity (DefaultElasticity);
-  props.SetFriction (DefaultFriction);
-  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+  csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(cylinder, "cylinder");
+  props->SetDensity (10.0f);
+  props->SetElasticity (DefaultElasticity);
+  props->SetFriction (DefaultFriction);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateCollisionObject(props);
 
   csOrthoTransform trans = tc;
   trans.RotateThis (csXRotMatrix3 (PI / 5.0));
@@ -355,11 +357,11 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
 
   // Create a body
   csRef<CS::Collisions::iColliderCapsule> capsule = physicalSystem->CreateColliderCapsule (length, radius);
-  RigidBodyProperties props(capsule, "capsule");
-  props.SetDensity (10.0f);
-  props.SetElasticity (DefaultElasticity);
-  props.SetFriction (DefaultFriction);
-  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+  csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(capsule, "capsule");
+  props->SetDensity (10.0f);
+  props->SetElasticity (DefaultElasticity);
+  props->SetFriction (DefaultFriction);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateCollisionObject(props);
 
   // set transform
   csOrthoTransform trans = tc;
@@ -422,9 +424,8 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
   }  
 
   // create body
-  RigidBodyProperties props(starCollider);
-  props.SetName("star");
-  csRef<CS::Physics::iRigidBody> co = physicalSystem->CreateRigidBody(&props);
+  csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(starCollider, "star");
+  csRef<CS::Physics::iRigidBody> co = physicalSystem->CreateCollisionObject(props);
 
   // set transform
   csOrthoTransform trans = tc;
@@ -470,11 +471,11 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
 
   // Create a body and attach the mesh.
   csRef<CS::Collisions::iColliderConvexMesh> collider = physicalSystem->CreateColliderConvexMesh (mesh);
-  RigidBodyProperties props(collider, "convexmesh");
-  props.SetDensity (10.0f);
-  props.SetElasticity (DefaultElasticity);
-  props.SetFriction (DefaultFriction);
-  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+  csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(collider, "convexmesh");
+  props->SetDensity (10.0f);
+  props->SetElasticity (DefaultElasticity);
+  props->SetFriction (DefaultFriction);
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateCollisionObject(props);
 
   // Set transform
   csOrthoTransform trans = tc;
@@ -512,8 +513,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
   physicalSystem->DecomposeConcaveMesh (&*rootCollider, mesh, true);
 
   // Create a body
-  RigidBodyProperties props(rootCollider, "compound");
-  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody(&props);
+  csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(rootCollider, "compound");
+  csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateCollisionObject(props);
 
   // Set transform
   csOrthoTransform trans = tc;
@@ -1016,10 +1017,13 @@ void PhysDemo::SpawnRope()
   // First example using ropes defined by their extremities
 #if 1
   // Spawn a first rope and attach it to the box
-  csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateRope
-    (tc.GetOrigin() + tc.GetT2O() * csVector3 (-2, 2, 0),
-    tc.GetOrigin() + tc.GetT2O() * csVector3 (-0.2f, 0, 1), 20);
-  body->SetMass (2.0f);
+  csRef<CS::Physics::iSoftRopeProperties> props = physicalSystem->CreateSoftRopeProperties();
+  props->SetStart(tc.GetOrigin() + tc.GetT2O() * csVector3 (-2, 2, 0));
+  props->SetEnd(tc.GetOrigin() + tc.GetT2O() * csVector3 (-0.2f, 0, 1), 20);
+  props->SetNodeCount(20);
+  props->SetMass (2.0f);
+
+  csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateCollisionObject(props);
   body->SetRigidity (0.95f);
   body->AnchorVertex (0);
   body->AnchorVertex (body->GetVertexCount() - 1, box);
@@ -1027,10 +1031,10 @@ void PhysDemo::SpawnRope()
   physicalSector->AddCollisionObject (body);
 
   // Spawn a second rope and attach it to the box
-  body = physicalSystem->CreateRope
-    (tc.GetOrigin() + tc.GetT2O() * csVector3 (2, 2, 0),
-    tc.GetOrigin() + tc.GetT2O() * csVector3 (0.2f, 0, 1), 20);
-  body->SetMass (2.0f);
+  props->SetStart(tc.GetOrigin() + tc.GetT2O() * csVector3 (2, 2, 0));
+  props->SetEnd(tc.GetOrigin() + tc.GetT2O() * csVector3 (0.2f, 0, 1));
+  
+  body = physicalSystem->CreateCollisionObject(props);
   body->SetRigidity (0.95f);
   body->AnchorVertex (0);
   body->AnchorVertex (body->GetVertexCount() - 1, box);
@@ -1090,16 +1094,24 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth()
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera()->GetTransform();
 
-  // Create the cloth
-  csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateCloth
-    (tc.GetOrigin() + tc.GetT2O() * csVector3 (-2, 2, 1),
+  csVector3 corners[] = {
+    tc.GetOrigin() + tc.GetT2O() * csVector3 (-2, 2, 1),
     tc.GetOrigin() + tc.GetT2O() * csVector3 (2, 2, 1),
     tc.GetOrigin() + tc.GetT2O() * csVector3 (-2, 0, 1),
-    tc.GetOrigin() + tc.GetT2O() * csVector3 (2, 0, 1),
-    10, 10, true);
-  body->SetMass (5.0f);
+    tc.GetOrigin() + tc.GetT2O() * csVector3 (2, 0, 1)
+  };
+
+  // Create the cloth
+  csRef<CS::Physics::iSoftClothProperties> props = physicalSystem->CreateSoftClothProperties();
+  props->SetCorners(corners);
+  props->SetSegmentCounts(10, 10);
+  props->SetWithDiagonals(true);
+  props->SetMass (5.0f);
+
+  csRef<iSoftBody> body = physicalSystem->CreateCollisionObject(props);
 
   // Attach the two top corners
+  // TODO: Add anchor information to properties?
   body->AnchorVertex (0);
   body->AnchorVertex (9);
 

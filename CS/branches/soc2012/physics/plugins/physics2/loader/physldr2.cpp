@@ -38,6 +38,7 @@
 #include "physldr2.h"
 
 using namespace CS::Collisions;
+using namespace CS::Physics;
 
 enum
 {
@@ -277,14 +278,16 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
         csRef<CS::Collisions::iCollisionObject> obj;
         
         csRef<CS::Collisions::iColliderCompound> rootCollider = csRef<CS::Collisions::iColliderCompound>(physicalSystem->CreateColliderCompound());
-        GhostCollisionObjectProperties props(rootCollider);
+        
         if (child->GetAttribute ("ghost"))
         {
-          obj = csRef<CS::Collisions::iGhostCollisionObject>(collisionSystem->CreateGhostCollisionObject (&props));
+          csRef<iGhostCollisionObjectProperties> props = physicalSystem->CreateGhostCollisionObjectProperties(rootCollider);
+          obj = csRef<CS::Collisions::iGhostCollisionObject>(collisionSystem->CreateCollisionObject (props));
         }
         else
         {
-          obj = collisionSystem->CreateCollisionObject (&props);
+          csRef<iCollisionObjectProperties> props = physicalSystem->CreateCollisionObjectProperties(rootCollider);
+          obj = collisionSystem->CreateCollisionObject (props);
         }
         
         if (!ParseCollisionObject (child, obj, collSector, ldr_context))
@@ -295,8 +298,8 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
       {
         csRef<CS::Collisions::iColliderCompound> rootCollider = csRef<CS::Collisions::iColliderCompound>(physicalSystem->CreateColliderCompound());
 
-        CS::Physics::RigidBodyProperties props(rootCollider);
-        csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateRigidBody (&props);
+        csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(rootCollider);
+        csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateCollisionObject (props);
         if (!ParseRigidBody (child, rb, collSector, ldr_context))
           return false;
         break;
@@ -481,9 +484,6 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
                                       CS::Physics::iPhysicalSector* physSector,
                                       iLoaderContext* ldr_context)
 {
-  csOrthoTransform trans;
-  ParseTransform (node, trans);
-
   csRef<CS::Physics::iSoftBody> body;
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -506,8 +506,10 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
         }
         csRef<iGeneralFactoryState> gmstate = scfQueryInterface<
           iGeneralFactoryState> (m->GetMeshObjectFactory ());
-
-        body = physicalSystem->CreateSoftBody (gmstate, trans);
+        
+        csRef<CS::Physics::iSoftMeshProperties> props = physicalSystem->CreateSoftMeshProperties ();
+        props->SetGenmeshFactory(gmstate);
+        body = physicalSystem->CreateCollisionObject(props);
       }
       break;
     }

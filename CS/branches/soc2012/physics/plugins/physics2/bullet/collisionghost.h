@@ -11,7 +11,7 @@ class csBulletGhostCollisionObject : public scfVirtImplementationExt1<
   csBulletGhostCollisionObject, csBulletCollisionObject, CS::Collisions::iGhostCollisionObject>
 {
 public:
-  void CreateGhostCollisionObject(CS::Collisions::GhostCollisionObjectProperties* props);
+  void CreateGhostCollisionObject(CS::Collisions::iGhostCollisionObjectProperties* props);
 
 public:
   csBulletGhostCollisionObject(csBulletSystem* sys);

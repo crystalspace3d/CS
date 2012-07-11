@@ -26,7 +26,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "csutil/scf.h"
-#include "csutil/csstring.h"
 #include "csgeom/vector2.h"
 #include "csgeom/vector3.h"
 #include "csgeom/matrix3.h"
@@ -39,13 +38,43 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 namespace CS 
 { 
-namespace Collisions {
+namespace Collisions 
+{
   struct csConvexResult;
   struct iCollisionCallback;
   struct iCollisionObject;
   struct iCollisionSector;
   struct iCollider;
   struct CollisionGroup;
+
+  /**
+   * Enum is necessary to identify the object type to be created from some Properties object
+   */
+  enum InternalCollisionObjectType
+  {
+    InternalCollisionObjectTypeCollisionObject,
+    InternalCollisionObjectTypeCollisionActor,
+    InternalCollisionObjectTypeGhostObject,
+
+    // physical objects:
+    
+    InternalCollisionObjectTypeRigidBody,
+    InternalCollisionObjectTypeSoftBody,
+    InternalCollisionObjectTypeDynamicActor,
+    InternalCollisionObjectTypeSoftRope,
+    InternalCollisionObjectTypeSoftCloth,
+    InternalCollisionObjectTypeSoftMesh
+  };
+
+  /**
+  * The type of a collision object.
+  */
+  enum CollisionObjectType
+  {
+    COLLISION_OBJECT_PHYSICAL = 0,
+    COLLISION_OBJECT_GHOST,
+    COLLISION_OBJECT_ACTOR
+  };
 
   typedef short CollisionGroupMask;
 
@@ -92,74 +121,50 @@ namespace Collisions {
     {}
   };
 
-  class CollisionObjectProperties
+  struct iCollisionObjectProperties : public virtual iBase
   {
-  protected:
-    csRef<iCollider> collider;
-    csString name;
-    CollisionGroup collGroup;
+    /// Get the type of the object whose data is represented by this properties object
+    virtual InternalCollisionObjectType GetInternalObjectType() const = 0;
 
-  public:
-    CollisionObjectProperties(iCollider* collider) : collider(collider), collGroup() {}
+    /// Return the underlying object
+    virtual iObject *QueryObject (void) = 0;
 
     /// Get the collider of all objects that will be constructed with these properties
-    iCollider* GetCollider() const { return collider; }
+    virtual iCollider* GetCollider() const = 0;
     /// Set the collider of all objects that will be constructed with these properties
-    void SetCollider(iCollider* value) { collider = value; }
-
-    /// Get the name of all objects that will be constructed with these properties
-    const csString& GetName() const { return name; }
-    /// Set the name of all objects that will be constructed with these properties
-    void SetName(const char* newName) { name = newName; }
+    virtual void SetCollider(iCollider* value)  = 0;
 
     /// Get the collision group of all objects that will be constructed with these properties
-    const CollisionGroup& GetCollisionGroup() const { return collGroup; }
+    virtual const CollisionGroup& GetCollisionGroup() const = 0;
     /// Set the collision group of all objects that will be constructed with these properties
-    void SetCollisionGroup(const CollisionGroup& value) { collGroup = value; }
+    virtual void SetCollisionGroup(const CollisionGroup& value)  = 0;
   };
 
-  class GhostCollisionObjectProperties : public CollisionObjectProperties
+  struct iGhostCollisionObjectProperties : public virtual iCollisionObjectProperties
   {
-  public:
-    GhostCollisionObjectProperties(iCollider* collider) : CollisionObjectProperties(collider) {}
-
   };
 
-  class CollisionActorProperties : public GhostCollisionObjectProperties
+  struct iCollisionActorProperties : public virtual iGhostCollisionObjectProperties
   {
-    float stepHeight;
-    float walkSpeed, jumpSpeed;
-    float airControlFactor;
-
-  public:
-    CollisionActorProperties(iCollider* collider) : GhostCollisionObjectProperties(collider),
-      stepHeight(.5f),
-      walkSpeed(10.f),
-      jumpSpeed(10.f),
-      airControlFactor(0.04f)
-    {
-      SetName("Actor");
-    }
-
     /// Get the max vertical threshold that this actor can step over
-    float GetStepHeight () const { return stepHeight; }
+    virtual float GetStepHeight () const = 0;
     /// Set the max vertical threshold that this actor can step over
-    void SetStepHeight (float h) { stepHeight = h; }
+    virtual void SetStepHeight (float h) = 0;
 
     /// Get the walk speed
-    float GetWalkSpeed () const { return walkSpeed; }
+    virtual float GetWalkSpeed () const = 0;
     /// Set the walk speed
-    void SetWalkSpeed (float s) { walkSpeed = s; }
+    virtual void SetWalkSpeed (float s) = 0;
 
     /// Get the jump speed
-    float GetJumpSpeed () const { return jumpSpeed; }
+    virtual float GetJumpSpeed () const = 0;
     /// Set the jump speed
-    void SetJumpSpeed (float s) { jumpSpeed = s; }
+    virtual void SetJumpSpeed (float s)  = 0;
 
     /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-    float GetAirControlFactor () const { return airControlFactor; }
+    virtual float GetAirControlFactor () const = 0;
     /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-    void SetAirControlFactor (float f) { airControlFactor = f; }
+    virtual void SetAirControlFactor (float f) = 0;
   };
 } 
 }

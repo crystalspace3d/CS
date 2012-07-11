@@ -68,15 +68,6 @@ struct iPhysicalSystem;
 struct iPhysicalSector;
 
 /**
- * The type of a physical body.
- */
-enum PhysicalBodyType
-{
-  BODY_RIGID = 0,
-  BODY_SOFT
-};
-
-/**
  * The type of a rigid body state.
  */
 enum RigidBodyState
@@ -320,7 +311,7 @@ struct iAnchorAnimationControl : public virtual iBase
  * A soft body can neither be static or kinematic, it is always dynamic.
  *
  * Main creators of instances implementing this interface:
- * - iPhysicalSystem::CreateSoftBody()
+ * - iCollisionSystem::CreateCollisionObject()
  * 
  * Main ways to get pointers to this interface: 
  * - iPhysicalSector::GetSoftBody()
@@ -731,11 +722,6 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
    */
   virtual csPtr<iPhysicalSector> CreatePhysicalSector () = 0;
 
-  /**
-   * Create a rigid body.
-   */
-  virtual csPtr<iRigidBody> CreateRigidBody (RigidBodyProperties* props) = 0;
-
   /// Create a general 6DOF joint.
   virtual csPtr<iJoint> CreateJoint () = 0;
 
@@ -744,7 +730,7 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
    * world space.
    */
   virtual csPtr<iJoint> CreateRigidP2PJoint (const csVector3 position) = 0;
-
+  
   /* 
    * Create a slide joint for rigid bodies.
    * \param trans The transform of the joint in world space.
@@ -794,69 +780,30 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
    * in order to manipulate it.
    */
   virtual csPtr<iJoint> CreateRigidPivotJoint (iRigidBody* body, const csVector3 position) = 0;
-  
-  /**
-   * Create a soft body rope.
-   * \param start Start position of the rope.
-   * \param end End position of the rope.
-   * \param segmentCount Number of segments in the rope.
-   * \remark You must call SetSoftBodyWorld() prior to this.
-   */
-  virtual csPtr<iSoftBody> CreateRope (csVector3 start,
-      csVector3 end, size_t segmentCount) = 0;
 
   /**
-   * Create a soft body rope with explicit positions of the vertices.
-   * \param vertices The array of positions to use for the vertices.
-   * \param vertexCount The amount of vertices for the rope.
-   * \remark You must call SetSoftBodyWorld() prior to this.
+   * Create a rigid body.
    */
-  virtual csPtr<iSoftBody> CreateRope (csVector3* vertices, size_t vertexCount) = 0;
-
-  /**
-   * Create a soft body cloth.
-   * \param corner1 The position of the top left corner.
-   * \param corner2 The position of the top right corner.
-   * \param corner3 The position of the bottom left corner.
-   * \param corner4 The position of the bottom right corner.
-   * \param segmentCount1 Number of horizontal segments in the cloth.
-   * \param segmentCount2 Number of vertical segments in the cloth.
-   * \param withDiagonals Whether there must be diagonal segments in the cloth
-   * or not. Diagonal segments will make the cloth more rigid.
-   * \remark You must call SetSoftBodyWorld() prior to this.
-   */
-  virtual csPtr<iSoftBody> CreateCloth (csVector3 corner1, csVector3 corner2,
-      csVector3 corner3, csVector3 corner4,
-      size_t segmentCount1, size_t segmentCount2,
-      bool withDiagonals = false) = 0;
-
-  /**
-   * Create a volumetric soft body from a genmesh.
-   * \param genmeshFactory The genmesh factory to use.
-   * \param bodyTransform the transform of this body.
-   * \remark You must call SetSoftBodyWorld() prior to this.
-   */
-  virtual csPtr<iSoftBody> CreateSoftBody (iGeneralFactoryState* genmeshFactory, 
-    const csOrthoTransform& bodyTransform) = 0;
-
-  /**
-   * Create a custom volumetric soft body.
-   * \param vertices The vertices of the soft body. The position is absolute.
-   * \param vertexCount The count of vertices of the soft body.
-   * \param triangles The faces of the soft body.
-   * \param triangleCount The count of faces of the soft body.
-   * \param bodyTransform the transform of the soft body.
-   * \param if there's an iCollisionObject pointer, attach the iCollisionObject to it.
-   * \remark You must call SetSoftBodyWorld() prior to this.
-   */
-  virtual csPtr<iSoftBody> CreateSoftBody (csVector3* vertices,
-      size_t vertexCount, csTriangle* triangles,
-      size_t triangleCount, const csOrthoTransform& bodyTransform) = 0;
+  virtual csPtr<iRigidBody> CreateCollisionObject (iRigidBodyProperties* props) = 0;
 
   /**
    * Create a DynamicActor.
    */
-  virtual csPtr<iDynamicActor> CreateDynamicActor (DynamicActorProperties* props) = 0;
+  virtual csPtr<iDynamicActor> CreateCollisionObject (iDynamicActorProperties* props) = 0;
+  
+  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftRopeProperties* props) = 0;
+  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftClothProperties* props) = 0;
+  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftMeshProperties* props) = 0;
+  
+  // Properties
+  
+  virtual csPtr<iRigidBodyProperties> CreateRigidBodyProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+
+  virtual csPtr<iDynamicActorProperties> CreateDynamicActorProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor") = 0;
+
+  virtual csPtr<iSoftRopeProperties> CreateSoftRopeProperties () = 0;
+  virtual csPtr<iSoftClothProperties> CreateSoftClothProperties () = 0;
+  virtual csPtr<iSoftMeshProperties> CreateSoftMeshProperties () = 0;
 };
 
 /**

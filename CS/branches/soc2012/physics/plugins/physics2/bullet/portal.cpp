@@ -240,7 +240,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
                 for (size_t l = 0; l < rbs.GetSize (); l++)
                   sector->RemoveCollisionObject (rbs[l]->QueryRigidBody ());
                 for (size_t l = 0; l < rbs.GetSize (); l++)
-                  targetSector->AddRigidBody (rbs[l]->QueryRigidBody ());
+                  targetSector->AddCollisionObject (rbs[l]->QueryRigidBody ());
                 for (size_t l = 0; l < jnts.GetSize (); l++)
                 {
                   jnts[l]->RebuildJoint ();
@@ -320,17 +320,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           {
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
 
-            RigidBodyProperties props(rb->GetCollider());
+            csRef<iRigidBodyProperties> props = sector->sys->CreateRigidBodyProperties(rb->GetCollider());
             
-            props.SetDensity (rb->GetDensity());
-            props.SetFriction (rb->GetFriction());
-            props.SetElasticity (rb->GetElasticity());
-            props.SetLinearDamping (0.5f);
-            props.SetAngularDamping (0.5f);
+            props->SetDensity (rb->GetDensity());
+            props->SetFriction (rb->GetFriction());
+            props->SetElasticity (rb->GetElasticity());
+            props->SetLinearDamping (0.5f);
+            props->SetAngularDamping (0.5f);
 
-            props.SetCollisionGroup (sector->GetSystem()->FindCollisionGroup("Portal"));
+            props->SetCollisionGroup (sector->GetSystem()->FindCollisionGroup("Portal"));
 
-            csRef<iRigidBody> inb = sector->sys->CreateRigidBody (&props);
+            csRef<iRigidBody> inb = sector->sys->CreateCollisionObject (props);
 
             csBulletRigidBody* newBody = dynamic_cast<csBulletRigidBody*> ((iRigidBody*)inb);
 
@@ -338,7 +338,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
             newBody->btBody->setGravity (btVector3 (0.0,0.0,0.0));
             newObject = newBody;
             
-            targetSector->AddRigidBody (newBody);
+            targetSector->AddCollisionObject (newBody);
 
             CS_ASSERT (!rb->objectCopy);
             rb->objectCopy = newBody;
@@ -351,11 +351,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         }
         else if (obj->GetObjectType () == COLLISION_OBJECT_GHOST || obj->GetObjectType () == COLLISION_OBJECT_ACTOR)
         {
-          GhostCollisionObjectProperties props(obj->GetCollider());
-          props.SetName ("ghost copy");
-          props.SetCollisionGroup (sector->sys->FindCollisionGroup("Portal"));
+          csRef<iGhostCollisionObjectProperties> props = 
+            sector->sys->CreateGhostCollisionObjectProperties(obj->GetCollider(), "ghost copy");
+
+          props->SetCollisionGroup (sector->sys->FindCollisionGroup("Portal"));
           
-          csRef<iGhostCollisionObject> co = sector->sys->CreateGhostCollisionObject (&props);
+          csRef<iGhostCollisionObject> co = sector->sys->CreateCollisionObject (props);
           
           newObject = dynamic_cast<csBulletCollisionObject*> ((iCollisionObject*)co);
 

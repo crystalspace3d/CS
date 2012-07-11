@@ -23,7 +23,7 @@ using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void csPhysicalBody::CreatePhysicalBodyObject(PhysicalObjectProperties* props)
+  void csPhysicalBody::CreatePhysicalBodyObject(iPhysicalObjectProperties* props)
   {
     CreateCollisionObject(props);
 

@@ -224,7 +224,52 @@ csPtr<CS::Collisions::iCollisionTerrain> csBulletSystem::CreateCollisionTerrain 
   return csPtr<iCollisionTerrain>(collider);
 }
 
-csPtr<CS::Collisions::iGhostCollisionObject> csBulletSystem::CreateGhostCollisionObject (CS::Collisions::GhostCollisionObjectProperties* props)
+csPtr<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject (CS::Collisions::iCollisionObjectProperties* props)
+{
+
+  // Compiler can optimize this into a table-lookup
+  switch (props->GetInternalObjectType())
+  {
+  case InternalCollisionObjectTypeCollisionActor:
+    {
+    csRef<iCollisionActorProperties> p = scfQueryInterface<iCollisionActorProperties>(props);
+    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iCollisionActor>(CreateCollisionObject(p))));
+    }
+  case InternalCollisionObjectTypeDynamicActor:
+    {
+    csRef<iDynamicActorProperties> p = scfQueryInterface<iDynamicActorProperties>(props);
+    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iDynamicActor>(CreateCollisionObject(p))));
+    }
+  case InternalCollisionObjectTypeGhostObject:
+    {
+    csRef<iGhostCollisionObjectProperties> p = scfQueryInterface<iGhostCollisionObjectProperties>(props);
+    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iGhostCollisionObject>(CreateCollisionObject(p))));
+    }
+  case InternalCollisionObjectTypeRigidBody:
+    {
+    csRef<iRigidBodyProperties> p = scfQueryInterface<iRigidBodyProperties>(props);
+    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iRigidBody>(CreateCollisionObject(p))));
+    }
+  case InternalCollisionObjectTypeSoftRope:
+    {
+    csRef<iSoftRopeProperties> p = scfQueryInterface<iSoftRopeProperties>(props);
+    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iSoftBody>(CreateCollisionObject(p))));
+    }
+  case InternalCollisionObjectTypeSoftCloth:
+    {
+    csRef<iSoftClothProperties> p = scfQueryInterface<iSoftClothProperties>(props);
+    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iSoftBody>(CreateCollisionObject(p))));
+    }
+  case InternalCollisionObjectTypeSoftMesh:
+    {
+    csRef<iSoftMeshProperties> p = scfQueryInterface<iSoftMeshProperties>(props);
+    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iSoftBody>(CreateCollisionObject(p))));
+    }
+  }
+  return csPtr<iCollisionObject> (nullptr);
+}
+
+csPtr<CS::Collisions::iGhostCollisionObject> csBulletSystem::CreateCollisionObject (CS::Collisions::iGhostCollisionObjectProperties* props)
 {
   csRef<csBulletGhostCollisionObject> collObject = csPtr<csBulletGhostCollisionObject>(new csBulletGhostCollisionObject (this));
 
@@ -235,13 +280,7 @@ csPtr<CS::Collisions::iGhostCollisionObject> csBulletSystem::CreateGhostCollisio
   return csPtr<iGhostCollisionObject>(collObject);
 }
 
-csPtr<CS::Collisions::iCollisionObject> csBulletSystem::CreateCollisionObject (CS::Collisions::CollisionObjectProperties* props)
-{
-  // TODO
-  return csPtr<CS::Collisions::iCollisionObject> (nullptr);
-}
-
-csPtr<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionActor (CS::Collisions::CollisionActorProperties* props)
+csPtr<CS::Collisions::iCollisionActor> csBulletSystem::CreateCollisionObject (CS::Collisions::iCollisionActorProperties* props)
 {
   csBulletCollisionActor* actor = new csBulletCollisionActor (this);
 
@@ -409,7 +448,11 @@ void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollider* root, iMes
   }
 }
 
-csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateRigidBody (RigidBodyProperties* props)
+
+// ###############################################################################################################
+// Physical Objects
+
+csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateCollisionObject (CS::Physics::iRigidBodyProperties* props)
 {
   csRef<csBulletRigidBody> body = csPtr<csBulletRigidBody>(new csBulletRigidBody (this));
 
@@ -419,7 +462,7 @@ csPtr<CS::Physics::iRigidBody> csBulletSystem::CreateRigidBody (RigidBodyPropert
   return csPtr<CS::Physics::iRigidBody>(body);
 }
 
-csPtr<CS::Physics::iDynamicActor> csBulletSystem::CreateDynamicActor (CS::Physics::DynamicActorProperties* props)
+csPtr<CS::Physics::iDynamicActor> csBulletSystem::CreateCollisionObject (CS::Physics::iDynamicActorProperties* props)
 {
   csRef<csBulletDynamicActor> body = csPtr<csBulletDynamicActor>(new csBulletDynamicActor (this));
 
@@ -427,6 +470,83 @@ csPtr<CS::Physics::iDynamicActor> csBulletSystem::CreateDynamicActor (CS::Physic
   
   return csPtr<CS::Physics::iDynamicActor>(body);
 }
+
+csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCollisionObject (CS::Physics::iSoftRopeProperties* props)
+{ 
+  btSoftBody* body = btSoftBodyHelpers::CreateRope
+    (*defaultInfo, CSToBullet (props->GetStart(), internalScale),
+    CSToBullet (props->GetEnd(), internalScale), int (props->GetNodeCount()) - 1, 0);
+
+  //hard-coded parameters for hair ropes
+  body->m_cfg.kDP = 0.08f; // no elasticity
+  body->m_cfg.piterations = 16; // no white zone
+  body->m_cfg.timescale = 2;
+
+  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body));
+}
+
+csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCollisionObject (CS::Physics::iSoftClothProperties* props)
+{
+  const csVector3* corners = props->GetCorners();
+  size_t segmentCount1, segmentCount2;
+  props->GetSegmentCounts(segmentCount1, segmentCount2);
+  
+  btSoftBody* body = btSoftBodyHelpers::CreatePatch
+    (*defaultInfo, CSToBullet (corners[0], internalScale),
+    CSToBullet (corners[1], internalScale),
+    CSToBullet (corners[2], internalScale),
+    CSToBullet (corners[3], internalScale), 
+    int (segmentCount1), 
+    int (segmentCount2), 0,
+    props->GetWithDiagonals());
+  body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
+
+  //softBodies.Push (csBody);
+  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body));
+}
+
+csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCollisionObject (CS::Physics::iSoftMeshProperties* props)
+{
+  iGeneralFactoryState*  genmeshFactory = props->GetGenmeshFactory();
+  btScalar* vertices = new btScalar[genmeshFactory->GetVertexCount () * 3];
+  for (int i = 0; i < genmeshFactory->GetVertexCount (); i++)
+  {
+    csVector3 vertex = genmeshFactory->GetVertices ()[i] * internalScale;
+    vertices[i * 3] = vertex[0];
+    vertices[i * 3 + 1] = vertex[1];
+    vertices[i * 3 + 2] = vertex[2];
+  }
+
+  int* triangles = new int[genmeshFactory->GetTriangleCount () * 3];
+  for (int i = 0; i < genmeshFactory->GetTriangleCount (); i++)
+  {
+    csTriangle& triangle = genmeshFactory->GetTriangles ()[i];
+    triangles[i * 3] = triangle.a;
+    triangles[i * 3 + 1] = triangle.b;
+    triangles[i * 3 + 2] = triangle.c;
+  }
+
+  btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh
+    (*defaultInfo, vertices, triangles, genmeshFactory->GetTriangleCount (),
+    false);
+
+  // TODO: Make this stuff customizable, too
+  body->m_cfg.piterations = 10;
+  body->m_cfg.collisions |=	btSoftBody::fCollision::SDF_RS;
+  body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
+  body->m_materials[0]->m_kLST = 1;
+
+  csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (this, body));
+
+  //softBodies.Push (csBody);
+  return csPtr<CS::Physics::iSoftBody>(csBody);
+}
+
+
+
+
+
+// Joints
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateJoint ()
 {
@@ -555,144 +675,6 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
   return csPtr<CS::Physics::iJoint>(joint);
 }
 
-csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3 start,
-                                             csVector3 end,
-                                             size_t segmentCount)
-{
-  //Don't know the soft world info currently. So just set it to nullptr
-  
-  btSoftBody* body = btSoftBodyHelpers::CreateRope
-    (*defaultInfo, CSToBullet (start, internalScale),
-    CSToBullet (end, internalScale), int (segmentCount) - 1, 0);
-
-  //hard-coded parameters for hair ropes
-  body->m_cfg.kDP = 0.08f; // no elasticity
-  body->m_cfg.piterations = 16; // no white zone
-  body->m_cfg.timescale = 2;
-
-  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body));
-}
-
-csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateRope (csVector3* vertices, size_t vertexCount)
-{
-  // Create the nodes
-  CS_ALLOC_STACK_ARRAY(btVector3, nodes, vertexCount);
-  CS_ALLOC_STACK_ARRAY(btScalar, materials, vertexCount);
-
-  for (size_t i = 0; i < vertexCount; i++)
-  {
-    nodes[i] = CSToBullet (vertices[i], internalScale);
-    materials[i] = 1;
-  }
-
-  btSoftBody* body = new btSoftBody(nullptr, int (vertexCount), &nodes[0], &materials[0]);
-
-  // Create the links between the nodes
-  for (size_t i = 1; i < vertexCount; i++)
-    body->appendLink (int (i - 1), int (i));
-
-  //hard-coded parameters for hair ropes
-  body->m_cfg.kDP = 0.08f; // no elasticity
-  body->m_cfg.piterations = 16; // no white zone
-  body->m_cfg.timescale = 2;
-
-  //softBodies.Push (csBody);
-  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body)); 
-}
-
-csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCloth (csVector3 corner1, csVector3 corner2,
-                                              csVector3 corner3, csVector3 corner4,
-                                              size_t segmentCount1, size_t segmentCount2,
-                                              bool withDiagonals /* = false */)
-{
-  btSoftBody* body = btSoftBodyHelpers::CreatePatch
-    (*defaultInfo, CSToBullet (corner1, internalScale),
-    CSToBullet (corner2, internalScale), CSToBullet (corner3, internalScale),
-    CSToBullet (corner4, internalScale), int (segmentCount1), int (segmentCount2), 0,
-    withDiagonals);
-  body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
-
-  //softBodies.Push (csBody);
-  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body));
-}
-
-csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (iGeneralFactoryState* genmeshFactory,
-                                                 const csOrthoTransform& bodyTransform)
-{
-  btScalar* vertices = new btScalar[genmeshFactory->GetVertexCount () * 3];
-  for (int i = 0; i < genmeshFactory->GetVertexCount (); i++)
-  {
-    csVector3 vertex = genmeshFactory->GetVertices ()[i] * internalScale;
-    vertices[i * 3] = vertex[0];
-    vertices[i * 3 + 1] = vertex[1];
-    vertices[i * 3 + 2] = vertex[2];
-  }
-
-  int* triangles = new int[genmeshFactory->GetTriangleCount () * 3];
-  for (int i = 0; i < genmeshFactory->GetTriangleCount (); i++)
-  {
-    csTriangle& triangle = genmeshFactory->GetTriangles ()[i];
-    triangles[i * 3] = triangle.a;
-    triangles[i * 3 + 1] = triangle.b;
-    triangles[i * 3 + 2] = triangle.c;
-  }
-
-  btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh
-    (*defaultInfo, vertices, triangles, genmeshFactory->GetTriangleCount (),
-    false);
-
-  body->m_cfg.piterations = 10;
-  body->m_cfg.collisions |=	btSoftBody::fCollision::SDF_RS;
-  body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
-  body->m_materials[0]->m_kLST = 1;
-
-  csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (this, body));
-  csBody->SetTransform (bodyTransform);
-
-  //softBodies.Push (csBody);
-  return csPtr<CS::Physics::iSoftBody>(csBody);
-}
-
-csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateSoftBody (csVector3* vertices, size_t vertexCount,
-                                                 csTriangle* triangles, size_t triangleCount,
-                                                 const csOrthoTransform& bodyTransform)
-{
-  btScalar* btVertices = new btScalar[vertexCount * 3];
-  for (size_t i = 0; i < vertexCount; i++)
-  {
-    csVector3 vertex = vertices[i] * internalScale;
-    btVertices[i * 3] = vertex[0];
-    btVertices[i * 3 + 1] = vertex[1];
-    btVertices[i * 3 + 2] = vertex[2];
-  }
-
-  int* btTriangles = new int[triangleCount * 3];
-  for (size_t i = 0; i < triangleCount; i++)
-  {
-    csTriangle& triangle = triangles[i];
-    btTriangles[i * 3] = triangle.a;
-    btTriangles[i * 3 + 1] = triangle.b;
-    btTriangles[i * 3 + 2] = triangle.c;
-  }
-
-  btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh
-    (*defaultInfo, btVertices, btTriangles, int (triangleCount), false);
-
-  body->m_cfg.piterations = 10;
-  body->m_cfg.collisions |=	btSoftBody::fCollision::SDF_RS;
-  body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
-  body->m_materials[0]->m_kLST = 1;
-
-  delete [] btVertices;
-  delete [] btTriangles;
-
-  csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (this, body));
-  csBody->SetTransform (bodyTransform);
-
-  //softBodies.Push (csBody);
-  return csPtr<CS::Physics::iSoftBody>(csBody);
-}
-
 void csBulletSystem::ReportWarning (const char* msg, ...)
 {
   va_list arg;
@@ -761,6 +743,56 @@ bool csBulletSystem::GetGroupCollision (const char* name1,
     return true;
   else
     return false;
+}
+
+
+// Properties
+
+
+csPtr<CS::Collisions::iGhostCollisionObjectProperties> 
+  csBulletSystem::CreateGhostCollisionObjectProperties (CS::Collisions::iCollider* collider, const csString& name) 
+{ 
+  return csPtr<iGhostCollisionObjectProperties>(
+    scfQueryInterface<iGhostCollisionObjectProperties>(new BulletGhostCollisionObjectProperties(collider, name))); 
+}
+
+csPtr<CS::Collisions::iCollisionActorProperties> 
+  csBulletSystem::CreateCollisionActorProperties (CS::Collisions::iCollider* collider, const csString& name) 
+{
+  return csPtr<iCollisionActorProperties>(
+    scfQueryInterface<iCollisionActorProperties>(new BulletCollisionActorProperties(collider, name))); 
+}
+
+csPtr<CS::Physics::iRigidBodyProperties> 
+  csBulletSystem::CreateRigidBodyProperties (CS::Collisions::iCollider* collider, const csString& name)
+{
+  return csPtr<CS::Physics::iRigidBodyProperties>(
+    scfQueryInterface<CS::Physics::iRigidBodyProperties>(new BulletRigidBodyProperties(collider, name))); 
+}
+
+csPtr<CS::Physics::iDynamicActorProperties> 
+  csBulletSystem::CreateDynamicActorProperties (CS::Collisions::iCollider* collider, const csString& name)
+{
+  return csPtr<CS::Physics::iDynamicActorProperties>(
+    scfQueryInterface<CS::Physics::iDynamicActorProperties>(new BulletDynamicActorProperties(collider, name))); 
+}
+
+csPtr<CS::Physics::iSoftRopeProperties> csBulletSystem::CreateSoftRopeProperties ()
+{
+  return csPtr<CS::Physics::iSoftRopeProperties>(
+    scfQueryInterface<CS::Physics::iSoftRopeProperties>(new BulletSoftRopeProperties));
+}
+
+csPtr<CS::Physics::iSoftClothProperties> csBulletSystem::CreateSoftClothProperties ()
+{
+  return csPtr<CS::Physics::iSoftClothProperties>(
+    scfQueryInterface<CS::Physics::iSoftClothProperties>(new BulletSoftClothProperties));
+}
+
+csPtr<CS::Physics::iSoftMeshProperties> csBulletSystem::CreateSoftMeshProperties ()
+{
+  return csPtr<CS::Physics::iSoftMeshProperties>(
+    scfQueryInterface<CS::Physics::iSoftMeshProperties>(new BulletSoftMeshProperties));
 }
 
 }

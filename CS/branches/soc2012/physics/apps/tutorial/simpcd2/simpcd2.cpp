@@ -475,13 +475,14 @@ void Simple::CreateRoom ()
     spstate = scfQueryInterface<iSprite3DState> (sprite1->GetMeshObject ());
     spstate->SetAction ("default");
     sprite1->QuerySceneNode ()->SetParent (parent_sprite->QuerySceneNode ());
+    
+    csRef<iCollisionObjectProperties> props = collisionSystem->CreateCollisionObjectProperties();
 
     // Create a collider.
     sprite_col = collisionSystem->CreateColliderConcaveMesh (sprite1);
 
     // Create a collision object. Set the collider and the movable.
-    CollisionObjectProperties props(sprite_col);
-    sprite1_obj = collisionSystem->CreateCollisionObject (&props);
+    sprite1_obj = collisionSystem->CreateCollisionObject (props);
 
     sprite1_obj->SetAttachedMovable (sprite1->GetMovable ());
     // You have to set a world transform to collision object.

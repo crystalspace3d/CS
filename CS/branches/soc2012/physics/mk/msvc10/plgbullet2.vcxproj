@@ -1246,6 +1246,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\physics2\bullet\motionstates.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\physicalbody.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\portal.cpp" />
+    <ClCompile Include="..\..\plugins\physics2\bullet\objectproperties.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\rigidbody2.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\softbody2.cpp" />
   </ItemGroup>
@@ -1280,6 +1281,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\physics2\bullet\motionstates.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\physicalbody.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\portal.h" />
+    <ClInclude Include="..\..\plugins\physics2\bullet\objectproperties.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\rigidbody2.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\softbody2.h" />
   </ItemGroup>

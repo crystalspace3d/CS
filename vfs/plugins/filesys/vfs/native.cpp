@@ -25,7 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-// Win32 utime() workaround
+// win32 utime() workaround
 #ifdef CS_PLATFORM_WIN32
 #include <sys/utime.h>
 #define utime(a,b) _utime(a,b)
@@ -59,6 +59,22 @@ namespace
 
     return string;
   }
+
+#ifdef _USE_EMULATED_PERMISSION
+  // Converts Windows error from GetLastError () to VFS error code
+  int Win32LastError ()
+  {
+    // use Win32 API to retrieve error code
+    int winError = GetLastError ();
+    switch (winError)
+    {
+    case 0:
+      return VFS_STATUS_OK;
+    default:
+      return VFS_STATUS_OTHER;
+    }
+  }
+#endif
 }
 
 
@@ -1021,12 +1037,6 @@ bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
   csString path (ToRealPath (fileName));
   struct stat info;
 
-#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__CYGWIN32__)
-  // TODO: implement Win32 emulated permission
-  SetLastError (VFS_STATUS_UNSUPPORTED);
-  return false;
-#else // POSIX-compliant platform assumed
-
   // use stat() to get file information...
   if (stat (path, &info) != 0)
   {
@@ -1042,7 +1052,6 @@ bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
   oPerm = permission;
 
   return true;
-#endif
 }
 
 // Set permission set of a file
@@ -1051,12 +1060,6 @@ bool NativeFS::SetPermission (const char *fileName,
 {
   // get real path from given virtual filename
   csString path (ToRealPath (fileName));
-
-#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__CYGWIN32__)
-  // TODO: implement Win32 emulated permission
-  SetLastError (VFS_STATUS_UNSUPPORTED);
-  return false;
-#else // POSIX-compliant platform assumed
 
   // FIXME: currently it only supports user/group/others r/w/x permissions.
   // what about S_ISUID, S_ISGID, S_ISVTX and such special fields?
@@ -1082,7 +1085,6 @@ bool NativeFS::SetPermission (const char *fileName,
   }
 
   return true;
-#endif
 }
 
 // Set file time

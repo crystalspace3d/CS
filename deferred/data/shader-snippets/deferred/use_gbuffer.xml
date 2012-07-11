@@ -173,7 +173,7 @@
     <output name="shininess" type="float">
       <attribute name="perfragment" type="bool" />
     </output>
-    <output name="normal" type="normal_tangent">
+    <output name="normal" type="normal_camera">
       <attribute name="perfragment" type="bool" />
     </output>
     <output name="position" type="position4_camera">

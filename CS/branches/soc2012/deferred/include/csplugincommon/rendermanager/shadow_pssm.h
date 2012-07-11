@@ -188,8 +188,52 @@ namespace RenderManager
       // Called every frame/RenderView() execution, use for housekeeping.
       void UpdateNewFrame()
       {
-	// @@@TODO: add caching
-	lightHash.DeleteAll();
+	// iterate over all the light hashes for the various sectors
+	LightHashHash::GlobalIterator sectorIt = lightHash.GetIterator();
+	while(sectorIt.HasNext())
+	{
+	  csWeakRef<iSector> sector;
+	  LightHash& lights = sectorIt.NextNoAdvance(sector);
+
+	  // clear data if sector is gone
+	  if(sector.IsValid())
+	  {
+	    sectorIt.Advance();
+	  }
+	  else
+	  {
+	    lightHash.DeleteElement(sectorIt);
+	    continue;
+	  }
+
+	  // iterate over all the known lights in this sector
+	  LightHash::GlobalIterator lightIt = lights.GetIterator();
+	  while(lightIt.HasNext())
+	  {
+	    csWeakRef<iLight> light;
+	    LightData& lightData = lightIt.NextNoAdvance(light);
+
+	    // clear data if light is gone
+	    if(light.IsValid())
+	    {
+	      lightIt.Advance();
+	    }
+	    else
+	    {
+	      lights.DeleteElement(lightIt);
+	      continue;
+	    }
+
+	    // go over the frustums for this light and clear the temp data
+	    for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
+	    {
+	      typename LightData::Frustum& frustum = lightData.frustums[f];
+
+	      // @@@TODO: add slice caching
+	      frustum.slicesHash.DeleteAll();
+	    }
+	  }
+	}
 
         csTicks time = csGetTicks();
         settings.AdvanceFrame(time);
@@ -307,8 +351,8 @@ namespace RenderManager
       }
 
       // typedefs
-      typedef csHash<LightData, csPtrKey<iLight> > LightHash;
-      typedef csHash<LightHash, csPtrKey<iSector> > LightHashHash;
+      typedef csHash<LightData, csWeakRef<iLight> > LightHash;
+      typedef csHash<LightHash, csWeakRef<iSector> > LightHashHash;
 
       // config settings
       csString configPrefix;
@@ -463,6 +507,7 @@ namespace RenderManager
 	// bounding box of receivers in this slice in projection space
 	csBox3 receiversPS;
 
+	// @@@TODO: add slice caching (thos will have to become csRefs then)
 	// tmp SVs - uninit if Slice won't be drawn
 	csShaderVariable* projectSV;
 	csShaderVariable* unscaleSV;
@@ -500,7 +545,7 @@ namespace RenderManager
 	CS::Utility::MeshFilter meshFilter;
 
 	// hash with the slice arrays for various views
-	csHash<Slices, csPtrKey<iCamera> > slicesHash;
+	csHash<Slices, csWeakRef<iCamera> > slicesHash;
       };
 
       // actual light data
@@ -579,6 +624,8 @@ namespace RenderManager
 	  // get slice array
 	  csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
 
+	  // @@@TODO: add slice caching
+
 	  // set size to num of slices we want
 	  slices.SetSize(persist.numSplits);
 
@@ -601,7 +648,7 @@ namespace RenderManager
 	  {
 	    typename LightData::Slice& slice = slices[s];
 
-	    // clear receiver data
+	    // clear receiver box
 	    slice.receiversPS.StartBoundingBox();
 
 	    // create slice box in frustum space
@@ -673,7 +720,7 @@ namespace RenderManager
 	while(it.HasNext())
 	{
 	  // get light data
-	  csPtrKey<iLight> light;
+	  csWeakRef<iLight> light;
 	  LightData& lightData = it.Next(light);
 
 	  for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
@@ -684,20 +731,19 @@ namespace RenderManager
 	    // keep track whether any slice will be drawn at all
 	    bool draw = false;
 
-	    // check which slices will be drawn and whether
-	    // @@@TODO: if we want to cache slices we should possibly use a stack array
-	    //          for the combined check here instead of writing the combined checks
-	    //          into the original positions as that'd make the info about empty slices
-	    //          lost
+	    // get slice array
 	    CS_ASSERT(frustum.slicesHash.Contains(cam));
 	    csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
+
+	    // check which slices will be drawn
+	    CS_ALLOC_STACK_ARRAY(bool, sliceDraw, slices.GetSize());
 	    for(size_t s = 0; s < slices.GetSize(); ++s)
 	    {
 	      typename LightData::Slice& slice = slices[s];
 
 	      // check whether this slice will be used
-	      slice.draw &= !slice.receiversPS.Empty();
-	      draw |= slice.draw;
+	      sliceDraw[s] = slice.draw & !slice.receiversPS.Empty();
+	      draw |= sliceDraw[s];
 	    }
 
 	    // skip setup if this frustum won't be used
@@ -709,6 +755,12 @@ namespace RenderManager
 	    {
 	      // update setup-frame
 	      frustum.setupFrame = currentFrame;
+
+	      // clear casters box
+	      frustum.castersPS.StartBoundingBox();
+
+	      // clear filter
+	      frustum.meshFilter.Clear();
 
 	      // get all meshes in the frustum box
 	      iVisibilityCuller* culler = sector->GetVisibilityCuller();
@@ -759,7 +811,7 @@ namespace RenderManager
 	      typename LightData::Slice& slice = slices[s];
 
 	      // not used, skip
-	      if(!slice.draw)
+	      if(!sliceDraw[s])
 		continue;
 
 	      // set up SVs and create the target
@@ -775,6 +827,8 @@ namespace RenderManager
     protected:
       void SetupTarget(iLight* light, LightData& lightData, typename LightData::Frustum& frustum, typename LightData::Slice& slice, bool fixed)
       {
+	// @@@TODO: add slice caching (persistent SVs, ...)
+
 	// create SVs
 	CS::ShaderVarStringID svID;
 
@@ -1077,8 +1131,8 @@ namespace RenderManager
       PersistentData& persist;
       RenderTreeType& renderTree;
       CS::RenderManager::RenderView* rview;
-      iCamera* cam;
-      iSector* sector;
+      csWeakRef<iCamera> cam;
+      csWeakRef<iSector> sector;
 
       LightingVariablesHelper svHelper;
       csLightShaderVarCache& svNames;

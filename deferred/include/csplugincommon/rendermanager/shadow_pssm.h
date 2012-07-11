@@ -704,11 +704,53 @@ namespace RenderManager
 	    if(!draw)
 	      continue;
 
-	    // it will, ensure castersPS is up-to-date
+	    // ensure projection space casters box and mesh filter are up to date
 	    if(frustum.setupFrame != currentFrame)
 	    {
+	      // update setup-frame
 	      frustum.setupFrame = currentFrame;
-	      // @@@TODO: get all casters from light's POV here
+
+	      // get all meshes in the frustum box
+	      iVisibilityCuller* culler = sector->GetVisibilityCuller();
+	      csRef<iVisibilityObjectIterator> objects = culler->VisTest(frustum.boxLS / lightData.light2world);
+
+	      // calculate world -> light -> frustum transform
+	      csTransform frust2world = frustum.frust2light * lightData.light2world;
+
+	      // iterate over all meshes
+	      while(objects->HasNext())
+	      {
+		// get object
+		iVisibilityObject* object = objects->Next();
+
+		// get mesh wrapper
+		iMeshWrapper* meshWrapper = object->GetMeshWrapper();
+
+		// get mesh flags
+		csFlags meshFlags = meshWrapper->GetFlags();
+
+		// check whether this object is a caster in our mode
+		bool casting = (!persist.limitedShadow && !meshFlags.Check(CS_ENTITY_NOSHADOWCAST))
+			    || ( persist.limitedShadow &&  meshFlags.Check(CS_ENTITY_LIMITEDSHADOWCAST));
+
+		// check whether we want this mesh filtered:
+		//   for limited casting casters are included
+		//   for normal casting non-casters are excluded
+		if(casting ^ !persist.limitedShadow)
+		{
+		  frustum.meshFilter.AddFilterMesh(meshWrapper);
+		}
+
+		// if this mesh is a caster add it's bounding box to the caster box
+		if(casting)
+		{
+		  // get world space bounding box
+		  csBox3 meshBox = object->GetBBox();
+
+		  // add projected bounding box to casters box
+		  frustum.castersPS += ProjectBox(meshBox, frust2world, lightData.project);
+		}
+	      }
 	    }
 
 	    // setup the slices that'll be used
@@ -964,15 +1006,6 @@ namespace RenderManager
       // cropping for improved shadow map usage
       void HandleMesh(typename RenderTreeType::MeshNode::SingleMesh& mesh)
       {
-	// check whether the mesh casts shadows in our mode
-	bool casting = (!persist.limitedShadow && !mesh.meshFlags.Check(CS_ENTITY_NOSHADOWCAST))
-		    || ( persist.limitedShadow &&  mesh.meshFlags.Check(CS_ENTITY_LIMITEDSHADOWCAST));
-
-	// check whether we want this mesh filtered:
-	//   for limited casting casters are included
-	//   for normal casting non-casters are excluded
-	bool filtered = casting ^ !persist.limitedShadow;
-
 	// get mesh bbox
 	csBox3 meshBox(mesh.renderMesh->bbox);
 
@@ -988,7 +1021,6 @@ namespace RenderManager
 
 	  // transform mesh bounding box to light space
 	  csTransform light2object = lightData.light2world * world2object;
-	  csBox3 meshBoxLS = light2object * meshBox;
 
 	  // for all frustums
 	  for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
@@ -996,35 +1028,16 @@ namespace RenderManager
 	    // get the frustum to process
 	    typename LightData::Frustum& frustum = lightData.frustums[f];
 
-	    // calculate object -> world -> light -> frustum transform
-	    csTransform frust2object = frustum.frust2light * light2object;
-
-	    // transform mesh bounding box to frustum space
-	    csBox3 meshBoxPS = ProjectBox(meshBox, frust2object, lightData.project);
-
-	    // @@@TODO: remove the caster handling here, this should be done once-per frustum
-	    //          only as it is view-independent and this should be done from the light's POV
-	    //          not from our actual view's POV as to not leave casters out
-
-	    // check whether mesh is visible in light space
-	    if(frustum.boxLS.TestIntersect(meshBoxLS))
-	    {
-	      // add frustum space box for casters
-	      if(casting)
-	      {
-		frustum.castersPS += meshBoxPS;
-	      }
-
-	      // add mesh to the inclusion/exclusion filter as needed (see above)
-	      if(filtered)
-	      {
-		frustum.meshFilter.AddFilterMesh(mesh.meshWrapper);
-	      }
-	    }
-
 	    // check whether the mesh receives shadows
 	    if(!mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
 	    {
+	      // calculate object -> world -> light -> frustum transform
+	      csTransform frust2object = frustum.frust2light * light2object;
+
+	      // transform mesh bounding box to frustum space
+	      // @@@TODO: we can save this projection if we first check whether we are in any slice
+	      csBox3 meshBoxPS = ProjectBox(meshBox, frust2object, lightData.project);
+
 	      // transform mesh bounding box to view space
 	      csTransform view2mesh = cam->GetTransform() * world2object;
 	      csBox3 meshBoxView = view2mesh * meshBox;

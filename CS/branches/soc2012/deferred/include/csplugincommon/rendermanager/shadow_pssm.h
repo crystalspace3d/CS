@@ -189,7 +189,7 @@ namespace RenderManager
       void UpdateNewFrame()
       {
 	// iterate over all the light hashes for the various sectors
-	LightHashHash::GlobalIterator sectorIt = lightHash.GetIterator();
+	typename LightHashHash::GlobalIterator sectorIt = lightHash.GetIterator();
 	while(sectorIt.HasNext())
 	{
 	  csWeakRef<iSector> sector;
@@ -207,7 +207,7 @@ namespace RenderManager
 	  }
 
 	  // iterate over all the known lights in this sector
-	  LightHash::GlobalIterator lightIt = lights.GetIterator();
+	  typename LightHash::GlobalIterator lightIt = lights.GetIterator();
 	  while(lightIt.HasNext())
 	  {
 	    csWeakRef<iLight> light;

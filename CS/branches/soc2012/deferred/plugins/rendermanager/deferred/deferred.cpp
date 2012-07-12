@@ -654,7 +654,7 @@ bool RMDeferred::DebugCommand(const char *cmd)
     return true;
   }
 
-  return RMDebugCommon::DebugCommand(cmd);
+  return RMDebugCommonBase::DebugCommand(cmd);
 }
 
 }

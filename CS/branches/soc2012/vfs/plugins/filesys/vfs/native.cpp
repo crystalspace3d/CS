@@ -60,6 +60,65 @@ namespace
     return string;
   }
 
+  // Convert thread-local error status to VFS status code
+  int ErrnoToVfsStatus ()
+  {
+    int status = VFS_STATUS_OK;
+    // the following code is from old vfs.cpp code
+    switch (errno)
+    {
+      case 0:
+        // no error; commented out because VFS_STATUS_OK is the default
+        //status = VFS_STATUS_OK;
+        break;
+#ifdef ENOSPC
+      case ENOSPC:
+        status = VFS_STATUS_NOSPACE;
+        break;
+#endif
+#ifdef EMFILE
+      case EMFILE:
+#endif
+#ifdef ENFILE
+      case ENFILE:
+#endif
+#ifdef ENOMEM
+      case ENOMEM:
+#endif
+#if defined( EMFILE ) || defined( ENFILE ) || defined( ENOMEM )
+        status = VFS_STATUS_RESOURCES;
+        break;
+#endif
+#ifdef ETXTBSY
+    case ETXTBSY:
+#endif
+#ifdef EROFS
+    case EROFS:
+#endif
+#ifdef EPERM
+     case EPERM:
+#endif
+#ifdef EACCES
+     case EACCES:
+#endif
+#if defined( ETXTBSY ) || defined( EROFS ) || defined( EPERM ) || \
+    defined( EACCES )
+        status = VFS_STATUS_ACCESSDENIED;
+        break;
+#endif
+#ifdef EIO
+      case EIO:
+        status = VFS_STATUS_IOERROR;
+        break;
+#endif
+      default:
+        // there was an error, but not recognized
+        status = VFS_STATUS_OTHER;
+        break;
+    }
+    return status;
+  }
+
 #ifdef _USE_EMULATED_PERMISSION
   // Converts Windows error from GetLastError () to VFS error code
   int Win32LastError ()
@@ -209,7 +268,7 @@ public:
   // Destructor
   virtual ~View ();
   // Query filename
-  virtual const char *GetName () { return "#View"; }
+  virtual const char *GetName () { return "#NativeFile::View"; }
   // Query file size
   virtual uint64_t GetSize () { return size; }
   // Query and reset last error status
@@ -320,17 +379,19 @@ NativeFile::NativeFile (NativeFS *parent,
     // TODO: implement 64-bit fail-proof handling
     if (fseek (handle, 0, SEEK_END) == 0)
     {
-      // fseek succeeded
+      // fseek succeeded;
       size = ftell (handle);
       if (size == (uint64_t)-1)
       {
         // cannot possibly have this size
         size = 0;
-        // TODO: handle errors
+        // update error
+        UpdateError ();
       }
     }
     else
-      ; // TODO: handle errors
+      // update error from errno
+      UpdateError ();
 
     // for read or write mode, reposition file pointer
     if (fileMode != VFS_FILE_APPEND)
@@ -375,56 +436,8 @@ void NativeFile::UpdateError ()
   if (!handle)
     return;
 
-  // the following code is from old vfs.cpp code
-  switch (errno)
-  {
-    case 0:
-      lastError = VFS_STATUS_OK;
-      break;
-#ifdef ENOSPC
-    case ENOSPC:
-      lastError = VFS_STATUS_NOSPACE;
-      break;
-#endif
-#ifdef EMFILE
-    case EMFILE:
-#endif
-#ifdef ENFILE
-    case ENFILE:
-#endif
-#ifdef ENOMEM
-    case ENOMEM:
-#endif
-#if defined( EMFILE ) || defined( ENFILE ) || defined( ENOMEM )
-      lastError = VFS_STATUS_RESOURCES;
-      break;
-#endif
-#ifdef ETXTBSY
-    case ETXTBSY:
-#endif
-#ifdef EROFS
-    case EROFS:
-#endif
-#ifdef EPERM
-   case EPERM:
-#endif
-#ifdef EACCES
-   case EACCES:
-#endif
-#if defined( ETXTBSY ) || defined( EROFS ) || defined( EPERM ) || \
-    defined( EACCES )
-      lastError = VFS_STATUS_ACCESSDENIED;
-      break;
-#endif
-#ifdef EIO
-    case EIO:
-      lastError = VFS_STATUS_IOERROR;
-      break;
-#endif
-    default:
-      lastError = VFS_STATUS_OTHER;
-      break;
-  }
+  // call our helper function to determine status
+  lastError = ErrnoToVfsStatus ();
 }
 
 // Reset and return last error status
@@ -931,56 +944,8 @@ void NativeFS::UpdateError ()
   if (lastError != VFS_STATUS_OK)
     return;
 
-  // the following code is from old vfs.cpp code
-  switch (errno)
-  {
-    case 0:
-      lastError = VFS_STATUS_OK;
-      break;
-#ifdef ENOSPC
-    case ENOSPC:
-      lastError = VFS_STATUS_NOSPACE;
-      break;
-#endif
-#ifdef EMFILE
-    case EMFILE:
-#endif
-#ifdef ENFILE
-    case ENFILE:
-#endif
-#ifdef ENOMEM
-    case ENOMEM:
-#endif
-#if defined( EMFILE ) || defined( ENFILE ) || defined( ENOMEM )
-      lastError = VFS_STATUS_RESOURCES;
-      break;
-#endif
-#ifdef ETXTBSY
-    case ETXTBSY:
-#endif
-#ifdef EROFS
-    case EROFS:
-#endif
-#ifdef EPERM
-   case EPERM:
-#endif
-#ifdef EACCES
-   case EACCES:
-#endif
-#if defined( ETXTBSY ) || defined( EROFS ) || defined( EPERM ) || \
-    defined( EACCES )
-      lastError = VFS_STATUS_ACCESSDENIED;
-      break;
-#endif
-#ifdef EIO
-    case EIO:
-      lastError = VFS_STATUS_IOERROR;
-      break;
-#endif
-    default:
-      lastError = VFS_STATUS_OTHER;
-      break;
-  }
+  // use helper function to get corresponding VFS status
+  lastError = ErrnoToVfsStatus ();
 }
 
 // Open a particular file

@@ -777,11 +777,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       int w = graphics3D->GetWidth();
       int h = graphics3D->GetHeight();
       
-      csVector3 quadVerts[4];
-      quadVerts[0] = csVector3 (0.0f, 0.0f, 0.0f);
-      quadVerts[1] = csVector3 (0.0f,    h, 0.0f);
-      quadVerts[2] = csVector3 (   w,    h, 0.0f);
-      quadVerts[3] = csVector3 (   w, 0.0f, 0.0f);
+      csVector3 quadVerts[4] = {
+	csVector3 (0.0f, 0.0f, 0.0f),
+	csVector3 (0.0f,    h, 0.0f),
+	csVector3 (   w,    h, 0.0f),
+	csVector3 (   w, 0.0f, 0.0f)
+      };
 
       persistentData.quadMesh.vertices = quadVerts;
       persistentData.quadMesh.shader = shader;

@@ -94,11 +94,10 @@ bool MapLoader::Initialize (iEditor* editor)
   lastResource.path = "/lev/";
   lastResource.file = "";
 
-  //lastResource.path = "/lev/castle/";
-  lastResource.path = "/data/frankie/";
-  //lastResource.path = "/data/scaletest/";
-  //lastResource.file = "world";
-  lastResource.file = "frankie.xml";
+  //lastResource.path = "/lev/castle/"; lastResource.file = "world";
+  //lastResource.path = "/data/scaletest/"; lastResource.file = "world";
+  //lastResource.path = "/data/frankie/"; lastResource.file = "frankie.xml";
+  //lastResource.path = "/data/particles/"; lastResource.file = "fire1.cslib";
   //resourceData.Push (lastResource);
 
   // Analyze the command line arguments for a file to be loaded
@@ -109,7 +108,6 @@ bool MapLoader::Initialize (iEditor* editor)
   const char* realPath = cmdline->GetOption ("R");
   if (realPath)
   {
-    printf ("realPath %s\n", realPath);
     vfs->Mount ("/tmp/cseditor", realPath);
     //vfs->ChDir ("/tmp/cseditor");
     realPath = "/tmp/cseditor";
@@ -139,7 +137,6 @@ bool MapLoader::Initialize (iEditor* editor)
     if (!vfsDir.IsEmpty () && vfsDir.GetAt (vfsDir.Length () - 1) != '/')
       vfsDir += '/';
 
-    printf ("found path '%s' file '%s'\n", vfsDir.GetData(), filename.GetData());
     lastResource.path = vfsDir;
     lastResource.file = filename;
     resourceData.Push (lastResource);

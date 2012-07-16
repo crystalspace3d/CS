@@ -192,7 +192,7 @@ void SceneManager::OnSetActiveObject (iCamera* camera)
     camera->SetSector (sectorList->Get (0));
     csBox3 bbox = mesh->GetWorldBoundingBox ();
     PositionCamera (camera, bbox);
-    cameraManager->SetCameraMode (CS::Utility::CAMERA_MOVE_FREE);
+    cameraManager->SetCameraMode (CS::Utility::CAMERA_ROTATE);
     cameraManager->SetMotionSpeed (5.0f);
     cameraManager->ResetCamera ();
 
@@ -212,7 +212,7 @@ void SceneManager::OnSetActiveObject (iCamera* camera)
     csBox3 bbox = light->GetWorldBBox ();
     bbox.SetSize (bbox.GetSize () * 0.5f);
     PositionCamera (camera, bbox);
-    cameraManager->SetCameraMode (CS::Utility::CAMERA_MOVE_FREE);
+    cameraManager->SetCameraMode (CS::Utility::CAMERA_ROTATE);
     cameraManager->SetMotionSpeed (5.0f);
     cameraManager->ResetCamera ();
 
@@ -239,7 +239,7 @@ void SceneManager::OnSetActiveObject (iCamera* camera)
 
     camera->SetSector (sector);
     PositionCamera (camera, bbox);
-    cameraManager->SetCameraMode (CS::Utility::CAMERA_MOVE_FREE);
+    cameraManager->SetCameraMode (CS::Utility::CAMERA_ROTATE);
     cameraManager->SetMotionSpeed (5.0f);
     cameraManager->ResetCamera ();
 
@@ -317,7 +317,7 @@ void SceneManager::OnSetCollection (iCamera* camera)
     camera->GetTransform ().SetO2T (csMatrix3 ());
     cameraManager->SetStartPosition (csVector3 (0.0f));
     cameraManager->SetCameraTarget (csVector3 (0.0f));
-    cameraManager->SetCameraMode (CS::Utility::CAMERA_MOVE_FREE);
+    cameraManager->SetCameraMode (CS::Utility::CAMERA_ROTATE);
     cameraManager->SetMotionSpeed (5.0f);
     cameraManager->ResetCamera ();
     return;

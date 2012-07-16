@@ -12,13 +12,13 @@
       <class>
         <name>crystalspace.editor.space.properties</name>
         <implementation>PropertiesSpace</implementation>
-        <description>Properties panel</description>
+        <description>Properties</description>
         <allowMultiple>true</allowMultiple>
       </class>
       <class>
         <name>crystalspace.editor.space.scenetree</name>
         <implementation>SceneTree</implementation>
-        <description>Display of the scene tree</description>
+        <description>Scene</description>
         <allowMultiple>true</allowMultiple>
       </class>
       <class>

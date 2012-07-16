@@ -155,10 +155,25 @@ void SceneTreeCtrl::UpdateTree ()
   csRef<iContextFileLoader> fileLoaderContext =
     scfQueryInterface<iContextFileLoader> (editor->GetContext ());
   iCollection* collection = fileLoaderContext->GetCollection ();
-  if (!collection) return;
+  if (!collection)
+  {
+    InsertItem (GetRootItem (), 0,
+		wxString::FromUTF8 ("No objects available"),
+		-1, -1, nullptr); 
+    return;
+  }
 
   iObject* collisionObject = collection->QueryObject ();
-  for (csRef<iObjectIterator> it = collisionObject->GetIterator (); it->HasNext (); )
+  csRef<iObjectIterator> it = collisionObject->GetIterator ();
+  if (!it->HasNext ())
+  {
+    InsertItem (GetRootItem (), 0,
+		wxString::FromUTF8 ("No objects available"),
+		-1, -1, nullptr); 
+    return;
+  }
+
+  for ( ; it->HasNext (); )
   {
     iObject* object = it->Next ();
    

@@ -282,12 +282,22 @@ bool CameraManager::OnMouseDown (iEvent& event)
     cameraModeZoom = true;
     break;
   case 3:
-    cameraDistance = csMax<float> (minimumDistance, cameraDistance - mouseWheelZoomAmount);
-    ApplyPositionParameters ();
+    if (cameraMode == CS::Utility::CAMERA_MOVE_FREE)
+      camera->Move (CS_VEC_FORWARD * mouseWheelZoomAmount);
+    else
+    {
+      cameraDistance = csMax<float> (minimumDistance, cameraDistance - mouseWheelZoomAmount);
+      ApplyPositionParameters ();
+    }
     break;
   case 4:
-    cameraDistance = csMax<float> (minimumDistance, cameraDistance + mouseWheelZoomAmount);
-    ApplyPositionParameters ();
+    if (cameraMode == CS::Utility::CAMERA_MOVE_FREE)
+      camera->Move (CS_VEC_FORWARD * -mouseWheelZoomAmount);
+    else
+    {
+      cameraDistance = csMax<float> (minimumDistance, cameraDistance + mouseWheelZoomAmount);
+      ApplyPositionParameters ();
+    }
     break;
   }
   return false;
@@ -330,25 +340,50 @@ bool CameraManager::OnMouseMove (iEvent& event)
 
   if (cameraModePan)
   {
-    panCameraTarget +=
-      camera->GetTransform ().This2OtherRelative (csVector3 (1,0,0)) * dx * motionSpeed / 10.0f
-      + camera->GetTransform ().This2OtherRelative (csVector3 (0,1,0)) * dy * motionSpeed / 10.0f;
-    ApplyPositionParameters ();
+    if (cameraMode == CS::Utility::CAMERA_MOVE_FREE)
+    {
+      camera->Move (CS_VEC_RIGHT * dx * motionSpeed * 0.3f);
+      camera->Move (CS_VEC_UP * dy * motionSpeed * 0.3f);
+    }
+
+    else
+    {
+      panCameraTarget +=
+	camera->GetTransform ().This2OtherRelative (csVector3 (1,0,0)) * dx * motionSpeed * 0.1f
+	+ camera->GetTransform ().This2OtherRelative (csVector3 (0,1,0)) * dy * motionSpeed * 0.1f;
+      ApplyPositionParameters ();
+    }
   }
 
   if (cameraModeRotate)
   {
-    cameraYaw += dx * rotationSpeed;
-    cameraPitch += dy * rotationSpeed;
-    cameraPitch = csMax<float> (-3.14159f * 0.5f + 0.01f, cameraPitch);
-    cameraPitch = csMin<float> (3.14159f * 0.5f - 0.01f, cameraPitch);
-    ApplyPositionParameters ();
+    if (cameraMode == CS::Utility::CAMERA_MOVE_FREE)
+    {
+      camera->GetTransform ().RotateOther
+	(csVector3 (0.0f, 1.0f, 0.0f), dx * rotationSpeed * 0.5f);
+      camera->GetTransform ().RotateThis
+	(csVector3 (1.0f, 0.0f, 0.0f), -dy * rotationSpeed * 0.5f);
+    }
+
+    else
+    {
+      cameraYaw += dx * rotationSpeed;
+      cameraPitch += dy * rotationSpeed;
+      cameraPitch = csMax<float> (-3.14159f * 0.5f + 0.01f, cameraPitch);
+      cameraPitch = csMin<float> (3.14159f * 0.5f - 0.01f, cameraPitch);
+      ApplyPositionParameters ();
+    }
   }
 
   if (cameraModeZoom)
   {
-    cameraDistance = csMax<float> (minimumDistance, cameraDistance - (dx + dy) * motionSpeed);
-    ApplyPositionParameters ();
+    if (cameraMode == CS::Utility::CAMERA_MOVE_FREE)
+      camera->Move (CS_VEC_FORWARD * (dx + dy) * motionSpeed);
+    else
+    {
+      cameraDistance = csMax<float> (minimumDistance, cameraDistance - (dx + dy) * motionSpeed);
+      ApplyPositionParameters ();
+    }
   }
 
   return false;

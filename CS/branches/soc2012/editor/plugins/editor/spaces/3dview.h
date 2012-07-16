@@ -20,7 +20,6 @@
 #ifndef __SPACE_3DVIEW_H__
 #define __SPACE_3DVIEW_H__
 
-#include "cstool/collider.h"
 #include "csutil/csbaseeventh.h"
 #include "csutil/eventnames.h"
 #include "csutil/scf_implementation.h"
@@ -58,7 +57,8 @@ public:
   void OnSize (wxSizeEvent& event);
   
 private:
-  virtual void UpdateFrame ();
+  virtual void OnFrameBegin ();
+  virtual void OnFramePrint ();
   
 private:
   iObjectRegistry* object_reg;
@@ -76,17 +76,31 @@ private:
   csEventID eventSetCamera;
   csEventID eventSetCollection;
 
-  struct FrameListener : public csBaseEventHandler
+  class FrameBegin3DDraw : public scfImplementation1<FrameBegin3DDraw, iEventHandler>
   {
-    FrameListener (CS3DSpace* space);
-
-    //-- iEventHandler
+  public:
+    FrameBegin3DDraw (CS3DSpace* space);
+    ~FrameBegin3DDraw ();
     bool HandleEvent (iEvent &event);
 
   private:
     CS3DSpace* space;
+    CS_EVENTHANDLER_PHASE_3D ("crystalspace.editor.space.3dview.frame_begin");
   };
-  FrameListener* frameListener;
+  FrameBegin3DDraw* frameBegin3DDraw;
+
+  class FramePrinter : public scfImplementation1<FramePrinter, iEventHandler>
+  {
+  public:
+    FramePrinter (CS3DSpace* space);
+    ~FramePrinter ();
+    bool HandleEvent (iEvent &event);
+
+  private:
+    CS3DSpace* space;
+    CS_EVENTHANDLER_PHASE_FRAME ("crystalspace.editor.space.3dview.frame_print");
+  };
+  FramePrinter* framePrinter;
 
   class Space : public wxPanel
   {
@@ -102,7 +116,7 @@ private:
 
     private:
       CS3DSpace* space;
-      
+
       DECLARE_EVENT_TABLE ();
   };
 };

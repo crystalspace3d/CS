@@ -135,6 +135,10 @@ void SceneManager::OnSetCamera (iCamera* camera)
     return;
   }
   cameraManager->SetCamera (camera);
+
+  // If the camera is not in a sector then try to find one
+  if (camera && !camera->GetSector ())
+    OnSetCollection (camera);
 }
 
 void SceneManager::OnSetActiveObject (iCamera* camera)
@@ -163,62 +167,14 @@ void SceneManager::OnSetActiveObject (iCamera* camera)
     return;
   }
 
-  // If it's a iMeshFactoryWrapper then create a new sector to visualize it
+  // If it's a iMeshFactoryWrapper then create a new sector to
+  // visualize it
   csRef<iMeshFactoryWrapper> meshFactory =
     scfQueryInterface<iMeshFactoryWrapper> (object);
 
   if (meshFactory)
   {
-    // Create a temporary sector
-    meshSector = engine->CreateSector ("viewmesh");
-
-    // Setup the camera
-    camera->SetSector (meshSector);
-    cameraManager->SetCameraMode (CS::Utility::CAMERA_ROTATE);
-
-    csRef<iMeshWrapper> meshWrapper =
-      engine->CreateMeshWrapper (meshFactory, "viewmesh", meshSector);
-
-    csBox3 bbox = meshWrapper->GetWorldBoundingBox ();
-    cameraManager->SetCameraTarget (bbox.GetCenter ());
-    float boxSize = bbox.GetSize ().Norm ();
-    cameraManager->SetStartPosition
-      (bbox.GetCenter () + csVector3 (0.0f, 0.0f, - boxSize));
-    cameraManager->SetMotionSpeed (boxSize * 5.0f);
-    cameraManager->ResetCamera ();
-
-    float roomSize = bbox.GetSize ().Norm () * 5.0f;
-
-    // Initialize the lights
-    csRef<iLight> light;
-    light = engine->CreateLight
-      (0, csVector3 (0.0f), 100.0f, csColor(1, 1, 1));
-    meshSector->GetLights ()->Add (light);
-
-    light = engine->CreateLight
-      (0, csVector3 (0.0f), 100.0f, csColor(1, 1, 1));
-    meshSector->GetLights ()->Add (light);
-
-    light = engine->CreateLight
-      (0, csVector3(0.0f), 100.0f, csColor(1, 1, 1));
-    meshSector->GetLights ()->Add (light);
-
-    iLightList* ll = meshSector->GetLights ();
-    ll->Get (0)->GetMovable()->SetPosition
-      (csVector3 (-roomSize / 2.0f, roomSize / 2.0f, 0.0f));
-    ll->Get (1)->GetMovable()->SetPosition
-      (csVector3 (roomSize / 2.0f,  -roomSize / 2.0f, 0.0f));
-    ll->Get (2)->GetMovable()->SetPosition
-      (csVector3 (0.0f, 0.0f, -roomSize / 2.0f));
-
-    ll->Get (0)->SetCutoffDistance (roomSize);
-    ll->Get (1)->SetCutoffDistance (roomSize);
-    ll->Get (2)->SetCutoffDistance (roomSize);
-
-    ll->Get (0)->GetMovable()->UpdateMove();
-    ll->Get (1)->GetMovable()->UpdateMove();
-    ll->Get (2)->GetMovable()->UpdateMove();
-
+    CreateViewmeshScene (meshFactory, camera);
     return;
   }
 
@@ -297,7 +253,7 @@ void SceneManager::OnSetCollection (iCamera* camera)
 
   csRef<iContextFileLoader> fileLoaderContext =
     scfQueryInterface<iContextFileLoader> (editor->GetContext ());
-  const iCollection* collection = fileLoaderContext->GetCollection ();
+  iCollection* collection = fileLoaderContext->GetCollection ();
 
   if (!collection)
   {
@@ -305,38 +261,128 @@ void SceneManager::OnSetCollection (iCamera* camera)
     return;
   }
 
-  // TODO: read all of this from the iContextObjectSelection
-  // If there are no sectors then invalidate the camera
-  if (!engine->GetSectors ()->GetCount ())
+  // Analyze the collection to find a suitable starting position
+  // for the camera
+  iCameraPosition* firstCameraPosition = nullptr;
+  iSector* firstSector = nullptr;
+  iMeshFactoryWrapper* firstMeshFactory = nullptr;
+
+  iObject* collisionObject = collection->QueryObject ();
+  for (csRef<iObjectIterator> it = collisionObject->GetIterator (); it->HasNext (); )
   {
-    camera->SetSector (nullptr);
+    iObject* object = it->Next ();
+
+    csRef<iMeshFactoryWrapper> meshFactory =
+      scfQueryInterface<iMeshFactoryWrapper> (object);
+    if (meshFactory)
+    {
+      if (!firstMeshFactory) firstMeshFactory = meshFactory;
+      continue;
+    }
+
+    csRef<iSector> sector =
+      scfQueryInterface<iSector> (object);
+    if (sector)
+    {
+      if (!firstSector) firstSector = sector;
+      continue;
+    }
+
+    csRef<iCameraPosition> cameraPosition =
+      scfQueryInterface<iCameraPosition> (object);
+    if (cameraPosition)
+    {
+      if (!firstCameraPosition) firstCameraPosition = cameraPosition;
+      break;
+    }
+   }
+
+  // If there is a valid starting position defined in the level file
+  // then go to it.
+  if (firstCameraPosition)
+  {
+    firstCameraPosition->Load (camera, engine);
+    cameraManager->SetStartPosition (camera->GetTransform ().GetOrigin ());
+    cameraManager->SetCameraTarget (csVector3 (0.0f));
+    cameraManager->SetCameraMode (CS::Utility::CAMERA_MOVE_FREE);
+    cameraManager->SetMotionSpeed (5.0f);
+    cameraManager->ResetCamera ();
     return;
   }
 
-  // Move the camera to the starting sector/position
-  csRef<iSector> room;
-  csVector3 pos;
-  
-  if (engine->GetCameraPositions ()->GetCount () > 0)
+  // If there is a sector then go to its origin
+  if (firstSector)
   {
-    // There is a valid starting position defined in the level file.
-    iCameraPosition* campos = engine->GetCameraPositions ()->Get (0);
-    room = engine->GetSectors ()->FindByName (campos->GetSector ());
-    pos = campos->GetPosition ();
+    camera->SetSector (firstSector);
+    camera->GetTransform ().SetO2T (csMatrix3 ());
+    cameraManager->SetStartPosition (csVector3 (0.0f));
+    cameraManager->SetCameraTarget (csVector3 (0.0f));
+    cameraManager->SetCameraMode (CS::Utility::CAMERA_MOVE_FREE);
+    cameraManager->SetMotionSpeed (5.0f);
+    cameraManager->ResetCamera ();
+    return;
   }
 
-  if (!room)
+  // If there is a mesh factory then create a dedicated sector for it
+  if (firstMeshFactory)
   {
-    // We didn't find a valid starting position. So we default
-    // to going to the sector called 'room', or the first sector,
-    // at position (0,0,0).
-    room = engine->GetSectors ()->FindByName ("room");
-    if (!room) room = engine->GetSectors ()->Get (0);
-    pos = csVector3 (0, 0, 0);
+    CreateViewmeshScene (firstMeshFactory, camera);
+    return;
   }
+}
 
-  camera->SetSector (room);
-  camera->GetTransform ().SetOrigin (pos);
+void SceneManager::CreateViewmeshScene (iMeshFactoryWrapper* meshFactory,
+					iCamera* camera)
+{
+  // Create a temporary sector
+  meshSector = engine->CreateSector ("viewmesh");
+
+  // Setup the camera
+  camera->SetSector (meshSector);
+  cameraManager->SetCameraMode (CS::Utility::CAMERA_ROTATE);
+
+  csRef<iMeshWrapper> meshWrapper =
+    engine->CreateMeshWrapper (meshFactory, "viewmesh", meshSector);
+
+  csBox3 bbox = meshWrapper->GetWorldBoundingBox ();
+  cameraManager->SetCameraTarget (bbox.GetCenter ());
+  float boxSize = bbox.GetSize ().Norm ();
+  cameraManager->SetStartPosition
+    (bbox.GetCenter () + csVector3 (0.0f, 0.0f, - boxSize));
+  cameraManager->SetMotionSpeed (boxSize * 5.0f);
+  cameraManager->ResetCamera ();
+
+  float roomSize = bbox.GetSize ().Norm () * 5.0f;
+
+  // Initialize the lights
+  csRef<iLight> light;
+  light = engine->CreateLight
+    (0, csVector3 (0.0f), 100.0f, csColor(1, 1, 1));
+  meshSector->GetLights ()->Add (light);
+
+  light = engine->CreateLight
+    (0, csVector3 (0.0f), 100.0f, csColor(1, 1, 1));
+  meshSector->GetLights ()->Add (light);
+
+  light = engine->CreateLight
+    (0, csVector3(0.0f), 100.0f, csColor(1, 1, 1));
+  meshSector->GetLights ()->Add (light);
+
+  iLightList* ll = meshSector->GetLights ();
+  ll->Get (0)->GetMovable()->SetPosition
+    (csVector3 (-roomSize / 2.0f, roomSize / 2.0f, 0.0f));
+  ll->Get (1)->GetMovable()->SetPosition
+    (csVector3 (roomSize / 2.0f,  -roomSize / 2.0f, 0.0f));
+  ll->Get (2)->GetMovable()->SetPosition
+    (csVector3 (0.0f, 0.0f, -roomSize / 2.0f));
+
+  ll->Get (0)->SetCutoffDistance (roomSize);
+  ll->Get (1)->SetCutoffDistance (roomSize);
+  ll->Get (2)->SetCutoffDistance (roomSize);
+
+  ll->Get (0)->GetMovable()->UpdateMove();
+  ll->Get (1)->GetMovable()->UpdateMove();
+  ll->Get (2)->GetMovable()->UpdateMove();
 }
 
 void SceneManager::PositionCamera (iCamera* camera, csBox3& bbox)

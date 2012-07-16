@@ -75,6 +75,8 @@ private:
   void OnSetCollection (iCamera* camera);
 
   void PositionCamera (iCamera* camera, csBox3& bbox);
+  void CreateViewmeshScene (iMeshFactoryWrapper* meshFactory,
+			    iCamera* camera);
 
 private:
   iObjectRegistry* object_reg;

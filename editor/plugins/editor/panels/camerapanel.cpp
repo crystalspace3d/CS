@@ -51,8 +51,6 @@ bool CameraPanel::Poll (iContext* context)
 
 void CameraPanel::Draw (iContext* context, iLayout* layout)
 {
-  printf ("CameraPanel::Draw\n");
-
   csString ori;
   csRef<iContextCamera> cameraContext = scfQueryInterface<iContextCamera> (context);
   const csVector3 & origin = cameraContext->GetCamera ()->GetTransform ().GetOrigin ();

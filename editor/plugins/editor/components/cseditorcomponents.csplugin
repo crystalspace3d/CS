@@ -4,6 +4,11 @@
   <scf>
     <classes>
       <class>
+        <name>crystalspace.editor.component.2dinfo</name>
+        <implementation>CS2DInfo</implementation>
+        <description>2D Info</description>
+      </class>
+      <class>
         <name>crystalspace.editor.component.engine</name>
         <implementation>CS3DEngine</implementation>
         <description>Base engine and menu entries</description>
@@ -14,6 +19,11 @@
         <description>Management of application exit</description>
       </class>
       <class>
+        <name>crystalspace.editor.component.logger</name>
+        <implementation>Logger</implementation>
+        <description>Logging of report messages</description>
+      </class>
+      <class>
         <name>crystalspace.editor.component.maploader</name>
         <implementation>MapLoader</implementation>
         <description>Default map and library loader</description>
@@ -22,11 +32,6 @@
         <name>crystalspace.editor.component.scenemanager</name>
         <implementation>SceneManager</implementation>
         <description>Scene and camera management</description>
-      </class>
-      <class>
-        <name>crystalspace.editor.component.logger</name>
-        <implementation>Logger</implementation>
-        <description>Logging of report messages</description>
       </class>
     </classes>
   </scf>

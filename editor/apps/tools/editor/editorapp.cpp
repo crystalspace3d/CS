@@ -38,7 +38,7 @@
 
 CS_IMPLEMENT_APPLICATION
 
-#if defined(CS_PLATFORM_WIN32)
+#if defined (CS_PLATFORM_WIN32)
 
 #ifndef SW_SHOWNORMAL
 #define SW_SHOWNORMAL 1
@@ -57,7 +57,7 @@ int main (int argc, const char* const argv[])
 using namespace CS::EditorApp;
 
 // Define a new application type
-class EditorApp : public wxApp
+class EditorApplication : public wxApp
 {
   bool ReportError (const char* description, ...)
   {
@@ -94,13 +94,13 @@ public:
   virtual int OnExit (void);
 };
 
-
-IMPLEMENT_APP (EditorApp);
+IMPLEMENT_APP (EditorApplication);
 
 /*---------------------------------------------------------------------*
  * Main function
  *---------------------------------------------------------------------*/
-bool EditorApp::OnInit (void)
+
+bool EditorApplication::OnInit (void)
 {
   wxInitAllImageHandlers ();
 
@@ -145,6 +145,7 @@ bool EditorApp::OnInit (void)
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.maploader")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.scenemanager")) return false;
+  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.2dinfo")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.exit")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.3dview")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.scenetree")) return false;
@@ -159,7 +160,7 @@ bool EditorApp::OnInit (void)
   return true;
 }
 
-int EditorApp::OnExit ()
+int EditorApplication::OnExit ()
 {
   // Send the general Crystal Space 'quit' event
   csRef<iEventQueue> queue (csQueryRegistry<iEventQueue> (object_reg));

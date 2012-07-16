@@ -76,9 +76,7 @@ bool SceneTree::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   
   // Create the tree control
   treectrl = new SceneTreeCtrl (object_reg, editor, this, SceneTree_Ctrl,
-				wxPoint (0, 0), wxSize (100, 100),
-				wxTR_MULTIPLE | wxTR_FULL_ROW_HIGHLIGHT
-				| wxTR_EDIT_LABELS | wxTR_HAS_BUTTONS);
+				wxPoint (0, 0), wxSize (100, 100));
 
   return true;
 }
@@ -104,18 +102,16 @@ void SceneTree::OnSize (wxSizeEvent& event)
 
 SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
 			      wxWindow *parent, const wxWindowID id,
-			      const wxPoint& pos, const wxSize& size,
-			      long style)
-  : wxTreeCtrl (parent, id, pos, size, style), editor (editor)
+			      const wxPoint& pos, const wxSize& size)
+  : wxTreeCtrl (parent, id, pos, size,
+		wxTR_MULTIPLE | wxTR_FULL_ROW_HIGHLIGHT | wxTR_EDIT_LABELS | wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT),
+    editor (editor)
 {
   imageList = new wxImageList (16, 16);
   AssignImageList (imageList);
 
   wxBitmap sceneBmp (sceneIcon_xpm);
   rootIconIdx = imageList->Add (sceneBmp);
-
-  // Hide the root item
-  SetWindowStyle (GetWindowStyle () | wxTR_HIDE_ROOT);
 
   // Register the event handler
   iEventNameRegistry* registry =
@@ -295,9 +291,8 @@ void SceneTreeCtrl::AppendObject (iObject* object, ObjectType type)
   if (name.Trim ().IsEmpty ())
     name = "Unnamed object";
 
-  wxTreeItemId id =
-    AppendItem (rootIDs[type], wxString (name, *wxConvCurrent),
-		/*imageIdx*/ -1, -1, new SceneTreeItemData (object));
+  AppendItem (rootIDs[type], wxString (name, *wxConvCurrent),
+	      /*imageIdx*/ -1, -1, new SceneTreeItemData (object));
 }
 
 void SceneTreeCtrl::OnItemActivated (wxTreeEvent& event)

@@ -150,7 +150,7 @@ ViewControl::ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* p
 
   box->Add (menuBar, 0, wxEXPAND);
   SetSizer (box);
-  box->SetSizeHints (this);
+  //box->SetSizeHints (this);
 }
 
 ViewControl::~ViewControl ()
@@ -254,8 +254,7 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
         control->box->Insert (0, control->space->GetwxWindow (), 1, wxEXPAND, 0);
         SetSelection (i - 1);
         mgr->ReDraw (control->space);
-	control->space->GetwxWindow ()->Layout ();
-        editor->GetwxFrame ()->Layout ();
+	control->box->Layout ();
       }
 
       else

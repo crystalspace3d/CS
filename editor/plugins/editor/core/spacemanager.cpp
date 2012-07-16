@@ -436,7 +436,7 @@ void SpaceManager::ReDraw (iSpace* space)
       }
 
       win->SetSizer (sz, true);
-      sz->SetSizeHints (win);
+      //sz->SetSizeHints (win);
     }
   }
 }

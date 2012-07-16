@@ -269,7 +269,7 @@ void Editor::Init ()
   wxBoxSizer* box = new wxBoxSizer (wxHORIZONTAL);
   box->Add (m_splitter, 1, wxEXPAND | wxALL, 0);
   SetSizer (box);
-  box->SetSizeHints (this);
+  //box->SetSizeHints (this);
 
   // Reset the window size
   SetSize (wxSize (1024, 768));

@@ -122,7 +122,7 @@ HeaderLayout::HeaderLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow* 
   tb->Realize ();
   box->Add (tb, 1, wxEXPAND);
   parent->SetSizer (box, true);
-  box->SetSizeHints (parent);
+  //box->SetSizeHints (parent);
 }
 
 HeaderLayout::~HeaderLayout ()
@@ -221,7 +221,7 @@ PanelLayout::PanelLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow* pa
   paneSz = new wxBoxSizer (wxVERTICAL);
 
   parent->SetSizer (paneSz);
-  paneSz->SetSizeHints (parent);
+  //paneSz->SetSizeHints (parent);
 }
 
 PanelLayout::~PanelLayout ()

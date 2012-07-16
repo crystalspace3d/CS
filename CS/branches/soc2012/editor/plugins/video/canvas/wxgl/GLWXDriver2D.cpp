@@ -274,12 +274,12 @@ bool csGraphics2DWX::Open()
 
 #ifdef WIN32
 
-  csGLPixelFormatPicker picker (this);
+  //csGLPixelFormatPicker picker (this);
 
-  int pixelFormat = -1;
+  //int pixelFormat = -1;
 
   PIXELFORMATDESCRIPTOR pfd;
-  pixelFormat = FindPixelFormat (picker, pfd);
+  //pixelFormat = FindPixelFormat (picker, pfd);
 
   currentFormat[glpfvColorBits] = pfd.cColorBits;
   currentFormat[glpfvAlphaBits] = pfd.cAlphaBits;
@@ -609,11 +609,12 @@ BEGIN_EVENT_TABLE(csGLCanvas, wxGLCanvas)
   EVT_SIZE(csGLCanvas::OnSize)
   EVT_PAINT(csGLCanvas::OnPaint)
   EVT_ERASE_BACKGROUND(csGLCanvas::OnEraseBackground)
-  EVT_KEY_DOWN( csGLCanvas::OnKeyDown )
-  EVT_KEY_UP( csGLCanvas::OnKeyUp )
-  EVT_ENTER_WINDOW( csGLCanvas::OnEnterWindow )
-  EVT_LEAVE_WINDOW( csGLCanvas::OnLeaveWindow )
-  EVT_MOUSE_EVENTS( csGLCanvas::OnMouseEvent )
+  EVT_KEY_DOWN(csGLCanvas::OnKeyDown)
+  EVT_KEY_UP(csGLCanvas::OnKeyUp)
+  EVT_SET_FOCUS(csGLCanvas::OnSetFocus)
+  EVT_KILL_FOCUS(csGLCanvas::OnKillFocus)
+  EVT_MOUSE_EVENTS(csGLCanvas::OnMouseEvent)
+  EVT_MOUSE_CAPTURE_LOST(csGLCanvas::OnMouseCaptureLost)
 END_EVENT_TABLE()
 
 csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
@@ -622,7 +623,7 @@ csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
                        const wxSize& size, long style,
                        const wxString& name, int* attr)
   : wxGLCanvas(parent, id, pos, size, style | wxWANTS_CHARS, name, attr),
-    g2d(g)
+  g2d(g), mouseState(0)
 {
   int w, h;
   GetClientSize(&w, &h);
@@ -649,19 +650,7 @@ csGLCanvas::~csGLCanvas()
 {
 }
 
-void csGLCanvas::OnEnterWindow( wxMouseEvent& WXUNUSED(event) )
-{
-  csRef<iEventNameRegistry> enr = csQueryRegistry<iEventNameRegistry> (g2d->object_reg);
-  g2d->EventOutlet->Broadcast(csevFocusGained(enr));
-}
-
-void csGLCanvas::OnLeaveWindow( wxMouseEvent& WXUNUSED(event) )
-{
-  csRef<iEventNameRegistry> enr = csQueryRegistry<iEventNameRegistry> (g2d->object_reg);
-  g2d->EventOutlet->Broadcast(csevFocusLost(enr));
-}
-
-void csGLCanvas::OnPaint( wxPaintEvent& WXUNUSED(event) )
+void csGLCanvas::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
   wxPaintDC dc(this);
 }
@@ -688,38 +677,71 @@ void csGLCanvas::OnEraseBackground(wxEraseEvent& WXUNUSED(event))
   // Do nothing, to avoid flashing.
 }
 
-void csGLCanvas::OnMouseEvent( wxMouseEvent& event )
+void csGLCanvas::OnKeyUp( wxKeyEvent& event )
 {
-  // csPrintf("got mouse event %ld %ld\n", event.GetX(), event.GetY());
+  EmitKeyEvent(event, false);
+}
+
+void csGLCanvas::OnKeyDown( wxKeyEvent& event )
+{
+  EmitKeyEvent(event, true);
+}
+
+void csGLCanvas::OnMouseEvent(wxMouseEvent& event)
+{
   if(event.GetEventType() == wxEVT_MOTION)
   {
     g2d->EventOutlet->Mouse(csmbNone, false, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_LEFT_DOWN)
   {
+    // Start capturing the mouse
+    if (!mouseState) CaptureMouse ();
+    mouseState |= MOUSE_LEFT;
+
     SetFocus ();
     g2d->EventOutlet->Mouse(csmbLeft, true, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_LEFT_UP)
   {
+    // Release the mouse capturing
+    mouseState &= ~MOUSE_LEFT;
+    if (!mouseState) ReleaseMouse ();
+
     g2d->EventOutlet->Mouse(csmbLeft, false, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_MIDDLE_DOWN)
   {
+    // Start capturing the mouse
+    if (!mouseState) CaptureMouse ();
+    mouseState |= MOUSE_MIDDLE;
+
     SetFocus ();
     g2d->EventOutlet->Mouse(csmbMiddle, true, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_MIDDLE_UP)
   {
+    // Release the mouse capturing
+    mouseState &= ~MOUSE_MIDDLE;
+    if (!mouseState) ReleaseMouse ();
+
     g2d->EventOutlet->Mouse(csmbMiddle, false, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_RIGHT_DOWN)
   {
+    // Start capturing the mouse
+    if (!mouseState) CaptureMouse ();
+    mouseState |= MOUSE_RIGHT;
+
     SetFocus ();
     g2d->EventOutlet->Mouse(csmbRight, true, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_RIGHT_UP)
   {
+    // Release the mouse capturing
+    mouseState &= ~MOUSE_RIGHT;
+    if (!mouseState) ReleaseMouse ();
+
     g2d->EventOutlet->Mouse(csmbRight, false, event.GetX(), event.GetY());
   }
   else if(event.GetEventType() == wxEVT_MOUSEWHEEL)
@@ -733,6 +755,33 @@ void csGLCanvas::OnMouseEvent( wxMouseEvent& event )
      g2d->EventOutlet->Mouse(csmbWheelDown, true, event.GetX(), event.GetY());
    }
   }
+}
+
+void csGLCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event)
+{
+  wxMouseState wxmouseState = wxGetMouseState();
+  wxPoint position = ScreenToClient(wxPoint (wxmouseState.GetX(), wxmouseState.GetY()));
+
+  if (mouseState & MOUSE_LEFT)
+    g2d->EventOutlet->Mouse(csmbLeft, false, position.x, position.y);
+  if (mouseState & MOUSE_MIDDLE)
+    g2d->EventOutlet->Mouse(csmbMiddle, false, position.x, position.y);
+  if (mouseState & MOUSE_RIGHT)
+    g2d->EventOutlet->Mouse(csmbRight, false, position.x, position.y);
+
+  mouseState = 0;
+}
+
+void csGLCanvas::OnSetFocus(wxFocusEvent& WXUNUSED(event))
+{
+  csRef<iEventNameRegistry> enr = csQueryRegistry<iEventNameRegistry> (g2d->object_reg);
+  g2d->EventOutlet->Broadcast(csevFocusGained(enr));
+}
+
+void csGLCanvas::OnKillFocus(wxFocusEvent& WXUNUSED(event))
+{
+  csRef<iEventNameRegistry> enr = csQueryRegistry<iEventNameRegistry> (g2d->object_reg);
+  g2d->EventOutlet->Broadcast(csevFocusLost(enr));
 }
 
 static bool wxCodeToCSCode(int wxkey, utf32_char& raw, utf32_char& cooked)
@@ -854,14 +903,3 @@ void csGLCanvas::EmitKeyEvent(wxKeyEvent& event, bool down)
   if (cskey_cooked == 0) cskey_cooked = cskey_cooked_new;
   if (cskey_raw != 0) g2d->EventOutlet->Key (cskey_raw, cskey_cooked, down);
 }
-
-void csGLCanvas::OnKeyDown( wxKeyEvent& event )
-{
-  EmitKeyEvent(event, true);
-}
-
-void csGLCanvas::OnKeyUp( wxKeyEvent& event )
-{
-  EmitKeyEvent(event, false);
-}
-

@@ -112,10 +112,19 @@ public:
   void *GetProcAddress (const char *funcname);
 };
 
+enum MouseState
+{
+  MOUSE_LEFT = 1,
+  MOUSE_MIDDLE = 1 << 1,
+  MOUSE_RIGHT = 1 << 2
+};
+
 class csGLCanvas: public wxGLCanvas
 {
 private:
   csGraphics2DWX* g2d;
+  int mouseState;
+
 public:
   csGLCanvas(csGraphics2DWX* g2d, wxWindow *parent, wxWindowID id = wxID_ANY,
              const wxPoint& pos = wxDefaultPosition,
@@ -130,11 +139,12 @@ public:
   void OnPaint(wxPaintEvent& event);
   void OnSize(wxSizeEvent& event);
   void OnEraseBackground(wxEraseEvent& event);
-  void OnKeyDown(wxKeyEvent& event);
   void OnKeyUp(wxKeyEvent& event);
+  void OnKeyDown(wxKeyEvent& event);
   void OnMouseEvent(wxMouseEvent& event);
-  void OnEnterWindow(wxMouseEvent& event);
-  void OnLeaveWindow(wxMouseEvent& event);
+  void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
+  void OnSetFocus(wxFocusEvent& event);
+  void OnKillFocus(wxFocusEvent& event);
 
   DECLARE_EVENT_TABLE();
 };

@@ -23,8 +23,8 @@
 #include "csutil/scf.h"
 #include "ieditor/context.h"
 #include "iengine/camera.h"
-#include "ivideo/graph3d.h"
 #include "ivideo/graph2d.h"
+#include "ivideo/graph3d.h"
 #include "ivideo/wxwin.h"
 
 #include "3dview.h"
@@ -42,13 +42,14 @@ SCF_IMPLEMENT_FACTORY (CS3DSpace)
 
 CS3DSpace::CS3DSpace (iBase* parent)
   : scfImplementationType (this, parent), object_reg (0),
-  frameListener (nullptr)
+  frameBegin3DDraw (nullptr), framePrinter (nullptr)
 {
 }
 
 CS3DSpace::~CS3DSpace()
 {
-  delete frameListener;
+  delete frameBegin3DDraw;
+  delete framePrinter;
 }
 
 bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
@@ -101,8 +102,9 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   RegisterQueue (editor->GetContext ()->GetEventQueue (),
 		 eventSetCollection);
 
-  // Register a frame listener to the global event queue
-  frameListener = new CS3DSpace::FrameListener (this);
+  // Register frame listeners to the global event queue
+  frameBegin3DDraw = new CS3DSpace::FrameBegin3DDraw (this);
+  framePrinter = new CS3DSpace::FramePrinter (this);
 
   return true;
 }
@@ -127,16 +129,22 @@ bool CS3DSpace::HandleEvent (iEvent& event)
   return false;
 }
 
-void CS3DSpace::UpdateFrame ()
+void CS3DSpace::OnFrameBegin ()
 {
   if (!disabled) { // TODO: or check for the availability of a parent?
     // Tell 3D driver we're going to display 3D things.
-    if (!g3d->BeginDraw (CSDRAW_CLEARSCREEN | CSDRAW_3DGRAPHICS))
+    if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
       return;
 
-    // Tell the camera to render into the frame buffer.
+    // Render the view into the frame buffer.
     view->Draw ();
+  }
+}
 
+void CS3DSpace::OnFramePrint ()
+{
+  if (!disabled)
+  {
     // Finish the drawing
     g3d->FinishDraw ();
     g3d->Print (0);
@@ -176,17 +184,45 @@ void CS3DSpace::OnSize (wxSizeEvent& event)
   event.Skip();
 }
 
-CS3DSpace::FrameListener::FrameListener (CS3DSpace* space)
-  : space (space)
+//--------------------------------------------------------------------------------------
+
+CS3DSpace::FrameBegin3DDraw::FrameBegin3DDraw (CS3DSpace* space)
+  : scfImplementationType (this), space (space)
 {
-  csRef<iEventQueue> eventQueue =
-    csQueryRegistry<iEventQueue> (space->object_reg);
-  RegisterQueue (eventQueue, csevFrame (space->object_reg));
+  csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (space->object_reg);
+  queue->RegisterListener (this, csevFrame (space->object_reg));
 }
 
-bool CS3DSpace::FrameListener::HandleEvent (iEvent &event)
+CS3DSpace::FrameBegin3DDraw::~FrameBegin3DDraw ()
 {
-  space->UpdateFrame ();
+  csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (space->object_reg);
+  queue->RemoveListener (this);
+}
+
+bool CS3DSpace::FrameBegin3DDraw::HandleEvent (iEvent &event)
+{
+  space->OnFrameBegin ();
+  return false;
+}
+
+//--------------------------------------------------------------------------------------
+
+CS3DSpace::FramePrinter::FramePrinter (CS3DSpace* space)
+  : scfImplementationType (this), space (space)
+{
+  csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (space->object_reg);
+  queue->RegisterListener (this, csevFrame (space->object_reg));
+}
+
+CS3DSpace::FramePrinter::~FramePrinter ()
+{
+  csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (space->object_reg);
+  queue->RemoveListener (this);
+}
+
+bool CS3DSpace::FramePrinter::HandleEvent (iEvent &event)
+{
+  space->OnFramePrint ();
   return false;
 }
 

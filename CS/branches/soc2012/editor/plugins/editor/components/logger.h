@@ -20,6 +20,7 @@
 
 #include "csutil/scf_implementation.h"
 #include "csutil/stringarray.h"
+#include "csutil/threadmanager.h"
 #include "ieditor/components.h"
 #include "ieditor/editor.h"
 #include "ivaria/reporter.h"
@@ -37,7 +38,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
 class Logger
-  : public scfImplementation3<Logger, iEditorComponent, iLogger, iReporterListener>
+  : public ThreadedCallable<Logger>,
+    public scfImplementation3<Logger, iEditorComponent, iLogger, iReporterListener>
 {
 public:
   Logger (iBase* parent);
@@ -54,15 +56,15 @@ public:
   virtual size_t GetMaximumReportCount () const;
   virtual wxTextCtrl* CreateTextCtrl (wxWindow* parent);
 
+  //-- ThreadedCallable
+  iObjectRegistry* GetObjectRegistry() const { return object_reg; }
+
   //-- iReporterListener
-  csRef<iThreadReturn> Report (iReporter* reporter, int severity,
-			       const char* msgId, const char* description);
-  csRef<iThreadReturn> ReportWait (iReporter* reporter, int severity,
-				   const char* msgId, const char* description);
+  THREADED_CALLABLE_DECL4 (Logger, Report, csThreadReturn,
+    iReporter*, reporter, int, severity, const char*, msgId, const char*,
+    description, HIGH, false, false);
 
 private:
-  void Report (int severity, const char* msgId, const char* description);
-
   bool ReportError (const char* description, ...) const
   {
     va_list arg;

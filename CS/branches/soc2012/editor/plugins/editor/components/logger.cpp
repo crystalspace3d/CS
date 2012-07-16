@@ -95,21 +95,8 @@ wxTextCtrl* Logger::CreateTextCtrl (wxWindow* parent)
   return textCtrl;
 }
 
-csRef<iThreadReturn> Logger::Report
-  (iReporter* reporter, int severity, const char* msgId, const char* description)
-{
-  Report (severity, msgId, description);
-  return csRef<iThreadReturn> (nullptr);
-}
-
-csRef<iThreadReturn> Logger::ReportWait
-  (iReporter* reporter, int severity, const char* msgId, const char* description)
-{
-  Report (severity, msgId, description);
-  return csRef<iThreadReturn> (nullptr);
-}
-
-void Logger::Report (int severity, const char* msgId, const char* description)
+THREADED_CALLABLE_IMPL4 (Logger, Report, iReporter*, int severity,
+  const char* msgId, const char* description)
 {
   // Read the timestamp of the report
   time_t rawtime;
@@ -148,6 +135,8 @@ void Logger::Report (int severity, const char* msgId, const char* description)
   wxString text = wxString::FromUTF8 (FormatReport (report));
   for (size_t i = 0; i < textCtrls.GetSize (); i++)
     textCtrls[i]->AppendText (text);
+
+  return true;
 }
 
 const char* Logger::FormatReport (ReportEntry& report)

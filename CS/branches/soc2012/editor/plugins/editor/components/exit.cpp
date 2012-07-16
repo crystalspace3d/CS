@@ -78,6 +78,8 @@ bool Exit::HandleEvent (iEvent &event)
 
 void Exit::OnQuit (wxCommandEvent& event)
 {
+  editor->ReportStatus ("Quit");
+
   // Destroy this top-level window
   editor->GetwxFrame ()->Destroy ();
 }

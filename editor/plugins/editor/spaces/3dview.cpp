@@ -42,7 +42,7 @@ SCF_IMPLEMENT_FACTORY (CS3DSpace)
 
 CS3DSpace::CS3DSpace (iBase* parent)
   : scfImplementationType (this, parent), object_reg (0),
-  frameBegin3DDraw (nullptr), framePrinter (nullptr)
+  updateCount (0), frameBegin3DDraw (nullptr), framePrinter (nullptr)
 {
 }
 
@@ -62,8 +62,6 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
 
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
   engine = csQueryRegistry<iEngine> (object_reg);
-
-  disabled = false;
 
   // Setup the 2D canvas
   iGraphics2D* g2d = g3d->GetDriver2D ();
@@ -114,6 +112,11 @@ wxWindow* CS3DSpace::GetwxWindow ()
   return window;
 }
 
+void CS3DSpace::DisableUpdates (bool val)
+{
+  updateCount = 0;
+}
+
 bool CS3DSpace::HandleEvent (iEvent& event)
 {
   if (event.Name == eventSetCollection)
@@ -131,30 +134,32 @@ bool CS3DSpace::HandleEvent (iEvent& event)
 
 void CS3DSpace::OnFrameBegin ()
 {
-  if (!disabled) { // TODO: or check for the availability of a parent?
-    // Tell 3D driver we're going to display 3D things.
-    if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
-      return;
+  // Hack around an impossibility before wxWidgets 2.9 to know whether or not
+  // the wx OpenGL context has been correctly initialized. The workaround here
+  // is to simply wait some time before drawing anything in the hope that the
+  // context has got the time to be initialized.
+  if (updateCount < 5) return;
 
-    // Render the view into the frame buffer.
-    view->Draw ();
-  }
+  // Tell the 3D driver we're going to display 3D things.
+  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
+    return;
+
+  // Render the view into the frame buffer.
+  view->Draw ();
 }
 
 void CS3DSpace::OnFramePrint ()
 {
-  if (!disabled)
-  {
-    // Finish the drawing
-    g3d->FinishDraw ();
-    g3d->Print (0);
-  }
+  if (updateCount < 5) return;
 
-  else disabled = false;
+  // Finish the drawing
+  g3d->FinishDraw ();
+  g3d->Print (0);
 }
 
 void CS3DSpace::Update ()
 {
+  updateCount++;
 }
 
 void CS3DSpace::OnSize (wxSizeEvent& event)

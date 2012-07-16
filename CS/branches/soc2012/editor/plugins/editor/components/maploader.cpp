@@ -23,6 +23,7 @@
 #include "iengine/engine.h"
 #include "imap/loader.h"
 #include "imap/saver.h"
+#include "iutil/cmdline.h"
 #include "iutil/plugin.h"
 #include "ivaria/pmeter.h"
 
@@ -30,6 +31,7 @@
 #include "vfsfiledialog.h"
 
 #include <wx/frame.h>
+#include <wx/menuitem.h>
 
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
@@ -80,20 +82,68 @@ bool MapLoader::Initialize (iEditor* editor)
   saveItem = fileMenu->AppendItem ("&Save file", "file.save");
   separator = fileMenu->AppendSeparator ();
 
+  reloadItem->GetwxMenuItem ()->Enable (false);
+
   csEventID events[] = { openItem->GetEventID (),
 			 reloadItem->GetEventID (),
 			 saveItem->GetEventID (),
 			 CS_EVENTLIST_END };
   RegisterQueue (editor->GetContext ()->GetEventQueue (), events);
 
-  // TODO: read resource to be loaded from command line
+  // Initialize the files to be loaded
   lastResource.path = "/lev/";
   lastResource.file = "";
 
-  lastResource.path = "/lev/castle/";
+  //lastResource.path = "/lev/castle/";
+  lastResource.path = "/data/frankie/";
   //lastResource.path = "/data/scaletest/";
-  lastResource.file = "world";
+  //lastResource.file = "world";
+  lastResource.file = "frankie.xml";
   //resourceData.Push (lastResource);
+
+  // Analyze the command line arguments for a file to be loaded
+  csRef<iCommandLineParser> cmdline =
+    csQueryRegistry<iCommandLineParser> (object_reg);
+
+  // Check for a new path to be mounted
+  const char* realPath = cmdline->GetOption ("R");
+  if (realPath)
+  {
+    printf ("realPath %s\n", realPath);
+    vfs->Mount ("/tmp/cseditor", realPath);
+    //vfs->ChDir ("/tmp/cseditor");
+    realPath = "/tmp/cseditor";
+  }
+
+  // Check for a path and filename provided by the user
+  csString filename = cmdline->GetName (0);
+  csString vfsDir = cmdline->GetOption ("C");
+  if (vfsDir.IsEmpty ())
+    vfsDir = realPath;
+
+  if (!filename && !vfsDir.IsEmpty ()) filename = "world";
+
+  if (vfsDir.IsEmpty () && filename)
+  {
+    size_t index = filename.FindLast ('/');
+    if (index != (size_t) -1)
+    {
+      vfsDir = filename.Slice (0, index);
+      filename = filename.Slice (index + 1);
+    }
+  }
+
+  // If there is a valid file provided then start loading it
+  if (filename)
+  {
+    if (!vfsDir.IsEmpty () && vfsDir.GetAt (vfsDir.Length () - 1) != '/')
+      vfsDir += '/';
+
+    printf ("found path '%s' file '%s'\n", vfsDir.GetData(), filename.GetData());
+    lastResource.path = vfsDir;
+    lastResource.file = filename;
+    resourceData.Push (lastResource);
+  }
 
   return true;
 }
@@ -103,10 +153,13 @@ void MapLoader::Update ()
   // Check the status of any resource currently loaded
   if (loadingResource && loadingReturn->IsFinished ())
   {
+    reloadItem->GetwxMenuItem ()->Enable (true);
+
     if (loadingReturn->WasSuccessful ())
     {
       csString text;
-      text.Format ("File %s%s was loaded successfully", CS::Quote::SingleLeft (loadingResource->path.GetData ()),
+      text.Format ("File %s%s was loaded successfully",
+		   CS::Quote::SingleLeft (loadingResource->path.GetData ()),
 		   CS::Quote::SingleRight (loadingResource->file.GetData ()));
       editor->ReportStatus (text.GetData ());
 
@@ -120,7 +173,8 @@ void MapLoader::Update ()
     else
     {
       csString text;
-      text.Format ("Failed to load file %s%s", CS::Quote::SingleLeft (loadingResource->path.GetData ()),
+      text.Format ("Failed to load file %s%s",
+		   CS::Quote::SingleLeft (loadingResource->path.GetData ()),
 		   CS::Quote::SingleRight (loadingResource->file.GetData ()));
       editor->ReportStatus (text.GetData ());
     }
@@ -142,7 +196,8 @@ void MapLoader::Update ()
 
     // Set the status text
     csString text;
-    text.Format ("Loading file %s%s", CS::Quote::SingleLeft (loadingResource->path.GetData ()),
+    text.Format ("Loading file %s%s",
+		 CS::Quote::SingleLeft (loadingResource->path.GetData ()),
 		 CS::Quote::SingleRight (loadingResource->file.GetData ()));
     editor->ReportStatus (text.GetData ());
 

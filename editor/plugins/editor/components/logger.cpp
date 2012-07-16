@@ -32,12 +32,11 @@ SCF_IMPLEMENT_FACTORY (Logger)
 Logger::Logger (iBase* parent)
   : scfImplementationType (this, parent), maxReportCount (100)
 {
-  errorMessages.SetSize (CS_REPORTER_SEVERITY_DEBUG + 1);
-  errorMessages[CS_REPORTER_SEVERITY_BUG] = "Bug";
-  errorMessages[CS_REPORTER_SEVERITY_ERROR] = "Error";
-  errorMessages[CS_REPORTER_SEVERITY_WARNING] = "Warning";
-  errorMessages[CS_REPORTER_SEVERITY_NOTIFY] = "Notify";
-  errorMessages[CS_REPORTER_SEVERITY_DEBUG] = "Debug";
+  errorMessages.Push ("Bug");
+  errorMessages.Push ("Error");
+  errorMessages.Push ("Warning");
+  errorMessages.Push ("Notify");
+  errorMessages.Push ("Debug");
 }
 
 Logger::~Logger()

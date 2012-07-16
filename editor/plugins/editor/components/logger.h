@@ -41,7 +41,7 @@ class Logger
 {
 public:
   Logger (iBase* parent);
-  virtual ~Logger();
+  virtual ~Logger ();
 
   //-- iEditorComponent
   virtual bool Initialize (iEditor* editor);
@@ -96,8 +96,10 @@ private:
     csString msgId;
     csString description;
 
-    ReportEntry (struct tm* timeinfo, int severity, const char* msgId, const char* description)
-    : timeinfo (*timeinfo), severity (severity), msgId (msgId), description (description)
+    ReportEntry (struct tm* timeinfo, int severity,
+		 const char* msgId, const char* description)
+    : timeinfo (*timeinfo), severity (severity), msgId (msgId),
+      description (description)
       {
 	this->msgId.Trim ();
 	this->description.Trim ();

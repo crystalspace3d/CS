@@ -16,17 +16,15 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __CSEDITOR_CAMERA_PANEL_H__
-#define __CSEDITOR_CAMERA_PANEL_H__
+#ifndef __CSEDITOR_PANEL_CAMERA_H__
+#define __CSEDITOR_PANEL_CAMERA_H__
 
 #include "csutil/scf_implementation.h"
-#include "iutil/comp.h"
-
 #include "ieditor/panel.h"
 
 using namespace CS::EditorApp;
 
-CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
+CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
 class CameraPanel : public scfImplementation1<CameraPanel, iPanel>
@@ -41,6 +39,6 @@ public:
 };
 
 }
-CS_PLUGIN_NAMESPACE_END(CSEditor)
+CS_PLUGIN_NAMESPACE_END (CSEditor)
 
-#endif
+#endif // __CSEDITOR_PANEL_CAMERA_H__

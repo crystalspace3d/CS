@@ -114,35 +114,36 @@ ViewControl::ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* p
   
   wxPanel* menuBar = new wxPanel (this, wxID_ANY, wxDefaultPosition, wxSize (-1, -1));
   wxBoxSizer* bar = new wxBoxSizer (wxHORIZONTAL);
-  wxToolBar* tb1 = new wxToolBar (menuBar, wxID_ANY);
+  wxToolBar* tb = new wxToolBar (menuBar, wxID_ANY);
       
   // Create the space combo box
-  SpaceComboBox* m_combobox = new SpaceComboBox (obj_reg, editor, tb1, this);
-  tb1->AddControl (m_combobox);
+  SpaceComboBox* m_combobox = new SpaceComboBox (obj_reg, editor, tb, this);
+  tb->AddControl (m_combobox);
 
   if (space && space->GetwxWindow ())
     box->Add (space->GetwxWindow (), 1, wxEXPAND | wxALL, 0);
       
-  tb1->Realize ();
-  bar->Add (tb1, 0, /*wxEXPAND |*/ wxALIGN_LEFT, 0);
+  tb->Realize ();
+  bar->Add (tb, 0, /*wxEXPAND |*/ wxALIGN_LEFT, 0);
 
   toolbar = new wxPanel (menuBar, wxID_ANY);
   bar->Add (toolbar, 1, wxEXPAND | wxALL, 0);
 
   {
-    wxToolBar* tb1 = new wxToolBar (menuBar, wxID_ANY);
-    tb1->AddTool (1, wxT ("Split"), wxArtProvider::GetBitmap (wxART_MISSING_IMAGE));
-    tb1->Connect (1, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (ViewControl::OnClicked), 0, this);
-    tb1->AddTool (2, wxT ("Duplicate"), wxArtProvider::GetBitmap (wxART_MISSING_IMAGE));
-    tb1->Connect (2, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (ViewControl::OnClicked), 0, this);
-    /*tb1->AddTool (1, wxT ("Test"), wxArtProvider::GetBitmap (wxART_ERROR));
-      tb1->AddSeparator ();
-      tb1->AddTool (2, wxT ("Test"), wxArtProvider::GetBitmap (wxART_QUESTION));
-      tb1->AddTool (3, wxT ("Test"), wxArtProvider::GetBitmap (wxART_INFORMATION));
-      tb1->AddTool (4, wxT ("Test"), wxArtProvider::GetBitmap (wxART_WARNING));
-      tb1->AddTool (5, wxT ("Test"), wxArtProvider::GetBitmap (wxART_MISSING_IMAGE));*/
-    tb1->Realize ();
-    bar->Add (tb1, 0, /*wxEXPAND |*/ wxALIGN_RIGHT, 0);
+    wxToolBar* tb = new wxToolBar (menuBar, wxID_ANY);
+    tb->AddTool (1, wxT ("Split"), wxArtProvider::GetBitmap (wxART_ADD_BOOKMARK, wxART_TOOLBAR, wxSize (16, 16)));
+    tb->Connect (1, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (ViewControl::OnClicked), 0, this);
+    tb->AddTool (2, wxT ("Duplicate"), wxArtProvider::GetBitmap (wxART_GO_TO_PARENT, wxART_TOOLBAR, wxSize (16, 16)));
+    tb->Connect (2, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (ViewControl::OnClicked), 0, this);
+/*
+    tb->AddSeparator ();
+    tb->AddTool (2, wxT ("Test"), wxArtProvider::GetBitmap (wxART_NEW_DIR, wxART_TOOLBAR, wxSize (16, 16)));
+    tb->AddTool (3, wxT ("Test"), wxArtProvider::GetBitmap (wxART_GO_DIR_UP, wxART_TOOLBAR, wxSize (16, 16)));
+    tb->AddTool (4, wxT ("Test"), wxArtProvider::GetBitmap (wxART_GO_HOME, wxART_TOOLBAR, wxSize (16, 16)));
+    tb->AddTool (5, wxT ("Test"), wxArtProvider::GetBitmap (wxART_FILE_OPEN, wxART_TOOLBAR, wxSize (16, 16)));
+*/
+    tb->Realize ();
+    bar->Add (tb, 0, /*wxEXPAND |*/ wxALIGN_RIGHT, 0);
   }
 
   menuBar->SetSizer (bar);

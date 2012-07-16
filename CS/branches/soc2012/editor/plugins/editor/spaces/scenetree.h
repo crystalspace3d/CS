@@ -99,8 +99,7 @@ class SceneTreeCtrl : public wxTreeCtrl, public csBaseEventHandler
 {
 public:
   SceneTreeCtrl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow *parent,
-             const wxWindowID id, const wxPoint& pos, const wxSize& size,
-             long style);
+             const wxWindowID id, const wxPoint& pos, const wxSize& size);
   virtual ~SceneTreeCtrl () { };
 
   //-- iEventHandler

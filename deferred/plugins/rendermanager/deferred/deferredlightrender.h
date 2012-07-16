@@ -317,8 +317,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       /* String IDs for shader types and variable names */
       csStringID gbufUse;
-      CS::ShaderVarStringID lightPos;
-      CS::ShaderVarStringID lightDir;
+      csRef<csShaderVariable> lightPos;
+      csRef<csShaderVariable> lightDir;
       csShaderVariable* scale;
 
       /**
@@ -343,8 +343,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
         // populate string IDs
         gbufUse = stringSet->Request ("gbuffer use");
-	lightPos = svStringSet->Request ("light position view");
-	lightDir = svStringSet->Request ("light direction view");
+	lightPos.AttachNew(new csShaderVariable(svStringSet->Request ("light position view")));
+	lightDir.AttachNew(new csShaderVariable(svStringSet->Request ("light direction view")));
 	scale = shaderManager->GetVariableAdd(svStringSet->Request("gbuffer scaleoffset"));
 	zOnly = shaderManager->GetShader("z_only");
 	if(!zOnly)
@@ -599,34 +599,35 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     /**
      * Sets shader variables specific to the given light.
      */
-    void SetupLightShaderVars(iLight *light)
+    void SetupLightShaderVars(iLight *light, csShaderVariableStack& svStack)
     {
       const csReversibleTransform &world2camera = graphics3D->GetWorldToCamera ();
 
-      iShaderVariableContext *lightSVContext = light->GetSVContext ();
-      iMovable *movable = light->GetMovable ();
       csLightType type = light->GetType ();
 
       // Transform light position to view space.
       if (type == CS_LIGHT_POINTLIGHT || type == CS_LIGHT_SPOTLIGHT)
       {
-        csVector3 lightPos = movable->GetFullPosition ();
-        lightPos = world2camera.This2Other (lightPos);
+	iMovable *movable = light->GetMovable ();
 
-        csShaderVariable *lightPosSV = lightSVContext->GetVariableAdd (
-          persistentData.lightPos);
-        lightPosSV->SetValue (lightPos);
+	csShaderVariable* lightPosSV = persistentData.lightPos;
+
+        csVector3 lightPos = movable->GetFullPosition () / world2camera;
+
+        lightPosSV->SetValue(lightPos);
+	svStack[lightPosSV->GetName()] = lightPosSV;
       }
 
       // Transform light direction to view space.
       if (type == CS_LIGHT_DIRECTIONAL || type == CS_LIGHT_SPOTLIGHT)
       {
-        csVector3 lightDir = GetLightDir (light);
-        lightDir = world2camera.GetT2O () * lightDir;
+	csShaderVariable* lightDirSV = persistentData.lightDir;
 
-        csShaderVariable *lightDirSV = lightSVContext->GetVariableAdd (
-          persistentData.lightDir);
-        lightDirSV->SetValue (csVector3::Unit (lightDir));
+        csVector3 lightDir = GetLightDir(light);
+        lightDir = world2camera.This2OtherRelative(lightDir);
+
+        lightDirSV->SetValue(lightDir.Unit());
+	svStack[lightDirSV->GetName()] = lightDirSV;
       }
     }
 
@@ -674,17 +675,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if (num <= 0)
         return;
 
-      // Setup shader variables.
-      SetupLightShaderVars (light);
-
       // Update shader stack.
       csShaderVariableStack svStack = shaderMgr->GetShaderVariableStack ();
       iShader *shader = mat->GetShader (persistentData.gbufUse);
       iShaderVariableContext *lightSVContext = light->GetSVContext ();
 
+      // push shader variables
       svStack.Clear ();
       shaderMgr->PushVariables (svStack);
       lightSVContext->PushVariables (svStack);
+      SetupLightShaderVars (light, svStack);
       shader->PushVariables (svStack);
 
       // Draw the light mesh.

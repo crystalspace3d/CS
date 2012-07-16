@@ -507,7 +507,9 @@ namespace RenderManager
 	// bounding box of receivers in this slice in projection space
 	csBox3 receiversPS;
 
-	// @@@TODO: add slice caching (thos will have to become csRefs then)
+	// @@@TODO: add slice caching
+	//	    - csRefs for the SVs
+	//	    - cached cam for the context (culling)
 	// tmp SVs - uninit if Slice won't be drawn
 	csShaderVariable* projectSV;
 	csShaderVariable* unscaleSV;
@@ -545,7 +547,7 @@ namespace RenderManager
 	CS::Utility::MeshFilter meshFilter;
 
 	// hash with the slice arrays for various views
-	csHash<Slices, csWeakRef<iCamera> > slicesHash;
+	csHash<Slices, csWeakRef<CS::RenderManager::RenderView> > slicesHash;
       };
 
       // actual light data
@@ -604,10 +606,10 @@ namespace RenderManager
 	  typename LightData::Frustum& frustum = lightData.frustums[f];
 
 	  // check whether we already have slices set up
-	  if(frustum.slicesHash.Contains(cam))
+	  if(frustum.slicesHash.Contains(rview))
 	  {
 	    // we have one, check whether we set slices up this frame
-	    if(frustum.slicesHash[cam]->setupFrame == currentFrame)
+	    if(frustum.slicesHash[rview]->setupFrame == currentFrame)
 	    {
 	      // nothing to be done
 	      continue;
@@ -615,14 +617,14 @@ namespace RenderManager
 	  }
 	  else
 	  {
-	    frustum.slicesHash.Put(cam, typename LightData::Slices());
+	    frustum.slicesHash.Put(rview, typename LightData::Slices());
 	  }
 
 	  // update frame setup
-	  frustum.slicesHash[cam]->setupFrame = currentFrame;
+	  frustum.slicesHash[rview]->setupFrame = currentFrame;
 
 	  // get slice array
-	  csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
+	  csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
 
 	  // @@@TODO: add slice caching
 
@@ -732,8 +734,8 @@ namespace RenderManager
 	    bool draw = false;
 
 	    // get slice array
-	    CS_ASSERT(frustum.slicesHash.Contains(cam));
-	    csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
+	    CS_ASSERT(frustum.slicesHash.Contains(rview));
+	    csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
 
 	    // check which slices will be drawn
 	    CS_ALLOC_STACK_ARRAY(bool, sliceDraw, slices.GetSize());
@@ -756,54 +758,12 @@ namespace RenderManager
 	      // update setup-frame
 	      frustum.setupFrame = currentFrame;
 
-	      // clear casters box
-	      frustum.castersPS.StartBoundingBox();
-
-	      // clear filter
-	      frustum.meshFilter.Clear();
-
-	      // get all meshes in the frustum box
-	      iVisibilityCuller* culler = sector->GetVisibilityCuller();
-	      csRef<iVisibilityObjectIterator> objects = culler->VisTest(frustum.boxLS / lightData.light2world);
-
-	      // calculate world -> light -> frustum transform
-	      csTransform frust2world = frustum.frust2light * lightData.light2world;
-
-	      // iterate over all meshes
-	      while(objects->HasNext())
-	      {
-		// get object
-		iVisibilityObject* object = objects->Next();
-
-		// get mesh wrapper
-		iMeshWrapper* meshWrapper = object->GetMeshWrapper();
-
-		// get mesh flags
-		csFlags meshFlags = meshWrapper->GetFlags();
-
-		// check whether this object is a caster in our mode
-		bool casting = (!persist.limitedShadow && !meshFlags.Check(CS_ENTITY_NOSHADOWCAST))
-			    || ( persist.limitedShadow &&  meshFlags.Check(CS_ENTITY_LIMITEDSHADOWCAST));
-
-		// check whether we want this mesh filtered:
-		//   for limited casting casters are included
-		//   for normal casting non-casters are excluded
-		if(casting ^ !persist.limitedShadow)
-		{
-		  frustum.meshFilter.AddFilterMesh(meshWrapper);
-		}
-
-		// if this mesh is a caster add it's bounding box to the caster box
-		if(casting)
-		{
-		  // get world space bounding box
-		  csBox3 meshBox = object->GetBBox();
-
-		  // add projected bounding box to casters box
-		  frustum.castersPS += ProjectBox(meshBox, frust2world, lightData.project);
-		}
-	      }
+	      // update casters bounding box and filter
+	      SetupFrustum(lightData, frustum);
 	    }
+
+	    // @@@TODO: could we use cubemaps for point lights?
+	    // @@@TODO: could we draw all slices at once using instancing?
 
 	    // setup the slices that'll be used
 	    for(size_t s = 0; s < slices.GetSize(); ++s)
@@ -825,6 +785,57 @@ namespace RenderManager
       }
 
     protected:
+      void SetupFrustum(LightData& lightData, typename LightData::Frustum& frustum)
+      {
+	// clear casters box
+	frustum.castersPS.StartBoundingBox();
+
+	// clear filter
+	frustum.meshFilter.Clear();
+
+	// get all meshes in the frustum box
+	iVisibilityCuller* culler = sector->GetVisibilityCuller();
+	csRef<iVisibilityObjectIterator> objects = culler->VisTest(frustum.boxLS / lightData.light2world);
+
+	// calculate world -> light -> frustum transform
+	csTransform frust2world = frustum.frust2light * lightData.light2world;
+
+	// iterate over all meshes
+	while(objects->HasNext())
+	{
+	  // get object
+	  iVisibilityObject* object = objects->Next();
+
+	  // get mesh wrapper
+	  iMeshWrapper* meshWrapper = object->GetMeshWrapper();
+
+	  // get mesh flags
+	  csFlags meshFlags = meshWrapper->GetFlags();
+
+	  // check whether this object is a caster in our mode
+	  bool casting = (!persist.limitedShadow && !meshFlags.Check(CS_ENTITY_NOSHADOWCAST))
+		      || ( persist.limitedShadow &&  meshFlags.Check(CS_ENTITY_LIMITEDSHADOWCAST));
+
+	  // check whether we want this mesh filtered:
+	  //   for limited casting casters are included
+	  //   for normal casting non-casters are excluded
+	  if(casting ^ !persist.limitedShadow)
+	  {
+	    frustum.meshFilter.AddFilterMesh(meshWrapper);
+	  }
+
+	  // if this mesh is a caster add it's bounding box to the caster box
+	  if(casting)
+	  {
+	    // get world space bounding box
+	    csBox3 meshBox = object->GetBBox();
+
+	    // add projected bounding box to casters box
+	    frustum.castersPS += ProjectBox(meshBox, frust2world, lightData.project);
+	  }
+	}
+      }
+
       void SetupTarget(iLight* light, LightData& lightData, typename LightData::Frustum& frustum, typename LightData::Slice& slice, bool fixed)
       {
 	// @@@TODO: add slice caching (persistent SVs, ...)
@@ -1097,8 +1108,8 @@ namespace RenderManager
 	      csBox3 meshBoxView = view2mesh * meshBox;
 
 	      // get view-dependent furstum slices
-	      CS_ASSERT(frustum.slicesHash[cam]);
-	      csArray<typename LightData::Slice>& slices = frustum.slicesHash[cam]->slices;
+	      CS_ASSERT(frustum.slicesHash[rview]);
+	      csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
 
 	      // for all slices
 	      for(size_t s = 0; s < slices.GetSize(); ++s)
@@ -1180,8 +1191,8 @@ namespace RenderManager
       typename LightData::Frustum& frustum = lightData.frustums[f];
 
       // get the slices for our view
-      CS_ASSERT(frustum.slicesHash.Contains(rview->GetCamera()));
-      csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview->GetCamera()]->slices;
+      CS_ASSERT(frustum.slicesHash.Contains(rview));
+      csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
 
       // go over the slices and check which ones will be used for this mesh
       uint spread = 0;
@@ -1220,6 +1231,9 @@ namespace RenderManager
 
       return spread;
     }
+
+    // @@@TODO: add handler for deferred lighting here that pushes slice/frustum
+    //          array
 
     // return true when we need a final pass - used by light setup
     static bool NeedFinalHandleLight() { return false; }

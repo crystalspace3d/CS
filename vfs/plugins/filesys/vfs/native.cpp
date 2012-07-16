@@ -42,6 +42,7 @@
 #include "csutil/platformfile.h"
 #include "csutil/vfsplat.h"
 #include "csutil/databuf.h"
+#include "csutil/filepermission.h"
 
 // local helper functions
 namespace
@@ -60,12 +61,12 @@ namespace
     return string;
   }
 
-  // Convert thread-local error status to VFS status code
-  int ErrnoToVfsStatus ()
+  // Convert errno error status to VFS status code
+  int ErrnoToVfsStatus (int error)
   {
     int status = VFS_STATUS_OK;
     // the following code is from old vfs.cpp code
-    switch (errno)
+    switch (error)
     {
       case 0:
         // no error; commented out because VFS_STATUS_OK is the default
@@ -118,22 +119,6 @@ namespace
     }
     return status;
   }
-
-#ifdef _USE_EMULATED_PERMISSION
-  // Converts Windows error from GetLastError () to VFS error code
-  int Win32LastError ()
-  {
-    // use Win32 API to retrieve error code
-    int winError = GetLastError ();
-    switch (winError)
-    {
-    case 0:
-      return VFS_STATUS_OK;
-    default:
-      return VFS_STATUS_OTHER;
-    }
-  }
-#endif
 }
 
 
@@ -437,7 +422,7 @@ void NativeFile::UpdateError ()
     return;
 
   // call our helper function to determine status
-  lastError = ErrnoToVfsStatus ();
+  lastError = ErrnoToVfsStatus (errno);
 }
 
 // Reset and return last error status
@@ -765,14 +750,14 @@ bool NativeFile::View::SetPos (off64_t newPos, int relativeTo)
   switch (relativeTo)
   {
     case VFS_POS_CURRENT:
-    // relative to current position
+      // relative to current position
       if (negative) // remember, this is unsigned arithmetic
         pos = (pos < distance) ? 0 : pos - distance;
       else
         pos += distance;
       break;
     case VFS_POS_END:
-    // relative to end of view
+      // relative to end of view
       if (negative)
         pos = (size < distance) ? 0 : size - distance;
       else
@@ -945,14 +930,14 @@ void NativeFS::UpdateError ()
     return;
 
   // use helper function to get corresponding VFS status
-  lastError = ErrnoToVfsStatus ();
+  lastError = ErrnoToVfsStatus (errno);
 }
 
 // Open a particular file
 csPtr<iFile> NativeFS::Open (const char *path,
                              const char *pathPrefix,
                              int mode,
-                             bool useCaching)
+                             bool /*useCaching*/)
 {
   // TODO: implement checks for boundary cases
 
@@ -1000,20 +985,20 @@ bool NativeFS::Move (const char *oldPath, const char *newPath)
 bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
 {
   csString path (ToRealPath (fileName));
-  struct stat info;
 
-  // use stat() to get file information...
-  if (stat (path, &info) != 0)
+  uint32 permission;
+  int error = CS::Platform::GetFilePermission (path, permission);
+
+  // use GetFilePermission () to get permission
+  if (error != 0)
   {
-    // stat() failed... update error status
-    UpdateError ();
+    // GetFilePermission() failed; update error status
+    SetLastError (ErrnoToVfsStatus (error));
     return false;
   }
 
   // Using obtained information, fill in the structure using constructor
   // st_mode is bitwise compatible with traditional octal representation
-  csFilePermission permission (info.st_mode);
-  // done; copy contents
   oPerm = permission;
 
   return true;
@@ -1041,11 +1026,12 @@ bool NativeFS::SetPermission (const char *fileName,
              || (S_IWOTH * (iPerm.others_write   != 0))
              || (S_IXOTH * (iPerm.others_execute != 0));
 
-  // use chmod () to apply desired permission
-  if (chmod (path, mode) != 0)
+  // use SetFilePermission () to apply desired permission
+  int error = CS::Platform::SetFilePermission (path, mode);
+  if (error != 0)
   {
-    // chmod () failed...
-    UpdateError ();
+    // SetFilePermission () failed...
+    SetLastError (ErrnoToVfsStatus (error));
     return false;
   }
 

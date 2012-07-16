@@ -85,8 +85,20 @@ struct csFilePermission
    * \param octal Unix-style permissions in octal format (e.g. 0744). The order
    *   of digits is from the left: 0 (octal prefix), user, group, and others.
    */
-  csFilePermission(int octal)
+  csFilePermission(uint32 octal)
   {
+    // use assignment operator to update internal fields
+    this->operator= (octal);
+  }
+
+  /**
+   * Assign individual fields in csFilePermission from octal representation of
+   * Unix permissions.
+   * \param octal Unix-style permissions in octal format (e.g. 0744). The order
+   *   of digits is from the left: 0 (octal prefix), user, group, and others.
+   */
+  csFilePermission &operator= (uint32 octal)
+  {    
     user_read      = (octal & 0400) != 0;
     user_write     = (octal & 0200) != 0;
     user_execute   = (octal & 0100) != 0;
@@ -96,6 +108,8 @@ struct csFilePermission
     others_read    = (octal & 0004) != 0;
     others_write   = (octal & 0002) != 0;
     others_execute = (octal & 0001) != 0;
+
+    return *this;
   }
 };
 

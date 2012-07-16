@@ -79,13 +79,13 @@ struct csFilePermission
   bool others_execute;
 
   /// Empty csFilePermission constructor. Members are not initialized.
-  csFilePermission() { }
+  csFilePermission () { }
 
   /** Construct csFilePermission from octal representation of Unix permissions.
    * \param octal Unix-style permissions in octal format (e.g. 0744). The order
    *   of digits is from the left: 0 (octal prefix), user, group, and others.
    */
-  csFilePermission(uint32 octal)
+  csFilePermission (uint32 octal)
   {
     // use assignment operator to update internal fields
     this->operator= (octal);

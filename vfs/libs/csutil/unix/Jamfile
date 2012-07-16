@@ -32,6 +32,7 @@ CSUTIL.GENERIC +=
   appfilename.cpp
   expandname.cpp
   findlib.cpp
+  filepermission.cpp
   getopt.cpp
   loadlib.cpp
   memutil_impl_virtsize.cpp

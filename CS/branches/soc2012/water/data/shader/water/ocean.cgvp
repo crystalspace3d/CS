@@ -23,6 +23,7 @@ struct vert2frag
 	float2 NormalTC		 : TEXCOORD2; 
 	float3 Normal;
 	float4 Pos;
+	float dist;
 };
 
 /**
@@ -57,7 +58,8 @@ vert2frag main (app2vert IN,
 			 uniform float4x4 ModelViewProj : state.matrix.mvp,
 			 uniform float4x4 o2w,
 			 uniform float4 reflectXform,
-			 uniform float4 refractXform)
+			 uniform float4 refractXform,
+			 uniform float3 foamPoints[5])
 {
     vert2frag OUT;
 
@@ -84,15 +86,32 @@ vert2frag main (app2vert IN,
 	//Add all the displacements
 	inPos.x -= wdxz1.x + wdxz2.x + wdxz3.x;
 	inPos.z -= wdxz1.y + wdxz2.y + wdxz3.y;
-	inPos.y = wdy1 + wdy2 + wdy3;
+	inPos.y = wdy1 + wdy2 + wdy3; 
 	
-	
-	//Get real position again.
+	//Get real position
 	float4 reflrefrTC = mul(ModelViewProj, inPos); 
 	float4 frTC = mul(ModelViewProj, IN.Position); 
 	OUT.Position = reflrefrTC;
 	OUT.Pos = reflrefrTC;
 	OUT.Normal = normalize(reflrefrTC.xyz - frTC.xyz);
+	
+	float4 foamPoin;
+	foamPoin.xyz = foamPoints[0];
+	foamPoin.w = 1;
+	
+	//foamPoin = mul(ModelViewProj, foamPoin); 
+	float distanceFoam = distance(foamPoin.xz, frTC.xz);
+	
+	/*for (int i = 1 ; i < 1 ; i++)
+	{
+		float distanceFoamT = length(foamPoints[i] - reflrefrTC.xyz);
+		if(distanceFoamT < distanceFoam)
+		{
+			distanceFoam = distanceFoamT;
+		}
+	}*/
+	
+	OUT.dist = distanceFoam;
 	
 	float3 reflScale = float3 (reflectXform.xy, 0.5);
 	float3 reflXlate = float3 (reflectXform.zw, -0.5) * reflrefrTC.w;

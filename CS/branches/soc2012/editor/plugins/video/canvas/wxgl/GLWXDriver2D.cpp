@@ -274,12 +274,9 @@ bool csGraphics2DWX::Open()
 
 #ifdef WIN32
 
-  //csGLPixelFormatPicker picker (this);
-
-  //int pixelFormat = -1;
-
+  csGLPixelFormatPicker picker (this);
   PIXELFORMATDESCRIPTOR pfd;
-  //pixelFormat = FindPixelFormat (picker, pfd);
+  FindPixelFormat (picker, pfd);
 
   currentFormat[glpfvColorBits] = pfd.cColorBits;
   currentFormat[glpfvAlphaBits] = pfd.cAlphaBits;
@@ -623,7 +620,7 @@ csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
                        const wxSize& size, long style,
                        const wxString& name, int* attr)
   : wxGLCanvas(parent, id, pos, size, style | wxWANTS_CHARS, name, attr),
-  g2d(g), mouseState(0)
+  g2d(g), mouseState(0), wheelPosition (0)
 {
   int w, h;
   GetClientSize(&w, &h);
@@ -746,14 +743,21 @@ void csGLCanvas::OnMouseEvent(wxMouseEvent& event)
   }
   else if(event.GetEventType() == wxEVT_MOUSEWHEEL)
   {
-   if (event.GetWheelRotation() > 0)
-   {
-    g2d->EventOutlet->Mouse(csmbWheelUp, true, event.GetX(), event.GetY());
-   }
-   else
-   {
-     g2d->EventOutlet->Mouse(csmbWheelDown, true, event.GetX(), event.GetY());
-   }
+    // Accumulate the rotation of the wheel
+    wheelPosition += event.GetWheelRotation();
+
+    // Generate one event per wheel delta
+    while (wheelPosition > event.GetWheelDelta() / 2)
+    {
+      g2d->EventOutlet->Mouse(csmbWheelUp, true, event.GetX(), event.GetY());
+      wheelPosition -= event.GetWheelDelta();
+    }
+
+    while (wheelPosition < -event.GetWheelDelta() / 2)
+    {
+      g2d->EventOutlet->Mouse(csmbWheelDown, true, event.GetX(), event.GetY());
+      wheelPosition += event.GetWheelDelta();
+    }
   }
 }
 

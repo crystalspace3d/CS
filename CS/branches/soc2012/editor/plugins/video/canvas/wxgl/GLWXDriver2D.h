@@ -124,6 +124,7 @@ class csGLCanvas: public wxGLCanvas
 private:
   csGraphics2DWX* g2d;
   int mouseState;
+  int wheelPosition;
 
 public:
   csGLCanvas(csGraphics2DWX* g2d, wxWindow *parent, wxWindowID id = wxID_ANY,

@@ -11,6 +11,7 @@ struct vert2frag
 	float2 NormalTC		: TEXCOORD2; 
 	float3 Normal;
 	float4 Pos;
+	float dist;
 };
 
 // Water color
@@ -75,9 +76,18 @@ float4 main (vert2frag IN,
     reflColor *=  fresnelWeight;
     refrColor *= (1-fresnelWeight);
 	
-	float3 foam = tex2D(TexFoam,IN.NormalTC);
-	foam = foam * 0.5;
-    color.xyz = light + reflColor.xyz + refrColor.xyz + foam ;
+	float4 foam = tex2D(TexFoam,IN.NormalTC);
+	
+	IN.dist = clamp(IN.dist,0,10);
+	IN.dist = 10 - IN.dist;
+	IN.dist /= 10; 
+	
+	foam = foam * 0.5 * IN.dist;
+	
+    color.xyz = light + reflColor.xyz + refrColor.xyz + foam;
+	
+	//color = clamp((color + foam ) , 0 , 1 ) ;
+	
 	//color = tex2D(TexNormal,IN.NormalTC);
 	//color = tex2D(TexFoam,IN.NormalTC);
 	color.a = 1.0;

@@ -60,6 +60,8 @@
 						<variablemap variable="reflection coord xform" destination="reflectXform" />
 						
 						<variablemap variable="refraction coord xform" destination="refractXform" />
+						
+						<variablemap variable="foam points" destination="foamPoints" />
 
                         <program file="/shader/water/ocean.cgvp"/>
                         <?else ?>

@@ -210,6 +210,21 @@ void csWaterMeshObject::SetupObject ()
       SetupBufferHolder ();
     }
 
+	csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
+	foampoints.Push(csVector3(0,0,0));
+
+	// foam points 
+	csShaderVariable *foam_points = variableContext->GetVariableAdd(svStrings->Request("foam points"));
+	foam_points->SetType(csShaderVariable::ARRAY);
+	foam_points->SetArraySize(0);
+
+	//while(foampoints.GetSize())
+	{
+		csRef<csShaderVariable> foampoint;
+		foampoint.AttachNew(new csShaderVariable);
+		foampoint->SetValue(foampoints.Pop());
+		foam_points->AddVariableToArray(foampoint);
+	}
 	// Plane of Reflection 
 	csShaderVariable *PlaneReflection = variableContext->GetVariableAdd(svStrings->Request("plane reflection"));
 	PlaneReflection->SetType(csShaderVariable::VECTOR4);

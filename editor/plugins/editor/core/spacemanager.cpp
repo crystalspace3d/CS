@@ -366,16 +366,18 @@ iEditorComponent* SpaceManager::FindComponent (const char* pluginName) const
 
 bool SpaceManager::HandleEvent (iEvent &event)
 {
-  for (csRefArray<SpaceFactory>::Iterator it = spaceFactories.GetIterator (); it.HasNext (); )
+  for (csRefArray<SpaceFactory>::Iterator it =
+	 spaceFactories.GetIterator (); it.HasNext (); )
   {
     iSpaceFactory* n = it.Next ();
     SpaceFactory* f = static_cast<SpaceFactory*> (n);
     if (!f) continue;
 
-    for (csWeakRefArray<iSpace>::Iterator spaces = f->spaces.GetIterator (); spaces.HasNext (); )
+    for (csWeakRefArray<iSpace>::Iterator spaces =
+	   f->spaces.GetIterator (); spaces.HasNext (); )
     {
       iSpace* space = spaces.Next ();
-      if (space) ReDraw (space);
+      if (space && space->GetEnabled ()) ReDraw (space);
     }
   }
 
@@ -405,7 +407,8 @@ void SpaceManager::ReDraw (iSpace* space)
       {
         ctrl->SetLayout (0);
         csRef<iLayout> layout;
-        layout.AttachNew (new HeaderLayout (editor->manager->object_reg, editor, ctrl->GetRegion ()));
+        layout.AttachNew (new HeaderLayout (editor->manager->object_reg,
+					    editor, ctrl->GetRegion ()));
         ctrl->SetLayout (layout);
         header->Draw (editor->context, layout);
         ctrl->GetRegion ()->GetParent ()->Layout ();
@@ -418,8 +421,8 @@ void SpaceManager::ReDraw (iSpace* space)
   if (win)
   {
     csHash<csRef<iPanel>, csString>::Iterator panelsit = panels.GetIterator (id);
-    bool hasPanels = panelsit.HasNext ();
-    if (hasPanels)
+
+    if (panelsit.HasNext ())
     {
       wxSizer* sz = new wxBoxSizer (wxVERTICAL);
       if (win->GetSizer ())
@@ -436,7 +439,7 @@ void SpaceManager::ReDraw (iSpace* space)
           
           CollapsiblePane* collpane = new CollapsiblePane
 	    (editor->manager->object_reg, win, fact->QueryDescription ());
-          
+
           layout.AttachNew (new PanelLayout (editor->manager->object_reg,
 					     editor, collpane->GetPane ()));
           collpane->SetLayout (layout);
@@ -448,7 +451,7 @@ void SpaceManager::ReDraw (iSpace* space)
       }
 
       win->SetSizer (sz, true);
-      //sz->SetSizeHints (win);
+      sz->Layout ();
     }
   }
 }
@@ -456,20 +459,23 @@ void SpaceManager::ReDraw (iSpace* space)
 void SpaceManager::Update ()
 {
   // Update the editor components
-  for (csHash<csRef<iEditorComponent>, csString>::GlobalIterator it = components.GetIterator (); it.HasNext (); )
+  for (csHash<csRef<iEditorComponent>, csString>::GlobalIterator it =
+	 components.GetIterator (); it.HasNext (); )
   {
     iEditorComponent* component = it.Next ();
     component->Update ();
   }
 
   // Update the spaces
-  for (csRefArray<SpaceFactory>::Iterator it = spaceFactories.GetIterator (); it.HasNext (); )
+  for (csRefArray<SpaceFactory>::Iterator it =
+	 spaceFactories.GetIterator (); it.HasNext (); )
   {
     iSpaceFactory* n = it.Next ();
     SpaceFactory* f = static_cast<SpaceFactory*> (n);
     if (!f) continue;
 
-    for (csWeakRefArray<iSpace>::Iterator spaces = f->spaces.GetIterator (); spaces.HasNext (); )
+    for (csWeakRefArray<iSpace>::Iterator spaces =
+	   f->spaces.GetIterator (); spaces.HasNext (); )
     {
       iSpace* space = spaces.Next ();
       if (space) space->Update ();

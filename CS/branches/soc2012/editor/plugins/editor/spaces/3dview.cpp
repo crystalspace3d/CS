@@ -61,13 +61,13 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   factory = fact;
 
   g3d = csQueryRegistry<iGraphics3D> (object_reg);
-  engine = csQueryRegistry<iEngine> (object_reg);
+  csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
 
   // Setup the 2D canvas
   iGraphics2D* g2d = g3d->GetDriver2D ();
   g2d->AllowResize (true);
 
-  wxwin = scfQueryInterface<iWxWindow> (g2d);
+  csRef<iWxWindow> wxwin = scfQueryInterface<iWxWindow> (g2d);
   if (!wxwin)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
@@ -84,7 +84,7 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   // Setup the view and the camera context
   view = csPtr<iView> (new csView (engine, g3d));
   view->SetAutoResize (false);
-  view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
+  view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight (), false);
 
   csRef<iContextCamera> cameraContext =
     scfQueryInterface<iContextCamera> (editor->GetContext ());
@@ -93,8 +93,6 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   // Register this event handler to the editor events
   iEventNameRegistry* registry =
     csEventNameRegistry::GetRegistry (object_reg);
-  eventSetCamera =
-    registry->GetID ("crystalspace.editor.context.setcamera");
   eventSetCollection = 
     registry->GetID ("crystalspace.editor.context.setcollection");
   RegisterQueue (editor->GetContext ()->GetEventQueue (),
@@ -184,9 +182,9 @@ void CS3DSpace::OnSize (wxSizeEvent& event)
   if (view->GetPerspectiveCamera ())
     view->GetPerspectiveCamera ()->SetFOV
       ((float) (size.y) / (float) (size.x), 1.0f);
-  view->SetRectangle (0, 0, size.x, size.y);
+  view->SetRectangle (0, 0, size.x, size.y, false);
 
-  event.Skip();
+  event.Skip ();
 }
 
 //--------------------------------------------------------------------------------------

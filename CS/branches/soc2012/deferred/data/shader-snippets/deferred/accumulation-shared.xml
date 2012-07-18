@@ -21,15 +21,45 @@
     <combiner plugin="crystalspace.graphics3d.shader.combiner.glcg" />
 
     <alias name="use_buffer" weak="yes" file="/shader-snippets/deferred/use_gbuffer.xml" />
+    <alias name="shadow" weak="yes" file="/shader-snippets/deferred/shadow_depth.xml" />
 
     <snippet id="position" file="/shader-snippets/position.xml" />
     <snippet id="use_buffer" filealias="use_buffer" />
+    <snippet id="shadow" filealias="shadow" />
     <snippet id="lighting" filealias="lighting" />
+    <snippet id="attenuate_diffuse" file="/shader-snippets/modulate_rgb.xml" />
+    <snippet id="attenuate_specular" file="/shader-snippets/modulate_rgb.xml" />
 
+    <!-- read gbuffer -->
     <connection from="position" to="use_buffer" />
+
+    <!-- calculate lighting -->
     <connection from="use_buffer" to="lighting" />
 
-    <output snippet="lighting" name="diffuseColor" to="color0" />
-    <output snippet="lighting" name="specularColor" to="color1" />
+    <!-- calculate shadow attenuation -->
+    <connection from="use_buffer" to="shadow">
+      <explicit from="position" to="positionV" />
+      <explicit from="position" to="positionW" />
+    </connection>
+
+    <!-- attenuate diffuse -->
+    <connection from="shadow" to="attenuate_diffuse">
+      <explicit from="attenuation" to="a" />
+    </connection>
+    <connection from="lighting" to="attenuate_diffuse">
+      <explicit from="diffuseColor" to="b" />
+    </connection>
+
+    <!-- attenuate specular -->
+    <connection from="shadow" to="attenuate_specular">
+      <explicit from="attenuation" to="a" />
+    </connection>
+    <connection from="lighting" to="attenuate_specular">
+      <explicit from="specularColor" to="b" />
+    </connection>
+
+    <!-- output results -->
+    <output snippet="attenuate_diffuse"  name="result" to="color0" />
+    <output snippet="attenuate_specular" name="result" to="color1" />
   </technique>
 </snippet>

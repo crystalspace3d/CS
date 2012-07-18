@@ -144,7 +144,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     RenderTreeType::PersistentData treePersistent;
     PortalSetupType::PersistentData portalPersistent;
     LightSetupType::PersistentData lightPersistent;
-    DeferredLightRenderer::PersistentData lightRenderPersistent;
+    DeferredLightRenderer<ShadowType>::PersistentData lightRenderPersistent;
 
     AutoReflectRefractType::PersistentData reflectRefractPersistent;
     AutoFramebufferTexType::PersistentData framebufferTexPersistent;

@@ -383,7 +383,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   portalPersistent.Initialize (shaderManager, graphics3D, treePersistent.debugPersist);
   lightPersistent.shadowPersist.SetConfigPrefix ("RenderManager.Deferred");
   lightPersistent.Initialize (registry, treePersistent.debugPersist);
-  lightRenderPersistent.Initialize (registry);
+  lightRenderPersistent.Initialize (registry, lightPersistent.shadowPersist);
 
   // initialize post-effects
   PostEffectsSupport::Initialize (registry, "RenderManager.Deferred");
@@ -486,15 +486,9 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
 
   // Render all contexts.
   {
-    DeferredTreeRenderer<RenderTreeType> render (graphics3D,
-                                                 shaderManager,
-                                                 stringSet,
-                                                 lightRenderPersistent,
-						 gbuffer,
-                                                 deferredLayer,
-						 lightingLayer,
-                                                 zonlyLayer,
-                                                 drawLightVolumes);
+    DeferredTreeRenderer<RenderTreeType, ShadowType>
+    render(graphics3D, shaderManager, stringSet, lightRenderPersistent,
+	   gbuffer, deferredLayer, lightingLayer, zonlyLayer, drawLightVolumes);
 
     ForEachContextReverse (renderTree, render);
   }

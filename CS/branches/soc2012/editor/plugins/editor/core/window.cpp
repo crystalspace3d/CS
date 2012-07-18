@@ -95,7 +95,6 @@ void Window::OnUnsplitEvent (wxSplitterEvent& event)
 
 void Window::OnSize (wxSizeEvent& event)
 {
-  //SetSize (event.GetSize ());
   Layout ();
   event.Skip ();
 }
@@ -161,21 +160,24 @@ void ViewControl::OnClicked (wxCommandEvent& event)
 {
   if (event.GetId () == 1)
   {
-    space->DisableUpdates (true);
     Window* window = (Window*) this->GetParent ();
     window->Split ();
+
+    // Disable temporarily the current space. This is needed for the 3D view
+    // because its OpenGL canvas can get temporarily invalid.
+    space->SetEnabled (false);
+    space->SetEnabled (true);
   }
   else
   {
     wxFrame* frame = new wxFrame (this, wxID_ANY, wxT ("3D View"), wxDefaultPosition, GetSize ());
-    /*Window* m_splitter =*/ new Window (object_reg, editor, frame);
+    new Window (object_reg, editor, frame);
     frame->Show (true);
   }
 }
 
 void ViewControl::OnSize (wxSizeEvent& event)
 {
-  //SetSize (event.GetSize ());
   Layout ();
   event.Skip ();
 }
@@ -186,7 +188,7 @@ SpaceComboBox::SpaceComboBox
   (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, ViewControl* ctrl)
   : wxBitmapComboBox (parent, wxID_ANY, wxEmptyString,wxDefaultPosition,
 		      wxSize (50, 20),0, NULL, wxCB_READONLY),
-    object_reg (obj_reg), editor (editor), control (ctrl)
+    object_reg (obj_reg), editor (editor), control (ctrl), lastIndex ((size_t) ~0)
 {
   // Build the list of menu entries for all spaces
   iSpaceManager* imgr = editor->GetSpaceManager ();
@@ -194,29 +196,41 @@ SpaceComboBox::SpaceComboBox
   csRefArray<SpaceFactory>::ConstIterator spaces =
     mgr->GetSpaceFactories ().GetIterator ();
 
-  size_t i = 0;
-  bool instanced = false;
-  while (spaces.HasNext ())
+  if (spaces.HasNext ())
   {
-    i++;
+    size_t i = 0;
+    size_t smallest = 1000;
+    size_t smallestIndex = 0;
+    iSpaceFactory* smallestFactory = nullptr;
 
-    // Add the menu entry for this space
-    iSpaceFactory* f = spaces.Next ();
-    wxString label (f->GetLabel (), wxConvUTF8);
-    Append (label, f->GetIcon ());
-
-    // Create the default space if not yet made
-    if (instanced) continue;
-
-    if (f->GetMultipleAllowed () || f->GetCount () == 0)
+    while (spaces.HasNext ())
     {
-      ctrl->space = f->CreateInstance (control);
-      SetSelection (i-1);
-      instanced = true;
+      // Add the menu entry for this space
+      iSpaceFactory* f = spaces.Next ();
+      wxString label (f->GetLabel (), wxConvUTF8);
+      Append (label, f->GetIcon ());
+
+      // Check for the less represented space
+      if (smallest > f->GetCount ()
+	  && (f->GetMultipleAllowed () || f->GetEnabledCount () == 0))
+      {
+	smallest = f->GetEnabledCount ();
+	smallestIndex = i;
+	smallestFactory = f;
+      }
+
+      i++;
+    }
+
+    // Create the space
+    if (smallestFactory)
+    {
+      ctrl->space = smallestFactory->CreateInstance (control);
+      SetSelection (smallestIndex);
+      lastIndex = smallestIndex;
+      ctrl->spaces.Put (smallestIndex, ctrl->space);
     }
   }
-
-  // TODO: create a default space if not yet made
 
   // Listen to the OnSelected event
   Connect (GetId (), wxEVT_COMMAND_COMBOBOX_SELECTED,
@@ -239,32 +253,53 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
   size_t i = 0;
   while (spaces.HasNext ())
   {
-    i++;
     iSpaceFactory* f = spaces.Next ();
     wxString label (f->GetLabel (), wxConvUTF8);
 
     if (GetValue () == label)
     {
       // Create an instance of the selected space
-      if (f->GetMultipleAllowed () || f->GetCount () == 0)
+      if (f->GetMultipleAllowed () || f->GetEnabledCount () == 0)
       {
+	// Invalidate the previous space
         control->layout.Invalidate ();
         control->box->Detach (control->space->GetwxWindow ());
-        control->space = f->CreateInstance (control);
+	control->space->SetEnabled (false);
+	control->space->GetwxWindow ()->Hide ();
+
+	// Get or create the selected space
+	if (control->spaces.Contains (i))
+	{
+	  control->space = *control->spaces.GetElementPointer (i);
+	  control->space->SetEnabled (true);
+	  control->space->GetwxWindow ()->Show ();
+	}
+
+        else
+	{
+	  control->space = f->CreateInstance (control);
+	  control->spaces.Put (i, control->space);
+	}
+
+	// Update the combo box and the view
         control->box->Insert (0, control->space->GetwxWindow (), 1, wxEXPAND, 0);
-        SetSelection (i - 1);
+        SetSelection (i);
+	lastIndex = i;
         mgr->ReDraw (control->space);
 	control->box->Layout ();
-      }
 
-      else
-      {
-	// TODO: put back the previous selection
+	return;
       }
 
       break;
     }
+
+    i++;
   }
+
+  // Put back the previous selection
+  if (lastIndex != (size_t) ~0)
+    SetSelection (lastIndex);
 }
 
 }

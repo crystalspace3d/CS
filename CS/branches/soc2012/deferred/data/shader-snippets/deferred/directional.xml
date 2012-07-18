@@ -88,7 +88,7 @@
       vec3 L = -lightDirection;
 
       // Since we are in view space we know that the eye position is at the origin.
-      vec3 V = -normalize (position.xyz); 
+      vec3 V = -normalize (position.xyz);
       vec3 H = normalize (L + V);
 
       // Compute phong lighting.

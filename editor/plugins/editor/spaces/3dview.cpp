@@ -42,7 +42,8 @@ SCF_IMPLEMENT_FACTORY (CS3DSpace)
 
 CS3DSpace::CS3DSpace (iBase* parent)
   : scfImplementationType (this, parent), object_reg (0),
-  enabled (true), updateCount (0), frameBegin3DDraw (nullptr), framePrinter (nullptr)
+  enabled (true), updateCount (0), frameBegin3DDraw (nullptr),
+  framePrinter (nullptr)
 {
 }
 
@@ -113,7 +114,15 @@ wxWindow* CS3DSpace::GetwxWindow ()
 void CS3DSpace::SetEnabled (bool enabled)
 {
   this->enabled = enabled;
-  if (enabled) updateCount = 0;
+  if (enabled)
+  {
+    updateCount = 0;
+
+    // Force the reparenting of the wxGL canvas
+    csRef<iWxWindow> wxwin =
+      scfQueryInterface<iWxWindow> (g3d->GetDriver2D ());
+    wxwin->SetParent (window);
+  }
 }
 
 bool CS3DSpace::GetEnabled () const
@@ -126,9 +135,9 @@ bool CS3DSpace::HandleEvent (iEvent& event)
   if (event.Name == eventSetCollection)
   {
     // Put back the focus on the window
-    csRef<iWxWindow> wxwin = scfQueryInterface<iWxWindow> (g3d->GetDriver2D ());
-    if (wxwin->GetWindow ())
-      wxwin->GetWindow ()->SetFocus ();
+    csRef<iWxWindow> wxwin =
+      scfQueryInterface<iWxWindow> (g3d->GetDriver2D ());
+    wxwin->GetWindow ()->SetFocus ();
 
     return false;
   }
@@ -138,10 +147,10 @@ bool CS3DSpace::HandleEvent (iEvent& event)
 
 void CS3DSpace::OnFrameBegin ()
 {
-  // Hack around an impossibility before wxWidgets 2.9 to know whether or not
-  // the wx OpenGL context has been correctly initialized. The workaround here
-  // is to simply wait some time before drawing anything in the hope that the
-  // context has got the time to be initialized.
+  // Hack around an impossibility before wxWidgets 2.9 to know whether
+  // or not the wx OpenGL context has been correctly initialized. The
+  // workaround here is to simply wait some time before drawing anything
+  // in the hope that the context has got the time to be initialized.
   if (!enabled || updateCount < 5) return;
 
   // Tell the 3D driver we're going to display 3D things.
@@ -193,18 +202,20 @@ void CS3DSpace::OnSize (wxSizeEvent& event)
   event.Skip ();
 }
 
-//--------------------------------------------------------------------------------------
+//---------------------------------------------------------------
 
 CS3DSpace::FrameBegin3DDraw::FrameBegin3DDraw (CS3DSpace* space)
   : scfImplementationType (this), space (space)
 {
-  csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (space->object_reg);
+  csRef<iEventQueue> queue =
+    csQueryRegistry<iEventQueue> (space->object_reg);
   queue->RegisterListener (this, csevFrame (space->object_reg));
 }
 
 CS3DSpace::FrameBegin3DDraw::~FrameBegin3DDraw ()
 {
-  csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (space->object_reg);
+  csRef<iEventQueue> queue =
+    csQueryRegistry<iEventQueue> (space->object_reg);
   queue->RemoveListener (this);
 }
 
@@ -214,18 +225,20 @@ bool CS3DSpace::FrameBegin3DDraw::HandleEvent (iEvent &event)
   return false;
 }
 
-//--------------------------------------------------------------------------------------
+//---------------------------------------------------------------
 
 CS3DSpace::FramePrinter::FramePrinter (CS3DSpace* space)
   : scfImplementationType (this), space (space)
 {
-  csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (space->object_reg);
+  csRef<iEventQueue> queue =
+    csQueryRegistry<iEventQueue> (space->object_reg);
   queue->RegisterListener (this, csevFrame (space->object_reg));
 }
 
 CS3DSpace::FramePrinter::~FramePrinter ()
 {
-  csRef<iEventQueue> queue = csQueryRegistry<iEventQueue> (space->object_reg);
+  csRef<iEventQueue> queue =
+    csQueryRegistry<iEventQueue> (space->object_reg);
   queue->RemoveListener (this);
 }
 

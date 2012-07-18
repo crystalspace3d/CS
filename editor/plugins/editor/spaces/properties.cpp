@@ -35,17 +35,17 @@ END_EVENT_TABLE ()
 SCF_IMPLEMENT_FACTORY (PropertiesSpace)
 
 PropertiesSpace::PropertiesSpace (iBase* parent)
- : scfImplementationType (this, parent), object_reg (0)
+  : scfImplementationType (this, parent), object_reg (0), enabled (true)
 {  
 }
 
-bool PropertiesSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent)
+bool PropertiesSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+				  iSpaceFactory* fact, wxWindow* parent)
 {
   object_reg = obj_reg;
   factory = fact;
 
   window = new PropertiesSpace::Space (this, parent, -1, wxPoint (0,0), wxSize (-1,-1));
-  //window->SetBackgroundColour (*wxRED);
   
   return true;
 }

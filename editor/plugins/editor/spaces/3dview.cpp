@@ -42,7 +42,7 @@ SCF_IMPLEMENT_FACTORY (CS3DSpace)
 
 CS3DSpace::CS3DSpace (iBase* parent)
   : scfImplementationType (this, parent), object_reg (0),
-  updateCount (0), frameBegin3DDraw (nullptr), framePrinter (nullptr)
+  enabled (true), updateCount (0), frameBegin3DDraw (nullptr), framePrinter (nullptr)
 {
 }
 
@@ -110,9 +110,15 @@ wxWindow* CS3DSpace::GetwxWindow ()
   return window;
 }
 
-void CS3DSpace::DisableUpdates (bool val)
+void CS3DSpace::SetEnabled (bool enabled)
 {
-  updateCount = 0;
+  this->enabled = enabled;
+  if (enabled) updateCount = 0;
+}
+
+bool CS3DSpace::GetEnabled () const
+{
+  return enabled;
 }
 
 bool CS3DSpace::HandleEvent (iEvent& event)
@@ -136,7 +142,7 @@ void CS3DSpace::OnFrameBegin ()
   // the wx OpenGL context has been correctly initialized. The workaround here
   // is to simply wait some time before drawing anything in the hope that the
   // context has got the time to be initialized.
-  if (updateCount < 5) return;
+  if (!enabled || updateCount < 5) return;
 
   // Tell the 3D driver we're going to display 3D things.
   if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
@@ -148,7 +154,7 @@ void CS3DSpace::OnFrameBegin ()
 
 void CS3DSpace::OnFramePrint ()
 {
-  if (updateCount < 5) return;
+  if (!enabled || updateCount < 5) return;
 
   // Finish the drawing
   g3d->FinishDraw ();

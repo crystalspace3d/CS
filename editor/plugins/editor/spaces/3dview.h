@@ -48,7 +48,8 @@ public:
 			   iSpaceFactory* factory, wxWindow* parent);
   virtual iSpaceFactory* GetFactory () const { return factory; }
   virtual wxWindow* GetwxWindow ();
-  virtual void DisableUpdates (bool val);
+  virtual void SetEnabled (bool enabled);
+  virtual bool GetEnabled () const;
   virtual void Update ();
 
   //-- iEventHandler
@@ -66,13 +67,13 @@ private:
   csRef<iSpaceFactory> factory;
 
   wxWindow* window;
+  bool enabled;
+  size_t updateCount;
   
   csRef<iGraphics3D> g3d;
   csRef<iView> view;
 
   csEventID eventSetCollection;
-
-  size_t updateCount;
 
   class FrameBegin3DDraw : public scfImplementation1<FrameBegin3DDraw, iEventHandler>
   {

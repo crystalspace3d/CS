@@ -46,7 +46,8 @@ public:
 			   iSpaceFactory* fact, wxWindow* parent);
   virtual iSpaceFactory* GetFactory () const { return factory; }
   virtual wxWindow* GetwxWindow ();
-  virtual void DisableUpdates (bool val) { }
+  virtual void SetEnabled (bool enabled) { this->enabled = enabled; }
+  virtual bool GetEnabled () const { return enabled; }
   virtual void Update ();
 
   void OnSize (wxSizeEvent& event);
@@ -56,20 +57,23 @@ private:
   csRef<iSpaceFactory> factory;
 
   wxWindow* window;
+  bool enabled;
   
   class Space : public wxPanel
   {
     public:
-      Space(PropertiesSpace* p, wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize)
-      : wxPanel (parent, id, pos, size), space(p)
+      Space (PropertiesSpace* p, wxWindow* parent, wxWindowID id = wxID_ANY,
+	     const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize)
+      : wxPanel (parent, id, pos, size), space (p)
       {}
     
       virtual void OnSize (wxSizeEvent& ev)
       { if (space) space->OnSize (ev); }
+
     private:
       PropertiesSpace* space;
-      
-      DECLARE_EVENT_TABLE()
+
+      DECLARE_EVENT_TABLE ();
   };
   
 };

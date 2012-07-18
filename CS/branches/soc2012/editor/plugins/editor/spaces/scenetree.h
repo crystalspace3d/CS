@@ -53,7 +53,8 @@ public:
 			   iSpaceFactory* fact, wxWindow* parent);
   virtual iSpaceFactory* GetFactory () const { return factory; }
   virtual wxWindow* GetwxWindow ();
-  virtual void DisableUpdates (bool val) { }
+  virtual void SetEnabled (bool enabled) { this->enabled = enabled; }
+  virtual bool GetEnabled () const { return enabled; }
   virtual void Update ();
 
 private:
@@ -64,6 +65,7 @@ private:
   csRef<iSpaceFactory> factory;
 
   SceneTreeCtrl* treectrl;
+  bool enabled;
 
   DECLARE_EVENT_TABLE ();
 };

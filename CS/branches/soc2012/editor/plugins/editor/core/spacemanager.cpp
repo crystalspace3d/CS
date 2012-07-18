@@ -109,8 +109,18 @@ csPtr<iSpace> SpaceFactory::CreateInstance (wxWindow* parent)
 
 size_t SpaceFactory::GetCount ()
 {
-  spaces.Compact (); 
+  spaces.Compact ();
   return spaces.GetSize ();
+}
+
+size_t SpaceFactory::GetEnabledCount ()
+{
+  spaces.Compact ();
+  size_t count = 0;
+  for (size_t i = 0; i < spaces.GetSize (); i++)
+    if (spaces[i] && spaces[i]->GetEnabled ())
+      count++;
+  return count;
 }
 
 //----------------------------------------------------------------------
@@ -118,8 +128,10 @@ size_t SpaceFactory::GetCount ()
 SpaceManager::SpaceManager (Editor* editor)
   : scfImplementationType (this), editor (editor)
 {
-  csRef<iEventNameRegistry> registry = csQueryRegistry<iEventNameRegistry> (editor->manager->object_reg);
-  RegisterQueue (editor->context->GetEventQueue (), registry->GetID ("crystalspace.editor.context"));
+  csRef<iEventNameRegistry> registry =
+    csQueryRegistry<iEventNameRegistry> (editor->manager->object_reg);
+  RegisterQueue (editor->context->GetEventQueue (),
+		 registry->GetID ("crystalspace.editor.context"));
 }
 
 SpaceManager::~SpaceManager ()

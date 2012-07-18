@@ -52,7 +52,8 @@ struct iSpace : public virtual iBase
   /// Get the underlying wxWindow content area of this space.
   virtual wxWindow* GetwxWindow () = 0;
 
-  virtual void DisableUpdates (bool disabled) = 0;
+  virtual void SetEnabled (bool enabled) = 0;
+  virtual bool GetEnabled () const = 0;
 
   virtual void Update () = 0;
 };
@@ -75,6 +76,7 @@ struct iSpaceFactory : public virtual iBase
   virtual bool GetMultipleAllowed () const = 0;
 
   virtual size_t GetCount () = 0;
+  virtual size_t GetEnabledCount () = 0;
 };
 
 /**
@@ -98,4 +100,4 @@ struct iSpaceManager : public virtual iBase
 } // namespace EditorApp
 } // namespace CS
 
-#endif
+#endif // __IEDITOR_SPACE_H__

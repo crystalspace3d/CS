@@ -57,9 +57,8 @@ END_EVENT_TABLE ()
 // ----------------------------------------------------------------------------
 
 SceneTree::SceneTree (iBase* parent)
- : scfImplementationType (this, parent)
+  : scfImplementationType (this, parent), treectrl (nullptr),  enabled (true)
 {
-  treectrl = 0;
 }
 
 SceneTree::~SceneTree ()

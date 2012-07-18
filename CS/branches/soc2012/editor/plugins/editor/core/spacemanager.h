@@ -47,6 +47,7 @@ public:
   virtual const wxBitmap& GetIcon () const;
   virtual bool GetMultipleAllowed () const;
   virtual size_t GetCount ();
+  virtual size_t GetEnabledCount ();
 
 private:
   Editor* editor;

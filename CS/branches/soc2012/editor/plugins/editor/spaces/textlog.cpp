@@ -29,7 +29,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 SCF_IMPLEMENT_FACTORY (TextLog)
 
 TextLog::TextLog (iBase* parent)
- : scfImplementationType (this, parent)
+ : scfImplementationType (this, parent), enabled (true)
 {  
 }
 

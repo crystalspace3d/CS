@@ -25,15 +25,12 @@
 #include "iutil/objreg.h"
 #include "ivaria/reporter.h"
 
-//#include <wx/event.h>
 #include <wx/log.h>
 #include <wx/panel.h>
 #include <wx/textctrl.h>
 
 class wxWindow;
 
-//using namespace CS::EditorApp;
-//using namespace CS::EditorApp::Component;
 using namespace CS::EditorApp;
 using namespace CS::EditorApp::Component;
 
@@ -51,7 +48,8 @@ public:
 			   iSpaceFactory* fact, wxWindow* parent);
   virtual iSpaceFactory* GetFactory () const { return factory; }
   virtual wxWindow* GetwxWindow ();
-  virtual void DisableUpdates (bool val) { }
+  virtual void SetEnabled (bool enabled) { this->enabled = enabled; }
+  virtual bool GetEnabled () const { return enabled; }
   virtual void Update ();
   
 private:
@@ -70,9 +68,10 @@ private:
   iObjectRegistry* object_reg;
   csRef<iSpaceFactory> factory;
   wxWindow* window;
+  bool enabled;
 };
 
 }
 CS_PLUGIN_NAMESPACE_END (CSEditor)
 
-#endif // __SPACE_PROPERTIESSPACE_H__
+#endif // __SPACE_TEXTLOG_H__

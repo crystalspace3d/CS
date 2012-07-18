@@ -50,7 +50,7 @@ public:
 
   // iSpace
   virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor,
-			   iSpaceFactory* fact, wxWindow* parent);
+			   iSpaceFactory* factory, wxWindow* parent);
   virtual iSpaceFactory* GetFactory () const { return factory; }
   virtual wxWindow* GetwxWindow ();
   virtual void SetEnabled (bool enabled) { this->enabled = enabled; }

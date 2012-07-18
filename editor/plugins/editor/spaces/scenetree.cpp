@@ -66,9 +66,10 @@ SceneTree::~SceneTree ()
 }
 
 bool SceneTree::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
-			    iSpaceFactory* fact, wxWindow* parent)
+			    iSpaceFactory* factory, wxWindow* parent)
 {
   object_reg = obj_reg;
+  this->factory = factory;
   
   // Create this panel
   Create (parent, -1, wxPoint (0, 0), wxSize (250, 250));

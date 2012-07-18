@@ -478,11 +478,13 @@ csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCollisionObject (CS::Physics
     CSToBullet (props->GetEnd(), internalScale), int (props->GetNodeCount()) - 1, 0);
 
   //hard-coded parameters for hair ropes
-  body->m_cfg.kDP = 0.08f; // no elasticity
+  body->m_cfg.kDP = 0.08f; // damping
   body->m_cfg.piterations = 16; // no white zone
   body->m_cfg.timescale = 2;
-
-  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body));
+  
+  csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (this, body));
+  csBody->CreatePhysicalBodyObject(props);
+  return csPtr<CS::Physics::iSoftBody>(csBody);
 }
 
 csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCollisionObject (CS::Physics::iSoftClothProperties* props)
@@ -501,8 +503,10 @@ csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCollisionObject (CS::Physics
     props->GetWithDiagonals());
   body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
 
-  //softBodies.Push (csBody);
-  return csPtr<CS::Physics::iSoftBody>(new csBulletSoftBody (this, body));
+
+  csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (this, body));
+  csBody->CreatePhysicalBodyObject(props);
+  return csPtr<CS::Physics::iSoftBody>(csBody);
 }
 
 csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCollisionObject (CS::Physics::iSoftMeshProperties* props)
@@ -535,10 +539,10 @@ csPtr<CS::Physics::iSoftBody> csBulletSystem::CreateCollisionObject (CS::Physics
   body->m_cfg.collisions |=	btSoftBody::fCollision::SDF_RS;
   body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
   body->m_materials[0]->m_kLST = 1;
+  
 
   csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (this, body));
-
-  //softBodies.Push (csBody);
+  csBody->CreatePhysicalBodyObject(props);
   return csPtr<CS::Physics::iSoftBody>(csBody);
 }
 
@@ -753,46 +757,60 @@ csPtr<CS::Collisions::iGhostCollisionObjectProperties>
   csBulletSystem::CreateGhostCollisionObjectProperties (CS::Collisions::iCollider* collider, const csString& name) 
 { 
   return csPtr<iGhostCollisionObjectProperties>(
-    scfQueryInterface<iGhostCollisionObjectProperties>(new BulletGhostCollisionObjectProperties(collider, name))); 
+    csRef<iGhostCollisionObjectProperties>(
+    csRef<BulletGhostCollisionObjectProperties>(
+    csPtr<BulletGhostCollisionObjectProperties>(new BulletGhostCollisionObjectProperties(collider, name)))));
 }
 
 csPtr<CS::Collisions::iCollisionActorProperties> 
   csBulletSystem::CreateCollisionActorProperties (CS::Collisions::iCollider* collider, const csString& name) 
 {
   return csPtr<iCollisionActorProperties>(
-    scfQueryInterface<iCollisionActorProperties>(new BulletCollisionActorProperties(collider, name))); 
+    csRef<iCollisionActorProperties>(
+    csRef<BulletCollisionActorProperties>(
+    csPtr<BulletCollisionActorProperties>(new BulletCollisionActorProperties(collider, name)))));
 }
 
 csPtr<CS::Physics::iRigidBodyProperties> 
   csBulletSystem::CreateRigidBodyProperties (CS::Collisions::iCollider* collider, const csString& name)
 {
-  return csPtr<CS::Physics::iRigidBodyProperties>(
-    scfQueryInterface<CS::Physics::iRigidBodyProperties>(new BulletRigidBodyProperties(collider, name))); 
+  return csPtr<iRigidBodyProperties>(
+    csRef<iRigidBodyProperties>(
+    csRef<BulletRigidBodyProperties>(
+    csPtr<BulletRigidBodyProperties>(new BulletRigidBodyProperties(collider, name))))); 
 }
 
 csPtr<CS::Physics::iDynamicActorProperties> 
   csBulletSystem::CreateDynamicActorProperties (CS::Collisions::iCollider* collider, const csString& name)
 {
-  return csPtr<CS::Physics::iDynamicActorProperties>(
-    scfQueryInterface<CS::Physics::iDynamicActorProperties>(new BulletDynamicActorProperties(collider, name))); 
+  return csPtr<iDynamicActorProperties>(
+    csRef<iDynamicActorProperties>(
+    csRef<BulletDynamicActorProperties>(
+    csPtr<BulletDynamicActorProperties>(new BulletDynamicActorProperties(collider, name)))));
 }
 
 csPtr<CS::Physics::iSoftRopeProperties> csBulletSystem::CreateSoftRopeProperties ()
 {
-  return csPtr<CS::Physics::iSoftRopeProperties>(
-    scfQueryInterface<CS::Physics::iSoftRopeProperties>(new BulletSoftRopeProperties));
+  return csPtr<iSoftRopeProperties>(
+    csRef<iSoftRopeProperties>(
+    csRef<BulletSoftRopeProperties>(
+    csPtr<BulletSoftRopeProperties>(new BulletSoftRopeProperties()))));
 }
 
 csPtr<CS::Physics::iSoftClothProperties> csBulletSystem::CreateSoftClothProperties ()
 {
-  return csPtr<CS::Physics::iSoftClothProperties>(
-    scfQueryInterface<CS::Physics::iSoftClothProperties>(new BulletSoftClothProperties));
+  return csPtr<iSoftClothProperties>(
+    csRef<iSoftClothProperties>(
+    csRef<BulletSoftClothProperties>(
+    csPtr<BulletSoftClothProperties>(new BulletSoftClothProperties()))));
 }
 
 csPtr<CS::Physics::iSoftMeshProperties> csBulletSystem::CreateSoftMeshProperties ()
 {
-  return csPtr<CS::Physics::iSoftMeshProperties>(
-    scfQueryInterface<CS::Physics::iSoftMeshProperties>(new BulletSoftMeshProperties));
+  return csPtr<iSoftMeshProperties>(
+    csRef<iSoftMeshProperties>(
+    csRef<BulletSoftMeshProperties>(
+    csPtr<BulletSoftMeshProperties>(new BulletSoftMeshProperties()))));
 }
 
 }

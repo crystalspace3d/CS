@@ -65,8 +65,8 @@ public:
   csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body);
   virtual ~csBulletSoftBody ();
 
-  virtual iObject* QueryObject (void) { return (iObject*) this; }
   //iCollisionObject
+  virtual iObject* QueryObject (void) { return (iObject*) this; }
 
   virtual void SetAttachedMovable (iMovable* movable) {csBulletCollisionObject::SetAttachedMovable (movable);}
   virtual iMovable* GetAttachedMovable () {return csBulletCollisionObject::GetAttachedMovable ();}
@@ -75,6 +75,9 @@ public:
   virtual iCamera* GetAttachedCamera () {return csBulletCollisionObject::GetAttachedCamera ();}
 
   virtual void RebuildObject ();
+
+  virtual void SetTransform (const csOrthoTransform& trans);
+  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const;
 
   // btSoftBody don't use collision shape.
   virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans

@@ -39,15 +39,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 csBulletSoftBody::csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body)
   :scfImplementationType (this, phySys), btBody (body), anchorCount (0)
 {
-  density = btScalar(.1);
-  // friction = 0.5f;
   btObject = body;
   btBody->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*>(this));
 }
 
 csBulletSoftBody::~csBulletSoftBody ()
 {
-  (sector->anchoredSoftBodies).Delete (this);
 }
 
 void csBulletSoftBody::RebuildObject ()
@@ -105,9 +102,10 @@ bool csBulletSoftBody::RemoveBulletObject ()
   if (insideWorld)
   {
     for (size_t i = 0; i < joints.GetSize (); i++)
+    {
       sector->RemoveJoint (joints[i]);
-    btSoftRigidDynamicsWorld* softWorld =
-      static_cast<btSoftRigidDynamicsWorld*> (sector->bulletWorld);
+    }
+    btSoftRigidDynamicsWorld* softWorld = static_cast<btSoftRigidDynamicsWorld*> (sector->bulletWorld);
     softWorld->removeSoftBody (btBody);
     insideWorld = false;
     anchorCount = 0;
@@ -116,8 +114,7 @@ bool csBulletSoftBody::RemoveBulletObject ()
     for (int i = 0; i < btBody->m_anchors.size (); i++)
     {
       btRigidBody* btRB = btBody->m_anchors[i].m_body;
-      CS::Collisions::iCollisionObject* collObject = static_cast<CS::Collisions::iCollisionObject*> (
-        btRB->getUserPointer ());
+      CS::Collisions::iCollisionObject* collObject = static_cast<CS::Collisions::iCollisionObject*> (btRB->getUserPointer ());
       csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (collObject);
       rb->anchorCount -- ;
     }
@@ -139,6 +136,34 @@ bool csBulletSoftBody::AddBulletObject ()
     insideWorld = true;
   }
   return true;
+}
+
+void csBulletSoftBody::GetAABB(csVector3& aabbMin, csVector3& aabbMax) const
+{
+  btVector3 bmin, bmax;
+  btBody->getAabb(bmin, bmax);
+
+  aabbMin = BulletToCS(bmin, system->getInverseInternalScale ());
+  aabbMax = BulletToCS(bmax, system->getInverseInternalScale ());
+}
+
+void csBulletSoftBody::SetTransform (const csOrthoTransform& trans)
+{
+  CS_ASSERT(btObject);
+
+  btTransform btTrans = CSToBullet (trans, system->getInternalScale ());
+
+  if (movable)
+  {
+    movable->SetFullTransform (trans);
+  }
+
+  if (camera)
+  {
+    camera->SetTransform (trans);
+  }
+
+  btBody->transform(btTrans);
 }
 
 void csBulletSoftBody::SetMass (float mass)
@@ -203,6 +228,7 @@ void csBulletSoftBody::SetFriction (float friction)
   CS_ASSERT (btBody);
   CS_ASSERT (friction >= 0.0f && friction <= 1.0f);
   
+  // dynamic friction
   btBody->m_cfg.kDF = friction;
 }
 

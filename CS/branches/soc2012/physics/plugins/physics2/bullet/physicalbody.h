@@ -35,6 +35,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 class csPhysicalBody : public scfVirtImplementationExt1<
   csPhysicalBody, csBulletCollisionObject, CS::Physics::iPhysicalBody>
 {
+  friend class csBulletSystem;
+  
 protected:
   btScalar density;
 

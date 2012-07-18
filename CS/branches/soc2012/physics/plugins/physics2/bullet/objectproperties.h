@@ -136,28 +136,28 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     BulletPhysicalObjectProperties, BulletCollisionObjectProperties, CS::Physics::iPhysicalObjectProperties>
   {
   protected:
-    float density;
-    float friction;
+    csScalar density, mass;
+    csScalar friction;
 
   public:
     BulletPhysicalObjectProperties(CS::Collisions::iCollider* collider = nullptr, const csString& name = "") : 
         scfImplementationType (this, collider, name),
-        density(0),     // static objects
+        density(0), mass(0),     // static objects
         friction(10)
     {}
 
     /// Get the density of all objects that will be constructed with these properties
-    virtual float GetDensity() const { return density; }
+    virtual csScalar GetDensity() const { return density; }
     /// Set the density of all objects that will be constructed with these properties
-    virtual void SetDensity(float value) { density = value; }
+    virtual void SetDensity(csScalar value) { density = value; mass = 0; }
     
     /// Get the mass of all objects that will be constructed with these properties
-    virtual float GetMass() const { return density * collider->GetVolume(); }
+    virtual csScalar GetMass() const { return mass; }
     /// Set the mass of all objects that will be constructed with these properties
-    virtual void SetMass(float value) { density = value / collider->GetVolume(); }
+    virtual void SetMass(csScalar value) { mass = value; density = 0; }
 
     /// Set the friction of all objects that will be constructed with these properties
-    virtual void SetFriction(float value) { friction = value; }
+    virtual void SetFriction(csScalar value) { friction = value; }
 
     /// Get the friction of all objects that will be constructed with these properties
     virtual float GetFriction() const { return friction; }
@@ -247,6 +247,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   public:
     BulletSoftBodyProperties() : scfImplementationType (this)
     {
+      SetFriction(.2);    // between 0 and 1
     }
 
     virtual CS::Physics::PhysicalBodyType GetPhysicalBodyType() const { return CS::Physics::BODY_SOFT; }
@@ -256,7 +257,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
    * Used to create a one-dimensional softbody
    */
   class BulletSoftRopeProperties : public scfVirtImplementationExt1<
-    BulletSoftBodyProperties, BulletSoftBodyProperties, CS::Physics::iSoftBodyProperties>
+    BulletSoftBodyProperties, BulletSoftBodyProperties, CS::Physics::iSoftRopeProperties>
   {
   protected:
     csVector3 start, end;
@@ -288,7 +289,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
    * Used to create a two-dimensional softbody
    */
   class BulletSoftClothProperties : public scfVirtImplementationExt1<
-    BulletSoftClothProperties, BulletSoftBodyProperties, CS::Physics::iSoftBodyProperties> 
+    BulletSoftClothProperties, BulletSoftBodyProperties, CS::Physics::iSoftClothProperties> 
   {
   protected:
     csVector3 corners[4];
@@ -324,7 +325,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
    * Used to create an arbitrary softbody defined by a given mesh
    */
   class BulletSoftMeshProperties : public scfVirtImplementationExt1<
-    BulletSoftMeshProperties, BulletSoftBodyProperties, CS::Physics::iSoftBodyProperties> 
+    BulletSoftMeshProperties, BulletSoftBodyProperties, CS::Physics::iSoftMeshProperties> 
   {
   protected:
     iGeneralFactoryState* factory;

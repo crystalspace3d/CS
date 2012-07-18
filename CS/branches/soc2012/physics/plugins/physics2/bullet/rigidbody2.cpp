@@ -34,12 +34,21 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //CreatePhysicalBodyObject(props);
     SetCollider(props->GetCollider());
     SetName(props->QueryObject()->GetName());
-
-    density = props->GetDensity();
+    
+    btScalar mass;
+    if (props->GetDensity())
+    {
+      density = props->GetDensity();
+      mass = density * collider->GetVolume();
+    }
+    else
+    {
+      mass = props->GetMass();
+      density = collider->GetVolume() > 0 ? mass / collider->GetVolume() : 0;
+    }
     
     // construct bullet object
     btCollisionShape* shape = collider->GetOrCreateBulletShape();
-    btScalar mass = density * collider->GetVolume();
     btRigidBody::btRigidBodyConstructionInfo infos (mass, CreateMotionState(collider->GetBtPrincipalAxisTransform()), shape, mass * collider->GetLocalInertia());
 
     infos.m_friction = props->GetFriction();
@@ -50,7 +59,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btObject = btBody = new btRigidBody (infos);
     btBody->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*>(this));
 
-    bool isStatic = props->GetMass() == 0;
+    bool isStatic = mass == 0;
     SetState(isStatic ? STATE_STATIC : STATE_DYNAMIC);
 
     // Set collision group

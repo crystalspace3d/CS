@@ -127,6 +127,14 @@ void PhysDemo::Frame()
   // Dynamics and actor simulation
   if (!pauseDynamic)
   {
+    if (physicalSector->GetSoftBodyCount())
+    {
+      csVector3 aabbMin, aabbMax;
+      physicalSector->GetSoftBody(0)->GetAABB(aabbMin, aabbMax);
+      csVector3 o = aabbMin + (aabbMax - aabbMin) / 2;
+      csPrintf("SB #0: %f, %f, %f\n", o.x, o.y, o.z);
+    }
+
     // handle movement
     // intended movement direction
     bool gravityOff = physicalSector->GetGravity().SquaredNorm() == 0;

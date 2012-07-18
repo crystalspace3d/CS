@@ -1019,7 +1019,7 @@ void PhysDemo::SpawnRope()
   // Spawn a first rope and attach it to the box
   csRef<CS::Physics::iSoftRopeProperties> props = physicalSystem->CreateSoftRopeProperties();
   props->SetStart(tc.GetOrigin() + tc.GetT2O() * csVector3 (-2, 2, 0));
-  props->SetEnd(tc.GetOrigin() + tc.GetT2O() * csVector3 (-0.2f, 0, 1), 20);
+  props->SetEnd(tc.GetOrigin() + tc.GetT2O() * csVector3 (-0.2f, 0, 1));
   props->SetNodeCount(20);
   props->SetMass (2.0f);
 
@@ -1137,11 +1137,11 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth()
 
   // Init the animation control for the animation of the genmesh
   // If it's a double-side soft body like cloth, you have to call SetSoftBody (body, true);
-  csRef<iGeneralMeshState> meshState =
+  /*csRef<iGeneralMeshState> meshState =
     scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject());
   csRef<CS::Physics::iSoftBodyAnimationControl> animationControl =
     scfQueryInterface<CS::Physics::iSoftBodyAnimationControl> (meshState->GetAnimationControl());
-  animationControl->SetSoftBody (body, true);
+  animationControl->SetSoftBody (body, true);*/
 
   return body;
 }
@@ -1171,12 +1171,13 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   //csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateSoftBody(gmstate,
   //  csOrthoTransform (csMatrix3(), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
   // This would have worked too
-  csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateSoftBody
-    (gmstate->GetVertices(), gmstate->GetVertexCount(),
-     gmstate->GetTriangles(), gmstate->GetTriangleCount(),
-     csOrthoTransform (csMatrix3(), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
-  body->SetMass (5.0f);
+  csRef<iSoftMeshProperties> props = physicalSystem->CreateSoftMeshProperties();
+  props->SetGenmeshFactory(gmstate);
+  props->SetMass (5.0f);
+
+  csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateCollisionObject(props);
   body->SetRigidity (0.8f);
+
   csRef<CS::Physics::Bullet2::iSoftBody> bulletbody = 
     scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (body);
   bulletbody->SetBendingConstraint (true);
@@ -1195,17 +1196,20 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   body->SetAttachedMovable (mesh->GetMovable());
-
   body->RebuildObject();
+  
+  csOrthoTransform trans;
+  trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
+  body->SetTransform(trans);
+
   physicalSector->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
-  /*csRef<iGeneralMeshState> meshState =
+  csRef<iGeneralMeshState> meshState =
     scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject());
   csRef<CS::Physics::iSoftBodyAnimationControl> animationControl =
     scfQueryInterface<CS::Physics::iSoftBodyAnimationControl> (meshState->GetAnimationControl());
-  animationControl->SetSoftBody (body);*/
-
+  animationControl->SetSoftBody (body);
 
   // This would have worked too
   //for (size_t i = 0; i < body->GetVertexCount(); i++)

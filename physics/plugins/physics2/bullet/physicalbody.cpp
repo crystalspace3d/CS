@@ -27,7 +27,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     CreateCollisionObject(props);
 
-    SetDensity(props->GetDensity());
+    if (props->GetDensity())
+    {
+      SetDensity(props->GetDensity());
+    }
+    else
+    {
+      SetMass(props->GetMass());
+    }
     SetFriction(props->GetFriction());
   }
 

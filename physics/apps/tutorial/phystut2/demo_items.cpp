@@ -51,7 +51,7 @@ void PhysDemo::CreateItemTemplates()
   }
 
   {
-    // Primitive Object Spawner
+    // Complex Object Spawner
     ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Complex Object Spawner");
     
     AddItemFunction(Secondary, SpawnCompound, "Spawn Compound", physDemo.SpawnCompound());

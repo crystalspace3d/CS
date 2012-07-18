@@ -60,12 +60,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     if (movable)
     {
-      movable->SetFullTransform (BulletToCS (btTrans, system->getInverseInternalScale ()));
+      movable->SetFullTransform (trans);
     }
 
     if (camera)
     {
-      camera->SetTransform (BulletToCS (btTrans, system->getInverseInternalScale ()));
+      camera->SetTransform (trans);
     }
 
     btObject->setWorldTransform(btTrans);

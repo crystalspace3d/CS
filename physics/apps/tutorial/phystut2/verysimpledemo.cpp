@@ -8,6 +8,10 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
+
+using namespace CS::Collisions;
+using namespace CS::Physics;
+
 //
 //
 //
@@ -303,15 +307,14 @@ CS::Physics::iSoftBody* VerySimple::SpawnSoftBody (bool setVelocity /* = true */
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
 
   // Create the soft body
-  //csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateSoftBody(gmstate,
-  //  csOrthoTransform (csMatrix3 (), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
-  // This would have worked too
-  csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateSoftBody
-    (gmstate->GetVertices (), gmstate->GetVertexCount (),
-    gmstate->GetTriangles (), gmstate->GetTriangleCount (),
-    csOrthoTransform (csMatrix3 (), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
-  body->SetMass (5.0f);
+  csRef<iSoftMeshProperties> props = physicalSystem->CreateSoftMeshProperties();
+  props->SetGenmeshFactory(gmstate);
+  props->SetMass (5.0f);
+
+  csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateCollisionObject(props);
   body->SetRigidity (0.8f);
+
+  body->SetTransform(csOrthoTransform (csMatrix3 (), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
   csRef<CS::Physics::Bullet2::iSoftBody> bulletbody = 
     scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (body);
   bulletbody->SetBendingConstraint (true);

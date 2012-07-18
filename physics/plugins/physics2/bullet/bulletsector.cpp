@@ -754,7 +754,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csRef<csBulletSoftBody> btBody (dynamic_cast<csBulletSoftBody*>(body));
     softBodies.Push (btBody);
     btBody->sector = this;
-    btBody->collGroup = sys->collGroups[CollisionGroupTypeDefault];
     btBody->AddBulletObject ();
 
     iMovable* movable = body->GetAttachedMovable ();

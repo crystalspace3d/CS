@@ -330,7 +330,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
       // Add a force at the point clicked
       csVector3 force = hitResult.isect - GetActorPos();
       force.Normalize();
-      force *= 100.f;
+      force *= 20.f;
 
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
       if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)

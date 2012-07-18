@@ -62,17 +62,14 @@ private:
   
 private:
   iObjectRegistry* object_reg;
+  iEditor* editor;
   csRef<iSpaceFactory> factory;
+
   wxWindow* window;
   
-  csRef<iEditor> editor;
-  
-  csRef<iEngine> engine;
   csRef<iGraphics3D> g3d;
-  csRef<iWxWindow> wxwin;
   csRef<iView> view;
 
-  csEventID eventSetCamera;
   csEventID eventSetCollection;
 
   size_t updateCount;

@@ -211,7 +211,7 @@ SpaceComboBox::SpaceComboBox
       Append (label, f->GetIcon ());
 
       // Check for the less represented space
-      if (smallest > f->GetCount ()
+      if (smallest > f->GetEnabledCount ()
 	  && (f->GetMultipleAllowed () || f->GetEnabledCount () == 0))
       {
 	smallest = f->GetEnabledCount ();

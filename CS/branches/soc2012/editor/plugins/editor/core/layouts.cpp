@@ -60,7 +60,8 @@ void BaseLayout::OnMenu (wxCommandEvent& event)
     {
       wxMenu wx;
       csRef<iLayout> layout;
-      layout.AttachNew (new MenuLayout (object_reg, editor, GetwxWindow (), &wx));
+      layout.AttachNew
+	(new MenuLayout (object_reg, editor, GetwxWindow (), &wx));
       menu->Draw (context, layout);
       GetwxWindow ()->PopupMenu (&wx);
     }
@@ -69,7 +70,8 @@ void BaseLayout::OnMenu (wxCommandEvent& event)
 
 iOperator* BaseLayout::GetOperator (const char* id)
 {
-  csRef<iOperator> op = editor->GetOperatorManager ()->CreateOperator (id);
+  csRef<iOperator> op =
+    editor->GetOperatorManager ()->CreateOperator (id);
   return op;
 }
 
@@ -114,7 +116,8 @@ iMenu* BaseLayout::GetMenu (const char* pluginName)
 
 //----------------------------------------------------------------------
 
-HeaderLayout::HeaderLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow* parent)
+HeaderLayout::HeaderLayout (iObjectRegistry* obj_reg, Editor* editor,
+			    wxWindow* parent)
   : BaseLayout (obj_reg, editor)
 {
   box = new wxBoxSizer (wxVERTICAL);
@@ -122,7 +125,6 @@ HeaderLayout::HeaderLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow* 
   tb->Realize ();
   box->Add (tb, 1, wxEXPAND);
   parent->SetSizer (box, true);
-  //box->SetSizeHints (parent);
 }
 
 HeaderLayout::~HeaderLayout ()
@@ -131,14 +133,18 @@ HeaderLayout::~HeaderLayout ()
   box->Clear (true);
 }
 
-iOperator* HeaderLayout::AppendOperator (const char* id, const char* label, const char* icon) 
+iOperator* HeaderLayout::AppendOperator
+(const char* id, const char* label, const char* icon) 
 { 
   wxString l (label, wxConvUTF8);
-  wxToolBarToolBase* item = tb->AddTool (wxID_ANY, l, wxArtProvider::GetBitmap (wxART_ERROR));
+  wxToolBarToolBase* item =
+    tb->AddTool (wxID_ANY, l, wxArtProvider::GetBitmap (wxART_ERROR));
   tb->Realize ();
   csRef<iOperator> op = GetOperator (id);
   operators.PutUnique (item->GetId (), op);
-  tb->Connect (item->GetId (), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (HeaderLayout::OnOperator), 0, this);
+  tb->Connect (item->GetId (), wxEVT_COMMAND_MENU_SELECTED,
+	       wxCommandEventHandler (HeaderLayout::OnOperator),
+	       0, this);
 
   return op; 
 }
@@ -146,14 +152,17 @@ iOperator* HeaderLayout::AppendOperator (const char* id, const char* label, cons
 iMenu* HeaderLayout::AppendMenu (const char* id, const char* label)
 {
   wxString l (label, wxConvUTF8);
-  wxButton* entry = new wxButton (tb, wxID_ANY, l, wxDefaultPosition, wxDefaultSize, wxNO_BORDER /*| wxBU_EXACTFIT*/);
+  wxButton* entry =
+    new wxButton (tb, wxID_ANY, l, wxDefaultPosition, wxDefaultSize,
+		  wxNO_BORDER /*| wxBU_EXACTFIT*/);
   tb->AddControl (entry);
   tb->Realize ();
 
   csRef<iMenu> menu = GetMenu (id);
 
   menus.PutUnique (entry->GetId (), menu);
-  tb->Connect (entry->GetId (), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler (HeaderLayout::OnMenu), 0, this);
+  tb->Connect (entry->GetId (), wxEVT_COMMAND_BUTTON_CLICKED,
+	       wxCommandEventHandler (HeaderLayout::OnMenu), 0, this);
 
   return menu;
 }
@@ -175,7 +184,8 @@ wxWindow* HeaderLayout::GetwxWindow ()
 
 //----------------------------------------------------------------------
 
-MenuLayout::MenuLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow* parent, wxMenu* menu)
+MenuLayout::MenuLayout (iObjectRegistry* obj_reg, Editor* editor,
+			wxWindow* parent, wxMenu* menu)
   : BaseLayout (obj_reg, editor),  parent (parent), menu (menu)
 {
 }
@@ -184,12 +194,15 @@ MenuLayout::~MenuLayout ()
 {
 }
 
-iOperator* MenuLayout::AppendOperator (const char* id, const char* label, const char* icon) 
+iOperator* MenuLayout::AppendOperator
+(const char* id, const char* label, const char* icon) 
 { 
   wxString l (label, wxConvUTF8);
   wxMenuItem* item = menu->Append (wxID_ANY, l);
   csRef<iOperator> op = GetOperator (id);
-  parent->Connect (item->GetId (), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler (MenuLayout::OnOperator), 0, this);
+  parent->Connect (item->GetId (), wxEVT_COMMAND_MENU_SELECTED,
+		   wxCommandEventHandler (MenuLayout::OnOperator),
+		   0, this);
   operators.PutUnique (item->GetId (), op);
 
   return op; 
@@ -215,13 +228,12 @@ wxWindow* MenuLayout::GetwxWindow ()
 
 //----------------------------------------------------------------------
 
-PanelLayout::PanelLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow* parent)
+PanelLayout::PanelLayout
+(iObjectRegistry* obj_reg, Editor* editor, wxWindow* parent)
   : BaseLayout (obj_reg, editor),  parent (parent)
 {
   paneSz = new wxBoxSizer (wxVERTICAL);
-
   parent->SetSizer (paneSz);
-  //paneSz->SetSizeHints (parent);
 }
 
 PanelLayout::~PanelLayout ()
@@ -229,15 +241,21 @@ PanelLayout::~PanelLayout ()
   paneSz->Clear (true);
 }
 
-iOperator* PanelLayout::AppendOperator (const char* id, const char* label, const char* icon) 
+iOperator* PanelLayout::AppendOperator
+(const char* id, const char* label, const char* icon) 
 { 
   wxString l (label, wxConvUTF8);
-  wxButton* item = new wxButton (parent, wxID_ANY, l, wxDefaultPosition, wxDefaultSize/*, wxNO_BORDER | wxBU_EXACTFIT*/);
+  wxButton* item =
+    new wxButton (parent, wxID_ANY, l, wxDefaultPosition,
+		  wxDefaultSize/*, wxNO_BORDER | wxBU_EXACTFIT*/);
   csRef<iOperator> op = GetOperator (id);
-  parent->Connect (item->GetId (), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler (MenuLayout::OnOperator), 0, this);
+  parent->Connect (item->GetId (), wxEVT_COMMAND_BUTTON_CLICKED,
+		   wxCommandEventHandler (MenuLayout::OnOperator),
+		   0, this);
   operators.PutUnique (item->GetId (), op);
   
   paneSz->Add (item, 0, wxEXPAND, 0);
+  item->Show ();
   
   return op; 
 }
@@ -261,18 +279,19 @@ wxWindow* PanelLayout::GetwxWindow ()
 {
   return parent;
 }
+
 //----------------------------------------------------------------------
 
 BEGIN_EVENT_TABLE (CollapsiblePane, wxCollapsiblePane)
   EVT_SIZE (CollapsiblePane::OnSize)
 END_EVENT_TABLE ()
 
-CollapsiblePane::CollapsiblePane (iObjectRegistry* obj_reg, wxWindow* parent, const char* label)
+CollapsiblePane::CollapsiblePane
+ (iObjectRegistry* obj_reg, wxWindow* parent, const char* label)
   : wxCollapsiblePane (parent, wxID_ANY, wxString (label, wxConvUTF8),
 		       wxDefaultPosition, wxDefaultSize, wxCP_NO_TLW_RESIZE),
   object_reg (obj_reg)
 {
-
 }
 
 CollapsiblePane::~CollapsiblePane ()

@@ -73,9 +73,9 @@ struct HeaderLayout : public BaseLayout
   HeaderLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow* parent);
   ~HeaderLayout ();
 
-  virtual iOperator* AppendOperator (const char* id, const char* label, const char* icon);
+  virtual iOperator* AppendOperator
+    (const char* id, const char* label, const char* icon);
   virtual iMenu* AppendMenu (const char* id, const char* label);
-  //virtual iProperty* AppendProperty (iResource*, const char* id);
   virtual void AppendLabel (const char* label);
   virtual void AppendSeparator ();
 
@@ -96,9 +96,9 @@ struct MenuLayout : public BaseLayout
   MenuLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow*, wxMenu*);
   ~MenuLayout ();
 
-  virtual iOperator* AppendOperator (const char* id, const char* label, const char* icon);
+  virtual iOperator* AppendOperator
+    (const char* id, const char* label, const char* icon);
   virtual iMenu* AppendMenu (const char* id, const char* label);
-  //virtual iProperty* AppendProperty (iResource*, const char* id);
   virtual void AppendLabel (const char* label);
   virtual void AppendSeparator ();
 
@@ -119,9 +119,9 @@ struct PanelLayout : public BaseLayout
   PanelLayout (iObjectRegistry* obj_reg, Editor* editor, wxWindow*);
   ~PanelLayout ();
 
-  virtual iOperator* AppendOperator (const char* id, const char* label, const char* icon);
+  virtual iOperator* AppendOperator
+    (const char* id, const char* label, const char* icon);
   virtual iMenu* AppendMenu (const char* id, const char* label);
-  //virtual iProperty* AppendProperty (iResource*, const char* id);
   virtual void AppendLabel (const char* label);
   virtual void AppendSeparator ();
 

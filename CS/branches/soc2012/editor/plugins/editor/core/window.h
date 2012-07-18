@@ -86,6 +86,7 @@ private:
   csRef<iLayout> layout;
 
   friend class SpaceComboBox;
+  friend class Window;
 };
 
 class SpaceComboBox : public wxBitmapComboBox

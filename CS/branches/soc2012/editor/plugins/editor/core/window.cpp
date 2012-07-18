@@ -46,6 +46,14 @@ Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent,
 {
   ViewControl* control = new ViewControl (object_reg, editor, this);
   Initialize (control);
+
+  // Redraw the space
+  if (control->space)
+  {
+    SpaceManager* mgr =
+      static_cast<SpaceManager*> (editor->GetSpaceManager ());
+    mgr->ReDraw (control->space);
+  }
 }
 
 Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent,
@@ -149,7 +157,6 @@ ViewControl::ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* p
 
   box->Add (menuBar, 0, wxEXPAND);
   SetSizer (box);
-  //box->SetSizeHints (this);
 }
 
 ViewControl::~ViewControl ()
@@ -226,9 +233,10 @@ SpaceComboBox::SpaceComboBox
     if (smallestFactory)
     {
       ctrl->space = smallestFactory->CreateInstance (control);
+      ctrl->spaces.Put (smallestIndex, ctrl->space);
+
       SetSelection (smallestIndex);
       lastIndex = smallestIndex;
-      ctrl->spaces.Put (smallestIndex, ctrl->space);
     }
   }
 
@@ -258,6 +266,9 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
 
     if (GetValue () == label)
     {
+      // Don't do anything if the selection is still the same
+      if (lastIndex == i) return;
+
       // Create an instance of the selected space
       if (f->GetMultipleAllowed () || f->GetEnabledCount () == 0)
       {

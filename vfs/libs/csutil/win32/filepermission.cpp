@@ -53,6 +53,12 @@ namespace
   // Convert fixed-size (3) ACCESS_MASK array to octal-formatted Unix permission
   uint32 AccessMaskToUnixPermission (ACCESS_MASK *rights);
 
+  // Convert octal-formatted Unix-style permission to three ACCESS_MASKs
+  void PermissionToAccessMask (uint32 perm,
+                               ACCESS_MASK &user,
+                               ACCESS_MASK &group,
+                               ACCESS_MASK &others);
+
   /* Get emulated Unix permission from given file
    * - takes filename (wide-character filename string)
    *         oPerm    (variable to store permission)
@@ -94,8 +100,118 @@ namespace CS
 
     int SetFilePermission (const char *filename, uint32 permission)
     {
-      // TODO: implement feature
-      return ENOTSUP;
+      if (!filename) // filename must not be null!
+        return EINVAL;
+
+      ACCESS_MASK user, group, others;
+      PSID ownerSid = NULL, groupSid = NULL, everyoneSid = NULL;
+      BOOL ownerDefaulted = FALSE, groupDefaulted = FALSE;
+
+      // UTF-16 max length (in wchar_t) <= UTF-8 length (in char)
+      size_t pathLen = strlen (path) + 1;
+      // allocate buffer
+      CS_ALLOC_STACK_ARRAY (wchar_t, wPath, pathLen);
+      // convert to wchar_t
+      csUnicodeTransform::UTF8toWC (wPath, pathLen, path);
+  
+      // get security descriptor
+      PSECURITY_DESCRIPTOR security = GetSecurityDescriptor (wPath);
+
+      if (!security)
+        return LastErrorToErrno ();
+
+      // retrieve SID information for trustees
+      GetSecurityDescriptorOwner (security, &ownerSid, &ownerDefaulted);
+      GetSecurityDescriptorGroup (security, &groupSid, &groupDefaulted);
+
+      // others (everyone) SID is well-known, built-in SID
+      DWORD everyoneSidSize = SECURITY_MAX_SID_SIZE;
+      // allocate memory
+      everyoneSid = LocalAlloc (LMEM_FIXED, everyoneSidSize);
+      // create SID for Everyone
+      CreateWellKnownSid (WinWorldSid, NULL, everyoneSid, &everyoneSidSize);
+
+      // list of permissions that should not be denied
+      const ACCESS_MASK mustHave = READ_CONTROL | SYNCHRONIZE;
+      // find corresponding access mask
+      PermissionToAccessMask (permission, user, group, others);
+      // now derive actually required permission set
+      ACCESS_MASK userDeny    = ~user & (group | others) & ~mustHave,
+                  userGrant   = user,
+                  groupDeny   = ~group & others & ~mustHave,
+                  groupGrant  = group,
+                  othersGrant = others;
+  
+      // create corresponding DACL entry
+      // note that we cannot use canonical ACEs
+      DWORD allowedAceSize = sizeof (ACCESS_ALLOWED_ACE) - sizeof (DWORD);
+      DWORD deniedAceSize  = sizeof (ACCESS_DENIED_ACE)  - sizeof (DWORD);
+      DWORD sidLengthTotal = GetLengthSid (ownerSid)
+                           + GetLengthSid (groupSid)
+                           + everyoneSidSize;
+      DWORD daclSize = sizeof(ACL) + allowedAceSize * 3 + deniedAceSize * 2
+                                   + sidLengthTotal;
+  
+      // make sure it fits DWORD boundary (4-byte/32-bit)
+      if (daclSize & 0x03)
+      {
+        // if either last 2 bits are set,
+        daclSize &= 0xFFFFFFFC; // remove the bits
+        daclSize += 0x04;       // add 4 (round up)
+      }
+
+      // allocate memory for DACL
+      PACL dacl = (PACL)LocalAlloc (LMEM_FIXED, daclSize);
+
+      if (!dacl)
+      {
+        // DACL memory allocation failed
+        int error = LastErrorToErrno ();
+        LocalFree (everyoneSid);
+        LocalFree (security);
+        return error;
+      }
+
+      // initialize empty DACL
+      if (!InitializeAcl (dacl, daclSize, ACL_REVISION))
+      {
+        // ACL initialization failed.
+        int error = LastErrorToErrno ();
+        LocalFree (dacl);
+        LocalFree (everyoneSid);
+        LocalFree (security);
+        return error;
+      }
+
+      // Add entries to ACL in pre-defined order
+      AddAccessDeniedAce  (dacl, ACL_REVISION, userDeny,    ownerSid);
+      AddAccessAllowedAce (dacl, ACL_REVISION, userGrant,   ownerSid);
+      AddAccessDeniedAce  (dacl, ACL_REVISION, groupDeny,   groupSid);
+      AddAccessAllowedAce (dacl, ACL_REVISION, groupGrant,  groupSid);
+      AddAccessAllowedAce (dacl, ACL_REVISION, othersGrant, everyoneSid);
+
+      int result = 0;
+
+      // set security information of file
+      if (SetNamedSecurityInfoW (wPath,            // path of the file
+          SE_FILE_OBJECT,                      // given name is a file
+          DACL_SECURITY_INFORMATION            // set DACL of this object
+        | PROTECTED_DACL_SECURITY_INFORMATION, // prevent DACL inheritance
+          NULL,                                // SID of new owner (unused)
+          NULL,                                // SID of new group (unused)
+          dacl,                                // new DACL
+          NULL))                               // new SACL (unused)
+      {
+        // nonzero return value => error
+        result = LastErrorToErrno ();
+      }
+
+      // free memory
+      LocalFree (dacl);
+      LocalFree (everyoneSid);
+      LocalFree (security);
+
+      return result;
     }
   } // namespace Platform
 } // namespace CS
@@ -231,6 +347,23 @@ namespace
     return result;
   }
 
+  void PermissionToAccessMask (uint32 perm,
+                               ACCESS_MASK &user,
+                               ACCESS_MASK &group,
+                               ACCESS_MASK &others)
+  {
+    // we only do direct translations
+    user   = ((perm & 0400) != 0) * FILE_GENERIC_READ
+           | ((perm & 0200) != 0) * FILE_GENERIC_WRITE
+           | ((perm & 0100) != 0) * FILE_GENERIC_EXECUTE;
+    group  = ((perm & 0040) != 0) * FILE_GENERIC_READ
+           | ((perm & 0020) != 0) * FILE_GENERIC_WRITE
+           | ((perm & 0010) != 0) * FILE_GENERIC_EXECUTE;
+    others = ((perm & 0004) != 0) * FILE_GENERIC_READ
+           | ((perm & 0002) != 0) * FILE_GENERIC_WRITE
+           | ((perm & 0001) != 0) * FILE_GENERIC_EXECUTE;
+  }
+
   int GetUnixPermission (wchar_t * filename, uint32 &oPerm)
   {
     AUTHZ_RESOURCE_MANAGER_HANDLE authz;
@@ -280,6 +413,7 @@ namespace
 
     // release memory
     LocalFree (othersSid);
+    LocalFree (security);
   
     return result;
   }

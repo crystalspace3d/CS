@@ -66,8 +66,8 @@ class ViewControl : public wxPanel
 public:
   ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent);
   virtual ~ViewControl ();
-  wxWindow* GetRegion() { return toolbar; }
-  void SetLayout(iLayout* l) { layout = l; }
+  wxWindow* GetRegion () { return toolbar; }
+  void SetLayout (iLayout* l) { layout = l; }
 
 private:
   void OnClicked (wxCommandEvent& event);
@@ -79,6 +79,7 @@ private:
   iObjectRegistry* object_reg;
   iEditor* editor;
   csRef<iSpace> space;
+  csHash<csRef<iSpace>, size_t> spaces;
 
   wxBoxSizer* box;
   wxWindow* toolbar;
@@ -100,6 +101,7 @@ private:
   iObjectRegistry* object_reg;
   iEditor* editor;
   ViewControl* control;
+  size_t lastIndex;
 };
 
 }

@@ -49,9 +49,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
   inline csVector3 GetLightDir(iLight *light)
   {
     iMovable *mov = light->GetMovable ();
-    csVector3 d = mov->GetFullTransform ().GetT2O () * csVector3 (0.0f, 0.0f, 1.0f);
+    csVector3 d = mov->GetFullTransform ().This2OtherRelative(csVector3 (0.0f, 0.0f, 1.0f));
 
-    return csVector3::Unit (d);
+    return d.Unit();
   }
 
   /**
@@ -272,6 +272,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
    * // ... apply post processing ...
    * \endcode
    */
+  template<typename ShadowHandler>
   class DeferredLightRenderer
   {
   public:
@@ -321,16 +322,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       csRef<csShaderVariable> lightDir;
       csShaderVariable* scale;
 
+      // persistent shadow data - we query deferred shadow data from it
+      typename ShadowHandler::PersistentData* shadowPersist;
+      csRef<csShaderVariable> shadowSpread;
+
       /**
        * Initialize persistent data, must be called once before using the
        * light renderer.
        */
-      void Initialize(iObjectRegistry *objRegistry)
+      void Initialize(iObjectRegistry *objRegistry, typename ShadowHandler::PersistentData& shadowPersistent)
       {
         using namespace CS::Geometry;
 
         const char *messageID = "crystalspace.rendermanager.deferred.lightrender";
 
+	// set shadow data
+	shadowPersist = &shadowPersistent;
+
+	// query some plugins we'll need
         csRef<iEngine> engine = csQueryRegistry<iEngine> (objRegistry);
         csRef<iLoader> loader = csQueryRegistry<iLoader> (objRegistry);
         csRef<iGraphics3D> graphics3D = csQueryRegistry<iGraphics3D> (objRegistry);
@@ -339,12 +348,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
           "crystalspace.shared.stringset");
         iShaderVarStringSet *svStringSet = shaderManager->GetSVNameStringset ();
 
+	// setup config accessor
         csConfigAccess cfg (objRegistry);
 
         // populate string IDs
         gbufUse = stringSet->Request ("gbuffer use");
 	lightPos.AttachNew(new csShaderVariable(svStringSet->Request ("light position view")));
 	lightDir.AttachNew(new csShaderVariable(svStringSet->Request ("light direction view")));
+	shadowSpread.AttachNew(new csShaderVariable(svStringSet->Request ("light shadow spread")));
 	scale = shaderManager->GetVariableAdd(svStringSet->Request("gbuffer scaleoffset"));
 	zOnly = shaderManager->GetShader("z_only");
 	if(!zOnly)
@@ -499,7 +510,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     shaderMgr(shaderMgr),
     stringSet(stringSet),
     rview(rview),
-    persistentData(persistent)
+    persistentData(persistent),
+    shadowHandler(*persistent.shadowPersist, rview)
     {
       gbuffer.UpdateShaderVars (shaderMgr);
     }
@@ -687,7 +699,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       SetupLightShaderVars (light, svStack);
       shader->PushVariables (svStack);
 
-      // Draw the light mesh.
+      // push shadow spread variable
+      csShaderVariable* shadowSpreadSV = persistentData.shadowSpread;
+      svStack[shadowSpreadSV->GetName()] = shadowSpreadSV;
+
+      // get transform and check whether we're inside the light
       iCamera *cam = rview->GetCamera ();
       csVector3 camPos = cam->GetTransform ().This2Other (csVector3 (0.0f, 0.0f, 1.0f));
       
@@ -707,7 +723,36 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	graphics3D->SetShadowState(CS_SHADOW_VOLUME_USE);
       }
 
-      DrawLightMesh (meshes, num, trans, shader, svStack, CS_FX_ADD);
+      // light doesn't cast shadows - draw without shadowing
+      if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
+      {
+	// let the shader know we don't use shadows
+	shadowSpreadSV->SetValue(0);
+
+	// draw the light without shadows
+	DrawLightMesh (meshes, num, trans, shader, svStack, CS_FX_ADD);
+      }
+      // shadow does cast shadows - draw with shadowing
+      else
+      {
+	// we may have to render multiple times if the shadow map uses multiple projectors
+	for(uint i = 0; i < shadowHandler.GetSublightNum(light); ++i)
+	{
+	  // setup shadow variables
+	  csShaderVariableStack localStack(svStack);
+	  int spread = shadowHandler.PushVariables(light, i, localStack);
+
+	  // check whether we need to draw anything for this projector
+	  if(spread > 0)
+	  {
+	    // set spread shader variable accordingly...
+	    shadowSpreadSV->SetValue(spread);
+
+	    // draw light with shadows
+	    DrawLightMesh (meshes, num, trans, shader, localStack, CS_FX_ADD);
+	  }
+	}
+      }
 
       if(!insideLight)
       {
@@ -801,16 +846,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     CS::RenderManager::RenderView *rview;
 
     PersistentData &persistentData;
+    ShadowHandler shadowHandler;
   };
 
   /**
    * A helper functor that will draw the light volume for each given light.
    */
+  template<typename LightRenderType>
   class LightVolumeRenderer
   {
   public:
 
-    LightVolumeRenderer(DeferredLightRenderer &render, bool wireframe, float alpha)
+    LightVolumeRenderer(LightRenderType &render, bool wireframe, float alpha)
       :
     render(render),
     wireframe(wireframe),
@@ -822,7 +869,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       render.OutputLightVolume (light, wireframe, alpha);
     }
 
-    DeferredLightRenderer &render;
+    LightRenderType& render;
     bool wireframe;
     float alpha;
   };

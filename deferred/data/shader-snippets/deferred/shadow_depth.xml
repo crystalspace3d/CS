@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+  Copyright (C) 2012 by Matthieu Kraus
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Library General Public License for more details.
+
+  You should have received a copy of the GNU Library General Public
+  License along with this library; if not, write to the Free
+  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-->
+<snippet id="shadow">
+  <?if (vars."light shadow spread".int &gt; 0) ?>
+  <!-- we have a shadow map, so calculate attenuation from shadows -->
+  <technique priority="100">
+    <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
+    <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
+
+    <!-- declarations of our array input variables for Cg -->
+    <block location="cg:definitions">
+      #define MAX_CSM 8
+
+      // transform from light to shadow space
+      float4x4 shadowMapProject[MAX_CSM];
+
+      // unscale transform
+      float4 shadowMapUnscale[MAX_CSM];
+
+      // clip range
+      float2 shadowMapClip[MAX_CSM];
+
+      // actual shadow map
+      sampler2D shadowMap[MAX_CSM];
+
+      // shadow map shadowSpread
+      int shadowSpread;
+
+      // world to light transform
+      float4x4 worldToLight;
+    </block>
+
+    <!-- declarations of our array input variables for GLSL -->
+    <block location="glsl:definitions">
+      #define MAX_CSM 8
+
+      // transform from light to shadow space
+      uniform mat4 shadowMapProject[MAX_CSM];
+
+      // unscale transform
+      uniform vec4 shadowMapUnscale[MAX_CSM];
+
+      // clip range
+      uniform vec2 shadowMapClip[MAX_CSM];
+
+      // actual shadow map
+      uniform sampler2DShadow shadowMap[MAX_CSM];
+
+      // shadow map shadowSpread
+      uniform int shadowSpread;
+
+      // world to light transform
+      uniform mat4 worldToLight;
+    </block>
+
+    <!-- texture inputs -->
+    <block location="pass">
+      <?Generate L 0 7?>
+	<texture name="light shadow map[$L$]" destination="shadowMap[$L$]"
+		comparemode="rToTexture" comparefunc="lequal" />
+      <?Endgenerate?>
+    </block>
+
+    <!-- shader variable array inputs -->
+    <block location="cg:variablemap;glsl:variablemap">
+      <variablemap variable="light shadow map projection" destination="shadowMapProject" />
+      <variablemap variable="light shadow map unscale" destination="shadowMapUnscale" />
+      <variablemap variable="light shadow map clip" destination="shadowMapClip" />
+      <variablemap variable="light shadow spread" destination="shadowSpread" />
+      <variablemap variable="light transform world inverse" destination="worldToLight" />
+    </block>
+
+    <!-- inputs from other snippets -->
+    <input name="positionV" type="position4_camera" />
+    <input name="positionW" type="position4_world" />
+
+    <!-- vertex program stub -->
+    <block location="vertexMain">
+      attenuation = 0.0;
+      attenuation_attr_perfragment = true;
+    </block>
+
+    <!-- Cg implementation -->
+    <block location="cg:fragmentMain">
+    <![CDATA[
+      // define our comparison bias
+      float bias = 0.0001;
+
+      // go over all shadow maps and find the one applicapble to us
+      int slice;
+      for(slice = 0; slice < min(shadowSpread,MAX_CSM); ++slice)
+      {
+        // check whether we are in this slice
+        if(positionV.z >= shadowMapClip[slice].x && positionV.z <= shadowMapClip[slice].y)
+        {
+          break;
+        }
+      }
+
+      // check whether we fit somewhere
+      if(slice == min(shadowSpread,MAX_CSM))
+      {
+        // this should NOT happen
+        discard;
+      }
+
+      // transform world position to shadow space
+      float4x4 worldToShadow = mul(shadowMapProject[slice], worldToLight);
+      float4 positionS = mul(worldToShadow, positionW);
+
+      // divide by perspective
+      float3 positionP = positionS.xyz / positionS.w;
+
+      // unscale position
+      float2 positionU = shadowMapUnscale[slice].xy * positionP.xy + shadowMapUnscale[slice].zw;
+
+      // transform into actual texture coord
+      float3 texCoord = float3(0.5) * positionP + float3(0.5);
+
+      // adjust bias
+      texCoord.z = (1.0 - bias) - texCoord.z;
+
+      // finally get attenuation from shadow map
+      attenuation = tex2D(shadowMap[slice], texCoord).x;
+
+      // set fixed value if position is off the map
+    ]]>
+    <?if (vars."light type".int == consts.CS_LIGHT_DIRECTIONAL) ?>
+      if(any(vec4(positionP.xy,-positionP.xy) &gt; 1.0))
+      {
+        attenuation = 1.0;
+      }
+    <?else?>
+      if(any(vec4(positionU,-positionU) &gt; 1.0) || positionS.w &lt; 0.0)
+      {
+        attenuation = 0.0;
+      }
+    <?endif?>
+      attenuation_attr_perfragment = true;
+    </block>
+
+    <!-- GLSL implementation -->
+    <block location="glsl:fragmentMain">
+    <![CDATA[
+      // define our comparison bias
+      float bias = 0.0001;
+
+      // go over all shadow maps and find the one applicapble to us
+      int slice;
+      for(slice = 0; slice < min(shadowSpread,MAX_CSM); ++slice)
+      {
+        // check whether we are in this slice
+        if(positionV.z >= shadowMapClip[slice].x && positionV.z <= shadowMapClip[slice].y)
+        {
+          break;
+        }
+      }
+
+      // check whether we fit somewhere
+      if(slice == min(shadowSpread,MAX_CSM))
+      {
+        // this should NOT happen
+        discard;
+      }
+
+      // transform world position to shadow space
+      mat4 worldToShadow = shadowMapProject[slice] * worldToLight;
+      vec4 positionS = worldToShadow * positionW;
+
+      // divide by perspective
+      vec3 positionP = positionS.xyz / positionS.w;
+
+      // unscale position
+      vec2 positionU = shadowMapUnscale[slice].xy * positionP.xy + shadowMapUnscale[slice].zw;
+
+      // transform into actual texture coord
+      vec3 texCoord = vec3(0.5) * positionP + vec3(0.5);
+
+      // adjust bias
+      texCoord.z = (1.0 - bias) - texCoord.z;
+
+      // finally get attenuation from shadow map
+      attenuation = shadow2D(shadowMap[slice], texCoord).x;
+
+      // set fixed value if position is off the map
+    ]]>
+    <?if (vars."light type".int == consts.CS_LIGHT_DIRECTIONAL) ?>
+      if(any(greaterThan(vec4(positionP.xy,-positionP.xy), vec4(1.0))))
+      {
+        attenuation = 1.0;
+      }
+    <?else?>
+      if(any(greaterThan(vec4(positionU,-positionU), vec4(1.0))) || positionS.w &lt; 0.0)
+      {
+        attenuation = 0.0;
+      }
+    <?endif?>
+      attenuation_attr_perfragment = true;
+    </block>
+
+    <!-- out outputs for other snippets -->
+    <output name="attenuation" type="float">
+      <attribute name="perfragment" type="bool" />
+    </output>
+  </technique>
+  <?else?>
+  <!-- no shadow map available, so no attenuation from shadows -->
+  <technique priority="50">
+    <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
+    <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
+
+    <block location="vertexMain;fragmentMain">
+      attenuation = 1.0;
+      attenuation_attr_perfragment = false;
+    </block>
+
+    <output name="attenuation" type="float">
+      <attribute name="perfragment" type="bool" />
+    </output>
+  </technique>
+  <?endif?>
+</snippet>

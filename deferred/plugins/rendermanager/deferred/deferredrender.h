@@ -49,18 +49,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
    * // ... apply post processing ...
    * \endcode
    */
-  template<typename RenderTree>
+  template<typename RenderTree, typename ShadowHandler>
   class DeferredTreeRenderer
   {
   public:
 
     typedef typename RenderTree::ContextNode ContextNodeType;
     typedef CS::RenderManager::SimpleContextRender<RenderTree> RenderType;
+    typedef DeferredLightRenderer<ShadowHandler> LightRenderType;
 
     DeferredTreeRenderer(iGraphics3D *g3d, 
                          iShaderManager *shaderMgr,
                          iStringSet *stringSet,
-                         DeferredLightRenderer::PersistentData &lightRenderPersistent,
+                         typename LightRenderType::PersistentData &lightRenderPersistent,
 			 GBuffer& gbuffer,
                          int deferredLayer,
 			 int lightingLayer,
@@ -235,12 +236,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       }
 
       // create the light render here as we'll use it a lot
-      DeferredLightRenderer lightRender (graphics3D,
-                                         shaderMgr,
-                                         stringSet,
-                                         rview,
-                                         gbuffer,
-                                         lightRenderPersistent);
+      LightRenderType lightRender(graphics3D, shaderMgr, stringSet,
+				  rview, gbuffer, lightRenderPersistent);
 
       // shared setup for deferred passes
       graphics3D->SetProjectionMatrix (context->gbufferFixup * projMatrix);
@@ -382,7 +379,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	// deferred rendering - debug step if wanted
 	if(drawLightVolumes)
 	{
-          LightVolumeRenderer lightVolumeRender (lightRender, true, 0.2f);
+          LightVolumeRenderer<LightRenderType> lightVolumeRender (lightRender, true, 0.2f);
 
 	  // output light volumes
 	  RenderLights(deferredLayer, ctxCount, lightVolumeRender);
@@ -464,7 +461,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     iStringSet *stringSet;
 
     // render objects from parent
-    DeferredLightRenderer::PersistentData &lightRenderPersistent;
+    typename LightRenderType::PersistentData& lightRenderPersistent;
     GBuffer& gbuffer;
 
     // render layer data from parent

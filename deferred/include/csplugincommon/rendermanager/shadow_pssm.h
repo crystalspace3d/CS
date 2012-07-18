@@ -259,7 +259,7 @@ namespace RenderManager
 	  svNames.SetStrings(strings);
 
 	  unscaleID = strings->Request("light shadow map unscale");
-	  clipID = strings->Request("light shadow clip");
+	  clipID = strings->Request("light shadow map clip");
 	}
 
 	// we need those infos after reading config, but only to calculate the splits
@@ -1156,20 +1156,29 @@ namespace RenderManager
     {
     }
 
+    ShadowPSSM(PersistentData& persist, CS::RenderManager::RenderView* rview)
+      : persist(persist), rview(rview)
+    {
+    }
+
+    // forward rendering handlers
+
     // set up shadowing for a mesh-light combination - used by light setup
     uint HandleOneLight(typename RenderTreeType::MeshNode::SingleMesh& mesh,
                         iLight* light, CachedLightData&,
                         csShaderVariableStack* lightStacks,
                         uint l, uint f)
     {
+      CS_ASSERT(rview);
+
       // @@@FIXME: light setup is broken and cannot handle different layer spreads for different lights
       return 1;
 
-      // check whether the light creates shadows (in this case there's nothing to be done)
+      // check whether the light creates shadows (if not there's nothing to be done)
       if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
 	return 0; // @@@TODO: we should use a default SV set here (empty SM, etc.)
 
-      // check whether the mesh receives shadows (else there's nothing to be done)
+      // check whether the mesh receives shadows (if not there's nothing to be done)
       if(mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
 	return 0; // @@@TODO: we should use a default SV set here (empty SM, etc.)
 
@@ -1232,9 +1241,6 @@ namespace RenderManager
       return spread;
     }
 
-    // @@@TODO: add handler for deferred lighting here that pushes slice/frustum
-    //          array
-
     // return true when we need a final pass - used by light setup
     static bool NeedFinalHandleLight() { return false; }
 
@@ -1248,6 +1254,71 @@ namespace RenderManager
     
     // return up to how many layers shadows for a light may need in light setup
     size_t GetLightLayerSpread() const { return persist.numSplits; }
+
+    // deferred handlers
+
+    // set up shadowing for one sub-light for deferred rendering
+    int PushVariables(iLight* light, uint f, csShaderVariableStack& svStack)
+    {
+      // deferred light renderer should only use us for shadow-casting lights
+      CS_ASSERT(!light->GetFlags().Check(CS_LIGHT_NOSHADOWS));
+
+      // get sv helper
+      LightingVariablesHelper svHelper(persist.lightVarsPersist);
+
+      // get sector
+      iSector* sector = rview->GetThisSector();
+
+      // get our light data for that light
+      CS_ASSERT(persist.lightHash[sector]->Contains(light));
+      LightData& lightData = *persist.lightHash[sector]->GetElementPointer(light);
+
+      // keep track into which index we'll push this map
+      int index = 0;
+
+      // get our frustum
+      CS_ASSERT(f < lightData.frustums.GetSize());
+      typename LightData::Frustum& frustum = lightData.frustums[f];
+
+      // get the slices for our view
+      CS_ASSERT(frustum.slicesHash.Contains(rview));
+      csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
+
+      // go over the slices and check which ones will be used for this mesh
+      for(size_t s = 0; s < slices.GetSize(); ++s)
+      {
+	typename LightData::Slice& slice = slices[s];
+
+	// check whether this slice is active
+	if(!slice.draw || slice.receiversPS.Empty())
+	  continue;
+
+	// we'll use this one, setup SVs
+	bool success = true;
+	success &= svHelper.MergeAsArrayItem(svStack, slice.projectSV, index);
+	success &= svHelper.MergeAsArrayItem(svStack, slice.unscaleSV, index);
+	success &= svHelper.MergeAsArrayItem(svStack, slice.dimSV, index);
+	success &= svHelper.MergeAsArrayItem(svStack, slice.clipSV, index);
+
+	const ShadowSettings::TargetArray& targets = persist.settings.targets;
+	for(size_t t = 0; t < targets.GetSize(); ++t)
+	{
+	  const ShadowSettings::Target* target = targets[t];
+	  success &= svHelper.MergeAsArrayItem(svStack, slice.textureSV[target->attachment], index);
+	}
+	CS_ASSERT(success);
+
+	// increment index
+	++index;
+      }
+
+      return index;
+    }
+
+    uint GetSublightNum(const iLight* light) const
+    {
+      return light->GetType() == CS_LIGHT_POINTLIGHT ? 6 : 1;
+    }
 
   protected:
     PersistentData& persist;

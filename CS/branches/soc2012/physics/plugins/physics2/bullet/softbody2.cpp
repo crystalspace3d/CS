@@ -163,7 +163,8 @@ void csBulletSoftBody::SetTransform (const csOrthoTransform& trans)
     camera->SetTransform (trans);
   }
 
-  btBody->transform(btTrans);
+  btTransform& worldTrans = btObject->getWorldTransform();
+  btBody->transform(worldTrans.inverse () * btTrans);           // transform relative to last
 }
 
 void csBulletSoftBody::SetMass (float mass)

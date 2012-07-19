@@ -95,12 +95,8 @@ vert2frag main (app2vert IN,
 	OUT.Pos = reflrefrTC;
 	OUT.Normal = normalize(reflrefrTC.xyz - frTC.xyz);
 	
-	float4 foamPoin;
-	foamPoin.xyz = foamPoints[0];
-	foamPoin.w = 1;
-	
-	//foamPoin = mul(ModelViewProj, foamPoin); 
-	float distanceFoam = distance(foamPoin.xz, frTC.xz);
+	float4 Inposition = mul(o2w, IN.Position); 
+	float distanceFoam = distance(foamPoints[0], Inposition);
 	
 	/*for (int i = 1 ; i < 1 ; i++)
 	{

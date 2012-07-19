@@ -6,7 +6,6 @@
 #define __PHYSTUT2_ITEMS_H__
 
 #include "ivaria/physics.h"
-#include "ivaria/bullet2.h"
 #include "ivaria/collisions.h"
 
 #include "imesh/animesh.h"

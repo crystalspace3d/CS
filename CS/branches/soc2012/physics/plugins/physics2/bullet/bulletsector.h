@@ -21,7 +21,6 @@
 #include "ivaria/reporter.h"
 #include "ivaria/collisions.h"
 #include "ivaria/physics.h"
-#include "ivaria/bullet2.h"
 #include "ivaria/view.h"
 #include "iengine/sector.h"
 #include "iengine/movable.h"
@@ -59,9 +58,8 @@ class csBulletJoint;
 class csBulletCollisionPortal;
 
 // Also implements iPhysicalSector
-class csBulletSector : public scfImplementationExt2<
+class csBulletSector : public scfImplementationExt1<
   csBulletSector, csObject,
-  CS::Physics::Bullet2::iPhysicalSector,
   CS::Physics::iPhysicalSector>
 {
   friend class csBulletCollisionObject;
@@ -199,8 +197,8 @@ public:
   virtual bool SaveWorld (const char* filename);
 
   virtual void DebugDraw (iView* rview);
-  virtual void SetDebugMode (CS::Physics::Bullet2::DebugMode mode);
-  virtual CS::Physics::Bullet2::DebugMode GetDebugMode ();
+  virtual void SetDebugMode (CS::Physics::DebugMode mode);
+  virtual CS::Physics::DebugMode GetDebugMode ();
 
   virtual void StartProfile ();
 

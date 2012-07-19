@@ -422,7 +422,7 @@ struct iCollisionActor : public virtual iGhostCollisionObject, public virtual iA
  * Main ways to get pointers to this interface:
  * - iCollisionSystem::FindCollisionSector()
  *
- * \sa CS::Physics::iPhysicalSector CS::Physics::Bullet2::iPhysicalSector
+ * \sa CS::Physics::iPhysicalSector CS::Physics::iPhysicalSector
  */
 struct iCollisionSector : public virtual iBase
 {

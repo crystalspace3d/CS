@@ -911,7 +911,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     debugDraw->DebugDraw (rview);
   }
 
-  void csBulletSector::SetDebugMode (CS::Physics::Bullet2::DebugMode mode)
+  void csBulletSector::SetDebugMode (CS::Physics::DebugMode mode)
   {
     if (!debugDraw && mode)
     {
@@ -922,10 +922,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     debugDraw->SetDebugMode (mode);
   }
 
-  CS::Physics::Bullet2::DebugMode csBulletSector::GetDebugMode ()
+  CS::Physics::DebugMode csBulletSector::GetDebugMode ()
   {
     if (!debugDraw)
-      return CS::Physics::Bullet2::DEBUG_NOTHING;
+      return CS::Physics::DEBUG_NOTHING;
 
     return debugDraw->GetDebugMode ();
   }

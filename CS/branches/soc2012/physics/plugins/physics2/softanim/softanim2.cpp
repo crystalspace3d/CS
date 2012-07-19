@@ -20,7 +20,6 @@
 #include "csutil/scf.h"
 #include "ivaria/reporter.h"
 #include "ivaria/physics.h"
-#include "ivaria/bullet2.h"
 #include "imesh/object.h"
 #include "imesh/objmodel.h"
 #include "iengine/mesh.h"

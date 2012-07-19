@@ -42,6 +42,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     friend class csBulletSystem;
     friend class csBulletSector;
+    friend class BulletDynamicActorFactory;
 
   private:
     csScalar stepHeight;
@@ -51,7 +52,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool kinematicSteps;
 
   protected:
-    void CreateDynamicActor(CS::Physics::iDynamicActorProperties* props);
+    void CreateDynamicActor(CS::Physics::iDynamicActorFactory* props);
 
     virtual csBulletMotionState* CreateMotionState(const btTransform& trans);
 

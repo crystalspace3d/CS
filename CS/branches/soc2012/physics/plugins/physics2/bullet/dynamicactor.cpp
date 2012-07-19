@@ -61,7 +61,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   }
 
-  void csBulletDynamicActor::CreateDynamicActor(iDynamicActorProperties* props)
+  void csBulletDynamicActor::CreateDynamicActor(iDynamicActorFactory* props)
   {
     if (!props->GetCollisionGroup().name.Length())
     {

@@ -33,7 +33,7 @@
 #include "cstool/primitives.h"
 #include "ivaria/collisions.h"
 
-#include "ivaria/physicsproperties.h"
+#include "ivaria/physicalfactories.h"
 
 namespace CS 
 {
@@ -780,30 +780,16 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
    * in order to manipulate it.
    */
   virtual csPtr<iJoint> CreateRigidPivotJoint (iRigidBody* body, const csVector3 position) = 0;
-
-  /**
-   * Create a rigid body.
-   */
-  virtual csPtr<iRigidBody> CreateCollisionObject (iRigidBodyProperties* props) = 0;
-
-  /**
-   * Create a DynamicActor.
-   */
-  virtual csPtr<iDynamicActor> CreateCollisionObject (iDynamicActorProperties* props) = 0;
   
-  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftRopeProperties* props) = 0;
-  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftClothProperties* props) = 0;
-  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftMeshProperties* props) = 0;
+  // Factory
   
-  // Properties
-  
-  virtual csPtr<iRigidBodyProperties> CreateRigidBodyProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+  virtual csPtr<iRigidBodyFactory> CreateRigidBodyFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
 
-  virtual csPtr<iDynamicActorProperties> CreateDynamicActorProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor") = 0;
+  virtual csPtr<iDynamicActorFactory> CreateDynamicActorFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor") = 0;
 
-  virtual csPtr<iSoftRopeProperties> CreateSoftRopeProperties () = 0;
-  virtual csPtr<iSoftClothProperties> CreateSoftClothProperties () = 0;
-  virtual csPtr<iSoftMeshProperties> CreateSoftMeshProperties () = 0;
+  virtual csPtr<iSoftRopeFactory> CreateSoftRopeFactory () = 0;
+  virtual csPtr<iSoftClothFactory> CreateSoftClothFactory () = 0;
+  virtual csPtr<iSoftMeshFactory> CreateSoftMeshFactory () = 0;
 };
 
 /**

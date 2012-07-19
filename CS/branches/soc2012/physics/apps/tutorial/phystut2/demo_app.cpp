@@ -23,7 +23,7 @@ PhysDemo::PhysDemo()
   moveSpeed(7.f),
   turnSpeed(2.f),
   selectedItem(nullptr),
-  actorAirControl(1.f),
+  actorAirControl(.3f),
   camFollowMode(CamFollowMode1stPerson),
   //physicalCameraMode (ACTOR_KINEMATIC)
   physicalCameraMode (ACTOR_DYNAMIC)
@@ -311,15 +311,15 @@ void PhysDemo::UpdateCameraMode()
         //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y);
         //csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
         csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
-        csRef<iDynamicActorProperties> props = physicalSystem->CreateDynamicActorProperties(collider);
-        props->SetMass(csScalar(80.));
-        props->SetElasticity(csScalar(0));
-        props->SetFriction(csScalar(1.));
+        csRef<iDynamicActorFactory> factory = physicalSystem->CreateDynamicActorFactory(collider);
+        factory->SetMass(csScalar(80.));
+        factory->SetElasticity(csScalar(0));
+        factory->SetFriction(csScalar(1.));
 
-        props->SetAirControlFactor(actorAirControl);
-        props->SetStepHeight(csScalar(0.1));
+        factory->SetAirControlFactor(actorAirControl);
+        factory->SetStepHeight(csScalar(0.1));
 
-        dynamicActor = physicalSystem->CreateCollisionObject(props);
+        dynamicActor = factory->CreateDynamicActor();
       }
 
       csOrthoTransform trans(tc);
@@ -342,13 +342,13 @@ void PhysDemo::UpdateCameraMode()
         trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
         csRef<CS::Collisions::iColliderCompound> parent = physicalSystem->CreateColliderCompound ();
         parent->AddCollider(collider, trans);
-        csRef<iCollisionActorProperties> props = physicalSystem->CreateCollisionActorProperties(parent);*/
-        csRef<iCollisionActorProperties> props = physicalSystem->CreateCollisionActorProperties(collider);
-        props->SetAirControlFactor(actorAirControl);
-        props->SetJumpSpeed(moveSpeed);
+        csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(parent);*/
+        csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(collider);
+        factory->SetAirControlFactor(actorAirControl);
+        factory->SetJumpSpeed(moveSpeed);
 
         iCollisionSystem* colSys = physicalSystem;
-        kinematicActor = colSys->CreateCollisionObject(props);
+        kinematicActor = factory->CreateCollisionActor();
       }
 
       csOrthoTransform trans;

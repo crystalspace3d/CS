@@ -307,11 +307,11 @@ CS::Physics::iSoftBody* VerySimple::SpawnSoftBody (bool setVelocity /* = true */
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
 
   // Create the soft body
-  csRef<iSoftMeshProperties> props = physicalSystem->CreateSoftMeshProperties();
-  props->SetGenmeshFactory(gmstate);
-  props->SetMass (5.0f);
+  csRef<iSoftMeshFactory> factory = physicalSystem->CreateSoftMeshFactory();
+  factory->SetGenmeshFactory(gmstate);
+  factory->SetMass (5.0f);
 
-  csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateCollisionObject(props);
+  csRef<CS::Physics::iSoftBody> body = factory->CreateSoftBody();
   body->SetRigidity (0.8f);
 
   body->SetTransform(csOrthoTransform (csMatrix3 (), csVector3 (0.0f, 0.0f, 1.0f)) * tc);

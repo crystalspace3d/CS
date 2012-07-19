@@ -14,8 +14,8 @@
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __CS_BULLET_OBJECTPROPS_H__
-#define __CS_BULLET_OBJECTPROPS_H__
+#ifndef __CS_BULLET_PHYSICSFACTORIES_H__
+#define __CS_BULLET_PHYSICSFACTORIES_H__
 
 #include "iutil/comp.h"
 #include "csutil/scf.h"
@@ -41,15 +41,18 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   /**
    * Base class for all object properties
    */
-  class BulletCollisionObjectProperties : public scfVirtImplementationExt1<
-    BulletCollisionObjectProperties, csObject, CS::Collisions::iCollisionObjectProperties> 
+  class BulletCollisionObjectFactory : public scfVirtImplementationExt1<
+    BulletCollisionObjectFactory, csObject, CS::Collisions::iCollisionObjectFactory> 
   {
+    friend class csBulletSystem;
+
   protected:
     csRef<CS::Collisions::iCollider> collider;
     CS::Collisions::CollisionGroup collGroup;
+    csBulletSystem* system;
 
   public:
-    BulletCollisionObjectProperties(CS::Collisions::iCollider* collider = nullptr, const csString& name = "CollisionObject")  :
+    BulletCollisionObjectFactory(CS::Collisions::iCollider* collider = nullptr, const csString& name = "CollisionObject")  :
         scfImplementationType (this), collider(collider), collGroup() 
     {
       SetName(name);
@@ -61,41 +64,54 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     /// Return the underlying object
     virtual iObject *QueryObject (void) { return this; }
 
-    /// Get the collider of all objects that will be constructed with these properties
+    /// Return the system to which the factory belongs
+    virtual CS::Collisions::iCollisionSystem* GetSystem() const { return (CS::Collisions::iCollisionSystem*)system; }
+
+    /// Create a new object
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() { return csPtr<CS::Collisions::iCollisionObject>(nullptr); }
+
+    /// Get the collider of all objects that will be constructed with this factory
     virtual CS::Collisions::iCollider* GetCollider() const { return collider; }
-    /// Set the collider of all objects that will be constructed with these properties
+    /// Set the collider of all objects that will be constructed with this factory
     virtual void SetCollider(CS::Collisions::iCollider* value) { collider = value; }
 
-    /// Get the collision group of all objects that will be constructed with these properties
+    /// Get the collision group of all objects that will be constructed with this factory
     virtual const CS::Collisions::CollisionGroup& GetCollisionGroup() const { return collGroup; }
-    /// Set the collision group of all objects that will be constructed with these properties
+    /// Set the collision group of all objects that will be constructed with this factory
     virtual void SetCollisionGroup(const CS::Collisions::CollisionGroup& value) { collGroup = value; }
   };
 
-  class BulletGhostCollisionObjectProperties : public scfVirtImplementationExt1<
-    BulletGhostCollisionObjectProperties, BulletCollisionObjectProperties, CS::Collisions::iGhostCollisionObjectProperties> 
+  class BulletGhostCollisionObjectFactory : public scfVirtImplementationExt1<
+    BulletGhostCollisionObjectFactory, BulletCollisionObjectFactory, CS::Collisions::iGhostCollisionObjectFactory> 
   {
   public:
-    BulletGhostCollisionObjectProperties(CS::Collisions::iCollider* collider = nullptr, const csString& name = "GhostObject") :
+    BulletGhostCollisionObjectFactory(CS::Collisions::iCollider* collider = nullptr, const csString& name = "GhostObject") :
         scfImplementationType (this, collider)
     {
     }
     
     virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeGhostObject; }
+
+    /// Create a new object
+    virtual csPtr<CS::Collisions::iGhostCollisionObject> CreateGhostCollisionObject();
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
+    { 
+      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iGhostCollisionObject>(CreateGhostCollisionObject()); 
+    }
   };
 
   /**
    * Kinematic Actor
    */
-  class BulletCollisionActorProperties : public scfVirtImplementationExt1<
-    BulletCollisionActorProperties, BulletGhostCollisionObjectProperties, CS::Collisions::iCollisionActorProperties> 
+  class BulletCollisionActorFactory : public scfVirtImplementationExt1<
+    BulletCollisionActorFactory, BulletGhostCollisionObjectFactory, CS::Collisions::iCollisionActorFactory> 
   {
     float stepHeight;
     float walkSpeed, jumpSpeed;
     float airControlFactor;
 
   public:
-    BulletCollisionActorProperties(CS::Collisions::iCollider* collider = nullptr, const csString& name = "CollisionActor") :
+    BulletCollisionActorFactory(CS::Collisions::iCollider* collider = nullptr, const csString& name = "CollisionActor") :
         scfImplementationType (this, collider),
       stepHeight(.5f),
       walkSpeed(10.f),
@@ -105,6 +121,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
 
     virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeCollisionActor; }
+    
+    /// Create a new object
+    virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor();
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
+    { 
+      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iCollisionActor>(CreateCollisionActor()); 
+    }
 
     /// Get the max vertical threshold that this actor can step over
     virtual float GetStepHeight () const { return stepHeight; }
@@ -132,34 +155,34 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   // ###################################################################################################
   // Physics
 
-  class BulletPhysicalObjectProperties : public scfVirtImplementationExt1<
-    BulletPhysicalObjectProperties, BulletCollisionObjectProperties, CS::Physics::iPhysicalObjectProperties>
+  class BulletPhysicalObjectFactory : public scfVirtImplementationExt1<
+    BulletPhysicalObjectFactory, BulletCollisionObjectFactory, CS::Physics::iPhysicalObjectFactory>
   {
   protected:
     csScalar density, mass;
     csScalar friction;
 
   public:
-    BulletPhysicalObjectProperties(CS::Collisions::iCollider* collider = nullptr, const csString& name = "") : 
+    BulletPhysicalObjectFactory(CS::Collisions::iCollider* collider = nullptr, const csString& name = "") : 
         scfImplementationType (this, collider, name),
         density(0), mass(0),     // static objects
         friction(10)
     {}
 
-    /// Get the density of all objects that will be constructed with these properties
+    /// Get the density of all objects that will be constructed with this factory
     virtual csScalar GetDensity() const { return density; }
-    /// Set the density of all objects that will be constructed with these properties
+    /// Set the density of all objects that will be constructed with this factory
     virtual void SetDensity(csScalar value) { density = value; mass = 0; }
     
-    /// Get the mass of all objects that will be constructed with these properties
+    /// Get the mass of all objects that will be constructed with this factory
     virtual csScalar GetMass() const { return mass; }
-    /// Set the mass of all objects that will be constructed with these properties
+    /// Set the mass of all objects that will be constructed with this factory
     virtual void SetMass(csScalar value) { mass = value; density = 0; }
 
-    /// Set the friction of all objects that will be constructed with these properties
+    /// Set the friction of all objects that will be constructed with this factory
     virtual void SetFriction(csScalar value) { friction = value; }
 
-    /// Get the friction of all objects that will be constructed with these properties
+    /// Get the friction of all objects that will be constructed with this factory
     virtual float GetFriction() const { return friction; }
   };
 
@@ -185,21 +208,29 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   /**
    * Collection of all properties of a rigid body
    */
-  class BulletRigidBodyProperties : public scfVirtImplementationExt1<
-    BulletRigidBodyProperties, BulletPhysicalObjectProperties, CS::Physics::iRigidBodyProperties>
+  class BulletRigidBodyFactory : public scfVirtImplementationExt1<
+    BulletRigidBodyFactory, BulletPhysicalObjectFactory, CS::Physics::iRigidBodyFactory>
   {
   protected:
     float elasticity;
     float linearDamping, angularDamping;
 
+
   public:
-    BulletRigidBodyProperties(CS::Collisions::iCollider* collider = nullptr, const csString& name = "RigidBody") : 
+    BulletRigidBodyFactory(CS::Collisions::iCollider* collider = nullptr, const csString& name = "RigidBody") : 
         scfImplementationType (this, collider, name),
       elasticity(0.5f), linearDamping(0.01f), angularDamping(0.01f)
     {
     }
 
     virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeRigidBody; }
+
+    /// Create a new object
+    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody();
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
+    { 
+      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iRigidBody>(CreateRigidBody()); 
+    }
     
     virtual CS::Physics::PhysicalBodyType GetPhysicalBodyType() const { return CS::Physics::BODY_RIGID; }
 
@@ -239,38 +270,49 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   /**
    * Collection of properties of a soft body
    */
-  class BulletSoftBodyProperties : public scfVirtImplementationExt1<
-    BulletSoftBodyProperties, BulletPhysicalObjectProperties, CS::Physics::iSoftBodyProperties>
+  class BulletSoftBodyFactory : public scfVirtImplementationExt1<
+    BulletSoftBodyFactory, BulletPhysicalObjectFactory, CS::Physics::iSoftBodyFactory>
   {
   protected:
 
   public:
-    BulletSoftBodyProperties() : scfImplementationType (this)
+    BulletSoftBodyFactory() : scfImplementationType (this)
     {
-      SetFriction(.2);    // between 0 and 1
+      SetName("SoftBody");
+      SetFriction(csScalar(.2));    // between 0 and 1
     }
 
     virtual CS::Physics::PhysicalBodyType GetPhysicalBodyType() const { return CS::Physics::BODY_SOFT; }
+
+    /// Create a new object
+    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody() = 0;
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
+    { 
+      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iSoftBody>(CreateSoftBody()); 
+    }
   };
 
   /**
    * Used to create a one-dimensional softbody
    */
-  class BulletSoftRopeProperties : public scfVirtImplementationExt1<
-    BulletSoftBodyProperties, BulletSoftBodyProperties, CS::Physics::iSoftRopeProperties>
+  class BulletSoftRopeFactory : public scfVirtImplementationExt1<
+    BulletSoftBodyFactory, BulletSoftBodyFactory, CS::Physics::iSoftRopeFactory>
   {
   protected:
     csVector3 start, end;
     size_t nodeCount;
 
   public:
-    BulletSoftRopeProperties() : scfImplementationType (this),
+    BulletSoftRopeFactory() : scfImplementationType (this),
       start(0), end(0),
       nodeCount(10)
     {
     }
     
     virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeSoftRope; }
+
+    /// Create a new object
+    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
 
     /// Start position of the rope
     virtual const csVector3& GetStart() const { return start; }
@@ -288,8 +330,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   /**
    * Used to create a two-dimensional softbody
    */
-  class BulletSoftClothProperties : public scfVirtImplementationExt1<
-    BulletSoftClothProperties, BulletSoftBodyProperties, CS::Physics::iSoftClothProperties> 
+  class BulletSoftClothFactory : public scfVirtImplementationExt1<
+    BulletSoftClothFactory, BulletSoftBodyFactory, CS::Physics::iSoftClothFactory> 
   {
   protected:
     csVector3 corners[4];
@@ -297,7 +339,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool withDiagonals;
 
   public:
-    BulletSoftClothProperties() : scfImplementationType (this),
+    BulletSoftClothFactory() : scfImplementationType (this),
       withDiagonals(false)
     {
       for (size_t i = 0; i < 4; ++i) corners[i] = csVector3(i);
@@ -305,6 +347,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
 
     virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeSoftCloth; }
+
+    /// Create a new object
+    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
 
     /// Get the four corners of the cloth
     virtual const csVector3* GetCorners() const { return corners; }
@@ -324,18 +369,21 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   /**
    * Used to create an arbitrary softbody defined by a given mesh
    */
-  class BulletSoftMeshProperties : public scfVirtImplementationExt1<
-    BulletSoftMeshProperties, BulletSoftBodyProperties, CS::Physics::iSoftMeshProperties> 
+  class BulletSoftMeshFactory : public scfVirtImplementationExt1<
+    BulletSoftMeshFactory, BulletSoftBodyFactory, CS::Physics::iSoftMeshFactory> 
   {
   protected:
     iGeneralFactoryState* factory;
 
   public:
-    BulletSoftMeshProperties() : scfImplementationType (this)
+    BulletSoftMeshFactory() : scfImplementationType (this)
     {
     }
 
     virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeSoftMesh; }
+
+    /// Create a new object
+    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
 
     /// Get the factory that contains the mesh to define the softbody
     virtual iGeneralFactoryState* GetGenmeshFactory() const { return factory; }
@@ -344,8 +392,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   };
 
 
-  class BulletDynamicActorProperties : public scfVirtImplementationExt1<
-    BulletDynamicActorProperties, BulletRigidBodyProperties, CS::Physics::iDynamicActorProperties>
+  class BulletDynamicActorFactory : public scfVirtImplementationExt1<
+    BulletDynamicActorFactory, BulletRigidBodyFactory, CS::Physics::iDynamicActorFactory>
   {
     float stepHeight;
     float walkSpeed, jumpSpeed;
@@ -353,7 +401,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool kinematicSteps;
 
   public:
-    BulletDynamicActorProperties(CS::Collisions::iCollider* collider, const csString& name = "DynamicActor") : 
+    BulletDynamicActorFactory(CS::Collisions::iCollider* collider, const csString& name = "DynamicActor") : 
         scfImplementationType (this, collider, name),
       stepHeight(.1f),
       walkSpeed(10.f),
@@ -364,6 +412,17 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
 
     virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeDynamicActor; }
+
+    /// Create a new object
+    virtual csPtr<CS::Physics::iDynamicActor> CreateDynamicActor();
+    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody()
+    { 
+      return DowncastPtr<CS::Physics::iRigidBody, CS::Physics::iDynamicActor>(CreateDynamicActor()); 
+    }
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
+    { 
+      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iDynamicActor>(CreateDynamicActor()); 
+    }
 
     /// Get the max vertical threshold that this actor can step over
     float GetStepHeight () const { return stepHeight; }

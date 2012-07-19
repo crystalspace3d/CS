@@ -34,11 +34,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     // compute the size of the portal
     // WARNING: GetWorldVertices() initializes the portal plane - Always call this before GetNormal()!
     const csVector3* vert = portal->GetWorldVertices ();
+    csVector3 portalPos(0);
     csBox3 box;
     for (int i = 0; i < portal->GetVertexIndicesCount (); i++)
     {
-      box.AddBoundingVertex (vert[portal->GetVertexIndices ()[i]]);
+      csVector3 v(vert[portal->GetVertexIndices ()[i]]);
+      portalPos += v;
+      box.AddBoundingVertex (v);
     }
+
+    portalPos /= portal->GetVertexIndicesCount();
 
     // Compute the warp transform of the portal
     warpTrans = portal->GetWarp ().GetInverse ();
@@ -57,7 +62,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csVector3 centerDist = (size * normal) * normal;    // move origin into the center of the box
     
     csOrthoTransform realTrans;                         // no rotation necessary, since we already rotated everything
-    realTrans.SetOrigin(meshTrans.GetOrigin() + centerDist);
+    realTrans.SetOrigin(portalPos + meshTrans.GetOrigin() + centerDist);
     ghostPortal->setWorldTransform (CSToBullet (realTrans, sourceSector->sys->getInternalScale ()));
 
     // give the portal it's shape and add it to the world
@@ -320,17 +325,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           {
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
 
-            csRef<iRigidBodyProperties> props = sector->sys->CreateRigidBodyProperties(rb->GetCollider());
+            csRef<iRigidBodyFactory> factory = sector->sys->CreateRigidBodyFactory(rb->GetCollider());
             
-            props->SetDensity (rb->GetDensity());
-            props->SetFriction (rb->GetFriction());
-            props->SetElasticity (rb->GetElasticity());
-            props->SetLinearDamping (0.5f);
-            props->SetAngularDamping (0.5f);
+            factory->SetDensity (rb->GetDensity());
+            factory->SetFriction (rb->GetFriction());
+            factory->SetElasticity (rb->GetElasticity());
+            factory->SetLinearDamping (0.5f);
+            factory->SetAngularDamping (0.5f);
 
-            props->SetCollisionGroup (sector->GetSystem()->FindCollisionGroup("Portal"));
+            factory->SetCollisionGroup (sector->GetSystem()->FindCollisionGroup("Portal"));
 
-            csRef<iRigidBody> inb = sector->sys->CreateCollisionObject (props);
+            csRef<iRigidBody> inb = factory->CreateRigidBody();
 
             csBulletRigidBody* newBody = dynamic_cast<csBulletRigidBody*> ((iRigidBody*)inb);
 
@@ -351,12 +356,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         }
         else if (obj->GetObjectType () == COLLISION_OBJECT_GHOST || obj->GetObjectType () == COLLISION_OBJECT_ACTOR)
         {
-          csRef<iGhostCollisionObjectProperties> props = 
-            sector->sys->CreateGhostCollisionObjectProperties(obj->GetCollider(), "ghost copy");
+          csRef<iGhostCollisionObjectFactory> factory = 
+            sector->sys->CreateGhostCollisionObjectFactory(obj->GetCollider(), "ghost copy");
 
-          props->SetCollisionGroup (sector->sys->FindCollisionGroup("Portal"));
+          factory->SetCollisionGroup (sector->sys->FindCollisionGroup("Portal"));
           
-          csRef<iGhostCollisionObject> co = sector->sys->CreateCollisionObject (props);
+          csRef<iGhostCollisionObject> co = factory->CreateGhostCollisionObject();
           
           newObject = dynamic_cast<csBulletCollisionObject*> ((iCollisionObject*)co);
 

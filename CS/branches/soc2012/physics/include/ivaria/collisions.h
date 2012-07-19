@@ -32,9 +32,24 @@
 #include "csgeom/plane3.h"
 #include "iutil/object.h"
 #include "colliders.h"
-#include "ivaria/collisionproperties.h"
+#include "ivaria/collisionfactories.h"
 
+// Some temporary stuff that has to be moved to a utility class or replaced by something entirely different:
 #define	SQRT2				1.41421356237f	
+
+/**
+ * Very ugly and inefficient work-around to easily cast between two known-to-be-compatible types
+ */
+template<typename T, typename T2>
+inline csPtr<T> DowncastPtr(csPtr<T2> ptr)
+{
+  return csPtr<T>(csRef<T>(csRef<T2>(ptr)));
+}
+template<typename T, typename T2>
+inline csPtr<T> DowncastPtr(T2* ptr)
+{
+  return DowncastPtr<T, T2>(csPtr<T2>(ptr));
+}
 
 typedef float csScalar;
 
@@ -156,7 +171,7 @@ struct iCollisionCallback: public virtual iBase
  *It contains the collision information of the object.
  * 
  * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateCollisionObject()
+ * - iCollisionObjectFactory::CreateCollisionObject
  * 
  * Main ways to get pointers to this interface:
  * - iCollisionSystem::GetCollisionObject()
@@ -376,7 +391,7 @@ struct iActor : public virtual iBase
  * You can use it to create a player or character model with gravity handling.
  *
  * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateCollisionObject()
+ * - iCollisionActorFactory::CreateCollisionObject
  * 
  * Main users of this interface:
  * - iCollisionSystem
@@ -548,19 +563,6 @@ struct iCollisionSystem : public virtual iBase
   virtual csPtr<iCollisionTerrain> CreateCollisionTerrain (iTerrainSystem* terrain,
       float minHeight = 0, float maxHeight = 0) = 0;
 
-
-  /// Create a CollisionObject
-  virtual csPtr<iCollisionObject> CreateCollisionObject(iCollisionObjectProperties* props) = 0;
-
-  /**
-   * Create a ghost collision object
-   */
-  virtual csPtr<iGhostCollisionObject> CreateCollisionObject (iGhostCollisionObjectProperties* props) = 0;
-
-  /**
-   * Create a collision actor.
-   */
-  virtual csPtr<iCollisionActor> CreateCollisionObject (iCollisionActorProperties* props) = 0;
   
   /// Create a collision sector.
   virtual csPtr<iCollisionSector> CreateCollisionSector () = 0;
@@ -594,11 +596,11 @@ struct iCollisionSystem : public virtual iBase
 
 
 
-  // Properties
+  // Factory
   
-  virtual csPtr<iCollisionObjectProperties> CreateCollisionObjectProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
-  virtual csPtr<iGhostCollisionObjectProperties> CreateGhostCollisionObjectProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
-  virtual csPtr<iCollisionActorProperties> CreateCollisionActorProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+  virtual csPtr<iCollisionObjectFactory> CreateCollisionObjectFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+  virtual csPtr<iGhostCollisionObjectFactory> CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+  virtual csPtr<iCollisionActorFactory> CreateCollisionActorFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
 };
 
 } }

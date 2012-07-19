@@ -13,7 +13,7 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void csBulletCollisionObject::CreateCollisionObject(iCollisionObjectProperties* props)
+  void csBulletCollisionObject::CreateCollisionObject(iCollisionObjectFactory* props)
   {
     SetCollider(props->GetCollider());
     SetName(props->QueryObject()->GetName());

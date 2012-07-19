@@ -595,11 +595,11 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
     previousBody = false;
 
     csRef<CS::Collisions::iColliderCompound> rootCollider = collisionSystem->CreateColliderCompound();
-    csRef<CS::Physics::iRigidBodyProperties> rbProps = physicalSystem->CreateRigidBodyProperties(rootCollider, "bone");
+    csRef<CS::Physics::iRigidBodyFactory> rbFact = physicalSystem->CreateRigidBodyFactory(rootCollider, "bone");
     CS::Animation::iBodyBoneProperties* boneProps = bodyBone->GetBoneProperties ();
     if (boneProps)
     {
-      rbProps->SetMass (boneProps->GetMass ());
+      rbFact->SetMass (boneProps->GetMass ());
     }
 
     // set body properties if they are defined
@@ -611,9 +611,9 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
       CS::Animation::iBodyBoneCollider* boneCollider = bodyBone->GetBoneCollider (index);
 
       // TODO: These values are overridden on every iteration
-      rbProps->SetDensity (boneCollider->GetDensity ());
-      rbProps->SetFriction (boneCollider->GetFriction ());
-      rbProps->SetElasticity (boneCollider->GetElasticity ());
+      rbFact->SetDensity (boneCollider->GetDensity ());
+      rbFact->SetFriction (boneCollider->GetFriction ());
+      rbFact->SetElasticity (boneCollider->GetElasticity ());
 
       csRef<CS::Collisions::iCollider> rbCollider = CreateBoneCollider(boneCollider, boneCollider->GetGeometryType());
 
@@ -630,7 +630,7 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
     }
 
     // create rigid body
-    boneData->rigidBody = physicalSystem->CreateCollisionObject (rbProps);
+    boneData->rigidBody = rbFact->CreateRigidBody ();
 
     // set body position
     csQuaternion rotation;

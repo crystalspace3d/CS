@@ -22,13 +22,24 @@ using namespace CS::Geometry;
  * Utility function - Should eventually be added to csPoly3D.
  * Rotates polyIn by rotation and stores it in polyOut.
  */
-void RotatePoly3D(const csPoly3D& polyIn, csPoly3D& polyOut, const csMatrix3& rotation)
+void TransformPoly3D(const csPoly3D& polyIn, csPoly3D& polyOut, const csOrthoTransform& trans)
 {
   polyOut.SetVertexCount(polyIn.GetVertexCount());
   for (size_t i = 0; i < polyIn.GetVertexCount(); ++i)
   {
     csVector3 vert = polyIn[i];
-    //vert = rotation * vert;
+    vert = trans.GetOrigin() + trans.GetT2O() * vert;
+    polyOut[i] = vert;
+  }
+}
+
+void RotatePoly3D(const csPoly3D& polyIn, csPoly3D& polyOut, const csMatrix3& rot)
+{
+  polyOut.SetVertexCount(polyIn.GetVertexCount());
+  for (size_t i = 0; i < polyIn.GetVertexCount(); ++i)
+  {
+    csVector3 vert = polyIn[i];
+    vert = rot * vert;
     polyOut[i] = vert;
   }
 }
@@ -88,7 +99,6 @@ void PhysDemo::CreatePortalRoom()
   csScalar portalEpsilon = csScalar(0.01);
   csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
   
-  //csMatrix3 rotation = csYRotMatrix3 (-HALF_PI) * csZRotMatrix3 (HALF_PI);
   csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two
   
   // Default behavior from DemoApplication for the creation of the scene
@@ -131,46 +141,46 @@ void PhysDemo::CreatePortalRoom()
     rotation,
     portal2Pos);
 
-  // Warps are relative to the portal
-  csOrthoTransform warp1Trans((portal2Trans / portal1Trans).GetInverse());
-  csOrthoTransform warp2Trans((portal1Trans / portal2Trans).GetInverse());
+  // transform the portals into place
+  csPoly3D poly1, poly2;
+  RotatePoly3D(poly, poly1, portal1Trans.GetT2O());
+  RotatePoly3D(poly, poly2, portal2Trans.GetT2O());
+
 
   iPortal *portal1, *portal2;
 
   // Create the portal meshes
   csRef<iMeshWrapper> portalMesh1 = engine->CreatePortal ("right_wall", 
     room,
-    csVector3(0),
+    portal1Trans.GetOrigin(),
     room, 
-    poly.GetVertices(), 
-    (int) poly.GetVertexCount(),
+    poly1.GetVertices(), 
+    (int) poly1.GetVertexCount(),
     portal1);
 
   csRef<iMeshWrapper> portalMesh2 = engine->CreatePortal ("floor", 
     room,
-    csVector3(0),
+    portal2Trans.GetOrigin(),
     room, 
-    poly.GetVertices(), 
-    (int) poly.GetVertexCount(),
+    poly2.GetVertices(), 
+    (int) poly2.GetVertexCount(),
     portal2);
   
   // place & configure portals and warp transforms
-  portalMesh1->QuerySceneNode()->GetMovable()->SetTransform(portal1Trans);
-  portalMesh2->QuerySceneNode()->GetMovable()->SetTransform(portal2Trans);
+  //portalMesh1->QuerySceneNode()->GetMovable()->SetTransform(portal1Trans);
+  //portalMesh2->QuerySceneNode()->GetMovable()->SetTransform(portal2Trans);
   
   portal1->GetFlags().Set (CS_PORTAL_ZFILL);
   portal1->GetFlags().Set (CS_PORTAL_CLIPDEST);
-  //portal1->SetWarp (warp1Trans);
-  portal1->SetWarp (csOrthoTransform (csYRotMatrix3 (-PI * 0.5f) * csZRotMatrix3 (PI * 0.5f),
-				     csVector3 (1.0f, 0.0f, 4.999f)));
 
   portal2->GetFlags().Set (CS_PORTAL_ZFILL);
   portal2->GetFlags().Set (CS_PORTAL_CLIPDEST);
-  //portal2->SetWarp (warp2Trans);
-  portal2->SetWarp (csOrthoTransform (csZRotMatrix3 (-PI * 0.5f) * csYRotMatrix3 (PI * 0.5f),
-				     csVector3 (0.0f, -4.999f, -1.0f)));
+  
+  portal1->SetWarp (portal2Trans.GetInverse() * portal1Trans);
+  portal2->SetWarp (portal1Trans.GetInverse() * portal2Trans);
   
   // Create collision portals
+  static const csOrthoTransform identity;
   physicalSector->AddPortal (portal1, portal1Trans);
   physicalSector->AddPortal (portal2, portal2Trans);
 

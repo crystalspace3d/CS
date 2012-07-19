@@ -33,7 +33,7 @@
 #include "iengine/portal.h"
 #include "csutil/csobject.h"
 
-#include "objectproperties.h"
+#include "physicsfactories.h"
 
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
@@ -133,10 +133,6 @@ public:
   virtual csPtr<CS::Collisions::iCollisionTerrain> CreateCollisionTerrain (iTerrainSystem* terrain,
       float minHeight = 0, float maxHeight = 0);
 
-  
-  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject (CS::Collisions::iCollisionObjectProperties* props);
-  virtual csPtr<CS::Collisions::iGhostCollisionObject> CreateCollisionObject (CS::Collisions::iGhostCollisionObjectProperties* props);
-  virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionObject (CS::Collisions::iCollisionActorProperties* props);
 
   virtual csPtr<CS::Collisions::iCollisionSector> CreateCollisionSector ();
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
@@ -151,28 +147,25 @@ public:
       csRef<CS::Collisions::iCollisionSector>(CreateCollisionSector())));
   }
   
-  virtual csPtr<CS::Physics::iRigidBody> CreateCollisionObject (CS::Physics::iRigidBodyProperties* props);
-  virtual csPtr<CS::Physics::iDynamicActor> CreateCollisionObject (CS::Physics::iDynamicActorProperties* props);
-  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftRopeProperties* props);
-  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftClothProperties* props);
-  virtual csPtr<CS::Physics::iSoftBody> CreateCollisionObject (CS::Physics::iSoftMeshProperties* props);
   
-  
-  // Properties
-  virtual csPtr<CS::Collisions::iCollisionObjectProperties> CreateCollisionObjectProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "CollisionObject")
-  { return csPtr<CS::Collisions::iCollisionObjectProperties>(nullptr); }
+  // Factories
+  virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (CS::Collisions::InternalCollisionObjectType id)
+  { return csPtr<CS::Collisions::iCollisionObjectFactory>(nullptr); }
 
-  virtual csPtr<CS::Collisions::iGhostCollisionObjectProperties> CreateGhostCollisionObjectProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "GhostObject");
+  virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (CS::Collisions::iCollider *collider, const csString & name = "CollisionObject")
+  { return csPtr<CS::Collisions::iCollisionObjectFactory>(nullptr); }
 
-  virtual csPtr<CS::Collisions::iCollisionActorProperties> CreateCollisionActorProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "CollisionActor");
+  virtual csPtr<CS::Collisions::iGhostCollisionObjectFactory> CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "GhostObject");
 
-  virtual csPtr<CS::Physics::iRigidBodyProperties> CreateRigidBodyProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "RigidBody");
+  virtual csPtr<CS::Collisions::iCollisionActorFactory> CreateCollisionActorFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "CollisionActor");
 
-  virtual csPtr<CS::Physics::iDynamicActorProperties> CreateDynamicActorProperties (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor");
+  virtual csPtr<CS::Physics::iRigidBodyFactory> CreateRigidBodyFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "RigidBody");
 
-  virtual csPtr<CS::Physics::iSoftRopeProperties> CreateSoftRopeProperties ();
-  virtual csPtr<CS::Physics::iSoftClothProperties> CreateSoftClothProperties () ;
-  virtual csPtr<CS::Physics::iSoftMeshProperties> CreateSoftMeshProperties ();
+  virtual csPtr<CS::Physics::iDynamicActorFactory> CreateDynamicActorFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor");
+
+  virtual csPtr<CS::Physics::iSoftRopeFactory> CreateSoftRopeFactory ();
+  virtual csPtr<CS::Physics::iSoftClothFactory> CreateSoftClothFactory () ;
+  virtual csPtr<CS::Physics::iSoftMeshFactory> CreateSoftMeshFactory ();
 
 
   // Joints & Constraints
@@ -192,9 +185,6 @@ public:
 
   // Misc
 
-  float getInverseInternalScale() {return inverseInternalScale;}
-  float getInternalScale() {return internalScale;}
-
   virtual CS::Collisions::CollisionGroup& CreateCollisionGroup (const char* name);
   virtual CS::Collisions::CollisionGroup& FindCollisionGroup (const char* name);
 
@@ -203,6 +193,11 @@ public:
   virtual bool GetGroupCollision (const char* name1,
     const char* name2);
 
+
+  // Internal stuff
+  btSoftBodyWorldInfo* GetSoftBodyWorldInfo() const { return defaultInfo; }
+  float getInverseInternalScale() {return inverseInternalScale;}
+  float getInternalScale() {return internalScale;}
   void ReportWarning (const char* msg, ...);
 };
 }

@@ -32,7 +32,7 @@ class VerySimple : public CS::Utility::DemoApplication
 private:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
   csRef<CS::Physics::iPhysicalSector> physicalSector;
-  csRef<CS::Physics::Bullet2::iPhysicalSector> bulletSector;
+  csRef<CS::Physics::iPhysicalSector> bulletSector;
 
   // Edit1: Not necessary to cast to sub-type
   //csRef<CS::Physics::iSoftBodyAnimationControlFactory> softBodyAnimationFactory;
@@ -65,7 +65,7 @@ private:
   float dynamicStepFactor;
 
   // Camera related
-  CS::Physics::Bullet2::DebugMode debugMode;
+  CS::Physics::DebugMode debugMode;
   int physicalCameraMode;
   csRef<CS::Physics::iRigidBody> dynamicActor;
   csRef<CS::Collisions::iCollisionActor> kinematicActor;
@@ -138,7 +138,7 @@ VerySimple::VerySimple()
   isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
   do_soft_debug (true), remainingStepDuration (0.0f), allStatic (false), 
   pauseDynamic (false), dynamicStepFactor (1.0f),
-  debugMode (CS::Physics::Bullet2::DEBUG_COLLIDERS),
+  debugMode (CS::Physics::DEBUG_COLLIDERS),
   physicalCameraMode (ACTOR_DYNAMIC), dragging (false), softDragging (false)
 {
 }
@@ -231,7 +231,7 @@ bool VerySimple::Application ()
   if (isSoftBodyWorld)
     physicalSector->SetSoftBodyEnabled (true);
 
-  bulletSector = scfQueryInterface<CS::Physics::Bullet2::iPhysicalSector> (physicalSector);
+  bulletSector = scfQueryInterface<CS::Physics::iPhysicalSector> (physicalSector);
   bulletSector->SetDebugMode (debugMode);
 
   // Preload some meshes and materials
@@ -315,8 +315,8 @@ CS::Physics::iSoftBody* VerySimple::SpawnSoftBody (bool setVelocity /* = true */
   body->SetRigidity (0.8f);
 
   body->SetTransform(csOrthoTransform (csMatrix3 (), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
-  csRef<CS::Physics::Bullet2::iSoftBody> bulletbody = 
-    scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (body);
+  csRef<CS::Physics::iSoftBody> bulletbody = 
+    scfQueryInterface<CS::Physics::iSoftBody> (body);
   bulletbody->SetBendingConstraint (true);
 
   if (setVelocity)

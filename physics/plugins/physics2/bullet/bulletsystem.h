@@ -26,7 +26,6 @@
 #include "ivaria/reporter.h"
 #include "ivaria/collisions.h"
 #include "ivaria/physics.h"
-#include "ivaria/bullet2.h"
 #include "ivaria/view.h"
 #include "iengine/sector.h"
 #include "iengine/movable.h"

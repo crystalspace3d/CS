@@ -644,7 +644,7 @@ CS::Physics::iJoint* PhysDemo::SpawnJointed()
 
 #ifdef SOFT_LINEAR
   csRef<CS::Physics::iSoftBody> sb1 = SpawnSoftBody (false);
-  csRef<CS::Physics::Bullet2::iSoftBody> bulletSoftBody = scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (sb1);
+  csRef<CS::Physics::iSoftBody> bulletSoftBody = scfQueryInterface<CS::Physics::iSoftBody> (sb1);
   bulletSoftBody->ResetCollisionFlag();
   // The soft body need to use cluster collision.
   bulletSoftBody->SetClusterCollisionRS (true);
@@ -664,7 +664,7 @@ CS::Physics::iJoint* PhysDemo::SpawnJointed()
   csOrthoTransform trans = rb2->GetTransform();
   trans.SetOrigin (trans.GetOrigin() + csVector3 (0.0f,1.0f,-0.5f));
   rb2->SetTransform (trans);
-  bulletSoftBody = scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (rb2);
+  bulletSoftBody = scfQueryInterface<CS::Physics::iSoftBody> (rb2);
   bulletSoftBody->ResetCollisionFlag();
   bulletSoftBody->SetClusterCollisionRS (true);
   bulletSoftBody->SetClusterCollisionSS (true);
@@ -678,7 +678,7 @@ CS::Physics::iJoint* PhysDemo::SpawnJointed()
 
 #ifdef SOFT_ANGULAR
   csRef<CS::Physics::iSoftBody> sb1 = SpawnSoftBody (false);
-  csRef<CS::Physics::Bullet2::iSoftBody> bulletSoftBody = scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (sb1);
+  csRef<CS::Physics::iSoftBody> bulletSoftBody = scfQueryInterface<CS::Physics::iSoftBody> (sb1);
   bulletSoftBody->ResetCollisionFlag();
   bulletSoftBody->SetClusterCollisionRS (true);
   bulletSoftBody->SetClusterCollisionSS (true);
@@ -1179,8 +1179,8 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   csRef<CS::Physics::iSoftBody> body = factory->CreateSoftBody();
   body->SetRigidity (0.8f);
 
-  csRef<CS::Physics::Bullet2::iSoftBody> bulletbody = 
-    scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (body);
+  csRef<CS::Physics::iSoftBody> bulletbody = 
+    scfQueryInterface<CS::Physics::iSoftBody> (body);
   bulletbody->SetBendingConstraint (true);
   
   if (setVelocity)

@@ -6,7 +6,6 @@
 
 #include "cstool/demoapplication.h"
 #include "ivaria/physics.h"
-#include "ivaria/bullet2.h"
 #include "ivaria/collisions.h"
 
 #include "imesh/animesh.h"
@@ -86,7 +85,7 @@ public:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
 
   csRef<CS::Physics::iPhysicalSector> physicalSector;
-  csWeakRef<CS::Physics::Bullet2::iPhysicalSector> bulletSector;
+  csWeakRef<CS::Physics::iPhysicalSector> bulletSector;
 
   csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
 
@@ -122,7 +121,7 @@ public:
   float dynamicStepFactor;
 
   // Camera & actors
-  CS::Physics::Bullet2::DebugMode debugMode;
+  CS::Physics::DebugMode debugMode;
   float actorAirControl;
   float moveSpeed, turnSpeed;
   int physicalCameraMode;

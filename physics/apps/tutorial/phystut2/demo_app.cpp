@@ -18,7 +18,7 @@ PhysDemo::PhysDemo()
   isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
   do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
   pauseDynamic (false), dynamicStepFactor (1.0f),
-  debugMode (Bullet2::DEBUG_COLLIDERS),
+  debugMode (DEBUG_COLLIDERS),
   dragging (false), softDragging (false),
   moveSpeed(7.f),
   turnSpeed(2.f),
@@ -124,7 +124,7 @@ bool PhysDemo::Application()
     physicalSector->SetSoftBodyEnabled (true);
   }
 
-  bulletSector = scfQueryInterface<Bullet2::iPhysicalSector> (physicalSector);
+  bulletSector = scfQueryInterface<iPhysicalSector> (physicalSector);
   bulletSector->SetDebugMode (debugMode);
   
   // Preload some meshes and materials

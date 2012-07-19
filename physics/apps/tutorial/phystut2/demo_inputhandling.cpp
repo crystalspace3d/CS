@@ -111,17 +111,17 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     {
       switch (debugMode)
       {
-      case CS::Physics::Bullet2::DEBUG_NOTHING:
-        debugMode = CS::Physics::Bullet2::DEBUG_COLLIDERS;
+      case CS::Physics::DEBUG_NOTHING:
+        debugMode = CS::Physics::DEBUG_COLLIDERS;
         break;
-      case CS::Physics::Bullet2::DEBUG_COLLIDERS:
-        debugMode = CS::Physics::Bullet2::DEBUG_AABB;
+      case CS::Physics::DEBUG_COLLIDERS:
+        debugMode = CS::Physics::DEBUG_AABB;
         break;
-      case CS::Physics::Bullet2::DEBUG_AABB:
-        debugMode = CS::Physics::Bullet2::DEBUG_JOINTS;
+      case CS::Physics::DEBUG_AABB:
+        debugMode = CS::Physics::DEBUG_JOINTS;
         break;
-      case CS::Physics::Bullet2::DEBUG_JOINTS:
-        debugMode = CS::Physics::Bullet2::DEBUG_NOTHING;
+      case CS::Physics::DEBUG_JOINTS:
+        debugMode = CS::Physics::DEBUG_NOTHING;
         break;
       }
       bulletSector->SetDebugMode (debugMode);

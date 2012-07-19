@@ -6,7 +6,6 @@
 #include "csutil/scf.h"
 
 #include "ivaria/physics.h"
-#include "ivaria/bullet2.h"
 #include "ivaria/collisions.h"
 
 #include "imesh/emit.h"

@@ -319,8 +319,8 @@ void PhysDemo::Frame()
     for (size_t i = 0; i < physicalSector->GetSoftBodyCount(); i++)
     {
       CS::Physics::iSoftBody* softBody = physicalSector->GetSoftBody (i);
-      csRef<CS::Physics::Bullet2::iSoftBody> bulletSoftBody = 
-        scfQueryInterface<CS::Physics::Bullet2::iSoftBody> (softBody);
+      csRef<CS::Physics::iSoftBody> bulletSoftBody = 
+        scfQueryInterface<CS::Physics::iSoftBody> (softBody);
       if (softBody->GetVertexCount())
         bulletSoftBody->DebugDraw (view);
     }

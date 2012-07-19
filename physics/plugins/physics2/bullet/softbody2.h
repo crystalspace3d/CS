@@ -28,9 +28,10 @@ class btSoftBody;
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 
-class csBulletSoftBody : public scfImplementationExt2<csBulletSoftBody, 
-  csPhysicalBody, CS::Physics::iSoftBody,
-  CS::Physics::Bullet2::iSoftBody>
+class csBulletSoftBody : public scfImplementationExt1<
+  csBulletSoftBody, 
+  csPhysicalBody,
+  CS::Physics::iSoftBody>
 {
   friend class csBulletRigidBody;
   friend class csBulletJoint;

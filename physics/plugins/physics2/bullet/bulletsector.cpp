@@ -485,7 +485,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
     else
     {
-      btPairCachingGhostObject* ghost = dynamic_cast<btPairCachingGhostObject*> (btGhostObject::upcast (collObject->btObject));
+      btPairCachingGhostObject* ghost = static_cast<btPairCachingGhostObject*> (btGhostObject::upcast (collObject->btObject));
 
       bulletWorld->getDispatcher()->dispatchAllCollisionPairs(ghost->getOverlappingPairCache(), bulletWorld->getDispatchInfo(), bulletWorld->getDispatcher());
 

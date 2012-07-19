@@ -52,7 +52,8 @@ class csBulletSystem;
 /**
  * The collider of a single terrain cell
  */
-class csBulletColliderTerrain : public scfVirtImplementationExt1<csBulletColliderTerrain, csBulletCollider, CS::Collisions::iColliderTerrain>
+class csBulletColliderTerrain : public scfVirtImplementationExt1<
+  csBulletColliderTerrain, csBulletCollider, CS::Collisions::iColliderTerrain>
 {
   friend class csBulletCollisionTerrain;
   
@@ -98,6 +99,8 @@ class csBulletCollisionTerrain:
   float minimumHeight;
   float maximumHeight;
   bool unload;
+  
+  csRef<CS::Physics::iRigidBodyFactory> cellFactory;
 
   void LoadCellToCollider(iTerrainCell* cell);
 public:

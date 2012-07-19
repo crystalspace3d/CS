@@ -279,16 +279,18 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
         
         csRef<CS::Collisions::iColliderCompound> rootCollider = csRef<CS::Collisions::iColliderCompound>(physicalSystem->CreateColliderCompound());
         
+        csRef<iCollisionObjectFactory> factory;
+
         if (child->GetAttribute ("ghost"))
         {
-          csRef<iGhostCollisionObjectProperties> props = physicalSystem->CreateGhostCollisionObjectProperties(rootCollider);
-          obj = csRef<CS::Collisions::iGhostCollisionObject>(collisionSystem->CreateCollisionObject (props));
+          factory = csRef<iGhostCollisionObjectFactory>(physicalSystem->CreateGhostCollisionObjectFactory(rootCollider));
         }
         else
         {
-          csRef<iCollisionObjectProperties> props = physicalSystem->CreateCollisionObjectProperties(rootCollider);
-          obj = collisionSystem->CreateCollisionObject (props);
+          factory = physicalSystem->CreateCollisionObjectFactory(rootCollider);
         }
+        
+        obj = factory->CreateCollisionObject ();
         
         if (!ParseCollisionObject (child, obj, collSector, ldr_context))
           return false;
@@ -298,8 +300,8 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
       {
         csRef<CS::Collisions::iColliderCompound> rootCollider = csRef<CS::Collisions::iColliderCompound>(physicalSystem->CreateColliderCompound());
 
-        csRef<iRigidBodyProperties> props = physicalSystem->CreateRigidBodyProperties(rootCollider);
-        csRef<CS::Physics::iRigidBody> rb = physicalSystem->CreateCollisionObject (props);
+        csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(rootCollider);
+        csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
         if (!ParseRigidBody (child, rb, collSector, ldr_context))
           return false;
         break;
@@ -507,9 +509,9 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
         csRef<iGeneralFactoryState> gmstate = scfQueryInterface<
           iGeneralFactoryState> (m->GetMeshObjectFactory ());
         
-        csRef<CS::Physics::iSoftMeshProperties> props = physicalSystem->CreateSoftMeshProperties ();
-        props->SetGenmeshFactory(gmstate);
-        body = physicalSystem->CreateCollisionObject(props);
+        csRef<CS::Physics::iSoftMeshFactory> factory = physicalSystem->CreateSoftMeshFactory ();
+        factory->SetGenmeshFactory(gmstate);
+        body = factory->CreateSoftBody();
       }
       break;
     }

@@ -36,6 +36,10 @@ class csBulletSoftBody : public scfImplementationExt2<csBulletSoftBody,
   friend class csBulletJoint;
   friend class csBulletSector;
   friend class csBulletCollisionPortal;
+  
+  friend class BulletSoftRopeFactory;
+  friend class BulletSoftClothFactory;
+  friend class BulletSoftMeshFactory;
 
   using csPhysicalBody::Enable;
   using csPhysicalBody::Disable;
@@ -59,7 +63,7 @@ private:
   csArray<AnimatedAnchor> animatedAnchors;
 
 public:
-  void CreateSoftBodyObject(CS::Physics::iSoftBodyProperties* props);
+  void CreateSoftBodyObject(CS::Physics::iSoftBodyFactory* props);
 
 public:
   csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body);

@@ -28,7 +28,7 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {   
-  void csBulletCollisionActor::CreateCollisionActor(CS::Collisions::iCollisionActorProperties* props)
+  void csBulletCollisionActor::CreateCollisionActor(CS::Collisions::iCollisionActorFactory* props)
   {
     CreateGhostCollisionObject(props);
     

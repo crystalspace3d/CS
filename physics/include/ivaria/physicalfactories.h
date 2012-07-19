@@ -14,8 +14,8 @@ License along with this library; if not, write to the Free
 Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __IVARIA_PHYSIPROPERTIESH__
-#define __IVARIA_PHYSIPROPERTIESH__
+#ifndef __IVARIA_PHYSICSFACTORIESH__
+#define __IVARIA_PHYSICSFACTORIESH__
 
 /**\file
 * Physics interfaces
@@ -30,7 +30,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csgeom/tri.h"
 #include "cstool/primitives.h"
 #include "ivaria/collisions.h"
-#include "ivaria/collisionproperties.h"
+#include "ivaria/collisionfactories.h"
 
 namespace CS 
 { 
@@ -59,6 +59,7 @@ namespace Physics
   struct iObject;
   struct iRigidBody;
   struct iSoftBody;
+  struct iDynamicActor;
   struct iKinematicCallback;
   struct iPhysicalSystem;
   struct iPhysicalSector;
@@ -75,7 +76,7 @@ namespace Physics
   /**
    * Collection of all properties of a physical object
    */
-  struct iPhysicalObjectProperties : public virtual CS::Collisions::iCollisionObjectProperties
+  struct iPhysicalObjectFactory : public virtual CS::Collisions::iCollisionObjectFactory
   {
     /// Get the PhysicalBodyType of the object whose data is stored in this properties object
     virtual PhysicalBodyType GetPhysicalBodyType() const = 0;
@@ -119,8 +120,10 @@ namespace Physics
   /**
    * Collection of all properties of a rigid body
    */
-  struct iRigidBodyProperties : public virtual iPhysicalObjectProperties
+  struct iRigidBodyFactory : public virtual iPhysicalObjectFactory
   {
+    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody() = 0;
+
     /// Set the elasticity of this rigid body.
     virtual void SetElasticity (float value) = 0;
 
@@ -157,14 +160,15 @@ namespace Physics
   /**
    * Collection of all properties of a soft body
    */
-  struct iSoftBodyProperties : public virtual iPhysicalObjectProperties
+  struct iSoftBodyFactory : public virtual iPhysicalObjectFactory
   {
+    virtual csPtr<iSoftBody> CreateSoftBody() = 0;
   };
 
   /**
    * Used to create a one-dimensional softbody
    */
-  struct iSoftRopeProperties : public virtual iSoftBodyProperties
+  struct iSoftRopeFactory : public virtual iSoftBodyFactory
   {
     /// Start position of the rope
     virtual const csVector3& GetStart() const = 0;
@@ -182,7 +186,7 @@ namespace Physics
   /**
    * Used to create a two-dimensional softbody
    */
-  struct iSoftClothProperties : public virtual iSoftBodyProperties
+  struct iSoftClothFactory : public virtual iSoftBodyFactory
   {
     /// Get the four corners of the cloth
     virtual const csVector3* GetCorners() const = 0;
@@ -202,7 +206,7 @@ namespace Physics
   /**
    * Used to create an arbitrary softbody defined by a given mesh
    */
-  struct iSoftMeshProperties : public virtual iSoftBodyProperties
+  struct iSoftMeshFactory : public virtual iSoftBodyFactory
   {
     /// Get the factory that contains the mesh to define the softbody
     virtual iGeneralFactoryState* GetGenmeshFactory() const = 0;
@@ -212,8 +216,10 @@ namespace Physics
   };
 
 
-  struct iDynamicActorProperties : public virtual iRigidBodyProperties
+  struct iDynamicActorFactory : public virtual iRigidBodyFactory
   {
+    virtual csPtr<iDynamicActor> CreateDynamicActor() = 0;
+
     /// Get the max vertical threshold that this actor can step over
     virtual float GetStepHeight () const = 0;
     /// Set the max vertical threshold that this actor can step over

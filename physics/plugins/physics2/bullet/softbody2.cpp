@@ -36,6 +36,12 @@
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+
+void csBulletSoftBody::CreateSoftBodyObject(CS::Physics::iSoftBodyFactory* props)
+{
+  CreatePhysicalBodyObject(props);
+}
+
 csBulletSoftBody::csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body)
   :scfImplementationType (this, phySys), btBody (body), anchorCount (0)
 {

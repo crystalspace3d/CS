@@ -29,7 +29,7 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void csBulletRigidBody::CreateRigidBodyObject(CS::Physics::iRigidBodyProperties* props)
+  void csBulletRigidBody::CreateRigidBodyObject(CS::Physics::iRigidBodyFactory* props)
   {
     //CreatePhysicalBodyObject(props);
     SetCollider(props->GetCollider());

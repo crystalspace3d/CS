@@ -18,8 +18,8 @@ License along with this library; if not, write to the Free
 Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __CS_IVARIA_COLLISIONPROPERTIES_H__
-#define __CS_IVARIA_COLLISIONPROPERTIES_H__
+#ifndef __CS_IVARIA_COLLISIONFACTORIES_H__
+#define __CS_IVARIA_COLLISIONFACTORIES_H__
 
 /**\file
 * Collision interfaces
@@ -44,11 +44,17 @@ namespace Collisions
   struct iCollisionCallback;
   struct iCollisionObject;
   struct iCollisionSector;
+  struct iCollisionSystem;
+  struct iCollisionObject;
+  struct iGhostCollisionObject;
+  struct iCollisionActor;
+
   struct iCollider;
+
   struct CollisionGroup;
 
   /**
-   * Enum is necessary to identify the object type to be created from some Properties object
+   * Enum is necessary to identify the object type to be created from some Factory object
    */
   enum InternalCollisionObjectType
   {
@@ -121,13 +127,19 @@ namespace Collisions
     {}
   };
 
-  struct iCollisionObjectProperties : public virtual iBase
+  struct iCollisionObjectFactory : public virtual iBase
   {
     /// Get the type of the object whose data is represented by this properties object
     virtual InternalCollisionObjectType GetInternalObjectType() const = 0;
 
     /// Return the underlying object
     virtual iObject *QueryObject (void) = 0;
+
+    /// Get the system of this factory
+    virtual iCollisionSystem* GetSystem() const = 0;
+
+    /// Create a baby
+    virtual csPtr<iCollisionObject> CreateCollisionObject() = 0;
 
     /// Get the collider of all objects that will be constructed with these properties
     virtual iCollider* GetCollider() const = 0;
@@ -140,12 +152,17 @@ namespace Collisions
     virtual void SetCollisionGroup(const CollisionGroup& value)  = 0;
   };
 
-  struct iGhostCollisionObjectProperties : public virtual iCollisionObjectProperties
+  struct iGhostCollisionObjectFactory : public virtual iCollisionObjectFactory
   {
+    /// Create a baby
+    virtual csPtr<iGhostCollisionObject> CreateGhostCollisionObject() = 0;
   };
 
-  struct iCollisionActorProperties : public virtual iGhostCollisionObjectProperties
+  struct iCollisionActorFactory : public virtual iGhostCollisionObjectFactory
   {
+    /// Create a baby
+    virtual csPtr<iCollisionActor> CreateCollisionActor() = 0;
+
     /// Get the max vertical threshold that this actor can step over
     virtual float GetStepHeight () const = 0;
     /// Set the max vertical threshold that this actor can step over

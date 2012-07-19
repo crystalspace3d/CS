@@ -98,6 +98,8 @@ void csBulletColliderTerrain::UpdateHeight(const csRect& area)
   }
 }
 
+
+
 csBulletCollisionTerrain::csBulletCollisionTerrain (iTerrainSystem* terrain, float minimumHeight,
                                                   float maximumHeight, csBulletSystem* sys)
   : scfImplementationType (this), terrainSystem (terrain), minimumHeight (minimumHeight), 
@@ -208,9 +210,10 @@ void csBulletCollisionTerrain::LoadCellToCollider (iTerrainCell *cell)
 
   // Create the rigid body and add it to the world
 
-  csRef<iRigidBodyProperties> props = collSystem->CreateRigidBodyProperties(collider, "heightfield cell");
-  props->SetCollisionGroup(collSystem->FindCollisionGroup("Static"));
-  csRef<iRigidBody> ibody = this->collSystem->CreateCollisionObject(props);
+  // TODO: Re-use factory
+  cellFactory = collSystem->CreateRigidBodyFactory(collider, "heightfield cell");
+  cellFactory->SetCollisionGroup(collSystem->FindCollisionGroup("Static"));
+  csRef<iRigidBody> ibody = cellFactory->CreateRigidBody();
   csBulletRigidBody* body = dynamic_cast<csBulletRigidBody*> (&*ibody);
   
   body->SetTransform(cellTransform);

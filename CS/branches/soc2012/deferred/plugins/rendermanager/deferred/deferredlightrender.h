@@ -60,14 +60,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
    */
   inline csReversibleTransform CreatePointLightTransform(iLight *light)
   {
-    csVector3 pos = light->GetMovable ()->GetFullPosition ();
     float range = light->GetCutoffDistance ();
 
     csMatrix3 scale (range,  0.0f,  0.0f,
                       0.0f, range,  0.0f,
                       0.0f,  0.0f, range);
 
-    return csReversibleTransform (scale, pos);
+    return csReversibleTransform(scale.GetInverse(), csVector3());
   }
 
   /**
@@ -112,7 +111,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                  0, r,      0);
     csVector3 v (0, 0,  range);
 
-    return csReversibleTransform (m, v) * movable->GetFullTransform ();
+    return csReversibleTransform(m.GetInverse(), v);
   }
 
   /**
@@ -121,8 +120,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
    */
   inline csReversibleTransform CreateDirectionalLightTransform(iLight *light)
   {
-    iMovable *movable = light->GetMovable ();
-
     float z = light->GetCutoffDistance ();
     float r = light->GetDirectionalCutoffRadius ();
 
@@ -130,9 +127,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                  0, z, 0,
                  0, 0, r);
 
-    csMatrix3 T = S * movable->GetFullTransform ().GetO2T ();
-
-    return csReversibleTransform (T, movable->GetFullPosition ());
+    return csReversibleTransform(S.GetInverse(), csVector3());
   }
 
   /**
@@ -141,22 +136,23 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
    */
   inline csReversibleTransform CreateLightTransform(iLight *light)
   {
+      csReversibleTransform T;
       switch (light->GetType ())
       {
       case CS_LIGHT_POINTLIGHT:
-        return CreatePointLightTransform (light);
+        T = CreatePointLightTransform (light);
         break;
       case CS_LIGHT_DIRECTIONAL:
-        return CreateDirectionalLightTransform (light);
+        T = CreateDirectionalLightTransform (light);
         break;
       case CS_LIGHT_SPOTLIGHT:
-        return CreateSpotLightTransform (light);
+        T = CreateSpotLightTransform (light);
         break;
       default:
         CS_ASSERT(false);
       };
 
-      return csReversibleTransform ();
+      return T * light->GetMovable()->GetFullTransform();
   }
 
   /**

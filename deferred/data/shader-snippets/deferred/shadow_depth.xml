@@ -17,9 +17,8 @@
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 -->
 <snippet id="shadow">
-  <?if (vars."light shadow spread".int &gt; 0) ?>
   <!-- we have a shadow map, so calculate attenuation from shadows -->
-  <technique priority="100">
+  <technique priority="100" condition="vars.&quot;light shadow spread&quot;.int &gt; 0">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
     <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
 
@@ -91,7 +90,7 @@
     <input name="positionW" type="position4_world" />
 
     <!-- vertex program stub -->
-    <block location="vertexMain">
+    <block location="cg:vertexMain;glsl:vertexMain">
       attenuation = 0.0;
       attenuation_attr_perfragment = true;
     </block>
@@ -219,13 +218,12 @@
       <attribute name="perfragment" type="bool" />
     </output>
   </technique>
-  <?else?>
   <!-- no shadow map available, so no attenuation from shadows -->
   <technique priority="50">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
     <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
 
-    <block location="vertexMain;fragmentMain">
+    <block location="cg:vertexMain;cg:fragmentMain;glsl:vertexMain;glsl:fragmentMain">
       attenuation = 1.0;
       attenuation_attr_perfragment = false;
     </block>
@@ -234,5 +232,4 @@
       <attribute name="perfragment" type="bool" />
     </output>
   </technique>
-  <?endif?>
 </snippet>

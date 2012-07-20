@@ -410,6 +410,12 @@ struct iFileSystem : public virtual iBase
   virtual bool GetSize (const char *FileName, uint64_t &oSize) = 0;
 
   /**
+   * Get real path of which this filesystem is based on.
+   * \return csString containing real path of filesystem root
+   */
+  virtual csString GetRootRealPath () = 0;
+
+  /**
    * Query and reset last error status.
    * \return Last error status. If there was no error, returns VFS_STATUS_OK.
    */

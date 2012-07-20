@@ -167,6 +167,8 @@ public:
   virtual bool SetTime (const char *fileName, const csFileTime &iTime);
   // Get file size
   virtual bool GetSize (const char *fileName, uint64_t &oSize);
+  // Get mount root
+  virtual csString GetRootRealPath ();
   // Query and reset last error status
   virtual int GetStatus ();
 };
@@ -1099,6 +1101,12 @@ bool NativeFS::GetSize (const char *fileName, uint64_t &oSize)
   oSize = info.st_size;
 
   return true;
+}
+
+// Query real path of filesystem root
+csString NativeFS::GetRootRealPath ()
+{
+  return csString (mountRoot);
 }
 
 // Query and reset last error status

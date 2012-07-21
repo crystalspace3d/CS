@@ -163,16 +163,16 @@ public:
   // Move file from OldPath to NewPath
   virtual bool Move (const char *oldPath, const char *newPath);
   // Get permission set of a file
-  virtual bool GetPermission (const char *fileName, csFilePermission &oPerm);
+  virtual bool GetPermission (const char *filename, csFilePermission &oPerm);
   // Set permission set of a file
-  virtual bool SetPermission (const char *fileName,
+  virtual bool SetPermission (const char *filename,
                               const csFilePermission &iPerm);
   // Set file time
-  virtual bool GetTime (const char *fileName, csFileTime &oTime);
+  virtual bool GetTime (const char *filename, csFileTime &oTime);
   // Get file time
-  virtual bool SetTime (const char *fileName, const csFileTime &iTime);
+  virtual bool SetTime (const char *filename, const csFileTime &iTime);
   // Get file size
-  virtual bool GetSize (const char *fileName, uint64_t &oSize);
+  virtual bool GetSize (const char *filename, uint64_t &oSize);
   // Check for file existence
   virtual bool Exists (const char *filename);
   // Delete a given file
@@ -994,9 +994,9 @@ bool NativeFS::Move (const char *oldPath, const char *newPath)
 }
 
 // Get permission set of a file
-bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
+bool NativeFS::GetPermission (const char *filename, csFilePermission &oPerm)
 {
-  csString path (ToRealPath (fileName));
+  csString path (ToRealPath (filename));
 
   uint32 permission;
   int error = CS::Platform::GetFilePermission (path, permission);
@@ -1017,11 +1017,11 @@ bool NativeFS::GetPermission (const char *fileName, csFilePermission &oPerm)
 }
 
 // Set permission set of a file
-bool NativeFS::SetPermission (const char *fileName,
+bool NativeFS::SetPermission (const char *filename,
                               const csFilePermission &iPerm)
 {
   // get real path from given virtual filename
-  csString path (ToRealPath (fileName));
+  csString path (ToRealPath (filename));
 
   // FIXME: currently it only supports user/group/others r/w/x permissions.
   // what about S_ISUID, S_ISGID, S_ISVTX and such special fields?
@@ -1051,10 +1051,10 @@ bool NativeFS::SetPermission (const char *fileName,
 }
 
 // Set file time
-bool NativeFS::GetTime (const char *fileName, csFileTime &oTime)
+bool NativeFS::GetTime (const char *filename, csFileTime &oTime)
 {
   // get real path from given virtual filename
-  csString path (ToRealPath (fileName));
+  csString path (ToRealPath (filename));
   struct stat info; // struct to store file information
 
   // retrieve file information with stat()
@@ -1074,9 +1074,9 @@ bool NativeFS::GetTime (const char *fileName, csFileTime &oTime)
 }
 
 // Get file time
-bool NativeFS::SetTime (const char *fileName, const csFileTime &iTime)
+bool NativeFS::SetTime (const char *filename, const csFileTime &iTime)
 {
-  csString path (ToRealPath (fileName)); // obtain real path from fileName
+  csString path (ToRealPath (filename)); // obtain real path from fileName
   struct tm curtm = iTime;
   struct utimbuf times;
 
@@ -1096,9 +1096,9 @@ bool NativeFS::SetTime (const char *fileName, const csFileTime &iTime)
 }
 
 // Get file size
-bool NativeFS::GetSize (const char *fileName, uint64_t &oSize)
+bool NativeFS::GetSize (const char *filename, uint64_t &oSize)
 {
-  csString path (ToRealPath (fileName));
+  csString path (ToRealPath (filename));
   struct stat info;
   // TODO: ensure large file compatibility
   if (stat (path, &info) != 0)

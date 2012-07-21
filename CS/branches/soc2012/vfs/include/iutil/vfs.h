@@ -133,16 +133,16 @@ struct csFileTime
   int year;
 
   ///empty constructor.
-  csFileTime() {}
+  csFileTime () {}
 
   /// Construct a csFileTime item from a <tt>struct tm</tt>
-  csFileTime(const struct tm& time)
+  csFileTime (const struct tm& time)
   {
       *this = time;
   }
 
   /// Assign a <tt>struct tm</tt>.
-  void operator=(const struct tm& time)
+  void operator= (const struct tm& time)
   {
     sec  = time.tm_sec;
     min  = time.tm_sec;
@@ -153,14 +153,14 @@ struct csFileTime
   }
 
   /// Create a <tt>struct tm</tt> from object.
-  operator struct tm() const
+  operator struct tm () const
   {
     struct tm time;
-    time.tm_sec = sec;
-    time.tm_min = min;
+    time.tm_sec  = sec;
+    time.tm_min  = min;
     time.tm_hour = hour;
     time.tm_mday = day;
-    time.tm_mon = mon;
+    time.tm_mon  = mon;
     time.tm_year = year - 1900;
     return time;
   }
@@ -170,7 +170,7 @@ namespace CS
 {
   namespace Deprecated
   {
-    CS_DEPRECATED_METHOD_MSG("Use assign operator of csFileTime.")
+    CS_DEPRECATED_METHOD_MSG ("Use assign operator of csFileTime.")
     static inline void ASSIGN_FILETIME (csFileTime &ft, const struct tm &time)
     {
       ft = time;
@@ -265,23 +265,23 @@ struct iFile : public virtual iBase
   virtual int GetStatus () = 0;
 
   /**
-   * Read DataSize bytes and place them into the buffer at which Data points.
-   * \param Data Pointer to the buffer into which the data should be read.  The
-   *   buffer should be at least DataSize bytes in size.
-   * \param DataSize Number of bytes to read.
+   * Read dataSize bytes and place them into the buffer at which Data points.
+   * \param data Pointer to the buffer into which the data should be read.  The
+   *   buffer should be at least dataSize bytes in size.
+   * \param dataSize Number of bytes to read.
    * \return The number of bytes actually read.  If an error occurs, zero is
    *   returned.  Invoke GetStatus() to retrieve the error code.
    */
-  virtual size_t Read (char *Data, size_t DataSize) = 0;
+  virtual size_t Read (char *data, size_t dataSize) = 0;
 
   /**
-   * Write DataSize bytes from the buffer at which Data points.
-   * \param Data Pointer to the data to be written.
-   * \param DataSize Number of bytes to write.
+   * Write dataSize bytes from the buffer at which Data points.
+   * \param data Pointer to the data to be written.
+   * \param dataSize Number of bytes to write.
    * \return The number of bytes actually written.  If an error occurs, zero is
    *   returned.  Invoke GetStatus() to retrieve the error code.
    */
-  virtual size_t Write (const char *Data, size_t DataSize) = 0;
+  virtual size_t Write (const char *data, size_t dataSize) = 0;
 
   /// Flush stream.
   virtual void Flush () = 0;
@@ -366,50 +366,50 @@ struct iFileSystem : public virtual iBase
 
   /**
    * Get permission of specified file within current file system.
-   * \param FileName Virtual path of file to get permission
+   * \param filename Virtual path of file to get permission
    * \param oPerm Reference to csFilePermission structure to be written
    * \return true if operation succeeded; false otherwise. Use GetStatus() for
    *   error information.
    */
-  virtual bool GetPermission (const char *FileName,
+  virtual bool GetPermission (const char *filename,
                               csFilePermission &oPerm) = 0;
 
   /**
    * Set permission of specified file within current file system.
-   * \param FileName Virtual path of file to set permission
+   * \param filename Virtual path of file to set permission
    * \param iPerm csFilePermission structure containing desired permission.
    * \return true if operation succeeded; false otherwise. Use GetStatus() for
    *   error information.
    */
-  virtual bool SetPermission (const char *FileName,
+  virtual bool SetPermission (const char *filename,
                               const csFilePermission &iPerm) = 0;
 
   /**
    * Get file time of specified file within current file system.
-   * \param FileName Virtual path of file to get time
+   * \param filename Virtual path of file to get time
    * \param oTime Reference of csFileTime structure to be written
    * \return true if operation succeeded; false otherwise. Use GetStatus() for
    *   error information.
    */
-  virtual bool GetTime (const char *FileName, csFileTime &oTime) = 0;
+  virtual bool GetTime (const char *filename, csFileTime &oTime) = 0;
 
   /**
    * Set file time of specified file within current file system.
-   * \param FileName Virtual path of file to set time
+   * \param filename Virtual path of file to set time
    * \param iTime csFileTime structure containing desired file time.
    * \return true if operation succeeded; false otherwise. Use GetStatus() for
    *   error information.
    */
-  virtual bool SetTime (const char *FileName, const csFileTime &iTime) = 0;
+  virtual bool SetTime (const char *filename, const csFileTime &iTime) = 0;
 
   /**
    * Query file size of specified file within current file system.
-   * \param FileName Virtual path of file to query size
+   * \param filename Virtual path of file to query size
    * \param oSize 64-bit unsigned integer variable to receive file size
    * \return true if operation succeeded; false otherwise. Use GetStatus() for
    *   error information.
    */
-  virtual bool GetSize (const char *FileName, uint64_t &oSize) = 0;
+  virtual bool GetSize (const char *filename, uint64_t &oSize) = 0;
 
   /**
    * Query whether a file or directory of given name exists.
@@ -530,13 +530,13 @@ struct iVFS : public virtual iBase
 
   /**
    * Open a file on the VFS filesystem.
-   * \param FileName The VFS path of the file in the VFS filesystem.
-   * \param Mode Combination of VFS_FILE_XXX constants.
+   * \param filename The VFS path of the file in the VFS filesystem.
+   * \param mode Combination of VFS_FILE_XXX constants.
    * \return A valid iFile if the file was opened successfully, otherwise an
    *  invalidated iFile.  Use csRef<>::IsValid() to check validity.
    * \sa #VFS_FILE_MODE
    */
-  virtual csPtr<iFile> Open (const char *FileName, int Mode) = 0;
+  virtual csPtr<iFile> Open (const char *filename, int mode) = 0;
 
   /**
    * Get an entire file at once. This is more effective than opening files 
@@ -544,7 +544,7 @@ struct iVFS : public virtual iBase
    * be null-terminated (so that it can be conveniently used with string 
    * functions) but the extra null-terminator is not counted as part of the 
    * returned size.
-   * \param FileName VFS path of the file to be read.
+   * \param filename VFS path of the file to be read.
    * \param nullterm Null-terminate the returned buffer.
    * \return An iDataBuffer containing the file contents if the file was opened
    *  and read successfully, otherwise a null reference.  Use
@@ -552,23 +552,23 @@ struct iVFS : public virtual iBase
    * \remarks Null-termination might have a performance penalty (dependent on
    *  where the file is stored). Use only when needed.
    */
-  virtual csPtr<iDataBuffer> ReadFile (const char *FileName,
+  virtual csPtr<iDataBuffer> ReadFile (const char *filename,
     bool nullterm = true) = 0;
 
   /**
    * Write an entire file in one pass.
-   * \param Name Name of file to write.
-   * \param Data Pointer to the data to be written.
-   * \param Size Number of bytes to write.
+   * \param name Name of file to write.
+   * \param data Pointer to the data to be written.
+   * \param size Number of bytes to write.
    * \return True if the write succeeded, else false.
    */
-  virtual bool WriteFile (const char *Name, const char *Data, size_t Size) = 0;
+  virtual bool WriteFile (const char *name, const char *data, size_t size) = 0;
 
   /**
    * Delete a file on VFS
    * \return True if the deletion succeeded, else false.
    */
-  virtual bool DeleteFile (const char *FileName) = 0;
+  virtual bool DeleteFile (const char *filename) = 0;
 
   /**
    * Close all opened archives, free temporary storage etc.
@@ -581,60 +581,60 @@ struct iVFS : public virtual iBase
    *  (works like unix 'ln -s' command)
    * If the link already exists, then the target will be added to the link
    * At the moment just remounts it at `Target'.
-   * \param Target The target that the link will point to
-   * \param Link The path of the link within the VFS, if this is 0 then the 
+   * \param target The target that the link will point to
+   * \param link The path of the link within the VFS, if this is 0 then the 
    *  link will be created in the current directory with the same name as 
    *  the target
    * \param priority Currently unused
    * \return True if successful, else false.
    */
-  virtual bool SymbolicLink(const char *Target, const char *Link = 0, 
+  virtual bool SymbolicLink(const char *target, const char *link = 0, 
     int priority = 0) = 0;
 
   /**
    * Mount an VFS path on a "real-world-filesystem" path.
-   * \param VirtualPath The location in the virtual filesystem in which to
-   *   mount RealPath.
-   * \param RealPath The physical filesystem path to mount at VirtualPath.
+   * \param virtualPath The location in the virtual filesystem in which to
+   *   mount realPath.
+   * \param realPath The physical filesystem path to mount at virtualPath.
    *   All VFS pseudo-variables and anything that appears in the right-hand
    *   side of an equal sign in vfs.cfg is valid.
    * \return True if the mount succeeded, else false.
    */
-  virtual bool Mount (const char *VirtualPath, const char *RealPath) = 0;
+  virtual bool Mount (const char *virtualPath, const char *realPath) = 0;
 
   /**
    * Unmount a VFS path.
-   * \param VirtualPath The location in the virtual filesystem which is to be
+   * \param virtualPath The location in the virtual filesystem which is to be
    *   unmounted.
-   * \param RealPath The physical filesystem path corresponding to the virtual
+   * \param realPath The physical filesystem path corresponding to the virtual
    *   path.
    * \remarks A single virtual path may represent multiple physical locations;
    *   in which case, the physical locations appear as a conglomerate in the
-   *   virtual filesystem.  The RealPath argument allows unmounting of just a
-   *   single location represented by the given VirtualPath.  If RealPath is
-   *   the null pointer, then all physical locations represented by VirtualPath
+   *   virtual filesystem.  The realPath argument allows unmounting of just a
+   *   single location represented by the given virtualPath.  If realPath is
+   *   the null pointer, then all physical locations represented by virtualPath
    *   are umounted.
    * \return True if the unmount succeeded, else false.
    */
-  virtual bool Unmount (const char *VirtualPath, const char *RealPath) = 0;
+  virtual bool Unmount (const char *virtualPath, const char *realPath) = 0;
 
   /**
    * Mount the root directory or directories beneath the given virtual path.
    * \return A list of absolute virtual pathnames mounted by this operation.
    * \remarks On Unix, there is only a single root directory, but on other
-   *   platforms there may be many.  For example, on Unix, if VirtualPath is
+   *   platforms there may be many.  For example, on Unix, if virtualPath is
    *   "/native", then the single Unix root directory "/" will be mounted
    *   directly to "/native".  On Windows, which has multiple root directories,
    *   one for each drive letter, they will be mounted as "/native/a/",
    *   "/native/c/", "/native/d/", and so on.
    */
-  virtual csRef<iStringArray> MountRoot (const char *VirtualPath) = 0;
+  virtual csRef<iStringArray> MountRoot (const char *virtualPath) = 0;
 
   /**
    * Save current configuration back into configuration file
    * \return True if the operation succeeded, else false.
    */
-  virtual bool SaveMounts (const char *FileName) = 0;
+  virtual bool SaveMounts (const char *filename) = 0;
   /**
    * Loads mounts from a configuration file
    * \return True if no error occured, false otherwise.
@@ -676,19 +676,19 @@ struct iVFS : public virtual iBase
    * Query file date/time.
    * \return True if the query succeeded, else false.
    */
-  virtual bool GetFileTime (const char *FileName, csFileTime &oTime) = 0;
+  virtual bool GetFileTime (const char *filename, csFileTime &oTime) = 0;
   /**
    * Set file date/time.
    * \return True if the operation succeeded, else false.
    */
-  virtual bool SetFileTime (const char *FileName, const csFileTime &iTime) = 0;
+  virtual bool SetFileTime (const char *filename, const csFileTime &iTime) = 0;
 
 
   /**
    * Query file size (without opening it).
    * \return True if the query succeeded, else false.
    */
-  virtual bool GetFileSize (const char *FileName, uint64_t &oSize) = 0;
+  virtual bool GetFileSize (const char *filename, uint64_t &oSize) = 0;
 
   // if 64-bit, size_t is equivalent to uint64_t.
   // deprecated overload is only available for non 64-bit systems.
@@ -698,35 +698,35 @@ struct iVFS : public virtual iBase
    * \return True if the query succeeded, else false.
    */
   CS_DEPRECATED_METHOD_MSG("Use uint64_t overload instead.")
-  virtual bool GetFileSize (const char *FileName, size_t &oSize) = 0;
+  virtual bool GetFileSize (const char *filename, size_t &oSize) = 0;
 #endif
 
   /**
    * Query file permission.
    * \return True if the query succeeded, else false.
    */
-  virtual bool GetFilePermission (const char *FileName, 
+  virtual bool GetFilePermission (const char *filename, 
                                   csFilePermission &oPerm) = 0;
 
   /**
    * Set file permission.
    * \return True if the operation succeeded, else false.
    */
-  virtual bool SetFilePermission (const char *FileName,
+  virtual bool SetFilePermission (const char *filename,
                                   const csFilePermission &iPerm) = 0;
   /**
    * Query real-world path from given VFS path.
-   * \param FileName The virtual path for which the physical path is desired.
+   * \param filename The virtual path for which the physical path is desired.
    * \remarks This will work only for files that are stored on real filesystem,
    *   not in archive files.  You should expect this function to return an
    *   invalidated iDataBuffer for filesystems which do not support this
    *   operation.
    * \return An iDataBuffer containing the actual physical path corresponding
-   *   to the virtual path named by FileName, or an invalidated iDataBuffer if
+   *   to the virtual path named by filename, or an invalidated iDataBuffer if
    *   the operation fails or is not supported.  Use csRef<>::IsValid() to
    *   check validity.
    */
-  virtual csPtr<iDataBuffer> GetRealPath (const char *FileName) = 0;
+  virtual csPtr<iDataBuffer> GetRealPath (const char *filename) = 0;
 
   /**
    * Get a list of all current virtual mount paths
@@ -736,12 +736,12 @@ struct iVFS : public virtual iBase
 
   /**
    * Get the real paths associated with a mount
-   * \param VirtualPath The virtual path of a mount point
+   * \param virtualPath The virtual path of a mount point
    * \return An iStringArray containing all the real filesystem paths associated
-   * with the VirtualPath mount, or an empty array if the VirtualPath isn't
+   * with the virtualPath mount, or an empty array if the virtualPath isn't
    * mounted.
    */
-  virtual csRef<iStringArray> GetRealMountPaths (const char *VirtualPath) = 0;
+  virtual csRef<iStringArray> GetRealMountPaths (const char *virtualPath) = 0;
 };
 
 /** @} */

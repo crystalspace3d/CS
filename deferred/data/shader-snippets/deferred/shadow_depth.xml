@@ -59,7 +59,9 @@
       uniform vec2 shadowMapClip[MAX_CSM];
 
       // actual shadow map
-      uniform sampler2DShadow shadowMap[MAX_CSM];
+      <?Generate L 0 7?>
+      uniform sampler2DShadow shadowMap_$L$;
+      <?Endgenerate?>
 
       // shadow map shadowSpread
       uniform int shadowSpread;
@@ -69,9 +71,16 @@
     </block>
 
     <!-- texture inputs -->
-    <block location="pass">
+    <block location="cg:pass">
       <?Generate L 0 7?>
 	<texture name="light shadow map[$L$]" destination="shadowMap[$L$]"
+		comparemode="rToTexture" comparefunc="lequal" />
+      <?Endgenerate?>
+    </block>
+
+    <block location="glsl:pass">
+      <?Generate L 0 7?>
+	<texture name="light shadow map[$L$]" destination="shadowMap_$L$"
 		comparemode="rToTexture" comparefunc="lequal" />
       <?Endgenerate?>
     </block>
@@ -122,6 +131,7 @@
       // transform world position to shadow space
       float4x4 worldToShadow = mul(shadowMapProject[slice], worldToLight);
       float4 positionS = mul(worldToShadow, positionW);
+      positionS.y *= -1; // flip y coordinate
 
       // divide by perspective
       float3 positionP = positionS.xyz / positionS.w;
@@ -133,7 +143,7 @@
       float3 texCoord = float3(0.5) * positionP + float3(0.5);
 
       // adjust bias
-      texCoord.z = (1.0 - bias) - texCoord.z;
+      texCoord.z += bias;
 
       // finally get attenuation from shadow map
       attenuation = tex2D(shadowMap[slice], texCoord).x;
@@ -181,6 +191,7 @@
       // transform world position to shadow space
       mat4 worldToShadow = shadowMapProject[slice] * worldToLight;
       vec4 positionS = worldToShadow * positionW;
+      positionS.y *= -1; // flip y coordinate
 
       // divide by perspective
       vec3 positionP = positionS.xyz / positionS.w;
@@ -192,10 +203,7 @@
       vec3 texCoord = vec3(0.5) * positionP + vec3(0.5);
 
       // adjust bias
-      texCoord.z = (1.0 - bias) - texCoord.z;
-
-      // finally get attenuation from shadow map
-      attenuation = shadow2D(shadowMap[slice], texCoord).x;
+      texCoord.z += bias;
 
       // set fixed value if position is off the map
     ]]>
@@ -210,6 +218,18 @@
         attenuation = 0.0;
       }
     <?endif?>
+    <?Generate L 0 7?>
+      else if(slice == $L$)
+      {
+        // finally get attenuation from shadow map
+        attenuation = shadow2D(shadowMap_$L$, texCoord).x;
+      }
+    <?Endgenerate?>
+      else
+      {
+        // how did we end up here?
+        attenuation = 1.0;
+      }
       attenuation_attr_perfragment = true;
     </block>
 

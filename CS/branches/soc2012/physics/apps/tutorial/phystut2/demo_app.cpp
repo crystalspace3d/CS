@@ -275,7 +275,7 @@ void PhysDemo::GripContactBodies()
     iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody();
     if (pb && IsDynamic(pb))
     {
-      if (pb->GetBodyType() == BODY_RIGID)
+      if (pb->QueryRigidBody())
       {
         CS::Physics::iRigidBody* rb = pb->QueryRigidBody();
         csVector3 velo = pb->GetLinearVelocity();

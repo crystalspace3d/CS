@@ -67,10 +67,12 @@ namespace Physics
   /**
   * The type of a physical body.
   */
-  enum PhysicalBodyType
+  enum PhysicalObjectType
   {
-    BODY_RIGID = 0,
-    BODY_SOFT
+    PHYSICAL_OBJECT_RIGIDBODY = CS::Collisions::COLLISION_OBJECT_END,
+    PHYSICAL_OBJECT_SOFTYBODY,
+    PHYSICAL_OBJECT_DYNAMICACTOR,
+    PHYSICAL_OBJECT_END
   };
 
   /**
@@ -78,8 +80,8 @@ namespace Physics
    */
   struct iPhysicalObjectFactory : public virtual CS::Collisions::iCollisionObjectFactory
   {
-    /// Get the PhysicalBodyType of the object whose data is stored in this properties object
-    virtual PhysicalBodyType GetPhysicalBodyType() const = 0;
+    /// Get the PhysicalObjectType of the object whose data is stored in this properties object
+    virtual PhysicalObjectType GetPhysicalObjectType() const = 0;
 
     /// Get the density of all objects that will be constructed with these properties
     virtual float GetDensity() const = 0;

@@ -59,6 +59,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   public:
     csBulletDynamicActor(csBulletSystem* sys);
     virtual ~csBulletDynamicActor();
+    
+    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const {return CS::Physics::PHYSICAL_OBJECT_DYNAMICACTOR;}
 
     bool AddBulletObject();
     bool RemoveBulletObject();

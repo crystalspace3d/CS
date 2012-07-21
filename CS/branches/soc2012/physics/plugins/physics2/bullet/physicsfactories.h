@@ -58,9 +58,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       SetName(name);
     }
 
-    /// Get the type of the object whose data is represented by this properties object
-    virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const = 0;
-
     /// Return the underlying object
     virtual iObject *QueryObject (void) { return this; }
 
@@ -90,8 +87,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
     }
     
-    virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeGhostObject; }
-
     /// Create a new object
     virtual csPtr<CS::Collisions::iGhostCollisionObject> CreateGhostCollisionObject();
     virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
@@ -120,8 +115,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
     }
 
-    virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeCollisionActor; }
-    
     /// Create a new object
     virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor();
     virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
@@ -223,8 +216,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
     }
 
-    virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeRigidBody; }
-
     /// Create a new object
     virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody();
     virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
@@ -232,7 +223,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iRigidBody>(CreateRigidBody()); 
     }
     
-    virtual CS::Physics::PhysicalBodyType GetPhysicalBodyType() const { return CS::Physics::BODY_RIGID; }
+    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType() const { return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY; }
 
     /// Set the elasticity of this rigid body.
     virtual void SetElasticity (float value) { elasticity = value; }
@@ -282,7 +273,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       SetFriction(csScalar(.2));    // between 0 and 1
     }
 
-    virtual CS::Physics::PhysicalBodyType GetPhysicalBodyType() const { return CS::Physics::BODY_SOFT; }
+    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType() const { return CS::Physics::PHYSICAL_OBJECT_SOFTYBODY; }
 
     /// Create a new object
     virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody() = 0;
@@ -308,8 +299,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       nodeCount(10)
     {
     }
-    
-    virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeSoftRope; }
 
     /// Create a new object
     virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
@@ -346,8 +335,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       counts[0] = counts[1] = 10;
     }
 
-    virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeSoftCloth; }
-
     /// Create a new object
     virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
 
@@ -380,8 +367,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
     }
 
-    virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeSoftMesh; }
-
     /// Create a new object
     virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
 
@@ -401,7 +386,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool kinematicSteps;
 
   public:
-    BulletDynamicActorFactory(CS::Collisions::iCollider* collider, const csString& name = "DynamicActor") : 
+    BulletDynamicActorFactory(CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor") : 
         scfImplementationType (this, collider, name),
       stepHeight(.1f),
       walkSpeed(10.f),
@@ -410,8 +395,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       kinematicSteps(true)
     {
     }
-
-    virtual CS::Collisions::InternalCollisionObjectType GetInternalObjectType() const { return CS::Collisions::InternalCollisionObjectTypeDynamicActor; }
 
     /// Create a new object
     virtual csPtr<CS::Physics::iDynamicActor> CreateDynamicActor();

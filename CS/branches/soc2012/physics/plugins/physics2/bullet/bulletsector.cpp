@@ -185,7 +185,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         iPhysicalBody* phyBody = obj->QueryPhysicalBody();
         //int cflags = obj->btObject->getCollisionFlags();
         //obj->btObject->setCollisionFlags(obj->btObject->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
-        if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
+        if (phyBody->QueryRigidBody())
         {
           AddRigidBody (phyBody->QueryRigidBody ());
         }
@@ -227,7 +227,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       if (collObject->IsPhysicalObject())
       {
         iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
-        if (phyBody->GetBodyType () == CS::Physics::BODY_RIGID)
+        if (phyBody->QueryRigidBody())
         {
           rigidBodies.Delete(dynamic_cast<csBulletRigidBody*>(phyBody->QueryRigidBody ()));
         }
@@ -1058,7 +1058,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (obj->IsPhysicalObject())
     {
       CS::Physics::iPhysicalBody* pb = obj->QueryPhysicalBody ();
-      if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
+      if (pb->QueryRigidBody())
       {
         csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
         csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
@@ -1091,7 +1091,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (obj->IsPhysicalObject())
     {
       CS::Physics::iPhysicalBody* pb = obj->QueryPhysicalBody ();
-      if (pb->GetBodyType () == CS::Physics::BODY_RIGID)
+      if (pb->QueryRigidBody())
       {
         csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
         csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());

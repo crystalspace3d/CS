@@ -64,7 +64,7 @@ void csBulletJoint::Attach (CS::Physics::iPhysicalBody* body1, CS::Physics::iPhy
   // If the joint is attached to two bodies.
   if (body2)
   {
-    if (body1->GetBodyType () == CS::Physics::BODY_SOFT)
+    if (body1->GetPhysicalObjectType () == CS::Physics::PHYSICAL_OBJECT_SOFTYBODY)
     {
       bodies[0] = body1;
       bodies[1] = body2;
@@ -72,7 +72,7 @@ void csBulletJoint::Attach (CS::Physics::iPhysicalBody* body1, CS::Physics::iPhy
     else
     {
       // Two rigid bodies.
-      if (body2->GetBodyType () == CS::Physics::BODY_RIGID)
+      if (body2->QueryRigidBody())
       {
         jointFlag &= ~JOINT_SOFT;
         bool static2 = (!body2->IsDynamic());
@@ -102,7 +102,7 @@ void csBulletJoint::Attach (CS::Physics::iPhysicalBody* body1, CS::Physics::iPhy
     bodies[0] = body1;
     bodies[1] = nullptr;
 
-    if (body1->GetBodyType () == CS::Physics::BODY_RIGID)
+    if (body1->QueryRigidBody())
       jointFlag &= ~JOINT_SOFT;
     else
     {
@@ -565,7 +565,7 @@ void csBulletJoint::AddBulletJoint ()
       lspecs.cfm		=	1;
       lspecs.erp		=	1; 
       lspecs.position = CSToBullet (position, sys->getInternalScale ());
-      if (bodies[1]->GetBodyType () == CS::Physics::BODY_RIGID)
+      if (bodies[1]->QueryRigidBody())
       {  
         csBulletRigidBody* body2 = dynamic_cast<csBulletRigidBody*> (bodies[1]);
         body->btBody->appendLinearJoint (lspecs, body2->btBody);
@@ -590,7 +590,7 @@ void csBulletJoint::AddBulletJoint ()
       else if (!rotConstraintZ)
         aspecs.axis = btVector3(0,0,1);
 
-      if (bodies[1]->GetBodyType () == CS::Physics::BODY_RIGID)
+      if (bodies[1]->QueryRigidBody())
       {  
         csBulletRigidBody* body2 = dynamic_cast<csBulletRigidBody*> (bodies[1]);
         body->btBody->appendAngularJoint (aspecs, body2->btBody);

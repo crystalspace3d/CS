@@ -165,6 +165,11 @@ void PhysDemo::CreatePortalRoom()
     poly2.GetVertices(), 
     (int) poly2.GetVertexCount(),
     portal2);
+
+  
+  portal1->GetWorldVertices ();
+
+  csVector3 nor = portal1->GetObjectPlane ().GetNormal ();
   
   // place & configure portals and warp transforms
   //portalMesh1->QuerySceneNode()->GetMovable()->SetTransform(portal1Trans);
@@ -176,8 +181,15 @@ void PhysDemo::CreatePortalRoom()
   portal2->GetFlags().Set (CS_PORTAL_ZFILL);
   portal2->GetFlags().Set (CS_PORTAL_CLIPDEST);
   
-  portal1->SetWarp (portal2Trans.GetInverse() * portal1Trans);
-  portal2->SetWarp (portal1Trans.GetInverse() * portal2Trans);
+  csOrthoTransform portal1Warp(portal2Trans.GetInverse() * portal1Trans);
+  csOrthoTransform portal2Warp(portal1Trans.GetInverse() * portal2Trans);
+  
+  portal1Warp.SetT2O(portal1Warp.GetT2O() * csXRotMatrix3(PI) * csYRotMatrix3(PI));
+  //portal1Warp.SetT2O(portal1Warp.GetT2O() * csZRotMatrix3(PI));
+  portal2Warp.SetT2O(portal2Warp.GetT2O() * csYRotMatrix3(PI) * csZRotMatrix3(PI));
+
+  portal1->SetWarp (portal1Warp);
+  portal2->SetWarp (portal2Warp);
   
   // Create collision portals
   static const csOrthoTransform identity;

@@ -105,7 +105,7 @@ public:
 
   //iPhysicalBody
 
-  virtual CS::Physics::PhysicalBodyType GetBodyType () const {return CS::Physics::BODY_SOFT;}
+  virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const {return CS::Physics::PHYSICAL_OBJECT_SOFTYBODY;}
   virtual CS::Physics::iRigidBody* QueryRigidBody () {return dynamic_cast<CS::Physics::iRigidBody*>(this);}
   virtual CS::Physics::iSoftBody* QuerySoftBody () {return dynamic_cast<CS::Physics::iSoftBody*>(this);}
 

@@ -54,32 +54,14 @@ namespace Collisions
   struct CollisionGroup;
 
   /**
-   * Enum is necessary to identify the object type to be created from some Factory object
-   */
-  enum InternalCollisionObjectType
-  {
-    InternalCollisionObjectTypeCollisionObject,
-    InternalCollisionObjectTypeCollisionActor,
-    InternalCollisionObjectTypeGhostObject,
-
-    // physical objects:
-    
-    InternalCollisionObjectTypeRigidBody,
-    InternalCollisionObjectTypeSoftBody,
-    InternalCollisionObjectTypeDynamicActor,
-    InternalCollisionObjectTypeSoftRope,
-    InternalCollisionObjectTypeSoftCloth,
-    InternalCollisionObjectTypeSoftMesh
-  };
-
-  /**
   * The type of a collision object.
   */
   enum CollisionObjectType
   {
     COLLISION_OBJECT_PHYSICAL = 0,
     COLLISION_OBJECT_GHOST,
-    COLLISION_OBJECT_ACTOR
+    COLLISION_OBJECT_ACTOR,
+    COLLISION_OBJECT_END
   };
 
   typedef short CollisionGroupMask;
@@ -129,9 +111,6 @@ namespace Collisions
 
   struct iCollisionObjectFactory : public virtual iBase
   {
-    /// Get the type of the object whose data is represented by this properties object
-    virtual InternalCollisionObjectType GetInternalObjectType() const = 0;
-
     /// Return the underlying object
     virtual iObject *QueryObject (void) = 0;
 

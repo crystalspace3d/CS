@@ -148,8 +148,7 @@ public:
   
   
   // Factories
-  virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (CS::Collisions::InternalCollisionObjectType id)
-  { return csPtr<CS::Collisions::iCollisionObjectFactory>(nullptr); }
+  virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (int id);
 
   virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (CS::Collisions::iCollider *collider, const csString & name = "CollisionObject")
   { return csPtr<CS::Collisions::iCollisionObjectFactory>(nullptr); }

@@ -101,17 +101,17 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual bool IsPhysicalObject() const { return true; }
 
   /// Get the type of this physical body.
-  virtual PhysicalBodyType GetBodyType () const = 0;
+  virtual PhysicalObjectType GetPhysicalObjectType () const = 0;
 
   /**
    * Query the iRigidBody interface of this body. It returns NULL if the
-   * interface is not valid, ie GetType() is not CS::Physics::BODY_RIGID.
+   * interface is not valid, ie GetType() is not CS::Physics::PHYSICAL_OBJECT_RIGIDBODY.
    */
   virtual iRigidBody* QueryRigidBody () = 0;
 
   /**
    * Query the iSoftBody interface of this body. It returns NULL if the
-   * interface is not valid, ie GetType() is not CS::Physics::BODY_SOFT.
+   * interface is not valid, ie GetType() is not CS::Physics::PHYSICAL_OBJECT_SOFTYBODY.
    */
   virtual iSoftBody* QuerySoftBody () = 0;
 

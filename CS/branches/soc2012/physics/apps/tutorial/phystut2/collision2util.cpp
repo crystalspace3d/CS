@@ -10,7 +10,7 @@
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
-void Collider2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
+void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
     iEngine* engine, iCollection* collection)
 {
   // Initialize all mesh objects for collision detection.
@@ -24,7 +24,7 @@ void Collider2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSyst
   }
 }
 
-void Collider2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
+void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
     iSector* sector, iCollection* collection)
 {
   // Initialize all mesh objects for collision detection.
@@ -38,7 +38,7 @@ void Collider2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSyst
   }
 }
 
-void Collider2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colSys, iMeshWrapper* mesh)
+void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colSys, iMeshWrapper* mesh)
 {
   iMeshFactoryWrapper* meshFactory = mesh->GetFactory ();
 

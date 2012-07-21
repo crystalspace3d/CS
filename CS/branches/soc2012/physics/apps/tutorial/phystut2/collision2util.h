@@ -16,7 +16,7 @@
 
 #include "ivaria/physics.h"
 
-class Collider2Helper
+class Collision2Helper
 {
 public:
   void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,

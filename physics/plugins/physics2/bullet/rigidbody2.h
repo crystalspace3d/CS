@@ -92,7 +92,7 @@ public:
   
   virtual bool IsDynamicPhysicalObject() const { return physicalState != CS::Physics::STATE_DYNAMIC; }
 
-  virtual CS::Physics::PhysicalBodyType GetBodyType () const {return CS::Physics::BODY_RIGID;}
+  virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const {return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY;}
   virtual iRigidBody* QueryRigidBody () {return dynamic_cast<iRigidBody*> (this);}
   virtual iSoftBody* QuerySoftBody () {return dynamic_cast<iSoftBody*> (this);}
 

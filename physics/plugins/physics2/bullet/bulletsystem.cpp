@@ -223,52 +223,45 @@ csPtr<CS::Collisions::iCollisionTerrain> csBulletSystem::CreateCollisionTerrain 
   //colliders.Push (collider);
   return csPtr<iCollisionTerrain>(collider);
 }
-//
-//csPtr<CS::Collisions::iCollisionObjectFactory*> csBulletSystem::CreateCollisionObjectFactory (InternalCollisionObjectType id)
-//{
-//  // TODO: How to fix this
-//  
-//  // Compiler can optimize this into a table-lookup
-//  switch (id)
-//  {
-//  case InternalCollisionObjectTypeCollisionActor:
-//    {
-//    csRef<iCollisionActorFactory> p = scfQueryInterface<iCollisionActorFactory>(props);
-//    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iCollisionActor>(CreateCollisionObject(p))));
-//    }
-//  case InternalCollisionObjectTypeDynamicActor:
-//    {
-//    csRef<iDynamicActorFactory> p = scfQueryInterface<iDynamicActorFactory>(props);
-//    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iDynamicActor>(CreateCollisionObject(p))));
-//    }
-//  case InternalCollisionObjectTypeGhostObject:
-//    {
-//    csRef<iGhostCollisionObjectFactory> p = scfQueryInterface<iGhostCollisionObjectFactory>(props);
-//    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iGhostCollisionObject>(CreateCollisionObject(p))));
-//    }
-//  case InternalCollisionObjectTypeRigidBody:
-//    {
-//    csRef<iRigidBodyFactory> p = scfQueryInterface<iRigidBodyFactory>(props);
-//    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iRigidBody>(CreateCollisionObject(p))));
-//    }
-//  case InternalCollisionObjectTypeSoftRope:
-//    {
-//    csRef<iSoftRopeFactory> p = scfQueryInterface<iSoftRopeFactory>(props);
-//    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iSoftBody>(CreateCollisionObject(p))));
-//    }
-//  case InternalCollisionObjectTypeSoftCloth:
-//    {
-//    csRef<iSoftClothFactory> p = scfQueryInterface<iSoftClothFactory>(props);
-//    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iSoftBody>(CreateCollisionObject(p))));
-//    }
-//  case InternalCollisionObjectTypeSoftMesh:
-//    {
-//    csRef<iSoftMeshFactory> p = scfQueryInterface<iSoftMeshFactory>(props);
-//    return csPtr<iCollisionObject>(csRef<iCollisionObject>(csRef<iSoftBody>(CreateCollisionObject(p))));
-//    }
-//  }
-//  return csPtr<iCollisionObjectFactory> (nullptr);
-//}
+
+csPtr<iCollisionObjectFactory> csBulletSystem::CreateCollisionObjectFactory (int id)
+{
+  // Compiler can optimize this into a table-lookup
+  iCollisionObjectFactory* factory;
+  switch (id)
+  {
+  case COLLISION_OBJECT_ACTOR:
+    {
+    factory = new BulletCollisionActorFactory();
+    }
+  case COLLISION_OBJECT_GHOST:
+    {
+      factory = new BulletGhostCollisionObjectFactory();
+    }
+  case PHYSICAL_OBJECT_DYNAMICACTOR:
+    {
+      factory = new BulletDynamicActorFactory();
+    }
+  case PHYSICAL_OBJECT_RIGIDBODY:
+    {
+      factory = new BulletRigidBodyFactory();
+    }
+
+    // TODO: SoftBody factories
+  //case InternalCollisionObjectTypeSoftRope:
+  //  {
+  //  }
+  //case InternalCollisionObjectTypeSoftCloth:
+  //  {
+  //  }
+  //case InternalCollisionObjectTypeSoftMesh:
+  //  {
+  //  }
+  default:
+    factory = nullptr;
+  }
+  return csPtr<iCollisionObjectFactory> (factory);
+}
 
 csPtr<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
 {

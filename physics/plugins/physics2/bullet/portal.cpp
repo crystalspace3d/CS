@@ -32,7 +32,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     ghostPortal = new btGhostObject ();
 
     // compute the size of the portal
-    // WARNING: GetWorldVertices() initializes the portal plane - Always call this before GetNormal()!
+    // WARNING: GetWorldVertices() initializes the portal plane - Always call this before GetObjectPlane()!
     const csVector3* vert = portal->GetWorldVertices ();
     csVector3 portalPos(0);
     csBox3 box;
@@ -114,7 +114,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
       {
         iPhysicalBody* pb = obj->QueryPhysicalBody ();
-        if (pb->GetBodyType () == BODY_SOFT)
+        if (pb->GetPhysicalObjectType () == PHYSICAL_OBJECT_SOFTYBODY)
         {
           //use AABB
           btVector3 aabbMin, aabbMax;
@@ -185,7 +185,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
                 doTrans = false;
                 break;
               }
-              else if (rbs[head]->GetBodyType () == BODY_SOFT)
+              else if (rbs[head]->GetPhysicalObjectType () == PHYSICAL_OBJECT_SOFTYBODY)
               {
                 // Soft joint should not be transmitted.
                 doTrans = false;
@@ -321,7 +321,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         {
           btVector3 localInertia (0.0f, 0.0f, 0.0f);
           iPhysicalBody* pb = obj->QueryPhysicalBody ();
-          if (pb->GetBodyType () == BODY_RIGID)
+          if (pb->QueryRigidBody())
           {
             csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
 
@@ -409,7 +409,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (obj->IsPhysicalObject())
     {
       iPhysicalBody* pb = obj->QueryPhysicalBody ();
-      if (pb->GetBodyType () == BODY_RIGID)
+      if (pb->QueryRigidBody())
       {
         csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
         csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
@@ -442,7 +442,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (obj->IsPhysicalObject())
     {
       iPhysicalBody* pb = obj->QueryPhysicalBody ();
-      if (pb->GetBodyType () == BODY_RIGID)
+      if (pb->QueryRigidBody())
       {
         csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
         csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());

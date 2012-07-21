@@ -597,6 +597,9 @@ struct iCollisionSystem : public virtual iBase
 
 
   // Factory
+
+  /// Creates a new object factory of the given type which is either a CollisionObjectType or PhysicalObjectType
+  virtual csPtr<iCollisionObjectFactory> CreateCollisionObjectFactory (int type) = 0;
   
   virtual csPtr<iCollisionObjectFactory> CreateCollisionObjectFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
   virtual csPtr<iGhostCollisionObjectFactory> CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;

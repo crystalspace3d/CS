@@ -170,7 +170,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       clipboardBody = hitResult.object->QueryPhysicalBody();
       clipboardMovable = hitResult.object->GetAttachedMovable();
 
-      if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
+      if (clipboardBody->QueryRigidBody())
       {
         CS::Physics::iRigidBody* rigidBody = clipboardBody->QueryRigidBody();
         if (rigidBody->GetState() == CS::Physics::STATE_DYNAMIC)
@@ -211,7 +211,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     newTransform.SetOrigin (newTransform.GetOrigin() + newPosition * 1.5f);
 
     // Put back the body from the clipboard to the simulation
-    if (clipboardBody->GetBodyType() == CS::Physics::BODY_RIGID)
+    if (clipboardBody->QueryRigidBody())
     {
       clipboardBody->SetTransform (newTransform);
       physicalSector->AddCollisionObject (clipboardBody->QueryRigidBody());
@@ -333,11 +333,11 @@ bool PhysDemo::OnMouseDown (iEvent &event)
       force *= 20.f;
 
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
-      if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
+      if (physicalBody->QueryRigidBody())
       {
         csOrthoTransform trans = physicalBody->GetTransform();
         // Check if the body hit is not static or kinematic
-        csRef<CS::Physics::iRigidBody> bulletBody = scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);
+        csRef<CS::Physics::iRigidBody> bulletBody = physicalBody->QueryRigidBody();
         physicalBody->QueryRigidBody()->AddForceAtPos (force, hitResult.isect);
 
         // This would work too
@@ -375,7 +375,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     {
       // Check if we hit a rigid body
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
-      if (physicalBody->GetBodyType() == CS::Physics::BODY_RIGID)
+      if (physicalBody->QueryRigidBody())
       {
         csRef<CS::Physics::iRigidBody> bulletBody = scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);
 

@@ -221,10 +221,12 @@ namespace CS
 #define VFS_STATUS_ACCESSDENIED		4
 /// An error occured during reading or writing data
 #define VFS_STATUS_IOERROR		5
+/// File is too large to be fully addressed in memory space
+#define VFS_STATUS_FILETOOLARGE		6
 /// Requested operation is not supported on current system
-#define VFS_STATUS_UNSUPPORTED		6
+#define VFS_STATUS_UNSUPPORTED		0x00008000
 /// Requested operation should be supported, but not implemented yet
-#define VFS_STATUS_NOTIMPLEMENTED	7
+#define VFS_STATUS_NOTIMPLEMENTED	0x00008001
 /** @} */
 
 /**\name File positioning modes
@@ -408,6 +410,22 @@ struct iFileSystem : public virtual iBase
    *   error information.
    */
   virtual bool GetSize (const char *FileName, uint64_t &oSize) = 0;
+
+  /**
+   * Query whether a file or directory of given name exists.
+   * \param filename Virtual path of file or directory to check existence
+   * \return true if exists; false otherwise.
+   * \remarks This method does not change error status.
+   */
+  virtual bool Exists (const char *filename) = 0;
+
+  /**
+   * Deletes a given file.
+   * \param filename Virtual path of file to delete
+   * \return true if operation succeeded; false otherwise. Use GetStatus() for
+   *   error information.
+   */
+  virtual bool Delete (const char *filename) = 0;
 
   /**
    * Get real path of which this filesystem is based on.

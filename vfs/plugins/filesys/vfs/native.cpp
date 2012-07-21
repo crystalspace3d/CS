@@ -44,6 +44,12 @@
 #include "csutil/databuf.h"
 #include "csutil/filepermission.h"
 
+// VC++ defines _S_IFDIR instead of S_IFDIR
+// Define _S_IFDIR for other platform
+#ifndef _S_IFDIR
+#define _S_IFDIR S_IFDIR
+#endif
+
 // local helper functions
 namespace
 {
@@ -167,6 +173,10 @@ public:
   virtual bool SetTime (const char *fileName, const csFileTime &iTime);
   // Get file size
   virtual bool GetSize (const char *fileName, uint64_t &oSize);
+  // Check for file existence
+  virtual bool Exists (const char *filename);
+  // Delete a given file
+  virtual bool Delete (const char *filename);
   // Get mount root
   virtual csString GetRootRealPath ();
   // Query and reset last error status
@@ -1099,6 +1109,59 @@ bool NativeFS::GetSize (const char *fileName, uint64_t &oSize)
   }
   // copy the information
   oSize = info.st_size;
+
+  return true;
+}
+
+// Determines whether a file exists
+bool NativeFS::Exists (const char *filename)
+{
+  // find corresponding real path
+  csString path (ToRealPath (filename));
+
+  // use access () with F_OK to test file existence
+  return (access (path, F_OK) == 0);
+}
+
+bool NativeFS::Delete (const char *filename)
+{  
+  // find corresponding real path
+  csString path (ToRealPath (filename));
+
+  // remove trailing path separator
+  if (path[path.Length ()-1] == CS_PATH_SEPARATOR)
+    path.Truncate (path.Length () - 1);
+
+  struct stat info;
+
+  // retrieve file information
+  if (stat (path, &info) != 0)
+  {
+    // stat() failed for whatever reason
+    UpdateError ();
+    return false;
+  }
+
+
+  if (info.st_mode & _S_IFDIR)
+  {
+    // file is a directory
+    if (rmdir (path) != 0)
+    {
+      // rmdir failed for whatever reason
+      UpdateError ();
+      return false;
+    }
+  }
+  else
+  {
+    if (unlink (path) != 0)
+    {
+      // unlink () failed for whatever reason
+      UpdateError ();
+      return false;
+    }
+  }
 
   return true;
 }

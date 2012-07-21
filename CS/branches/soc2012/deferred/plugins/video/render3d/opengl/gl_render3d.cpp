@@ -2020,8 +2020,7 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
   if (needMatrix)
   {
     float matrix[16];
-    makeGLMatrixInverted (o2w, matrix);
-    //makeGLMatrix (o2w, matrix);
+    makeGLMatrix (o2w, matrix);
     statecache->SetMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
     glMultMatrixf (matrix);
@@ -4237,8 +4236,7 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
   if (needMatrix)
   {
     float matrix[16];
-    makeGLMatrixInverted (o2w, matrix);
-    //makeGLMatrix (o2w, matrix);
+    makeGLMatrix (o2w, matrix);
     statecache->SetMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
     glMultMatrixf (matrix);

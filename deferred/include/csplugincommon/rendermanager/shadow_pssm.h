@@ -213,16 +213,22 @@ namespace RenderManager
 	    csWeakRef<iLight> light;
 	    LightData& lightData = lightIt.NextNoAdvance(light);
 
-	    // clear data if light is gone
-	    if(light.IsValid())
+	    // clear data if light is gone or out of date
+	    bool needsDelete = light.IsValid();
+	    if(!needsDelete)
 	    {
-	      lightIt.Advance();
+	      if(lightData.updateNumber != light->GetMovable()->GetUpdateNumber())
+	      {
+		needsDelete = true;
+	      }
 	    }
-	    else
+
+	    if(needsDelete)
 	    {
 	      lights.DeleteElement(lightIt);
 	      continue;
 	    }
+	    lightIt.Advance();
 
 	    // go over the frustums for this light and clear the temp data
 	    for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
@@ -409,6 +415,9 @@ namespace RenderManager
 	// set our transform
 	light2world = l->GetMovable()->GetFullTransform();
 
+	// set our update number
+	updateNumber = l->GetMovable()->GetUpdateNumber();
+
 	// set projection transform
 	{
 	  // get cutoff distance
@@ -554,6 +563,9 @@ namespace RenderManager
 
       // transform This == light Other == world
       csReversibleTransform light2world;
+
+      // movable update number
+      long updateNumber;
 
       // projection matrix
       CS::Math::Matrix4 project;

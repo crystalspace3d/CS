@@ -136,17 +136,11 @@
       // divide by perspective
       float3 positionP = positionS.xyz / positionS.w;
 
-      // unscale position
-      float2 positionU = shadowMapUnscale[slice].xy * positionP.xy + shadowMapUnscale[slice].zw;
-
       // transform into actual texture coord
       float3 texCoord = float3(0.5) * positionP + float3(0.5);
 
       // adjust bias
       texCoord.z += bias;
-
-      // finally get attenuation from shadow map
-      attenuation = tex2D(shadowMap[slice], texCoord).x;
 
       // set fixed value if position is off the map
     ]]>
@@ -156,11 +150,19 @@
         attenuation = 1.0;
       }
     <?else?>
+      // unscale position
+      float2 positionU = shadowMapUnscale[slice].xy * positionP.xy + shadowMapUnscale[slice].zw;
+
       if(any(vec4(positionU,-positionU) &gt; 1.0) || positionS.w &lt; 0.0)
       {
         attenuation = 0.0;
       }
     <?endif?>
+      else
+      {
+        // finally get attenuation from shadow map
+        attenuation = tex2D(shadowMap[slice], texCoord).x;
+      }
       attenuation_attr_perfragment = true;
     </block>
 
@@ -196,9 +198,6 @@
       // divide by perspective
       vec3 positionP = positionS.xyz / positionS.w;
 
-      // unscale position
-      vec2 positionU = shadowMapUnscale[slice].xy * positionP.xy + shadowMapUnscale[slice].zw;
-
       // transform into actual texture coord
       vec3 texCoord = vec3(0.5) * positionP + vec3(0.5);
 
@@ -213,6 +212,9 @@
         attenuation = 1.0;
       }
     <?else?>
+      // unscale position
+      vec2 positionU = shadowMapUnscale[slice].xy * positionP.xy + shadowMapUnscale[slice].zw;
+
       if(any(greaterThan(vec4(positionU,-positionU), vec4(1.0))) || positionS.w &lt; 0.0)
       {
         attenuation = 0.0;

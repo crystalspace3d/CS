@@ -42,10 +42,6 @@
     <!-- Surface normal -->
     <input name="normal" type="normal_camera" />
 	
-    <!-- Shader might be used together with shadowmap shader... -->
-    <block location="cg:clips"
-           file="/shader-snippets/lighting/shadowclip.block" />
-	
     <!-- Shininess value for specular reflection -->
     <input name="shininess" type="float" default="value" defval="32" />
 

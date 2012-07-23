@@ -144,7 +144,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	}
       }
 
-      return true;
+      return newContext->doDeferred == context->doDeferred;
     }
 
     /**
@@ -186,7 +186,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       // shared setup for all passes - projection only
       CS::Math::Matrix4 projMatrix = context->perspectiveFixup * cam->GetProjectionMatrix();
 
-      bool doDeferred = true;
+      bool doDeferred = context->doDeferred;
       size_t layerCount = 0;
       {
 	/* Different contexts may have different numbers of layers,
@@ -196,8 +196,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	  layerCount = csMax (layerCount,
 	    contextStack[i]->svArrays.GetNumLayers());
 	}
-	doDeferred &= layerCount > deferredLayer;
-	doDeferred &= useDeferredShading || layerCount > lightingLayer;
       }
 
       // not a deferred stack, just render by layer

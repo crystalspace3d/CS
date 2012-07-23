@@ -105,6 +105,9 @@ public:
     iVisibilityCuller *culler = sector->GetVisibilityCuller ();
     Viscull<RenderTreeType> (context, rview, culler);
 
+    // enable deferred rendering for this context
+    context.doDeferred = true;
+
     // setup gbuffer transform.
     // @@@TODO: we shouldn't have to recalculate this for all contexts - it only changes if the attachment changes
     SetupTarget(context.renderTargets, context.gbufferFixup, context.texScale);

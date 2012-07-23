@@ -66,7 +66,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                       0.0f, range,  0.0f,
                       0.0f,  0.0f, range);
 
-    return csReversibleTransform(scale.GetInverse(), csVector3());
+    return csReversibleTransform(scale.GetInverse(), csVector3(0));
   }
 
   /**
@@ -127,7 +127,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                  0, z, 0,
                  0, 0, r);
 
-    return csReversibleTransform(S.GetInverse(), csVector3());
+    return csReversibleTransform(S.GetInverse(), csVector3(0));
   }
 
   /**
@@ -216,7 +216,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     csReversibleTransform obj2world = CreateDirectionalLightTransform (light);
     csVector3 objPos = obj2world.Other2This (p);
 
-    return !box.In (objPos);
+    return box.In (objPos);
   }
 
   /**

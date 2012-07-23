@@ -321,12 +321,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       // persistent shadow data - we query deferred shadow data from it
       typename ShadowHandler::PersistentData* shadowPersist;
       csRef<csShaderVariable> shadowSpread;
+      bool doShadows;
 
       /**
        * Initialize persistent data, must be called once before using the
        * light renderer.
        */
-      void Initialize(iObjectRegistry *objRegistry, typename ShadowHandler::PersistentData& shadowPersistent)
+      void Initialize(iObjectRegistry *objRegistry, typename ShadowHandler::PersistentData& shadowPersistent, bool useShadows)
       {
         using namespace CS::Geometry;
 
@@ -334,6 +335,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	// set shadow data
 	shadowPersist = &shadowPersistent;
+	doShadows = useShadows;
 
 	// query some plugins we'll need
         csRef<iEngine> engine = csQueryRegistry<iEngine> (objRegistry);
@@ -720,7 +722,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       }
 
       // light doesn't cast shadows - draw without shadowing
-      if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
+      if(!persistentData.doShadows || light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
       {
 	// let the shader know we don't use shadows
 	shadowSpreadSV->SetValue(0);

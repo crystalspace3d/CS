@@ -1188,13 +1188,18 @@ namespace RenderManager
 
       // check whether the light creates shadows (if not there's nothing to be done)
       if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
-	return 0; // @@@TODO: we should use a default SV set here (empty SM, etc.)
+	return 1;
 
       // check whether the mesh receives shadows (if not there's nothing to be done)
       if(mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
-	return 0; // @@@TODO: we should use a default SV set here (empty SM, etc.)
+	return 1;
 
+      // get our sector
       iSector* sector = rview->GetThisSector();
+
+      // check whether this light is known
+      if(!persist.lightHash[sector]->Contains(light))
+	return 1;
 
       // get mesh box in view space
       csTransform view2object = rview->GetCamera()->GetTransform() / mesh.renderMesh->object2world;
@@ -1204,7 +1209,6 @@ namespace RenderManager
       LightingVariablesHelper svHelper(persist.lightVarsPersist);
 
       // get our light data for that light
-      CS_ASSERT(persist.lightHash[sector]->Contains(light));
       LightData& lightData = *persist.lightHash[sector]->GetElementPointer(light);
 
       // get our frustum

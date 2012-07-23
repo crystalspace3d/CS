@@ -52,40 +52,6 @@ struct iSector;
 CS_PLUGIN_NAMESPACE_BEGIN(Engine)
 {
 
-class csLightObjectModel : public scfImplementationExt0<csLightObjectModel,
-                                                        csObjectModel>
-{
-public:
-  csBox3 box;
-  float radius;
-
-  csLightObjectModel ()
-    : scfImplementationType (this)
-  {
-  }
-  virtual ~csLightObjectModel ()
-  {
-  }
-
-  virtual const csBox3& GetObjectBoundingBox ()
-  {
-    return box;
-  }
-  virtual void SetObjectBoundingBox (const csBox3& bbox)
-  {
-    box = bbox;
-  }
-  virtual void GetRadius (float& rad, csVector3& cent)
-  {
-    rad = radius;
-    cent.Set (0, 0, 0);	// @@@ FIXME!
-  }
-  virtual iTerraFormer* GetTerraFormerColldet () { return 0; }
-  virtual iTerrainSystem* GetTerrainColldet () { return 0; }
-};
-
-
-
 /**
  * Superclass of all positional lights.
  * A light subclassing from this has a color, a position

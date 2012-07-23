@@ -173,7 +173,7 @@
       float bias = 0.0001;
 
       // go over all shadow maps and find the one applicapble to us
-      /*int slice;
+      int slice;
       for(slice = 0; slice < min(shadowSpread,MAX_CSM); ++slice)
       {
         // check whether we are in this slice
@@ -181,8 +181,7 @@
         {
           break;
         }
-      }*/
-      #define slice 0
+      }
 
       // check whether we fit somewhere
       if(slice == min(shadowSpread,MAX_CSM))
@@ -194,7 +193,7 @@
       // transform world position to shadow space
       mat4 worldToShadow = shadowMapProject[slice] * worldToLight;
       vec4 positionS = worldToShadow * positionW;
-      positionS.y *= -1; // flip y coordinate
+      positionS.y *= -1.0; // flip y coordinate
 
       // divide by perspective
       vec3 positionP = positionS.xyz / positionS.w;
@@ -208,7 +207,7 @@
       // set fixed value if position is off the map
       attenuation = shadow2D(shadowMap_0, texCoord).x;
     ]]>
-    <!--<?if (vars."light type".int == consts.CS_LIGHT_DIRECTIONAL) ?>
+    <?if (vars."light type".int == consts.CS_LIGHT_DIRECTIONAL) ?>
       if(any(greaterThan(vec4(positionP.xy,-positionP.xy), vec4(1.0))))
       {
         attenuation = 1.0;
@@ -233,7 +232,7 @@
       {
         // how did we end up here?
         attenuation = 1.0;
-      }-->
+      }
       attenuation_attr_perfragment = true;
     </block>
 

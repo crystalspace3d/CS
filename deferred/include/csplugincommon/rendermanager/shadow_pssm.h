@@ -357,8 +357,10 @@ namespace RenderManager
       }
 
       // typedefs
-      typedef csHash<LightData, csWeakRef<iLight> > LightHash;
-      typedef csHash<LightHash, csWeakRef<iSector> > LightHashHash;
+      typedef csHash<LightData, csWeakRef<iLight>, CS::Memory::AllocatorMalloc,
+	csArraySafeCopyElementHandler<CS::Container::HashElement<LightData, csWeakRef<iLight> > > > LightHash;
+      typedef csHash<LightHash, csWeakRef<iSector>, CS::Memory::AllocatorMalloc,
+	csArraySafeCopyElementHandler<CS::Container::HashElement<LightHash, csWeakRef<iSector> > > > LightHashHash;
 
       // config settings
       csString configPrefix;
@@ -1286,8 +1288,10 @@ namespace RenderManager
       iSector* sector = rview->GetThisSector();
 
       // get our light data for that light
-      CS_ASSERT(persist.lightHash[sector]->Contains(light));
-      LightData& lightData = *persist.lightHash[sector]->GetElementPointer(light);
+      typename PersistentData::LightHash* lightHash = persist.lightHash[sector];
+      CS_ASSERT(lightHash);
+      CS_ASSERT(lightHash->Contains(light));
+      LightData& lightData = *lightHash->GetElementPointer(light);
 
       // keep track into which index we'll push this map
       int index = 0;

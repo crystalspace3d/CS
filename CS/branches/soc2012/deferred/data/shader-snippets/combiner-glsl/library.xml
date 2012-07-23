@@ -28,7 +28,7 @@
 
   <coercion from="rgb" to="rgba" cost="1">
     <block location="vertexMain;fragmentMain">
-      result = vec4(value, 1);
+      result = vec4(value, 1.0);
     </block>
   </coercion>
 
@@ -146,43 +146,43 @@
   
   <coercion from="direction_object" to="direction_screen" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ModelViewProjectionMatrix * vec4 (value, 0)).xyz;
+      result = (gl_ModelViewProjectionMatrix * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
   
   <coercion from="direction_screen" to="direction_object" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ModelViewProjectionMatrixInverse * vec4 (value, 0)).xyz;
+      result = (gl_ModelViewProjectionMatrixInverse * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="direction_object" to="direction_camera" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ModelViewMatrix * vec4 (value, 0)).xyz;
+      result = (gl_ModelViewMatrix * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="direction_camera" to="direction_object" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ModelViewMatrixInverse * vec4 (value, 0)).xyz;
+      result = (gl_ModelViewMatrixInverse * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="direction_camera" to="direction_screen" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ProjectionMatrix * vec4 (value, 0)).xyz;
+      result = (gl_ProjectionMatrix * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="direction_screen" to="direction_camera" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ProjectionMatrixInverse * vec4 (value, 0)).xyz;
+      result = (gl_ProjectionMatrixInverse * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="direction_object" to="direction_world" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (objectToWorld * vec4 (value, 0)).xyz;
+      result = (objectToWorld * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
@@ -190,7 +190,7 @@
     <input file="/shader-snippets/combiner-glsl/worldToCamera.inp" private="yes" />
     
     <block location="vertexMain;fragmentMain">
-      result = (worldToCamera * vec4 (value, 0)).xyz;
+      result = (worldToCamera * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
@@ -198,7 +198,7 @@
     <input file="/shader-snippets/combiner-glsl/cameraToWorld.inp" private="yes" />
 
     <block location="vertexMain;fragmentMain">
-      result = (cameraToWorld * vec4 (value, 0)).xyz;
+      result = (cameraToWorld * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
   
@@ -238,43 +238,43 @@
   
   <coercion from="normal_object" to="normal_screen" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ModelViewProjectionMatrix * vec4 (value, 0)).xyz;
+      result = (gl_ModelViewProjectionMatrix * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
   
   <coercion from="normal_screen" to="normal_object" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ModelViewProjectionMatrixInverse * vec4 (value, 0)).xyz;
+      result = (gl_ModelViewProjectionMatrixInverse * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="normal_object" to="normal_camera" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ModelViewMatrix * vec4 (value, 0)).xyz;
+      result = (gl_ModelViewMatrix * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="normal_camera" to="normal_object" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ModelViewMatrixInverse * vec4 (value, 0)).xyz;
+      result = (gl_ModelViewMatrixInverse * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="normal_camera" to="normal_screen" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ProjectionMatrix * vec4 (value, 0)).xyz;
+      result = (gl_ProjectionMatrix * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="normal_screen" to="normal_camera" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (gl_ProjectionMatrixInverse * vec4 (value, 0)).xyz;
+      result = (gl_ProjectionMatrixInverse * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
   <coercion from="normal_object" to="normal_world" cost="3">
     <block location="vertexMain;fragmentMain">
-      result = (objectToWorld * vec4 (value, 0)).xyz;
+      result = (objectToWorld * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
@@ -282,7 +282,7 @@
     <input file="/shader-snippets/combiner-glsl/worldToCamera.inp" private="yes" />
     
     <block location="vertexMain;fragmentMain">
-      result = (worldToCamera * vec4 (value, 0)).xyz;
+      result = (worldToCamera * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
 
@@ -290,7 +290,7 @@
     <input file="/shader-snippets/combiner-glsl/cameraToWorld.inp" private="yes" />
 
     <block location="vertexMain;fragmentMain">
-      result = (cameraToWorld * vec4 (value, 0)).xyz;
+      result = (cameraToWorld * vec4 (value, 0.0)).xyz;
     </block>
   </coercion>
   

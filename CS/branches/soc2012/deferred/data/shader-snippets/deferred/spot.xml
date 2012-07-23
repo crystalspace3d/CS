@@ -47,23 +47,23 @@
     <input name="shininess" type="float" default="value" defval="32" />
 
     <block location="cg:vertexMain">
-      diffuseColor = float3(0);
-      specularColor = float3(0);
+      diffuseColor = float3(0.0);
+      specularColor = float3(0.0);
 
       diffuseColor_attr_perfragment = true;
       specularColor_attr_perfragment = true;
     </block>
     <block location="glsl:vertexMain">
-      diffuseColor = vec3(0);
-      specularColor = vec3(0);
+      diffuseColor = vec3(0.0);
+      specularColor = vec3(0.0);
 
       diffuseColor_attr_perfragment = true;
       specularColor_attr_perfragment = true;
     </block>
 	
     <block location="cg:fragmentMain">
-      diffuseColor = float3(0);
-      specularColor = float3(0);
+      diffuseColor = float3(0.0);
+      specularColor = float3(0.0);
 
       float3 L = lightPosition - position.xyz;
       float dist = length (L);
@@ -87,8 +87,8 @@
       specularColor_attr_perfragment = true;
     </block>
     <block location="glsl:fragmentMain">
-      diffuseColor = vec3(0);
-      specularColor = vec3(0);
+      diffuseColor = vec3(0.0);
+      specularColor = vec3(0.0);
 
       vec3 L = lightPosition - position.xyz;
       float dist = length (L);

@@ -205,7 +205,6 @@
       texCoord.z += bias;
 
       // set fixed value if position is off the map
-      attenuation = shadow2D(shadowMap_0, texCoord).x;
     ]]>
     <?if (vars."light type".int == consts.CS_LIGHT_DIRECTIONAL) ?>
       if(any(greaterThan(vec4(positionP.xy,-positionP.xy), vec4(1.0))))

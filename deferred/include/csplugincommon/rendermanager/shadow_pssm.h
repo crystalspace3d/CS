@@ -188,56 +188,37 @@ namespace RenderManager
       // Called every frame/RenderView() execution, use for housekeeping.
       void UpdateNewFrame()
       {
-	// iterate over all the light hashes for the various sectors
-	typename LightHashHash::GlobalIterator sectorIt = lightHash.GetIterator();
-	while(sectorIt.HasNext())
+	// iterate over all the lights
+	typename LightHash::GlobalIterator lightIt = lightHash.GetIterator();
+	while(lightIt.HasNext())
 	{
-	  csWeakRef<iSector> sector;
-	  LightHash& lights = sectorIt.NextNoAdvance(sector);
+	  csWeakRef<iLight> light;
+	  LightData& lightData = lightIt.NextNoAdvance(light);
 
-	  // clear data if sector is gone
-	  if(sector.IsValid())
+	  // clear data if light is gone or out of date
+	  bool needsDelete = light.IsValid();
+	  if(!needsDelete)
 	  {
-	    sectorIt.Advance();
+	    if(lightData.updateNumber != light->GetMovable()->GetUpdateNumber())
+	    {
+	      needsDelete = true;
+	    }
 	  }
-	  else
+
+	  if(needsDelete)
 	  {
-	    lightHash.DeleteElement(sectorIt);
+	    lightHash.DeleteElement(lightIt);
 	    continue;
 	  }
+	  lightIt.Advance();
 
-	  // iterate over all the known lights in this sector
-	  typename LightHash::GlobalIterator lightIt = lights.GetIterator();
-	  while(lightIt.HasNext())
+	  // go over the frustums for this light and clear the temp data
+	  for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
 	  {
-	    csWeakRef<iLight> light;
-	    LightData& lightData = lightIt.NextNoAdvance(light);
+	    typename LightData::Frustum& frustum = lightData.frustums[f];
 
-	    // clear data if light is gone or out of date
-	    bool needsDelete = light.IsValid();
-	    if(!needsDelete)
-	    {
-	      if(lightData.updateNumber != light->GetMovable()->GetUpdateNumber())
-	      {
-		needsDelete = true;
-	      }
-	    }
-
-	    if(needsDelete)
-	    {
-	      lights.DeleteElement(lightIt);
-	      continue;
-	    }
-	    lightIt.Advance();
-
-	    // go over the frustums for this light and clear the temp data
-	    for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
-	    {
-	      typename LightData::Frustum& frustum = lightData.frustums[f];
-
-	      // @@@TODO: add slice caching
-	      frustum.slicesHash.DeleteAll();
-	    }
+	    // @@@TODO: add slice caching
+	    frustum.slicesHash.DeleteAll();
 	  }
 	}
 
@@ -359,8 +340,6 @@ namespace RenderManager
       // typedefs
       typedef csHash<LightData, csWeakRef<iLight>, CS::Memory::AllocatorMalloc,
 	csArraySafeCopyElementHandler<CS::Container::HashElement<LightData, csWeakRef<iLight> > > > LightHash;
-      typedef csHash<LightHash, csWeakRef<iSector>, CS::Memory::AllocatorMalloc,
-	csArraySafeCopyElementHandler<CS::Container::HashElement<LightHash, csWeakRef<iSector> > > > LightHashHash;
 
       // config settings
       csString configPrefix;
@@ -398,7 +377,7 @@ namespace RenderManager
       csRef<iTextureHandle> emptySM[rtaNumAttachments];
 
       // hash holding the data for all known lights
-      LightHashHash lightHash;
+      LightHash lightHash;
 
       // array holding our splitting distances - those are constant for PSSM
       csArray<float> splitDists;
@@ -585,10 +564,6 @@ namespace RenderManager
 	persist(persist), renderTree(renderTree), rview(rview), cam(rview->GetCamera()), sector(rview->GetThisSector()),
 	svHelper(persist.lightVarsPersist), svNames(persist.svNames)
       {
-	if(!persist.lightHash.Contains(sector))
-	{
-	  persist.lightHash.Put(sector, typename PersistentData::LightHash());
-	}
       }
 
       // handle setup for a light - should be done before meshes are handled
@@ -599,7 +574,7 @@ namespace RenderManager
 	if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
 	  return;
 
-	typename PersistentData::LightHash& lightHash = *persist.lightHash[sector];
+	typename PersistentData::LightHash& lightHash = persist.lightHash;
 
 	// check whether this light is known already
 	if(!lightHash.Contains(light))
@@ -732,7 +707,7 @@ namespace RenderManager
 	uint currentFrame = rview->GetCurrentFrameNumber();
 
 	// go over all lights and get the frustums
-	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash[sector]->GetIterator();
+	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash.GetIterator();
 	while(it.HasNext())
 	{
 	  // get light data
@@ -744,11 +719,14 @@ namespace RenderManager
 	    // get our frustum
 	    typename LightData::Frustum& frustum = lightData.frustums[f];
 
+	    // skip frustum if it doesn't belong to our rview
+	    if(!frustum.slicesHash.Contains(rview))
+	      continue;
+
 	    // keep track whether any slice will be drawn at all
 	    bool draw = false;
 
 	    // get slice array
-	    CS_ASSERT(frustum.slicesHash.Contains(rview));
 	    csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
 
 	    // check which slices will be drawn
@@ -1092,7 +1070,7 @@ namespace RenderManager
 	csTransform world2object = mesh.renderMesh->object2world.GetInverse();
 
 	// for all lights
-	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash[sector]->GetIterator();
+	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash.GetIterator();
 	while(it.HasNext())
 	{
 	  // get light data
@@ -1106,6 +1084,10 @@ namespace RenderManager
 	  {
 	    // get the frustum to process
 	    typename LightData::Frustum& frustum = lightData.frustums[f];
+
+	    // check whether this frustum is setup for our rview
+	    if(!frustum.slicesHash.Contains(rview))
+	      continue;
 
 	    // check whether the mesh receives shadows
 	    if(!mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
@@ -1122,7 +1104,6 @@ namespace RenderManager
 	      csBox3 meshBoxView = view2mesh * meshBox;
 
 	      // get view-dependent furstum slices
-	      CS_ASSERT(frustum.slicesHash[rview]);
 	      csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
 
 	      // for all slices
@@ -1196,11 +1177,8 @@ namespace RenderManager
       if(mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
 	return 1;
 
-      // get our sector
-      iSector* sector = rview->GetThisSector();
-
       // check whether this light is known
-      if(!persist.lightHash[sector]->Contains(light))
+      if(!persist.lightHash.Contains(light))
 	return 1;
 
       // get mesh box in view space
@@ -1211,7 +1189,7 @@ namespace RenderManager
       LightingVariablesHelper svHelper(persist.lightVarsPersist);
 
       // get our light data for that light
-      LightData& lightData = *persist.lightHash[sector]->GetElementPointer(light);
+      LightData& lightData = *persist.lightHash.GetElementPointer(light);
 
       // get our frustum
       CS_ASSERT(f < lightData.frustums.GetSize());
@@ -1284,14 +1262,10 @@ namespace RenderManager
       // get sv helper
       LightingVariablesHelper svHelper(persist.lightVarsPersist);
 
-      // get sector
-      iSector* sector = rview->GetThisSector();
-
       // get our light data for that light
-      typename PersistentData::LightHash* lightHash = persist.lightHash[sector];
-      CS_ASSERT(lightHash);
-      CS_ASSERT(lightHash->Contains(light));
-      LightData& lightData = *lightHash->GetElementPointer(light);
+      typename PersistentData::LightHash& lightHash = persist.lightHash;
+      CS_ASSERT(lightHash.Contains(light));
+      LightData& lightData = *lightHash.GetElementPointer(light);
 
       // keep track into which index we'll push this map
       int index = 0;

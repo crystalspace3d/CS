@@ -58,6 +58,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     {
       CS::Math::Matrix4 gbufferFixup;
       csVector4 texScale;
+      bool doDeferred;
+
+      ContextNodeExtraDataType() : doDeferred(false) {}
     };
     
     /// Any extra data per mesh in a single mesh 

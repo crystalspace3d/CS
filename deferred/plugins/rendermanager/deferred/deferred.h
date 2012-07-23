@@ -169,6 +169,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     int lightingLayer;
     int zonlyLayer;
     int maxPortalRecurse;
+    bool doShadows;
 
     bool showGBuffer;
     bool drawLightVolumes;

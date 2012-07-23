@@ -148,14 +148,17 @@ public:
     {
       typename ShadowType::ShadowParameters shadowParam (rmanager->lightPersistent.shadowPersist, context.owner, rview);
 
-      // setup shadows for all lights
-      ForEachLight (context, shadowParam);
+      if(rmanager->doShadows)
+      {
+	// setup shadows for all lights
+	ForEachLight (context, shadowParam);
 
-      // setup shadows for all meshes
-      ForEachMeshNode (context, shadowParam);
+	// setup shadows for all meshes
+	ForEachMeshNode (context, shadowParam);
 
-      // finish shadow setup
-      shadowParam();
+	// finish shadow setup
+	shadowParam();
+      }
 
       LightSetupType lightSetup (rmanager->lightPersistent, 
 				 rmanager->lightManager,
@@ -298,6 +301,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   // Read Config settings.
   csConfigAccess cfg (objRegistry);
   maxPortalRecurse = cfg->GetInt ("RenderManager.Deferred.MaxPortalRecurse", 30);
+  doShadows = cfg->GetBool ("RenderManager.Deferred.Shadows.Enabled", true);
   showGBuffer = false;
   drawLightVolumes = false;
 
@@ -383,7 +387,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   portalPersistent.Initialize (shaderManager, graphics3D, treePersistent.debugPersist);
   lightPersistent.shadowPersist.SetConfigPrefix ("RenderManager.Deferred");
   lightPersistent.Initialize (registry, treePersistent.debugPersist);
-  lightRenderPersistent.Initialize (registry, lightPersistent.shadowPersist);
+  lightRenderPersistent.Initialize (registry, lightPersistent.shadowPersist, doShadows);
 
   // initialize post-effects
   PostEffectsSupport::Initialize (registry, "RenderManager.Deferred");

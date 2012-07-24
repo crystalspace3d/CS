@@ -107,8 +107,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
     // Transforms the cone into light space.
     csMatrix3 m (r, 0,      0,
-                 0, 0, -range,
-                 0, r,      0);
+                 0, 0,     -r,
+                 0, -range, 0);
     csVector3 v (0, 0,  range);
 
     return csReversibleTransform(m.GetInverse(), v);

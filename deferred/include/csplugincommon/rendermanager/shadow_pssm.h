@@ -196,7 +196,7 @@ namespace RenderManager
 	  LightData& lightData = lightIt.NextNoAdvance(light);
 
 	  // clear data if light is gone or out of date
-	  bool needsDelete = light.IsValid();
+	  bool needsDelete = !light.IsValid();
 	  if(!needsDelete)
 	  {
 	    if(lightData.updateNumber != light->GetMovable()->GetUpdateNumber())

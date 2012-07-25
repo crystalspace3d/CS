@@ -48,7 +48,7 @@ namespace RenderManager
 
   csVector3 DowncastVector(const csVector4& v)
   {
-    return csVector3(v.x, v.y, v.z);
+    return csVector3(v.x, v.y, v.z)/v.w;
   }
 
   csBox3 ProjectBox(const csBox3& box, const csTransform& transform, const CS::Math::Matrix4 proj)
@@ -63,6 +63,64 @@ namespace RenderManager
     }
 
     return projBox;
+  }
+
+  CS::Math::Matrix4 CreateCropMatrix(float left, float right, float bottom, float top, float nearZ, float farZ, csVector4* unscale = nullptr)
+  {
+    // calculate crop scale
+    float cropScaleX = 2.0f/(right - left);
+    float cropScaleY = 2.0f/(top - bottom);
+    float cropScaleZ = 2.0f/(farZ - nearZ);
+
+    // calculate crop shift
+    float cropShiftX = (left + right)/(left - right);
+    float cropShiftY = (bottom + top)/(bottom - top);
+    float cropShiftZ = (nearZ + farZ)/(nearZ - farZ);
+
+    // assemble matrix
+    CS::Math::Matrix4 crop(
+      cropScaleX,	0,	    0,		cropShiftX,
+      0,		cropScaleY, 0,		cropShiftY,
+      0,		0,	    cropScaleZ,	cropShiftZ,
+      0,		0,	    0,		1
+    );
+
+    if(unscale)
+    {
+      // calculate uncrop scale
+      unscale->x = 0.5f * (right - left);
+      unscale->y = 0.5f * (top - bottom);
+
+      // calculate uncrop shift
+      unscale->z = 0.5f * (left + right);
+      unscale->w = 0.5f * (bottom + top);
+    }
+
+    return crop;
+  }
+
+  CS::Math::Matrix4 CreateFrustumMatrix(float left, float right, float bottom, float top, float nearZ, float farZ)
+  {
+    // convenience variable
+    float two_near = 2.0f*nearZ;
+
+    // calculate frustum scale
+    float frustumScaleX = two_near/(right - left);
+    float frustumScaleY = two_near/(top - bottom);
+    float frustumScaleZ = (farZ + nearZ)/(farZ - nearZ);
+
+    // calculate frustum shift
+    float frustumShiftX = (left + right)/(left - right);
+    float frustumShiftY = (bottom + top)/(bottom - top);
+    float frustumShiftZ = -two_near*farZ/(farZ - nearZ);
+
+    // assemble matrix
+    return CS::Math::Matrix4(
+      frustumScaleX, 0,             frustumShiftX, 0,
+      0,             frustumScaleY, frustumShiftY, 0,
+      0,             0,             frustumScaleZ, frustumShiftZ,
+      0,             0,             1,             0
+    );
   }
 
   template<typename RenderTreeType, typename LayerConfigType>
@@ -136,7 +194,7 @@ namespace RenderManager
 	{
 	  recurseCount++;
 	  PortalSetupType portalSetup(portalPersist, *this);
-	  portalSetup(context, portalSetupData);
+	  //portalSetup(context, portalSetupData);
 	  recurseCount--;
 	}
 
@@ -405,23 +463,25 @@ namespace RenderManager
 	  float cutoff = l->GetCutoffDistance();
 	  if(l->GetType() == CS_LIGHT_DIRECTIONAL)
 	  {
-	    project = CS::Math::Projections::Ortho(
-	      cutoff, -cutoff,
-	      cutoff, -cutoff,
-	     -cutoff, -SMALL_Z);
+	    project = CreateCropMatrix(
+	      -cutoff, cutoff,
+	      -cutoff, cutoff,
+	      SMALL_Z, cutoff);
 	  }
 	  else
 	  {
-	    // @@@QUESTION: why is this needed?
-	    CS::Math::Matrix4 flipZW(
-	      1, 0, 0, 0,
-	      0, 1, 0, 0,
-	      0, 0, -1, 0,
-	      0, 0, 0, -1);
-	    project = flipZW * CS::Math::Projections::Frustum(
-	      cutoff, -cutoff,
-	      cutoff, -cutoff, // @@@ TODO: use spot angle for spot lights
-	     -cutoff, -SMALL_Z);
+	    float outer = sqrt(0.5f);
+	    if(l->GetType() == CS_LIGHT_SPOTLIGHT)
+	    {
+	      float inner;
+	      l->GetSpotLightFalloff (inner, outer);
+	    }
+
+	    float base = (SMALL_Z / outer) * sqrt (1 - outer * outer);
+	    project = CreateFrustumMatrix(
+	      -base,   base,
+	      -base,   base,
+	      SMALL_Z, cutoff);
 	  }
 	}
 
@@ -429,20 +489,20 @@ namespace RenderManager
 	static const csMatrix3 rotations[] =
 	{
 	  csMatrix3(), // identity
-          csMatrix3(1,  0, 0, // -90° about x
-		    0,  0, 1,
-		    0, -1, 0),
-          csMatrix3(1,  0, 0, // +90° about x
-		    0,  0,-1,
-		    0,  1, 0),
-          csMatrix3(0,  0,-1, // -90° about y
-		    0,  1, 0,
-		    1,  0, 0),
-          csMatrix3(0,  0, 1, // +90° about y
-		    0,  1, 0,
-		   -1,  0, 0),
-          csMatrix3(1,  0, 0, // 180° about x
-		    0, -1, 0,
+          csMatrix3(1,  0,  0, // -90° about x
+		    0,  0,  1,
+		    0, -1,  0),
+          csMatrix3(1,  0,  0, // +90° about x
+		    0,  0, -1,
+		    0,  1,  0),
+          csMatrix3(0,  0, -1, // -90° about y
+		    0,  1,  0,
+		    1,  0,  0),
+          csMatrix3(0,  0,  1, // +90° about y
+		    0,  1,  0,
+		   -1,  0,  0),
+          csMatrix3(1,  0,  0, // 180° about x
+		    0, -1,  0,
 		    0,  0, -1)
 	};
 
@@ -681,11 +741,27 @@ namespace RenderManager
 		csColor(1, 0, 0));
 	    }
 
-	    // transform box to projection space
-	    slice.boxPS = ProjectBox(boxFS, csTransform(), lightData.project);
-
-	    // check whether this slice will be drawn
+	    // check whether box is empty in frustum space
 	    slice.draw = !boxFS.Empty();
+
+	    if(slice.draw)
+	    {
+	      // make sure minimum depth is at least SMALL_Z
+	      // to work around a singularity in the frustum projection
+	      if(boxFS.MinZ() < SMALL_Z)
+	      {
+		boxFS.SetMin(2, SMALL_Z);
+	      }
+
+	      // project box
+	      slice.boxPS = ProjectBox(boxFS, csTransform(), lightData.project);
+
+	      // projected coordinates are normalized to -1,1 for xy and 0,1 for z - clamp accordingly
+	      slice.boxPS *= csBox3(-1, -1, 0, 1, 1, 1);
+
+	      // don't draw this slice if it's empty in projection space
+	      slice.draw = !slice.boxPS.Empty();
+	    }
 	  }
 	}
       }
@@ -869,7 +945,7 @@ namespace RenderManager
 	// else we use the intersection of casters and receivers boxes
 	else
 	{
-	  objectBox = frustum.castersPS * slice.receiversPS;
+	  objectBox = frustum.castersPS * slice.receiversPS * slice.boxPS;
 	}
 
 	// calculate crop matrix and unscale transform
@@ -880,54 +956,25 @@ namespace RenderManager
 
 	if(empty)
 	{
-	  // nothing to be done for crop - it's already identity
-	  crop = CS::Math::Projections::Ortho(-1,1,1,-1,1.0f - EPSILON, 1.0f);
-
 	  unscale = csVector4(1,1,0,0);
 	}
 	else
 	{
 	  // set our z-range properly
-	  float nearZ = csMin(objectBox.MinZ(), slice.boxPS.MinZ());
+	  float nearZ = csMin(frustum.castersPS.MinZ(), slice.boxPS.MinZ());
 	  // + EPSILON in case nearZ == farZ
-	  float farZ = csMin(objectBox.MaxZ(), slice.boxPS.MaxZ()) + EPSILON;
+	  float farZ = objectBox.MaxZ() + EPSILON;
 
-	  // convenience copies of some variables
-	  const float& minX = objectBox.MinX();
-	  const float& minY = objectBox.MinY();
-	  const float& maxX = objectBox.MaxX();
-	  const float& maxY = objectBox.MaxY();
-
-	  // calculate crop scale
-	  float cropScaleX = 2.0f/(maxX - minX);
-	  float cropScaleY = 2.0f/(maxY - minY);
-	  float cropScaleZ = 1.0f/(farZ - nearZ);
-
-	  // calculate crop shift
-	  float cropShiftX = (minX + maxX)/(minX - maxX);
-	  float cropShiftY = (minY + maxY)/(minY - maxY);
-	  float cropShiftZ = -nearZ * cropScaleZ;
-
-	  // assemble matrix
-	  crop = CS::Math::Matrix4(
-	    cropScaleX,	0,	    0,		cropShiftX,
-	    0,		cropScaleY, 0,		cropShiftY,
-	    0,		0,	    cropScaleZ,	cropShiftZ,
-	    0,		0,	    0,		1
-	  );
-
-	  // calculate uncrop scale
-	  unscale.x = 0.5f * (maxX - minX);
-	  unscale.y = 0.5f * (maxY - minY);
-
-	  // calculate uncrop shift
-	  unscale.z = 0.5f * (minX + maxX);
-	  unscale.w = 0.5f * (minY + maxY);
+	  // create crop matrix
+	  crop = CreateCropMatrix(
+	    objectBox.MinX(), objectBox.MaxX(),
+	    objectBox.MinY(), objectBox.MaxY(),
+	    nearZ, farZ, &unscale);
 
 	  // draw cropped box if debugging splits
 	  if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
 	  {
-	    csBox3 debugBox = objectBox * slice.boxPS;
+	    csBox3 debugBox = objectBox;
 	    debugBox.SetMin(2, nearZ);
 	    debugBox.SetMax(2, farZ);
 
@@ -941,8 +988,14 @@ namespace RenderManager
 	slice.unscaleSV->SetValue(unscale);
 
 	// set final projection
+	static CS::Math::Matrix4 fixup(
+	  1, 0, 0, 0,
+	  0, 1, 0, 0,
+	  0, 0,-1, 0,
+	  0, 0, 0, 1);
 	CS::Math::Matrix4 project = crop * lightData.project * CS::Math::Matrix4(frustum.frust2light);
 	slice.projectSV->SetValue(project);
+	project = fixup * project;
 
 	// get our shadow map size
 	int mapSize;

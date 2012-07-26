@@ -210,30 +210,83 @@ void csWaterMeshObject::SetupObject ()
       SetupBufferHolder ();
     }
 
-	csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
-	foampoints.Push(csVector3(0,0,0));
-
-	// foam points 
-	csShaderVariable *foam_points = variableContext->GetVariableAdd(svStrings->Request("foam points"));
-	foam_points->SetType(csShaderVariable::ARRAY);
-	foam_points->SetArraySize(0);
-
-	//while(foampoints.GetSize())
-	{
-		csRef<csShaderVariable> foampoint;
-		foampoint.AttachNew(new csShaderVariable);
-		foampoint->SetValue(foampoints.Pop());
-		foam_points->AddVariableToArray(foampoint);
-	}
-	// Plane of Reflection 
-	csShaderVariable *PlaneReflection = variableContext->GetVariableAdd(svStrings->Request("plane reflection"));
-	PlaneReflection->SetType(csShaderVariable::VECTOR4);
-	PlaneReflection->SetValue(csVector4(0.0, -1.0, 0.0, 0.0));
-
 	// Setting Height 
 	csVector3 coord;
 	coord = logparent->GetMovable()->GetPosition();
 	waterHeight = coord.y;
+
+	// Gererating foam points
+	csRef<iMeshWrapper> terrainWrapper = engine->FindMeshObject ("Terrain");
+	csPrintf("Testing code ");
+	if (terrainWrapper)
+	{
+		csRef<iTerrainSystem> terrainn = scfQueryInterface<iTerrainSystem> (terrainWrapper->GetMeshObject ());
+		csPrintf("This is cell count %d",terrainn->GetCellCount());
+
+		csRef<iTerrainCell> terrainncell = terrainn->GetCell(1);
+		int cellwidth = terrainncell->GetGridWidth();
+		int cellheight = terrainncell->GetGridHeight();
+
+		csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
+
+		/*
+		csLockedHeightData cellval = terrainncell->GetHeightData();
+		int pitchval = cellval.pitch;
+
+		csPrintf("pitchval %d",pitchval);
+
+		for (int x = 0 ; x < cellwidth ; x++ )
+		{
+			for (int y = 0 ; y < cellheight ; y++ )
+			{
+			    float height = cellval.data[y * pitchval + x];
+
+				if (height == waterHeight)
+				{
+					csPrintf("Yes we got it");
+				}
+			}
+		}
+		*/
+
+		
+
+		for (int x = 0 ; x < cellwidth ; x++ )
+		{
+			for (int y = 0 ; y < cellheight ; y++ )
+			{
+				float height = terrainncell->GetHeight(x,y);
+
+				if (height == waterHeight)
+				{
+					csPrintf("Yes we got it");
+				}
+			}
+		}
+
+		
+		foampoints.Push(csVector3(0,0,0));
+		foampoints.Push(csVector3(20,0,0));
+		foampoints.Push(csVector3(0,0,20));
+
+		// foam points 
+		csShaderVariable *foam_points = variableContext->GetVariableAdd(svStrings->Request("foam points"));
+		foam_points->SetType(csShaderVariable::ARRAY);
+		foam_points->SetArraySize(0);
+
+		while(foampoints.GetSize())
+		{
+			csRef<csShaderVariable> foampoint;
+			foampoint.AttachNew(new csShaderVariable);
+			foampoint->SetValue(foampoints.Pop());
+			foam_points->AddVariableToArray(foampoint);
+		}
+	}
+
+	// Plane of Reflection 
+	csShaderVariable *PlaneReflection = variableContext->GetVariableAdd(svStrings->Request("plane reflection"));
+	PlaneReflection->SetType(csShaderVariable::VECTOR4);
+	PlaneReflection->SetValue(csVector4(0.0, -1.0, 0.0, 0.0));
 
   }
 
@@ -995,11 +1048,13 @@ void csWaterMeshObjectFactory::SetupFactory ()
       numVerts = (int)verts.GetSize();
       numTris = (int)tris.GetSize();
     }
-  
-    for(uint i = 0; i < children.GetSize(); i++)
-    {
-      children[i]->vertsChanged = true;
-    }
+
+/*
+	  for(uint i = 0; i < children.GetSize(); i++)
+	  {
+		  children[i]->vertsChanged = true;
+	  }
+*/
     
     Invalidate();
 

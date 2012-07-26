@@ -28,6 +28,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "imesh/objmodel.h"
 #include "iutil/comp.h"
 #include "imesh/watermesh.h"
+#include "imesh/terrain2.h"
 #include "imesh/object.h"
 #include "ivideo/graph3d.h"
 #include "csutil/flags.h"

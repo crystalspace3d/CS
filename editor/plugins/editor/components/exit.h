@@ -34,9 +34,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
 
 class Exit
-  : public scfImplementation1<Exit, iEditorComponent>,
-    public csBaseEventHandler,
-    public wxEvtHandler
+  : public wxEvtHandler,
+    public scfImplementation1<Exit, iEditorComponent>,
+    public csBaseEventHandler
 {
 public:
   Exit (iBase* parent);

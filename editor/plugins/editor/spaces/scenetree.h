@@ -65,6 +65,7 @@ private:
   csRef<iSpaceFactory> factory;
 
   SceneTreeCtrl* treectrl;
+  wxBoxSizer* sizer;
   bool enabled;
 
   DECLARE_EVENT_TABLE ();

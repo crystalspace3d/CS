@@ -9,7 +9,7 @@ SubDir TOP apps varedittest ;
 
   IncludeDir : propgrid ;
 
-  Description : "Crystal Space graph test" ;
+  Description : "Crystal Space iModifiable entities test" ;
   Application varedittest : [ Wildcard *.cpp *.h ] ;
   ExternalLibs varedittest : CRYSTAL WX ;
   CFlags varedittest : $(COMPILER.C++FLAGS.STRICTALIASING.DISABLE) ;

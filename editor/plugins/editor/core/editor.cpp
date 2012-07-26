@@ -275,6 +275,10 @@ void Editor::Init ()
   SetSize (wxSize (1024, 768));
   PositionStatusBar ();
 
+  // Opens a few default panels
+  // To be removed once perspectives are implemented
+  
+
   ReportStatus ("Ready");
 }
 

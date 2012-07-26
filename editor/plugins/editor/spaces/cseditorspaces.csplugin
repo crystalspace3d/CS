@@ -27,6 +27,12 @@
         <description>Logs</description>
         <allowMultiple>true</allowMultiple>
       </class>
+      <class>
+			  <name>crystalspace.editor.space.partedit</name>
+			  <implementation>CSPartEditSpace</implementation>
+			  <description>Particle editor panel</description>
+			  <allowMultiple>true</allowMultiple>
+		  </class>
     </classes>
   </scf>
 </plugin>

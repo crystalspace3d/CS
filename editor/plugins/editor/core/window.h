@@ -61,6 +61,10 @@ private:
   bool horizontal;
 };
 
+/**
+ * Defines the small toolbar at the bottom of each space slot, allowing the user
+ * to change the space's type, split it or create a new space in a whole new window.
+ */
 class ViewControl : public wxPanel
 {
 public:

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="ReleaseWithStaticLibs|Win32">
@@ -413,7 +413,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <OutputFile>..\..\varedittest.exe</OutputFile>
       <ProgramDatabaseFile>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>zlib.lib;wxbase28u-vc10_d.lib;wxmsw28u_core-vc10_d.lib;wxmsw28u_gl-vc10_d.lib;wxmsw28u_xrc-vc10_d.lib;wxmsw28u_html-vc10_d.lib;wxbase28u_xml-vc10_d.lib;wxmsw28u_adv-vc10_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>

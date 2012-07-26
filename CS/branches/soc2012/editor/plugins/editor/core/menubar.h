@@ -36,7 +36,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
   
 class Editor;
-class MenuManager;
+class __virtual_inheritance MenuManager;
 
 class MenuItem
   : public wxEvtHandler, public scfImplementation1<MenuItem, iMenuItem>

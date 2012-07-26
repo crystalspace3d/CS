@@ -1,14 +1,12 @@
 #ifndef MODIFIABLE_IMPL_H
 #define MODIFIABLE_IMPL_H
 
-/// Creates a variable-id pair (not used yet)
-#define MODIFIABLE(type, name) type name; csStringID id_##name
-
 // Stuff needed for the test iModifiable dude
 #include "iutil/modifiable.h"
 
 /**
  * Implementation of some of the most common iModifiableParameter usage. 
+ * Currently part of the particle editor space test code.
  */
 class csBasicModifiableParameter : public scfImplementation1<csBasicModifiableParameter, iModifiableParameter> 
 {

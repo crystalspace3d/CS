@@ -27,7 +27,6 @@
 #include "wx/propgrid/propgrid.h"
 
 // Needed for implementing custom properties.
-
 #include "wx/propgrid/propdev.h"
 
 // Extra property classes.
@@ -51,7 +50,6 @@
 #include <csutil/cscolor.h>
 #include <csgeom/vector3.h>
 #include <ivaria/translator.h>
-#include "wx/propgrid/advprops.h"
 #include "pump.h"
 
 //---------
@@ -433,131 +431,115 @@ void ModifiableTestFrame::Populate (const iModifiable* dataSource)
     {
       const iModifiableParameter* param = description->GetParameterByIndex(i);
       csVariant* variant = dataSource->GetParameterValue(param->GetID());
-
-      const char* translation;
-
-      translation = translator->GetMsg( param->GetName() );
-      wxString name( translation ? translation : param->GetName(), wxConvUTF8 );
-      
-      translation = translator->GetMsg( param->GetDescription() );
-      wxString description( translation ? translation : param->GetDescription(), wxConvUTF8 );
+  
+      wxString originalName( param->GetName(), wxConvUTF8 );
+      wxString translation( translator->GetMsg(param->GetName()), wxConvUTF8 );
+      wxString description( param->GetDescription(), wxConvUTF8 );
 
       switch (param->GetType())
       {
       case CSVAR_STRING:
       {
   wxString stringValue (variant->GetString(), wxConvUTF8);
-	wxStringProperty* stringP = new wxStringProperty (name);
+	wxStringProperty* stringP = new wxStringProperty (translation, originalName);
 	page->Append (stringP);
 	stringP->SetValue (stringValue);
-	page->SetPropertyHelpString(name, description);
+	page->SetPropertyHelpString(originalName, description);
       }
       break;
 
       case CSVAR_LONG :
       {
 	wxString longValue = wxString::Format (wxT("%ld"), (int) variant->GetLong());
-	wxIntProperty* intP = new wxIntProperty(name);				
+	wxIntProperty* intP = new wxIntProperty(translation, originalName);
 	page->Append(intP);
 	intP->SetValue(longValue);					
 	pgMan->GetGrid ()->SetPropertyValue (intP, longValue);
-	page->SetPropertyHelpString(name, description);
+	page->SetPropertyHelpString(originalName, description);
       }
       break;
 
       case CSVAR_FLOAT:
       { 
-	wxString floatDescription (param->GetDescription(), wxConvUTF8);
-	wxString floatName (param->GetName(), wxConvUTF8);
 	double value = variant->GetFloat();
 
   // Generate a homebrewed slider 
   //*
-	wxPGSliderProperty* sliderP = new wxPGSliderProperty (floatName, floatName, value, 0, 10000);
+	wxPGSliderProperty* sliderP = new wxPGSliderProperty (translation, originalName, value, 0, 10000);
 	page->Append (sliderP);
 	sliderP->Init ();
   //*/
 
   // Use a text field
   /*
-  wxFloatProperty* floatP = new wxFloatProperty(floatName);
+  wxFloatProperty* floatP = new wxFloatProperty(originalName);
   page->Append(floatP);
   floatP->SetValue(value);
   pgMan->GetGrid()->SetPropertyValue(floatP, value);
   //*/
 
-	page->SetPropertyHelpString (floatName, floatDescription);
+	page->SetPropertyHelpString (originalName, description);
       }
       break;
 
       case CSVAR_BOOL:
       {
-	wxString boolDescription (param->GetDescription(), wxConvUTF8);
-	wxString boolName (param->GetName(), wxConvUTF8);
-	wxBoolProperty* boolP = new wxBoolProperty(boolName);
+	wxBoolProperty* boolP = new wxBoolProperty(translation, originalName);
   boolP->SetValue ( variant->GetBool ());
 	page->Append (boolP);
 	pgMan->SetPropertyAttribute (boolP, wxPG_BOOL_USE_CHECKBOX, (long)1, wxPG_RECURSE);	
-	page->SetPropertyHelpString(boolName,boolDescription );
+	page->SetPropertyHelpString(originalName, description);
       }
       break;
 	
       case CSVAR_COLOR :
       {
-	wxString colorDescription(param->GetDescription(), wxConvUTF8);
-	wxString colorName (param->GetName(), wxConvUTF8);
 	csColor colorValue(variant->GetColor ());
 	int red   = colorValue[0] * 255;
 	int blue  = colorValue[1] * 255;
 	int green = colorValue[2] * 255;
-	wxColourProperty* colorP = new wxColourProperty (colorName,wxPG_LABEL,wxColour (red,blue,green) );
+	wxColourProperty* colorP = new wxColourProperty (translation, originalName, wxColour (red,blue,green) );
 	page->Append (colorP);
-	page->SetPropertyHelpString(colorName,colorDescription );
+	page->SetPropertyHelpString(originalName, description);
 
       }
       break;
 	
       case CSVAR_VECTOR3 :
       {
-	wxString vector3Description(param->GetDescription(), wxConvUTF8);
-	wxString vector3Name (param->GetName(), wxConvUTF8);
 	csVector3 vector3Value (variant->GetVector3());
 	double x = vector3Value.x;
 	double y = vector3Value.y;
 	double z = vector3Value.z;
-	wxVectorProperty *vector3P = new wxVectorProperty(vector3Name, vector3Name, wxVector3f(x,y,z));
+	wxVectorProperty *vector3P = new wxVectorProperty(translation, originalName, wxVector3f(x,y,z));
 	page->Append (vector3P);
-	page->SetPropertyHelpString(vector3Name, vector3Description);
+	page->SetPropertyHelpString(originalName, description);
 
       }
       break;
       
       case CSVAR_VECTOR2 :
       {
-	wxString vector2Description(param->GetDescription(), wxConvUTF8);
-	wxString vector2Name (param->GetName(), wxConvUTF8);
 	csVector2 vector2Value (variant->GetVector2());
 	double x = vector2Value.x;
 	double y = vector2Value.y;
-	wxVector2Property *vector2P = new wxVector2Property(vector2Name, vector2Name ,wxVector2f(x,y));
+	wxVector2Property *vector2P = new wxVector2Property(translation, originalName ,wxVector2f(x,y));
 	page->Append (vector2P);
-	page->SetPropertyHelpString(vector2Name,vector2Description);
+	page->SetPropertyHelpString(originalName,description);
 
       }
       break;
 				
       case CSVAR_VECTOR4 :
       {
-	wxString vector4Description(param->GetDescription(), wxConvUTF8);
-	wxString vector4Name (param->GetName(), wxConvUTF8);
 	csVector4 vector4Value (variant->GetVector4());
 	double x = vector4Value.x;
 	double y = vector4Value.y;
 	double z = vector4Value.z;
 	double w = vector4Value.w;
-	wxVector4Property *vector4P = new wxVector4Property(vector4Name, vector4Name, wxVector4f(x,y,z,w));
+	wxVector4Property *vector4P = new wxVector4Property(translation, originalName, wxVector4f(x,y,z,w));
 	page->Append (vector4P);
-	page->SetPropertyHelpString(vector4Name,vector4Description );
+	page->SetPropertyHelpString(originalName, description );
 
       }
       break;

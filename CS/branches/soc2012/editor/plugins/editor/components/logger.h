@@ -25,8 +25,12 @@
 #include "ieditor/editor.h"
 #include "ivaria/reporter.h"
 
-#include <sys/time.h>
-#include <unistd.h>
+
+#include <time.h>
+
+//#include <sys/time.h>
+//#include <unistd.h>
+#include <io.h>
 
 #include <wx/log.h>
 #include <wx/textctrl.h>

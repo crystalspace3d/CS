@@ -31,6 +31,11 @@
 #include "iutil/comp.h"
 #include "ivideo/rndbuf.h"
 
+// iModifiable
+#include "iutil/modifiable.h"
+// TODO: move this implementation to common folder
+#include "apps/varedittest/modifiableimpl.h"
+
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 {
   struct iVertexSetup;
@@ -60,9 +65,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   /**
   * Particle object factory
   */
-  class ParticlesMeshFactory : public scfImplementation3<ParticlesMeshFactory,
+  class ParticlesMeshFactory : public scfImplementation4<ParticlesMeshFactory,
                                                          iMeshObjectFactory,
                                                          iParticleSystemFactory,
+                                                         iModifiable,
                                                          scfFakeInterface<iParticleSystemBase> >
   {
   public:
@@ -151,6 +157,65 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     virtual bool GetDeepCreation () const
     {
       return deepCreation;
+    }
+    /** @} */
+
+    /**\name iModifiable implementation
+      * @{ */
+    const csStringID GetID() const {
+      // TODO: proper, unique ID
+      return 42;
+    }
+
+    csPtr<iModifiableDescription> GetDescription () const {
+      csBasicModifiableDescription* description = new csBasicModifiableDescription();
+      description->Push(new csBasicModifiableParameter("Particle orientation", "", CSVAR_LONG, id_particleOrientation));
+      description->Push(new csBasicModifiableParameter("Rotation mode", "", CSVAR_LONG, id_rotationMode));
+      description->Push(new csBasicModifiableParameter("Individual size", "", CSVAR_BOOL, id_individualSize));
+      description->Push(new csBasicModifiableParameter("Common direction", "", CSVAR_VECTOR3, id_commonDirection));
+      description->Push(new csBasicModifiableParameter("Particle size", "", CSVAR_VECTOR2, id_particleSize));
+      return description;
+    }
+
+
+    csVariant* GetParameterValue (csStringID id) const {
+      if(id ==  id_particleOrientation)
+        return new csVariant(particleOrientation);
+      else if(id == id_rotationMode)
+        return new csVariant(rotationMode);
+      else if(id == id_individualSize)
+        return new csVariant(individualSize);
+      else if(id == id_commonDirection)
+        return new csVariant(commonDirection);
+      else if(id == id_particleSize)
+        return new csVariant(particleSize);
+
+      return nullptr;
+    }
+
+    bool SetParameterValue (csStringID id, const csVariant& value) {
+      if(id ==  id_particleOrientation) {
+        particleOrientation = (csParticleRenderOrientation)value.GetLong();
+        return true;
+      }
+      else if(id == id_rotationMode) {
+        rotationMode = (csParticleRotationMode)value.GetLong();
+        return true;
+      }        
+      else if(id == id_individualSize) {
+        individualSize = value.GetBool();
+        return true;
+      }
+      else if(id == id_commonDirection) {
+        commonDirection = value.GetVector3();
+        return true;
+      }
+      else if(id == id_particleSize) {
+        particleSize = value.GetVector2();
+        return true;
+      }
+
+      return false;
     }
     /** @} */
 
@@ -310,6 +375,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     bool individualSize;
     csVector2 particleSize;
     csBox3 minBB;
+
+    //-- iModifiable
+    csStringID id_particleOrientation, id_rotationMode, id_individualSize, id_commonDirection, id_particleSize;
 
     csRefArray<iParticleEmitter> emitters;
     csRefArray<iParticleEffector> effectors;

@@ -66,35 +66,45 @@ bool VarEditTestApp::OnInit()
 
     return false;
   }
-
+  
   using namespace CS_PLUGIN_NAMESPACE_NAME(TransStd);
 
   csRef<iLoaderPlugin>  loaderRef( csQueryRegistry<iLoaderPlugin>(object_reg) );
   csRef<iTranslator>    translator( csQueryRegistry<iTranslator>( object_reg ));
   csRef<iVFS>           vfs( csQueryRegistry<iVFS>( object_reg ) );
+  string                langPath("/data/editor/lang/");
+  string                langFile("de_DE.xml");
   
+  
+  
+  // Removed since the language files are now in data/editor/lang
+  /*
   if(!vfs->Mount("/lang", "$^apps$/varedittest$/lang$/")) {
     cout << "Failed to mount" << endl;
   } else {
     cout << "Mounted data..." << endl;
     cout << "Opening lang file..." << endl;
+    */
 
-    csRef<iDataBuffer> path(vfs->GetRealPath("/lang/"));
+    csRef<iDataBuffer> path(vfs->GetRealPath(langPath.data()));
     if(path.IsValid()) {
-      cout << "Mounted path..." << endl;
+      cout << "Path functioning: " << langPath << endl;
       cout << path->GetData() << endl;
     } else {
       cout << "Path is not active" << endl;
     }
 
-    csRef<iStringArray> ls(vfs->FindFiles("/lang/"));
-    cout << "files in /lang/:" << endl;
+    csRef<iStringArray> ls(vfs->FindFiles(langPath.data()));
+    cout << "Available language files in /lang/:" << endl;
     for(size_t i = 0; i < ls->GetSize(); i++)
       cout << ls->Get(i) << endl;
 
-    cout << endl;
+    cout << endl << "Opening translation: " << langFile << endl;
 
-    csRef<iFile> file(vfs->Open("/lang/de_DE.xml", VFS_FILE_READ));
+    string fullPath(langPath);
+    fullPath += langFile;
+
+    csRef<iFile> file(vfs->Open(fullPath.data() , VFS_FILE_READ));
     if(file.IsValid()) {
       csRef<iDataBuffer> data(file->GetAllData());
       csRef<iDocumentSystem> documentSystem(csQueryRegistry<iDocumentSystem>( object_reg ));
@@ -107,9 +117,11 @@ bool VarEditTestApp::OnInit()
       cout << dynamic_cast<iTranslator*>( &*result )->GetMsg("Hello world") << endl;
 
     } else {
-      cout << "Could not open file..." << endl;
+      cout << "Could not open file..." << fullPath << endl;
     }
-  }
+
+  //}
+
   csRef<iStringArray> mnt(vfs->GetMounts());
 
   // Create the main frame

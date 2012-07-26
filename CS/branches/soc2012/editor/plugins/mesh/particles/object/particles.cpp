@@ -81,6 +81,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     transformMode (CS_PARTICLE_LOCAL_MODE),
     commonDirection (1.0f,0,0), individualSize (false), particleSize (1.0f)
   {
+    // Setup the ids for various properties
+    // TODO: all of them
+    csRef<iStringSet> strings( csQueryRegistryTagInterface<iStringSet>(objectType->object_reg, "crystalspace.shared.stringset") );
+    id_particleOrientation = strings->Request("particleOrientation");
+    id_rotationMode = strings->Request("rotationMode");
+    id_individualSize = strings->Request("individualSize");
+    id_commonDirection = strings->Request("commonDirection");
+    id_particleSize = strings->Request("particleSize");
   }
 
   ParticlesMeshFactory::~ParticlesMeshFactory()

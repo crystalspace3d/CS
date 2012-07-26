@@ -145,12 +145,15 @@ bool EditorApplication::OnInit (void)
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.maploader")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.scenemanager")) return false;
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.2dinfo")) return false;
+  //if (!spaceManager->RegisterComponent ("crystalspace.editor.component.2dinfo")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.exit")) return false;
+
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.3dview")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.scenetree")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.properties")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.textlog")) return false;
+  if (!spaceManager->RegisterSpace ("crystalspace.editor.space.partedit")) return false;
+
   if (!spaceManager->RegisterPanel ("crystalspace.editor.panel.camera")) return false;
   if (!spaceManager->RegisterHeader ("crystalspace.editor.header.3dheader")) return false;
 

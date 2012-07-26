@@ -30,9 +30,27 @@ static char const metainfo_cseditorspaces[] =
 "      <class>"
 "        <name>crystalspace.editor.space.properties</name>"
 "        <implementation>PropertiesSpace</implementation>"
-"        <description>Properties panel</description>"
+"        <description>Properties</description>"
 "        <allowMultiple>true</allowMultiple>"
 "      </class>"
+"      <class>"
+"        <name>crystalspace.editor.space.scenetree</name>"
+"        <implementation>SceneTree</implementation>"
+"        <description>Scene</description>"
+"        <allowMultiple>true</allowMultiple>"
+"      </class>"
+"      <class>"
+"        <name>crystalspace.editor.space.textlog</name>"
+"        <implementation>TextLog</implementation>"
+"        <description>Logs</description>"
+"        <allowMultiple>true</allowMultiple>"
+"      </class>"
+"      <class>"
+"			  <name>crystalspace.editor.space.partedit</name>"
+"			  <implementation>CSPartEditSpace</implementation>"
+"			  <description>Particle editor panel</description>"
+"			  <allowMultiple>true</allowMultiple>"
+"		  </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
@@ -45,6 +63,18 @@ static char const metainfo_cseditorspaces[] =
   #define PropertiesSpace_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(PropertiesSpace) 
   #endif
+  #ifndef SceneTree_FACTORY_REGISTER_DEFINED 
+  #define SceneTree_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(SceneTree) 
+  #endif
+  #ifndef TextLog_FACTORY_REGISTER_DEFINED 
+  #define TextLog_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(TextLog) 
+  #endif
+  #ifndef CSPartEditSpace_FACTORY_REGISTER_DEFINED 
+  #define CSPartEditSpace_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(CSPartEditSpace) 
+  #endif
 
 class cseditorspaces
 {
@@ -56,6 +86,18 @@ SCF_REGISTER_STATIC_LIBRARY(cseditorspaces,metainfo_cseditorspaces)
   #ifndef PropertiesSpace_FACTORY_REGISTERED 
   #define PropertiesSpace_FACTORY_REGISTERED 
     PropertiesSpace_StaticInit PropertiesSpace_static_init__; 
+  #endif
+  #ifndef SceneTree_FACTORY_REGISTERED 
+  #define SceneTree_FACTORY_REGISTERED 
+    SceneTree_StaticInit SceneTree_static_init__; 
+  #endif
+  #ifndef TextLog_FACTORY_REGISTERED 
+  #define TextLog_FACTORY_REGISTERED 
+    TextLog_StaticInit TextLog_static_init__; 
+  #endif
+  #ifndef CSPartEditSpace_FACTORY_REGISTERED 
+  #define CSPartEditSpace_FACTORY_REGISTERED 
+    CSPartEditSpace_StaticInit CSPartEditSpace_static_init__; 
   #endif
 public:
  cseditorspaces();

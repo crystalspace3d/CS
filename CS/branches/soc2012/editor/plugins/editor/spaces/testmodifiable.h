@@ -19,10 +19,10 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#ifndef MYGRAPHNODE1_H
-#define MYGRAPHNODE1_H
+#ifndef __TESTMODIFIABLE_H__
+#define __TESTMODIFIABLE_H__
 
-#include "modifiableimpl.h"
+#include "cseditor/modifiableimpl.h"
 
 /// Test entity for GUI generation.
 class csTestModifiable : public scfImplementation1<csTestModifiable, iModifiable>
@@ -51,4 +51,4 @@ private:
   iObjectRegistry* object_reg;
 };
 
-#endif// MYGRAPHNODE1_H
+#endif // __TESTMODIFIABLE_H__

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language name="de_DE">
+	<msg><src>Hello world</src><dst>HALLO WELT</dst></msg>
+	<msg><src>Name</src><dst>Name</dst></msg>
+	<msg><src>Item count</src><dst>Artikelanzahl</dst></msg>
+	<msg><src>Awesome</src><dst>Super</dst></msg>
+	<msg><src>Color</src><dst>Farbe</dst></msg>
+	<msg><src>Position</src><dst>Standort</dst></msg>
+	<msg><src>FloatThingy</src><dst>Float-Ding</dst></msg>
+	<msg><src>Job</src><dst>Job</dst></msg>
+</language>

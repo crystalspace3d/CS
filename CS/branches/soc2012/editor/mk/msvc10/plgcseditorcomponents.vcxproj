@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="ReleaseWithStaticLibs|Win32">
@@ -1219,13 +1219,17 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\cs3dengine.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\exit.cpp" />
+    <ClCompile Include="..\..\plugins\editor\components\logger.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\maploader.cpp" />
+    <ClCompile Include="..\..\plugins\editor\components\scenemanager.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\vfsfiledialog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\plugins\editor\components\cs3dengine.h" />
     <ClInclude Include="..\..\plugins\editor\components\exit.h" />
+    <ClInclude Include="..\..\plugins\editor\components\logger.h" />
     <ClInclude Include="..\..\plugins\editor\components\maploader.h" />
+    <ClInclude Include="..\..\plugins\editor\components\scenemanager.h" />
     <ClInclude Include="..\..\plugins\editor\components\vfsfiledialog.h" />
   </ItemGroup>
   <ItemGroup>

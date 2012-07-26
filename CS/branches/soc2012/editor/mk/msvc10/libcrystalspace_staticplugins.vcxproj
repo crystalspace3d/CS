@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="ReleaseWithStaticLibs|Win32">
@@ -1375,7 +1375,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\documentsystem\xmltiny\xmltiny.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\cs3dengine.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\exit.cpp" />
+    <ClCompile Include="..\..\plugins\editor\components\logger.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\maploader.cpp" />
+    <ClCompile Include="..\..\plugins\editor\components\scenemanager.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\vfsfiledialog.cpp" />
     <ClCompile Include="..\..\plugins\editor\core\actionmanager.cpp" />
     <ClCompile Include="..\..\plugins\editor\core\editor.cpp" />
@@ -1390,7 +1392,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\editor\operators\selectoperator.cpp" />
     <ClCompile Include="..\..\plugins\editor\panels\camerapanel.cpp" />
     <ClCompile Include="..\..\plugins\editor\spaces\3dview.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\particleeditor.cpp" />
     <ClCompile Include="..\..\plugins\editor\spaces\properties.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\scenetree.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\testmodifiable.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\textlog.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\textlog2.cpp" />
     <ClCompile Include="..\..\plugins\engine\3d\camera.cpp" />
     <ClCompile Include="..\..\plugins\engine\3d\campos.cpp" />
     <ClCompile Include="..\..\plugins\engine\3d\engine.cpp" />
@@ -1985,7 +1992,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\documentsystem\xmlread\xrpriv.h" />
     <ClInclude Include="..\..\plugins\editor\components\cs3dengine.h" />
     <ClInclude Include="..\..\plugins\editor\components\exit.h" />
+    <ClInclude Include="..\..\plugins\editor\components\logger.h" />
     <ClInclude Include="..\..\plugins\editor\components\maploader.h" />
+    <ClInclude Include="..\..\plugins\editor\components\scenemanager.h" />
     <ClInclude Include="..\..\plugins\editor\components\vfsfiledialog.h" />
     <ClInclude Include="..\..\plugins\editor\core\actionmanager.h" />
     <ClInclude Include="..\..\plugins\editor\core\editor.h" />
@@ -2000,7 +2009,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\editor\operators\selectoperator.h" />
     <ClInclude Include="..\..\plugins\editor\panels\camerapanel.h" />
     <ClInclude Include="..\..\plugins\editor\spaces\3dview.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\particleeditor.h" />
     <ClInclude Include="..\..\plugins\editor\spaces\properties.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\scenetree.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\testmodifiable.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\textlog.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\textlog2.h" />
     <ClInclude Include="..\..\plugins\engine\3d\camera.h" />
     <ClInclude Include="..\..\plugins\engine\3d\campos.h" />
     <ClInclude Include="..\..\plugins\engine\3d\collection.h" />

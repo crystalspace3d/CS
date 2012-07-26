@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="ReleaseWithStaticLibs|Win32">
@@ -402,7 +402,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\plgcseditorspaces\Win32\cseditorspaces.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\tools\editor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcseditorspaces\plgcseditorspaces.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\plgcseditorspaces\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\plgcseditorspaces\</ObjectFileName>
@@ -1216,13 +1216,43 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\apps\tools\editor\wx\propgrid\advprops.cpp" />
+    <ClCompile Include="..\..\apps\tools\editor\wx\propgrid\editors.cpp" />
+    <ClCompile Include="..\..\apps\tools\editor\wx\propgrid\extras.cpp" />
+    <ClCompile Include="..\..\apps\tools\editor\wx\propgrid\manager.cpp" />
+    <ClCompile Include="..\..\apps\tools\editor\wx\propgrid\odcombo.cpp" />
+    <ClCompile Include="..\..\apps\tools\editor\wx\propgrid\propgrid.cpp" />
+    <ClCompile Include="..\..\apps\tools\editor\wx\propgrid\props.cpp" />
+    <ClCompile Include="..\..\apps\tools\editor\wx\propgrid\xh_propgrid.cpp" />
+    <ClCompile Include="..\..\libs\cseditor\wxpgslider.cpp" />
     <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
     <ClCompile Include="..\..\plugins\editor\spaces\3dview.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\particleeditor.cpp" />
     <ClCompile Include="..\..\plugins\editor\spaces\properties.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\scenetree.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\testmodifiable.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\textlog.cpp" />
+    <ClCompile Include="..\..\plugins\editor\spaces\textlog2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\advprops.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\editors.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\extras.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\manager.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\odcombo.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\pg_dox_mainpage.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\propdev.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\propgrid.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\props.h" />
+    <ClInclude Include="..\..\apps\tools\editor\wx\propgrid\xh_propgrid.h" />
+    <ClInclude Include="..\..\include\cseditor\wxpgslider.h" />
     <ClInclude Include="..\..\plugins\editor\spaces\3dview.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\particleeditor.h" />
     <ClInclude Include="..\..\plugins\editor\spaces\properties.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\scenetree.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\testmodifiable.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\textlog.h" />
+    <ClInclude Include="..\..\plugins\editor\spaces\textlog2.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\plgcseditorspaces.rc" />

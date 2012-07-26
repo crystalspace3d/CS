@@ -1589,41 +1589,41 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\apps\varedittest\testmodifiable.cpp">
+				RelativePath="..\..\apps\varedittest\graphapp.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\varedittest\vareditapp.cpp">
+				RelativePath="..\..\apps\varedittest\graphedit.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\varedittest\vareditframe.cpp">
+				RelativePath="..\..\apps\varedittest\graphmain.cpp">
 			</File>
 			<File
-				RelativePath="..\..\apps\varedittest\wxpgslider.cpp">
+				RelativePath="..\..\apps\varedittest\graphnode.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\varedittest\slidereditor.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\apps\varedittest\modifiableimpl.h">
+				RelativePath="..\..\apps\varedittest\graphapp.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\varedittest\graphedit.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\varedittest\graphmain.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\varedittest\graphnode.h">
 			</File>
 			<File
 				RelativePath="..\..\apps\varedittest\pluginconfig.h">
 			</File>
 			<File
-				RelativePath="..\..\apps\varedittest\pump.h">
-			</File>
-			<File
-				RelativePath="..\..\apps\varedittest\testmodifiable.h">
-			</File>
-			<File
-				RelativePath="..\..\apps\varedittest\vareditapp.h">
-			</File>
-			<File
-				RelativePath="..\..\apps\varedittest\vareditframe.h">
-			</File>
-			<File
-				RelativePath="..\..\apps\varedittest\wxpgslider.h">
+				RelativePath="..\..\apps\varedittest\slidereditor.h">
 			</File>
 		</Filter>
 		<Filter

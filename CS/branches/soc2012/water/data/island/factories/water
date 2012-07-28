@@ -19,6 +19,9 @@
         <texture name="normal map 3">
             <file>/water/940-bump.jpg</file>
         </texture>
+		<texture name="foam">
+			<file>/water/foam.jpg</file>
+		</texture>
         <texture name="sky_001.dds">
             <file>textures/sky_001.dds</file>
         </texture>
@@ -28,6 +31,7 @@
         <material name="oceanMat">
      		<shader type="standard">water</shader>
       		<shadervar name="tex normal" type="texture">normal map 1</shadervar>
+			<shadervar name="tex foam" type="texture">foam</shadervar>
    		</material>
     </materials>
     

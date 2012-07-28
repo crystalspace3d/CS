@@ -59,7 +59,7 @@ vert2frag main (app2vert IN,
 			 uniform float4x4 o2w,
 			 uniform float4 reflectXform,
 			 uniform float4 refractXform,
-			 uniform float3 foamPoints[5])
+			 uniform float3 foamPoints[1000])
 {
     vert2frag OUT;
 
@@ -98,14 +98,14 @@ vert2frag main (app2vert IN,
 	float4 Inposition = mul(o2w, IN.Position); 
 	float distanceFoam = distance(foamPoints[0], Inposition);
 	
-	/*for (int i = 1 ; i < 1 ; i++)
+	for (int i = 1 ; i < 1000 ; i++)
 	{
-		float distanceFoamT = length(foamPoints[i] - reflrefrTC.xyz);
+		float distanceFoamT = distance(foamPoints[i], Inposition);
 		if(distanceFoamT < distanceFoam)
 		{
 			distanceFoam = distanceFoamT;
 		}
-	}*/
+	}
 	
 	OUT.dist = distanceFoam;
 	

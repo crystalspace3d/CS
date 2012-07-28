@@ -131,33 +131,36 @@
       // transform world position to shadow space
       float4x4 worldToShadow = mul(shadowMapProject[slice], worldToLight);
       float4 positionS = mul(worldToShadow, positionW);
-      positionS.y *= -1.0; // flip y coordinate
 
       // divide by perspective
       float3 positionP = positionS.xyz / positionS.w;
 
       // transform into actual texture coord
-      float3 texCoord = float3(0.5) * positionP + float3(0.5);
+      float3 texCoord = positionP;
+      texCoord.y *= -1; // flip y
+      texCoord = float3(0.5) * texCoord + float3(0.5);
 
       // adjust bias
-      texCoord.z += bias;
+      texCoord.z -= bias;
 
       // set fixed value if position is off the map
     ]]>
-    <?if (vars."light type".int == consts.CS_LIGHT_DIRECTIONAL) ?>
-      if(any(vec4(positionP.xy,-positionP.xy) &gt; 1.0))
-      {
-        attenuation = 1.0;
-      }
-    <?else?>
+    <?if (vars."light type".int != consts.CS_LIGHT_DIRECTIONAL) ?>
       // unscale position
       float2 positionU = shadowMapUnscale[slice].xy * positionP.xy + shadowMapUnscale[slice].zw;
 
-      if(any(vec4(positionU,-positionU) &gt; 1.0) || positionS.w &lt; 0.0)
+      if(any(float4(positionU,-positionU) &gt; float4(1.0)) || positionS.w &lt; 0.0)
       {
+        // fragment is unlit if it's outside our frustum
         attenuation = 0.0;
       }
+      else
     <?endif?>
+      if(any(float4(positionP.xy,-positionP.xy) &gt; float4(1.0)))
+      {
+        // fragment is fully lit if it's outside our shadow map
+        attenuation = 1.0;
+      }
       else
       {
         // finally get attenuation from shadow map
@@ -193,33 +196,34 @@
       // transform world position to shadow space
       mat4 worldToShadow = shadowMapProject[slice] * worldToLight;
       vec4 positionS = worldToShadow * positionW;
-      positionS.y *= -1.0; // flip y coordinate
 
       // divide by perspective
       vec3 positionP = positionS.xyz / positionS.w;
 
       // transform into actual texture coord
-      vec3 texCoord = vec3(0.5) * positionP + vec3(0.5);
+      vec3 texCoord = positionP;
+      texCoord.y *= -1; // flip y
+      texCoord = vec3(0.5) * texCoord + vec3(0.5);
 
       // adjust bias
-      texCoord.z += bias;
-
-      // set fixed value if position is off the map
+      texCoord.z -= bias;
     ]]>
-    <?if (vars."light type".int == consts.CS_LIGHT_DIRECTIONAL) ?>
-      if(any(greaterThan(vec4(positionP.xy,-positionP.xy), vec4(1.0))))
-      {
-        attenuation = 1.0;
-      }
-    <?else?>
+    <?if (vars."light type".int != consts.CS_LIGHT_DIRECTIONAL) ?>
       // unscale position
       vec2 positionU = shadowMapUnscale[slice].xy * positionP.xy + shadowMapUnscale[slice].zw;
 
       if(any(greaterThan(vec4(positionU,-positionU), vec4(1.0))) || positionS.w &lt; 0.0)
       {
+        // fragment is unlit if it's outside our frustum
         attenuation = 0.0;
       }
+      else
     <?endif?>
+      if(any(greaterThan(vec4(positionP.xy,-positionP.xy), vec4(1.0))))
+      {
+        // fragment is fully lit if it's outside our shadow map
+        attenuation = 1.0;
+      }
     <?Generate L 0 7?>
       else if(slice == $L$)
       {

@@ -74,7 +74,7 @@ namespace lighter
   }
 
   bool IrradianceCache :: EstimateIrradiance(
-      const float pos[3], const float norm[3], float* &power)
+      const float pos[3], const float norm[3], float (&power)[3])
   {
     // Put in sample struct
     IrradianceSample* samp = new IrradianceSample();

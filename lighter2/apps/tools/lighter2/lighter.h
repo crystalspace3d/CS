@@ -51,6 +51,9 @@ namespace lighter
     // Do the fancy lighting
     bool LightEmUp ();
 
+    // Notify a message, always returns false
+    bool Notify (const char* msg, ...);
+
     // Report an error/warning, always returns false
     bool Report (const char* msg, ...);
 

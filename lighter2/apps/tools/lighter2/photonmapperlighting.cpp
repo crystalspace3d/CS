@@ -1,4 +1,4 @@
-/*
+nal/*
   Copyright (C) 2008 by Greg Hoffman
   Portions Copyright (C) 2009 by Seth Berrier
 
@@ -228,7 +228,7 @@ namespace lighter
 
     // Iterate through all the non 'Pseudo Dynamic' light sources
     const LightRefArray& allNonPDLights = sect->allNonPDLights;
-    Statistics::ProgressState progressState(progress, numPhotonsPerSector*globalStats.scene.numSectors,0.03f);
+    Statistics::ProgressState progressState(progress, globalStats.scene.numPhotons,0.03f);
 
     // Iterate over the lights to determine the total lumen power in the sector
     double sectorLumenPower = 0;
@@ -237,7 +237,7 @@ namespace lighter
       Light* curLight = allNonPDLights[lightIdx];
       csColor pow = curLight->GetColor()*curLight->GetPower()*
         globalConfig.GetLighterProperties ().PMLightScale;
-      sectorLumenPower += (pow.red + pow.green + pow.blue)/3.0;
+      sectorLumenPower += pow.Luminance();
     }
 
     
@@ -277,8 +277,8 @@ namespace lighter
 
       // How many photons does this light get (proportional to the fraction
       // of power this light contributes to the sector)?
-      double powerScale = ((pow.red + pow.green + pow.blue)/3.0)/sectorLumenPower;
-      size_t photonsForCurLight = floor(powerScale*numPhotonsPerSector + 0.5);
+      double powerScale = pow.Luminance()/sectorLumenPower;
+      size_t photonsForCurLight = floor(powerScale*sect->numPhotonsToEmit + 0.5);
 
       size_t causticPhotonsForCurLight = 0;
       
@@ -536,7 +536,7 @@ namespace lighter
     }
 
     // Scale the photons for this light
-    sect->ScalePhotons(1.0/numPhotonsPerSector);
+    sect->ScalePhotons(1.0/sect->numPhotonsToEmit);
     if (enableCaustics)
     {
       sect->ScaleCausticPhotons(1.0/numCausticPhotonsPerSector);

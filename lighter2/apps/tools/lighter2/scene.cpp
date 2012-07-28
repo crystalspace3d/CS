@@ -110,7 +110,7 @@ namespace lighter
     if(photonMap == NULL)
     {
       photonMap = new PhotonMap(
-        2 * globalConfig.GetIndirectProperties ().numPhotons);
+        2 * numPhotonsToEmit);
     }
   }
 
@@ -121,6 +121,169 @@ namespace lighter
       causticPhotonMap = new PhotonMap(
         2 * globalConfig.GetIndirectProperties().numCausticPhotons);
     }
+  }
+
+  void Sector::InitPhotonNumber()
+  {
+    float maxPower = 0;
+    bool interactive = globalConfig.GetIndirectProperties().interactiveConfiguration;
+    numPhotonsToEmit = 0;
+
+    csBox3 sectorBBox;
+    
+    if (allObjects.GetSize() > 0)
+    {
+      ObjectHash::GlobalIterator objIt = allObjects.GetIterator();
+      sectorBBox = objIt.Next()->GetMeshWrapper()->GetWorldBoundingBox();
+
+      while(objIt.HasNext())
+      {
+        sectorBBox.AddBoundingBox(objIt.Next()->GetMeshWrapper()->GetWorldBoundingBox());
+      }
+
+      LightRefArray::Iterator lightIt = allNonPDLights.GetIterator();
+      while (lightIt.HasNext())
+      {
+        csRef<Light> light = lightIt.Next();    
+
+        if (light->IsRealLight())
+        {
+          numPhotonsToEmit += getLightPhotonsNumber(light,sectorBBox);
+
+          objIt.Reset();
+          while (objIt.HasNext())
+          {
+            //TODO find a better heuristics for the complexity due to the objects
+            csRef<Object> object = objIt.Next();
+            csBox3 objectBBox = object->GetMeshWrapper()->GetWorldBoundingBox();
+            float factor = 0.1 * csSquaredDist::PointPoint(objectBBox.Min(),objectBBox.Max())
+              / csSquaredDist::PointPoint(sectorBBox.Min(),sectorBBox.Max());
+            factor *= factor;
+            
+            float objectPhotonsContribution = ((float)getLightPhotonsNumber(light,objectBBox));
+            if ( objectPhotonsContribution < 1) objectPhotonsContribution = 0;
+
+            numPhotonsToEmit += objectPhotonsContribution * factor;
+          }
+        }
+      }
+
+      /*
+      lightIt = allPDLights.GetIterator();
+      while (lightIt.HasNext())
+      {
+        csRef<Light> light = lightIt.Next();
+
+        if (light->IsRealLight())
+        {
+          numPhotonsToEmit += getLightPhotonsNumber(light,sectorBBox)*1.5f;
+        }
+      }*/
+    }
+
+    numPhotonsToEmit += allPortals.GetSize() * 1000;
+
+    // Round to the upper factor of 100 number
+    numPhotonsToEmit += (100 - numPhotonsToEmit%100);
+    globalTUI.DrawPhotonNumber(sectorName,numPhotonsToEmit,interactive);
+  }
+
+  size_t Sector::getLightPhotonsNumber(Light* light, csBox3& sectorBBox)
+  {
+    // The number of photon for this to get the face correctly shaded;
+    size_t lightPhotonNumber = 0;
+    csVector3 bBoxCenter = sectorBBox.GetCenter();
+    if (light->IsRealLight())
+    {
+      csVector3 lightPos = light->GetPosition() - bBoxCenter;
+          
+      float maxDistance = 0.0f;
+      int farthestSide = 0;
+              
+      for (int i=0; i < 6 ; i++)
+      {
+        int axis;
+        float distance;
+        float sideOffset;
+        sectorBBox.GetAxisPlane(i,axis,sideOffset);
+
+        switch (axis)
+        {
+          case CS_AXIS_X :
+            distance = sideOffset - lightPos.x;
+            break;
+          case CS_AXIS_Y :
+            distance = sideOffset - lightPos.y;
+            break;
+          case CS_AXIS_Z :
+            distance = sideOffset - lightPos.z;
+            break;
+        }
+        if (distance < 0) distance *= -1;
+
+        if ( distance > maxDistance)
+        {
+          maxDistance = distance;
+          farthestSide = i;
+        }
+      }
+
+      csBox2 side = sectorBBox.GetSide(farthestSide);
+
+      float photonNeeded = side.Area();
+
+      if (globalConfig.GetIndirectProperties().finalGather)
+      {
+        photonNeeded *= log(globalConfig.GetLMProperties().lmDensity)/(8*log(2.0));
+      }
+      else
+      {
+        photonNeeded *= globalConfig.GetLMProperties().lmDensity;
+      }
+
+      //Project 3 point of the side to the sphere in order to find the surface area
+      //on the sphere
+      csVector3 projectedTriangle[3];
+      for (int i=0; i<3;i++)
+      {
+        csSegment3 edge = sectorBBox.GetEdge(sectorBBox.GetFaceEdges(farthestSide)[i]);
+        csVector3 corner = edge.Start();
+
+        projectedTriangle[i] = (corner - lightPos);
+      }
+              
+      //We compute the angles between the three point using girard theorem
+      float angles[3];
+      double portionArea = -PI;
+      for (int i=0; i<3; i++)
+      {
+        csVector3 edge1 = (projectedTriangle[(i+1)%3] - lightPos);
+        csVector3 edge2 = (projectedTriangle[(i+2)%3] - lightPos);
+                  
+        edge1.Normalize();
+        edge2.Normalize();
+
+        angles[i] = fabsf(acosf(edge1 * edge2));
+      }
+
+      float sphericAngles[3];
+      for (int i=0; i<3; i++)
+      {
+        sphericAngles[i] = 0.00001 + fabsf(acos(
+                          (cos(angles[i])-cos(angles[(i+1)%3])*cos(angles[(i+2)%3]))
+                          /(sin(angles[(i+1)%3])*sin(angles[(i+2)%3]))
+                          ));
+                    
+        portionArea += sphericAngles[i];
+      }
+
+      // To get the area of the square from the triangleArea
+      portionArea *=2;
+      if (portionArea > 0.000001)
+        lightPhotonNumber = photonNeeded * (4*PI) / portionArea ;
+    }
+        
+    return lightPhotonNumber;
   }
 
   void Sector::FreePhotonMappingData()
@@ -203,14 +366,13 @@ namespace lighter
     if(irradianceCache == NULL) return false;
 
     // Check cache to see if we can reuse old results
-    float* result = new float[3];
+    float result[3];
     float fPos[3] = { point.x, point.y, point.z };
     float fNorm[3] = { normal.x, normal.y, normal.z };
     
     if(irradianceCache->EstimateIrradiance(fPos, fNorm, result))
     {
       irrad.Set(result[0], result[1], result[2]);
-      delete [] result;
       return true;
     }
 
@@ -460,6 +622,22 @@ namespace lighter
     }
 
   }
+
+  int SectorGroup::computeNeededPhotonNumber()
+  {
+    SectorHash::GlobalIterator sectIt = sectors.GetIterator();
+    int groupPhotons = 0;
+    while (sectIt.HasNext())
+    {
+      csRef<Sector> sector = sectIt.Next();
+      if (sector->numPhotonsToEmit < 0)
+      {
+        sector->InitPhotonNumber();
+      }
+      groupPhotons += sector->numPhotonsToEmit;
+    }
+    return groupPhotons;
+   }
 
   void SectorGroup::Process(bool enableRaytracer, bool enablePhotonMapper, Statistics::Progress& progress)
   {
@@ -775,6 +953,7 @@ namespace lighter
       if (sect->sectorGroup == 0)
       {
         csRef<SectorGroup> sectorGroup = new SectorGroup(sect,sectorProcessor);
+        globalStats.scene.numPhotons += sectorGroup->computeNeededPhotonNumber();
         sectorGroups.Push(sectorGroup);
       }
     }
@@ -1338,12 +1517,28 @@ namespace lighter
     // Setup a sector struct
     const char* sectorName = sector->QueryObject ()->GetName ();
     csRef<Sector> radSector = sectors.Get (sectorName, 0);
+
     if (radSector == 0)
     {
       radSector.AttachNew (new Sector (this));
       radSector->sectorName = sectorName;
       sectors.Put (radSector->sectorName, radSector);
       originalSectorHash.Put (sector, radSector);
+    }
+
+    csRef<iObjectIterator> objIt = sector->QueryObject()->GetIterator();
+    while (objIt->HasNext())
+    {
+      iObject* obj = objIt->Next();
+
+      csRef<iKeyValuePair> kvp =  scfQueryInterface<iKeyValuePair> (obj);
+
+      if (kvp.IsValid() && (strcmp (kvp->GetKey(), "lighter2") == 0))
+      {
+        int numPhotons = 0;
+        csScanStr(kvp->GetValue("numphotons"),"%d",&numPhotons);
+        radSector->numPhotonsToEmit = numPhotons;
+      }
     }
 
     size_t u, updateFreq;

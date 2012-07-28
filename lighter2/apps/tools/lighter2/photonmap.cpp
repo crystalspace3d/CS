@@ -303,7 +303,7 @@ namespace lighter
           PhotonDir( pdir, p );
           if ( (pdir[0]*norm[0]+pdir[1]*norm[1]+pdir[2]*norm[2]) < 0.0f )
           {
-            float w = ConeWeight(sqrtf(np.distSq[i]), sqrtf(np.distSq[0]), coneK);
+            float w = ConeWeight(sqrtf(np.distSq[i]), maxDist, coneK);
             irrad[0] += p->power[0]*w;
             irrad[1] += p->power[1]*w;
             irrad[2] += p->power[2]*w;

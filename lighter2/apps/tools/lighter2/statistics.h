@@ -214,7 +214,7 @@ namespace lighter
     struct Scene
     {
       Scene ()
-        : numSectors (0), numObjects (0), numLights (0)
+        : numSectors (0), numObjects (0), numLights (0), numPhotons(0)
       {}
 
       /// Number of sectors in world
@@ -225,6 +225,9 @@ namespace lighter
 
       /// Number of lights in world
       size_t numLights;
+
+      /// Number of photon to emit in world
+      size_t numPhotons;
     } scene;
 
     struct KDTree

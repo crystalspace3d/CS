@@ -523,4 +523,13 @@ namespace lighter
     kdLastNumNodes = globalStats.kdtree.numNodes;
   }
 
+   void TUI::DrawPhotonNumber(csString sectorName, int &photons,bool interactive) const
+   {
+     if (interactive)
+     {
+       //
+     }
+     globalLighter->Notify("%d photons for %s sector",photons,sectorName.GetData());
+   }
+
 }

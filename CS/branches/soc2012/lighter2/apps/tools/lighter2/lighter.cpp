@@ -355,6 +355,16 @@ namespace lighter
     return true;  
   }
 
+  bool Lighter::Notify (const char* msg, ...)
+  {
+    va_list arg;
+    va_start (arg, msg);
+    csReportV(objectRegistry, CS_REPORTER_SEVERITY_NOTIFY, 
+      "crystalspace.application.lighter2", msg, arg);
+    va_end (arg);
+    return false;
+  }
+
   bool Lighter::Report (const char* msg, ...)
   {
     va_list arg;
@@ -724,8 +734,22 @@ namespace lighter
     {
       csPrintf ("Photon Mapping Options:\n");
       csPrintf (" --numphotons=<number>\n");
-      csPrintf ("  Sets the number of photons to emit in each sector (you should change this).\n");
-      csPrintf ("   Default: %d\n\n", globalConfig.GetIndirectProperties ().numPhotons);
+      csPrintf ("  Sets the number of photons to emit in each sector.\n");
+      csPrintf ("   Default: An approximated value will be computed for each sector\n\n");
+
+      csPrintf (" --[no]interactive\n");
+      csPrintf ("  When numphotons is not set up permit to choose between the computed\n");
+      csPrintf ("  number and a user value\n");
+      csPrintf ("   Default: %s\n\n",(globalConfig.GetIndirectProperties ().interactiveConfiguration?"True":"False"));
+
+      csPrintf (" --[no]caustics\n");
+      csPrintf ("  Enable the computation of caustics\n");
+      csPrintf ("   Default: %s\n\n", (globalConfig.GetIndirectProperties ().caustics?"True":"False"));
+
+      csPrintf (" --numcausticsphotons=<number>\n");
+      csPrintf ("  Sets the number of photons to emit in each sector to generate\n");
+      csPrintf ("  caustics.\n");
+      csPrintf ("   Default: %d\n\n", globalConfig.GetIndirectProperties ().numCausticPhotons);
 
       csPrintf (" --maxdensitysamples=<number>\n");
       csPrintf ("  Sets the maximum number of photons to sample when estimating\n"

@@ -115,7 +115,8 @@ namespace lighter
   {
   public:
     Sector (Scene* scene)
-        : kdTree (0), scene (scene), sectorGroup(0), photonMap(NULL), causticPhotonMap(NULL), irradianceCache(NULL)
+        : kdTree (0), scene (scene), sectorGroup(0), photonMap(NULL), causticPhotonMap(NULL), irradianceCache(NULL),
+        numPhotonsToEmit(globalConfig.GetIndirectProperties().numPhotons)
     {}
 
     ~Sector ();
@@ -135,6 +136,8 @@ namespace lighter
     void InitPhotonMap();
 
     void InitCausticPhotonMap();
+
+    void InitPhotonNumber();
 
     // Release the photonmapping data this mean photonmap,
     // caustic map and irradiance cache
@@ -191,7 +194,13 @@ namespace lighter
 
     SectorGroup* sectorGroup;
 
+    int numPhotonsToEmit;
+
   protected:
+
+    // Compute the number of photons require for an average accuracy
+    size_t getLightPhotonsNumber(Light* light, csBox3& sectorBBox);
+
     // Photon map for indirect lighting
     PhotonMap *photonMap;
 
@@ -215,6 +224,8 @@ namespace lighter
         Statistics::Progress& progress);
 
       void SaveLightmaps();
+
+      int computeNeededPhotonNumber();
 
       csRefArray<iThreadReturn> lightComputations;
 

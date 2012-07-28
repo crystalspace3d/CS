@@ -83,11 +83,11 @@ float4 main (vert2frag IN,
 	IN.dist /= 10; 
 	
 	foam = foam * 0.5 * IN.dist;
+	foam.x *= 40.0f;
 	
     color.xyz = light + reflColor.xyz + refrColor.xyz + foam;
 	
 	//color = clamp((color + foam ) , 0 , 1 ) ;
-	
 	//color = tex2D(TexNormal,IN.NormalTC);
 	//color = tex2D(TexFoam,IN.NormalTC);
 	color.a = 1.0;

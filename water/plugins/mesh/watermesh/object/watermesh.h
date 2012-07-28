@@ -64,6 +64,7 @@ class csWaterMeshObject :
                             iWaterMeshState>
 {
 private:
+
   // The render mesh holder is used by GetRenderMeshes() to supply
   // render meshes that can be returned by that function.
   csFrameDataHolder<csDirtyAccessArray<csRenderMesh*> > meshesHolder;

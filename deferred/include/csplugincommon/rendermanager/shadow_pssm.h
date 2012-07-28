@@ -1220,19 +1220,15 @@ namespace RenderManager
       CS_ASSERT(rview);
 
       // @@@FIXME: light setup is broken and cannot handle different layer spreads for different lights
-      return 1;
+      return f == 0 ? 1 : 0;
 
-      // check whether the light creates shadows (if not there's nothing to be done)
-      if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
-	return 1;
-
-      // check whether the mesh receives shadows (if not there's nothing to be done)
-      if(mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
-	return 1;
-
+      // check whether the light creates shadows
+      // check whether the mesh receives shadows
       // check whether this light is known
-      if(!persist.lightHash.Contains(light))
-	return 1;
+      if(light->GetFlags().Check(CS_LIGHT_NOSHADOWS)
+	|| mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE)
+	|| !persist.lightHash.Contains(light))
+	return f == 0 ? 1 : 0;
 
       // get mesh box in view space
       csTransform view2object = rview->GetCamera()->GetTransform() / mesh.renderMesh->object2world;

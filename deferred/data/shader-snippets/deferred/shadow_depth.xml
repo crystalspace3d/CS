@@ -108,7 +108,7 @@
     <block location="cg:fragmentMain">
     <![CDATA[
       // define our comparison bias
-      float bias = 0.0001;
+      float bias = 0.0003;
 
       // go over all shadow maps and find the one applicapble to us
       int slice;
@@ -173,7 +173,7 @@
     <block location="glsl:fragmentMain">
     <![CDATA[
       // define our comparison bias
-      float bias = 0.0001;
+      float bias = 0.0003;
 
       // go over all shadow maps and find the one applicapble to us
       int slice;

@@ -36,8 +36,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
 
   csBulletCollider::csBulletCollider ()
-    : scfImplementationType (this), shape (nullptr), margin (0.0), volume (0.0), collSystem (nullptr), 
-    children(nullptr), usedShape(nullptr), dirty(true), localInertia(0, 0, 0), customPrincipalAxis(false)
+    : scfImplementationType (this), shape (nullptr), usedShape(nullptr), margin (0.f),
+    collSystem (nullptr), dirty(true), children(nullptr), volume (0.f),
+    localInertia (0.f, 0.f, 0.f), customPrincipalAxis(false)
   {
     principalAxisTransform.setIdentity();
   }
@@ -91,7 +92,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     if (children)
     {
-      for (int i = 0; i < children->colliders.GetSize(); i++)
+      for (size_t i = 0; i < children->colliders.GetSize(); i++)
       {
         iCollider* icoll = children->colliders[i];
         icoll->SetLocalScale(scale);
@@ -176,7 +177,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       }
       
       // add all children
-      for (int i = 0; i < children->colliders.GetSize(); i++)
+      for (size_t i = 0; i < children->colliders.GetSize(); i++)
       {
         iCollider* icoll = children->colliders[i];
         csBulletCollider* coll = dynamic_cast<csBulletCollider*>(icoll);
@@ -200,9 +201,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
       // Translate & rotate children relative to principal axis
       btTransform principalAxisTransformInverse = principalAxisTransform.inverse();
-      for (int i = 0; i < children->colliders.GetSize(); i++)
+      for (size_t i = 0; i < children->colliders.GetSize(); i++)
       {
-        iCollider* icoll = children->colliders[i];
+        //iCollider* icoll = children->colliders[i];
         compound.updateChildTransform(i, principalAxisTransformInverse * compound.getChildTransform(i));
       }
 

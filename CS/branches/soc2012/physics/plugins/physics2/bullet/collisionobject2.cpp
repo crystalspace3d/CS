@@ -29,9 +29,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   }
 
   csBulletCollisionObject::csBulletCollisionObject (csBulletSystem* sys)
-    : scfImplementationType (this), movable (nullptr), camera (nullptr), collCb (nullptr),
-    portalWarp (btQuaternion::getIdentity ()), sector (nullptr), system (sys),
-    btObject (nullptr), objectOrigin (nullptr), objectCopy (nullptr),
+    : scfImplementationType (this), portalWarp (btQuaternion::getIdentity ()), sector (nullptr),
+    system (sys), objectOrigin (nullptr), objectCopy (nullptr), btObject (nullptr),
     insideWorld (false)
   {
   }
@@ -245,7 +244,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     csArray<CollisionData> collisions;
     sector->CollisionTest(this, collisions);
 
-    int objBeneathCount = 0;
+    //int objBeneathCount = 0;
     for (size_t i = 0; i < collisions.GetSize (); ++i)
     {
       CollisionData& coll = collisions[i];

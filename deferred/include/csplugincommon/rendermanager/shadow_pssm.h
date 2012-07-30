@@ -46,20 +46,163 @@ namespace RenderManager
   {
   };
 
-  csVector3 DowncastVector(const csVector4& v)
+  inline csVector2 Vector4To2(const csVector4& v, float* z = nullptr)
   {
-    return csVector3(v.x, v.y, v.z)/v.w;
+    if(z) *z = v.z/v.w;
+    return csVector2(v.x/v.w, v.y/v.w);
   }
 
-  csBox3 ProjectBox(const csBox3& box, const csTransform& transform, const CS::Math::Matrix4 proj)
+  inline csVector3 Vector4To3(const csVector4& v)
   {
-    CS::Math::Matrix4 projComp = proj * CS::Math::Matrix4(transform);
-    csBox3 projBox;
-    projBox.StartBoundingBox(DowncastVector(projComp * box.GetCorner(0)));
+    return csVector3(v.x/v.w, v.y/v.w, v.z/v.w);
+  }
 
-    for(int i = 1; i < 8; ++i)
+  // helper function that builds a projection space box
+  // the z value isn't transformed and only the positive z direction
+  // is taken into account
+  inline csBox3 ProjectBox(const csBox3& boxIn, const CS::Math::Matrix4& proj, const CS::Math::Matrix4& projInv)
+  {
+    // clamp incoming box to positive z
+    csBox3 box(csBox3(-FLT_MAX,-FLT_MAX,SMALL_Z, FLT_MAX,FLT_MAX,FLT_MAX) * boxIn);
+
+    // convenience variables
+    float boxNear = box.MinZ();
+    float boxFar = box.MaxZ();
+
+    // projection space near and far planes
+    float boxNearPS, boxFarPS;
+
+    // transform far plane to projection space
+    csBox2 farPS(Vector4To2(proj * box.GetCorner(CS_BOX_CORNER_XYZ), &boxFarPS));
+    farPS.AddBoundingVertexSmart(Vector4To2(proj * box.GetCorner(CS_BOX_CORNER_xYZ)));
+    farPS.AddBoundingVertexSmart(Vector4To2(proj * box.GetCorner(CS_BOX_CORNER_xyZ)));
+    farPS.AddBoundingVertexSmart(Vector4To2(proj * box.GetCorner(CS_BOX_CORNER_XyZ)));
+
+    // clip to actual frustum
+    csBox2 farNDC(csBox2(-1,-1,1,1) * farPS);
+
+    // if the far plane doesn't intersect with the frustum the whole box doesn't
+    if(farNDC.Empty())
     {
-      projBox.AddBoundingVertexSmart(DowncastVector(projComp * box.GetCorner(i)));
+      return csBox3();
+    }
+
+    // transform near plane to projection space
+    csBox2 nearPS(Vector4To2(proj * box.GetCorner(CS_BOX_CORNER_XYz), &boxNearPS));
+    nearPS.AddBoundingVertexSmart(Vector4To2(proj * box.GetCorner(CS_BOX_CORNER_xYz)));
+    nearPS.AddBoundingVertexSmart(Vector4To2(proj * box.GetCorner(CS_BOX_CORNER_xyz)));
+    nearPS.AddBoundingVertexSmart(Vector4To2(proj * box.GetCorner(CS_BOX_CORNER_Xyz)));
+
+    // clip to actual frustum
+    csBox2 nearNDC(csBox2(-1,-1,1,1) * nearPS);
+
+    // if near plane intersects with the frustum we are done
+    if(!nearNDC.Empty())
+    {
+      // return union of the boxes
+      nearNDC += farNDC;
+      return csBox3(nearNDC.MinX(), nearNDC.MinY(), boxNear,
+		    nearNDC.MaxX(), nearNDC.MaxY(), boxFar);
+    }
+    // else we have to take special care to use the actual near plane of the part
+    // that lies within the frustum
+    else
+    {
+      // start with current near plane
+      float nearZ = boxNear;
+
+      // check whether x axis needs special care
+      if(nearNDC.MinX() > nearNDC.MaxX())
+      {
+	// check on which side we are
+	if(farNDC.MinX() > 0)
+	{
+	  // unproject clipped near
+	  csVector4 nearClipped(projInv * csVector4(1,0,boxNearPS));
+	  float nearClippedX(nearClipped.x/nearClipped.w);
+
+	  // unproject clipped far max
+	  csVector4 farClipped(projInv * csVector4(1,0,boxFarPS));
+	  float farClippedX(farClipped.x/farClipped.w);
+
+	  // calculate actual required near plane
+	  nearZ = csMax(nearZ, boxFar - (boxFar - boxNear) * (box.MinX() - farClippedX) / (nearClippedX - farClippedX));
+	}
+	else
+	{
+	  // unproject clipped near
+	  csVector4 nearClipped(projInv * csVector4(-1,0,boxNearPS));
+	  float nearClippedX(nearClipped.x/nearClipped.w);
+
+	  // unproject clipped far max
+	  csVector4 farClipped(projInv * csVector4(-1,0,boxFarPS));
+	  float farClippedX(farClipped.x/farClipped.w);
+
+	  // calculate actual required near plane
+	  nearZ = csMax(nearZ, boxFar - (boxFar - boxNear) * (box.MaxX() - farClippedX) / (nearClippedX - farClippedX));
+	}
+      }
+
+      // check whether y axis needs special care
+      if(nearNDC.MinY() > nearNDC.MaxY())
+      {
+	// check on which side we are
+	if(farNDC.MinY() > 0)
+	{
+	  // unproject clipped near
+	  csVector4 nearClipped(projInv * csVector4(0,1,boxNearPS));
+	  float nearClippedY(nearClipped.y/nearClipped.w);
+
+	  // unproject clipped far max
+	  csVector4 farClipped(projInv * csVector4(0,1,boxFarPS));
+	  float farClippedY(farClipped.y/farClipped.w);
+
+	  // calculate actual required near plane
+	  nearZ = csMax(nearZ, boxFar - (boxFar - boxNear) * (box.MinY() - farClippedY) / (nearClippedY - farClippedY));
+	}
+	else
+	{
+	  // unproject clipped near
+	  csVector4 nearClipped(projInv * csVector4(0,-1,boxNearPS));
+	  float nearClippedY(nearClipped.y/nearClipped.w);
+
+	  // unproject clipped far max
+	  csVector4 farClipped(projInv * csVector4(0,-1,boxFarPS));
+	  float farClippedY(farClipped.y/farClipped.w);
+
+	  // calculate actual required near plane
+	  nearZ = csMax(nearZ, boxFar - (boxFar - boxNear) * (box.MaxY() - farClippedY) / (nearClippedY - farClippedY));
+	}
+      }
+
+      // set our new depth value
+      boxNear = nearZ;
+
+      // calculate new near plane now that we have the right depth
+      nearNDC.StartBoundingBox(Vector4To2(proj * csVector4(box.MinX(), box.MinY(), boxNear)));
+      nearNDC.AddBoundingVertexSmart(Vector4To2(proj * csVector4(box.MaxX(), box.MinY(), boxNear)));
+      nearNDC.AddBoundingVertexSmart(Vector4To2(proj * csVector4(box.MinX(), box.MaxY(), boxNear)));
+      nearNDC.AddBoundingVertexSmart(Vector4To2(proj * csVector4(box.MaxX(), box.MaxY(), boxNear)));
+    }
+
+    // return union of the boxes
+    nearNDC += farNDC;
+    return csBox3(nearNDC.MinX(), nearNDC.MinY(), boxNear,
+		  nearNDC.MaxX(), nearNDC.MaxY(), boxFar);
+  }
+
+  inline csBox3 UnprojectBox(const csBox3& box, const CS::Math::Matrix4 proj)
+  {
+    // start a new bounding box
+    csBox3 projBox;
+
+    // get inverse projection
+    CS::Math::Matrix4 projInv(proj.GetInverse());
+
+    for(int i = 0; i < 8; ++i)
+    {
+      // add projected corner to our new bbox
+      projBox.AddBoundingVertexSmart(Vector4To3(projInv * box.GetCorner(i)));
     }
 
     return projBox;
@@ -340,14 +483,66 @@ namespace RenderManager
 	  dbgShadowTex = dbgPersist.RegisterDebugFlag("textures.shadow");
 	}
 
-	// initialize empty SMs
+	// create and initalize empty SMs
 	csRef<iTextureManager> tm = graphics3D->GetTextureManager();
 	for(size_t i = 0; i < settings.targets.GetSize(); ++i)
 	{
+	  // get target
 	  const ShadowSettings::Target* target = settings.targets[i];
+
+	  // get cache belonging to target
 	  const TextureCache& cache = target->texCache;
-	  emptySM[target->attachment] = tm->CreateTexture(1, 1, csimg2D, cache.GetFormat(),
-							  cache.GetFlags() | CS_TEXTURE_CREATE_CLEAR);
+
+	  // create texture
+	  csRef<iTextureHandle> tex = tm->CreateTexture(1, 1, csimg2D, cache.GetFormat(), cache.GetFlags());
+
+	  // add it to our empty SM set
+	  emptySM[target->attachment] = tex;
+
+	  // attach it as render target for initialization
+	  graphics3D->SetRenderTarget(tex, false, 0, target->attachment);
+	}
+
+	// initalize textures
+	{
+	  // get screen width/height
+	  int w = graphics3D->GetWidth();
+	  int h = graphics3D->GetHeight();
+
+	  // create quad
+	  csSimpleRenderMesh quad;
+
+	  // create vertices
+	  csVector3 quadVerts[4] = {
+	    csVector3 (-1.0f, -1.0f, 1.0f),
+	    csVector3 (-1.0f,  1.0f, 1.0f),
+	    csVector3 ( 1.0f,  1.0f, 1.0f),
+	    csVector3 ( 1.0f, -1.0f, 1.0f)
+	  };
+
+	  // set mesh properties
+	  quad.vertexCount = 4;
+	  quad.vertices = quadVerts;
+	  quad.shader = nullptr;
+	  quad.z_buf_mode = CS_ZBUF_FILL;
+	  quad.mixmode = CS_FX_TRANSPARENT;
+	  quad.alphaType.autoAlphaMode = false;
+	  quad.alphaType.alphaType = csAlphaMode::alphaNone;
+
+	  // set projection
+	  graphics3D->SetProjectionMatrix(CS::Math::Matrix4());
+	
+	  // start draw
+	  graphics3D->BeginDraw(CSDRAW_3DGRAPHICS | CSDRAW_CLEARZBUFFER | CSDRAW_CLEARSCREEN);
+
+	  // set cam
+	  graphics3D->SetWorldToCamera(csOrthoTransform());
+
+	  // draw quad
+	  graphics3D->DrawSimpleMesh(quad);
+
+	  // finish draw
+	  graphics3D->FinishDraw();
 	}
 
 	// initialize persistent context setup data
@@ -466,7 +661,7 @@ namespace RenderManager
 	    project = CreateCropMatrix(
 	      -cutoff, cutoff,
 	      -cutoff, cutoff,
-	      SMALL_Z, cutoff);
+	      -1.0f, 1.0f);
 	  }
 	  else
 	  {
@@ -477,12 +672,14 @@ namespace RenderManager
 	      l->GetSpotLightFalloff (inner, outer);
 	    }
 
-	    float base = (SMALL_Z / outer) * sqrt (1 - outer * outer);
+	    float base = (1.0f / outer) * sqrt (1.0f - outer * outer);
 	    project = CreateFrustumMatrix(
 	      -base,   base,
 	      -base,   base,
-	      SMALL_Z, cutoff);
+	      1.0f, cutoff);
 	  }
+
+	  projectInverse = project.GetInverse();
 	}
 
 	// array of rotation matrices
@@ -608,8 +805,9 @@ namespace RenderManager
       // movable update number
       long updateNumber;
 
-      // projection matrix
+      // projection matrix and it's inverse
       CS::Math::Matrix4 project;
+      CS::Math::Matrix4 projectInverse;
 
       // the frustums that'll represent this light
       csArray<Frustum> frustums;
@@ -746,18 +944,8 @@ namespace RenderManager
 
 	    if(slice.draw)
 	    {
-	      // make sure minimum depth is at least SMALL_Z
-	      // to work around a singularity in the frustum projection
-	      if(boxFS.MinZ() < SMALL_Z)
-	      {
-		boxFS.SetMin(2, SMALL_Z);
-	      }
-
 	      // project box
-	      slice.boxPS = ProjectBox(boxFS, csTransform(), lightData.project);
-
-	      // projected coordinates are normalized to -1,1 for xy and 0,1 for z - clamp accordingly
-	      slice.boxPS *= csBox3(-1, -1, 0, 1, 1, 1);
+	      slice.boxPS = ProjectBox(boxFS, lightData.project, lightData.projectInverse);
 
 	      // don't draw this slice if it's empty in projection space
 	      slice.draw = !slice.boxPS.Empty();
@@ -812,7 +1000,7 @@ namespace RenderManager
 	      typename LightData::Slice& slice = slices[s];
 
 	      // check whether this slice will be used
-	      sliceDraw[s] = slice.draw & !slice.receiversPS.Empty();
+	      sliceDraw[s] = slice.draw && (!slice.receiversPS.Empty() || (persist.doFixedCloseShadow && s == 0));
 	      draw |= sliceDraw[s];
 	    }
 
@@ -898,8 +1086,11 @@ namespace RenderManager
 	    // get world space bounding box
 	    csBox3 meshBox = object->GetBBox();
 
-	    // add projected bounding box to casters box
-	    frustum.castersPS += ProjectBox(meshBox, frust2world, lightData.project);
+	    // project bounding box
+	    csBox3 meshBoxPS = ProjectBox(frust2world * meshBox, lightData.project, lightData.projectInverse);
+
+	    // add box to casters bounding box
+	    frustum.castersPS += meshBoxPS;
 	  }
 	}
       }
@@ -935,66 +1126,101 @@ namespace RenderManager
 	// setup everything
 
 	// box we'll use while calculating the crop matrix
-	csBox3 objectBox;
+	csBox3 objectBox(slice.boxPS);
 
-	// for fixed close up shadows we just use the frustum box
-	if(fixed)
+	// if we aren't using fixed close up shadows, our receivers in this slice
+	// make up the object box
+	if(!fixed)
 	{
-	  objectBox = slice.boxPS;
-	}
-	// else we use the intersection of casters and receivers boxes
-	else
-	{
-	  objectBox = frustum.castersPS * slice.receiversPS * slice.boxPS;
+	  objectBox *= slice.receiversPS;
 	}
 
-	// calculate crop matrix and unscale transform
-	CS::Math::Matrix4 crop;
-	csVector4 unscale;
+	// build target box
+	csBox3 targetBox(objectBox * frustum.castersPS);
 
-	bool empty = objectBox.Empty();
+	// specially set z-range
+	targetBox.SetMin(2, csMin(frustum.castersPS.MinZ(), objectBox.MinZ()));
+	targetBox.SetMax(2, csMin(frustum.castersPS.MaxZ(), objectBox.MaxZ()) + EPSILON);
+
+	// check whether we have anything to draw (casters and receivers overlap in screen space)
+	bool empty = targetBox.Empty();
 
 	if(empty)
 	{
-	  unscale = csVector4(1,1,0,0);
+	  // set our object range to default for empty maps
+	  targetBox = csBox3(-1, -1, SMALL_Z, 1, 1, light->GetCutoffDistance());
 	}
+
+	// projection matrix we'll use
+	CS::Math::Matrix4 project;
+
+	// unscale transform (only important for spot/point lights)
+	csVector4 unscale;
+
+	// simply chain the default light projection with a crop matrix
+	// if the light projection is orthogonal
+	if(light->GetType() == CS_LIGHT_DIRECTIONAL)
+	{
+	  project = CreateCropMatrix(
+	    targetBox.MinX(), targetBox.MaxX(),
+	    targetBox.MinY(), targetBox.MaxY(),
+	    targetBox.MinZ(), targetBox.MaxZ(),
+	    &unscale) * lightData.project;
+	}
+	// for perspective transforms build a new one with adjusted
+	// near and far planes for improved precision
 	else
 	{
-	  // set our z-range properly
-	  float nearZ = csMin(frustum.castersPS.MinZ(), slice.boxPS.MinZ());
-	  // + EPSILON in case nearZ == farZ
-	  float farZ = objectBox.MaxZ() + EPSILON;
-
-	  // create crop matrix
-	  crop = CreateCropMatrix(
-	    objectBox.MinX(), objectBox.MaxX(),
-	    objectBox.MinY(), objectBox.MaxY(),
-	    nearZ, farZ, &unscale);
-
-	  // draw cropped box if debugging splits
-	  if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
+	  // find the base for our frustum
+	  float outer = sqrt(0.5f);
+	  if(light->GetType() == CS_LIGHT_SPOTLIGHT)
 	  {
-	    csBox3 debugBox = objectBox;
-	    debugBox.SetMin(2, nearZ);
-	    debugBox.SetMax(2, farZ);
-
-	    renderTree.AddDebugBBox(ProjectBox(debugBox, csTransform(), lightData.project.GetInverse()),
-	      (frustum.frust2light * lightData.light2world).GetInverse(),
-	      csColor(0, 0, 1));
+	    float inner;
+	    light->GetSpotLightFalloff (inner, outer);
 	  }
+
+	  float base = (targetBox.MinZ() / outer) * sqrt (1.0f - outer * outer);
+
+	  // perform a frustum projection and crop in projection space
+	  project = CreateCropMatrix(
+	    targetBox.MinX(), targetBox.MaxX(),
+	    targetBox.MinY(), targetBox.MaxY(),
+	    -1.0f, 1.0f,
+	    &unscale) * CreateFrustumMatrix(
+	    -base, base,
+	    -base, base,
+	    targetBox.MinZ(), targetBox.MaxZ());
 	}
+
+	// chain frustum rotation into projection
+	project = project * CS::Math::Matrix4(frustum.frust2light);
 
 	// set unscale
 	slice.unscaleSV->SetValue(unscale);
 
-	// set final projection
-	static CS::Math::Matrix4 fixup(
-	  1, 0, 0, 0,
-	  0, 1, 0, 0,
-	  0, 0,-1, 0,
-	  0, 0, 0, 1);
-	CS::Math::Matrix4 project = crop * lightData.project * CS::Math::Matrix4(frustum.frust2light);
+	// set projection
 	slice.projectSV->SetValue(project);
+
+	// draw cropped box if debugging splits
+	if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
+	{
+	  // find clipped box in light space
+	  csBox3 debugBox(UnprojectBox(csBox3(-1,-1,-1, 1,1,1), project));
+
+	  renderTree.AddDebugBBox(debugBox,
+	    lightData.light2world.GetInverse(),
+	    csColor(0, 0, 1));
+	}
+
+	// fixup matrix
+	static const CS::Math::Matrix4 fixup(
+	  1, 0, 0, 0,
+	  0,-1, 0, 0,
+	  0, 0,-1, 0,
+	  0, 0, 0, 1
+	);
+
+	// tweak output a bit to save some operations in the shaders
 	project = fixup * project;
 
 	// get our shadow map size
@@ -1150,7 +1376,7 @@ namespace RenderManager
 
 	      // transform mesh bounding box to frustum space
 	      // @@@TODO: we can save this projection if we first check whether we are in any slice
-	      csBox3 meshBoxPS = ProjectBox(meshBox, frust2object, lightData.project);
+	      csBox3 meshBoxPS = ProjectBox(frust2object * meshBox, lightData.project, lightData.projectInverse);
 
 	      // transform mesh bounding box to view space
 	      csTransform view2mesh = cam->GetTransform() * world2object;

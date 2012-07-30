@@ -1249,6 +1249,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\physics2\bullet\physicsfactories.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\rigidbody2.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\softbody2.cpp" />
+    <ClCompile Include="..\..\plugins\physics2\bullet\vehicle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\plugins\physics2\bullet\bulletsystem.h" />
@@ -1284,6 +1285,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\physics2\bullet\physicsfactories.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\rigidbody2.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\softbody2.h" />
+    <ClInclude Include="..\..\plugins\physics2\bullet\vehicle.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\plgbullet2.rc" />

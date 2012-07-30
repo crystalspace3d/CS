@@ -322,7 +322,7 @@ CS::Physics::iSoftBody* VerySimple::SpawnSoftBody (bool setVelocity /* = true */
   if (setVelocity)
   {
     // Fling the body.
-    body->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 5));
+    body->QueryPhysicalBody()->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 5));
   }
 
   // Create the mesh

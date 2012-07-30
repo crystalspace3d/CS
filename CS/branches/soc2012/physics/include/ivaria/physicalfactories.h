@@ -29,6 +29,9 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "imesh/genmesh.h"
 #include "csgeom/tri.h"
 #include "cstool/primitives.h"
+
+#include "ivaria/physicscommon.h"
+
 #include "ivaria/collisions.h"
 #include "ivaria/collisionfactories.h"
 

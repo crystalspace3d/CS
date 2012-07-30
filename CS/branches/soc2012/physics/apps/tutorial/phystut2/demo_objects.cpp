@@ -289,7 +289,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   // offset. That way we can test if the physics engine supports that.
   //csVector3 artificialOffset (3, 3, 3);
   csVector3 artificialOffset (0, 0, 0);
-  csReversibleTransform hardTransform (csYRotMatrix3 (PI/2.0), artificialOffset);
+  csReversibleTransform hardTransform (csZRotMatrix3 (PI/2.0), artificialOffset);
   cylinderFact->HardTransform (hardTransform);
 
   // Create the mesh.
@@ -1186,7 +1186,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   if (setVelocity)
   {
     // Fling the body.
-    body->SetLinearVelocity (tc.GetT2O() * csVector3 (0, 0, 5));
+    body->QueryPhysicalBody()->SetLinearVelocity (tc.GetT2O() * csVector3 (0, 0, 5));
   }
 
   // Create the mesh

@@ -35,6 +35,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     SetCollider(props->GetCollider());
     SetName(props->QueryObject()->GetName());
     
+    // construct bullet shape
+    btCollisionShape* shape = collider->GetOrCreateBulletShape();
+
+    // set mass & density
     btScalar mass;
     if (props->GetDensity())
     {
@@ -48,7 +52,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
     
     // construct bullet object
-    btCollisionShape* shape = collider->GetOrCreateBulletShape();
     btRigidBody::btRigidBodyConstructionInfo infos (mass, CreateMotionState(collider->GetBtPrincipalAxisTransform()), shape, mass * collider->GetLocalInertia());
 
     infos.m_friction = props->GetFriction();
@@ -336,11 +339,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         if (insideWorld)
         {
           // create new motion state
-          delete motionState;
-
           btTransform trans;
           motionState->getWorldTransform (trans);
           trans *= motionState->inversePrincipalAxis;
+
+          delete motionState;
 
           trans *= collider->GetBtPrincipalAxisTransform();
           motionState = CreateMotionState(trans);
@@ -364,8 +367,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         }
       case STATE_KINEMATIC:
         {
-          btBody->setCollisionFlags (btBody->getCollisionFlags()
-            | btCollisionObject::CF_KINEMATIC_OBJECT
+          btBody->setCollisionFlags (
+            (btBody->getCollisionFlags()
+            | btCollisionObject::CF_KINEMATIC_OBJECT)
             & ~btCollisionObject::CF_STATIC_OBJECT);
 
           if (!kinematicCb)
@@ -393,8 +397,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         }
       case STATE_STATIC:
         {
-          btBody->setCollisionFlags (btBody->getCollisionFlags()
-            | btCollisionObject::CF_STATIC_OBJECT
+          btBody->setCollisionFlags ((btBody->getCollisionFlags()
+            | btCollisionObject::CF_STATIC_OBJECT)
             & ~btCollisionObject::CF_KINEMATIC_OBJECT);
           btBody->setActivationState (ISLAND_SLEEPING);
 

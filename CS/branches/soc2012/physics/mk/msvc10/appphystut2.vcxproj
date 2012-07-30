@@ -1256,12 +1256,14 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
   <ItemGroup>
     <ClCompile Include="..\..\apps\tutorial\phystut2\collision2util.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_app.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_geometry.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_inputhandling.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_items.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_objects.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_particles.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_frame.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\demo_statics.cpp" />
+    <ClCompile Include="..\..\apps\tutorial\phystut2\demo_vehicles.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\items.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\agent.cpp" />
     <ClCompile Include="..\..\apps\tutorial\phystut2\verysimpledemo.cpp" />
@@ -1271,6 +1273,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\apps\tutorial\phystut2\items.h" />
     <ClInclude Include="..\..\apps\tutorial\phystut2\physdemo.h" />
     <ClInclude Include="..\..\apps\tutorial\phystut2\agent.h" />
+    <ClInclude Include="..\..\apps\tutorial\phystut2\ivehicle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -25,6 +25,8 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 * Collision interfaces
 */
 
+#include "ivaria/collisionscommon.h"
+
 #include "csutil/scf.h"
 #include "csgeom/vector2.h"
 #include "csgeom/vector3.h"
@@ -52,62 +54,6 @@ namespace Collisions
   struct iCollider;
 
   struct CollisionGroup;
-
-  /**
-  * The type of a collision object.
-  */
-  enum CollisionObjectType
-  {
-    COLLISION_OBJECT_PHYSICAL = 0,
-    COLLISION_OBJECT_GHOST,
-    COLLISION_OBJECT_ACTOR,
-    COLLISION_OBJECT_END
-  };
-
-  typedef short CollisionGroupMask;
-
-  enum CollisionGroupType
-  {
-    CollisionGroupTypeDefault =     0,
-    CollisionGroupTypeStatic =      1,
-    CollisionGroupTypeKinematic =   2,
-    CollisionGroupTypePortal =      3,
-    CollisionGroupTypeTerrain =     3,
-    CollisionGroupTypePortalCopy =  4,
-    CollisionGroupTypeActor =       5
-  };
-
-  enum CollisionGroupMaskValue
-  {
-    CollisionGroupMaskValueDefault =      0x0001,
-    CollisionGroupMaskValueStatic =       0x0002,
-    CollisionGroupMaskValueKinematic =    0x0004,
-    CollisionGroupMaskValuePortal =       0x0008,
-    CollisionGroupMaskValuePortalCopy =   0x0010,
-    CollisionGroupMaskValueActor =        0x0020
-  };
-
-  /**
-  * A structure of collision group. 
-  * The objects in the group will not collide with each other.
-  */
-  struct CollisionGroup
-  {
-    /// The name of the group.
-    csString name;
-
-    /// The value of the group.
-    CollisionGroupMask value;
-
-    /// The mask of the group.
-    CollisionGroupMask mask;
-
-    CollisionGroup () {}
-
-    CollisionGroup (const char* name)
-      : name (name)
-    {}
-  };
 
   struct iCollisionObjectFactory : public virtual iBase
   {

@@ -101,7 +101,7 @@ public:
   virtual ~csBulletCollider();
   virtual CS::Collisions::ColliderType GetColliderType () const = 0;
   virtual void SetLocalScale (const csVector3& scale);
-  virtual const csVector3& GetLocalScale () const;
+  virtual csVector3 GetLocalScale () const;
 
   virtual void SetMargin (float margin);
   virtual float GetMargin () const;

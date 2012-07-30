@@ -67,6 +67,10 @@ struct iKinematicCallback;
 struct iPhysicalSystem;
 struct iPhysicalSector;
 
+struct iVehicle;
+struct iVehicleFactory;
+struct iVehicleWheelFactory;
+
 /**
  * The type of a rigid body state.
  */
@@ -150,8 +154,10 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   /// Add a force to the whole body.
   virtual void AddForce (const csVector3& force) = 0;
   
-  /// Get the linear velocity (movement).
+  /// Get the linear velocity (translational velocity component).
   virtual csVector3 GetLinearVelocity (size_t index = 0) const = 0;
+  /// Set the linear velocity (translational velocity component).
+  virtual void SetLinearVelocity (const csVector3& vel) = 0;
 
   /**
    * Get whether this object is dynamic.
@@ -201,9 +207,6 @@ struct iRigidBody : public virtual iPhysicalBody
   virtual float GetElasticity () = 0;
   /// Set the elasticity of this rigid body.
   virtual void SetElasticity (float elasticity) = 0;
-
-  /// Set the linear velocity (movement).
-  virtual void SetLinearVelocity (const csVector3& vel) = 0;
   
   /// Get the angular velocity (rotation)
   virtual csVector3 GetAngularVelocity () const = 0;
@@ -396,9 +399,6 @@ struct iSoftBody : public virtual iPhysicalBody
 
   /// Get the rigidity of this body.
   virtual float GetRigidity () = 0;
-
-  /// Set the linear velocity (movement).
-  virtual void SetLinearVelocity (const csVector3& vel) = 0;
 
   /// Set the linear velocity of the given vertex of the body.
   virtual void SetLinearVelocity (const csVector3& velocity,
@@ -896,7 +896,8 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
    */
   virtual csPtr<iJoint> CreateRigidPivotJoint (iRigidBody* body, const csVector3 position) = 0;
   
-  // Factory
+
+  // Factories
   
   virtual csPtr<iRigidBodyFactory> CreateRigidBodyFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
 
@@ -905,6 +906,18 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   virtual csPtr<iSoftRopeFactory> CreateSoftRopeFactory () = 0;
   virtual csPtr<iSoftClothFactory> CreateSoftClothFactory () = 0;
   virtual csPtr<iSoftMeshFactory> CreateSoftMeshFactory () = 0;
+  
+
+  // Vehicles
+
+  /// Creates a new factory to produce vehicles
+  virtual csPtr<iVehicleFactory> CreateVehicleFactory () = 0;
+  
+  /// Creates a new factory to produce vehicle wheels
+  virtual csPtr<iVehicleWheelFactory> CreateVehicleWheelFactory () = 0;
+
+  /// Returns the vehicle that the given object is a part of, or nullptr
+  virtual iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj) = 0;
 };
 
 /**
@@ -938,11 +951,11 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * range of iterations is from 4 (low quality, good performance) to 20 (good
    * quality, less but still reasonable performance). Default value is 10. 
    */
-  virtual void SetStepParameters (float timeStep, size_t maxSteps,
+  virtual void SetStepParameters (csScalar timeStep, size_t maxSteps,
     size_t iterations) = 0;  
 
   /// Step the simulation forward by the given duration, in second
-  virtual void Step (float duration) = 0;
+  virtual void Step (csScalar duration) = 0;
 
   /**
    * Set the global linear Damping. The dampening correspond to how
@@ -953,12 +966,12 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * The default value is 0.
    * \sa CS::Physics::iRigidBody::SetLinearDamping()
    */
-  virtual void SetLinearDamping (float d) = 0;
+  virtual void SetLinearDamping (csScalar d) = 0;
 
   /**
    * Get the global linear Damping setting.
    */
-  virtual float GetLinearDamping () const = 0;
+  virtual csScalar GetLinearDamping () const = 0;
 
   /**
    * Set the global angular Damping. The dampening correspond to how
@@ -969,10 +982,10 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * The default value is 0.
    * \sa CS::Physics::iRigidBody::SetAngularDamping()
    */
-  virtual void SetAngularDamping (float d) = 0;
+  virtual void SetAngularDamping (csScalar d) = 0;
 
   /// Get the global angular damping value
-  virtual float GetAngularDamping () const = 0;
+  virtual csScalar GetAngularDamping () const = 0;
   
   /**
    * Set the parameters for AutoDisable.
@@ -1069,6 +1082,16 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * the dumping.
    */
   virtual void DumpProfile (bool resetProfile = true) = 0;
+
+  /**
+   * Will cause the step function to be called on this updatable every step
+   */
+  virtual void AddUpdatable(iUpdatable* u) = 0;
+  
+  /**
+   * Removes the given updatable
+   */
+  virtual void RemoveUpdatable(iUpdatable* u) = 0;
 };
 
 /**

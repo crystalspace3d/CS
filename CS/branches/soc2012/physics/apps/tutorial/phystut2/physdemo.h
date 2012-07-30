@@ -3,10 +3,11 @@
 
 #include "cssysdef.h"
 #include "csutil/weakref.h"
-
 #include "cstool/demoapplication.h"
-#include "ivaria/physics.h"
+
 #include "ivaria/collisions.h"
+#include "ivaria/physics.h"
+#include "ivaria/ivehicle.h"
 
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
@@ -46,6 +47,7 @@ static const int KeyBack = 's';
 static const int KeyStrafeLeft = 'a';
 static const int KeyStrafeRight = 'd';
 static const int KeyJump = CSKEY_SPACE;
+static const int KeyHandbrake = CSKEY_SPACE;
 
 
 class PhysDemo;
@@ -160,6 +162,9 @@ public:
 
   csHash<int, csString> debugNameMap;
 
+  // Vehicles
+  csRef<CS::Physics::iVehicle> actorVehicle;
+
 private:
   void Frame();
   bool OnKeyboard (iEvent &event);
@@ -207,7 +212,7 @@ public:
   void CreateTerrainRoom();
 
   void CreateGhostCylinder();
-  void GripContactBodies();
+  void ApplyGhostSlowEffect();
 
   /// Creates a new rigid body, places it at the given pos and, optionally, gives it some initial momentum
   csRef<CS::Physics::iRigidBody> SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos, 
@@ -283,10 +288,19 @@ public:
 
   /// Find the ground contact point beneath pos
   bool GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const;
-  
+
+  /// Find the ground contact point above pos
+  bool GetPointOnGroundAbovePos(const csVector3& pos, csVector3& groundPos) const;
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Object utilities
+  // Geometry utilities
+
+  csPtr<iMeshWrapper> CreateCylinderYMesh(csScalar length, csScalar radius, const char* materialName = "objtexture", const char* meshName = "cylinder");
+
+  csPtr<iMeshWrapper> CreateBoxMesh(const csVector3& extents, const char* materialName = "objtexture", const char* meshName = "box");
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Object & Actor utilities
 
   /// Test whether there are any objects beneath obj (that obj can collide with)
   bool TestOnGround(CS::Collisions::iCollisionObject* obj);
@@ -294,22 +308,75 @@ public:
   bool IsDynamic(CS::Collisions::iCollisionObject* obj) const;
 
   bool IsActor(CS::Collisions::iCollisionObject* obj) const;
+
+  bool GetObjectInFrontOfMe(CS::Collisions::HitBeamResult& result);
+
+  void PullObject();
   
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Items
 
   void CreateItemTemplates();
+  
 
-  //
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Mesh & Collider Utilities
   void CreateBoxMeshColliderPair(RenderMeshColliderPair& pair, const csVector3& extents);
+    
 
-  //
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Vehicles
+  
+  csPtr<CS::Physics::iVehicle> CreateVehicle();
+
+  void EnterTargetVehicle();
+  void LeaveCurrentVehicle();
+
+  void SpawnVehicle();
+  void DeleteTargetVehicle();
+
+  void AccelerateTargetVehicle();
+
+  CS::Physics::iVehicle* GetTargetVehicle();
+
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Input Tools
+
+  csVector3 GetInputDirection();
+
+  csScalar GetForward();
+  csScalar GetBackward();
+  csScalar GetLeftRight();
+
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Other
-  bool GetObjectInFrontOfMe(CS::Collisions::HitBeamResult& result);
 
-  void PullObject();
+  bool IsGravityOff() { return physicalSector->GetGravity().SquaredNorm() == 0; }
+  
+
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Frame
+
+  void DoStep();
+
+  void MoveActor();
+  void MoveActorVehicle();
+
+  void UpdateVehiclePassengers();
+
+  void RotateActor();
+
+  void MoveCamera();
+
+  void UpdateDragging();
+
+  void UpdateHUD();
+
+  void DoDebugDraw();
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1
@@ -326,5 +393,15 @@ private:
 };
 
 extern PhysDemo physDemo;
+
+/// Utility: Component-wise vector multiplication
+inline csVector3 ScaleVector3(const csVector3& v1, const csVector3& v2)
+{
+  csVector3 v3;
+  v3.x = v1.x * v2.x;
+  v3.y = v1.y * v2.y;
+  v3.z = v1.z * v2.z;
+  return v3;
+}
 
 #endif

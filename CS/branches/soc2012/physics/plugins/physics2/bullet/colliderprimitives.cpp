@@ -366,7 +366,6 @@ float csBulletColliderConvexMesh::ComputeShapeVolume() const
     return 0;
 
   size_t triangleCount = triMesh->GetTriangleCount ();
-  size_t vertexCount = triMesh->GetVertexCount ();
 
   csTriangle *c_triangle = triMesh->GetTriangles ();
   csVector3 *c_vertex = triMesh->GetVertices ();

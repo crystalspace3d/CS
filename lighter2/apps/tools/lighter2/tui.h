@@ -63,7 +63,7 @@ namespace lighter
 
     //Draw sector photon number, and if it's interactive ask to the user
     //how many photon he want to put
-    void DrawPhotonNumber(csString sectorName, int &photons,bool interactive) const;
+    void DrawPhotonNumber(csString sectorName, int &photons,bool interactive);
 
   private:
     csString GetProgressBar (uint percent) const;

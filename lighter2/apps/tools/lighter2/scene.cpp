@@ -382,7 +382,7 @@ namespace lighter
   csColor Sector::SamplePhoton(const csVector3 point, const csVector3 normal,
                     const float searchRad)
   {
-    if (photonMap == NULL) return csColor(0, 0, 0);
+    if (photonMap->GetPhotonCount() == 0) return csColor(0, 0, 0);
 
     // Local copy of the global options
     const static size_t densitySamples =
@@ -941,19 +941,24 @@ namespace lighter
       csRef<Sector> sect = sectIt.Next ();
       PropagateLights(sect);
     }
-
+    
+    bool photonMapperActive = (globalConfig.GetLighterProperties().directLightEngine == LIGHT_ENGINE_PHOTONMAPPER)
+      || (globalConfig.GetLighterProperties().indirectLightEngine == LIGHT_ENGINE_PHOTONMAPPER);
 
     //With the proxy lights we are able to know the adjacent sector
+    csRef<SectorProcessor> sectorProcessor = new SectorProcessor(globalLighter->objectRegistry);
     sectIt.Reset();
 
-    csRef<SectorProcessor> sectorProcessor = new SectorProcessor(globalLighter->objectRegistry);
     while (sectIt.HasNext())
     {
       csRef<Sector> sect = sectIt.Next();
       if (sect->sectorGroup == 0)
       {
         csRef<SectorGroup> sectorGroup = new SectorGroup(sect,sectorProcessor);
-        globalStats.scene.numPhotons += sectorGroup->computeNeededPhotonNumber();
+        if (photonMapperActive)
+        {
+          globalStats.scene.numPhotons += sectorGroup->computeNeededPhotonNumber();
+        }
         sectorGroups.Push(sectorGroup);
       }
     }

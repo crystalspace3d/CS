@@ -221,7 +221,7 @@ namespace lighter
   const uint allocTryNormal = 2;
   const uint allocDefault = allocTryNoGrow | allocTryNormal;
 
-  /// Allocate all queued primitves onto allocators from \a allocs.
+  /// Allocate all queued primitives onto allocators from \a allocs.
   template<class Arrays, class Allocators>
   static bool AllocAllPrims (const Arrays& arrays, Allocators& allocs,
     AllocResultHash& result, Statistics::Progress* progress, uint flags)

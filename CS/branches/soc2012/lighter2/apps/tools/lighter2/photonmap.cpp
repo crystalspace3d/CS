@@ -173,6 +173,8 @@ namespace lighter
   {
     coneK = 1.0;
     storedPhotons = 0;
+    halfStoredPhotons = 0;
+
     prevScale = 1;
     initialSize = maxPhotons = maxPhot;
 
@@ -548,7 +550,7 @@ namespace lighter
       free(pa1);
     }
 
-    halfStoredPhotons = storedPhotons/2-1;
+    if (storedPhotons!=0) halfStoredPhotons = storedPhotons/2-1;
     globalStats.photonmapping.KDTreeDepth =
       (int)floor(log10f(storedPhotons)/log10f(2.0));
   }

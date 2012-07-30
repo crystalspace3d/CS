@@ -523,11 +523,19 @@ namespace lighter
     kdLastNumNodes = globalStats.kdtree.numNodes;
   }
 
-   void TUI::DrawPhotonNumber(csString sectorName, int &photons,bool interactive) const
+   void TUI::DrawPhotonNumber(csString sectorName, int &photons,bool interactive)
    {
      if (interactive)
      {
-       //
+       int redrawFlags = TUI::TUI_DRAW_ALL ^ TUI::TUI_DRAW_MESSAGES;
+       TUI::Redraw(redrawFlags);
+       csPrintf (CS_ANSI_CURSOR(3, 21));
+       csPrintf("%d photons advised for %s sector",photons,sectorName.GetData());
+       csPrintf (CS_ANSI_CURSOR(3, 22));
+       int userPhotonsNbr;
+       csPrintf("Number to emit (type -1 to use the advised number) : ",photons,sectorName.GetData());
+       scanf("%d",&userPhotonsNbr);
+       if (userPhotonsNbr >= 0)  photons = userPhotonsNbr;
      }
      globalLighter->Notify("%d photons for %s sector",photons,sectorName.GetData());
    }

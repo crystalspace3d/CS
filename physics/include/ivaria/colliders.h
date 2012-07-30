@@ -85,8 +85,8 @@ struct iCollider : public virtual iBase
   /// Set the scale of the collider shape on X/Y/Z axis.
   virtual void SetLocalScale (const csVector3& scale) = 0;
 
-  /// Get the scale on X/Y/Z axis.
-  virtual const csVector3& GetLocalScale () const = 0;
+  /// Get the scale along the X/Y/Z axes.
+  virtual csVector3 GetLocalScale () const = 0;
   
   /// Set the margin of this collider
   virtual void SetMargin (float margin) = 0;

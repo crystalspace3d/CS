@@ -34,25 +34,6 @@
 #include "colliders.h"
 #include "ivaria/collisionfactories.h"
 
-// Some temporary stuff that has to be moved to a utility class or replaced by something entirely different:
-#define	SQRT2				1.41421356237f	
-
-/**
- * Very ugly and inefficient work-around to easily cast between two known-to-be-compatible types
- */
-template<typename T, typename T2>
-inline csPtr<T> DowncastPtr(csPtr<T2> ptr)
-{
-  return csPtr<T>(csRef<T>(csRef<T2>(ptr)));
-}
-template<typename T, typename T2>
-inline csPtr<T> DowncastPtr(T2* ptr)
-{
-  return DowncastPtr<T, T2>(csPtr<T2>(ptr));
-}
-
-typedef float csScalar;
-
 struct iTerrainSystem;
 struct iSector;
 struct iMeshWrapper;
@@ -73,17 +54,6 @@ namespace CS
 {
 namespace Collisions
 {
-static const int UpAxis = 1;
-static const int HorizontalAxis1 = 0;
-static const int HorizontalAxis2 = 2;
-static const csVector3 UpVector(0, 1, 0);
-
-/// 3D vector defined by Horizontal (2D) and Vertical (1D) components
-#define HV_VECTOR3(horizontal2, vertical1) csVector3((horizontal2).x, vertical1, (horizontal2).y)
-
-/// 2D horizontal components of the given 3D vector
-#define HORIZONTAL_COMPONENT(vec3) csVector2((vec3).x, (vec3).z);
-
 struct csConvexResult;
 struct iCollisionCallback;
 struct iCollisionObject;
@@ -288,6 +258,11 @@ struct iCollisionObject : public virtual iBase
 
   /// Get the collision object contacted with this object by index.
   virtual iCollisionObject* GetContactObject (size_t index) = 0;
+  
+  /// Whether this object may be excluded from deactivation.
+  virtual bool GetMayBeDeactivated() const = 0;
+  /// Whether this object may be excluded from deactivation.
+  virtual void SetMayBeDeactivated(bool d) = 0;
 };
 
 /**
@@ -541,7 +516,7 @@ struct iCollisionSystem : public virtual iBase
   virtual csPtr<iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled (
     iColliderConcaveMesh* collider, csVector3 scale) = 0;
 
-  /// Create a cylinder collider.
+  /// Create a cylinder collider, oriented along the y-axis
   virtual csPtr<iColliderCylinder> CreateColliderCylinder (float length, float radius) = 0;
 
   /// Create a box collider.

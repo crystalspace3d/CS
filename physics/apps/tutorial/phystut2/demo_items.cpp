@@ -73,10 +73,22 @@ void PhysDemo::CreateItemTemplates()
   }
   
   {
-    // Does some cool gravity stuff
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Gravity Manipulator");
+    // Force Manipulator: Introduces fun forces
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Force Manipulator");
 
     AddItemFunction(Secondary, PullObject, "Pull Object", physDemo.PullObject());
+  }
+
+  {
+    // Vehicle Manager
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Vehicle Manager");
+    
+    AddItemFunction(Primary, EnterTargetVehicle, "Enter Target Vehicle", physDemo.EnterTargetVehicle());
+    AddItemFunction(Primary, DeleteTargetVehicle, "Delete Target Vehicle", physDemo.DeleteTargetVehicle());
+    
+    AddItemFunction(Secondary, AccelerateVehicle, "Leave Current Vehicle", physDemo.LeaveCurrentVehicle());
+    AddItemFunction(Secondary, SpawnVehicle, "Spawn New Vehicle", physDemo.SpawnVehicle());
+    AddItemFunction(Secondary, AccelerateVehicle, "Accelerate Target Vehicle", physDemo.AccelerateTargetVehicle());
   }
 }
 

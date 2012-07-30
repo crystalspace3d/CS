@@ -14,7 +14,44 @@
 #include "physdemo.h"
 
 using namespace CS::Collisions;
+using namespace CS::Physics;
 
+csScalar PhysDemo::GetForward()
+{
+  if (kbd->GetKeyState (KeyForward) || kbd->GetKeyState(CSKEY_UP))
+  {
+    return 1;
+  }
+  return 0;
+}
+
+csScalar PhysDemo::GetBackward()
+{
+  if (kbd->GetKeyState (KeyBack) || kbd->GetKeyState(CSKEY_DOWN))
+  {
+     return 1;
+  }
+  return 0;
+}
+
+csScalar PhysDemo::GetLeftRight()
+{
+  csScalar val = 0;
+  if (kbd->GetKeyState (KeyStrafeLeft))
+  {
+    val -= 1;
+  }
+  if (kbd->GetKeyState (KeyStrafeRight))
+  {
+    val += 1;
+  }
+  return val;
+}
+
+csVector3 PhysDemo::GetInputDirection()
+{
+  return csVector3(GetLeftRight(), 0, GetForward() - GetBackward());
+}
 
 bool PhysDemo::OnKeyboard (iEvent &event)
 {
@@ -40,7 +77,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code >= '1' && code <= '9')
   {
     int i = code - '1';
-    if (player.GetInventory().GetItem(i))
+    if (player.GetInventory().GetItems().GetSize() > i)
     {
       // A different item has been selected: Select it and update HUD descriptions
       selectedItem = player.GetInventory().GetItem(i);
@@ -55,7 +92,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     // reset
     physDemo.ResetWorld();
   }
-  else if (code == 'c')
+  else if (code == 'c' && !actorVehicle)    // don't switch modes while in vehicle
   {
     // Toggle camera mode
     switch (physicalCameraMode)
@@ -333,6 +370,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
       force *= 20.f;
 
       csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
+      force *= physicalBody->GetMass();
       if (physicalBody->QueryRigidBody())
       {
         csOrthoTransform trans = physicalBody->GetTransform();

@@ -33,6 +33,8 @@
 #define __CS_BULLET_SECTOR_H__
 
 struct iSector;
+struct iMovable;
+
 class btCollisionObject;
 class btCompoundShape;
 class btDynamicsWorld;
@@ -41,6 +43,7 @@ class btDefaultCollisionConfiguration;
 class btSequentialImpulseConstraintSolver;
 class btBroadphaseInterface;
 struct btSoftBodyWorldInfo;
+class btActionInterface;
 
 //class btGhostObject;
 
@@ -56,6 +59,14 @@ class csBulletCollisionActor;
 class csBulletCollider;
 class csBulletJoint;
 class csBulletCollisionPortal;
+
+struct BulletActionWrapper : public virtual CS::Physics::iUpdatable
+{
+  SCF_INTERFACE (CS::Plugin::Bullet2::BulletActionWrapper, 1, 0, 0);
+
+  virtual btActionInterface* GetBulletAction() = 0;
+};
+
 
 // Also implements iPhysicalSector
 class csBulletSector : public scfImplementationExt1<
@@ -106,6 +117,8 @@ class csBulletSector : public scfImplementationExt1<
   csRefArrayObject<csBulletSoftBody> softBodies;
   csWeakRefArray<csBulletSoftBody> anchoredSoftBodies;
   csRef<iSector> sector;
+
+  csRefArray<CS::Physics::iUpdatable> updatables;
 
   void CheckCollisions();
   void UpdatecsBulletCollisionPortals ();
@@ -216,11 +229,22 @@ public:
 
   void UpdateSoftBodies (float timeStep);
 
-  void AddMovableToSector (CS::Collisions::iCollisionObject* obj);
+  void AddMovableToSector (iMovable* movable);
 
-  void RemoveMovableFromSector (CS::Collisions::iCollisionObject* obj);
+  void RemoveMovableFromSector (iMovable* movable);
 
   inline csScalar GetWorldTimeStep() const { return worldTimeStep; }
+
+
+  /**
+   * Will cause the step function to be called on this updatable every step
+   */
+  virtual void AddUpdatable(CS::Physics::iUpdatable* u);
+  
+  /**
+   * Removes the given updatable
+   */
+  virtual void RemoveUpdatable(CS::Physics::iUpdatable* u);
 };
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

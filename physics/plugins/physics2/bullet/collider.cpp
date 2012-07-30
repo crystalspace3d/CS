@@ -67,7 +67,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     return isDirty;
   }
 
-  const csVector3& csBulletCollider::GetLocalScale () const
+  csVector3 csBulletCollider::GetLocalScale () const
   {
     if (shape)
     {

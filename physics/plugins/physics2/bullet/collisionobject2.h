@@ -28,7 +28,7 @@ protected:
   csRefArray<csBulletCollisionObject> contactObjects;
   csArray<CS::Physics::iJoint*> joints;
   CS::Collisions::CollisionGroup collGroup;
-  csWeakRef<iMovable> movable;
+  csWeakRef<iMovable> movable;      // must be a weak ref, because life-time does not coincide with owning mesh
   csWeakRef<iCamera> camera;
   csRef<CS::Collisions::iCollisionCallback> collCb;
 
@@ -63,9 +63,20 @@ public:
 
   virtual CS::Collisions::CollisionObjectType GetObjectType () const = 0;
 
-  virtual void SetAttachedMovable (iMovable* movable) 
+  virtual void SetAttachedMovable (iMovable* newMovable) 
   {
-    this->movable = movable; if (movable) movable->SetFullTransform(GetTransform());
+    if (movable)
+    {
+      // remove old movable from sector
+      if (sector) sector->RemoveMovableFromSector(movable); 
+    }
+    this->movable = newMovable; 
+    if (newMovable) 
+    {
+      // add new movable to sector
+      newMovable->SetFullTransform(GetTransform()); 
+      if (sector) sector->AddMovableToSector(newMovable); 
+    }
   }
 
   virtual iMovable* GetAttachedMovable () { return movable; }
@@ -118,6 +129,11 @@ public:
   }
 
   bool TestOnGround();
+
+  /// Whether this object may be excluded from deactivation.
+  virtual bool GetMayBeDeactivated() const { return btObject->getActivationState() == DISABLE_DEACTIVATION; }
+  /// Whether this object may be excluded from deactivation.
+  virtual void SetMayBeDeactivated(bool d) { btObject->setActivationState(d ? 0 : DISABLE_DEACTIVATION); }
 };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

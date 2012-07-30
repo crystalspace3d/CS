@@ -53,6 +53,8 @@
 #include "collisionactor.h"
 #include "joint2.h"
 
+#include "vehicle.h"
+
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
@@ -553,6 +555,29 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
   //joints.Push (joint);
   return csPtr<CS::Physics::iJoint>(joint);
 }
+
+
+// Vehicles
+
+/// Creates a new factory to produce vehicles
+csPtr<iVehicleFactory> csBulletSystem::CreateVehicleFactory ()
+{
+  return DowncastPtr<iVehicleFactory, BulletVehicleFactory>(new BulletVehicleFactory(this));
+}
+
+/// Creates a new factory to produce vehicle wheels
+csPtr<iVehicleWheelFactory> csBulletSystem::CreateVehicleWheelFactory ()
+{
+  return DowncastPtr<iVehicleWheelFactory, BulletVehicleWheelFactory>(new BulletVehicleWheelFactory(this));
+}
+
+iVehicle* csBulletSystem::GetVehicle (iCollisionObject* obj)
+{
+  return vehicleMap.Get(obj, nullptr);
+}
+
+
+// Misc
 
 void csBulletSystem::ReportWarning (const char* msg, ...)
 {

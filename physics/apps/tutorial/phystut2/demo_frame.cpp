@@ -41,14 +41,162 @@ void PhysDemo::PrintHelp()
 
 void PhysDemo::Frame()
 {
+/*if (physicalSector->GetSoftBodyCount())
+  {
+    csVector3 aabbMin, aabbMax;
+    physicalSector->GetSoftBody(0)->GetAABB(aabbMin, aabbMax);
+    csVector3 o = aabbMin + (aabbMax - aabbMin) / 2;
+    csPrintf("SB #0: %f, %f, %f\n", o.x, o.y, o.z);
+  }*/
+
+
+  // Rotate actor
+  RotateActor();
+
+  if (!pauseDynamic)
+  {
+    if (actorVehicle)
+    {
+      // Update vehicle
+      MoveActorVehicle();
+    }
+    else
+    {
+      // Update actor
+      MoveActor();
+    }
+    // Simulate one step
+    DoStep();
+  }
+
+  // Update passengers of all vehicles (this should probably be assisted by the physics plugin)
+  UpdateVehiclePassengers();
+
+  // Move the camera
+  MoveCamera();
+
+  // Update position of an object currently dragged by the mouse
+  UpdateDragging();
+
+  // Weird and irritating stuff...
+  ApplyGhostSlowEffect();
+  
+  // Update the demo's state information
+  UpdateHUD();
+
+  // Default behavior from DemoApplication
+  DemoApplication::Frame();
+
+  // Display debug informations
+  DoDebugDraw();
+}
+
+void PhysDemo::MoveActor()
+{
+  // Dynamics and actor simulation
   // First get elapsed time from the virtual clock.
   csTicks elapsed_time = vc->GetElapsedTicks();
+  const float moveSpeed = environment == ENVIRONMENT_TERRAIN ? 30.0f : 4.0f;
+
+  static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
+
+  const float timeMs = elapsed_time / 1000.0;
+
+  iCamera* cam = view->GetCamera();
+  csOrthoTransform& camTrans = cam->GetTransform();
+  // player.GetObject()->SetTransform(actorTrans);
+  csOrthoTransform actorTrans = player.GetObject()->GetTransform();
+
+  // handle movement
+  // intended movement direction
+  if (player.GetActor())
+  {
+    iCollisionObject* actorObj = player.GetObject();
+    /*csVector3 aabbMin, aabbMax;
+    actorObj->GetAABB(aabbMin, aabbMax);*/
+
+    csVector3 newVel = GetInputDirection();
+    bool hasMoveDir = newVel.x + newVel.z + newVel.z != 0;
+    bool wantsToMove = hasMoveDir | kbd->GetKeyState(KeyJump);
+
+    if (!wantsToMove)
+    {
+      // stop any player-controlled movement
+      player.GetActor()->StopMoving();
+    }
+    else
+    {
+      // move actor
+      if (hasMoveDir)
+      {
+        newVel = camTrans.GetT2O() * newVel;
+
+        bool freeFall = player.GetActor()->IsFreeFalling();
+
+        // actor is on ground, flying or has air control
+        if (!freeFall || player.GetActor()->GetAirControlFactor() > 0)
+        {
+          // wants to move and may move
+          if (!IsGravityOff())
+          {
+            // Only walk horizontally when gravity applies
+            csVector2 newVel2 = HORIZONTAL_COMPONENT(newVel);
+            player.GetActor()->WalkHorizontal(newVel2);
+            //dynamicActor->Walk(newVel);
+          }
+          else
+          {
+            // move freely when gravity is off
+            player.GetActor()->Walk(newVel);
+          }
+        }
+      }
+      if (!player.GetActor()->IsFreeFalling() && kbd->GetKeyState(KeyJump))
+      {
+        // Jump
+        player.GetActor()->Jump();
+      }
+    }
+  }
+  else
+  {
+    // Only move camera
+    csVector3 newVel = GetInputDirection();
+    if (kbd->GetKeyState(KeyJump))
+    {
+      // add upward movement
+      newVel[UpAxis] += moveSpeed;
+    }
+    cam->Move (newVel * moveSpeed * timeMs);
+  }
+}
+
+void PhysDemo::DoStep()
+{
+  csTicks elapsed_time = vc->GetElapsedTicks();
+  const float timeMs = elapsed_time / 1000.0;
+
+  if (player.GetActor())
+  {
+    player.GetActor()->UpdatePreStep(timeMs * dynamicStepFactor);
+  }
+  physicalSector->Step (timeMs * dynamicStepFactor);
+  if (player.GetActor())
+  {
+    player.GetActor()->UpdatePostStep(timeMs * dynamicStepFactor);
+  }
+}
+
+void PhysDemo::RotateActor()
+{
+  csTicks elapsed_time = vc->GetElapsedTicks();
+
+  const float timeMs = elapsed_time / 1000.0;
 
   float moveSpeed = environment == ENVIRONMENT_TERRAIN ? 30.0f : 4.0f;
 
   static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
 
-  const float timeMs = elapsed_time / 1000.0;
 
   iCamera* cam = view->GetCamera();
   csOrthoTransform& camTrans = cam->GetTransform();
@@ -67,23 +215,23 @@ void PhysDemo::Frame()
     csVector3 camDir3 = camTrans.GetT2O() * csVector3(0, 0, 1);
     float vertCos = camDir3 * UpVector;
 
-    float leftRightAmount = 0;
+    float yaw = 0;
     if (kbd->GetKeyState (KeyLeft) || kbd->GetKeyState(CSKEY_LEFT))
     {
-      leftRightAmount -= turnAmount;
+      yaw -= turnAmount;
     }
     if (kbd->GetKeyState (KeyRight) || kbd->GetKeyState(CSKEY_RIGHT))
     {
-      leftRightAmount += turnAmount;
+      yaw += turnAmount;
     }
 
     csVector2 actorDir2 = HORIZONTAL_COMPONENT(actorDir3);
-    if (leftRightAmount)
+    if (yaw)
     {
-      actorDir2.Rotate(leftRightAmount);
+      actorDir2.Rotate(yaw);
 
       csVector2 camDir2 = HORIZONTAL_COMPONENT(camDir3);
-      camDir2.Rotate(leftRightAmount);
+      camDir2.Rotate(yaw);
       camDir3 = HV_VECTOR3(camDir2, camDir3[UpAxis]);
 
       // Update horizontal panning of actor
@@ -123,112 +271,53 @@ void PhysDemo::Frame()
       camTrans.LookAt(camDir3, UpVector);
     }
   }
+}
 
-  // Dynamics and actor simulation
-  if (!pauseDynamic)
+void PhysDemo::MoveCamera()
+{
+  iCamera* cam = view->GetCamera();
+  csOrthoTransform& camTrans = cam->GetTransform();
+
+  if (player.GetObject())
   {
-    if (physicalSector->GetSoftBodyCount())
-    {
-      csVector3 aabbMin, aabbMax;
-      physicalSector->GetSoftBody(0)->GetAABB(aabbMin, aabbMax);
-      csVector3 o = aabbMin + (aabbMax - aabbMin) / 2;
-      csPrintf("SB #0: %f, %f, %f\n", o.x, o.y, o.z);
-    }
+    // adjust camera relative to actor
+    csOrthoTransform actorTrans = player.GetObject()->GetTransform();
+    csVector3 targetPos = player.GetObject()->GetTransform().GetOrigin();
 
-    // handle movement
-    // intended movement direction
-    bool gravityOff = physicalSector->GetGravity().SquaredNorm() == 0;
-
-    csVector3 newVel(0);
-    if (kbd->GetKeyState (KeyForward) || kbd->GetKeyState(CSKEY_UP))
+    if (camFollowMode != CamFollowMode1stPerson)
     {
-      newVel.z += 1;
-    }
-    if (kbd->GetKeyState (KeyBack) || kbd->GetKeyState(CSKEY_DOWN))
-    {
-      newVel.z -= 1;
-    }
-    if (kbd->GetKeyState (KeyStrafeLeft))
-    {
-      newVel.x -= 1;
-    }
-    if (kbd->GetKeyState (KeyStrafeRight))
-    {
-      newVel.x += 1;
-    }
+      csVector3 pos = camTrans.GetOrigin();
 
-    bool hasMoveDir = newVel.x + newVel.z + newVel.z != 0;
-    bool wantsToMove = hasMoveDir | kbd->GetKeyState(KeyJump);
-    if (player.GetActor())
-    {
-      iCollisionObject* colCurrentActor = player.GetObject();
-      /*csVector3 aabbMin, aabbMax;
-      colCurrentActor->GetAABB(aabbMin, aabbMax);*/
+      // camera follows the actor, looking over the shoulder
+      csScalar camDistFactor = camFollowMode == CamFollowMode3rdPersonFar ? 3 : 1;
+      csScalar camDistance = 2 * camDistFactor * ActorDimensions.Norm();
 
-      if (!wantsToMove)
-      {
-        // stop any player-controlled movement
-        player.GetActor()->StopMoving();
-      }
-      else
-      {
-        // move actor
-        if (hasMoveDir)
-        {
-          newVel = camTrans.GetT2O() * newVel;
-        }
+      targetPos -= camDistance * actorTrans.GetT2O() * csVector3(0, -1, 1); // * (1 / SQRT2)
 
-        bool freeFall = player.GetActor()->IsFreeFalling();
-        bool gravityOff = physicalSector->GetGravity().SquaredNorm() == 0;
+      // interpolate between current pos and target pos
+      static const csScalar targetWeight = csScalar(0.1);
+      targetPos = targetWeight * targetPos + (1 - targetWeight) * pos;
+      camTrans.SetOrigin(targetPos);
 
-        // actor is on ground, flying or has air control
-        if (hasMoveDir && (!freeFall || player.GetActor()->GetAirControlFactor() > 0)) 
-        {
-          // wants to move and may move
-          if (!gravityOff)
-          {
-            // Only walk horizontally when gravity applies
-            csVector2 newVel2 = HORIZONTAL_COMPONENT(newVel);
-            player.GetActor()->WalkHorizontal(newVel2);
-            //dynamicActor->Walk(newVel);
-          }
-          else
-          {
-            // move freely when gravity is off
-            player.GetActor()->Walk(newVel);
-          }
-        }
-        if (!player.GetActor()->IsFreeFalling() && kbd->GetKeyState(KeyJump))
-        {
-          // Jump
-          player.GetActor()->Jump();
-        }
-      }
+      // let the camera look at a point in front of the actor
+      csVector3 lookAtPos = actorTrans.GetOrigin() + actorTrans.GetT2O() * csVector3(0, 0, 1) - targetPos;
+      camTrans.LookAt(lookAtPos, UpVector);
     }
     else
     {
-      // Only move camera
-      if (kbd->GetKeyState(KeyJump))
-      {
-        // add upward movement
-        newVel[UpAxis] += moveSpeed;
-      }
-      cam->Move (newVel * moveSpeed * timeMs);
-    }
-
-    if (player.GetActor())
-    {
-      player.GetActor()->UpdatePreStep(timeMs * dynamicStepFactor);
-    }
-    physicalSector->Step (timeMs * dynamicStepFactor);
-    if (player.GetActor())
-    {
-      player.GetActor()->UpdatePostStep(timeMs * dynamicStepFactor);
+      // Move camera eye level (~ 0.9 * actorheight)
+      camTrans.SetOrigin(targetPos + csVector3(0, csScalar(.4) * ActorDimensions.y, 0));
     }
   }
+}
 
+void PhysDemo::UpdateDragging()
+{
   if (dragging)
   {
+    iCamera* cam = view->GetCamera();
+    csOrthoTransform& camTrans = cam->GetTransform();
+
     // Keep the drag joint at the same distance to the camera
     csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
     csVector3 v3d = cam->InvPerspective (v2d, 10000);
@@ -240,44 +329,29 @@ void PhysDemo::Frame()
     newPosition = camTrans.GetOrigin() + newPosition * dragDistance;
     dragJoint->SetPosition (newPosition);
   }
+}
 
-  if (player.GetActor())
-  {
-    // adjust camera relative to actor
-    csVector3 targetPos = player.GetObject()->GetTransform().GetOrigin();
-
-    if (camFollowMode != CamFollowMode1stPerson)
-    {
-      csVector3 pos = camTrans.GetOrigin();
-
-      // camera follows behind the actor, looking over the shoulder
-      csScalar camDistFactor = camFollowMode == CamFollowMode3rdPersonFar ? 3 : 1;
-      csScalar camDistance = 2 * camDistFactor * ActorDimensions.Norm();
-
-      targetPos -= camDistance * actorTrans.GetT2O() * csVector3(0, -1, 1); // * (1 / SQRT2)
-
-      // interpolate between current pos and target pos
-      static const csScalar targetWeight = csScalar(0.1);
-      targetPos = targetWeight * targetPos + (1 - targetWeight) * pos;
-      camTrans.SetOrigin(targetPos);
-
-      // let the camera look in front of the actor
-      csVector3 lookAtPos = actorTrans.GetOrigin() + actorTrans.GetT2O() * csVector3(0, 0, 1) - targetPos;
-      camTrans.LookAt(lookAtPos, UpVector);
-    }
-    else
-    {
-      camTrans.SetOrigin(targetPos);
-    }
-  }
-
-  GripContactBodies();
-
-  // Update the demo's state information
+void PhysDemo::UpdateHUD()
+{
   hudManager->GetStateDescriptions()->Empty();
   csString txt;
 
   hudManager->GetStateDescriptions()->Push (csString ("Physics engine: ") + phys_engine_name);
+
+  if (actorVehicle || player.GetObject()->QueryPhysicalBody())
+  {
+    csScalar speed;
+    if (actorVehicle)
+    {
+      speed = actorVehicle->GetSpeedKMH();
+    }
+    else
+    {
+      speed = csScalar(3.6) * player.GetObject()->QueryPhysicalBody()->GetLinearVelocity().Norm();
+    }
+    txt.Format ("Current speed : %.3f km/h", speed);
+    hudManager->GetStateDescriptions()->Push (txt);
+  }
 
   txt.Format ("Collision objects count: %zu", physicalSector->GetCollisionObjectCount());
   hudManager->GetStateDescriptions()->Push (txt);
@@ -308,11 +382,10 @@ void PhysDemo::Frame()
   default:
     break;
   }
+}
 
-  // Default behavior from DemoApplication
-  DemoApplication::Frame();
-
-  // Display debug informations
+void PhysDemo::DoDebugDraw()
+{
   if (do_bullet_debug)
     bulletSector->DebugDraw (view);
   else if (isSoftBodyWorld && do_soft_debug)

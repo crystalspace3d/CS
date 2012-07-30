@@ -23,6 +23,7 @@
 #include "csutil/scf.h"
 #include "csutil/nobjvec.h"
 #include "csutil/scf_implementation.h"
+#include "csutil/hash.h"
 #include "ivaria/reporter.h"
 #include "ivaria/collisions.h"
 #include "ivaria/physics.h"
@@ -45,7 +46,6 @@ class btDefaultCollisionConfiguration;
 class btSequentialImpulseConstraintSolver;
 class btBroadphaseInterface;
 struct btSoftBodyWorldInfo;
-
 //class btGhostObject;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
@@ -107,6 +107,7 @@ private:
   
   CollisionGroupVector collGroups;
   size_t systemFilterCount;
+  csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*> vehicleMap;
 
 public:
   csBulletSystem (iBase* iParent);
@@ -179,6 +180,21 @@ public:
   virtual csPtr<CS::Physics::iJoint> CreateSoftLinearJoint (const csVector3 position);
   virtual csPtr<CS::Physics::iJoint> CreateSoftAngularJoint (int axis);
   virtual csPtr<CS::Physics::iJoint> CreateRigidPivotJoint (CS::Physics::iRigidBody* body, const csVector3 position);
+
+
+
+  // Vehicles
+  
+  /// Creates a new factory to produce vehicles
+  virtual csPtr<CS::Physics::iVehicleFactory> CreateVehicleFactory ();
+
+  /// Creates a new factory to produce vehicle wheels
+  virtual csPtr<CS::Physics::iVehicleWheelFactory> CreateVehicleWheelFactory ();
+  
+  /// Returns the vehicle that the given object is a part of, or nullptr
+  virtual CS::Physics::iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj);
+
+  csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& GetVehicleMap() { return vehicleMap; }
 
 
   // Misc

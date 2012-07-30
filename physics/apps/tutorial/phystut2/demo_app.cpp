@@ -28,8 +28,8 @@ PhysDemo::PhysDemo()
   //physicalCameraMode (ACTOR_KINEMATIC)
   physicalCameraMode (ACTOR_DYNAMIC)
   ,
-  //defaultEnvironmentName("terrain")
-  defaultEnvironmentName("portals")
+  defaultEnvironmentName("terrain")
+  //defaultEnvironmentName("portals")
 {
 }
 
@@ -131,6 +131,7 @@ bool PhysDemo::Application()
   if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif")) return ReportError ("Could not load texture: stone");
   if (!loader->LoadTexture ("objtexture", "/lib/std/blobby.jpg")) return ReportError ("Error loading texture: blobby");
+  if (!loader->LoadTexture ("misty", "/lib/std/misty.jpg")) return ReportError ("Error loading texture: misty");
 
   // Create the environment
   switch (environment)
@@ -244,7 +245,12 @@ void PhysDemo::SetupHUD()
   {
     ItemTemplate& templ = selectedItem->GetTemplate();
     desc.Push ("--Current Tool (" + templ.GetName() + ")--");
-    for (size_t i = 0; i < templ.GetFunctionCount(); ++i)
+    for (size_t i = 0; i < csMin(templ.GetPrimaryFunctions().GetSize(), size_t(2)); ++i)
+    {
+      ItemFunction* func = templ.GetPrimaryFunction(i);
+      desc.Push (csString().Format(" %s: %s", i == 0 ? "LMB" : "RMB", func->GetName().GetData()));
+    }
+    for (size_t i = 0; i < templ.GetSecondaryFunctions().GetSize(); ++i)
     {
       ItemFunction* func = templ.GetSecondaryFunction(i);
       desc.Push (csString().Format(" F%d: %s", i+1, func->GetName().GetData()));
@@ -265,7 +271,7 @@ void PhysDemo::SetupHUD()
 
 
 
-void PhysDemo::GripContactBodies()
+void PhysDemo::ApplyGhostSlowEffect()
 {
   if (!ghostObject) return;
 
@@ -287,7 +293,7 @@ void PhysDemo::GripContactBodies()
       else
       {
         iSoftBody* sb = pb->QuerySoftBody();
-        sb->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
+        sb->QueryPhysicalBody()->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
         //sb->SetLinearVelocity (csVector3 (0,0,-1.0f));
       }
     }
@@ -415,6 +421,19 @@ void PhysDemo::ResetWorld()
 bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const
 {
   csVector3 to = pos - 10000 * UpVector;
+  HitBeamResult result = physicalSector->HitBeam(pos, to);
+
+  if (result.hasHit)
+  {
+    groundPos = result.isect;
+    return true;
+  }
+  return false;
+}
+
+bool PhysDemo::GetPointOnGroundAbovePos(const csVector3& pos, csVector3& groundPos) const
+{
+  csVector3 to = pos + 10000 * UpVector;
   HitBeamResult result = physicalSector->HitBeam(pos, to);
 
   if (result.hasHit)

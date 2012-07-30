@@ -59,6 +59,7 @@ const float COLLISION_THRESHOLD = 0.01f;
 
 
 using namespace CS::Collisions;
+using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
@@ -110,14 +111,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   csBulletSector::~csBulletSector ()
   {
+    // remove updatables
+    while (updatables.GetSize())
+    {
+      RemoveUpdatable(updatables[updatables.GetSize() - 1]);
+    }
+
+    // remove portals
     for (size_t i = 0; i < portals.GetSize (); ++i)
     {
       bulletWorld->removeCollisionObject (portals[i]->ghostPortal);
     }
+
+    // remove collision objects
     for (size_t i = 0; i < collisionObjects.GetSize (); ++i)
     {
       collisionObjects[i]->RemoveBulletObject();
     }
+
+    // remove constraints
     for (size_t i = 0; i < joints.GetSize(); ++i)
     {
       joints[i]->RemoveBulletJoint();
@@ -206,7 +218,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       break;
     }
 
-    AddMovableToSector (object);
+    AddMovableToSector (object->GetAttachedMovable());
 
     // add all objects to the collisionObjects list
     collisionObjects.Push (obj);
@@ -222,7 +234,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (removed)
     {
       collisionObjects.Delete (collObject);
-      RemoveMovableFromSector (object);
+      RemoveMovableFromSector (object->GetAttachedMovable());
 
       if (collObject->IsPhysicalObject())
       {
@@ -699,11 +711,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     // Send the collision response of copies to source object.
     for (size_t i = 0; i < collisionObjects.GetSize (); i++)
+    {
       if (collisionObjects[i]->objectOrigin)
         GetInformationFromCopy (collisionObjects[i]->objectOrigin, collisionObjects[i]);
+    }
 
     // Check for collisions
     CheckCollisions();
+
+    for (size_t i = 0; i < updatables.GetSize (); i++)
+    {
+      updatables[i]->DoStep(duration);
+    }
   }
 
   void csBulletSector::SetLinearDamping (float d)
@@ -971,9 +990,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  void csBulletSector::AddMovableToSector (CS::Collisions::iCollisionObject* obj)
+  void csBulletSector::AddMovableToSector (iMovable* movable)
   {
-    iMovable* movable = obj->GetAttachedMovable ();
     if (movable && sector)
     {
       iMeshWrapper* mesh = movable->GetSceneNode ()->QueryMesh ();
@@ -989,9 +1007,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  void csBulletSector::RemoveMovableFromSector (CS::Collisions::iCollisionObject* obj)
+  void csBulletSector::RemoveMovableFromSector (iMovable* movable)
   {
-    iMovable* movable = obj->GetAttachedMovable ();
     if (movable && sector)
     {
       iMeshWrapper* mesh = movable->GetSceneNode ()->QueryMesh ();
@@ -1122,6 +1139,49 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
       // Need to think about the implementation of actor.
     }
+  }
+  
+
+  /**
+   * Will cause the step function to be called on this updatable every step
+   */
+  void csBulletSector::AddUpdatable(iUpdatable* u)
+  {
+    updatables.Push(u);
+
+    if (u->GetCollisionObject())
+    {
+      AddCollisionObject(u->GetCollisionObject());
+    }
+
+    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper>(u);
+    if (wrapper && wrapper->GetBulletAction())
+    {
+      bulletWorld->addAction(wrapper->GetBulletAction());
+    }
+
+    u->OnAdded(this);
+  }
+  
+  /**
+   * Removes the given updatable
+   */
+  void csBulletSector::RemoveUpdatable(iUpdatable* u)
+  {
+    if (u->GetCollisionObject())
+    {
+      RemoveCollisionObject(u->GetCollisionObject());
+    }
+
+    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper>(u);
+    if (wrapper && wrapper->GetBulletAction())
+    {
+      bulletWorld->removeAction(wrapper->GetBulletAction());
+    }
+    
+    u->OnRemoved(this);
+
+    updatables.Delete(u);   // delete last because that might be the last hard reference
   }
 
 }

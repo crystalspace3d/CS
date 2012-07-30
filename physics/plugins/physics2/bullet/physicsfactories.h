@@ -25,7 +25,6 @@
 
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
-class BulletSector;
 class btCollisionObject;
 class btCompoundShape;
 class btDynamicsWorld;
@@ -35,9 +34,12 @@ class btSequentialImpulseConstraintSolver;
 class btBroadphaseInterface;
 struct btSoftBodyWorldInfo;
 
-
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+
+  class csBulletSystem;
+  class BulletSector;
+
   /**
    * Base class for all object properties
    */

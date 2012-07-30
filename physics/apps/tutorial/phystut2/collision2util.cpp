@@ -44,7 +44,7 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
 
   if (meshFactory)
   {
-    csRef<::iObject> meshFactoryObj = scfQueryInterface<::iObject>(meshFactory);
+    ::iObject* meshFactoryObj = meshFactory->QueryObject ();
     if (meshFactoryObj)
     {
       iMovable* movable = mesh->GetMovable();

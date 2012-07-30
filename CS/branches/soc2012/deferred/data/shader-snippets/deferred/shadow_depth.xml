@@ -107,9 +107,6 @@
     <!-- Cg implementation -->
     <block location="cg:fragmentMain">
     <![CDATA[
-      // define our comparison bias
-      float bias = 0.0003;
-
       // go over all shadow maps and find the one applicapble to us
       int slice;
       for(slice = 0; slice < shadowSpread && slice < MAX_CSM; ++slice)
@@ -136,12 +133,7 @@
       float3 positionP = positionS.xyz / positionS.w;
 
       // transform into actual texture coord
-      float3 texCoord = positionP;
-      texCoord.y *= -1; // flip y
-      texCoord = float3(0.5) * texCoord + float3(0.5);
-
-      // adjust bias
-      texCoord.z -= bias;
+      float3 texCoord = float3(0.5) * positionP + float3(0.5);
 
       // set fixed value if position is off the map
     ]]>
@@ -172,9 +164,6 @@
     <!-- GLSL implementation -->
     <block location="glsl:fragmentMain">
     <![CDATA[
-      // define our comparison bias
-      float bias = 0.0003;
-
       // go over all shadow maps and find the one applicapble to us
       int slice;
       for(slice = 0; slice < min(shadowSpread,MAX_CSM); ++slice)
@@ -202,11 +191,8 @@
 
       // transform into actual texture coord
       vec3 texCoord = positionP;
-      texCoord.y *= -1; // flip y
       texCoord = vec3(0.5) * texCoord + vec3(0.5);
 
-      // adjust bias
-      texCoord.z -= bias;
     ]]>
     <?if (vars."light type".int != consts.CS_LIGHT_DIRECTIONAL) ?>
       // unscale position

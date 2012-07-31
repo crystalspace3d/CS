@@ -38,12 +38,11 @@ Context::Context (iObjectRegistry* obj_reg)
   // Create a new event queue (and hack around the fact that a new
   // csEventQueue instance will be registered to the object registry,
   // hence overwriting the global event queue).
-  //*
   csRef<iEventQueue> mainEventQueue =
     csQueryRegistry<iEventQueue> (object_reg);
   eventQueue.AttachNew (new csEventQueue (object_reg));
   object_reg->Register (mainEventQueue, "contextQueue");
-  //*/
+
   // Initialize the event ID's
   csRef<iEventNameRegistry> registry =
     csQueryRegistry<iEventNameRegistry> (object_reg);
@@ -120,7 +119,6 @@ iBase* Context::GetData (csStringID id)
 
 void Context::PostEvent (csEventID eventID)
 {
-  printf("Posting context event #ID: %u\n", eventID);
   csRef<iEvent> event = eventQueue->CreateEvent (eventID);
   eventQueue->Post (event);
   eventQueue->Process ();

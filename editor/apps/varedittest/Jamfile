@@ -1,22 +1,13 @@
 SubDir TOP apps varedittest ;
 
-#if $(WX.AVAILABLE) = "yes" && $(WX.AUI.AVAILABLE) = "yes"
+#if $(WX.AVAILABLE) = "yes"
 {
-  Description propgrid : "wxPropertyGrid library" ;
-  Library propgrid : [ Wildcard wx propgrid : *.cpp *.h ] : notest ;
-  ExternalLibs propgrid : WX ;
-  CFlags propgrid : $(COMPILER.C++FLAGS.STRICTALIASING.DISABLE) ;
-
-  IncludeDir : propgrid ;
-
   Description : "Crystal Space iModifiable entities test" ;
   Application varedittest : [ Wildcard *.cpp *.h ] ;
   ExternalLibs varedittest : CRYSTAL WX ;
   CFlags varedittest : $(COMPILER.C++FLAGS.STRICTALIASING.DISABLE) ;
-  LinkWith varedittest : propgrid crystalspace ;
+  LinkWith varedittest : crystalspace crystalspace-gui ;
   Win32Resource varedittest : [ ConcatDirs $(SUBDIR) varedittest.rc ] ;
   # To locate wx.rc
   Win32RcFlags varedittest : [ Match ^(-I.*) ^(-D.*) : [ SplitToList $(WX.CFLAGS) ] ] ;
-
-  IncludeDir : varedittest ;
 }

@@ -28,7 +28,7 @@
 #include <csutil/cscolor.h>
 
 // Macro magic to make csTestModifiable work
-CS_IMPLEMENT_FOREIGN_DLL
+//CS_IMPLEMENT_FOREIGN_DLL
 
 csTestModifiable :: csTestModifiable(const char* name, const char* job, long itemCount, iObjectRegistry* object_reg) :
   name(name),

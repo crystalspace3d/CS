@@ -28,23 +28,23 @@
 #endif
 
 #include "vareditapp.h"
-#include "wxpgslider.h"
+#include "cseditor/wxpgslider.h"
 #include <csutil/refarr.h>
 #include <csutil/weakref.h>
 
 // Main propertygrid header.
-#include "wx/propgrid/propgrid.h"
-#include "wx/propgrid/editors.h"
+#include "cseditor/wx/propgrid/propgrid.h"
+#include "cseditor/wx/propgrid/editors.h"
 
 // Needed for implementing custom properties.
-#include "wx/propgrid/propdev.h"
+#include "cseditor/wx/propgrid/propdev.h"
 #include <wx/panel.h>
 
 // Extra property classes.
-#include "wx/propgrid/advprops.h"
+#include "cseditor/wx/propgrid/advprops.h"
 
 // This defines wxPropertyGridManager.
-#include "wx/propgrid/manager.h"
+#include "cseditor/wx/propgrid/manager.h"
 
 // Includes basic iModifiable data types
 #include "modifiableimpl.h"

@@ -19,16 +19,22 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#define CS_IMPLEMENT_PLATFORM_APPLICATION
+/* This is needed due the WX headers using free() inline, but the opposing
+ * malloc() is in the WX libs. */
+#define CS_NO_MALLOC_OVERRIDE
+
 #include "cssysdef.h"
 #include "vareditapp.h"
 #include "testmodifiable.h"
+
+#include "imap/reader.h"
+#include "iutil/document.h"
+#include "iutil/stringarray.h"
+#include "iutil/vfs.h"
 #include "ivaria/translator.h"
 
-#include "plugins/translator/standard/transldr_xml.h"
-#include "iutil/document.h"
-#include "plugins/documentsystem/xmlread/xr.h"
-#include "plugins/filesys/vfs/vfs.h"
-#include "iutil/stringarray.h"
+CS_IMPLEMENT_APPLICATION
 
 IMPLEMENT_APP(VarEditTestApp);
 
@@ -47,35 +53,34 @@ bool VarEditTestApp::OnInit()
 #endif
 
   // Load the needed plugins; so far, just the translator is needed
-  if( ! csInitializer::RequestPlugins(  object_reg, 
-
-            // Read the XML required for the name translations
-            CS_REQUEST_PLUGIN("crystalspace.documentsystem.xmlread",  iDocumentSystem),
-            // The translator itself
-            CS_REQUEST_PLUGIN("crystalspace.translator.standard",     iTranslator),
-            // Translator component for transforming the XML data into usable translations
-            CS_REQUEST_PLUGIN("crystalspace.translator.loader.xml",   iLoaderPlugin),
-            // We need a file system to read stuff from it
-            CS_REQUEST_PLUGIN("crystalspace.kernel.vfs",              iVFS),
-
-            CS_REQUEST_END ) ) 
+  if (!csInitializer::RequestPlugins (object_reg, 
+    // We need a file system to read stuff from it
+    CS_REQUEST_PLUGIN("crystalspace.kernel.vfs", iVFS),
+    // Read the XML required for the name translations
+    CS_REQUEST_PLUGIN("crystalspace.documentsystem.xmlread", iDocumentSystem),
+    // The translator itself
+    CS_REQUEST_PLUGIN("crystalspace.translator.standard", iTranslator),
+    // Translator component for transforming the XML data into usable translations
+    CS_REQUEST_PLUGIN("crystalspace.translator.loader.xml", iLoaderPlugin),
+    CS_REQUEST_END ))
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
       "crystalspace.application.varedittest",
       "Can't initialize plugins!");
-
     return false;
   }
   
-  using namespace CS_PLUGIN_NAMESPACE_NAME(TransStd);
+  csRef<iLoaderPlugin> loader = csQueryRegistry<iLoaderPlugin> (object_reg);
+  if (!loader) return false; //ReportError ("Could not locate the loader plugin");
 
-  csRef<iLoaderPlugin>  loaderRef( csQueryRegistry<iLoaderPlugin>(object_reg) );
-  csRef<iTranslator>    translator( csQueryRegistry<iTranslator>( object_reg ));
-  csRef<iVFS>           vfs( csQueryRegistry<iVFS>( object_reg ) );
-  string                langPath("/data/editor/lang/");
-  string                langFile("de_DE.xml");
-  
-  
+  csRef<iTranslator> translator = csQueryRegistry<iTranslator> (object_reg);
+  if (!translator) return false; //ReportError ("Could not locate the translator plugin");
+
+  csRef<iVFS> vfs = csQueryRegistry<iVFS> (object_reg);
+  if (!vfs) return false; //ReportError ("Could not locate the VFS plugin");
+
+  string langPath ("/data/editor/lang/");
+  string langFile ("de_DE.xml");
   
   // Removed since the language files are now in data/editor/lang
   /*
@@ -112,7 +117,7 @@ bool VarEditTestApp::OnInit()
 
       document->Parse(data->GetData());
       csRef<iDocumentNode> root = document->GetRoot();
-      csRef<iBase> result = loaderRef->Parse(root, 0, 0, translator);
+      csRef<iBase> result = loader->Parse(root, 0, 0, translator);
       
       cout << dynamic_cast<iTranslator*>( &*result )->GetMsg("Hello world") << endl;
 

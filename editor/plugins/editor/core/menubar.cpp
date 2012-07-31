@@ -54,8 +54,7 @@ MenuItem::~MenuItem ()
 
 void MenuItem::OnToggle (wxCommandEvent& wxevent)
 {
-  Editor *e = menuManager->editor;
-  iEventQueue* queue = e->GetContext ()->GetEventQueue ();
+  iEventQueue* queue = menuManager->editor->GetContext ()->GetEventQueue ();
   csRef<iEvent> event = queue->CreateEvent (eventID);
   queue->Post (event);
   queue->Process ();

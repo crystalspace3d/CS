@@ -22,7 +22,8 @@
 #include "csutil/hash.h"
 #include "csutil/refarr.h"
 #include "ieditor/context.h"
-#include "wx/event.h"
+
+#include <wx/event.h>
 
 struct iObjectRegistry;
 

@@ -42,25 +42,6 @@ typedef float csScalar;
 /// 2D horizontal components of the given 3D vector
 #define HORIZONTAL_COMPONENT(vec3) csVector2((vec3).x, (vec3).z);
 
-/**
- * Very ugly and inefficient work-around to easily cast between two known-to-be-compatible types
- */
-template<typename T, typename T2>
-inline csPtr<T> DowncastPtr(csPtr<T2> ptr)
-{
-  return csRef<T2>(ptr);
-}
-template<typename T, typename T2>
-inline csPtr<T> DowncastPtr(csRef<T2> ptr)
-{
-  return csPtr<T>(csRef<T>(ptr));
-}
-template<typename T, typename T2>
-inline csPtr<T> DowncastPtr(T2* ptr)
-{
-  return DowncastPtr<T, T2>(csRef<T2>(ptr));
-}
-
 struct iTerrainSystem;
 struct iSector;
 struct iMeshWrapper;

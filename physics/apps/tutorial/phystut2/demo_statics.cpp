@@ -97,7 +97,8 @@ void PhysDemo::CreatePortalRoom()
   
   // Portal parameters
   csScalar portalEpsilon = csScalar(0.01);
-  csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
+  //csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
+  csVector2 halfPortalExtents(1);
   
   csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two
   
@@ -181,12 +182,21 @@ void PhysDemo::CreatePortalRoom()
   portal2->GetFlags().Set (CS_PORTAL_ZFILL);
   portal2->GetFlags().Set (CS_PORTAL_CLIPDEST);
   
-  csOrthoTransform portal1Warp(portal2Trans.GetInverse() * portal1Trans);
-  csOrthoTransform portal2Warp(portal1Trans.GetInverse() * portal2Trans);
+  //csOrthoTransform portal1Warp(portal2Trans.GetInverse() * portal1Trans);
+  //csOrthoTransform portal2Warp(portal1Trans.GetInverse() * portal2Trans);
   
-  portal1Warp.SetT2O(portal1Warp.GetT2O() * csXRotMatrix3(PI) * csYRotMatrix3(PI));
+  //portal1Warp.SetT2O(portal1Warp.GetT2O() * csXRotMatrix3(PI) * csYRotMatrix3(PI));
   //portal1Warp.SetT2O(portal1Warp.GetT2O() * csZRotMatrix3(PI));
-  portal2Warp.SetT2O(portal2Warp.GetT2O() * csYRotMatrix3(PI) * csZRotMatrix3(PI));
+  //portal2Warp.SetT2O(portal2Warp.GetT2O() * csYRotMatrix3(PI) * csZRotMatrix3(PI));
+
+  // distance between the two portals
+  csVector3 portalDist(portal2Trans.GetOrigin() - portal1Trans.GetOrigin());
+
+  csOrthoTransform portal1Warp(csYRotMatrix3 (-PI * 0.5f) * csZRotMatrix3 (PI * 0.5f),
+				     csVector3 (-portalDist.y, -portalDist.z, -portalDist.x));
+
+  csOrthoTransform portal2Warp(csZRotMatrix3 (-PI * 0.5f) * csYRotMatrix3 (PI * 0.5f),
+				     csVector3 (portalDist.z, portalDist.x, portalDist.y));
 
   portal1->SetWarp (portal1Warp);
   portal2->SetWarp (portal2Warp);

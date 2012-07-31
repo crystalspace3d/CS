@@ -1,6 +1,7 @@
 SubDir TOP apps tools editor ;
 
-if $(WX.AVAILABLE) = "yes" && $(WX.AUI.AVAILABLE) = "yes"
+# TODO: remove the CS dependency on wx AUI
+if $(WX.AVAILABLE) = "yes"
 {
   Description : "Crystal Space Editor" ;
   Application cseditor : [ Wildcard *.cpp *.h ] : console ;

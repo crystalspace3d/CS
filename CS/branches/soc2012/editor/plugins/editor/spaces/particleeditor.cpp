@@ -53,12 +53,6 @@
 #include "ivideo/natwin.h"
 #include "ivideo/wxwin.h"
 
-
-#include "testmodifiable.h"
-
-// Hack to allow getting the active object
-#include "apps/tools/editor/context.h"
-
 // For the part sys factory
 #include "imesh/particles.h"
 
@@ -132,18 +126,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     object_reg = obj_reg;
     this->editor = editor;
     factory = fact;
-    window = new CSPartEditSpace::Space(this, parent, -1, wxPoint(0, 0), wxSize(200, 640));
+    window = new CSPartEditSpace::Space(this, parent);
 
     // Setup the event names
     nameRegistry = csEventNameRegistry::GetRegistry (object_reg);
-    addObject = nameRegistry->GetID("crystalspace.editor.context.addselectedobject");
-    clearObjects = nameRegistry->GetID("crystalspace.editor.context.clearselectedobjects");
+    //addObject = nameRegistry->GetID("crystalspace.editor.context.addselectedobject");
+    //clearObjects = nameRegistry->GetID("crystalspace.editor.context.clearselectedobjects");
     activateObject = nameRegistry->GetID("crystalspace.editor.context.setactiveobject");
 
     // Respond to context events
-    csEventID contextSelect = nameRegistry->GetID("crystalspace.editor.context");
-    queue = csQueryRegistryTagInterface<iEventQueue> (object_reg, "contextQueue");
-    RegisterQueue(editor->GetContext()->GetEventQueue(), contextSelect);
+    //csEventID contextSelect = nameRegistry->GetID("crystalspace.editor.context");
+    RegisterQueue (editor->GetContext()->GetEventQueue(), activateObject);
     
     // Prepare translations
     translator = csQueryRegistry<iTranslator>(object_reg);
@@ -199,9 +192,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
     if(event.Name == activateObject) {
       printf("You selected something!\n");
-      iModifiable* source;
-      iObject* result = static_cast<Context*>(editor->GetContext())->GetActiveObject();
+      csRef<iContextObjectSelection> objectSelectionContext =
+	scfQueryInterface<iContextObjectSelection> (editor->GetContext ());
       
+      iObject* result = objectSelectionContext->GetActiveObject ();
       //*
       csRef<iMeshFactoryWrapper> fac = scfQueryInterface<iMeshFactoryWrapper>(result);
       if(fac.IsValid()) {
@@ -219,9 +213,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
         }
       }
       //*/
-     
-      
-      
     }
 
     return false;

@@ -40,7 +40,7 @@
 // TODO: maybe relocate slider code
 // TODO: sort the fustercluck of includes
 
-#include "include/cseditor/wxpgslider.h"
+#include "cseditor/wxpgslider.h"
 #include <csutil/refarr.h>
 #include "csutil/ref.h"
 
@@ -58,18 +58,18 @@
 // Main propertygrid header.
 // Verbose paths are in place until the jamfiles are updated
 // to generate msvc project files with the proper include dirs
-#include "apps/tools/editor/wx/propgrid/propgrid.h"
-#include "apps/tools/editor/wx/propgrid/editors.h"
+#include "cseditor/wx/propgrid/propgrid.h"
+#include "cseditor/wx/propgrid/editors.h"
 
 // Needed for implementing custom properties.
-#include "apps/tools/editor/wx/propgrid/propdev.h"
+#include "cseditor/wx/propgrid/propdev.h"
 #include <wx/panel.h>
 
 // Extra property classes.
-#include "apps/tools/editor/wx/propgrid/advprops.h"
+#include "cseditor/wx/propgrid/advprops.h"
 
 // This defines wxPropertyGridManager.
-#include "apps/tools/editor/wx/propgrid/manager.h"
+#include "cseditor/wx/propgrid/manager.h"
 
 // For the gist - displaying modifiable stuff in a GUI
 #include "iutil/modifiable.h"

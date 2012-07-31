@@ -8,10 +8,10 @@
 #include <wx/wx.h>
 
 // for wxPGEditor
-#include "apps/tools/editor/wx/propgrid/propgrid.h"
-#include "apps/tools/editor/wx/propgrid/propdev.h"
-#include "apps/tools/editor/wx/propgrid/advprops.h"
-#include "apps/tools/editor/wx/propgrid/editors.h"
+#include "cseditor/wx/propgrid/propgrid.h"
+#include "cseditor/wx/propgrid/propdev.h"
+#include "cseditor/wx/propgrid/advprops.h"
+#include "cseditor/wx/propgrid/editors.h"
 
 // the right csVariant
 #include "apps/varedittest/pluginconfig.h"

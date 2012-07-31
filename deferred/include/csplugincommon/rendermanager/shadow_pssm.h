@@ -184,6 +184,9 @@ namespace RenderManager
       nearNDC.AddBoundingVertexSmart(Vector4To2(proj * csVector4(box.MaxX(), box.MinY(), boxNear)));
       nearNDC.AddBoundingVertexSmart(Vector4To2(proj * csVector4(box.MinX(), box.MaxY(), boxNear)));
       nearNDC.AddBoundingVertexSmart(Vector4To2(proj * csVector4(box.MaxX(), box.MaxY(), boxNear)));
+
+      // clip to actual frustum
+      nearNDC *= csBox2(-1,-1,1,1);
     }
 
     // return union of the boxes
@@ -892,6 +895,12 @@ namespace RenderManager
 	  // get transform with This == Frustum and Other == View
 	  csTransform frust2view(frustum.frust2light * lightData.light2world / cam->GetTransform());
 
+	  // get original camera for inverse perspective
+	  iCamera* origCam = rview->GetOriginalCamera();
+
+	  CS_ASSERT_MSG("PSSM shadow implementation requires a perspective camera",
+	    csRef<iPerspectiveCamera>(scfQueryInterface<iPerspectiveCamera>(origCam)));
+
 	  // set the slice data
 	  for(size_t s = 0; s < slices.GetSize(); ++s)
 	  {
@@ -908,7 +917,10 @@ namespace RenderManager
 	      for(int side = 0; side < 2; ++side)
 	      {
 		// get corner in view space
-		csVector3 vVS(cam->InvPerspective(corner, persist.splitDists[s+side]));
+		// @@@FIXME: this doesn't work with portals because iCustomMatrixCamera
+		//           is used for portals which doesn't implement InvPerspective
+                //           so we get 0 for all points
+		csVector3 vVS(origCam->InvPerspective(corner, persist.splitDists[s+side]));
 
 		// transform to frustum space
 		csVector3 vFS(frust2view * vVS);
@@ -1356,7 +1368,8 @@ namespace RenderManager
 	while(it.HasNext())
 	{
 	  // get light data
-	  LightData& lightData = it.Next(/*light*/);
+	  csWeakRef<iLight> light;
+	  LightData& lightData = it.Next(light);
 
 	  // calculate object -> world -> light transform
 	  csTransform light2object(lightData.light2world * world2object);
@@ -1369,7 +1382,7 @@ namespace RenderManager
 
 	    // check whether this frustum is setup for our rview
 	    if(!frustum.slicesHash.Contains(rview))
-	      continue;
+	      break;
 
 	    // calculate object -> world -> light -> frustum transform
 	    csTransform frust2object(frustum.frust2light * light2object);

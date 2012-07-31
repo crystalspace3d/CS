@@ -1417,8 +1417,8 @@ namespace RenderManager
       PersistentData& persist;
       RenderTreeType& renderTree;
       CS::RenderManager::RenderView* rview;
-      csWeakRef<iCamera> cam;
-      csWeakRef<iSector> sector;
+      iCamera* cam;
+      iSector* sector;
 
       LightingVariablesHelper svHelper;
       csLightShaderVarCache& svNames;

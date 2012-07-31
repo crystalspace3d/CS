@@ -85,7 +85,6 @@ rule CsLibAddModule
 }
 
 SubInclude TOP libs csutil ;
-SubInclude TOP libs cseditor ;
 SubInclude TOP libs csgeom ;
 SubInclude TOP libs csgfx ;
 SubInclude TOP libs cstool ;
@@ -150,3 +149,31 @@ if [ Property build : projgen ] = msvc
 CSLIB.DECLARED = yes ;
 
 SubInclude TOP libs csplugincommon ;
+
+if $(WX.AVAILABLE) = "yes"
+{
+  CSLIB.SOURCES = ;
+  CSLIB.TESTS = ;
+  CSLIB.ROOT = $(SUBDIR_TOKENS) ;
+  CSLIB.DECLARED = no ;
+
+  SubInclude TOP libs cseditor ;
+
+  SubDir TOP libs ;
+
+  Description crystalspace-gui : "Crystal Space library" ;
+  Library crystalspace-gui : $(CSLIB.SOURCES) : shared notest ;
+  CFlags crystalspace-gui : [ FDefines CS_CRYSTALSPACE_GUI_LIB ] ;
+  LinkWith crystalspace-gui : crystalspace ;
+  ExternalLibs crystalspace-gui : WX ;
+  MsvcDefine crystalspace-gui : CS_CRYSTALSPACE_GUI_LIB ;
+  MsvcDefine crystalspace-gui :
+    CS_COMPILER_NAME_AND_VERSION : "\"VC_$(MSVC_VERSION)\"" ;
+  {
+    local def ;
+    for def in $(CSLIB.MSVC_DEFINES)
+    {
+      MsvcDefine crystalspace-gui : $(def) ;
+    }
+  }
+}

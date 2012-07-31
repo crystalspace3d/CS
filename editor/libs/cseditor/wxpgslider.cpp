@@ -1,4 +1,4 @@
-#include "include/cseditor/wxpgslider.h"
+#include "cseditor/wxpgslider.h"
 
 //----------------- wxPGSliderEditor ---------------------
 

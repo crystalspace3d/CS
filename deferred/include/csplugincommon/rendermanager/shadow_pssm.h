@@ -1343,11 +1343,19 @@ namespace RenderManager
       // cropping for improved shadow map usage
       void HandleMesh(typename RenderTreeType::MeshNode::SingleMesh& mesh)
       {
+	// check whether this mesh receives shadows - if not we're done
+	if(mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
+	  return;
+
 	// get mesh bbox
 	csBox3 meshBox(mesh.renderMesh->bbox);
 
 	// get world2object transform so we don't compute it multiple times later
 	csTransform world2object = mesh.renderMesh->object2world.GetInverse();
+
+	// transform mesh bounding box to view space
+	csTransform view2mesh = cam->GetTransform() * world2object;
+	csBox3 meshBoxView = view2mesh * meshBox;
 
 	// for all lights
 	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash.GetIterator();
@@ -1356,7 +1364,7 @@ namespace RenderManager
 	  // get light data
 	  LightData& lightData = it.Next(/*light*/);
 
-	  // transform mesh bounding box to light space
+	  // calculate object -> world -> light transform
 	  csTransform light2object = lightData.light2world * world2object;
 
 	  // for all frustums
@@ -1369,45 +1377,40 @@ namespace RenderManager
 	    if(!frustum.slicesHash.Contains(rview))
 	      continue;
 
-	    // check whether the mesh receives shadows
-	    if(!mesh.meshFlags.Check(CS_ENTITY_NOSHADOWRECEIVE))
+	    // calculate object -> world -> light -> frustum transform
+	    csTransform frust2object = frustum.frust2light * light2object;
+
+	    // transform mesh bounding box to frustum space
+	    // @@@TODO: we can save this projection if we first check whether we are in any slice
+	    csBox3 meshBoxPS = ProjectBox(frust2object * meshBox, lightData.project, lightData.projectInverse);
+
+	    if(meshBoxPS.Empty())
+	      continue;
+
+	    // get view-dependent furstum slices
+	    csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
+
+	    // for all slices
+	    for(size_t s = 0; s < slices.GetSize(); ++s)
 	    {
-	      // calculate object -> world -> light -> frustum transform
-	      csTransform frust2object = frustum.frust2light * light2object;
+	      // get frustum slice to process
+	      typename LightData::Slice& slice = slices[s];
 
-	      // transform mesh bounding box to frustum space
-	      // @@@TODO: we can save this projection if we first check whether we are in any slice
-	      csBox3 meshBoxPS = ProjectBox(frust2object * meshBox, lightData.project, lightData.projectInverse);
+	      // skip this slice if it won't be drawn
+	      if(!slice.draw)
+		continue;
 
-	      // transform mesh bounding box to view space
-	      csTransform view2mesh = cam->GetTransform() * world2object;
-	      csBox3 meshBoxView = view2mesh * meshBox;
+	      // skip this slice if the mesh isn't part of it
+	      if(meshBoxView.MaxZ() < persist.splitDists[s]
+		|| meshBoxView.MinZ() > persist.splitDists[s+1])
+		continue;
 
-	      // get view-dependent furstum slices
-	      csArray<typename LightData::Slice>& slices = frustum.slicesHash[rview]->slices;
+	      // skip this slice if the mesh doesn't intersect with it
+	      if(!slice.boxPS.Overlap(meshBoxPS))
+		continue;
 
-	      // for all slices
-	      for(size_t s = 0; s < slices.GetSize(); ++s)
-	      {
-		// get frustum slice to process
-		typename LightData::Slice& slice = slices[s];
-
-		// skip this slice if it won't be drawn
-		if(!slice.draw)
-		  continue;
-
-		// skip this slice if the mesh isn't part of it
-		if(meshBoxView.MaxZ() < persist.splitDists[s]
-		  || meshBoxView.MinZ() > persist.splitDists[s+1])
-		  continue;
-
-		// skip this slice if the mesh doesn't intersect with it
-		if(!slice.boxPS.Overlap(meshBoxPS))
-		  continue;
-
-		// add frustum space mesh box to receivers
-		slice.receiversPS += meshBoxPS;
-	      }
+	      // add frustum space mesh box to receivers
+	      slice.receiversPS += meshBoxPS;
 	    }
 	  }
 	}

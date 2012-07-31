@@ -25,7 +25,7 @@ csPtr<iMeshWrapper> PhysDemo::CreateCylinderYMesh(csScalar length, csScalar radi
   if (!cylinderFact)
   {
     ReportError ("Error creating mesh object factory!");
-    return nullptr;
+    return csPtr<iMeshWrapper> (nullptr);
   }
 
   csRef<iGeneralFactoryState> gmstate = scfQueryInterface<iGeneralFactoryState> (cylinderFact->GetMeshObjectFactory());
@@ -43,7 +43,7 @@ csPtr<iMeshWrapper> PhysDemo::CreateCylinderYMesh(csScalar length, csScalar radi
   if (!mat)
   {
     ReportError ("Error - Invalid material: %s", materialName);
-    return nullptr;
+    return csPtr<iMeshWrapper> (nullptr);
   }
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
   

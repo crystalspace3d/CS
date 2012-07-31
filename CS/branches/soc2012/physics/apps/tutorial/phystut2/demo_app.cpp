@@ -15,21 +15,22 @@ PhysDemo physDemo;
 
 PhysDemo::PhysDemo()
   : DemoApplication ("CrystalSpace.PhysTut2"),
-  isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
+  isSoftBodyWorld (true), 
+  defaultEnvironmentName("terrain"),
+  //defaultEnvironmentName("portals"),
+  do_bullet_debug (false),
   do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
   pauseDynamic (false), dynamicStepFactor (1.0f),
   debugMode (DEBUG_COLLIDERS),
-  dragging (false), softDragging (false),
+  actorAirControl(.3f),
   moveSpeed(7.f),
   turnSpeed(2.f),
+  //physicalCameraMode (ACTOR_KINEMATIC),
+  physicalCameraMode (ACTOR_DYNAMIC),
+    camFollowMode(CamFollowMode1stPerson),
   selectedItem(nullptr),
-  actorAirControl(.3f),
-  camFollowMode(CamFollowMode1stPerson),
-  //physicalCameraMode (ACTOR_KINEMATIC)
-  physicalCameraMode (ACTOR_DYNAMIC)
-  ,
-  defaultEnvironmentName("terrain")
-  //defaultEnvironmentName("portals")
+  dragging (false),
+  softDragging (false)
 {
 }
 
@@ -353,7 +354,7 @@ void PhysDemo::UpdateCameraMode()
         factory->SetAirControlFactor(actorAirControl);
         factory->SetJumpSpeed(moveSpeed);
 
-        iCollisionSystem* colSys = physicalSystem;
+        //iCollisionSystem* colSys = physicalSystem;
         kinematicActor = factory->CreateCollisionActor();
       }
 
@@ -452,7 +453,7 @@ bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
   csArray<CollisionData> collisions;
   physicalSector->CollisionTest(obj, collisions);
 
-  int objBeneathCount = 0;
+  //int objBeneathCount = 0;
   for (size_t i = 0; i < collisions.GetSize (); ++i)
   {
     CollisionData& coll = collisions[i];

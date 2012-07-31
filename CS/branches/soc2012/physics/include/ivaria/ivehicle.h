@@ -217,16 +217,16 @@ namespace CS
       csRef<iVehicleWheelFactory> factory;
       csVector3 pos, wheelOrientation, axleOrientation;
       csScalar suspensionLength;
-      bool isDriven;
       csScalar radius;
+      bool isDriven;
 
     public:
       VehicleWheelInfo(iVehicleWheelFactory* f) :
           scfImplementationType(this),
           factory(f),
-            suspensionLength(1),
-            radius(.5),
-            isDriven(true)
+          suspensionLength(1),
+          radius(.5),
+          isDriven(true)
       {
       }
 

@@ -724,12 +724,11 @@ namespace RenderManager
 	    frustum.meshFilter.SetFilterMode(CS::Utility::MESH_FILTER_INCLUDE);
 
 	  // set transform
-	  csReversibleTransform frust2light(rotations[i], csVector3(0));
-	  frustum.frust2light = frust2light;
+	  frustum.frust2light = csReversibleTransform(rotations[i], csVector3(0));
 
 	  // create unbounded frustum bounding box in frustum space
-	  csBox3 boxFS = csBox3(csVector3(-FLT_MAX, -FLT_MAX, 0),
-			        csVector3(FLT_MAX, FLT_MAX, FLT_MAX));;
+	  csBox3 boxFS(csVector3(-FLT_MAX, -FLT_MAX, 0),
+		       csVector3(FLT_MAX, FLT_MAX, FLT_MAX));;
 
 	  // transform box to light space
 	  frustum.boxLS = boxFS / frustum.frust2light;
@@ -891,7 +890,7 @@ namespace RenderManager
 	  };
 
 	  // get transform with This == Frustum and Other == View
-	  csTransform frust2view = frustum.frust2light * lightData.light2world / cam->GetTransform();
+	  csTransform frust2view(frustum.frust2light * lightData.light2world / cam->GetTransform());
 
 	  // set the slice data
 	  for(size_t s = 0; s < slices.GetSize(); ++s)
@@ -909,10 +908,10 @@ namespace RenderManager
 	      for(int side = 0; side < 2; ++side)
 	      {
 		// get corner in view space
-		csVector3 vVS = cam->InvPerspective(corner, persist.splitDists[s+side]);
+		csVector3 vVS(cam->InvPerspective(corner, persist.splitDists[s+side]));
 
 		// transform to frustum space
-		csVector3 vFS = frust2view * vVS;
+		csVector3 vFS(frust2view * vVS);
 
 		// add corner to frustum space box
 		boxFS.AddBoundingVertex(vFS);
@@ -930,7 +929,7 @@ namespace RenderManager
 	    if(!(persist.doFixedCloseShadow && s == 0))
 	    {
 	      // intersect with frustum box for non-fixed slices
-	      boxFS = boxFS * (frustum.frust2light * frustum.boxLS);
+	      boxFS *= frustum.frust2light * frustum.boxLS;
 	    }
 
 	    if(renderTree.IsDebugFlagEnabled(persist.dbgSplit))
@@ -1055,7 +1054,7 @@ namespace RenderManager
 	csRef<iVisibilityObjectIterator> objects = culler->VisTest(frustum.boxLS / lightData.light2world);
 
 	// calculate world -> light -> frustum transform
-	csTransform frust2world = frustum.frust2light * lightData.light2world;
+	csTransform frust2world(frustum.frust2light * lightData.light2world);
 
 	// iterate over all meshes
 	while(objects->HasNext())
@@ -1084,11 +1083,8 @@ namespace RenderManager
 	  // if this mesh is a caster add it's bounding box to the caster box
 	  if(casting)
 	  {
-	    // get world space bounding box
-	    csBox3 meshBox = object->GetBBox();
-
 	    // project bounding box
-	    csBox3 meshBoxPS = ProjectBox(frust2world * meshBox, lightData.project, lightData.projectInverse);
+	    csBox3 meshBoxPS(ProjectBox(frust2world * object->GetBBox(), lightData.project, lightData.projectInverse));
 
 	    // add box to casters bounding box
 	    frustum.castersPS += meshBoxPS;
@@ -1308,9 +1304,7 @@ namespace RenderManager
 	// setup post-effects if required
 	if(context->postEffects.IsValid())
 	{
-  	  CS::Math::Matrix4 perspectiveFixup;
-	  context->postEffects->SetupView(mapSize, mapSize, perspectiveFixup);
-	  context->perspectiveFixup = perspectiveFixup;
+	  context->postEffects->SetupView(mapSize, mapSize, context->perspectiveFixup);
 	}
 
 	// setup rendertargets
@@ -1351,11 +1345,11 @@ namespace RenderManager
 	csBox3 meshBox(mesh.renderMesh->bbox);
 
 	// get world2object transform so we don't compute it multiple times later
-	csTransform world2object = mesh.renderMesh->object2world.GetInverse();
+	csTransform world2object(mesh.renderMesh->object2world.GetInverse());
 
 	// transform mesh bounding box to view space
-	csTransform view2mesh = cam->GetTransform() * world2object;
-	csBox3 meshBoxView = view2mesh * meshBox;
+	csTransform view2mesh(cam->GetTransform() * world2object);
+	csBox3 meshBoxView(view2mesh * meshBox);
 
 	// for all lights
 	typename PersistentData::LightHash::GlobalIterator it = persist.lightHash.GetIterator();
@@ -1365,7 +1359,7 @@ namespace RenderManager
 	  LightData& lightData = it.Next(/*light*/);
 
 	  // calculate object -> world -> light transform
-	  csTransform light2object = lightData.light2world * world2object;
+	  csTransform light2object(lightData.light2world * world2object);
 
 	  // for all frustums
 	  for(size_t f = 0; f < lightData.frustums.GetSize(); ++f)
@@ -1378,11 +1372,11 @@ namespace RenderManager
 	      continue;
 
 	    // calculate object -> world -> light -> frustum transform
-	    csTransform frust2object = frustum.frust2light * light2object;
+	    csTransform frust2object(frustum.frust2light * light2object);
 
 	    // transform mesh bounding box to frustum space
 	    // @@@TODO: we can save this projection if we first check whether we are in any slice
-	    csBox3 meshBoxPS = ProjectBox(frust2object * meshBox, lightData.project, lightData.projectInverse);
+	    csBox3 meshBoxPS(ProjectBox(frust2object * meshBox, lightData.project, lightData.projectInverse));
 
 	    if(meshBoxPS.Empty())
 	      continue;
@@ -1461,8 +1455,8 @@ namespace RenderManager
 	return f == 0 ? 1 : 0;
 
       // get mesh box in view space
-      csTransform view2object = rview->GetCamera()->GetTransform() / mesh.renderMesh->object2world;
-      csBox3 boxView = view2object * mesh.renderMesh->bbox;
+      csTransform view2object(rview->GetCamera()->GetTransform() / mesh.renderMesh->object2world);
+      csBox3 boxView(view2object * mesh.renderMesh->bbox);
 
       // get sv helper
       LightingVariablesHelper svHelper(persist.lightVarsPersist);

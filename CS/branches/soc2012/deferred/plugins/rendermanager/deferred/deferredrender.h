@@ -219,7 +219,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	graphics3D->SetZMode (CS_ZBUF_MESH);
 
 	// render out all layers
-	for(int i = 0; i < layerCount; ++i)
+	for(size_t i = 0; i < layerCount; ++i)
 	{
 	  RenderLayer<false>(i, ctxCount);
 	}
@@ -412,7 +412,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     void RenderForwardMeshes(size_t layerCount, const size_t ctxCount)
     {
       // iterate over all layers
-      for (int layer = 0; layer < layerCount; ++layer)
+      for (size_t layer = 0; layer < layerCount; ++layer)
       {
 	// set layer
 	meshRender.SetLayer(layer);
@@ -423,7 +423,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     }
 
     template<typename T, void fn(ContextNodeType&,T&)>
-    inline void RenderObjects(int layer, const size_t ctxCount, T& render)
+    inline void RenderObjects(size_t layer, const size_t ctxCount, T& render)
     {
       for(size_t i = 0; i < ctxCount; ++i)
       {

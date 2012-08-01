@@ -605,11 +605,11 @@ int RMDeferred::LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers
                             csStringID shaderType)
 {
   size_t count = renderLayer.GetLayerCount ();
-  for (int i = 0; i < count; i++)
+  for (size_t i = 0; i < count; i++)
   {
     size_t num;
     const csStringID *strID = renderLayer.GetShaderTypes (i, num);
-    for (int j = 0; j < num; j++)
+    for (size_t j = 0; j < num; j++)
     {
       if (strID[j] == shaderType)
       {

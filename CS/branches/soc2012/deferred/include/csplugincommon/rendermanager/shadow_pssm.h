@@ -509,10 +509,6 @@ namespace RenderManager
 
 	// initalize textures
 	{
-	  // get screen width/height
-	  int w = graphics3D->GetWidth();
-	  int h = graphics3D->GetHeight();
-
 	  // create quad
 	  csSimpleRenderMesh quad;
 

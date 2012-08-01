@@ -442,12 +442,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       }
     }
 
-    bool IsDeferredLayer(int layer)
-    {
-      return layer == deferredLayer || layer == lightingLayer
-	  || layer == zonlyLayer;
-    }
-
   private:
 
     // renderer

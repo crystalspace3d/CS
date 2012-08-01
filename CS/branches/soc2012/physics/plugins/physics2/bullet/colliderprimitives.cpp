@@ -352,6 +352,14 @@ csBulletColliderConvexMesh::csBulletColliderConvexMesh (iMeshWrapper* mesh, csBu
   GetOrCreateBulletShape();
 }
 
+csBulletColliderConvexMesh::csBulletColliderConvexMesh (btConvexHullShape* shape, float volume, csBulletSystem* sys) 
+  : scfImplementationType (this)
+{
+  this->shape = shape; 
+  collSystem = sys;
+  this->volume = volume;
+}
+
 csBulletColliderConvexMesh::~csBulletColliderConvexMesh ()
 {
   delete shape;
@@ -359,6 +367,9 @@ csBulletColliderConvexMesh::~csBulletColliderConvexMesh ()
 
 float csBulletColliderConvexMesh::ComputeShapeVolume() const 
 {
+  // TODO: If no mesh is supplied, cannot compute new volume
+  if (!mesh) return volume;
+
   csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh, 
     collSystem->baseID, collSystem->colldetID);
 
@@ -416,6 +427,8 @@ csBulletColliderConcaveMesh::~csBulletColliderConcaveMesh ()
 float csBulletColliderConcaveMesh::ComputeShapeVolume() const 
 {
   btTransform tran;
+  tran.setIdentity();
+
   btVector3 aabbmin (-1000, -1000, -1000);
   btVector3 aabbmax (1000, 1000, 1000);
 

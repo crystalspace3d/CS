@@ -184,20 +184,15 @@ class csBulletColliderConvexMesh:
   public scfVirtImplementationExt1<csBulletColliderConvexMesh,
   csBulletCollider, CS::Collisions::iColliderConvexMesh>
 {
-  iMeshWrapper* mesh;
+  csRef<iMeshWrapper> mesh;
 
 protected:
   virtual float ComputeShapeVolume() const;
   
 public:
   csBulletColliderConvexMesh (iMeshWrapper* mesh, csBulletSystem* sys, bool simplify);
-  csBulletColliderConvexMesh (btConvexHullShape* shape, float volume, csBulletSystem* sys) 
-    : scfImplementationType (this)
-  {
-    this->shape = shape; 
-    collSystem = sys;
-    this->volume = volume;
-  }
+  csBulletColliderConvexMesh (btConvexHullShape* shape, float volume, csBulletSystem* sys);
+
   virtual ~csBulletColliderConvexMesh ();
   virtual CS::Collisions::ColliderType GetColliderType () const
  {return CS::Collisions::COLLIDER_CONVEX_MESH;}

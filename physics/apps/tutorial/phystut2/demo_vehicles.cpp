@@ -288,7 +288,7 @@ void PhysDemo::EnterTargetVehicle()
   player.GetObject()->SetCollisionGroup("None");
 
   // switch to 3rd person mode
-  camFollowMode = CamFollowMode3rdPersonFar;
+  cameraMode = CamFollowMode3rdPersonFar;
 
   // set vehicle
   actorVehicle = vehicle; 

@@ -243,7 +243,7 @@ void PhysDemo::RotateActor()
 
     // Update up/down camera panning
     // TODO: Zoom out/in when in 3rd person mode
-    if (camFollowMode == CamFollowMode1stPerson)
+    if (cameraMode == CamFollowMode1stPerson)
     {
       camDir3.Normalize();
 
@@ -284,12 +284,12 @@ void PhysDemo::MoveCamera()
     csOrthoTransform actorTrans = player.GetObject()->GetTransform();
     csVector3 targetPos = player.GetObject()->GetTransform().GetOrigin();
 
-    if (camFollowMode != CamFollowMode1stPerson)
+    if (cameraMode != CamFollowMode1stPerson)
     {
       csVector3 pos = camTrans.GetOrigin();
 
       // camera follows the actor, looking over the shoulder
-      csScalar camDistFactor = camFollowMode == CamFollowMode3rdPersonFar ? 3 : 1;
+      csScalar camDistFactor = cameraMode == CamFollowMode3rdPersonFar ? 3 : 1;
       csScalar camDistance = 2 * camDistFactor * ActorDimensions.Norm();
 
       targetPos -= camDistance * actorTrans.GetT2O() * csVector3(0, -1, 1); // * (1 / SQRT2)
@@ -365,7 +365,7 @@ void PhysDemo::UpdateHUD()
     hudManager->GetStateDescriptions()->Push (txt);
   }
 
-  switch (physicalCameraMode)
+  switch (actorMode)
   {
   case ACTOR_DYNAMIC:
     hudManager->GetStateDescriptions()->Push (csString ("Camera mode: dynamic"));

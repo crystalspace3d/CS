@@ -66,7 +66,7 @@ private:
 
   // Camera related
   CS::Physics::DebugMode debugMode;
-  int physicalCameraMode;
+  int actorMode;
   csRef<CS::Physics::iRigidBody> dynamicActor;
   csRef<CS::Collisions::iCollisionActor> kinematicActor;
 
@@ -139,7 +139,7 @@ VerySimple::VerySimple()
   do_soft_debug (true), remainingStepDuration (0.0f), allStatic (false), 
   pauseDynamic (false), dynamicStepFactor (1.0f),
   debugMode (CS::Physics::DEBUG_COLLIDERS),
-  physicalCameraMode (ACTOR_DYNAMIC), dragging (false), softDragging (false)
+  actorMode (ACTOR_DYNAMIC), dragging (false), softDragging (false)
 {
 }
 

@@ -91,10 +91,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     /// Create a new object
     virtual csPtr<CS::Collisions::iGhostCollisionObject> CreateGhostCollisionObject();
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
-    { 
-      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iGhostCollisionObject>(CreateGhostCollisionObject()); 
-    }
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
   };
 
   /**
@@ -119,10 +116,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     /// Create a new object
     virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor();
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
-    { 
-      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iCollisionActor>(CreateCollisionActor()); 
-    }
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
 
     /// Get the max vertical threshold that this actor can step over
     virtual float GetStepHeight () const { return stepHeight; }
@@ -220,10 +214,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     /// Create a new object
     virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody();
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
-    { 
-      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iRigidBody>(CreateRigidBody()); 
-    }
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
     
     virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType() const { return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY; }
 
@@ -279,10 +270,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     /// Create a new object
     virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody() = 0;
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
-    { 
-      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iSoftBody>(CreateSoftBody()); 
-    }
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
   };
 
   /**
@@ -400,14 +388,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     /// Create a new object
     virtual csPtr<CS::Physics::iDynamicActor> CreateDynamicActor();
-    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody()
-    { 
-      return DowncastPtr<CS::Physics::iRigidBody, CS::Physics::iDynamicActor>(CreateDynamicActor()); 
-    }
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() 
-    { 
-      return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iDynamicActor>(CreateDynamicActor()); 
-    }
+    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody();
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
 
     /// Get the max vertical threshold that this actor can step over
     float GetStepHeight () const { return stepHeight; }

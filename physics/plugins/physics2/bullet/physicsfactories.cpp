@@ -56,6 +56,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     return csPtr<iGhostCollisionObject>(collObject);
   }
 
+  csPtr<CS::Collisions::iCollisionObject> BulletGhostCollisionObjectFactory::CreateCollisionObject() 
+  { 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iGhostCollisionObject>(CreateGhostCollisionObject()); 
+  }
+
+
+
   csPtr<CS::Collisions::iCollisionActor> BulletCollisionActorFactory::CreateCollisionActor ()
   {
     csBulletCollisionActor* actor = new csBulletCollisionActor (system);
@@ -67,6 +74,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     return csPtr<iCollisionActor>(iactor);
   }
 
+  csPtr<CS::Collisions::iCollisionObject> BulletCollisionActorFactory::CreateCollisionObject() 
+  { 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iCollisionActor>(CreateCollisionActor()); 
+  }
+
+
+
   csPtr<CS::Physics::iRigidBody> BulletRigidBodyFactory::CreateRigidBody ()
   {
     csRef<csBulletRigidBody> body = csPtr<csBulletRigidBody>(new csBulletRigidBody (system));
@@ -76,6 +90,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     return csPtr<CS::Physics::iRigidBody>(body);
   }
 
+  csPtr<CS::Collisions::iCollisionObject> BulletRigidBodyFactory::CreateCollisionObject() 
+  { 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iRigidBody>(CreateRigidBody()); 
+  }
+
+
   csPtr<CS::Physics::iDynamicActor> BulletDynamicActorFactory::CreateDynamicActor()
   {
     csRef<csBulletDynamicActor> body = csPtr<csBulletDynamicActor>(new csBulletDynamicActor (system));
@@ -83,6 +103,23 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     body->CreateDynamicActor(this);
 
     return csPtr<CS::Physics::iDynamicActor>(body);
+  }
+
+  csPtr<CS::Physics::iRigidBody> BulletDynamicActorFactory::CreateRigidBody()
+  { 
+    return DowncastPtr<CS::Physics::iRigidBody, CS::Physics::iDynamicActor>(CreateDynamicActor()); 
+  }
+
+  csPtr<CS::Collisions::iCollisionObject> BulletDynamicActorFactory::CreateCollisionObject() 
+  { 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iDynamicActor>(CreateDynamicActor()); 
+  }
+
+
+
+  csPtr<CS::Collisions::iCollisionObject> BulletSoftBodyFactory::CreateCollisionObject() 
+  { 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iSoftBody>(CreateSoftBody()); 
   }
 
   csPtr<CS::Physics::iSoftBody> BulletSoftRopeFactory::CreateSoftBody()

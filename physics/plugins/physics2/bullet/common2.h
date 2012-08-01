@@ -153,14 +153,14 @@ static inline btVector3 BtVectorTangentialComponent(const btVector3& direction, 
 template<typename T, typename T2>
 inline csPtr<T> DowncastPtr(csPtr<T2> ptr)
 {
-  return csPtr<T>(csRef<T2>(ptr));
+  return csPtr<T>(csRef<T>(csRef<T2>(ptr)));
 }
 
 /// Create a csPtr of a raw pointer to a newly created object of an implicitly castable type
 template<typename T, typename T2>
 inline csPtr<T> DowncastPtr(T2* ptr)
 {
-  return csPtr<T>(csRef<T2>(csPtr<T2>(ptr)));
+  return csPtr<T>(csRef<T>(csRef<T2>(csPtr<T2>(ptr))));
 }
 
 //----------------------- csBulletDebugDraw ----------------------------

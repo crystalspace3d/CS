@@ -66,18 +66,23 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     // An F-key has been pressed -> Use tool
     if (selectedItem)
     {
-      ItemFunction* func = selectedItem->GetTemplate().GetSecondaryFunction(code - CSKEY_F1);
-      if (func)
+      int i = code - CSKEY_F1;
+      if (i < selectedItem->GetTemplate().GetSecondaryFunctions().GetSize())
       {
-        return func->Use(selectedItem);
+        ItemFunction* func = selectedItem->GetTemplate().GetSecondaryFunction(i);
+        if (func)
+        {
+          return func->Use(selectedItem);
+        }
       }
     }
     return false;
   }
   else if (code >= '1' && code <= '9')
   {
+    // Select tool
     int i = code - '1';
-    if (player.GetInventory().GetItems().GetSize() > i)
+    if (i < player.GetInventory().GetItems().GetSize())
     {
       // A different item has been selected: Select it and update HUD descriptions
       selectedItem = player.GetInventory().GetItem(i);

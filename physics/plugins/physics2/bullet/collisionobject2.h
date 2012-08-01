@@ -75,6 +75,7 @@ public:
     {
       // add new movable to sector
       newMovable->SetFullTransform(GetTransform()); 
+      newMovable->UpdateMove ();
       if (sector) sector->AddMovableToSector(newMovable); 
     }
   }

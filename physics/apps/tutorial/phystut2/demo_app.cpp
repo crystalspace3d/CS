@@ -1,7 +1,9 @@
 #include "cssysdef.h"
 #include "csgeom/poly3d.h"
 #include "csgeom/sphere.h"
-#include "iengine/portal.h"
+
+#include "iengine/campos.h"
+
 #include "imesh/genmesh.h"
 #include "imesh/terrain2.h"
 #include "cstool/genmeshbuilder.h"
@@ -24,12 +26,13 @@ PhysDemo::PhysDemo()
   moveSpeed(7.f),
   turnSpeed(2.f),
   selectedItem(nullptr),
-  //actorMode (ACTOR_KINEMATIC)
-  actorMode (ACTOR_DYNAMIC)
+  //actorMode (ActorModeKinematic)
+  actorMode (ActorModeDynamic)
   ,
-  cameraMode(CamFollowMode1stPerson),
+  cameraMode(CameraMode1stPerson),
+  defaultEnvironmentName("box")
   //defaultEnvironmentName("terrain")
-  defaultEnvironmentName("portals")
+  //defaultEnvironmentName("portals")
 {
 }
 
@@ -104,29 +107,33 @@ bool PhysDemo::Application()
   if (!DemoApplication::Application())
     return false;
 
-  // Prepare engine (whatever that means)
-  engine->Prepare();
+  // Set camera
+  cameraManager->SetCamera (view->GetCamera ());
 
+  // Disable the camera manager
+  cameraManager->SetCameraMode (CS::Utility::CAMERA_NO_MOVE);
+  cameraManager->SetMouseMoveEnabled (false);
 
-  // Create the dynamic system
-  room = engine->CreateSector ("room");
-  physicalSector = physicalSystem->CreatePhysicalSector();
-  physicalSector->SetSector(room);
-
-  // Set some linear and angular dampening in order to have a reduction of
-  // the movements of the objects
-  physicalSector->SetLinearDamping(0.1f);
-  physicalSector->SetAngularDamping(0.1f);
-
-  // Enable soft bodies
-  if (isSoftBodyWorld)
+  // Initialize Player items
+  CreateItemTemplates();
+  for (size_t i = 0; i < ItemMgr::Instance->GetTemplateCount(); ++i)
   {
-    physicalSector->SetSoftBodyEnabled (true);
+    ItemTemplate& templ = ItemMgr::Instance->GetTemplate(i);
+    player.GetInventory().AddItem(templ);
   }
-
-  bulletSector = scfQueryInterface<iPhysicalSector> (physicalSector);
-  bulletSector->SetDebugMode (debugMode);
   
+  // Initialize the actor
+  UpdateActorMode(actorMode);
+
+  // Initialize HUD
+  SetupHUD();
+
+
+  // Scene setup:
+  
+  // Remove everything in the engine that existed before
+  engine->DeleteAll();
+
   // Preload some meshes and materials
   if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif")) return ReportError ("Could not load texture: stone");
@@ -138,42 +145,25 @@ bool PhysDemo::Application()
   {
   case PhysDemoLevelsBox:
     CreateBoxRoom();
-    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3.5f));
     break;
 
   case PhysDemoLevelsPortals:
     CreatePortalRoom();
-    //engine->GetCameraPositions()->
-    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3.5f));
     break;
 
   case PhysDemoLevelsTerrain:
     CreateTerrainRoom();
-    //view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 30, -3));
-    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 5, 3));
     break;
 
   default:
     break;
   }
 
-  // Disable the camera manager
-  cameraManager->SetCameraMode (CS::Utility::CAMERA_NO_MOVE);
-  cameraManager->SetMouseMoveEnabled (false);
+  // Finalize stuff in the engine after scene setup
+  engine->Prepare();
 
-  // Initialize the camera
-  UpdateCameraMode();
-
-  // Initialize Player items
-  CreateItemTemplates();
-  for (size_t i = 0; i < ItemMgr::Instance->GetTemplateCount(); ++i)
-  {
-    ItemTemplate& templ = ItemMgr::Instance->GetTemplate(i);
-    player.GetInventory().AddItem(templ);
-  }
-
-  // Initialize HUD
-  SetupHUD();
+  // Move actor to initial position
+  TeleportObject(player.GetObject(), engine->GetCameraPositions()->Get(0));
 
 
   // Run the application
@@ -265,6 +255,22 @@ void PhysDemo::SetupHUD()
 }
 
 
+csPtr<iPhysicalSector> PhysDemo::CreatePhysicalSector(iSector* isector)
+{
+  csRef<iPhysicalSector> sector = physicalSystem->CreatePhysicalSector();
+  sector->SetSector(isector);
+  sector->SetDebugMode (debugMode);
+  if (isSoftBodyWorld)
+  {
+    sector->SetSoftBodyEnabled (true);
+  }
+  return csPtr<iPhysicalSector>(sector);
+}
+
+
+// ####################################################################################################################
+// Misc stuff
+
 
 void PhysDemo::ApplyGhostSlowEffect()
 {
@@ -295,16 +301,16 @@ void PhysDemo::ApplyGhostSlowEffect()
   }
 }
 
-void PhysDemo::UpdateCameraMode()
+void PhysDemo::UpdateActorMode(ActorMode newActorMode)
 {
-  const csOrthoTransform& tc = view->GetCamera()->GetTransform();
+  actorMode = newActorMode;
 
   iCollisionObject* lastActorObj = player.GetObject();
 
   switch (actorMode)
   {
     // The camera is controlled by a rigid body
-  case ACTOR_DYNAMIC:
+  case ActorModeDynamic:
     {
       // Check if there is already a rigid body created for the 'kinematic' mode
       if (!dynamicActor)
@@ -323,15 +329,11 @@ void PhysDemo::UpdateCameraMode()
         dynamicActor = factory->CreateDynamicActor();
       }
 
-      csOrthoTransform trans(tc);
-      dynamicActor->SetTransform (trans);
-      physicalSector->AddCollisionObject(dynamicActor);
-
       player.SetObject(dynamicActor);
       break;
     }
 
-  case ACTOR_KINEMATIC:
+  case ActorModeKinematic:
     {
       if (!kinematicActor)
       {
@@ -351,13 +353,6 @@ void PhysDemo::UpdateCameraMode()
         kinematicActor = factory->CreateCollisionActor();
       }
 
-      csOrthoTransform trans;
-      //trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
-      trans.SetOrigin(tc.GetOrigin());
-      kinematicActor->SetTransform(trans);
-      //kinematicActor->SetTransform(tc);
-
-      physicalSector->AddCollisionObject(kinematicActor);
       kinematicActor->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
 
       player.SetObject(kinematicActor);
@@ -368,18 +363,22 @@ void PhysDemo::UpdateCameraMode()
     break;
   }
 
-  if (actorMode != ACTOR_NOCLIP)
-  {   
+  if (actorMode != ActorModeNoclip)
+  {
     if (lastActorObj)
     {
       // remove previous actor
-      physicalSector->RemoveCollisionObject(lastActorObj);
+      lastActorObj->GetSector()->RemoveCollisionObject(lastActorObj);
+      
+      // move new actor to old transform
+      player.GetObject()->SetTransform(lastActorObj->GetTransform());
+      lastActorObj->GetSector()->AddCollisionObject(player.GetObject());
     }
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
   }
   else
   {
-    // The camera is free
+    // The camera is free now -> Requires actor object to already be created & set
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("None"));
     physicalSector->SetGravity(0);
   }
@@ -497,6 +496,17 @@ void PhysDemo::PullObject()
   }
 }
 
+
+void PhysDemo::TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosition* pos)
+{
+  csOrthoTransform trans(csMatrix3(), pos->GetPosition());
+  trans.LookAt(pos->GetForwardVector(), pos->GetUpwardVector());
+  obj->SetTransform(trans);
+  
+  iCollisionSector* sector = physicalSystem->FindCollisionSector(pos->GetSector());
+  CS_ASSERT(sector);
+  sector->AddCollisionObject(obj);
+}
 
 //---------------------------------------------------------------------------
 

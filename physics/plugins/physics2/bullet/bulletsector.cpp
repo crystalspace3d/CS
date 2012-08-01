@@ -87,7 +87,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   csBulletSector::csBulletSector (csBulletSystem* sys)
     :scfImplementationType (this), sys (sys), isSoftWorld (false),
     hitPortal (nullptr), debugDraw (nullptr), softWorldInfo (nullptr),
-    linearDampening (0.0f), angularDampening (0.0f),
+    linearDampening (0.1f), angularDampening (0.1f),
     linearDisableThreshold (0.8f), angularDisableThreshold (1.0f),
     timeDisableThreshold (0.0f), worldTimeStep (1.0f / 60.0f), worldMaxSteps (1)
   {
@@ -179,6 +179,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* object)
   {
+    if (object->GetSector())
+    {
+      object->GetSector()->RemoveCollisionObject(object);
+    }
+
     csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*>(object));
 
 #ifdef _DEBUG
@@ -313,6 +318,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (sector)
     {
       // sector is set
+
+      // set name
+      QueryObject()->SetName(sector->QueryObject()->GetName());
 
       // add portal meshes
       const csSet<csPtrKey<iMeshWrapper> >& portal_meshes = 

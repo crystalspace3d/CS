@@ -12,7 +12,12 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
+#include "iengine/campos.h"
+
 const static csScalar StaticElasticity(0.1);
+
+const csString DefaultSectorName("defaultsector");
+
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
@@ -88,16 +93,18 @@ void PhysDemo::CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos,
   
 }
 
-void PhysDemo::CreatePortalRoom()
-{
-  // TODO: Load portal room from file
-  CreateBoxRoom();
-}
+void PhysDemo::CreateBoxRoom(csScalar size)
+{ 
+  // Create a sector
+  room = engine->CreateSector (DefaultSectorName);
+  physicalSector = CreatePhysicalSector(room);
 
-void PhysDemo::CreateBoxRoom()
-{
+  // Add cam pos
+  iCameraPosition* pos = engine->GetCameraPositions()->NewCameraPosition("Center");
+  pos->Set(DefaultSectorName, csVector3 (0, 0, 0), csVector3 (0, 0, 1), UpVector);
+
   // Room parameters
-  csVector3 roomExtents(20); csVector3 halfRoomExtents(csScalar(.5) * roomExtents);
+  csVector3 roomExtents(size); csVector3 halfRoomExtents(csScalar(.5) * roomExtents);
   csVector3 roomPos(0);
   csScalar wallThickness = 5;
   
@@ -239,13 +246,23 @@ void PhysDemo::CreateBoxRoom()
   CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
 }
 
+void PhysDemo::CreatePortalRoom()
+{
+  // TODO: Load portal room from file
+  CreateBoxRoom();
+}
+
 void PhysDemo::CreateTerrainRoom()
 {
   printf ("Loading terrain level...\n");
-  
-  // Default behavior from DemoApplication for the creation of the scene
-  if (!DemoApplication::CreateRoom()) return;
 
+  // Add cam pos
+  iCameraPosition* pos = engine->GetCameraPositions()->NewCameraPosition("Default Position");
+  pos->Set(DefaultSectorName, csVector3 (0, 5, 3), csVector3 (0, 0, 1), UpVector);
+  
+  // Add a skybox and some extra lights
+  //if (!DemoApplication::CreateRoom()) return;
+  
   // Load the level file
   csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry()));
 
@@ -260,11 +277,12 @@ void PhysDemo::CreateTerrainRoom()
     ReportError("Error couldn't load terrain level!");
     return;
   }
-  VFS->ChDir(dir);    // reset CWD
 
-  // Setup the sector
-  room = engine->FindSector ("room");
-  view->GetCamera()->SetSector (room);
+  // setup sector
+  room = engine->FindSector("room");
+  physicalSector = CreatePhysicalSector(room);
+
+  VFS->ChDir(dir);    // reset CWD
 
   // Find the terrain mesh
   csRef<iMeshWrapper> terrainWrapper = engine->FindMeshObject ("Terrain");
@@ -294,4 +312,5 @@ void PhysDemo::CreateTerrainRoom()
   csRef<iCollisionTerrain> colTerrain = physicalSystem->CreateCollisionTerrain (terrain);
   
   physicalSector->AddCollisionTerrain(colTerrain);
+
 }

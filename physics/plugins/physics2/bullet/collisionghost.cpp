@@ -45,6 +45,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (movable)
     {
       movable->SetFullTransform (BulletToCS(transform, system->getInverseInternalScale ()));
+      movable->UpdateMove ();
     }
 
     if (camera)

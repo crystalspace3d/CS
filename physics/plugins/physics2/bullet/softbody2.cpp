@@ -162,6 +162,7 @@ void csBulletSoftBody::SetTransform (const csOrthoTransform& trans)
   if (movable)
   {
     movable->SetFullTransform (trans);
+    movable->UpdateMove ();
   }
 
   if (camera)

@@ -32,7 +32,6 @@ class VerySimple : public CS::Utility::DemoApplication
 private:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
   csRef<CS::Physics::iPhysicalSector> physicalSector;
-  csRef<CS::Physics::iPhysicalSector> bulletSector;
 
   // Edit1: Not necessary to cast to sub-type
   //csRef<CS::Physics::iSoftBodyAnimationControlFactory> softBodyAnimationFactory;
@@ -100,7 +99,7 @@ private:
   bool OnMouseUp (iEvent &event);
 
   // Camera
-  void UpdateCameraMode ();
+  void UpdateActorMode ();
 
   // Spawning objects
   CS::Physics::iSoftBody* SpawnSoftBody (bool setVelocity = true);
@@ -125,9 +124,9 @@ int runDebug(int argc, char* argv[])
 // ####################################################################################################
 // VerySimple implementation
 
-#define ACTOR_DYNAMIC 1
-#define ACTOR_KINEMATIC 2
-#define ACTOR_NOCLIP 3
+#define ActorModeDynamic 1
+#define ActorModeKinematic 2
+#define ActorModeNoclip 3
 #define CAMERA_ACTOR 4
 
 #define PhysDemoLevelsPortals 1
@@ -139,7 +138,7 @@ VerySimple::VerySimple()
   do_soft_debug (true), remainingStepDuration (0.0f), allStatic (false), 
   pauseDynamic (false), dynamicStepFactor (1.0f),
   debugMode (CS::Physics::DEBUG_COLLIDERS),
-  actorMode (ACTOR_DYNAMIC), dragging (false), softDragging (false)
+  actorMode (ActorModeDynamic), dragging (false), softDragging (false)
 {
 }
 
@@ -231,8 +230,8 @@ bool VerySimple::Application ()
   if (isSoftBodyWorld)
     physicalSector->SetSoftBodyEnabled (true);
 
-  bulletSector = scfQueryInterface<CS::Physics::iPhysicalSector> (physicalSector);
-  bulletSector->SetDebugMode (debugMode);
+  physicalSector = scfQueryInterface<CS::Physics::iPhysicalSector> (physicalSector);
+  physicalSector->SetDebugMode (debugMode);
 
   // Preload some meshes and materials
   iTextureWrapper* txt = loader->LoadTexture ("objtexture",
@@ -244,7 +243,7 @@ bool VerySimple::Application ()
   cameraManager->SetMouseMoveEnabled (false);
 
   // Initialize the camera
-  UpdateCameraMode ();
+  UpdateActorMode ();
 
   SpawnSoftBody(false);
 
@@ -263,7 +262,7 @@ bool VerySimple::Application ()
   return true;
 }
 
-void VerySimple::UpdateCameraMode ()
+void VerySimple::UpdateActorMode ()
 {
 }
 

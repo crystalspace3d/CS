@@ -113,20 +113,20 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     // Toggle camera mode
     switch (actorMode)
     {
-    case ACTOR_KINEMATIC:
-      actorMode = ACTOR_DYNAMIC;
+    case ActorModeKinematic:
+      actorMode = ActorModeDynamic;
       break;
 
-    case ACTOR_DYNAMIC:
-      actorMode = ACTOR_NOCLIP;
+    case ActorModeDynamic:
+      actorMode = ActorModeNoclip;
       break;
 
-    case ACTOR_NOCLIP:
-      actorMode = ACTOR_KINEMATIC;
+    case ActorModeNoclip:
+      actorMode = ActorModeKinematic;
       break;
     }
 
-    UpdateCameraMode();
+    UpdateActorMode(actorMode);
     return true;
   }
 
@@ -177,7 +177,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         debugMode = CS::Physics::DEBUG_NOTHING;
         break;
       }
-      bulletSector->SetDebugMode (debugMode);
+      physicalSector->SetDebugMode (debugMode);
     }
     return true;
   }
@@ -285,7 +285,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     printf ("Starting profile...\n");
-    bulletSector->StartProfile();
+    physicalSector->StartProfile();
     return true;
   }
 
@@ -293,14 +293,14 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     printf ("Stopping profile...\n");
-    bulletSector->StopProfile();
+    physicalSector->StopProfile();
     return true;
   }
 
   else if (csKeyEventHelper::GetRawCode (&event) == 'p'
     && kbd->GetKeyState (CSKEY_CTRL))
   {
-    bulletSector->DumpProfile();
+    physicalSector->DumpProfile();
     return true;
   }
   
@@ -347,7 +347,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   case 'v':
     {
     // Update camera follow mode
-    cameraMode = CamFollowMode(((int)cameraMode + 1) % (int)CamFollowModeCount);
+    cameraMode = CameraMode(((int)cameraMode + 1) % (int)CameraModeCount);
     csVector3 dir(cam->GetTransform().GetT2O() * csVector3(0, 0, 1));
     dir[UpAxis] = 0;
     dir.Normalize();

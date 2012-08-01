@@ -15,10 +15,17 @@
 
 #include "agent.h"
 
+struct iCameraPosition;
+
+
 // Actor/Camera modes
-#define ACTOR_DYNAMIC 1
-#define ACTOR_KINEMATIC 2
-#define ACTOR_NOCLIP 3
+enum ActorMode
+{
+  ActorModeNone,
+  ActorModeDynamic,
+  ActorModeKinematic,
+  ActorModeNoclip
+};
 
 // Levels
 enum PhysDemoLevels
@@ -29,12 +36,12 @@ enum PhysDemoLevels
   PhysDemoLevelsTerrain
 };
 
-enum CamFollowMode
+enum CameraMode
 {
-  CamFollowMode1stPerson,
-  CamFollowMode3rdPerson,
-  CamFollowMode3rdPersonFar,
-  CamFollowModeCount
+  CameraMode1stPerson,
+  CameraMode3rdPerson,
+  CameraMode3rdPersonFar,
+  CameraModeCount
 };
 
 // Navigation input (use WASD controls)
@@ -92,9 +99,7 @@ class PhysDemo : public CS::Utility::DemoApplication
 {
 public:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
-
   csRef<CS::Physics::iPhysicalSector> physicalSector;
-  csWeakRef<CS::Physics::iPhysicalSector> bulletSector;
 
   csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
 
@@ -134,8 +139,8 @@ public:
   CS::Physics::DebugMode debugMode;
   float actorAirControl;
   float moveSpeed, turnSpeed;
-  int actorMode;
-  CamFollowMode cameraMode;
+  ActorMode actorMode;
+  CameraMode cameraMode;
 
   Agent player;
   Item* selectedItem;
@@ -178,7 +183,7 @@ private:
 
 public:
   // Camera
-  void UpdateCameraMode();
+  void UpdateActorMode(ActorMode newActorMode);
 
   // Spawning objects
   bool SpawnStarCollider();
@@ -213,7 +218,7 @@ public:
    */
   void CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos = csVector3(0), csScalar wallThickness = 5);
 
-  void CreateBoxRoom();
+  void CreateBoxRoom(csScalar size = 100);
   void CreatePortalRoom();
   void CreateTerrainRoom();
 
@@ -308,6 +313,9 @@ public:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Object & Actor utilities
 
+  /// Teleport given object to given location
+  void TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosition* pos);
+
   /// Test whether there are any objects beneath obj (that obj can collide with)
   bool TestOnGround(CS::Collisions::iCollisionObject* obj);
 
@@ -352,8 +360,13 @@ public:
 
   csVector3 GetInputDirection();
 
+  /// 0 or 1, depending on whether the forward key is currently pressed (possibly values in between, depending on input device)
   csScalar GetForward();
+  
+  /// 0 or 1, depending on whether the backward key is currently pressed (possibly values in between, depending on input device)
   csScalar GetBackward();
+  
+  /// 0 or 1, depending on whether the left/right keys are currently pressed (possibly values in between, depending on input device)
   csScalar GetLeftRight();
 
   
@@ -362,6 +375,8 @@ public:
 
   bool IsGravityOff() { return physicalSector->GetGravity().SquaredNorm() == 0; }
   
+  /// Create new iPhysicalSector for the given iSector
+  csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector(iSector* sector);
 
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

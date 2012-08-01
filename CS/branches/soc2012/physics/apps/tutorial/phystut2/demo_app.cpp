@@ -90,7 +90,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
       CS::Quote::Single ("box"),
       CS::Quote::Single ("terrain"),
       defaultEnvironmentName.GetData());
-    //environment = PhysDemoLevelsPortals;
+    //environment = PhysDemoLevelPortals;
     environment = GetEnvironmentByName(defaultEnvironmentName);
   }
 
@@ -121,18 +121,65 @@ bool PhysDemo::Application()
     ItemTemplate& templ = ItemMgr::Instance->GetTemplate(i);
     player.GetInventory().AddItem(templ);
   }
-  
-  // Initialize the actor
-  UpdateActorMode(actorMode);
 
-  // Initialize HUD
-  SetupHUD();
+  // Scene setup
+  if (SetLevel(environment))
+  {
+    // Run the application
+    Run();
 
+    return true;
+  }
+  return false;
+}
 
-  // Scene setup:
-  
+void PhysDemo::Reset()
+{
   // Remove everything in the engine that existed before
   engine->DeleteAll();
+
+  // Remove all sectors from the physical system
+  physicalSystem->DeleteAll();
+
+
+  // reset all other variables
+  physicalSector = nullptr;
+  mainCollider = nullptr;
+
+  stackBoxMeshPair.Collider = nullptr;
+  stackBoxMeshPair.MeshFactory = nullptr;
+
+  dragJoint = nullptr;
+  draggedBody = nullptr;
+
+  player.SetObject(nullptr);
+  dynamicActor = nullptr;
+  kinematicActor = nullptr;
+
+  clipboardBody = nullptr;
+  clipboardMovable = nullptr;
+  
+  ghostObject = nullptr;
+
+  terrainFeeder = nullptr;
+  terrainMod = nullptr;
+
+  debugNameMap.DeleteAll();
+
+  actorVehicle = nullptr;
+
+  walls = nullptr;
+}
+
+bool PhysDemo::SetLevel(PhysDemoLevel level)
+{
+  environment = level;
+
+  // Reset scene
+  Reset();
+
+  // Initialize the actor
+  UpdateActorMode(actorMode);
 
   // Preload some meshes and materials
   if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
@@ -143,15 +190,15 @@ bool PhysDemo::Application()
   // Create the environment
   switch (environment)
   {
-  case PhysDemoLevelsBox:
+  case PhysDemoLevelBox:
     CreateBoxRoom();
     break;
 
-  case PhysDemoLevelsPortals:
+  case PhysDemoLevelPortals:
     CreatePortalRoom();
     break;
 
-  case PhysDemoLevelsTerrain:
+  case PhysDemoLevelTerrain:
     CreateTerrainRoom();
     break;
 
@@ -162,14 +209,14 @@ bool PhysDemo::Application()
   // Finalize stuff in the engine after scene setup
   engine->Prepare();
 
+  // Update Camera Manager item
+  UpdateCameraManager();
+
+  // Initialize HUD
+  SetupHUD();
+
   // Move actor to initial position
   TeleportObject(player.GetObject(), engine->GetCameraPositions()->Get(0));
-
-
-  // Run the application
-  Run();
-
-  return true;
 }
 
 void PhysDemo::SetupHUD()
@@ -399,16 +446,11 @@ bool PhysDemo::IsActor(CS::Collisions::iCollisionObject* obj) const
   return obj->QueryActor();
 }
 
-void PhysDemo::ResetWorld()
+void PhysDemo::ResetCurrentLevel()
 {
-  for (int i = physicalSector->GetCollisionObjectCount() - 1; i >= 0; --i)
-  {
-    iCollisionObject* obj = physicalSector->GetCollisionObject(i);
-    if (IsDynamic(obj) && !IsActor(obj))
-    {
-      physicalSector->RemoveCollisionObject(obj);
-    }
-  }
+  Reset();
+
+  SetLevel(environment);
 }
 
 bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const

@@ -922,6 +922,10 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
 
   /// Returns the vehicle that the given object is a part of, or nullptr
   virtual iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj) = 0;
+
+
+  /// Resets the entire system and deletes all sectors
+  virtual void DeleteAll() = 0;
 };
 
 /**

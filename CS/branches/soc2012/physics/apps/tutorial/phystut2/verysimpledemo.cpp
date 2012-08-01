@@ -36,7 +36,6 @@ private:
   // Edit1: Not necessary to cast to sub-type
   //csRef<CS::Physics::iSoftBodyAnimationControlFactory> softBodyAnimationFactory;
   csRef<iGenMeshAnimationControlFactory> softBodyAnimationFactory;
-  csRefArray<CS::Physics::iRigidBody> dynamicBodies;
   bool isSoftBodyWorld;
 
   // Meshes
@@ -129,8 +128,8 @@ int runDebug(int argc, char* argv[])
 #define ActorModeNoclip 3
 #define CAMERA_ACTOR 4
 
-#define PhysDemoLevelsPortals 1
-#define PhysDemoLevelsTerrain 2
+#define PhysDemoLevelPortals 1
+#define PhysDemoLevelTerrain 2
 
 VerySimple::VerySimple()
   : DemoApplication ("CrystalSpace.PhysTut2"),

@@ -210,6 +210,7 @@ public:
   virtual bool GetGroupCollision (const char* name1,
     const char* name2);
 
+  void DeleteAll();
 
   // Internal stuff
   btSoftBodyWorldInfo* GetSoftBodyWorldInfo() const { return defaultInfo; }

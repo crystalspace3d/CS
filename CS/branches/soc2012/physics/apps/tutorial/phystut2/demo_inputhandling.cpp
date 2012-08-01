@@ -106,7 +106,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code == 'r')
   {
     // reset
-    physDemo.ResetWorld();
+    physDemo.ResetCurrentLevel();
   }
   else if (code == 'c' && !actorVehicle)    // don't switch modes while in vehicle
   {

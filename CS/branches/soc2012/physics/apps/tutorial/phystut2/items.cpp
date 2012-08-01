@@ -14,6 +14,7 @@ ItemMgr* ItemMgr::Instance = new ItemMgr;
 Item* Inventory::AddItem(ItemTemplate& templ)
 {
   csRef<Item> item = ItemMgr::Instance->CreateItem(templ);
+  item->inventory = this;
   items.Push(item);
   return item;
 }

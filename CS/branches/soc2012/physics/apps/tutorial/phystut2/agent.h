@@ -25,6 +25,7 @@ protected:
 public:
   Agent()
   {
+    inventory.owner = this;
   }
 
   Inventory& GetInventory() { return inventory; }

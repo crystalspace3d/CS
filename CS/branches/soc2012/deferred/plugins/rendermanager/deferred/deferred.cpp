@@ -226,7 +226,7 @@ private:
 
     // init to identity
     m = CS::Math::Matrix4();
-    if (target)
+    if(target)
     {
       int width, height;
       rmanager->gbuffer.GetDimensions(width,height);
@@ -235,9 +235,12 @@ private:
 
       if(width != targetW || height != targetH)
       {
+	// we have to downscale if target is bigger than gbuffer
+	targetW = csMin(targetW, width);
+	targetH = csMin(targetH, height);
 	// calculate perspective fixup for gbuffer pass.
-	float scaleX = csMin(float(targetW)/float (width),1.0f);
-	float scaleY = csMin(float(targetH)/float (height),1.0f);
+	float scaleX = float(targetW)/float(width);
+	float scaleY = float(targetH)/float(height);
 	m = CS::Math::Matrix4 (
 	  scaleX, 0, 0, scaleX-1.0f,
 	  0, scaleY, 0, scaleY-1.0f,
@@ -245,9 +248,9 @@ private:
 	  0, 0, 0, 1);
 
 	// calculate texture scale xform for gbuffer reads
-        float scaleXTex = scaleX/2;
-        float scaleYTex = scaleY/2;
-        v = csVector4(scaleXTex, scaleYTex, scaleXTex, 1-scaleYTex);
+        float scaleXTex = 0.5f*scaleX;
+        float scaleYTex = 0.5f*scaleY;
+        v = csVector4(scaleXTex, scaleYTex, scaleXTex, 1.0f-scaleYTex);
       }
       else
       {
@@ -277,7 +280,6 @@ private:
 RMDeferred::RMDeferred(iBase *parent) 
   : 
 scfImplementationType(this, parent),
-portalPersistent(CS::RenderManager::TextureCache::tcacheExactSizeMatch),
 doHDRExposure (false),
 targets (*this)
 {

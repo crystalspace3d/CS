@@ -248,7 +248,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	gbuffer.Attach ();
 
 	// setup clipper
-	graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+	//graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+	// @@@FIXME: clipper is causing issues with portals
+	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
 
         int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
         drawFlags |= CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;
@@ -282,7 +284,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	gbuffer.AttachAccumulation();
 
 	// set clipper
-	graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+	//graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+	// @@@FIXME: clipper is causing issues with portals
+	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
 
         int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
 	drawFlags |= CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;

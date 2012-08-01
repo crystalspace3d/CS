@@ -213,6 +213,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     // update chassis movable to prevent jittering
     chassis->GetAttachedMovable()->SetFullTransform(chassis->GetTransform());
+    chassis->GetAttachedMovable()->UpdateMove();
 
     // post-process wheels:
     for (size_t i = 0; i < wheels.GetSize(); ++i)
@@ -228,6 +229,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       
       // update transformation
       wheels[i]->GetMovable()->SetFullTransform(BulletToCS(wheel->btWheel.m_worldTransform, sys->getInverseInternalScale()));
+      wheels[i]->GetMovable()->UpdateMove ();
     }
   }
   

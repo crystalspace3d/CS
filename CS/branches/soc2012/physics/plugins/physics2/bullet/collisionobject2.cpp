@@ -60,6 +60,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (movable)
     {
       movable->SetFullTransform (trans);
+      movable->UpdateMove ();
     }
 
     if (camera)

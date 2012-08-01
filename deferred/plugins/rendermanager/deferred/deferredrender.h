@@ -186,7 +186,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       // shared setup for all passes - projection only
       CS::Math::Matrix4 projMatrix = context->perspectiveFixup * cam->GetProjectionMatrix();
 
-      bool doDeferred = context->doDeferred;
       size_t layerCount = 0;
       {
 	/* Different contexts may have different numbers of layers,
@@ -199,7 +198,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       }
 
       // not a deferred stack, just render by layer
-      if(!doDeferred)
+      if(!context->doDeferred)
       {
 	// setup projection matrix
 	graphics3D->SetProjectionMatrix (projMatrix);

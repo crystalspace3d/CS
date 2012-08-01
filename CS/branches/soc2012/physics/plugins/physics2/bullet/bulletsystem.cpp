@@ -562,13 +562,13 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
 /// Creates a new factory to produce vehicles
 csPtr<iVehicleFactory> csBulletSystem::CreateVehicleFactory ()
 {
-  return DowncastPtr<iVehicleFactory, BulletVehicleFactory>(new BulletVehicleFactory(this));
+  return csPtr<iVehicleFactory>(new BulletVehicleFactory(this));
 }
 
 /// Creates a new factory to produce vehicle wheels
 csPtr<iVehicleWheelFactory> csBulletSystem::CreateVehicleWheelFactory ()
 {
-  return DowncastPtr<iVehicleWheelFactory, BulletVehicleWheelFactory>(new BulletVehicleWheelFactory(this));
+  return csPtr<iVehicleWheelFactory>(new BulletVehicleWheelFactory(this));
 }
 
 iVehicle* csBulletSystem::GetVehicle (iCollisionObject* obj)
@@ -659,7 +659,7 @@ csPtr<CS::Collisions::iGhostCollisionObjectFactory>
   BulletGhostCollisionObjectFactory* fact = new BulletGhostCollisionObjectFactory(collider, name);
   fact->system = this;
 
-  return DowncastPtr<iGhostCollisionObjectFactory, BulletGhostCollisionObjectFactory>(fact); 
+  return csPtr<iGhostCollisionObjectFactory>(fact); 
 }
 
 csPtr<CS::Collisions::iCollisionActorFactory> 
@@ -668,7 +668,7 @@ csPtr<CS::Collisions::iCollisionActorFactory>
   BulletCollisionActorFactory* fact = new BulletCollisionActorFactory(collider, name);
   fact->system = this;
 
-  return DowncastPtr<iCollisionActorFactory, BulletCollisionActorFactory>(fact); 
+  return csPtr<iCollisionActorFactory>(fact); 
 }
 
 csPtr<CS::Physics::iRigidBodyFactory> 
@@ -677,7 +677,7 @@ csPtr<CS::Physics::iRigidBodyFactory>
   BulletRigidBodyFactory* fact = new BulletRigidBodyFactory(collider, name);
   fact->system = this;
 
-  return DowncastPtr<iRigidBodyFactory, BulletRigidBodyFactory>(fact); 
+  return csPtr<iRigidBodyFactory>(fact); 
 }
 
 csPtr<CS::Physics::iDynamicActorFactory> 
@@ -686,7 +686,7 @@ csPtr<CS::Physics::iDynamicActorFactory>
   BulletDynamicActorFactory* fact = new BulletDynamicActorFactory(collider, name);
   fact->system = this;
 
-  return DowncastPtr<iDynamicActorFactory, BulletDynamicActorFactory>(fact);
+  return csPtr<iDynamicActorFactory>(fact);
 }
 
 csPtr<CS::Physics::iSoftRopeFactory> csBulletSystem::CreateSoftRopeFactory ()
@@ -694,7 +694,7 @@ csPtr<CS::Physics::iSoftRopeFactory> csBulletSystem::CreateSoftRopeFactory ()
   BulletSoftRopeFactory* fact = new BulletSoftRopeFactory();
   fact->system = this;
 
-  return DowncastPtr<iSoftRopeFactory, BulletSoftRopeFactory>(fact);
+  return csPtr<iSoftRopeFactory>(fact);
 }
 
 csPtr<CS::Physics::iSoftClothFactory> csBulletSystem::CreateSoftClothFactory ()
@@ -702,7 +702,7 @@ csPtr<CS::Physics::iSoftClothFactory> csBulletSystem::CreateSoftClothFactory ()
   BulletSoftClothFactory* fact = new BulletSoftClothFactory();
   fact->system = this;
 
-  return DowncastPtr<iSoftClothFactory, BulletSoftClothFactory>(fact);
+  return csPtr<iSoftClothFactory>(fact);
 }
 
 csPtr<CS::Physics::iSoftMeshFactory> csBulletSystem::CreateSoftMeshFactory ()
@@ -710,7 +710,7 @@ csPtr<CS::Physics::iSoftMeshFactory> csBulletSystem::CreateSoftMeshFactory ()
   BulletSoftMeshFactory* fact = new BulletSoftMeshFactory();
   fact->system = this;
 
-  return DowncastPtr<iSoftMeshFactory, BulletSoftMeshFactory>(fact);
+  return csPtr<iSoftMeshFactory>(fact);
 }
 
 }

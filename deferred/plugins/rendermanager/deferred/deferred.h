@@ -131,10 +131,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       return false;
     }
 
-    void AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer);
-    void AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer);
+    void AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, size_t &addedLayer);
+    void AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, size_t &addedLayer);
 
-    int LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
+    size_t LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
                     csStringID shaderType);
 
     void ShowGBuffer(RenderTreeType &tree, GBuffer* buffer);
@@ -165,9 +165,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     GBuffer gbuffer;
     GBuffer::Description gbufferDescription;
 
-    int deferredLayer;
-    int lightingLayer;
-    int zonlyLayer;
+    size_t deferredLayer;
+    size_t lightingLayer;
+    size_t zonlyLayer;
     int maxPortalRecurse;
     bool doShadows;
 

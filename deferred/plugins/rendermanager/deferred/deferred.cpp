@@ -267,9 +267,9 @@ private:
   const LayerConfigType &layerConfig;
 
   int recurseCount;
-  int deferredLayer;
-  int lightingLayer;
-  int zonlyLayer;
+  size_t deferredLayer;
+  size_t lightingLayer;
+  size_t zonlyLayer;
   int maxPortalRecurse;
 };
 
@@ -326,7 +326,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
     {
       // Locates the deferred shading layer.
       deferredLayer = LocateLayer (renderLayer, stringSet->Request("gbuffer fill"));
-      if (deferredLayer < 0)
+      if (deferredLayer == (size_t)-1)
       {
         csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
           messageID, "The render layers file %s does not contain a %s layer.",
@@ -340,7 +340,7 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
       lightingLayer = LocateLayer (renderLayer, stringSet->Request("gbuffer use"));
       csReport (objRegistry, CS_REPORTER_SEVERITY_NOTIFY,
         messageID, "Using deferred %s.",
-	(lightingLayer < 0) ? "shading" : "lighting");
+	(lightingLayer == (size_t)-1) ? "shading" : "lighting");
 
       // Locates the zonly shading layer.
       zonlyLayer = LocateLayer (renderLayer, stringSet->Request("depthwrite"));
@@ -555,7 +555,7 @@ bool RMDeferred::HandleTarget (RenderTreeType& renderTree,
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer)
+void RMDeferred::AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, size_t &addedLayer)
 {
   const char *messageID = "crystalspace.rendermanager.deferred";
 
@@ -574,11 +574,11 @@ void RMDeferred::AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers
 
   renderLayer.AddLayers (baseLayer);
 
-  addedLayer = (int)renderLayer.GetLayerCount () - 1;
+  addedLayer = renderLayer.GetLayerCount () - 1;
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer)
+void RMDeferred::AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, size_t &addedLayer)
 {
   const char *messageID = "crystalspace.rendermanager.deferred";
 
@@ -597,11 +597,11 @@ void RMDeferred::AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, i
 
   renderLayer.AddLayers (baseLayer);
 
-  addedLayer = (int)renderLayer.GetLayerCount () - 1;
+  addedLayer = renderLayer.GetLayerCount () - 1;
 }
 
 //----------------------------------------------------------------------
-int RMDeferred::LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
+size_t RMDeferred::LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
                             csStringID shaderType)
 {
   size_t count = renderLayer.GetLayerCount ();
@@ -618,7 +618,7 @@ int RMDeferred::LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers
     }
   }
 
-  return -1;
+  return (size_t)-1;
 }
 
 //----------------------------------------------------------------------

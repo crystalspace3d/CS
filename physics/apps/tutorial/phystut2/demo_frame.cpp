@@ -96,7 +96,7 @@ void PhysDemo::MoveActor()
   // Dynamics and actor simulation
   // First get elapsed time from the virtual clock.
   csTicks elapsed_time = vc->GetElapsedTicks();
-  const float moveSpeed = environment == PhysDemoLevelsTerrain ? 30.0f : 4.0f;
+  const float moveSpeed = environment == PhysDemoLevelTerrain ? 30.0f : 4.0f;
 
   static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
 
@@ -193,7 +193,7 @@ void PhysDemo::RotateActor()
 
   const float timeMs = elapsed_time / 1000.0;
 
-  float moveSpeed = environment == PhysDemoLevelsTerrain ? 30.0f : 4.0f;
+  float moveSpeed = environment == PhysDemoLevelTerrain ? 30.0f : 4.0f;
 
   static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
 
@@ -280,6 +280,12 @@ void PhysDemo::MoveCamera()
 
   if (player.GetObject())
   {
+    // set sector
+    if (cam->GetSector() != player.GetObject()->GetSector()->GetSector())
+    {
+      cam->SetSector(player.GetObject()->GetSector()->GetSector());
+    }
+
     // adjust camera relative to actor
     csOrthoTransform actorTrans = player.GetObject()->GetTransform();
     csVector3 targetPos = player.GetObject()->GetTransform().GetOrigin();

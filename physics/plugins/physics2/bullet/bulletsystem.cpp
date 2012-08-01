@@ -718,5 +718,9 @@ csPtr<CS::Physics::iSoftMeshFactory> csBulletSystem::CreateSoftMeshFactory ()
   return csPtr<iSoftMeshFactory>(fact);
 }
 
+void csBulletSystem::DeleteAll() 
+{
+  collSectors.DeleteAll ();
+}
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

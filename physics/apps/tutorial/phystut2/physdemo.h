@@ -28,12 +28,12 @@ enum ActorMode
 };
 
 // Levels
-enum PhysDemoLevels
+enum PhysDemoLevel
 {
-  PhysDemoLevelsNone,
-  PhysDemoLevelsBox,
-  PhysDemoLevelsPortals,
-  PhysDemoLevelsTerrain
+  PhysDemoLevelNone,
+  PhysDemoLevelBox,
+  PhysDemoLevelPortals,
+  PhysDemoLevelTerrain
 };
 
 enum CameraMode
@@ -77,18 +77,18 @@ public:
   csPtr<CS::Physics::iRigidBody> SpawnRigidBody(const csString& name, const csOrthoTransform& trans, csScalar friction = 1, csScalar density = 30);
 };
 
-inline int GetEnvironmentByName(csString levelName)
+inline PhysDemoLevel GetEnvironmentByName(csString levelName)
 {
   if (levelName == "box")
-      return PhysDemoLevelsBox;
+      return PhysDemoLevelBox;
 
   else if (levelName == "portals")
-      return PhysDemoLevelsPortals;
+      return PhysDemoLevelPortals;
 
   else if (levelName == "terrain")
-      return PhysDemoLevelsTerrain;
+      return PhysDemoLevelTerrain;
   
-  return PhysDemoLevelsNone;
+  return PhysDemoLevelNone;
 }
  
 //static const csVector3 ActorDimensions(0.8);
@@ -104,7 +104,6 @@ public:
   csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
 
   csRef<iGenMeshAnimationControlFactory> softBodyAnimationFactory;
-  csRefArray<CS::Physics::iRigidBody> dynamicBodies;
   bool isSoftBodyWorld;
 
   // Meshes
@@ -171,7 +170,7 @@ public:
 
   // Static environment
   csString defaultEnvironmentName;
-  int environment;
+  PhysDemoLevel environment;
   csRef<iMeshWrapper> walls;
 
 private:
@@ -234,7 +233,7 @@ public:
   void AddParticles(const csVector3& origin, float yFactor = 1, int num = 256);
 
   // removes everything and resets things
-  void ResetWorld();
+  void ResetCurrentLevel();
 
 public:
   PhysDemo();
@@ -332,6 +331,8 @@ public:
   // Items
 
   void CreateItemTemplates();
+
+  void UpdateCameraManager();
   
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -371,15 +372,6 @@ public:
 
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Other
-
-  bool IsGravityOff() { return physicalSector->GetGravity().SquaredNorm() == 0; }
-  
-  /// Create new iPhysicalSector for the given iSector
-  csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector(iSector* sector);
-
-  
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Frame
 
   void DoStep();
@@ -398,6 +390,24 @@ public:
   void UpdateHUD();
 
   void DoDebugDraw();
+
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Level setup & management
+  
+  /// Create new iPhysicalSector for the given iSector
+  csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector(iSector* sector);
+
+  /// Clears & deletes the scene
+  void Reset();
+
+  /// Reset the current scene and setup the given level
+  bool SetLevel(PhysDemoLevel level);
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Other
+
+  bool IsGravityOff() { return physicalSector->GetGravity().SquaredNorm() == 0; }
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1

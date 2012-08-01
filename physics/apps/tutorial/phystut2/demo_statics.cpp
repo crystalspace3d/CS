@@ -95,7 +95,7 @@ void PhysDemo::CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos,
 
 void PhysDemo::CreateBoxRoom(csScalar size)
 { 
-  // Create a sector
+  // Create and setup sector
   room = engine->CreateSector (DefaultSectorName);
   physicalSector = CreatePhysicalSector(room);
 
@@ -255,10 +255,6 @@ void PhysDemo::CreatePortalRoom()
 void PhysDemo::CreateTerrainRoom()
 {
   printf ("Loading terrain level...\n");
-
-  // Add cam pos
-  iCameraPosition* pos = engine->GetCameraPositions()->NewCameraPosition("Default Position");
-  pos->Set(DefaultSectorName, csVector3 (0, 5, 3), csVector3 (0, 0, 1), UpVector);
   
   // Add a skybox and some extra lights
   //if (!DemoApplication::CreateRoom()) return;
@@ -278,7 +274,7 @@ void PhysDemo::CreateTerrainRoom()
     return;
   }
 
-  // setup sector
+  // Setup sector
   room = engine->FindSector("room");
   physicalSector = CreatePhysicalSector(room);
 

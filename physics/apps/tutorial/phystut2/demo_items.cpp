@@ -5,7 +5,7 @@
 #include "cssysdef.h"
 #include "csgeom/poly3d.h"
 #include "csgeom/sphere.h"
-#include "iengine/portal.h"
+#include "iengine/campos.h"
 #include "imesh/genmesh.h"
 #include "imesh/terrain2.h"
 #include "cstool/genmeshbuilder.h"
@@ -20,11 +20,19 @@ using namespace CS::Physics;
 using namespace CS::Geometry;
 
 
+ItemTemplate* camMgr;
+
+
 #define ItemFunctionClassName(name) name##function
+
+#define ItemFunctionClassNameI(name, i) name##function##i
 
 // Creates a new ItemFunction class with the given name, description and code
 // and adds it as a "kind" (Primary or Secondary) function to the ItemTemplate called "templ"
 #define AddItemFunction(kind, name, desc, code) \
+  AddItemFunctionToTempl(templ, kind, name, desc, code)
+
+#define AddItemFunctionToTempl(templ, kind, name, desc, code) \
   { \
   class ItemFunctionClassName(name) : public ItemFunction { \
   public: ItemFunctionClassName(name)() : ItemFunction(desc) {} \
@@ -92,10 +100,50 @@ void PhysDemo::CreateItemTemplates()
   }
 
   {
+    // Level Manager
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Level Manager");
+    
+    AddItemFunction(Secondary, SwitchToBox, "Go to Box level", physDemo.SetLevel(PhysDemoLevelBox));
+    AddItemFunction(Secondary, SwitchToPortals, "Go to Portals level", physDemo.SetLevel(PhysDemoLevelPortals));
+    AddItemFunction(Secondary, SwitchToTerrain, "Go to Terrain level", physDemo.SetLevel(PhysDemoLevelTerrain));
+  }
+
+  {
     // Camera Manager
     ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Camera Manager");
-
+    
     // Functions are added dynamically
+    camMgr = &templ;
+  }
+}
+
+
+
+class TeleToPosFunction : public ItemFunction 
+{
+  iCameraPosition* pos;
+
+public:
+  TeleToPosFunction(iCameraPosition* pos) : ItemFunction(pos->QueryObject()->GetName()), pos(pos)
+  {
+  }
+  
+  bool Use(Item* item)
+  { 
+    physDemo.TeleportObject(item->GetInventory()->GetOwner()->GetObject(), pos); 
+    return true;
+  }
+};
+
+void PhysDemo::UpdateCameraManager()
+{
+  camMgr->Clear();
+
+  for (size_t i = 0; i < engine->GetCameraPositions()->GetCount(); ++i)
+  {
+    iCameraPosition* pos = engine->GetCameraPositions()->Get(i);
+
+    camMgr->AddSecondaryFunction(new TeleToPosFunction(pos));
   }
 }
 

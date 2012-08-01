@@ -11,7 +11,7 @@
  * Vehicle TODO:
  * - Add sockets for seats to make sure that passenger transforms are relative to vehicle
  * - Add mesh factories & materials to Vehicle- and VehicleWheel- factories
- * - Add convex ray caster for wheels (currently wheels are physically assumed to be thin disks)
+ * - Add convex ray caster for wheels (currently wheels are physically assumed to be thin disks, guided by a single down-ward ray-cast)
  * - Add proper ray casting and collision support for vehicle wheels (by adding ghost objects for wheels)
  * - Add gears and gearbox
  * - Produce a pretty sample vehicle in phystut2 that looks *real*

@@ -34,6 +34,8 @@ class ItemMgr;
  */
 class Inventory
 {
+  friend class Agent;
+
   Agent* owner;
   csRefArray<Item> items;
 
@@ -131,6 +133,7 @@ public:
 class Item : public scfVirtImplementationExt1<Item, csObject, iBase>
 {
   friend class ItemMgr;
+  friend class Inventory;
 
 protected:
   Inventory* inventory;

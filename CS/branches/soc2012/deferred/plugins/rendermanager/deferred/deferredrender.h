@@ -63,9 +63,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
                          iStringSet *stringSet,
                          typename LightRenderType::PersistentData &lightRenderPersistent,
 			 GBuffer& gbuffer,
-                         int deferredLayer,
-			 int lightingLayer,
-                         int zonlyLayer,
+                         size_t deferredLayer,
+			 size_t lightingLayer,
+                         size_t zonlyLayer,
                          bool drawLightVolumes)
       : 
     meshRender(g3d, shaderMgr),
@@ -78,7 +78,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     lightingLayer(lightingLayer),
     zonlyLayer(zonlyLayer),
     drawLightVolumes(drawLightVolumes),
-    useDeferredShading(lightingLayer < 0),
+    useDeferredShading(lightingLayer == (size_t)-1),
     context(nullptr),
     rview(nullptr),
     hasTarget(false)
@@ -260,7 +260,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         graphics3D->SetZMode (CS_ZBUF_MESH);
 
         // z only pass - maybe we shouldn't allow disabling it.
-	if(zonlyLayer >= 0)
+	if(zonlyLayer != (size_t)-1)
         {
 	  RenderLayer<false>(zonlyLayer, ctxCount);
         }
@@ -354,7 +354,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	  lightRender.OutputDepth();
 	}
 	// early z pass - could be disabled if occluvis is used - but how would we know?
-	else if(zonlyLayer >= 0)
+	else if(zonlyLayer != (size_t)-1)
         {
 	  RenderLayer<false>(zonlyLayer, ctxCount);
         }
@@ -390,7 +390,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     }
 
     template<bool deferredOnly>
-    void RenderLayer(int layer, const size_t ctxCount)
+    void RenderLayer(size_t layer, const size_t ctxCount)
     {
       // set layer
       meshRender.SetLayer(layer);
@@ -403,7 +403,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     }
 
     template<typename T>
-    void RenderLights(int layer, const size_t ctxCount, T& render)
+    void RenderLights(size_t layer, const size_t ctxCount, T& render)
     {
       // render all lights
       RenderObjects<T, ForEachLight>(layer, ctxCount, render);
@@ -456,9 +456,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     GBuffer& gbuffer;
 
     // render layer data from parent
-    int deferredLayer;
-    int lightingLayer;
-    int zonlyLayer;
+    size_t deferredLayer;
+    size_t lightingLayer;
+    size_t zonlyLayer;
 
     // render options from parent
     bool drawLightVolumes;

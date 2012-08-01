@@ -514,6 +514,13 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
   const csOrthoTransform& tc = view->GetCamera()->GetTransform();
 
   // Create the mesh.
+  csRef<iMeshFactoryWrapper> meshFact = loader->LoadMeshObjectFactory ("/varia/physmesh");
+  if (!meshFact)
+  { 
+    ReportError ("Error loading mesh object factory!"); 
+    meshFact = engine->CreateMeshFactory("crystalspace.mesh.object.genmesh", "ballFact");
+  }
+
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (meshFact, "mesh"));
 
   csRef<CS::Collisions::iColliderCompound> rootCollider = physicalSystem->CreateColliderCompound();

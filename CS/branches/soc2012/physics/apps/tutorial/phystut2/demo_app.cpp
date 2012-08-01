@@ -151,19 +151,6 @@ bool PhysDemo::Application()
     break;
   }
 
-  // Load the box mesh factory.
-  boxFact = loader->LoadMeshObjectFactory ("/lib/std/sprite1");
-  if (!boxFact) return ReportError ("Error loading mesh object factory!");
-
-  // Double the size.
-  csMatrix3 m; m *= .5;
-  csReversibleTransform t = csReversibleTransform (m, csVector3 (0));
-  boxFact->HardTransform (t);
-
-  // Load the mesh factory.
-  meshFact = loader->LoadMeshObjectFactory ("/varia/physmesh");
-  if (!meshFact) return ReportError ("Error loading mesh object factory!");
-
   // Disable the camera manager
   cameraManager->SetCameraMode (CS::Utility::CAMERA_NO_MOVE);
   cameraManager->SetMouseMoveEnabled (false);
@@ -194,6 +181,8 @@ void PhysDemo::SetupHUD()
   // Setup the descriptions in the HUD
   iStringArray& desc = *hudManager->GetKeyDescriptions();
   desc.Empty();
+
+  desc.Push("N: Next page");
   
   if (selectedItem && selectedItem->GetTemplate().GetPrimaryFunctions().GetSize())
   {
@@ -253,7 +242,7 @@ void PhysDemo::SetupHUD()
     for (size_t i = 0; i < templ.GetSecondaryFunctions().GetSize(); ++i)
     {
       ItemFunction* func = templ.GetSecondaryFunction(i);
-      desc.Push (csString().Format(" F%d: %s", i+1, func->GetName().GetData()));
+      desc.Push (csString().Format(" %d: %s", i+1, func->GetName().GetData()));
     }
   }
   else
@@ -265,7 +254,7 @@ void PhysDemo::SetupHUD()
   for (size_t i = 0; i < player.GetInventory().GetItems().GetSize(); ++i)
   {
     Item* item = player.GetInventory().GetItem(i);
-    desc.Push (csString().Format(" %d: %s", i+1, item->GetName()));
+    desc.Push (csString().Format(" F%d: %s", i+1, item->GetName()));
   }
 }
 

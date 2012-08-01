@@ -239,19 +239,6 @@ bool VerySimple::Application ()
     "/lib/std/spark.png");
   if (!txt) return ReportError ("Error loading texture!");
 
-  // Load the box mesh factory.
-  boxFact = loader->LoadMeshObjectFactory ("/lib/std/sprite1");
-  if (!boxFact) return ReportError ("Error loading mesh object factory!");
-
-  // Double the size.
-  csMatrix3 m; m *= .5;
-  csReversibleTransform t = csReversibleTransform (m, csVector3 (0));
-  boxFact->HardTransform (t);
-
-  // Load the mesh factory.
-  meshFact = loader->LoadMeshObjectFactory ("/varia/physmesh");
-  if (!meshFact) return ReportError ("Error loading mesh object factory!");
-
   // Disable the camera manager
   cameraManager->SetCameraMode (CS::Utility::CAMERA_NO_MOVE);
   cameraManager->SetMouseMoveEnabled (false);

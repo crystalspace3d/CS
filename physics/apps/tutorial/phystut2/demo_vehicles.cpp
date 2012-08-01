@@ -203,7 +203,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
   HandBrake.SetMaxForce(HandBrakeForce);
 
   // Create vehicle
-  csRef<iVehicle> vehicle = fact->CreateVehicle(physicalSector);
+  csRef<iVehicle> vehicle = fact->CreateVehicle(GetCurrentSector());
 
   // Set meshes (FIXME)
   csRef<iMeshWrapper> chassisMesh = CreateBoxMesh(ChassisSizeBottom, "misty", "chassis");
@@ -218,7 +218,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
   }   
 
   // Must add to world, because else meshes will be deleted upon return
-  physicalSector->AddUpdatable(vehicle);
+  GetCurrentSector()->AddUpdatable(vehicle);
 
   return csPtr<iVehicle>(vehicle);
 }
@@ -372,7 +372,7 @@ void PhysDemo::DeleteTargetVehicle()
   {
     LeaveCurrentVehicle();
   }
-  physicalSector->RemoveUpdatable(vehicle);
+  GetCurrentSector()->RemoveUpdatable(vehicle);
 }
 
 // ##############################################################################################################################

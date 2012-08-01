@@ -131,9 +131,12 @@ csBulletCollisionTerrain::csBulletCollisionTerrain (iTerrainSystem* terrain, flo
 
 csBulletCollisionTerrain::~csBulletCollisionTerrain ()
 {
-  for (size_t i = 0; i < bodies.GetSize (); i++)
+  if (collSector)
   {
-    collSector->RemoveCollisionObject(bodies[i]);
+    for (size_t i = 0; i < bodies.GetSize (); i++)
+    {
+      collSector->RemoveCollisionObject(bodies[i]);
+    }
   }
 }
 

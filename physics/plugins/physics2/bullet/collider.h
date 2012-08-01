@@ -21,6 +21,7 @@
 #ifndef __CS_BULLET_COLLIDER_H__
 #define __CS_BULLET_COLLIDER_H__
 
+#include "csutil/weakref.h"
 #include "csgeom/plane3.h"
 #include "ivaria/collisions.h"
 #include "common2.h"
@@ -73,7 +74,7 @@ class csBulletCollider : public scfVirtImplementation1<csBulletCollider, CS::Col
 protected:
   btCollisionShape* shape, *usedShape;
   float margin;
-  csBulletSystem* collSystem;
+  csWeakRef<csBulletSystem> collSystem;
 
   bool dirty;
   csColliderCollection* children;

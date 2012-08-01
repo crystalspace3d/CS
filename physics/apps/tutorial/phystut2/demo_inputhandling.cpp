@@ -101,12 +101,14 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code == 'n')
   {
     hudManager->SwitchKeysPage ();
+    return true;
   }
 
   else if (code == 'r')
   {
     // reset
     physDemo.ResetCurrentLevel();
+    return true;
   }
   else if (code == 'c' && !actorVehicle)    // don't switch modes while in vehicle
   {
@@ -177,7 +179,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         debugMode = CS::Physics::DEBUG_NOTHING;
         break;
       }
-      physicalSector->SetDebugMode (debugMode);
+      CallOnAllSectors(SetDebugMode (debugMode));
     }
     return true;
   }
@@ -199,7 +201,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code == 'g')
   {
     // Toggle gravity.
-    physicalSector->SetGravity (physicalSector->GetGravity().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
+    SetGravity (GetCurrentSector()->GetGravity().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
     return true;
   }
 
@@ -215,7 +217,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     csVector3 endBeam = camera->GetTransform().This2Other (v3d);
 
     CS::Collisions::HitBeamResult hitResult =
-      physicalSector->HitBeam (startBeam, endBeam);
+      GetCurrentSector()->HitBeam (startBeam, endBeam);
     if (hitResult.hasHit && IsDynamic(hitResult.object))
     {
       // Remove the body and the mesh from the simulation, and put them in the clipboard
@@ -228,17 +230,17 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         CS::Physics::iRigidBody* rigidBody = clipboardBody->QueryRigidBody();
         if (rigidBody->GetState() == CS::Physics::STATE_DYNAMIC)
         {
-          size_t count = physicalSector->GetRigidBodyCount();
-          physicalSector->RemoveCollisionObject (clipboardBody->QueryRigidBody());
+          size_t count = GetCurrentSector()->GetRigidBodyCount();
+          GetCurrentSector()->RemoveCollisionObject (clipboardBody->QueryRigidBody());
           //room->GetMeshes()->Remove (clipboardMovable->GetSceneNode()->QueryMesh());
-          if (physicalSector->GetRigidBodyCount() == count)
+          if (GetCurrentSector()->GetRigidBodyCount() == count)
             clipboardBody.Invalidate();
         }
       }
       else
       {
         CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-        physicalSector->RemoveCollisionObject (softBody);
+        GetCurrentSector()->RemoveCollisionObject (softBody);
       }
 
       // Update the display of the dynamics debugger
@@ -267,12 +269,12 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     if (clipboardBody->QueryRigidBody())
     {
       clipboardBody->SetTransform (newTransform);
-      physicalSector->AddCollisionObject (clipboardBody->QueryRigidBody());
+      GetCurrentSector()->AddCollisionObject (clipboardBody->QueryRigidBody());
     }
     else
     {
       CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-      physicalSector->AddCollisionObject (softBody);
+      GetCurrentSector()->AddCollisionObject (softBody);
     }
 
     clipboardBody = 0;
@@ -285,7 +287,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     printf ("Starting profile...\n");
-    physicalSector->StartProfile();
+    GetCurrentSector()->StartProfile();
     return true;
   }
 
@@ -293,14 +295,14 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     printf ("Stopping profile...\n");
-    physicalSector->StopProfile();
+    GetCurrentSector()->StopProfile();
     return true;
   }
 
   else if (csKeyEventHelper::GetRawCode (&event) == 'p'
     && kbd->GetKeyState (CSKEY_CTRL))
   {
-    physicalSector->DumpProfile();
+    GetCurrentSector()->DumpProfile();
     return true;
   }
   
@@ -424,7 +426,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     csVector3 endBeam = camera->GetTransform().This2Other (v3d);
 
     // Trace the physical beam
-    CS::Collisions::HitBeamResult hitResult = physicalSector->HitBeam (startBeam, endBeam);
+    CS::Collisions::HitBeamResult hitResult = GetCurrentSector()->HitBeam (startBeam, endBeam);
     if (!hitResult.hasHit || !hitResult.object) return false;
 
     if (IsDynamic(hitResult.object))
@@ -437,7 +439,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
 
         // Create a p2p joint at the point clicked
         dragJoint = physicalSystem->CreateRigidPivotJoint (bulletBody, hitResult.isect);
-        physicalSector->AddJoint (dragJoint);
+        GetCurrentSector()->AddJoint (dragJoint);
 
         dragging = true;
         dragDistance = (hitResult.isect - startBeam).Norm();
@@ -480,7 +482,7 @@ bool PhysDemo::OnMouseUp (iEvent &event)
     bulletBody->SetAngularDamping (angularDampening);
 
     // Remove the drag joint
-    physicalSector->RemoveJoint (dragJoint);
+    GetCurrentSector()->RemoveJoint (dragJoint);
     dragJoint = nullptr;
     return true;
   }

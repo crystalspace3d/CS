@@ -41,7 +41,7 @@ csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const csSt
   body->SetAttachedMovable(mesh->GetMovable());
 
   // Add to world
-  physDemo.physicalSector->AddCollisionObject(body);
+  physDemo.GetCurrentSector()->AddCollisionObject(body);
 
   return csPtr<CS::Physics::iRigidBody>(body);
 }
@@ -141,7 +141,7 @@ void PhysDemo::CreateGhostCylinder()
   ghostObject->Rotate(csVector3(0, 1, 0), PI/2.0);
   //ghostObject->AddCollider (cylinder, trans)
 
-  physicalSector->AddCollisionObject (ghostObject);
+  GetCurrentSector()->AddCollisionObject (ghostObject);
 }
 
 
@@ -215,7 +215,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
     rb->SetAngularVelocity (tc.GetT2O() * csVector3 (5, 0, 0));
   }
 
-  physicalSector->AddCollisionObject (rb);
+  GetCurrentSector()->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -259,7 +259,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   }
 
   // TODO: Attach a mesh
-  physicalSector->AddCollisionObject (rb);
+  GetCurrentSector()->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -324,7 +324,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   }
   
   rb->RebuildObject();
-  physicalSector->AddCollisionObject (rb);
+  GetCurrentSector()->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -375,7 +375,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   rb->SetAttachedMovable (mesh->GetMovable());
 
   // Add to world
-  physicalSector->AddCollisionObject (rb);
+  GetCurrentSector()->AddCollisionObject (rb);
 
   if (setVelocity)
   {
@@ -439,7 +439,7 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
   co->SetAttachedMovable (star->GetMovable());
   co->SetTransform (trans);
   
-  physicalSector->AddCollisionObject (co);
+  GetCurrentSector()->AddCollisionObject (co);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -500,7 +500,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   }
 
   // Add to world
-  physicalSector->AddCollisionObject (rb);
+  GetCurrentSector()->AddCollisionObject (rb);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -541,7 +541,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
   rb->SetAttachedMovable (mesh->GetMovable());
 
   // Add to world
-  physicalSector->AddCollisionObject (rb);
+  GetCurrentSector()->AddCollisionObject (rb);
 
   if (setVelocity)
   {
@@ -712,7 +712,7 @@ CS::Physics::iJoint* PhysDemo::SpawnJointed()
   joint->Attach (sb1, rb2);
 #endif
 
-  physicalSector->AddJoint (joint);
+  GetCurrentSector()->AddJoint (joint);
   return joint;
 }
 
@@ -773,7 +773,7 @@ void PhysDemo::SpawnChain()
   joint->Attach (rb1, rb2, false);
   ConstraintJoint (joint);
   joint->RebuildJoint();
-  physicalSector->AddJoint (joint);
+  GetCurrentSector()->AddJoint (joint);
 
   joint = physicalSystem->CreateJoint();
   jointTransform.SetO2T (csZRotMatrix3 (PI * .5f));
@@ -782,7 +782,7 @@ void PhysDemo::SpawnChain()
   joint->Attach (rb2, rb3, false);
   ConstraintJoint (joint);
   joint->RebuildJoint();
-  physicalSector->AddJoint (joint);
+  GetCurrentSector()->AddJoint (joint);
 
   joint = physicalSystem->CreateJoint();
   jointTransform.SetO2T (csZRotMatrix3 (PI * .5f));
@@ -791,7 +791,7 @@ void PhysDemo::SpawnChain()
   joint->Attach (rb3, rb4, false);
   ConstraintJoint (joint);
   joint->RebuildJoint();
-  physicalSector->AddJoint (joint);
+  GetCurrentSector()->AddJoint (joint);
 
   joint = physicalSystem->CreateJoint();
   jointTransform.SetO2T (csZRotMatrix3 (PI * .5f));
@@ -800,7 +800,7 @@ void PhysDemo::SpawnChain()
   joint->Attach (rb4, rb5, false);
   ConstraintJoint (joint);
   joint->RebuildJoint();
-  physicalSector->AddJoint (joint);
+  GetCurrentSector()->AddJoint (joint);
 
   // Update the display of the dynamics debugger
   //dynamicsDebugger->UpdateDisplay();
@@ -966,7 +966,7 @@ void PhysDemo::SpawnFrankieRagdoll()
   csRef<CS::Animation::iSkeletonRagdollNode2> ragdoll =
     scfQueryInterfaceSafe<CS::Animation::iSkeletonRagdollNode2> (root);
   ragdoll->SetPhysicalSystem (physicalSystem);
-  ragdoll->SetPhysicalSector (physicalSector);
+  ragdoll->SetPhysicalSector (GetCurrentSector());
   ragdoll->Play();
 
   // Fling the body.
@@ -1011,7 +1011,7 @@ void PhysDemo::SpawnKrystalRagdoll()
   csRef<CS::Animation::iSkeletonRagdollNode2> ragdoll =
     scfQueryInterfaceSafe<CS::Animation::iSkeletonRagdollNode2> (root);
   ragdoll->SetPhysicalSystem (physicalSystem);
-  ragdoll->SetPhysicalSector (physicalSector);
+  ragdoll->SetPhysicalSector (GetCurrentSector());
   ragdoll->Play();
 
   // Fling the body.
@@ -1046,7 +1046,7 @@ void PhysDemo::SpawnRope()
   body->AnchorVertex (0);
   body->AnchorVertex (body->GetVertexCount() - 1, box);
   body->RebuildObject();
-  physicalSector->AddCollisionObject (body);
+  GetCurrentSector()->AddCollisionObject (body);
 
   // Spawn a second rope and attach it to the box
   factory->SetStart(tc.GetOrigin() + tc.GetT2O() * csVector3 (2, 2, 0));
@@ -1057,7 +1057,7 @@ void PhysDemo::SpawnRope()
   body->AnchorVertex (0);
   body->AnchorVertex (body->GetVertexCount() - 1, box);
   body->RebuildObject();
-  physicalSector->AddCollisionObject (body);
+  GetCurrentSector()->AddCollisionObject (body);
 
   // Second example using ropes defined by the position of each of their vertices
 #else
@@ -1080,7 +1080,7 @@ void PhysDemo::SpawnRope()
     body->AnchorVertex (0);
     body->AnchorVertex (body->GetVertexCount() - 1, box);
     body->RebuildObject();
-    physicalSector->AddSoftBody (body);
+    GetCurrentSector()->AddSoftBody (body);
   }
 
   // Spawn a second rope and attach it to the box
@@ -1102,7 +1102,7 @@ void PhysDemo::SpawnRope()
     body->AnchorVertex (0);
     body->AnchorVertex (body->GetVertexCount() - 1, box);
     body->RebuildObject();
-    physicalSector->AddSoftBody (body);
+    GetCurrentSector()->AddSoftBody (body);
   }
 #endif
 }
@@ -1151,7 +1151,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth()
   body->SetAttachedMovable (mesh->GetMovable());
 
   body->RebuildObject();
-  physicalSector->AddCollisionObject (body);
+  GetCurrentSector()->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
   // If it's a double-side soft body like cloth, you have to call SetSoftBody (body, true);
@@ -1220,7 +1220,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
   body->SetTransform(trans);
 
-  physicalSector->AddCollisionObject (body);
+  GetCurrentSector()->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
   csRef<iGeneralMeshState> meshState =

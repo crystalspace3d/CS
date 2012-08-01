@@ -73,8 +73,8 @@ void PhysDemo::AddParticles(const csVector3& origin, float yFactor, int num)
   //lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.1875f);
   //lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.0000f);
 
-  csRef<iParticleBuiltinEffectorForceWithCollisions> force = eff_factory->CreateForceWithCollisions(physicalSector);
-  //csRef<iParticleBuiltinEffectorForce> force = csPtr<iParticleBuiltinEffectorForce>(new ParticlePhysEffectorForce(physicalSector));
+  csRef<iParticleBuiltinEffectorForceWithCollisions> force = eff_factory->CreateForceWithCollisions(GetCurrentSector());
+  //csRef<iParticleBuiltinEffectorForce> force = csPtr<iParticleBuiltinEffectorForce>(new ParticlePhysEffectorForce(GetCurrentSector()));
   force->SetAcceleration(0);
   force->SetRandomAcceleration (csVector3(1.5f, yFactor * 1.5f, 1.5f));
 

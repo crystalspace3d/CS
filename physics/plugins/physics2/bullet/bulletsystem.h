@@ -135,7 +135,9 @@ public:
 
 
   virtual csPtr<CS::Collisions::iCollisionSector> CreateCollisionSector ();
+  virtual size_t GetCollisionSectorCount () const { return collSectors.GetSize(); }
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
+  virtual CS::Collisions::iCollisionSector* GetCollisionSector (size_t index) { return (CS::Collisions::iCollisionSector*)collSectors.Get(index); }
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
 
   virtual void DecomposeConcaveMesh (CS::Collisions::iCollider* object, iMeshWrapper* mesh, bool simplify = false); 

@@ -41,10 +41,10 @@ void PhysDemo::PrintHelp()
 
 void PhysDemo::Frame()
 {
-/*if (physicalSector->GetSoftBodyCount())
+/*if (GetCurrentSector()->GetSoftBodyCount())
   {
     csVector3 aabbMin, aabbMax;
-    physicalSector->GetSoftBody(0)->GetAABB(aabbMin, aabbMax);
+    GetCurrentSector()->GetSoftBody(0)->GetAABB(aabbMin, aabbMax);
     csVector3 o = aabbMin + (aabbMax - aabbMin) / 2;
     csPrintf("SB #0: %f, %f, %f\n", o.x, o.y, o.z);
   }*/
@@ -180,7 +180,7 @@ void PhysDemo::DoStep()
   {
     player.GetActor()->UpdatePreStep(timeMs * dynamicStepFactor);
   }
-  physicalSector->Step (timeMs * dynamicStepFactor);
+  GetCurrentSector()->Step (timeMs * dynamicStepFactor);
   if (player.GetActor())
   {
     player.GetActor()->UpdatePostStep(timeMs * dynamicStepFactor);
@@ -355,34 +355,34 @@ void PhysDemo::UpdateHUD()
     {
       speed = csScalar(3.6) * player.GetObject()->QueryPhysicalBody()->GetLinearVelocity().Norm();
     }
-    txt.Format ("Current speed : %.3f km/h", speed);
+    txt.Format ("Speed : %.3f km/h", speed);
     hudManager->GetStateDescriptions()->Push (txt);
   }
 
-  txt.Format ("Collision objects count: %zu", physicalSector->GetCollisionObjectCount());
+  txt.Format ("Collision objects: %zu", GetCurrentSector()->GetCollisionObjectCount());
   hudManager->GetStateDescriptions()->Push (txt);
 
-  txt.Format ("Rigid bodies count: %zu", physicalSector->GetRigidBodyCount());
+  txt.Format ("Rigid bodies: %zu", GetCurrentSector()->GetRigidBodyCount());
   hudManager->GetStateDescriptions()->Push (txt);
 
   if (isSoftBodyWorld)
   {
-    txt.Format ("Soft bodies count: %zu", physicalSector->GetSoftBodyCount());
+    txt.Format ("Soft bodies: %zu", GetCurrentSector()->GetSoftBodyCount());
     hudManager->GetStateDescriptions()->Push (txt);
   }
 
   switch (actorMode)
   {
   case ActorModeDynamic:
-    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: dynamic"));
+    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: Dynamic"));
     break;
 
   case ActorModeNoclip:
-    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: free"));
+    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: Free"));
     break;
 
   case ActorModeKinematic:
-    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: kinematic"));
+    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: Kinematic"));
     break;
 
   default:
@@ -393,11 +393,11 @@ void PhysDemo::UpdateHUD()
 void PhysDemo::DoDebugDraw()
 {
   if (do_bullet_debug)
-    physicalSector->DebugDraw (view);
+    GetCurrentSector()->DebugDraw (view);
   else if (isSoftBodyWorld && do_soft_debug)
-    for (size_t i = 0; i < physicalSector->GetSoftBodyCount(); i++)
+    for (size_t i = 0; i < GetCurrentSector()->GetSoftBodyCount(); i++)
     {
-      CS::Physics::iSoftBody* softBody = physicalSector->GetSoftBody (i);
+      CS::Physics::iSoftBody* softBody = GetCurrentSector()->GetSoftBody (i);
       csRef<CS::Physics::iSoftBody> bulletSoftBody = 
         scfQueryInterface<CS::Physics::iSoftBody> (softBody);
       if (softBody->GetVertexCount())

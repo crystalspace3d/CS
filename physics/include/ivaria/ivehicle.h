@@ -299,15 +299,17 @@ namespace CS
       }
 
       /// Max breaking force
-      csScalar GetMaxForce() { return maxForce; }
+      csScalar GetMaxForce() const { return maxForce; }
       /// Max breaking force
       void SetMaxForce(csScalar f) { maxForce = f; }
 
       /// The amount of wheels affected by this brake
       size_t GetAffectedWheelCount() const { return affectedWheelIndices.GetSize(); }
-
+      
       /// The indices of the wheels to be affected by this brake
       csArray<size_t>& GetAffectedWheelIndices() { return affectedWheelIndices; }
+      /// The indices of the wheels to be affected by this brake
+      const csArray<size_t>& GetAffectedWheelIndices() const { return affectedWheelIndices; }
     };
     
     /** 
@@ -327,7 +329,7 @@ namespace CS
       virtual ~VehicleSteeringDevice() {}
 
       /// Max breaking force
-      csScalar GetMaxSteering() { return maxSteering; }
+      csScalar GetMaxSteering() const { return maxSteering; }
       /// Max breaking force
       void SetMaxSteering(csScalar s) { maxSteering = s; }
 
@@ -336,6 +338,8 @@ namespace CS
 
       /// The indices of the wheels to be affected by this brake
       csArray<size_t>& GetAffectedWheelIndices() { return affectedWheelIndices; }
+      /// The indices of the wheels to be affected by this brake
+      const csArray<size_t>& GetAffectedWheelIndices() const { return affectedWheelIndices; }
     };
 
     struct iVehicle : public virtual iUpdatable

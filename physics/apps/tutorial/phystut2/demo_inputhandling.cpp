@@ -362,7 +362,9 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 bool PhysDemo::OnMouseDown (iEvent &event)
 {
   int button = csMouseEventHelper::GetButton (&event);
-  if (selectedItem && selectedItem->GetTemplate().GetPrimaryFunctions().GetSize())
+  if (selectedItem && 
+    selectedItem->GetTemplate().GetPrimaryFunctions().GetSize() && 
+    button < selectedItem->GetTemplate().GetPrimaryFunctions().GetSize())
   {
     // Use tool
     ItemFunction* func = selectedItem->GetTemplate().GetPrimaryFunction(button);

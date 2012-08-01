@@ -87,7 +87,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
       CS::Quote::Single ("box"),
       CS::Quote::Single ("terrain"),
       defaultEnvironmentName.GetData());
-    //environment = ENVIRONMENT_PORTALS;
+    //environment = PhysDemoLevelsPortals;
     environment = GetEnvironmentByName(defaultEnvironmentName);
   }
 
@@ -136,12 +136,18 @@ bool PhysDemo::Application()
   // Create the environment
   switch (environment)
   {
-  case ENVIRONMENT_PORTALS:
-    CreatePortalRoom();
+  case PhysDemoLevelsBox:
+    CreateBoxRoom();
     view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3.5f));
     break;
 
-  case ENVIRONMENT_TERRAIN:
+  case PhysDemoLevelsPortals:
+    CreatePortalRoom();
+    //engine->GetCameraPositions()->
+    view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 0, -3.5f));
+    break;
+
+  case PhysDemoLevelsTerrain:
     CreateTerrainRoom();
     //view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 30, -3));
     view->GetCamera()->GetTransform().SetOrigin (csVector3 (0, 5, 3));

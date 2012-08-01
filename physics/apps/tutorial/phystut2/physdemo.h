@@ -21,9 +21,13 @@
 #define ACTOR_NOCLIP 3
 
 // Levels
-#define ENVIRONMENT_NONE 0
-#define ENVIRONMENT_PORTALS 1
-#define ENVIRONMENT_TERRAIN 2
+enum PhysDemoLevels
+{
+  PhysDemoLevelsNone,
+  PhysDemoLevelsBox,
+  PhysDemoLevelsPortals,
+  PhysDemoLevelsTerrain
+};
 
 enum CamFollowMode
 {
@@ -68,13 +72,16 @@ public:
 
 inline int GetEnvironmentByName(csString levelName)
 {
-  if (levelName == "portals")
-      return ENVIRONMENT_PORTALS;
+  if (levelName == "box")
+      return PhysDemoLevelsBox;
+
+  else if (levelName == "portals")
+      return PhysDemoLevelsPortals;
 
   else if (levelName == "terrain")
-      return ENVIRONMENT_TERRAIN;
+      return PhysDemoLevelsTerrain;
   
-  return ENVIRONMENT_NONE;
+  return PhysDemoLevelsNone;
 }
  
 //static const csVector3 ActorDimensions(0.8);
@@ -205,6 +212,8 @@ public:
    * Room is the inside of a cuboid of the given size, and wall thickness
    */
   void CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos = csVector3(0), csScalar wallThickness = 5);
+
+  void CreateBoxRoom();
   void CreatePortalRoom();
   void CreateTerrainRoom();
 

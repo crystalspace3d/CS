@@ -96,7 +96,7 @@ void PhysDemo::MoveActor()
   // Dynamics and actor simulation
   // First get elapsed time from the virtual clock.
   csTicks elapsed_time = vc->GetElapsedTicks();
-  const float moveSpeed = environment == ENVIRONMENT_TERRAIN ? 30.0f : 4.0f;
+  const float moveSpeed = environment == PhysDemoLevelsTerrain ? 30.0f : 4.0f;
 
   static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
 
@@ -193,7 +193,7 @@ void PhysDemo::RotateActor()
 
   const float timeMs = elapsed_time / 1000.0;
 
-  float moveSpeed = environment == ENVIRONMENT_TERRAIN ? 30.0f : 4.0f;
+  float moveSpeed = environment == PhysDemoLevelsTerrain ? 30.0f : 4.0f;
 
   static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
 

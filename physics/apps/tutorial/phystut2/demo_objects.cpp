@@ -131,7 +131,7 @@ void PhysDemo::CreateGhostCylinder()
   
   csYRotMatrix3 m (PI/2.0);
   csOrthoTransform trans (m, csVector3 (0, -3, 5));
-  if (this->environment == ENVIRONMENT_TERRAIN)
+  if (this->environment == PhysDemoLevelsTerrain)
     trans.SetOrigin (csVector3 (0, 1.0, 5));
   ghostObject->SetTransform (trans);
   ghostObject->SetAttachedMovable (mesh->GetMovable());

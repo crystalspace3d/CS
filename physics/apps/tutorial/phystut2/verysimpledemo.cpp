@@ -130,8 +130,8 @@ int runDebug(int argc, char* argv[])
 #define ACTOR_NOCLIP 3
 #define CAMERA_ACTOR 4
 
-#define ENVIRONMENT_PORTALS 1
-#define ENVIRONMENT_TERRAIN 2
+#define PhysDemoLevelsPortals 1
+#define PhysDemoLevelsTerrain 2
 
 VerySimple::VerySimple()
   : DemoApplication ("CrystalSpace.PhysTut2"),

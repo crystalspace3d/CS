@@ -211,58 +211,42 @@ namespace CS
     /**
      * All info needed to produce a specific instance of a wheel, using a factory and geometric details.
      */
-    class VehicleWheelInfo : public scfImplementationExt0<VehicleWheelInfo, csObject>
+    struct iVehicleWheelInfo : public virtual iBase
     {
-      csRef<iVehicleWheelFactory> factory;
-      csVector3 pos, wheelOrientation, axleOrientation;
-      csScalar suspensionLength;
-      csScalar radius;
-      bool isDriven;
-
-    public:
-      VehicleWheelInfo(iVehicleWheelFactory* f) :
-          scfImplementationType(this),
-          factory(f),
-          suspensionLength(1),
-          radius(.5),
-          isDriven(true)
-      {
-      }
-
-      virtual ~VehicleWheelInfo() {}
-
-      iVehicleWheelFactory* GetFactory() const { return factory; }
-      void SetFactory(iVehicleWheelFactory* f) { factory = f; }
+      /// The factory to produce new wheels
+      virtual iVehicleWheelFactory* GetFactory() const = 0;
+      /// The factory to produce new wheels
+      virtual void SetFactory(iVehicleWheelFactory* f) = 0;
 
       /// Whether this wheel is driven by the engine
-      virtual bool GetIsWheelDriven() const { return isDriven; }
+      virtual bool GetIsWheelDriven() const = 0;
       /// Whether this wheel is driven by the engine
-      virtual void SetIsWheelDriven(bool d) { isDriven = d; }
+      virtual void SetIsWheelDriven(bool d) = 0;
 
       /// Length of the suspension in equilibrium
-      virtual csScalar GetSuspensionLength() const { return suspensionLength; }
+      virtual csScalar GetSuspensionLength() const = 0;
       /// Length of the suspension in equilibrium
-      virtual void SetSuspensionLength(csScalar s) { suspensionLength = s; }
+      virtual void SetSuspensionLength(csScalar s) = 0;
 
       /// Radius of the wheel
-      virtual csScalar GetRadius() const { return radius; }
+      virtual csScalar GetRadius() const = 0;
       /// Radius of the wheel
-      virtual void SetRadius(csScalar r) { radius = r; }
+      virtual void SetRadius(csScalar r) = 0;
 
       /// The position of the wheel relative to the chassis
-      const csVector3& GetWheelPos() const { return pos; }
+      virtual const csVector3& GetWheelPos() const = 0;
       /// Value between 0 and 1 that determines how easily the car can roll over its side
-      void SetWheelPos(const csVector3& p) { pos = p; }
+      virtual void SetWheelPos(const csVector3& p) = 0;
 
       /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-      csVector3 GetWheelOrientation() const { return wheelOrientation; }
+      virtual csVector3 GetWheelOrientation() const = 0;
       /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-      void SetSuspensionOrientation(const csVector3& o) { wheelOrientation = o; }
+      virtual void SetSuspensionOrientation(const csVector3& o) = 0;
 
       /// Unit vector that describes the axle about which the wheel rotates
-      const csVector3& GetAxleOrientation() const { return axleOrientation; }
+      virtual const csVector3& GetAxleOrientation() const = 0;
       /// Unit vector that describes the axle about which the wheel rotates
-      void SetAxleOrientation(const csVector3& o) { axleOrientation = o; }
+      virtual void SetAxleOrientation(const csVector3& o) = 0;
     };
 
     struct iVehicleFactory : public virtual iBase
@@ -274,9 +258,9 @@ namespace CS
       virtual csPtr<iVehicle> CreateVehicle(CS::Physics::iPhysicalSector* sector) = 0;
 
       /// The info for all wheels of the vehicle to be created
-      virtual const csRefArray<VehicleWheelInfo>& GetWheelInfos() const = 0;
+      virtual const csRefArray<iVehicleWheelInfo>& GetWheelInfos() const = 0;
       /// The info for all wheels of the vehicle to be created
-      virtual csRefArray<VehicleWheelInfo>& GetWheelInfos() = 0;
+      virtual csRefArray<iVehicleWheelInfo>& GetWheelInfos() = 0;
 
       /// The chassis of the vehicle
       virtual iRigidBodyFactory* GetChassisFactory() const = 0;

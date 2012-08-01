@@ -190,6 +190,9 @@ public:
 
   /// Creates a new factory to produce vehicle wheels
   virtual csPtr<CS::Physics::iVehicleWheelFactory> CreateVehicleWheelFactory ();
+
+  /// Creates a new factory to produce a new iVehicleWheelInfo object which defines a wheel factory and wheel geometry.
+  virtual csPtr<CS::Physics::iVehicleWheelInfo> CreateVehicleWheelInfo (CS::Physics::iVehicleWheelFactory* factory);
   
   /// Returns the vehicle that the given object is a part of, or nullptr
   virtual CS::Physics::iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj);

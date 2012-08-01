@@ -201,6 +201,64 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     virtual void SetRollInfluence(csScalar infl) { rollInfluence = infl; }
   };
 
+    /**
+     * All info needed to produce a specific instance of a wheel, using a factory and geometric details.
+     */
+    class BulletVehicleWheelInfo : public scfVirtImplementationExt1<
+      BulletVehicleWheelInfo, csObject, CS::Physics::iVehicleWheelInfo>
+    {
+      csRef<CS::Physics::iVehicleWheelFactory> factory;
+      csVector3 pos, wheelOrientation, axleOrientation;
+      csScalar suspensionLength;
+      csScalar radius;
+      bool isDriven;
+
+    public:
+      BulletVehicleWheelInfo(CS::Physics::iVehicleWheelFactory* f) :
+          scfImplementationType(this),
+          factory(f),
+          suspensionLength(1),
+          radius(.5),
+          isDriven(true)
+      {
+      }
+
+      virtual ~BulletVehicleWheelInfo() {}
+
+      virtual CS::Physics::iVehicleWheelFactory* GetFactory() const { return factory; }
+      virtual void SetFactory(CS::Physics::iVehicleWheelFactory* f) { factory = f; }
+
+      /// Whether this wheel is driven by the engine
+      virtual bool GetIsWheelDriven() const { return isDriven; }
+      /// Whether this wheel is driven by the engine
+      virtual void SetIsWheelDriven(bool d) { isDriven = d; }
+
+      /// Length of the suspension in equilibrium
+      virtual csScalar GetSuspensionLength() const { return suspensionLength; }
+      /// Length of the suspension in equilibrium
+      virtual void SetSuspensionLength(csScalar s) { suspensionLength = s; }
+
+      /// Radius of the wheel
+      virtual csScalar GetRadius() const { return radius; }
+      /// Radius of the wheel
+      virtual void SetRadius(csScalar r) { radius = r; }
+
+      /// The position of the wheel relative to the chassis
+      const csVector3& GetWheelPos() const { return pos; }
+      /// Value between 0 and 1 that determines how easily the car can roll over its side
+      void SetWheelPos(const csVector3& p) { pos = p; }
+
+      /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
+      csVector3 GetWheelOrientation() const { return wheelOrientation; }
+      /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
+      void SetSuspensionOrientation(const csVector3& o) { wheelOrientation = o; }
+
+      /// Unit vector that describes the axle about which the wheel rotates
+      const csVector3& GetAxleOrientation() const { return axleOrientation; }
+      /// Unit vector that describes the axle about which the wheel rotates
+      void SetAxleOrientation(const csVector3& o) { axleOrientation = o; }
+    };
+
 
   /**
    * Spits out vehicles based on a given set of properties
@@ -210,7 +268,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   {
   private:
     csBulletSystem* sys;
-    csRefArray<CS::Physics::VehicleWheelInfo> wheelInfos;
+    csRefArray<CS::Physics::iVehicleWheelInfo> wheelInfos;
     csRef<CS::Physics::iRigidBodyFactory> chassisFactory;
 
   public:
@@ -221,9 +279,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     virtual csPtr<CS::Physics::iVehicle> CreateVehicle(CS::Physics::iPhysicalSector* sector);
 
     /// The factories for all wheels of the vehicle to be created
-    virtual const csRefArray<CS::Physics::VehicleWheelInfo>& GetWheelInfos() const { return wheelInfos; }
+    virtual const csRefArray<CS::Physics::iVehicleWheelInfo>& GetWheelInfos() const { return wheelInfos; }
     /// The factories for all wheels of the vehicle to be created
-    virtual csRefArray<CS::Physics::VehicleWheelInfo>& GetWheelInfos() { return wheelInfos; }
+    virtual csRefArray<CS::Physics::iVehicleWheelInfo>& GetWheelInfos() { return wheelInfos; }
 
     /// The chassis of the vehicle
     virtual CS::Physics::iRigidBodyFactory* GetChassisFactory() const { return chassisFactory; }

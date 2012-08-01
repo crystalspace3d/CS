@@ -216,7 +216,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       volume = ComputeShapeVolume();
     }
 
-    if (usedShape)
+    if (usedShape && volume != 0 && IsDynamic())
     {
       usedShape->calculateLocalInertia(1, localInertia);      // inertia is proportional to mass
     }

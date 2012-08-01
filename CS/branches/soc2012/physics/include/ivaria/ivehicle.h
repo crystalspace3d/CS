@@ -229,6 +229,8 @@ namespace CS
       {
       }
 
+      virtual ~VehicleWheelInfo() {}
+
       iVehicleWheelFactory* GetFactory() const { return factory; }
       void SetFactory(iVehicleWheelFactory* f) { factory = f; }
 
@@ -296,6 +298,8 @@ namespace CS
       {
       }
 
+      virtual ~VehicleBrakeInfo() {}
+
       VehicleBrakeInfo(size_t* wheelIndices, csScalar maxForce = 1000) : scfImplementationType(this),
         maxForce(maxForce)
       {
@@ -331,6 +335,8 @@ namespace CS
         maxSteering(maxSteering)
       {
       }
+
+      virtual ~VehicleSteeringDevice() {}
 
       /// Max breaking force
       csScalar GetMaxSteering() { return maxSteering; }

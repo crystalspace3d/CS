@@ -16,8 +16,6 @@
 #include "ivaria/colliders.h"
 #include "ivaria/ivehicle.h"
 
-#include <array>
-
 using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;

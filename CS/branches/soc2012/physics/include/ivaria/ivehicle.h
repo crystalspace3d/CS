@@ -335,16 +335,6 @@ namespace CS
       {
       }
 
-      VehicleSteeringDevice(size_t* wheelIndices, csScalar maxSteering = csScalar(.4)) : scfImplementationType(this),
-        maxSteering(maxSteering)
-      {
-        while (*wheelIndices != -1)
-        {
-          affectedWheelIndices.Push(*wheelIndices);
-          ++wheelIndices;
-        }
-      }
-
       /// Max breaking force
       csScalar GetMaxSteering() { return maxSteering; }
       /// Max breaking force

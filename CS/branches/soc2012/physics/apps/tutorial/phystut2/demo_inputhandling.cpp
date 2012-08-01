@@ -95,18 +95,18 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code == 'c' && !actorVehicle)    // don't switch modes while in vehicle
   {
     // Toggle camera mode
-    switch (physicalCameraMode)
+    switch (actorMode)
     {
     case ACTOR_KINEMATIC:
-      physicalCameraMode = ACTOR_DYNAMIC;
+      actorMode = ACTOR_DYNAMIC;
       break;
 
     case ACTOR_DYNAMIC:
-      physicalCameraMode = ACTOR_NOCLIP;
+      actorMode = ACTOR_NOCLIP;
       break;
 
     case ACTOR_NOCLIP:
-      physicalCameraMode = ACTOR_KINEMATIC;
+      actorMode = ACTOR_KINEMATIC;
       break;
     }
 
@@ -331,7 +331,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   case 'v':
     {
     // Update camera follow mode
-    camFollowMode = CamFollowMode(((int)camFollowMode + 1) % (int)CamFollowModeCount);
+    cameraMode = CamFollowMode(((int)cameraMode + 1) % (int)CamFollowModeCount);
     csVector3 dir(cam->GetTransform().GetT2O() * csVector3(0, 0, 1));
     dir[UpAxis] = 0;
     dir.Normalize();

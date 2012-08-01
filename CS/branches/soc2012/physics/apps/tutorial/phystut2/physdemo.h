@@ -102,12 +102,6 @@ public:
 
   RenderMeshColliderPair stackBoxMeshPair;
 
-
-  // Static environment
-  csString defaultEnvironmentName;
-  int environment;
-  csRef<iMeshWrapper> walls;
-
   // Configuration related
   bool autodisable;
   csString phys_engine_name;
@@ -121,21 +115,6 @@ public:
   bool pauseDynamic;
   float dynamicStepFactor;
 
-  // Camera & actors
-  CS::Physics::DebugMode debugMode;
-  float actorAirControl;
-  float moveSpeed, turnSpeed;
-  int physicalCameraMode;
-  CamFollowMode camFollowMode;
-
-  Agent player;
-  Item* selectedItem;
-  csRef<CS::Physics::iDynamicActor> dynamicActor;
-  csRef<CS::Collisions::iCollisionActor> kinematicActor;
-
-  // Ragdoll related
-  csRef<CS::Animation::iSkeletonRagdollNodeManager2> ragdollManager;
-
   // Dragging related
   bool dragging;
   bool softDragging;
@@ -145,6 +124,21 @@ public:
   size_t draggedVertex;
   float dragDistance;
   float linearDampening, angularDampening;
+
+  // Camera & actors
+  CS::Physics::DebugMode debugMode;
+  float actorAirControl;
+  float moveSpeed, turnSpeed;
+  int actorMode;
+  CamFollowMode cameraMode;
+
+  Agent player;
+  Item* selectedItem;
+  csRef<CS::Physics::iDynamicActor> dynamicActor;
+  csRef<CS::Collisions::iCollisionActor> kinematicActor;
+
+  // Ragdoll related
+  csRef<CS::Animation::iSkeletonRagdollNodeManager2> ragdollManager;
 
   // Cut & Paste related
   csRef<CS::Physics::iPhysicalBody> clipboardBody;
@@ -163,6 +157,12 @@ public:
 
   // Vehicles
   csRef<CS::Physics::iVehicle> actorVehicle;
+
+
+  // Static environment
+  csString defaultEnvironmentName;
+  int environment;
+  csRef<iMeshWrapper> walls;
 
 private:
   void Frame();

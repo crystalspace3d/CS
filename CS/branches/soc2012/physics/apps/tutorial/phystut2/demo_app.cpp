@@ -15,19 +15,19 @@ PhysDemo physDemo;
 
 PhysDemo::PhysDemo()
   : DemoApplication ("CrystalSpace.PhysTut2"),
-  isSoftBodyWorld (true), solver (0), do_bullet_debug (false),
+  isSoftBodyWorld (true), do_bullet_debug (false),
   do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
   pauseDynamic (false), dynamicStepFactor (1.0f),
-  debugMode (DEBUG_COLLIDERS),
   dragging (false), softDragging (false),
+  debugMode (DEBUG_COLLIDERS),
+  actorAirControl(.3f),
   moveSpeed(7.f),
   turnSpeed(2.f),
   selectedItem(nullptr),
-  actorAirControl(.3f),
-  camFollowMode(CamFollowMode1stPerson),
-  //physicalCameraMode (ACTOR_KINEMATIC)
-  physicalCameraMode (ACTOR_DYNAMIC)
+  //actorMode (ACTOR_KINEMATIC)
+  actorMode (ACTOR_DYNAMIC)
   ,
+  cameraMode(CamFollowMode1stPerson),
   //defaultEnvironmentName("terrain")
   defaultEnvironmentName("portals")
 {
@@ -306,7 +306,7 @@ void PhysDemo::UpdateCameraMode()
 
   iCollisionObject* lastActorObj = player.GetObject();
 
-  switch (physicalCameraMode)
+  switch (actorMode)
   {
     // The camera is controlled by a rigid body
   case ACTOR_DYNAMIC:
@@ -373,7 +373,7 @@ void PhysDemo::UpdateCameraMode()
     break;
   }
 
-  if (physicalCameraMode != ACTOR_NOCLIP)
+  if (actorMode != ACTOR_NOCLIP)
   {   
     if (lastActorObj)
     {

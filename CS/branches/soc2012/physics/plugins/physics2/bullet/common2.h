@@ -97,11 +97,13 @@ static inline btVector3 CSToBullet (const csVector3& v,
 		    v.z * internalScale);
 }
 
+/// Returns the index'th component of the given vector
 static inline btScalar& BulletVectorComponent(btVector3& v, int index)
 {
   return v.m_floats[index];
 }
 
+/// Returns the index'th component of the given vector
 static inline const btScalar& BulletVectorComponent(const btVector3& v, int index)
 {
   return v.m_floats[index];
@@ -141,6 +143,27 @@ static inline btVector3 BtVectorNormalComponent (const btVector3& direction, con
 static inline btVector3 BtVectorTangentialComponent(const btVector3& direction, const btVector3& normal)
 {
   return direction - BtVectorNormalComponent(direction, normal);
+}
+
+//----------------------- DowncastPtr ----------------------------
+
+/**
+ * Very ugly and inefficient work-around to easily cast between two known-to-be-compatible types
+ */
+template<typename T, typename T2>
+inline csPtr<T> DowncastPtr(csPtr<T2> ptr)
+{
+  return csRef<T2>(ptr);
+}
+template<typename T, typename T2>
+inline csPtr<T> DowncastPtr(csRef<T2> ptr)
+{
+  return csPtr<T>(csRef<T>(ptr));
+}
+template<typename T, typename T2>
+inline csPtr<T> DowncastPtr(T2* ptr)
+{
+  return DowncastPtr<T, T2>(csRef<T2>(ptr));
 }
 
 //----------------------- csBulletDebugDraw ----------------------------

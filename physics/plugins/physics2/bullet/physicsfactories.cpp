@@ -47,21 +47,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
   csPtr<CS::Collisions::iGhostCollisionObject> BulletGhostCollisionObjectFactory::CreateGhostCollisionObject ()
   {
-    csRef<csBulletGhostCollisionObject> collObject = csPtr<csBulletGhostCollisionObject>(new csBulletGhostCollisionObject (system));
+    csRef<csBulletGhostCollisionObject> collObject;
+    collObject.AttachNew (new csBulletGhostCollisionObject (system));
 
-    collObject->CreateGhostCollisionObject(this);
+    collObject->CreateGhostCollisionObject (this);
     collObject->RebuildObject ();
 
     //objects.Push (collObject);
-    return csPtr<iGhostCollisionObject>(collObject);
+    return csPtr<iGhostCollisionObject> (collObject);
   }
 
-  csPtr<CS::Collisions::iCollisionObject> BulletGhostCollisionObjectFactory::CreateCollisionObject() 
+  csPtr<CS::Collisions::iCollisionObject> BulletGhostCollisionObjectFactory::CreateCollisionObject () 
   { 
-    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iGhostCollisionObject>(CreateGhostCollisionObject()); 
+    csRef<CS::Collisions::iGhostCollisionObject> collObject = CreateGhostCollisionObject ();
+    return csPtr<CS::Collisions::iCollisionObject> (collObject);
   }
-
-
 
   csPtr<CS::Collisions::iCollisionActor> BulletCollisionActorFactory::CreateCollisionActor ()
   {

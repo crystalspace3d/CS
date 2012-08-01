@@ -135,15 +135,14 @@ bool PhysDemo::Application()
 
 void PhysDemo::Reset()
 {
-  // Remove everything in the engine that existed before
-  engine->DeleteAll();
-
   // Remove all sectors from the physical system
   physicalSystem->DeleteAll();
 
+  // Remove everything in the engine that existed before
+  engine->DeleteAll();
+
 
   // reset all other variables
-  physicalSector = nullptr;
   mainCollider = nullptr;
 
   stackBoxMeshPair.Collider = nullptr;
@@ -422,12 +421,13 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
       lastActorObj->GetSector()->AddCollisionObject(player.GetObject());
     }
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
+    SetGravity(10);
   }
   else
   {
     // The camera is free now -> Requires actor object to already be created & set
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("None"));
-    physicalSector->SetGravity(0);
+    SetGravity(0);
   }
 }
 
@@ -446,6 +446,15 @@ bool PhysDemo::IsActor(CS::Collisions::iCollisionObject* obj) const
   return obj->QueryActor();
 }
 
+void PhysDemo::SetGravity(const csVector3& g)
+{
+  for (size_t i = 0; i < physicalSystem->GetCollisionSectorCount(); ++i)
+  {
+    csRef<iPhysicalSector> sector = scfQueryInterface<iPhysicalSector>(physicalSystem->GetCollisionSector(i));
+    sector->SetGravity(g);
+  }
+}
+
 void PhysDemo::ResetCurrentLevel()
 {
   Reset();
@@ -456,7 +465,7 @@ void PhysDemo::ResetCurrentLevel()
 bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const
 {
   csVector3 to = pos - 10000 * UpVector;
-  HitBeamResult result = physicalSector->HitBeam(pos, to);
+  HitBeamResult result = GetCurrentSector()->HitBeam(pos, to);
 
   if (result.hasHit)
   {
@@ -469,7 +478,7 @@ bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groun
 bool PhysDemo::GetPointOnGroundAbovePos(const csVector3& pos, csVector3& groundPos) const
 {
   csVector3 to = pos + 10000 * UpVector;
-  HitBeamResult result = physicalSector->HitBeam(pos, to);
+  HitBeamResult result = GetCurrentSector()->HitBeam(pos, to);
 
   if (result.hasHit)
   {
@@ -485,7 +494,7 @@ bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
 
   // Find any objects that can at least remotely support the object
   csArray<CollisionData> collisions;
-  physicalSector->CollisionTest(obj, collisions);
+  GetCurrentSector()->CollisionTest(obj, collisions);
 
   for (size_t i = 0; i < collisions.GetSize (); ++i)
   {
@@ -513,7 +522,7 @@ bool PhysDemo::GetObjectInFrontOfMe(CS::Collisions::HitBeamResult& result)
   csVector3 endBeam = camera->GetTransform().This2Other (v3d);
 
   // Trace the physical beam
-  return (result = physicalSector->HitBeamPortal (startBeam, endBeam)).hasHit;
+  return (result = GetCurrentSector()->HitBeamPortal (startBeam, endBeam)).hasHit;
 }
 
 void PhysDemo::PullObject()
@@ -541,10 +550,12 @@ void PhysDemo::PullObject()
 
 void PhysDemo::TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosition* pos)
 {
+  // set transform
   csOrthoTransform trans(csMatrix3(), pos->GetPosition());
   trans.LookAt(pos->GetForwardVector(), pos->GetUpwardVector());
   obj->SetTransform(trans);
   
+  // set sector
   iCollisionSector* sector = physicalSystem->FindCollisionSector(pos->GetSector());
   CS_ASSERT(sector);
   sector->AddCollisionObject(obj);

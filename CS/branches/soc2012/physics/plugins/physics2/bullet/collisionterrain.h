@@ -18,6 +18,7 @@
 #define __CS_BULLET_COLLISIONTERRAIN_H__
 
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
+#include "csutil/weakref.h"
 #include "csgeom/plane3.h"
 #include "imesh/terrain2.h"
 #include "ivaria/collisions.h"
@@ -58,7 +59,7 @@ class csBulletColliderTerrain : public scfVirtImplementationExt1<
   friend class csBulletCollisionTerrain;
   
 private:
-  iTerrainCell* cell;
+  csWeakRef<iTerrainCell> cell;
   float* heightData;
 
   btVector3 localScale;
@@ -93,9 +94,9 @@ class csBulletCollisionTerrain:
   
   csRefArray<csBulletRigidBody> bodies;
   csOrthoTransform terrainTransform;
-  csRef<csBulletSector> collSector;
-  csRef<csBulletSystem> collSystem;
-  iTerrainSystem* terrainSystem;
+  csWeakRef<csBulletSector> collSector;
+  csWeakRef<csBulletSystem> collSystem;
+  csWeakRef<iTerrainSystem> terrainSystem;
   float minimumHeight;
   float maximumHeight;
   bool unload;

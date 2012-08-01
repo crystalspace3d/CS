@@ -99,7 +99,6 @@ class PhysDemo : public CS::Utility::DemoApplication
 {
 public:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
-  csRef<CS::Physics::iPhysicalSector> physicalSector;
 
   csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
 
@@ -318,8 +317,6 @@ public:
   /// Test whether there are any objects beneath obj (that obj can collide with)
   bool TestOnGround(CS::Collisions::iCollisionObject* obj);
 
-  bool IsDynamic(CS::Collisions::iCollisionObject* obj) const;
-
   bool IsActor(CS::Collisions::iCollisionObject* obj) const;
 
   bool GetObjectInFrontOfMe(CS::Collisions::HitBeamResult& result);
@@ -397,17 +394,31 @@ public:
   
   /// Create new iPhysicalSector for the given iSector
   csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector(iSector* sector);
+  
+  inline void SetCurrentSector(CS::Physics::iPhysicalSector* sector) { sector->AddCollisionObject(player.GetObject()); }
+  inline CS::Physics::iPhysicalSector* GetCurrentSector() const 
+  { 
+    return csRef<CS::Physics::iPhysicalSector>(scfQueryInterface<CS::Physics::iPhysicalSector>(player.GetObject()->GetSector()));
+  }
 
   /// Clears & deletes the scene
   void Reset();
 
   /// Reset the current scene and setup the given level
   bool SetLevel(PhysDemoLevel level);
+
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Physics stuff
+
+  bool IsDynamic(CS::Collisions::iCollisionObject* obj) const;
+
+  void SetGravity(const csVector3& g);
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Other
 
-  bool IsGravityOff() { return physicalSector->GetGravity().SquaredNorm() == 0; }
+  bool IsGravityOff() { return GetCurrentSector()->GetGravity().SquaredNorm() == 0; }
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1
@@ -434,5 +445,12 @@ inline csVector3 ScaleVector3(const csVector3& v1, const csVector3& v2)
   v3.z = v1.z * v2.z;
   return v3;
 }
+
+// TODO: Replace with CS' equivalent of std::bind and std::function
+#define CallOnAllSectors(code) \
+  for (size_t iiiii = 0; iiiii < physDemo.physicalSystem->GetCollisionSectorCount(); ++iiiii) \
+  { \
+    csRef<iPhysicalSector>(scfQueryInterface<iPhysicalSector>(physDemo.physicalSystem->GetCollisionSector(iiiii)))->code; \
+  }
 
 #endif

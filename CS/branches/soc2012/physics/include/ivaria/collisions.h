@@ -541,11 +541,17 @@ struct iCollisionSystem : public virtual iBase
   
   /// Create a collision sector.
   virtual csPtr<iCollisionSector> CreateCollisionSector () = 0;
+  
+  /// Amount of sectors in this system
+  virtual size_t GetCollisionSectorCount () const = 0;
 
   /// Find a collision sector by name.
   virtual iCollisionSector* FindCollisionSector (const char* name) = 0; 
 
-  /// Find a collision sector by name.
+  /// Get a collision sector by index
+  virtual iCollisionSector* GetCollisionSector (size_t index) = 0; 
+  
+  /// Get a collision sector by iSector
   virtual iCollisionSector* GetCollisionSector (const iSector* sceneSector) = 0; 
 
   /**

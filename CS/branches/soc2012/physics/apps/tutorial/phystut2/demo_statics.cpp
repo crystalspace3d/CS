@@ -97,7 +97,7 @@ void PhysDemo::CreateBoxRoom(csScalar size)
 { 
   // Create and setup sector
   room = engine->CreateSector (DefaultSectorName);
-  physicalSector = CreatePhysicalSector(room);
+  SetCurrentSector(csRef<iPhysicalSector>(CreatePhysicalSector(room)));
 
   // Add cam pos
   iCameraPosition* pos = engine->GetCameraPositions()->NewCameraPosition("Center");
@@ -218,8 +218,8 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   //
   //// Create collision portals
   //static const csOrthoTransform identity;
-  //physicalSector->AddPortal (portal1, portal1Trans);
-  //physicalSector->AddPortal (portal2, portal2Trans);
+  //GetCurrentSector()->AddPortal (portal1, portal1Trans);
+  //GetCurrentSector()->AddPortal (portal2, portal2Trans);
 
   // Set up some lights
   room->SetDynamicAmbientLight (csColor (0.3f, 0.3f, 0.3f));
@@ -275,8 +275,8 @@ void PhysDemo::CreateTerrainRoom()
   }
 
   // Setup sector
-  room = engine->FindSector("room");
-  physicalSector = CreatePhysicalSector(room);
+  room = engine->GetSectors()->Get(0);
+  SetCurrentSector(csRef<iPhysicalSector>(CreatePhysicalSector(room)));
 
   VFS->ChDir(dir);    // reset CWD
 
@@ -307,6 +307,6 @@ void PhysDemo::CreateTerrainRoom()
   // Create a collision heightfield
   csRef<iCollisionTerrain> colTerrain = physicalSystem->CreateCollisionTerrain (terrain);
   
-  physicalSector->AddCollisionTerrain(colTerrain);
+  GetCurrentSector()->AddCollisionTerrain(colTerrain);
 
 }

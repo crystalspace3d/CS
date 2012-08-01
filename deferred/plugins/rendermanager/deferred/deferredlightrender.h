@@ -76,8 +76,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
    */
   inline csReversibleTransform CreateSpotLightTransform(iLight *light)
   {
-    iMovable *movable = light->GetMovable ();
-    csVector3 pos = movable->GetFullPosition ();
     float range = light->GetCutoffDistance ();
 
     float inner, outer;
@@ -664,9 +662,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       shader->PushVariables (svStack);
 
       // Draw the light mesh.
-      iCamera *cam = rview->GetCamera ();
-      csVector3 camPos = cam->GetTransform ().This2Other (csVector3 (0.0f, 0.0f, 1.0f));
-
       DrawLightMesh (meshes, num, CreateLightTransform (light), 
                      shader, svStack, CS_FX_ALPHA);
     }

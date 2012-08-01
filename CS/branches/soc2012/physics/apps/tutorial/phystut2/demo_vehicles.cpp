@@ -165,7 +165,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
       pos += axleFactor * (WheelBottomLeft - WheelTopLeft);
       pos = ScaleVector3(ChassisSizeBottom, pos);
 
-      csRef<VehicleWheelInfo> wheel = new VehicleWheelInfo(wheelFact);
+      csRef<iVehicleWheelInfo> wheel = physicalSystem->CreateVehicleWheelInfo(wheelFact);
       wheel->SetAxleOrientation(csVector3(-1, 0, 0));
       wheel->SetIsWheelDriven(axle == 0);
       wheel->SetRadius(WheelRadius);

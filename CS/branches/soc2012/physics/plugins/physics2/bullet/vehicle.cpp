@@ -65,7 +65,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // create & add bullet wheel objects
     for (size_t i = 0; i < wheelInfos.GetSize(); ++i)
     {
-      VehicleWheelInfo* info = wheelInfos[i];
+      iVehicleWheelInfo* info = wheelInfos[i];
 
       iVehicleWheelFactory* iwheelFact = info->GetFactory();
       BulletVehicleWheelFactory* wheelFact = dynamic_cast<BulletVehicleWheelFactory*>(iwheelFact);
@@ -85,7 +85,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // must separate from bullet allocation because the wheel objects will be moved during creation time
     for (size_t i = 0; i < wheelInfos.GetSize(); ++i)
     {
-      VehicleWheelInfo* info = wheelInfos[i];
+      iVehicleWheelInfo* info = wheelInfos[i];
 
       iVehicleWheelFactory* iwheelFact = info->GetFactory();
       BulletVehicleWheelFactory* wheelFact = dynamic_cast<BulletVehicleWheelFactory*>(iwheelFact);

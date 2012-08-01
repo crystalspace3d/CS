@@ -571,6 +571,11 @@ csPtr<iVehicleWheelFactory> csBulletSystem::CreateVehicleWheelFactory ()
   return csPtr<iVehicleWheelFactory>(new BulletVehicleWheelFactory(this));
 }
 
+csPtr<iVehicleWheelInfo> csBulletSystem::CreateVehicleWheelInfo (iVehicleWheelFactory* factory)
+{
+  return csPtr<iVehicleWheelInfo>(new BulletVehicleWheelInfo(factory));
+}
+
 iVehicle* csBulletSystem::GetVehicle (iCollisionObject* obj)
 {
   return vehicleMap.Get(obj, nullptr);

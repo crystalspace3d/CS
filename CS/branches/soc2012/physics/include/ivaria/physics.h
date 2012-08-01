@@ -70,6 +70,7 @@ struct iPhysicalSector;
 struct iVehicle;
 struct iVehicleFactory;
 struct iVehicleWheelFactory;
+struct iVehicleWheelInfo;
 
 /**
  * The type of a rigid body state.
@@ -915,6 +916,9 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   
   /// Creates a new factory to produce vehicle wheels
   virtual csPtr<iVehicleWheelFactory> CreateVehicleWheelFactory () = 0;
+  
+  /// Creates a new factory to produce vehicle wheels
+  virtual csPtr<iVehicleWheelInfo> CreateVehicleWheelInfo (iVehicleWheelFactory* factory) = 0;
 
   /// Returns the vehicle that the given object is a part of, or nullptr
   virtual iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj) = 0;

@@ -153,7 +153,7 @@ static inline btVector3 BtVectorTangentialComponent(const btVector3& direction, 
 template<typename T, typename T2>
 inline csPtr<T> DowncastPtr(csPtr<T2> ptr)
 {
-  return csRef<T2>(ptr);
+  return csPtr<T>(csRef<T2>(ptr));
 }
 template<typename T, typename T2>
 inline csPtr<T> DowncastPtr(csRef<T2> ptr)
@@ -163,7 +163,7 @@ inline csPtr<T> DowncastPtr(csRef<T2> ptr)
 template<typename T, typename T2>
 inline csPtr<T> DowncastPtr(T2* ptr)
 {
-  return DowncastPtr<T, T2>(csRef<T2>(ptr));
+  return DowncastPtr<T, T2>(csRef<T2>(csPtr<T2>(ptr)));
 }
 
 //----------------------- csBulletDebugDraw ----------------------------

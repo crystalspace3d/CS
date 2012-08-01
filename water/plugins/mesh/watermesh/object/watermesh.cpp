@@ -214,24 +214,24 @@ void csWaterMeshObject::SetupObject ()
 	csVector3 coord = logparent->GetMovable()->GetPosition();
 	waterHeight = coord.y;
 
-	// Generating foam points
+	// Generats foam points
 	csRef<iMeshWrapper> terrainWrapper = engine->FindMeshObject ("Terrain");
 	csPrintf("Testing code ");
 	if (terrainWrapper)
 	{
-		csDirtyAccessArray<csVector3> foampointsTemp;  // Get all the collision points
+		csDirtyAccessArray<csVector3> foampointsTemp;  // Store all the collision points Temperately 
 
 		csRef<iMovable> terrainMovable = terrainWrapper->GetMovable();
 		
 		csRef<iTerrainSystem> terrain = scfQueryInterface<iTerrainSystem> (terrainWrapper->GetMeshObject ());
 		size_t cellIndexMax = terrain->GetCellCount();
-		//csPrintf("This is cell count %d",cellIndexMax);
+		csPrintf("This is cell count %d",cellIndexMax);
 		
 		float sqrtcellIndex = sqrt((float)cellIndexMax);
-		//csPrintf("%f",sqrtcellIndex);
+		csPrintf("%f",sqrtcellIndex);
 
 		csVector3 terrainPos = terrainMovable->GetPosition();
-		//csPrintf("position of terrain %f  %f\n",terrainPos.x, terrainPos.z);
+		csPrintf("\nposition of terrain %f  %f\n",terrainPos.x, terrainPos.z);
 
 		for (size_t i = 0; i < cellIndexMax ; i++)
 		{
@@ -247,7 +247,7 @@ void csWaterMeshObject::SetupObject ()
 			terraincell->SetLoadState(terraincell->Loaded);
 			csVector2 terraincellPos = terraincell->GetPosition();
 
-			///csPrintf("position of cell %f  %f %d",terraincellPos.x,terraincellPos.y,cellwidth);
+			csPrintf("\nposition of cell %f  %f %d",terraincellPos.x,terraincellPos.y,cellwidth);
 
 			// Speedy Lookup
 			csLockedHeightData cellval = terraincell->GetHeightData();
@@ -260,50 +260,49 @@ void csWaterMeshObject::SetupObject ()
 				    float height = cellval.data[y * pitchval + x];
 
 					//csPrintf(" %f %f",height,waterHeight);
-
-					if (waterHeight-0.1+10 < (height) && (height) < waterHeight+0.1+10)
+					if (waterHeight-0.1 < (height) && (height) < waterHeight+0.1)
 					{
 						//csPrintf("  Yes!!! we got it.  ");
 						foampointsTemp.Push(csVector3( (int)(cellx*(cellwidth/2)) + (int)(x/2), waterHeight , (int)(cellz*(cellheight/2)) + (int)(y/2) )); 
-						csPrintf("\nRAW %d %d ",(int)(cellx*(cellwidth/2)) + (int)(x/2),(int)(cellz*(cellheight/2)) + (int)(y/2));
+						csPrintf("\nRAW points %d %d ",(int)(cellx*(cellwidth/2)) + (int)(x/2),(int)(cellz*(cellheight/2)) + (int)(y/2));
 					}
 				}
 			}			 
 		} 
 
-		csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
+        csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
 
-		int foamPointsgap = foampointsTemp.GetSize()/1000;
+		int foamPointsgap = foampointsTemp.GetSize()/1000;   
 		foamPointsgap++;
 
-		csPrintf("%d %d ",foampointsTemp.GetSize(),foamPointsgap);
+		csPrintf("\n %d %d ",foampointsTemp.GetSize(),foamPointsgap);
 
+		// Dropping raw foam points to 1000 
 		for (int i = 0 ; i < 1000; i++)
 		{
 			csVector3 pointasdf;
 
-			for (int j = 0; j < foamPointsgap ; j++)
-			{
-				if (foampointsTemp.GetSize())
-					pointasdf = foampointsTemp.Pop();
-				else
-					pointasdf = csVector3(0,waterHeight+1000,0);
-
-			}
+			if (foampointsTemp.GetSize() > i*foamPointsgap )
+				pointasdf = foampointsTemp.Get( i*foamPointsgap );   // Get with gaps
+			else
+				pointasdf = csVector3(0,waterHeight+1000,0); // set all extra points to at a place where no decal is formed
 
 			foampoints.Push(pointasdf);
 			csPrintf("\nADD %d %f %f ",i,pointasdf.x,pointasdf.z);
 		}
 	
-		/*foampoints.Push(csVector3(20,waterHeight,0));
+		/*
+		foampoints.Push(csVector3(20,waterHeight,0));
 		foampoints.Push(csVector3(257,waterHeight,-25));
-		foampoints.Push(csVector3(0,waterHeight,20));*/
+		foampoints.Push(csVector3(0,waterHeight,20));
+		*/
 
-		// foam points 
+		// Get shader to store foam points 
 		csShaderVariable *foam_points = variableContext->GetVariableAdd(svStrings->Request("foam points"));
 		foam_points->SetType(csShaderVariable::ARRAY);
 		foam_points->SetArraySize(0);
 
+		// Put all points to shaders
 		while((int)foampoints.GetSize())
 		{
 			csPrintf("adding points");

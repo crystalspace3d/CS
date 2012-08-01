@@ -211,8 +211,7 @@ namespace CS
     /**
      * All info needed to produce a specific instance of a wheel, using a factory and geometric details.
      */
-    class VehicleWheelInfo : public scfVirtImplementationExt1<
-      VehicleWheelInfo, csObject, iBase>
+    class VehicleWheelInfo : public scfImplementationExt0<VehicleWheelInfo, csObject>
     {
       csRef<iVehicleWheelFactory> factory;
       csVector3 pos, wheelOrientation, axleOrientation;
@@ -286,8 +285,7 @@ namespace CS
     /** 
      * A brake acts on a given set of tires with a given amount of force.
      */
-    class VehicleBrakeInfo : public scfVirtImplementationExt1<
-      VehicleWheelInfo, csObject, iBase>
+    class VehicleBrakeInfo : public scfImplementationExt0<VehicleBrakeInfo, csObject>
     {
       csScalar maxForce;
       csArray<size_t> affectedWheelIndices;
@@ -323,8 +321,7 @@ namespace CS
     /** 
      * A steering device steers a given set of tires with a given max amount 
      */
-    class VehicleSteeringDevice : public scfVirtImplementationExt1<
-      VehicleWheelInfo, csObject, iBase>
+    class VehicleSteeringDevice : public scfImplementationExt0<VehicleSteeringDevice, csObject>
     {
       csScalar maxSteering;
       csArray<size_t> affectedWheelIndices;

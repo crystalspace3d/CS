@@ -506,8 +506,12 @@ void PhysDemo::PullObject()
 //---------------------------------------------------------------------------
 
 CS_IMPLEMENT_APPLICATION
+  
+/// We use this to keep the physical system alive until the end to make sure its destroyed last
+csRef<iPhysicalSystem> _physSys;
 
-  int main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
+  _physSys = physDemo.physicalSystem;
   return physDemo.Main(argc, argv);
 }

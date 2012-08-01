@@ -19,6 +19,7 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
+static const csScalar DefaultDensity(100);
 static const csScalar DefaultFriction(10);
 static const csScalar DefaultElasticity(0.1f);
 
@@ -197,7 +198,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   csRef<CS::Collisions::iColliderSphere> sphere = physicalSystem->CreateColliderSphere (1.0);
   sphere->SetLocalScale (radius);
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(sphere, "sphere");
-  factory->SetDensity (10.0f);
+  factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
@@ -239,7 +240,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
 
   // Create object
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(cone, "cone");
-  factory->SetDensity (10.0f);
+  factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
 
@@ -304,7 +305,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   csMatrix3 m;
 
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(cylinder, "cylinder");
-  factory->SetDensity (10.0f);
+  factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
@@ -359,7 +360,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   // Create a body
   csRef<CS::Collisions::iColliderCapsule> capsule = physicalSystem->CreateColliderCapsule (length, radius);
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(capsule, "capsule");
-  factory->SetDensity (10.0f);
+  factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
@@ -426,6 +427,10 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
 
   // create body
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(starCollider, "star");
+  factory->SetDensity (DefaultDensity);
+  factory->SetElasticity (DefaultElasticity);
+  factory->SetFriction (DefaultFriction);
+
   csRef<CS::Physics::iRigidBody> co = factory->CreateRigidBody();
 
   // set transform
@@ -473,9 +478,10 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   // Create a body and attach the mesh.
   csRef<CS::Collisions::iColliderConvexMesh> collider = physicalSystem->CreateColliderConvexMesh (mesh);
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(collider, "convexmesh");
-  factory->SetDensity (10.0f);
+  factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
+
   csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
 
   // Set transform
@@ -515,6 +521,10 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
 
   // Create a body
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(rootCollider, "compound");
+  factory->SetDensity (DefaultDensity);
+  factory->SetElasticity (DefaultElasticity);
+  factory->SetFriction (DefaultFriction);
+
   csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
 
   // Set transform

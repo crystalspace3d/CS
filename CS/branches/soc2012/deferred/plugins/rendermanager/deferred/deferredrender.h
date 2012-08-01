@@ -115,7 +115,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	}
       }
       
-      contextStack.Push (context);
+      contextStack.Push (newContext);
     }
 
   protected:

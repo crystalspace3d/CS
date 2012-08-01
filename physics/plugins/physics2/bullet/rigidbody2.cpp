@@ -40,7 +40,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     // set mass & density
     btScalar mass;
-    if (props->GetDensity())
+    if (!collider->IsDynamic())
+    {
+      mass = density = 0;
+    }
+    else if (props->GetDensity())
     {
       density = props->GetDensity();
       mass = density * collider->GetVolume();

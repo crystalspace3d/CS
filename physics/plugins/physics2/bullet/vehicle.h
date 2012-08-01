@@ -280,8 +280,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     /// The factories for all wheels of the vehicle to be created
     virtual const csRefArray<CS::Physics::iVehicleWheelInfo>& GetWheelInfos() const { return wheelInfos; }
-    /// The factories for all wheels of the vehicle to be created
-    virtual csRefArray<CS::Physics::iVehicleWheelInfo>& GetWheelInfos() { return wheelInfos; }
+    
+      /// Add a new wheel to this vehicle factory
+    virtual void AddWheelInfo(CS::Physics::iVehicleWheelInfo* info) { wheelInfos.Push(info); }
 
     /// The chassis of the vehicle
     virtual CS::Physics::iRigidBodyFactory* GetChassisFactory() const { return chassisFactory; }

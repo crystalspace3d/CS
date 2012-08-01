@@ -190,7 +190,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
         HandBrake.GetAffectedWheelIndices().Push(index);
       }
 
-      fact->GetWheelInfos().Push(wheel);
+      fact->AddWheelInfo(wheel);
     }
   }
 

@@ -55,18 +55,17 @@ csVector3 PhysDemo::GetInputDirection()
 
 bool PhysDemo::OnKeyboard (iEvent &event)
 {
-  DemoApplication::OnKeyboard (event);
-
+  //DemoApplication::OnKeyboard (event);
   csKeyEventType eventtype = csKeyEventHelper::GetEventType(&event);
   if (eventtype != csKeyEventTypeDown) return false;
 
   utf32_char code = csKeyEventHelper::GetCookedCode (&event);
-  if (code >= CSKEY_F1 && code <= CSKEY_F12)
+  if (code >= '1' && code <= '9')
   {
-    // An F-key has been pressed -> Use tool
+    // An number key has been pressed -> Use tool function
     if (selectedItem)
     {
-      int i = code - CSKEY_F1;
+      int i = code - '1';
       if (i < selectedItem->GetTemplate().GetSecondaryFunctions().GetSize())
       {
         ItemFunction* func = selectedItem->GetTemplate().GetSecondaryFunction(i);
@@ -78,10 +77,10 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     }
     return false;
   }
-  else if (code >= '1' && code <= '9')
+  else if (code >= CSKEY_F1 && code <= CSKEY_F12)
   {
-    // Select tool
-    int i = code - '1';
+    // F-key has been pressed -> Select tool
+    int i = code - CSKEY_F1;
     if (i < player.GetInventory().GetItems().GetSize())
     {
       // A different item has been selected: Select it and update HUD descriptions
@@ -90,6 +89,18 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       return true;
     }
     return false;
+  }
+  
+  else  if (csKeyEventHelper::GetCookedCode (&event) == CSKEY_ESC)
+  {
+    csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (GetObjectRegistry ()));
+    if (q) q->GetEventOutlet()->Broadcast (csevQuit (GetObjectRegistry ()));
+    return true;
+  }
+
+  else if (code == 'n')
+  {
+    hudManager->SwitchKeysPage ();
   }
 
   else if (code == 'r')

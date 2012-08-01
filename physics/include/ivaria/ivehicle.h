@@ -249,6 +249,9 @@ namespace CS
       virtual void SetAxleOrientation(const csVector3& o) = 0;
     };
 
+    /**
+     * TODO: Wrap other array methods, too.
+     */
     struct iVehicleFactory : public virtual iBase
     {
       SCF_INTERFACE (CS::Physics::iVehicleFactory, 1, 0, 0);
@@ -259,8 +262,9 @@ namespace CS
 
       /// The info for all wheels of the vehicle to be created
       virtual const csRefArray<iVehicleWheelInfo>& GetWheelInfos() const = 0;
-      /// The info for all wheels of the vehicle to be created
-      virtual csRefArray<iVehicleWheelInfo>& GetWheelInfos() = 0;
+
+      /// Add a new wheel to this vehicle factory
+      virtual void AddWheelInfo(iVehicleWheelInfo* info) = 0;
 
       /// The chassis of the vehicle
       virtual iRigidBodyFactory* GetChassisFactory() const = 0;

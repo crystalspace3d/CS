@@ -90,6 +90,13 @@ void PhysDemo::CreateItemTemplates()
     AddItemFunction(Secondary, SpawnVehicle, "Spawn New Vehicle", physDemo.SpawnVehicle());
     AddItemFunction(Secondary, AccelerateVehicle, "Accelerate Target Vehicle", physDemo.AccelerateTargetVehicle());
   }
+
+  {
+    // Camera Manager
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Camera Manager");
+
+    // Functions are added dynamically
+  }
 }
 
 /**

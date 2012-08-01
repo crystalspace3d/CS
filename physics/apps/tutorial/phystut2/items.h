@@ -103,6 +103,13 @@ public:
     secondaryFunctions.Push(function);
   }
 
+  /// Remove all functions from this template
+  void Clear()
+  {
+    primaryFunctions.DeleteAll();
+    secondaryFunctions.DeleteAll();
+  }
+
   /// The index within the ItemMgr's array of all ItemTemplates
   int GetIndex() const { return index; }
   

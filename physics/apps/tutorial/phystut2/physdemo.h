@@ -96,8 +96,6 @@ public:
   bool isSoftBodyWorld;
 
   // Meshes
-  csRef<iMeshFactoryWrapper> boxFact;
-  csRef<iMeshFactoryWrapper> meshFact;
   csRef<CS::Collisions::iColliderConcaveMesh> mainCollider;
 
   RenderMeshColliderPair stackBoxMeshPair;

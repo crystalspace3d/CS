@@ -109,8 +109,8 @@ public:
     context.doDeferred = true;
 
     // setup gbuffer transform.
-    // @@@TODO: we shouldn't have to recalculate this for all contexts - it only changes if the attachment changes
-    SetupTarget(context.renderTargets, context.gbufferFixup, context.texScale);
+    // @@@TODO: we shouldn't have to recalculate this for all contexts - it only changes if the attachment/rview changes
+    context.useClipper = SetupTarget(context.renderTargets, context.gbufferFixup, context.texScale);
 
     // Set up all portals
     if (recursePortals)
@@ -210,7 +210,7 @@ public:
 
 private:
 
-  void SetupTarget(typename RenderTreeType::ContextNode::TargetTexture* targets, CS::Math::Matrix4& m, csVector4& v)
+  bool SetupTarget(typename RenderTreeType::ContextNode::TargetTexture* targets, CS::Math::Matrix4& m, csVector4& v)
   {
     // find a target if there is any
     // MRTs are required to be of equal size, so one is enough
@@ -235,15 +235,26 @@ private:
 
       if(width != targetW || height != targetH)
       {
-	// we have to downscale if target is bigger than gbuffer
-	targetW = csMin(targetW, width);
-	targetH = csMin(targetH, height);
+	// disable clipping for deferred passes if we have to scale down
+	// @@@FIXME: it'd be better to scale the clipper instead
+	bool useClipper = !(targetW > width || targetH > height);
+
+	// we have to scale down if target is bigger than gbuffer
+	if(!useClipper)
+	{
+	  targetW = csMin(targetW, width);
+	  targetH = csMin(targetH, height);
+	}
+
 	// calculate perspective fixup for gbuffer pass.
 	float scaleX = float(targetW)/float(width);
 	float scaleY = float(targetH)/float(height);
+	float shiftX = scaleX - 1.0f;
+	float shiftY = scaleY - 1.0f;
+
 	m = CS::Math::Matrix4 (
-	  scaleX, 0, 0, scaleX-1.0f,
-	  0, scaleY, 0, scaleY-1.0f,
+	  scaleX, 0, 0, shiftX,
+	  0, scaleY, 0, shiftY,
 	  0, 0, 1, 0,
 	  0, 0, 0, 1);
 
@@ -251,6 +262,8 @@ private:
         float scaleXTex = 0.5f*scaleX;
         float scaleYTex = 0.5f*scaleY;
         v = csVector4(scaleXTex, scaleYTex, scaleXTex, 1.0f-scaleYTex);
+
+	return useClipper;
       }
       else
       {
@@ -263,6 +276,7 @@ private:
       // we're rendering to the screen, so we have flipped y during lookups.
       v = csVector4(0.5,-0.5,0.5,0.5);
     }
+    return false;
   }
 
   RMDeferred *rmanager;

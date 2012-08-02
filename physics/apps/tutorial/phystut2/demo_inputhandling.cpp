@@ -146,15 +146,15 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code == 'o')
   {
     // Toggle speed of dynamic simulation
-    if (dynamicStepFactor - 1.0 < EPSILON)
-    {
-      dynamicStepFactor = 0.025f;
-      printf ("Dynamic simulation slowed\n");
-    }
-    else
+    if (dynamicStepFactor - 0.025 < EPSILON)
     {
       dynamicStepFactor = 1.0f;
       printf ("Dynamic simulation at normal speed\n");
+    }
+    else
+    {
+      dynamicStepFactor = 0.025f;
+      printf ("Dynamic simulation slowed\n");
     }
   }
 

@@ -26,6 +26,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     (iPortal* portal, const csOrthoTransform& meshTrans, csBulletSector* sourceSector)
     : portal (portal), sourceSector (sourceSector)
   {
+    // set sector
     targetSector = dynamic_cast<csBulletSector*>(sourceSector->sys->GetCollisionSector(portal->GetSector()));
 
     // Create a ghost collisder for the portal
@@ -85,12 +86,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   bool csBulletCollisionPortal::CanTraverse(csBulletCollisionObject* obj)
   {
-    // Static objects can't traverse portals
-    return obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL && obj->QueryPhysicalBody()->IsDynamic();
+    // Only actors and dynamic objects can traverse portals
+    return obj->QueryActor() || (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL && obj->QueryPhysicalBody()->IsDynamic());
   }
 
   void csBulletCollisionPortal::UpdateCollisions (csBulletSector* sector)
   {
+    if (!targetSector)
+    {
+      targetSector = dynamic_cast<csBulletSector*>(sourceSector->sys->GetCollisionSector(portal->GetSector()));
+    }
+
     csRefArray<csBulletCollisionObject> oldObjects (objects);
     csArray<csOrthoTransform> oldTrans (transforms);
     objects.Empty ();
@@ -105,10 +111,20 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       btCollisionObject* btObj = ghostPortal->getOverlappingObject (j);
       iCollisionObject* iObj = static_cast<iCollisionObject*> (btObj->getUserPointer ());
       csBulletCollisionObject* obj = dynamic_cast<csBulletCollisionObject*> (iObj);
+
+      //for (size_t k = 0; k < sector->GetCollisionObjectCount(); ++k)
+      //{
+      //  iCollisionObject* ooo = sector->GetCollisionObject(k);
+      //  btCollisionObject* btooo = dynamic_cast<csBulletCollisionObject*>(ooo)->GetBulletCollisionPointer();
+      //  //bool collliides = ghostPortal->col(btooo);
+      //  bool aaactive = btooo->isActive();
+      //  csString nnn = ooo->QueryObject()->GetName();
+      //  nnn = obj->QueryObject()->GetName();
+      //}
+
+      if (!obj || !CanTraverse(obj)) continue;
+      
       csBulletCollisionObject* newObject;
-
-      if (!CanTraverse(obj)) continue;
-
       
       // Phsical objects can traverse portals
       if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)

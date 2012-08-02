@@ -12,6 +12,8 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
+#include "collision2util.h"
+
 #include "iengine/campos.h"
 
 const static csScalar StaticElasticity(0.1);
@@ -248,8 +250,33 @@ void PhysDemo::CreateBoxRoom(csScalar size)
 
 void PhysDemo::CreatePortalRoom()
 {
-  // TODO: Load portal room from file
-  CreateBoxRoom();
+  printf ("Loading portal level...\n");
+
+  // Load the level file
+  csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry()));
+
+  const char* dir = VFS->GetCwd();
+  if (!VFS->ChDir ("/data/portals"))
+  {
+    ReportError("ERROR: Couldn't find portal level directory!");
+    return;
+  }
+
+  if (!loader->LoadMapFile ("world", false))
+  {
+    ReportError("ERROR: Couldn't load portal level!");
+    return;
+  }
+  
+  // create physical world from render world
+  Collision2Helper::InitializeCollisionObjects(physicalSystem, engine);
+
+  // Setup default sector
+  room = engine->GetSectors()->Get(0);
+
+  VFS->ChDir(dir);    // reset CWD
+
+  printf ("Done - Portal level loaded.\n");
 }
 
 void PhysDemo::CreateTerrainRoom()
@@ -276,7 +303,6 @@ void PhysDemo::CreateTerrainRoom()
 
   // Setup sector
   room = engine->GetSectors()->Get(0);
-  SetCurrentSector(csRef<iPhysicalSector>(CreatePhysicalSector(room)));
 
   VFS->ChDir(dir);    // reset CWD
 
@@ -308,5 +334,6 @@ void PhysDemo::CreateTerrainRoom()
   csRef<iCollisionTerrain> colTerrain = physicalSystem->CreateCollisionTerrain (terrain);
   
   GetCurrentSector()->AddCollisionTerrain(colTerrain);
-
+  
+  printf ("Done - Terrain level loaded.\n");
 }

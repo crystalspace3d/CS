@@ -58,7 +58,8 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry());
   physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet2");
 
-  physicalSystem->SetInternalScale (1.0f);
+  if (!physicalSystem)
+    return ReportError ("Could not load the bullet2 plugin!");
 
   // Check whether the soft bodies are enabled or not
   isSoftBodyWorld = clp->GetBoolOption ("soft", true);
@@ -84,7 +85,7 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   environment = GetEnvironmentByName(levelName);
   if (!environment)
   {
-    csPrintf ("Given level (%s) is not one of {%s, %s, %s}. Falling back to \"%s\"\n",
+    csPrintf ("Given level (%s) is not one of {%s, %s, %s} - Falling back to \"%s\"\n",
       CS::Quote::Single (levelName.GetData()),
       CS::Quote::Single ("portals"),
       CS::Quote::Single ("box"),
@@ -93,9 +94,6 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
     //environment = PhysDemoLevelPortals;
     environment = GetEnvironmentByName(defaultEnvironmentName);
   }
-
-  if (!physicalSystem)
-    return ReportError ("No bullet system plugin!");
 
   return true;
 }
@@ -409,6 +407,8 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
     break;
   }
 
+  CS_ASSERT(player.GetObject()->QueryActor());
+
   if (actorMode != ActorModeNoclip)
   {
     if (lastActorObj)
@@ -421,7 +421,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
       lastActorObj->GetSector()->AddCollisionObject(player.GetObject());
     }
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
-    SetGravity(10);
+    SetGravity(-10 * UpVector);
   }
   else
   {
@@ -556,9 +556,10 @@ void PhysDemo::TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosi
   obj->SetTransform(trans);
   
   // set sector
-  iCollisionSector* sector = physicalSystem->FindCollisionSector(pos->GetSector());
-  CS_ASSERT(sector);
-  sector->AddCollisionObject(obj);
+  iSector* isector = engine->FindSector(pos->GetSector());
+  iCollisionSector* collSector = physicalSystem->GetOrCreateCollisionSector(isector);
+  CS_ASSERT(collSector);
+  collSector->AddCollisionObject(obj);
 }
 
 //---------------------------------------------------------------------------

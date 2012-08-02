@@ -5,7 +5,11 @@
 #include "iengine/sector.h"
 #include "iengine/movable.h"
 #include "iengine/mesh.h"
+#include "iengine/portalcontainer.h"
 #include "iengine/scenenode.h"
+
+#include "imesh/objmodel.h"
+#include "imesh/terrain2.h"
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
@@ -19,8 +23,8 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
   for (i = 0 ; i < meshes->GetCount () ; i++)
   {
     iMeshWrapper* sp = meshes->Get (i);
-    if (collection && !collection->IsParentOf(sp->QueryObject ())) continue;
-    InitializeCollisionObjects (colsys, sp);
+    if ((collection && !collection->IsParentOf(sp->QueryObject ())) || !sp->GetMovable()) continue;
+    InitializeCollisionObjects (colsys, sp->GetMovable()->GetSectors()->Get(0), sp);
   }
 }
 
@@ -34,53 +38,97 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
   {
     iMeshWrapper* sp = meshes->Get (i);
     if (collection && !collection->IsParentOf(sp->QueryObject ())) continue;
-    InitializeCollisionObjects (colsys, sp);
+    InitializeCollisionObjects (colsys, sector, sp);
   }
 }
 
-void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colSys, iMeshWrapper* mesh)
+void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colSys, iSector* sector, iMeshWrapper* mesh)
 {
-  iMeshFactoryWrapper* meshFactory = mesh->GetFactory ();
+  // Get iCollisionSector from iSector
+  iCollisionSector* colSect = colSys->GetOrCreateCollisionSector (sector);
+  iObjectModel* objModel = mesh->GetMeshObject ()->GetObjectModel ();
 
+  // Check if we have a (partial) heightfield
+  iTerrainSystem* terrainSys = objModel->GetTerrainColldet ();
+  if (terrainSys)
+  {
+    // create new terrain, if the sector did not add it yet
+    if (!colSect->GetCollisionTerrain(terrainSys))
+    {
+      csRef<iCollisionTerrain> colTerrain = colSys->CreateCollisionTerrain(terrainSys);
+      colSect->AddCollisionTerrain(colTerrain);
+    }
+  }
+
+  // Check if we have portals
+  iPortalContainer* portalCont = mesh->GetPortalContainer ();
+  if (portalCont)
+  {
+    for (size_t i = 0; i < portalCont->GetPortalCount(); ++i)
+    {
+      iPortal* portal = portalCont->GetPortal(i);
+      //colSect->AddPortal (portal, csOrthoTransform());
+
+      // This is very odd: Multiple portals with a single transform?
+      colSect->AddPortal (portal, mesh->GetMovable ()->GetFullTransform ());
+    }
+  }
+
+  
+  csRef<iCollisionObject> collObj;
+  
+  // Get mesh factory
+  iMeshFactoryWrapper* meshFactory = mesh->GetFactory ();
   if (meshFactory)
   {
     ::iObject* meshFactoryObj = meshFactory->QueryObject ();
     if (meshFactoryObj)
     {
-      iMovable* movable = mesh->GetMovable();
-      if (movable)
+      // Add all collision objects of the mesh
+      for (csRef<iObjectIterator> it = meshFactoryObj->GetIterator (); it->HasNext (); )
       {
-        // Get iSector
-        // TODO: Since the object could be in multiple sectors at once, 
-        //        it might have to check against collisions in all of them
-        iSector* sect = movable->GetSectors()->Get(0);
-
-        // get iCollisionSector from iSector
-        iCollisionSector* colSect = colSys->GetCollisionSector (sect);
-        if (colSect)
+        ::iObject* next = it->Next();
+        csRef<iCollisionObjectFactory> nextFactory = scfQueryInterface<iCollisionObjectFactory>(next);
+        if (nextFactory)
         {
-          // Add all collision objects of the mesh
-          for (csRef<iObjectIterator> it = meshFactoryObj->GetIterator (); it->HasNext (); )
-          {
-            ::iObject* next = it->Next();
-            csRef<iCollisionObjectFactory> nextFactory = scfQueryInterface<iCollisionObjectFactory>(next);
-            if (nextFactory)
-            {
-              csRef<iCollisionObject> obj = nextFactory->CreateCollisionObject();
-              
-              // TODO: We have a problem if we set the mesh as movable of multiple collision objects
-              // TODO: Movables need to be able to define an offset transform relative to the collision object
-              // TODO: Inconsistent ownership model:
-              //      Movables are children of CollisionObject, but CollisionObjects are created from children of the mesh's factory
-              obj->SetTransform(movable->GetFullTransform());
-              obj->SetAttachedMovable(movable);
-              
-              colSect->AddCollisionObject(obj);
-            }
-          }
+          collObj = nextFactory->CreateCollisionObject();
+
+          // TODO: Movables need to be able to define an offset transform relative to the collision object
+          // TODO: Inconsistent ownership model:
+          //      Movables are children of CollisionObject, but CollisionObjects are created from children of the mesh's factory
+
+
+          // TODO: Can only add mesh to a single CO right now (quite limiting)
+          break;
         }
       }
     }
+  }
+
+  if (!terrainSys && !portalCont && !collObj)
+  {
+    // did not find a specific physical factory and its not a heightfield 
+    // -> Create a static CO from the mesh, using default values for friction, etc (given it has an underlying physical model)
+    csRef<iColliderConcaveMesh> collider = colSys->CreateColliderConcaveMesh(mesh);
+    csRef<iCollisionObjectFactory> collObjFact = colSys->CreateCollisionObjectFactory(collider);
+    collObj = collObjFact->CreateCollisionObject();
+  }
+
+  if (collObj)
+  {
+    // set movable stuff
+    iMovable* movable = mesh->GetMovable();
+    if (movable)
+    {
+      collObj->SetTransform(movable->GetFullTransform());
+      collObj->SetAttachedMovable(movable);
+    }
+
+    // set name
+    collObj->QueryObject()->SetName(mesh->QueryObject()->GetName());
+
+    // add to sector
+    colSect->AddCollisionObject(collObj);
   }
 
   // recurse
@@ -93,7 +141,7 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
     // @@@ What if we have a light containing another mesh?
     if (child)
     {
-      InitializeCollisionObjects (colSys, child);
+      InitializeCollisionObjects (colSys, sector, child);
     }
   }
 }

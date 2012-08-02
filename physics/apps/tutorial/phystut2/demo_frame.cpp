@@ -48,7 +48,9 @@ void PhysDemo::Frame()
     csVector3 o = aabbMin + (aabbMax - aabbMin) / 2;
     csPrintf("SB #0: %f, %f, %f\n", o.x, o.y, o.z);
   }*/
-
+  
+  // Update the demo's state information
+  UpdateHUD();
 
   // Rotate actor
   RotateActor();
@@ -80,9 +82,6 @@ void PhysDemo::Frame()
 
   // Weird and irritating stuff...
   ApplyGhostSlowEffect();
-  
-  // Update the demo's state information
-  UpdateHUD();
 
   // Default behavior from DemoApplication
   DemoApplication::Frame();
@@ -180,7 +179,7 @@ void PhysDemo::DoStep()
   {
     player.GetActor()->UpdatePreStep(timeMs * dynamicStepFactor);
   }
-  GetCurrentSector()->Step (timeMs * dynamicStepFactor);
+  CallOnAllSectors(Step (timeMs * dynamicStepFactor));
   if (player.GetActor())
   {
     player.GetActor()->UpdatePostStep(timeMs * dynamicStepFactor);

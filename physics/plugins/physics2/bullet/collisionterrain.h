@@ -99,7 +99,6 @@ class csBulletCollisionTerrain:
   csWeakRef<iTerrainSystem> terrainSystem;
   float minimumHeight;
   float maximumHeight;
-  bool unload;
   
   csRef<CS::Physics::iRigidBodyFactory> cellFactory;
 

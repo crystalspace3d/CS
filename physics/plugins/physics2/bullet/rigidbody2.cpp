@@ -428,6 +428,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   void csBulletRigidBody::SetLinearVelocity (const csVector3& vel)
   {
     CS_ASSERT(physicalState == STATE_DYNAMIC);
+    if (!QueryActor())
+    {
+      Enable();
+    }
     btBody->setLinearVelocity (CSToBullet (vel, system->getInternalScale ()));
     Enable();
   }

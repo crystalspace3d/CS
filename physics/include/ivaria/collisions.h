@@ -436,6 +436,9 @@ struct iCollisionSector : public virtual iBase
   /// Adds the given terrain to this sector
   virtual void AddCollisionTerrain(iCollisionTerrain* terrain) = 0;
 
+  /// Retreive the CollisionTerrain that wraps the given TerrainSystem
+  virtual iCollisionTerrain* GetCollisionTerrain(iTerrainSystem* terrain) = 0;
+
   /// Add a portal into the sector. Collision objects crossing a portal will be switched from iCollisionSector's.
   virtual void AddPortal (iPortal* portal, const csOrthoTransform& meshTrans) = 0;
 
@@ -539,14 +542,17 @@ struct iCollisionSystem : public virtual iBase
       float minHeight = 0, float maxHeight = 0) = 0;
 
   
-  /// Create a collision sector.
-  virtual csPtr<iCollisionSector> CreateCollisionSector () = 0;
+  /// Creates a new collision sector and adds it to the system's set
+  virtual iCollisionSector* CreateCollisionSector () = 0;
   
+  /// Retrieves the collision sector that corresponds to the given iSector. It adds a new one if it does not exist yet
+  virtual CS::Collisions::iCollisionSector* GetOrCreateCollisionSector (iSector* sector) = 0;
+
   /// Amount of sectors in this system
   virtual size_t GetCollisionSectorCount () const = 0;
 
   /// Find a collision sector by name.
-  virtual iCollisionSector* FindCollisionSector (const char* name) = 0; 
+  virtual iCollisionSector* FindCollisionSector (const csString& name) = 0; 
 
   /// Get a collision sector by index
   virtual iCollisionSector* GetCollisionSector (size_t index) = 0; 

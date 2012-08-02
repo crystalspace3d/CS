@@ -90,7 +90,8 @@ static const csVector3 UpVector(0, 1, 0);
     CollisionGroupMaskValueKinematic =    0x0004,
     CollisionGroupMaskValuePortal =       0x0008,
     CollisionGroupMaskValuePortalCopy =   0x0010,
-    CollisionGroupMaskValueActor =        0x0020
+    CollisionGroupMaskValueActor =        0x0020,
+    CollisionGroupMaskValueNone =         0x0040
   };
 
   /**

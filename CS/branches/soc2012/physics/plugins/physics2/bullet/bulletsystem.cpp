@@ -87,7 +87,7 @@ csBulletSystem::csBulletSystem (iBase* iParent)
 
   CS::Collisions::CollisionGroup portalGroup ("Portal");
   portalGroup.value = CollisionGroupMaskValuePortal;
-  portalGroup.mask = allFilter ^ CollisionGroupMaskValuePortal;
+  portalGroup.mask = allFilter ^ CollisionGroupMaskValueStatic;     // all but static
   collGroups.Push (portalGroup);
 
   CS::Collisions::CollisionGroup copyGroup ("PortalCopy");
@@ -101,8 +101,8 @@ csBulletSystem::csBulletSystem (iBase* iParent)
   collGroups.Push (characterGroup);
 
   CS::Collisions::CollisionGroup noneGroup ("None");
-  noneGroup.value = 0;
-  noneGroup.mask = 0;
+  noneGroup.value = CollisionGroupMaskValueNone;    
+  noneGroup.mask = CollisionGroupMaskValuePortal; // only intersect with portals
   collGroups.Push (noneGroup);
   
   SetGroupCollision ("PortalCopy", "Static", false);
@@ -260,22 +260,34 @@ csPtr<iCollisionObjectFactory> csBulletSystem::CreateCollisionObjectFactory (int
   //  {
   //  }
   default:
-    factory = nullptr;
+    // Just create a rigid body from it, for now
+    factory = new BulletRigidBodyFactory();
   }
   return csPtr<iCollisionObjectFactory> (factory);
 }
 
-csPtr<CS::Collisions::iCollisionSector> csBulletSystem::CreateCollisionSector ()
+CS::Collisions::iCollisionSector* csBulletSystem::CreateCollisionSector ()
 {
   csRef<csBulletSector> collSector = csPtr<csBulletSector>(new csBulletSector (this));
 
   collSectors.Push (collSector);
-  return csPtr<iCollisionSector>(collSector);
+  return collSector;
 }
 
-CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const char* name)
+CS::Collisions::iCollisionSector* csBulletSystem::GetOrCreateCollisionSector (iSector* sector)
 {
-  return this->collSectors.FindByName (name);
+  iCollisionSector* collSector = GetCollisionSector(sector);
+  if (!collSector)
+  {
+    collSector = CreateCollisionSector();
+    collSector->SetSector(sector);
+  }
+  return collSector;
+}
+
+CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const csString& name)
+{
+  return this->collSectors.FindByName (name.GetData());
 }
 
 CS::Collisions::iCollisionSector* csBulletSystem::GetCollisionSector (const iSector* sec)

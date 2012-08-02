@@ -106,7 +106,6 @@ csBulletCollisionTerrain::csBulletCollisionTerrain (iTerrainSystem* terrain, flo
   maximumHeight (maximumHeight)
 {
   collSystem = sys;
-  unload = true;
 
   terrain->AddCellLoadListener (this);
   terrain->AddCellHeightUpdateListener(this);
@@ -115,17 +114,14 @@ csBulletCollisionTerrain::csBulletCollisionTerrain (iTerrainSystem* terrain, flo
   csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (terrain);
   terrainTransform = mesh->GetMeshWrapper ()->GetMovable ()->GetFullTransform ();
 
-  if(unload)
+  // Create COs for already loaded cells
+  for (size_t i = 0; i<terrainSystem->GetCellCount (); i++)
   {
-    for (size_t i =0; i<terrainSystem->GetCellCount (); i++)
-    {
-      iTerrainCell* cell = terrainSystem->GetCell (i);
+    iTerrainCell* cell = terrainSystem->GetCell (i);
+    if (cell->GetLoadState () != iTerrainCell::Loaded)
+      continue;
 
-      if (cell->GetLoadState () != iTerrainCell::Loaded)
-        continue;
-      LoadCellToCollider (cell);       
-    }
-    unload = true;
+    LoadCellToCollider (cell);       
   }
 }
 

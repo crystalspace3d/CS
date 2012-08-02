@@ -133,11 +133,15 @@ public:
   virtual csPtr<CS::Collisions::iCollisionTerrain> CreateCollisionTerrain (iTerrainSystem* terrain,
       float minHeight = 0, float maxHeight = 0);
 
-
-  virtual csPtr<CS::Collisions::iCollisionSector> CreateCollisionSector ();
+  
+  virtual CS::Collisions::iCollisionSector* CreateCollisionSector ();
+  virtual CS::Collisions::iCollisionSector* GetOrCreateCollisionSector (iSector* sector);
   virtual size_t GetCollisionSectorCount () const { return collSectors.GetSize(); }
-  virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
-  virtual CS::Collisions::iCollisionSector* GetCollisionSector (size_t index) { return (CS::Collisions::iCollisionSector*)collSectors.Get(index); }
+  virtual CS::Collisions::iCollisionSector* FindCollisionSector (const csString& name);
+  virtual CS::Collisions::iCollisionSector* GetCollisionSector (size_t index) 
+  {
+    return csRef<CS::Collisions::iCollisionSector>(scfQueryInterface<CS::Collisions::iCollisionSector>(collSectors.Get(index)));
+  }
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
 
   virtual void DecomposeConcaveMesh (CS::Collisions::iCollider* object, iMeshWrapper* mesh, bool simplify = false); 
@@ -154,7 +158,9 @@ public:
   virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (int id);
 
   virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (CS::Collisions::iCollider *collider, const csString & name = "CollisionObject")
-  { return csPtr<CS::Collisions::iCollisionObjectFactory>(nullptr); }
+  { 
+    return csPtr<CS::Collisions::iCollisionObjectFactory>(csRef<CS::Physics::iRigidBodyFactory>(CreateRigidBodyFactory(collider, name))); 
+  }
 
   virtual csPtr<CS::Collisions::iGhostCollisionObjectFactory> CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "GhostObject");
 

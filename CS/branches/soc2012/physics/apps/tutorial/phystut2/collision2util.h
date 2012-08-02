@@ -19,14 +19,14 @@
 class Collision2Helper
 {
 public:
-  void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iEngine* engine, iCollection* collection);
+  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
+    iEngine* engine, iCollection* collection = nullptr);
 
-  void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iSector* sector, iCollection* collection);
+  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
+    iSector* sector, iCollection* collection = nullptr);
 
   /// Recursively creates and adds all collision objects of the mesh and it's children to the collision system
-  void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys, iMeshWrapper* mesh);
+  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys, iSector* sector, iMeshWrapper* mesh);
 };
 
 

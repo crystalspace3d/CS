@@ -208,7 +208,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   public:
     BulletRigidBodyFactory(CS::Collisions::iCollider* collider = nullptr, const csString& name = "RigidBody") : 
         scfImplementationType (this, collider, name),
-      elasticity(0.5f), linearDamping(0.01f), angularDamping(0.01f)
+      elasticity(0.1f), linearDamping(0.01f), angularDamping(0.01f)
     {
     }
 

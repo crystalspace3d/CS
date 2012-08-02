@@ -69,9 +69,10 @@ struct BulletActionWrapper : public virtual CS::Physics::iUpdatable
 
 
 // Also implements iPhysicalSector
-class csBulletSector : public scfImplementationExt1<
+class csBulletSector : public scfVirtImplementationExt2<
   csBulletSector, csObject,
-  CS::Physics::iPhysicalSector>
+  CS::Physics::iPhysicalSector,
+  CS::Collisions::iCollisionSector>
 {
   friend class csBulletCollisionObject;
   friend class csBulletCollisionActor;
@@ -118,6 +119,8 @@ class csBulletSector : public scfImplementationExt1<
   csWeakRefArray<csBulletSoftBody> anchoredSoftBodies;
   csRef<iSector> sector;
 
+  csRefArray<csBulletCollisionTerrain> terrains;
+
   csRefArray<CS::Physics::iUpdatable> updatables;
 
   void CheckCollisions();
@@ -154,6 +157,7 @@ public:
   virtual CS::Collisions::iCollisionObject* FindCollisionObject (const char* name);
 
   virtual void AddCollisionTerrain(CS::Collisions::iCollisionTerrain* terrain);
+  virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain(iTerrainSystem* terrain);
 
   virtual void AddPortal(iPortal* portal, const csOrthoTransform& meshTrans);
   virtual void RemovePortal(iPortal* portal);

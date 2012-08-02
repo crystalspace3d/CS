@@ -275,7 +275,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     btTerrain->RemoveRigidBodies();
     btTerrain->AddRigidBodies(this);
 
-    // Keeping an explicit list of terrain objects seems unnecessary
+    terrains.Push(btTerrain);
+  }
+
+  CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain(iTerrainSystem* terrain) 
+  {
+    for (size_t i = 0; i < terrains.GetSize(); ++i)
+    {
+      if (terrains.Get(i)->GetTerrain() == terrain)
+      {
+        return terrains.Get(i);
+      }
+    }
+    return nullptr;
   }
 
   CS::Collisions::iCollisionObject* csBulletSector::FindCollisionObject (const char* name)
@@ -323,7 +335,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       QueryObject()->SetName(sector->QueryObject()->GetName());
 
       // add portal meshes
-      const csSet<csPtrKey<iMeshWrapper> >& portal_meshes = 
+      /*const csSet<csPtrKey<iMeshWrapper> >& portal_meshes = 
         sector->GetPortalMeshes ();
       csSet<csPtrKey<iMeshWrapper> >::GlobalIterator it = 
         portal_meshes.GetIterator ();
@@ -337,7 +349,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           iPortal* portal = portalContainer->GetPortal (i);
           AddPortal (portal, portalMesh->GetMovable ()->GetFullTransform ());
         }
-      }
+      }*/
 
       // add object meshes
       for (size_t i = 0; i < collisionObjects.GetSize (); i++)

@@ -59,6 +59,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       CS::Math::Matrix4 gbufferFixup;
       csVector4 texScale;
       bool doDeferred;
+      bool useClipper;
 
       ContextNodeExtraDataType() : doDeferred(false) {}
     };

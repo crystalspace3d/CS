@@ -24,7 +24,7 @@ using namespace CS::Physics;
 using namespace CS::Geometry;
 
 static const csScalar DefaultDensity(100);
-static const csScalar DefaultFriction(10);
+static const csScalar DefaultFriction(.5);
 static const csScalar DefaultElasticity(0.1f);
 
 

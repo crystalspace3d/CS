@@ -128,9 +128,6 @@ int runDebug(int argc, char* argv[])
 #define ActorModeNoclip 3
 #define CAMERA_ACTOR 4
 
-#define PhysDemoLevelPortals 1
-#define PhysDemoLevelTerrain 2
-
 VerySimple::VerySimple()
   : DemoApplication ("CrystalSpace.PhysTut2"),
   isSoftBodyWorld (true), solver (0), do_bullet_debug (false),

@@ -16,40 +16,40 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 
 void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iEngine* engine, iCollection* collection)
+    iEngine* engine, bool decompose, iCollection* collection)
 {
   // Initialize all mesh objects for collision detection.
   int i;
   iMeshList* meshes = engine->GetMeshes ();
   for (i = 0 ; i < meshes->GetCount () ; i++)
   {
-    iMeshWrapper* sp = meshes->Get (i);
-    if ((collection && !collection->IsParentOf(sp->QueryObject ())) || !sp->GetMovable()) continue;
-    InitializeCollisionObjects (colsys, sp->GetMovable()->GetSectors()->Get(0), sp);
+    iMeshWrapper* mesh = meshes->Get (i);
+    if ((collection && !collection->IsParentOf(mesh->QueryObject ())) || !mesh->GetMovable()) continue;
+    InitializeCollisionObjects (colsys, mesh->GetMovable()->GetSectors()->Get(0), mesh, decompose);
   }
 }
 
 void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iSector* sector, iCollection* collection)
+    iSector* sector, bool decompose, iCollection* collection)
 {
   // Initialize all mesh objects for collision detection.
   int i;
   iMeshList* meshes = sector->GetMeshes ();
   for (i = 0 ; i < meshes->GetCount () ; i++)
   {
-    iMeshWrapper* sp = meshes->Get (i);
-    if (collection && !collection->IsParentOf(sp->QueryObject ())) continue;
-    InitializeCollisionObjects (colsys, sector, sp);
+    iMeshWrapper* mesh = meshes->Get (i);
+    if (collection && !collection->IsParentOf(mesh->QueryObject ())) continue;
+    InitializeCollisionObjects (colsys, sector, mesh, decompose);
   }
 }
 
-void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colSys, iSector* sector, iMeshWrapper* mesh)
+void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colSys, iSector* sector, iMeshWrapper* mesh, bool decompose)
 {
   // Get iCollisionSector from iSector
   iCollisionSector* colSect = colSys->GetOrCreateCollisionSector (sector);
   iObjectModel* objModel = mesh->GetMeshObject ()->GetObjectModel ();
 
-  // Check if we have a (partial) heightfield
+  // Check if we have a terrain mesh
   iTerrainSystem* terrainSys = objModel->GetTerrainColldet ();
   if (terrainSys)
   {
@@ -62,7 +62,7 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
     }
   }
 
-  // Check if we have portals
+  // Check if we have a portal mesh
   iPortalContainer* portalCont = mesh->GetPortalContainer ();
   if (portalCont)
   {
@@ -70,9 +70,9 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
     {
       iPortal* portal = portalCont->GetPortal(i);
 
-      // Ignore all portals that don't do warping
+      // TODO: Ignore all portals that don't do warping
       // TODO: Flag portals as see-through only (for example in-game monitors that display a video camera stream)
-    if (!portal->GetFlags().Check(CS_PORTAL_WARP)) continue;
+      //if (!portal->GetFlags().Check(CS_PORTAL_WARP)) continue;
 
       // This is very odd: Multiple portals with the same mesh transform?
       // TODO: Mesh transform can/should be retreived from the iPortal object - Don't need to pass it as an argument
@@ -81,6 +81,7 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
   }
 
   
+  // Create the CO of the mesh
   csRef<iCollisionObject> collObj;
   
   // Get mesh factory
@@ -112,11 +113,27 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
   if (!terrainSys && !portalCont && !collObj)
   {
     // did not find a specific physical factory and its not a heightfield 
-    // -> Create a static CO from the mesh, using default values for friction, etc (given it has an underlying physical model)
-    csRef<iColliderConcaveMesh> collider = colSys->CreateColliderConcaveMesh(mesh);
-    csRef<iCollisionObjectFactory> collObjFact = colSys->CreateCollisionObjectFactory(collider);
-    collObj = collObjFact->CreateCollisionObject();
-    mesh->QueryObject()->ObjAdd(collObj->QueryObject());
+    // -> Create a static CO from the mesh, using default values for friction, etc (if available)
+    //csRef<iColliderConvexMesh> collider = colSys->CreateColliderConvexMesh(mesh);
+    
+    csRef<CS::Collisions::iCollider> collider;
+    if (decompose)
+    {
+      collider = csRef<CS::Collisions::iColliderCompound>(colSys->CreateColliderCompound());
+      colSys->DecomposeConcaveMesh (collider, mesh, false);
+    }
+    else
+    {
+      collider = csRef<CS::Collisions::iColliderConcaveMesh>(colSys->CreateColliderConcaveMesh(mesh));
+    }
+
+    // Colliders cannot be created for meshes that have no triangle data
+    if (collider)
+    {
+      csRef<iCollisionObjectFactory> collObjFact = colSys->CreateCollisionObjectFactory(collider);
+      collObj = collObjFact->CreateCollisionObject();
+      mesh->QueryObject()->ObjAdd(collObj->QueryObject());
+    }
   }
 
   if (collObj)

@@ -65,8 +65,8 @@ csRef<iTriangleMesh> FindColdetTriangleMesh (iMeshWrapper* mesh,
   if (!triMesh || triMesh->GetVertexCount () == 0
       || triMesh->GetTriangleCount () == 0)
   {
-    csFPrintf (stderr, "iCollider: No collision polygons, triangles or vertices on mesh factory %s\n",
-      CS::Quote::Single (mesh->QueryObject ()->GetName ()));
+    /*csFPrintf (stderr, "iCollider: No collision polygons, triangles or vertices on mesh factory %s\n",
+      CS::Quote::Single (mesh->QueryObject ()->GetName ()));*/
 
     return csRef<iTriangleMesh> (nullptr);
   }
@@ -301,26 +301,16 @@ float csBulletColliderPlane::ComputeShapeVolume() const
 // #######################################################################################################
 // Convex Mesh
 
-csBulletColliderConvexMesh::csBulletColliderConvexMesh (iMeshWrapper* mesh, csBulletSystem* sys, bool simplify)
+csBulletColliderConvexMesh::csBulletColliderConvexMesh (iMeshWrapper* mesh, iTriangleMesh* triMesh, btTriangleMesh* btTriMesh, csBulletSystem* sys, bool simplify)
   : scfImplementationType (this), mesh (mesh)
 {
   collSystem = sys;
-  
-  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh, 
-    collSystem->baseID, collSystem->colldetID);
-
-  if (!triMesh)
-    return;
 
   size_t vertexCount = triMesh->GetVertexCount ();
   if (vertexCount == 0)
     return;
 
   btConvexHullShape* convexShape = new btConvexHullShape ();
-  
-  btTriangleMesh* btTriMesh = GenerateTriMeshData (mesh, collSystem->baseID, collSystem->colldetID, collSystem->getInternalScale ());
-  if (! btTriMesh)
-    return;
   
   csVector3 *c_vertex = triMesh->GetVertices ();
   if (simplify)
@@ -340,10 +330,12 @@ csBulletColliderConvexMesh::csBulletColliderConvexMesh (iMeshWrapper* mesh, csBu
     delete hull;
   }
   else
+  {
     for (size_t i = 0; i < vertexCount; i++)
     {
       convexShape->addPoint (CSToBullet (c_vertex[i], collSystem->getInternalScale ()));
     }
+  }
   shape = convexShape;
   margin = 0.04 * collSystem->getInverseInternalScale ();
 
@@ -402,15 +394,10 @@ float csBulletColliderConvexMesh::ComputeShapeVolume() const
 // #######################################################################################################
 // Concave Mesh
 
-csBulletColliderConcaveMesh::csBulletColliderConcaveMesh (iMeshWrapper* mesh, csBulletSystem* sys)
-  : scfImplementationType (this), mesh (mesh)
+csBulletColliderConcaveMesh::csBulletColliderConcaveMesh (iMeshWrapper* mesh, btTriangleMesh* triMesh, csBulletSystem* sys)
+  : scfImplementationType (this), mesh(mesh), triMesh (triMesh)
 {
-  btTransform tran;
-  btVector3 aabbmin (-1000, -1000, -1000);
-  btVector3 aabbmax (1000, 1000, 1000);
-
   collSystem = sys;
-  triMesh = GenerateTriMeshData (mesh, collSystem->baseID, collSystem->colldetID, collSystem->getInternalScale ());
   btBvhTriangleMeshShape* treeShape = new btBvhTriangleMeshShape (triMesh,true);
   treeShape->recalcLocalAabb();
   shape = treeShape;
@@ -426,18 +413,44 @@ csBulletColliderConcaveMesh::~csBulletColliderConcaveMesh ()
 
 float csBulletColliderConcaveMesh::ComputeShapeVolume() const 
 {
-  btTransform tran;
-  tran.setIdentity();
+  //btTransform tran;
+  //tran.setIdentity();
 
-  btVector3 aabbmin (-1000, -1000, -1000);
-  btVector3 aabbmax (1000, 1000, 1000);
+  //btVector3 aabbmin (-1000, -1000, -1000);
+  //btVector3 aabbmax (1000, 1000, 1000);
 
-  shape->getAabb (tran, aabbmin, aabbmax);
+  //shape->getAabb (tran, aabbmin, aabbmax);
 
-  btVector3 aabbExtents = aabbmax - aabbmin;
-  aabbExtents *= collSystem->getInverseInternalScale ();
+  //btVector3 aabbExtents = aabbmax - aabbmin;
+  //aabbExtents *= collSystem->getInverseInternalScale ();
 
-  return aabbExtents.x() * aabbExtents.y() * aabbExtents.z();
+  //return aabbExtents.x() * aabbExtents.y() * aabbExtents.z();
+  
+  csRef<iTriangleMesh> itriMesh = FindColdetTriangleMesh (mesh, 
+    collSystem->baseID, collSystem->colldetID);
+
+  if (!itriMesh)
+    return 0;
+
+  size_t triangleCount = itriMesh->GetTriangleCount ();
+
+  csTriangle *c_triangle = itriMesh->GetTriangles ();
+  csVector3 *c_vertex = itriMesh->GetVertices ();
+  csVector3 origin = c_vertex[c_triangle[0].a];
+
+  float vol = 0.0f;
+  for (size_t i = 1; i < triangleCount; i++)
+  {
+    csVector3 a = c_vertex[c_triangle[i].a] - origin;
+    csVector3 b = c_vertex[c_triangle[i].b] - origin;
+    csVector3 c = c_vertex[c_triangle[i].c] - origin;
+    csVector3 d;
+    d.Cross (b, c);
+    vol += btFabs (a * d);
+  }
+
+  vol /= 6.0f;
+  return vol;
 }
 
 csBulletColliderConcaveMeshScaled::csBulletColliderConcaveMeshScaled (CS::Collisions::iColliderConcaveMesh* collider,

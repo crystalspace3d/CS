@@ -81,10 +81,12 @@ void PhysDemo::CreateItemTemplates()
   }
   
   {
-    // Force Manipulator: Introduces fun forces
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Force Manipulator");
+    // Object & Force Manipulator: Manipulates objects and introduces fun forces
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Object & Force Manipulator");
 
     AddItemFunction(Secondary, PullObject, "Pull Object", physDemo.PullObject());
+    AddItemFunction(Secondary, DeleteObject, "Delete Object", physDemo.DeleteObject());
+    AddItemFunction(Secondary, ToggleObjectDynamic, "Toggle Dynamic", physDemo.ToggleObjectDynamic());
   }
 
   {
@@ -106,6 +108,8 @@ void PhysDemo::CreateItemTemplates()
     AddItemFunction(Secondary, SwitchToBox, "Go to Box level", physDemo.SetLevel(PhysDemoLevelBox));
     AddItemFunction(Secondary, SwitchToPortals, "Go to Portals level", physDemo.SetLevel(PhysDemoLevelPortals));
     AddItemFunction(Secondary, SwitchToTerrain, "Go to Terrain level", physDemo.SetLevel(PhysDemoLevelTerrain));
+    AddItemFunction(Secondary, SwitchToCastle, "Go to Castle level (static)", physDemo.SetLevel(PhysDemoLevelCastle));
+    AddItemFunction(Secondary, SwitchToCastleWithDecomp, "Go to Castle level (dynamic, loads very slowly)", physDemo.SetLevel(PhysDemoLevelCastle, true));
   }
 
   {

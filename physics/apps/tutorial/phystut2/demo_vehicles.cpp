@@ -394,7 +394,7 @@ void PhysDemo::AccelerateTargetVehicle()
 iVehicle* PhysDemo::GetTargetVehicle()
 {
   HitBeamResult hitResult;
-  if (GetObjectInFrontOfMe(hitResult))
+  if (PickCursorObject(hitResult))
   {
     return physicalSystem->GetVehicle(hitResult.object);
   }

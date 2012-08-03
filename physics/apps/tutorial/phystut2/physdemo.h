@@ -33,7 +33,8 @@ enum PhysDemoLevel
   PhysDemoLevelNone,
   PhysDemoLevelBox,
   PhysDemoLevelPortals,
-  PhysDemoLevelTerrain
+  PhysDemoLevelTerrain,
+  PhysDemoLevelCastle
 };
 
 enum CameraMode
@@ -87,6 +88,9 @@ inline PhysDemoLevel GetEnvironmentByName(csString levelName)
 
   else if (levelName == "terrain")
       return PhysDemoLevelTerrain;
+
+  else if (levelName == "castle")
+      return PhysDemoLevelCastle;
   
   return PhysDemoLevelNone;
 }
@@ -155,7 +159,7 @@ public:
   // Collider
 
   // Ghost
-  csRef<CS::Collisions::iGhostCollisionObject> ghostObject;
+  csWeakRef<CS::Collisions::iGhostCollisionObject> ghostObject;
 
   // Terrain
   /// The feeder to which the current terrain mod is applied (if any)
@@ -218,9 +222,11 @@ public:
    */
   void CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos = csVector3(0), csScalar wallThickness = 5);
 
+  /// Create the default box room with a given side-length
   void CreateBoxRoom(csScalar size = 100);
-  void LoadLevel(const char* filedir, const char* filename, const char* levelname);
-  void LoadTerrainLevel();
+  
+  /// Load a scene from file
+  bool LoadLevel(const char* filedir, const char* filename, const char* levelname, bool convexDecomp = false);
 
   void CreateGhostCylinder();
   void ApplyGhostSlowEffect();
@@ -313,6 +319,12 @@ public:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Object & Actor utilities
 
+  /// Pick the object that is under the cursor
+  bool PickCursorObject(CS::Collisions::HitBeamResult& result);
+
+  /// Get the owning entity of the given collision object (actor, vehicle, etc)
+  ::iBase* GetOwner(CS::Collisions::iCollisionObject* obj);
+
   /// Teleport given object to given location
   void TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosition* pos);
 
@@ -320,10 +332,15 @@ public:
   bool TestOnGround(CS::Collisions::iCollisionObject* obj);
 
   bool IsActor(CS::Collisions::iCollisionObject* obj) const;
+  
+  /// Adds a force to the given object that pulls it toward the actor. If not given, picks currently targeted object.
+  void PullObject(CS::Collisions::iCollisionObject* obj = nullptr);
 
-  bool GetObjectInFrontOfMe(CS::Collisions::HitBeamResult& result);
+  /// Toggles between DYNAMIC/STATIC state of the given object. If not given, picks currently targeted object.
+  void ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj = nullptr);
 
-  void PullObject();
+  /// Deletes the given object. If not given, picks currently targeted object.
+  void DeleteObject(CS::Collisions::iCollisionObject* obj = nullptr);
   
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -408,7 +425,7 @@ public:
   void Reset();
 
   /// Reset the current scene and setup the given level
-  bool SetLevel(PhysDemoLevel level);
+  bool SetLevel(PhysDemoLevel level, bool convexDecomp = false);
 
   /// Get the iModifiableDataFeeder of the first terrain that has one in the given sector (if any)
   iModifiableDataFeeder* GetFirstTerrainModDataFeeder(CS::Collisions::iCollisionSector* sector);

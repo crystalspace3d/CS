@@ -1,5 +1,5 @@
 /**
- * Create and handle dynamic (interacting) objects
+ * Create dynamic (interactive) objects
  */
 
 #include "cssysdef.h"
@@ -132,7 +132,10 @@ void PhysDemo::CreateGhostCylinder()
   csYRotMatrix3 m (PI/2.0);
   csOrthoTransform trans (m, csVector3 (0, -3, 5));
   if (this->environment == PhysDemoLevelTerrain)
+  {
+    // ouch bad.
     trans.SetOrigin (csVector3 (0, 1.0, 5));
+  }
   ghostObject->SetTransform (trans);
   ghostObject->SetAttachedMovable (mesh->GetMovable());
 

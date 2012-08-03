@@ -393,7 +393,7 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     // Find the rigid body that was clicked on
     // Compute the end beam points
     HitBeamResult hitResult;
-    if (GetObjectInFrontOfMe(hitResult) && IsDynamic(hitResult.object))
+    if (PickCursorObject(hitResult) && IsDynamic(hitResult.object))
     {
       // Add a force at the point clicked
       csVector3 force = hitResult.isect - GetActorPos();

@@ -146,7 +146,16 @@ csPtr<CS::Collisions::iColliderCompound> csBulletSystem::CreateColliderCompound 
 
 csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify)
 {
-  csRef<csBulletColliderConvexMesh> collider = csPtr<csBulletColliderConvexMesh>(new csBulletColliderConvexMesh (mesh, this, simplify));
+  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh, baseID, colldetID);
+  if (!triMesh)
+    return nullptr;
+
+  btTriangleMesh* btTriMesh = GenerateTriMeshData (mesh, baseID, colldetID, getInternalScale ());
+  if (! btTriMesh)
+    return nullptr;
+
+  csRef<csBulletColliderConvexMesh> collider = csPtr<csBulletColliderConvexMesh>(
+    new csBulletColliderConvexMesh (mesh, triMesh, btTriMesh, this, simplify));
 
   //colliders.Push (collider);
   return csPtr<iColliderConvexMesh>(collider);
@@ -154,7 +163,11 @@ csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexM
 
 csPtr<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcaveMesh (iMeshWrapper* mesh)
 {
-  csRef<csBulletColliderConcaveMesh> collider = csPtr<csBulletColliderConcaveMesh>(new csBulletColliderConcaveMesh (mesh,this));
+  btTriangleMesh* triMesh = GenerateTriMeshData (mesh, baseID, colldetID, getInternalScale ());
+  if (!triMesh) return nullptr;   // not a triangular mesh
+
+
+  csRef<csBulletColliderConcaveMesh> collider = csPtr<csBulletColliderConcaveMesh>(new csBulletColliderConcaveMesh (mesh, triMesh,this));
 
   //colliders.Push (collider);
   return csPtr<iColliderConcaveMesh>(collider);

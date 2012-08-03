@@ -862,7 +862,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
       }
     }
 
-    return 0;
+    return csPtr<iParticleEffector>(forceEffector);
   }
 
   csPtr<iBase> ParticlesFactoryLoader::Parse (iDocumentNode* node,

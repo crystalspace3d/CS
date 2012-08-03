@@ -40,9 +40,9 @@
 #include "csutil/dirtyaccessarray.h"
 #include "csutil/weakref.h"
 #include "csgfx/shadervarcontext.h"
-#include "csplugincommon/renderstep/basesteptype.h"
-#include "csplugincommon/renderstep/basesteploader.h"
-#include "csplugincommon/renderstep/parserenderstep.h"
+#include "basesteptype.h"
+#include "basesteploader.h"
+#include "parserenderstep.h"
 
 class csStencil2ShadowStep;
 class csStencil2ShadowType;
@@ -232,7 +232,7 @@ class csStencil2ShadowLoader :
   csRenderStepParser rsp;
   csStringHash tokens; 
 
-#define CS_TOKEN_ITEM_FILE "plugins/engine/renderloop/shadow/stencil2/stencil2.tok"
+#define CS_TOKEN_ITEM_FILE "plugins/engine/renderloop/stdsteps/stencil2.tok"
 #include "cstool/tokenlist.h"
 
 public:

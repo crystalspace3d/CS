@@ -29,7 +29,7 @@
 #include "imap/reader.h"
 #include "ivaria/reporter.h"
 
-#include "csplugincommon/renderstep/parserenderstep.h"
+#include "parserenderstep.h"
 
 CS_LEAKGUARD_IMPLEMENT (csRenderStepParser);
 

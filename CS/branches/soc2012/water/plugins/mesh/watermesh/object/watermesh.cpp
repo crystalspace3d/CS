@@ -235,36 +235,34 @@ void csWaterMeshObject::SetupObject ()
 
 		for (size_t i = 0; i < cellIndexMax ; i++)
 		{
-			int cellx = i%(int)sqrtcellIndex ; 
-			int cellz = i/sqrtcellIndex ;
+			csRef<iTerrainCell> terraincell = terrain->GetCell(i,true);
+			int gridWidth = terraincell->GetGridWidth();
+			int gridHeight = terraincell->GetGridHeight();
 
-			csPrintf("\nCELLS   %d %d   ",cellx,cellz);
+			csVector2 cellPos = terraincell->GetPosition();
+			csVector3 cellSize = terraincell->GetSize();
 
-			csRef<iTerrainCell> terraincell = terrain->GetCell(i);
-			int cellwidth = terraincell->GetGridWidth();
-			int cellheight = terraincell->GetGridHeight();
+			csPrintf("\n%s",terraincell->GetName());
 
-			terraincell->SetLoadState(terraincell->Loaded);
-			csVector2 terraincellPos = terraincell->GetPosition();
-
-			csPrintf("\nposition of cell %f  %f %d",terraincellPos.x,terraincellPos.y,cellwidth);
+			//terraincell->SetLoadState(terraincell->Loaded);
+			csPrintf("\nposition of cell %f  %f %d",cellPos.x,cellPos.y,gridWidth);
 
 			// Speedy Lookup
 			csLockedHeightData cellval = terraincell->GetHeightData();
 			int pitchval = cellval.pitch;
 
-			for (int x = 0 ; x < cellwidth ; x++ )
+			for (int x = 0 ; x < gridWidth ; x++ )
 			{
-				for (int y = 0 ; y < cellheight ; y++ )
+				for (int y = 0 ; y < gridHeight ; y++ )
 				{
 				    float height = cellval.data[y * pitchval + x];
 
-					//csPrintf(" %f %f",height,waterHeight);
+					//csPrintf("\nHH %d %d  -> %f %fHH",x,y,height,waterHeight);
 					if (waterHeight-0.1 < (height) && (height) < waterHeight+0.1)
 					{
-						//csPrintf("  Yes!!! we got it.  ");
-						foampointsTemp.Push(csVector3( (int)(cellx*(cellwidth/2)) + (int)(x/2), waterHeight , (int)(cellz*(cellheight/2)) + (int)(y/2) )); 
-						csPrintf("\nRAW points %d %d ",(int)(cellx*(cellwidth/2)) + (int)(x/2),(int)(cellz*(cellheight/2)) + (int)(y/2));
+						int Ty = gridHeight - y; 
+						foampointsTemp.Push(csVector3(cellPos.x + cellSize.x*x/(float)(gridWidth - 1),waterHeight, cellPos.y + cellSize.z*Ty/(float)(gridHeight - 1)));
+						csPrintf("\nCell points %d %d ",x,Ty);
 					}
 				}
 			}			 

@@ -135,8 +135,8 @@ void PhysDemo::Reset()
 
   // Remove everything in the engine that existed before
   engine->DeleteAll();
-  engine->GetCameraPositions()->RemoveAll();
   engine->ResetWorldSpecificSettings();
+  engine->GetCameraPositions()->RemoveAll();
 
   // reset all other variables
   mainCollider = nullptr;
@@ -378,7 +378,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         csRef<iDynamicActorFactory> factory = physicalSystem->CreateDynamicActorFactory(collider);
         factory->SetMass(csScalar(80.));
         factory->SetElasticity(csScalar(0));
-        factory->SetFriction(csScalar(1.));
+        factory->SetFriction(csScalar(.1));
 
         factory->SetAirControlFactor(actorAirControl);
         factory->SetStepHeight(csScalar(0.5));

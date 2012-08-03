@@ -190,7 +190,7 @@ void PhysDemo::RotateActor()
 
   const float timeMs = elapsed_time / 1000.0;
 
-  static const float MaxVertCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
+  static const float MaxPitchCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
 
 
   iCamera* cam = view->GetCamera();
@@ -206,10 +206,6 @@ void PhysDemo::RotateActor()
   {
     float turnAmount = turnSpeed * timeMs;
 
-    csVector3 actorDir3 = actorTrans.GetT2O() * csVector3(0, 0, 1);
-    csVector3 camDir3 = camTrans.GetT2O() * csVector3(0, 0, 1);
-    float vertCos = camDir3 * UpVector;
-
     float yaw = 0;
     if (kbd->GetKeyState (KeyLeft) || kbd->GetKeyState(CSKEY_LEFT))
     {
@@ -219,48 +215,55 @@ void PhysDemo::RotateActor()
     {
       yaw += turnAmount;
     }
-
+    
+    csVector3 actorDir3 = actorTrans.GetT2O().Col3();
     csVector2 actorDir2 = HORIZONTAL_COMPONENT(actorDir3);
+
+    // Update actor yaw
     if (yaw)
     {
       actorDir2.Rotate(yaw);
-
-      csVector2 camDir2 = HORIZONTAL_COMPONENT(camDir3);
-      camDir2.Rotate(yaw);
-      camDir3 = HV_VECTOR3(camDir2, camDir3[UpAxis]);
-
-      // Update horizontal panning of actor
       actorDir3 = HV_VECTOR3(actorDir2, 0);
-      actorDir3.Normalize();
       actorTrans.LookAt(actorDir3, UpVector);
       player.GetObject()->SetTransform(actorTrans);
     }
 
-    // Update up/down camera panning
+    // Update camera pitch
     // TODO: Zoom out/in when in 3rd person mode
     if (cameraMode == CameraMode1stPerson)
     {
-      camDir3.Normalize();
+      // Get pitch
+      csVector3 camDir3 = camTrans.GetT2O().Col3();
+      float currentPitchCos = camDir3[UpAxis];
 
-      csScalar upDownAmount = 0;
+      csScalar pitch = 0;
       if (kbd->GetKeyState (KeyUp))
       {
-        if (vertCos + turnAmount < MaxVertCos) upDownAmount -= turnAmount;
+        if (currentPitchCos + turnAmount < MaxPitchCos) pitch -= turnAmount;
       }
       if (kbd->GetKeyState (KeyDown))
       {
-        if (vertCos - turnAmount > -MaxVertCos) upDownAmount += turnAmount;
+        if (currentPitchCos - turnAmount > -MaxPitchCos) pitch += turnAmount;
       }
+      
+      // Set horizontal camera direction equal to actor direction, scaled correspondingly
+      csVector2 camDir2 = HORIZONTAL_COMPONENT(camDir3);
+      actorDir2.Normalize();
+      actorDir2 *= camDir2.Norm();
+      camDir3[HorizontalAxis1] = actorDir2.x;
+      camDir3[HorizontalAxis2] = actorDir2.y;
 
-      if (upDownAmount)
+      // Update camera pitch
+      if (pitch)
       {
+        actorDir2.Normalize();
         actorDir2.Rotate(HALF_PI);
         csVector3 camOrth3 = HV_VECTOR3(actorDir2, 0);
-        camOrth3.Normalize();
-
+        
         // rotate by quaternion
         csQuaternion q;
-        q.SetAxisAngle(camOrth3, upDownAmount);
+        q.SetAxisAngle(camOrth3, pitch);
+        
         camDir3 = q.Rotate(camDir3);
       }
       camTrans.LookAt(camDir3, UpVector);

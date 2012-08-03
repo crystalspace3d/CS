@@ -214,6 +214,8 @@ bool PhysDemo::SetLevel(PhysDemoLevel level)
 
   // Move actor to initial position
   TeleportObject(player.GetObject(), engine->GetCameraPositions()->Get(0));
+
+  return true;
 }
 
 void PhysDemo::SetupHUD()

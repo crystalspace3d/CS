@@ -85,11 +85,8 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   environment = GetEnvironmentByName(levelName);
   if (!environment)
   {
-    csPrintf ("Given level (%s) is not one of {%s, %s, %s} - Falling back to \"%s\"\n",
+    csPrintf ("Given level (%s) is invalid - Falling back to default: \"%s\"\n",
       CS::Quote::Single (levelName.GetData()),
-      CS::Quote::Single ("portals"),
-      CS::Quote::Single ("box"),
-      CS::Quote::Single ("terrain"),
       defaultEnvironmentName.GetData());
     //environment = PhysDemoLevelPortals;
     environment = GetEnvironmentByName(defaultEnvironmentName);
@@ -138,7 +135,8 @@ void PhysDemo::Reset()
 
   // Remove everything in the engine that existed before
   engine->DeleteAll();
-
+  engine->GetCameraPositions()->RemoveAll();
+  engine->ResetWorldSpecificSettings();
 
   // reset all other variables
   mainCollider = nullptr;
@@ -168,7 +166,7 @@ void PhysDemo::Reset()
   walls = nullptr;
 }
 
-bool PhysDemo::SetLevel(PhysDemoLevel level)
+bool PhysDemo::SetLevel(PhysDemoLevel level, bool concaveDecomp)
 {
   environment = level;
 
@@ -185,22 +183,35 @@ bool PhysDemo::SetLevel(PhysDemoLevel level)
   if (!loader->LoadTexture ("misty", "/lib/std/misty.jpg")) return ReportError ("Error loading texture: misty");
 
   // Create the environment
+  bool worked = false;
   switch (environment)
   {
   case PhysDemoLevelBox:
     CreateBoxRoom();
+    worked = true;
     break;
 
   case PhysDemoLevelPortals:
-    LoadLevel("/data/portals", "world", "Portals");
+    worked = LoadLevel("/data/portals", "world", "Portals", concaveDecomp);
     break;
 
   case PhysDemoLevelTerrain:
-    LoadTerrainLevel();
+    worked = LoadLevel("/lev/terraini", "worldmod", "Terrain", concaveDecomp);
+    break;
+
+  case PhysDemoLevelCastle:
+    worked = LoadLevel("/data/castle", "world", "Castle", concaveDecomp);
     break;
 
   default:
     break;
+  }
+
+  if (!worked)
+  {
+    // fall back to default
+    ReportWarning("Falling back to default level: Box room");
+    CreateBoxRoom();
   }
 
   // Finalize stuff in the engine after scene setup
@@ -370,7 +381,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         factory->SetFriction(csScalar(1.));
 
         factory->SetAirControlFactor(actorAirControl);
-        factory->SetStepHeight(csScalar(0.1));
+        factory->SetStepHeight(csScalar(0.5));
 
         dynamicActor = factory->CreateDynamicActor();
       }
@@ -488,80 +499,6 @@ bool PhysDemo::GetPointOnGroundAbovePos(const csVector3& pos, csVector3& groundP
     return true;
   }
   return false;
-}
-
-bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
-{
-  static const float groundAngleCosThresh = .7f;
-
-  // Find any objects that can at least remotely support the object
-  csArray<CollisionData> collisions;
-  GetCurrentSector()->CollisionTest(obj, collisions);
-
-  for (size_t i = 0; i < collisions.GetSize (); ++i)
-  {
-    CollisionData& coll = collisions[i];
-
-    int dir = coll.objectA == obj ? 1 : -1;
-
-    float groundAngleCos = coll.normalWorldOnB * UpVector;
-    if (dir * groundAngleCos > groundAngleCosThresh)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool PhysDemo::GetObjectInFrontOfMe(CS::Collisions::HitBeamResult& result)
-{ 
-  // Find the rigid body that was clicked on
-  // Compute the end beam points
-  csRef<iCamera> camera = view->GetCamera();
-  csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
-  csVector3 v3d = camera->InvPerspective (v2d, 10000);
-  csVector3 startBeam = camera->GetTransform().GetOrigin();
-  csVector3 endBeam = camera->GetTransform().This2Other (v3d);
-
-  // Trace the physical beam
-  return (result = GetCurrentSector()->HitBeamPortal (startBeam, endBeam)).hasHit;
-}
-
-void PhysDemo::PullObject()
-{
-  HitBeamResult result;
-  if (GetObjectInFrontOfMe(result) && IsDynamic(result.object))
-  {
-    iPhysicalBody* pb = result.object->QueryPhysicalBody();
-
-    csVector3 posCorrection(2  * UpVector);
-
-    csVector3 force(GetActorPos() - result.isect - posCorrection);
-    force.Normalize();
-    force *= 30 * pb->GetMass();
-
-    // prevent sliding problem
-    csOrthoTransform trans = pb->GetTransform();
-    trans.SetOrigin(trans.GetOrigin() + posCorrection);
-    pb->SetTransform(trans);
-
-    pb->QueryRigidBody()->AddForce (force);
-  }
-}
-
-
-void PhysDemo::TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosition* pos)
-{
-  // set transform
-  csOrthoTransform trans(csMatrix3(), pos->GetPosition());
-  trans.LookAt(pos->GetForwardVector(), pos->GetUpwardVector());
-  obj->SetTransform(trans);
-  
-  // set sector
-  iSector* isector = engine->FindSector(pos->GetSector());
-  iCollisionSector* collSector = physicalSystem->GetOrCreateCollisionSector(isector);
-  CS_ASSERT(collSector);
-  collSector->AddCollisionObject(obj);
 }
 
 //---------------------------------------------------------------------------

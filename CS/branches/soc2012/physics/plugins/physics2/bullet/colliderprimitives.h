@@ -53,6 +53,9 @@ class csBulletCollider;
 csRef<iTriangleMesh> FindColdetTriangleMesh (iMeshWrapper* mesh, 
                                              csStringID baseID, csStringID colldetID);
 
+btTriangleMesh* GenerateTriMeshData (iMeshWrapper* mesh, csStringID baseID, 
+                                     csStringID colldetID, float interScale);
+
 class csBulletColliderCompound : 
   public scfVirtImplementationExt1<csBulletColliderCompound,
   csBulletCollider, CS::Collisions::iColliderCompound>
@@ -190,7 +193,7 @@ protected:
   virtual float ComputeShapeVolume() const;
   
 public:
-  csBulletColliderConvexMesh (iMeshWrapper* mesh, csBulletSystem* sys, bool simplify);
+  csBulletColliderConvexMesh (iMeshWrapper* mesh, iTriangleMesh* triMesh, btTriangleMesh* btTriMesh, csBulletSystem* sys, bool simplify);
   csBulletColliderConvexMesh (btConvexHullShape* shape, float volume, csBulletSystem* sys);
 
   virtual ~csBulletColliderConvexMesh ();
@@ -212,7 +215,7 @@ protected:
   virtual float ComputeShapeVolume() const;
 
 public:
-  csBulletColliderConcaveMesh (iMeshWrapper* mesh, csBulletSystem* sys);
+  csBulletColliderConcaveMesh (iMeshWrapper* mesh, btTriangleMesh* triMesh, csBulletSystem* sys);
   virtual ~csBulletColliderConcaveMesh ();
   virtual CS::Collisions::ColliderType GetColliderType () const { return CS::Collisions::COLLIDER_CONCAVE_MESH; }
 

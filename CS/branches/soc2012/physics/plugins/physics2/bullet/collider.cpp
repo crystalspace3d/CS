@@ -166,11 +166,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       CS_ALLOC_STACK_ARRAY(float, masses, totalShapeCount);
 
       // add this collider's own shape
+      btTransform identity;
+      identity.setIdentity();
       if (shape)
       {
-        btTransform relaTrans;
-        relaTrans.setIdentity();
-        compound.addChildShape (relaTrans, shape);
+        compound.addChildShape (identity, shape);
         volume = ComputeShapeVolume();
         ++totalShapeCount;
         masses[0] = volume;
@@ -182,18 +182,26 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         iCollider* icoll = children->colliders[i];
         csBulletCollider* coll = dynamic_cast<csBulletCollider*>(icoll);
         btTransform relaTrans = CSToBullet (children->transforms[i], collSystem->getInternalScale ());
-        compound.addChildShape (relaTrans, coll->GetOrCreateBulletShape());
+        btCollisionShape* childShape = coll->GetOrCreateBulletShape();
+        compound.addChildShape (relaTrans, childShape);
 
         if (!coll->IsDynamic())
         {
           ++children->staticColliderCount;
         }
-        masses[start + i] = coll->GetVolume();
-        volume += coll->GetVolume();
+
+        btScalar childVolume = coll->GetVolume();
+        if (childVolume < EPSILON)
+        {
+          // shape is probably float -> Assign default volume of 1 for now
+          childVolume = 1;
+        }
+        masses[start + i] = childVolume;
+        volume += childVolume;
       }
 
       // compute principal axis
-      if (!customPrincipalAxis)
+      if (!customPrincipalAxis && IsDynamic())
       {
         btVector3 principalInertia;   // we don't care about this
         children->compoundShape.calculatePrincipalAxisTransform(masses, principalAxisTransform, principalInertia);

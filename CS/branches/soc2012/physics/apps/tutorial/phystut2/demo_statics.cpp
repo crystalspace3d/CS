@@ -248,7 +248,7 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
 }
 
-void PhysDemo::LoadLevel(const char* filedir, const char* filename, const char* levelname)
+bool PhysDemo::LoadLevel(const char* filedir, const char* filename, const char* levelname, bool convexDecomp)
 {
   printf ("Loading level: %s...\n", levelname);
 
@@ -258,18 +258,18 @@ void PhysDemo::LoadLevel(const char* filedir, const char* filename, const char* 
   const char* dir = VFS->GetCwd();
   if (!VFS->ChDir (filedir))
   {
-    ReportError("ERROR: Couldn't find portal level directory!");
-    return;
+    ReportError("ERROR: Couldn't find directory \"%s\" for level: %s", filedir, levelname);
+    return false;
   }
 
-  if (!loader->LoadMapFile (filename, false))
+  if (!loader->LoadMapFile (filename, true))
   {
-    ReportError("ERROR: Couldn't load portal level!");
-    return;
+    ReportError("ERROR: Couldn't load file \"%s\" for level: %s", filename, levelname);
+    return false;
   }
   
   // create physical world from render world
-  Collision2Helper::InitializeCollisionObjects(physicalSystem, engine);
+  Collision2Helper::InitializeCollisionObjects(physicalSystem, engine, convexDecomp);
 
   // Set default sector (generally unnecessary)
   room = engine->GetSectors()->Get(0);
@@ -277,11 +277,7 @@ void PhysDemo::LoadLevel(const char* filedir, const char* filename, const char* 
   VFS->ChDir(dir);    // reset CWD
 
   printf ("Done - level loaded: %s\n", levelname);
-}
-
-void PhysDemo::LoadTerrainLevel()
-{
-  LoadLevel("/lev/terraini", "worldmod", "Terrain");
+  return true;
 }
 
 

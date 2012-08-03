@@ -19,14 +19,16 @@
 class Collision2Helper
 {
 public:
+  /// Creates and adds all collision objects of all meshes in the given engine to the collision system
   static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iEngine* engine, iCollection* collection = nullptr);
-
+    iEngine* engine, bool convexDecomposition = false, iCollection* collection = nullptr);
+  
+  /// Creates and adds all collision objects of all meshes in the given sector to the collision system
   static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iSector* sector, iCollection* collection = nullptr);
+    iSector* sector, bool convexDecomposition = false, iCollection* collection = nullptr);
 
   /// Recursively creates and adds all collision objects of the mesh and it's children to the collision system
-  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys, iSector* sector, iMeshWrapper* mesh);
+  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys, iSector* sector, iMeshWrapper* mesh, bool convexDecomposition = false);
 };
 
 

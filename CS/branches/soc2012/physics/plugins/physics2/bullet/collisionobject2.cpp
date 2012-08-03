@@ -15,7 +15,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
   void csBulletCollisionObject::CreateCollisionObject(iCollisionObjectFactory* props)
   {
-    SetCollider(props->GetCollider());
+    collider = dynamic_cast<csBulletCollider*>(props->GetCollider());
     SetName(props->QueryObject()->GetName());
 
     if (props->GetCollisionGroup().name.Length())
@@ -45,10 +45,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (newCollider)
     {
-      this->collider = dynamic_cast<csBulletCollider*>(newCollider);
-    }
+      collider = dynamic_cast<csBulletCollider*>(newCollider);
 
-    //RebuildObject();
+      RebuildObject();
+    }
   }
 
   void csBulletCollisionObject::SetTransform (const csOrthoTransform& trans)

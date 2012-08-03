@@ -1024,9 +1024,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
       if (sector)
       {
-        if (mesh)
+        if (mesh && sector->GetMeshes()->Find(mesh) == csArrayItemNotFound)
+        {
           sector->GetMeshes ()->Add (mesh);
-        if (light)
+        }
+        if (light && sector->GetLights()->Find(light) == csArrayItemNotFound)
           sector->GetLights ()->Add (light);
       }
     }
@@ -1040,7 +1042,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       iLight* light = movable->GetSceneNode ()->QueryLight ();
       if (mesh)
         sector->GetMeshes ()->Remove (mesh);
-      else
+      if (light)
         sector->GetLights ()->Remove (light);
     }
   }

@@ -32,7 +32,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   void csBulletRigidBody::CreateRigidBodyObject(CS::Physics::iRigidBodyFactory* props)
   {
     //CreatePhysicalBodyObject(props);
-    SetCollider(props->GetCollider());
+    collider = dynamic_cast<csBulletCollider*>(props->GetCollider());
     SetName(props->QueryObject()->GetName());
     
     // construct bullet shape
@@ -416,6 +416,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       if (insideWorld)
       {
         sector->bulletWorld->addRigidBody (btBody);
+      }
+
+      if (state == STATE_DYNAMIC)
+      {
+        // dynamic now
+        Enable();
       }
 
       return true;

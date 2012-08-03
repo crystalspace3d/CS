@@ -6,7 +6,7 @@ SubDir TOP apps varedittest ;
   Application varedittest : [ Wildcard *.cpp *.h ] ;
   ExternalLibs varedittest : CRYSTAL WX ;
   CFlags varedittest : $(COMPILER.C++FLAGS.STRICTALIASING.DISABLE) ;
-  LinkWith varedittest : crystalspace crystalspace-gui ;
+  LinkWith varedittest : crystalspace crystalspace_gui ;
   Win32Resource varedittest : [ ConcatDirs $(SUBDIR) varedittest.rc ] ;
   # To locate wx.rc
   Win32RcFlags varedittest : [ Match ^(-I.*) ^(-D.*) : [ SplitToList $(WX.CFLAGS) ] ] ;

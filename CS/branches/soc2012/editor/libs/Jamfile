@@ -155,25 +155,26 @@ if $(WX.AVAILABLE) = "yes"
   CSLIB.SOURCES = ;
   CSLIB.TESTS = ;
   CSLIB.ROOT = $(SUBDIR_TOKENS) ;
-  CSLIB.DECLARED = no ;
 
   SubInclude TOP libs cseditor ;
 
   SubDir TOP libs ;
 
-  Description crystalspace-gui : "Crystal Space library" ;
-  Library crystalspace-gui : $(CSLIB.SOURCES) : shared notest ;
-  CFlags crystalspace-gui : [ FDefines CS_CRYSTALSPACE_GUI_LIB ] ;
-  LinkWith crystalspace-gui : crystalspace ;
-  ExternalLibs crystalspace-gui : WX ;
-  MsvcDefine crystalspace-gui : CS_CRYSTALSPACE_GUI_LIB ;
-  MsvcDefine crystalspace-gui :
+  Description crystalspace_gui : "Crystal Space Graphical User Interface library" ;
+  Library crystalspace_gui : $(CSLIB.SOURCES) : shared notest ;
+  LibDepends crystalspace_gui : crystalspace ;
+  ExternalLibs crystalspace_gui : WX ;
+  CFlags crystalspace_gui :
+    [ FDefines CS_CRYSTALSPACE_GUI_LIB ]
+    [ FDefines WXMAKINGDLL_PROPGRID ] ;
+  MsvcDefine crystalspace_gui : CS_CRYSTALSPACE_GUI_LIB ;
+  MsvcDefine crystalspace_gui :
     CS_COMPILER_NAME_AND_VERSION : "\"VC_$(MSVC_VERSION)\"" ;
   {
     local def ;
     for def in $(CSLIB.MSVC_DEFINES)
     {
-      MsvcDefine crystalspace-gui : $(def) ;
+      MsvcDefine crystalspace_gui : $(def) ;
     }
   }
 }

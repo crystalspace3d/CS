@@ -66,6 +66,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
   SCF_IMPLEMENT_FACTORY(AnimeshObjectType);
 
+  // --------------------------  AnimeshObjectType  --------------------------
+
   AnimeshObjectType::AnimeshObjectType (iBase* parent)
     : scfImplementationType (this, parent)
   {
@@ -102,8 +104,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
     return true;
   }
 
-
-
+  // --------------------------  AnimeshObjectFactory  --------------------------
 
   AnimeshObjectFactory::AnimeshObjectFactory (AnimeshObjectType* objType)
     : scfImplementationType (this), objectType (objType), logParent (0), material (0),
@@ -118,6 +119,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
     newSubmesh.AttachNew (new FactorySubmesh(name));
     newSubmesh->indexBuffers.Push (indices);
     newSubmesh->visible = visible;
+
+    // Setup the shader variable context
+    csRef<csShaderVariableContext> svContext;
+    svContext.AttachNew (new csShaderVariableContext);
+    newSubmesh->svContexts.Push (svContext);
+
     submeshes.Push (newSubmesh);
 
     // By default the first submesh gets the material of the animesh factory
@@ -151,6 +158,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       newSubmesh->boneMapping.Push (rb);
     }
     
+    // Setup the shader variable contexts
+    for (size_t i = 0; i < indices.GetSize (); ++i)
+    {      
+      csRef<csShaderVariableContext> svContext;
+      svContext.AttachNew (new csShaderVariableContext);
+      newSubmesh->svContexts.Push (svContext);
+    }
+
     submeshes.Push (newSubmesh);
 
     return newSubmesh;
@@ -326,7 +341,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
         
       }
 
-      // Setup buffer holders
+      // Setup the buffer holders
       sm->bufferHolders.DeleteAll ();
       for (size_t i = 0; i < sm->indexBuffers.GetSize (); ++i)
       {      
@@ -339,7 +354,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
         sm->bufferHolders.Push (bufferholder);
       }
     }
-
 
     // Setup the bone weight & index buffers for cases not covered above
     if (boneInfluences.GetSize ())
@@ -491,11 +505,28 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
   void AnimeshObjectFactory::HardTransform (const csReversibleTransform& t)
   {
+    if (!vertexBuffer)
+      return;
+
+    {
+      csRenderBufferLock<csVector3> vertices (vertexBuffer);
+      for (size_t i = 0; i < vertexCount; i++)      
+	vertices[i] = t.This2Other (vertices[i]);
+    }
+
+    if (!normalBuffer)
+      return;
+
+    {
+      csRenderBufferLock<csVector3> normals (normalBuffer);
+      for (size_t i = 0; i < vertexCount; i++)      
+	normals[i] = t.This2OtherRelative (normals[i]);
+    }
   }
 
   bool AnimeshObjectFactory::SupportsHardTransform () const
   {
-    return false;
+    return true;
   }
 
   void AnimeshObjectFactory::SetMeshFactoryWrapper (iMeshFactoryWrapper* lp)
@@ -975,6 +1006,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
   }
 
+  // --------------------------  FactorySocket  --------------------------
 
   FactorySocket::FactorySocket (AnimeshObjectFactory* factory, CS::Animation::BoneID bone, 
     const char* name, csReversibleTransform transform)
@@ -1017,6 +1049,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
     return factory;
   }
 
+  // --------------------------  AnimeshObject  --------------------------
 
   AnimeshObject::AnimeshObject (AnimeshObjectFactory* factory)
     : scfImplementationType (this), factory (factory), logParent (0),
@@ -1612,11 +1645,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
 
       for (size_t j = 0; j < fsm->indexBuffers.GetSize (); ++j)
       {
-        // SV context
+        // Create the shader variable context
         csRef<csShaderVariableContext> svContext;
         svContext.AttachNew (new csShaderVariableContext);
         csShaderVariable* sv;
         
+	// Copy the shader variables from the factory
+	const csRefArray<csShaderVariable> factoryVariables =
+	  fsm->svContexts[j]->GetShaderVariables ();
+	for (size_t i = 0; i < factoryVariables.GetSize (); i++)
+	{
+	  csRef<csShaderVariable> sv;
+	  sv.AttachNew (new csShaderVariable (*factoryVariables[i]));
+	  svContext->AddVariable (sv);
+	}
+
+	// Setup the shader variables of the rendering buffers
         sv = svContext->GetVariableAdd (svNameVertexUnskinned);
         sv->SetValue (postMorphVertices);
 
@@ -1638,7 +1682,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
           sv->SetValue (factory->binormalBuffer);
         }
 
-        
         sv = svContext->GetVariableAdd (svNameBoneIndex);
         if (subsm)
           sv->SetValue (fsm->boneMapping[j].boneWeightAndIndexBuffer[0]);
@@ -2072,6 +2115,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       animatedNormalsW[i + baseIndex] = normals[indices[i]];
     }
   }
+
+  // --------------------------  AnimeshObject::Socket  --------------------------
 
   AnimeshObject::Socket::Socket (AnimeshObject* object, FactorySocket* factorySocket)
     : scfImplementationType (this), object (object), factorySocket (factorySocket),

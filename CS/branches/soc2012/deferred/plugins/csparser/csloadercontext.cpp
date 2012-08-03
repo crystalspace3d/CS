@@ -176,6 +176,44 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     return mat;
   }
 
+  iLightFactory* csLoaderContext::FindLightFactory(const char* name, bool notify)
+  {
+    csRef<iLightFactory> fact;
+    {
+      CS::Threading::ScopedReadLock lock(loader->lightfactsLock);
+      for(size_t i=0; i<loader->loaderLightFactories.GetSize(); i++)
+      {
+        if(!strcmp(loader->loaderLightFactories[i]->QueryObject()->GetName(), name))
+        {
+          fact = loader->loaderLightFactories[i];
+          return fact;
+        }
+      }
+    }
+
+    if(!fact.IsValid() && missingdata)
+    {
+      fact = missingdata->MissingLightFactory(name);
+    }
+
+    if(!fact.IsValid())
+    {
+      fact = Engine->FindLightFactory(name, collection);
+    }
+
+    if(!fact.IsValid() && collection)
+    {
+      fact = Engine->FindLightFactory(name);
+    }
+
+    if(!fact.IsValid() && notify && do_verbose)
+    {
+      ReportNotify("Could not find light factory %s.", CS::Quote::Single (name));
+    }
+
+    return fact;
+  }
+
   iMeshFactoryWrapper* csLoaderContext::FindMeshFactory(const char* name, bool notify)
   {
     csRef<iMeshFactoryWrapper> fact;
@@ -526,6 +564,23 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         dat.path = vfs->GetCwd();
         CS::Threading::MutexScopedLock lock(meshfactObjects);
         availMeshfacts.Push(dat);
+      }
+    }
+  }
+
+  void csLoaderContext::ParseAvailableLightfacts(iDocumentNode* doc)
+  {
+    csRef<iDocumentNodeIterator> itr = doc->GetNodes("lightfact");
+    while(itr->HasNext())
+    {
+      csRef<iDocumentNode> lightfact = itr->Next();
+      if(lightfact->GetAttributeValue("name"))
+      {
+        NodeData dat;
+        dat.node = lightfact;
+        dat.path = vfs->GetCwd();
+        CS::Threading::MutexScopedLock lock(lightfactObjects);
+        availLightfacts.Push(dat);
       }
     }
   }

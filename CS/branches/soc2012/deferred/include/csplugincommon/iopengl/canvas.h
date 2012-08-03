@@ -1,6 +1,5 @@
 /*
-    Copyright (C) 2003 by Jorrit Tyberghein
-	      (C) 2003 by Frank Richter
+    Copyright (C) 2012 by Frank Richter
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,38 +16,26 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __CS_BASESTEPTYPE_H__
-#define __CS_BASESTEPTYPE_H__
+#ifndef __CS_CSPLUGINCOMMON_IOPENGL_CANVAS_H__
+#define __CS_CSPLUGINCOMMON_IOPENGL_CANVAS_H__
+
+#include "iutil/cfgmgr.h"
 
 /**\file
- * Base class for render step types.
+ * Interface to read custom GL driver databases
  */
 
-#include "csextern.h"
-#include "csutil/scf_implementation.h"
-#include "iengine/rendersteps/irsfact.h"
-#include "iutil/comp.h"
-#include "iutil/objreg.h"
+struct iDocumentNode;
 
-/**\addtogroup plugincommon
- * @{ */
 /**
- * Base class for render step loaders.
+ * Interface for OpenGL-specific canvas functionality.
  */
-class CS_CRYSTALSPACE_EXPORT csBaseRenderStepType : 
-  public scfImplementation2<csBaseRenderStepType, iRenderStepType, iComponent>
+struct iOpenGLCanvas : public virtual iBase
 {
-protected:
-  iObjectRegistry* object_reg;
+  SCF_INTERFACE(iOpenGLCanvas, 0, 0, 1);
 
-public:
+  /// Get number of current multisampling samples
+  virtual int GetMultiSamples() = 0;
+};
 
-  csBaseRenderStepType (iBase *p);
-  virtual ~csBaseRenderStepType ();
-
-  virtual bool Initialize(iObjectRegistry *object_reg);
-};  
-
-/** @} */
-
-#endif
+#endif // __CS_CSPLUGINCOMMON_IOPENGL_CANVAS_H__

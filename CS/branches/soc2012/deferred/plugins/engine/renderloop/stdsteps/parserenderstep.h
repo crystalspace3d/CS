@@ -35,12 +35,10 @@
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
 
-/**\addtogroup plugincommon
- * @{ */
 /**
  * Parser for render steps and render step lists.
  */
-class CS_CRYSTALSPACE_EXPORT csRenderStepParser
+class csRenderStepParser
 {
 private:
   iObjectRegistry* object_reg;
@@ -63,6 +61,5 @@ public:
   bool ParseRenderSteps (iRenderStepContainer* container, 
     iDocumentNode* node);
 };
-/** @} */
 
 #endif

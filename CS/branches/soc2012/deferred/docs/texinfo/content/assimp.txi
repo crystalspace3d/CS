@@ -26,7 +26,7 @@ import previously the file.
 @subsubheading Loader interfaces
 
 Technically speaking, the Assimp plugin implements the @code{iBinaryLoaderPlugin}
-and @code{iModelLoader} interfaces of Crystal Space, as any other @sc{CS}-specific
+and @code{iModelLoader} interfaces of Crystal Space, as any other @sc{cs}-specific
 loader plugin. Therefore, when the @code{iLoader} or @code{iThreadedLoader} are
 used to load a file, the Assimp plugin will be selected if it supports the file
 format. It will then analyze the file, and import the objects as genmeshes,
@@ -34,8 +34,8 @@ animeshes or whole scenes depending on the loader interface that was used.
 
 If the @code{iModelLoader} interface is used, then only one mesh will be created.
 If there is any skeleton or animation defined, then the mesh will be an
-@ref{MeshObject Animesh, Animesh}, otherwize it will be a @ref{MeshObject Genmesh, Genmesh}.
-If the @code{iBinaryLoaderPlugin}, then a mesh factory will be created for all the
+@ref{MeshObject Animesh, Animesh}, otherwise it will be a @ref{MeshObject Genmesh, Genmesh}.
+If the @code{iBinaryLoaderPlugin} is used, then a mesh factory will be created for all the
 meshes defined in the file.
 
 Additionally, if a mesh defined in the file contains points or line segments, then

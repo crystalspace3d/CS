@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="plgrendstep_stencil"
-	ProjectGUID="{A761F096-B740-7639-0CE6-43408EA86615}"
+	Name="appwxtest"
+	ProjectGUID="{49F2B941-18A6-C599-D4CD-5FAB2240362F}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -13,9 +13,10 @@
 	<Configurations>
             		<Configuration
 			Name="ReleaseWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\release9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\release9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\release9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -26,14 +27,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\release9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\release9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\release9\build\appwxtest\"
+				ObjectFile="..\..\out\release9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -50,13 +51,11 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\release9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\release9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib wxmsw28u_xrc-vc9.lib wxmsw28u_html-vc9.lib wxbase28u_xml-vc9.lib wxmsw28u_adv-vc9.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -66,11 +65,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\release9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9\bin\&#x0D;&#x0A;"
@@ -81,9 +80,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -91,9 +94,10 @@
 		</Configuration>
       		<Configuration
 			Name="ReleaseWithDlls|Win32"
-			OutputDirectory="..\..\out\release9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\release9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\release9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -104,14 +108,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\release9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\release9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\release9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\release9\build\appwxtest\"
+				ObjectFile="..\..\out\release9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -128,13 +132,11 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\release9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\release9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib wxmsw28u_xrc-vc9.lib wxmsw28u_html-vc9.lib wxbase28u_xml-vc9.lib wxmsw28u_adv-vc9.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -144,11 +146,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\release9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9\bin\&#x0D;&#x0A;"
@@ -159,9 +161,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -169,9 +175,10 @@
 		</Configuration>
                 		<Configuration
 			Name="DebugWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -181,14 +188,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
+				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -203,13 +210,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -219,11 +224,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -234,9 +239,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -244,9 +253,10 @@
 		</Configuration>
       		<Configuration
 			Name="DebugWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -256,14 +266,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
+				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -278,13 +288,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -294,11 +302,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -309,9 +317,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -319,9 +331,10 @@
 		</Configuration>
                 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -331,14 +344,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
+				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -353,13 +366,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -369,11 +380,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -384,9 +395,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -394,9 +409,10 @@
 		</Configuration>
       		<Configuration
 			Name="MemoryTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -406,14 +422,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
+				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -428,13 +444,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -444,11 +458,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -459,9 +473,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -469,9 +487,10 @@
 		</Configuration>
                 		<Configuration
 			Name="RefTrackerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -481,14 +500,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
+				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -503,13 +522,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -519,11 +536,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -534,9 +551,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -544,9 +565,10 @@
 		</Configuration>
       		<Configuration
 			Name="RefTrackerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -556,14 +578,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
+				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -578,13 +600,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -594,11 +614,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -609,9 +629,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -619,9 +643,10 @@
 		</Configuration>
                 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -631,14 +656,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
+				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -653,13 +678,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -669,11 +692,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -684,9 +707,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -694,9 +721,10 @@
 		</Configuration>
       		<Configuration
 			Name="ThreadCheckerWithDlls|Win32"
-			OutputDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -706,14 +734,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9\build\appwxtest\"
+				ObjectFile="..\..\out\debug9\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -728,13 +756,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9\build\plgrendstep_stencil\Win32\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9\build\plgrendstep_stencil\Win32\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9\build\appwxtest\Win32\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -744,11 +770,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9\bin\&#x0D;&#x0A;"
@@ -759,9 +785,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -769,9 +799,10 @@
 		</Configuration>
                         		<Configuration
 			Name="ReleaseWithStaticLibs|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\release9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -782,14 +813,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\release9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\release9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\release9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\release9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -806,13 +837,11 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib wxmsw28u_xrc-vc9.lib wxmsw28u_html-vc9.lib wxbase28u_xml-vc9.lib wxmsw28u_adv-vc9.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -822,11 +851,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\release9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9-x64\bin\&#x0D;&#x0A;"
@@ -837,9 +866,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -847,9 +880,10 @@
 		</Configuration>
       		<Configuration
 			Name="ReleaseWithDlls|x64"
-			OutputDirectory="..\..\out\release9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\release9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\release9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\release9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -860,14 +894,14 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDataBaseFileName="..\..\out\release9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\release9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\release9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\release9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\release9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\release9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\release9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -884,13 +918,11 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\release9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\release9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="2"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9.lib wxmsw28u_core-vc9.lib wxmsw28u_gl-vc9.lib wxmsw28u_xrc-vc9.lib wxmsw28u_html-vc9.lib wxbase28u_xml-vc9.lib wxmsw28u_adv-vc9.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -900,11 +932,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\release9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\release9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\release9-x64\bin\&#x0D;&#x0A;"
@@ -915,9 +947,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -925,9 +961,10 @@
 		</Configuration>
                 		<Configuration
 			Name="DebugWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -937,14 +974,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -959,13 +996,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -975,11 +1010,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -990,9 +1025,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -1000,9 +1039,10 @@
 		</Configuration>
       		<Configuration
 			Name="DebugWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1012,14 +1052,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1034,13 +1074,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1050,11 +1088,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1065,9 +1103,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -1075,9 +1117,10 @@
 		</Configuration>
                 		<Configuration
 			Name="MemoryTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1087,14 +1130,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1109,13 +1152,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1125,11 +1166,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1140,9 +1181,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -1150,9 +1195,10 @@
 		</Configuration>
       		<Configuration
 			Name="MemoryTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1162,14 +1208,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1184,13 +1230,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1200,11 +1244,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1215,9 +1259,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -1225,9 +1273,10 @@
 		</Configuration>
                 		<Configuration
 			Name="RefTrackerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1237,14 +1286,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1259,13 +1308,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1275,11 +1322,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1290,9 +1337,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -1300,9 +1351,10 @@
 		</Configuration>
       		<Configuration
 			Name="RefTrackerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1312,14 +1364,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1334,13 +1386,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1350,11 +1400,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1365,9 +1415,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -1375,9 +1429,10 @@
 		</Configuration>
                 		<Configuration
 			Name="ThreadCheckerWithStaticLibs|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1387,14 +1442,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1409,13 +1464,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1425,11 +1478,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1440,9 +1493,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -1450,9 +1507,10 @@
 		</Configuration>
       		<Configuration
 			Name="ThreadCheckerWithDlls|x64"
-			OutputDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			IntermediateDirectory="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-			ConfigurationType="2"
+			OutputDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			IntermediateDirectory="..\..\out\debug9-x64\build\appwxtest\"
+			ConfigurationType="1"
+			CharacterSet="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1462,14 +1520,14 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-				ProgramDataBaseFileName="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
 				AdditionalOptions=" "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
-				PrecompiledHeaderFile="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.pch"
-				AssemblerListingLocation="..\..\out\debug9-x64\build\plgrendstep_stencil\"
-				ObjectFile="..\..\out\debug9-x64\build\plgrendstep_stencil\"
+				PrecompiledHeaderFile="..\..\out\debug9-x64\build\appwxtest\appwxtest.pch"
+				AssemblerListingLocation="..\..\out\debug9-x64\build\appwxtest\"
+				ObjectFile="..\..\out\debug9-x64\build\appwxtest\"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="false"
@@ -1484,13 +1542,11 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-				OutputFile="..\..\rendstep_stencil.dll"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\rendstep_stencil.pdb"
-				IgnoreImportLibrary="TRUE"
-				DelayLoadDLLs=""
-				ImportLibrary="..\..\out\debug9-x64\build\plgrendstep_stencil\x64\plgrendstep_stencil.lib"
+				OutputFile="..\..\wxtest.exe"
+				ProgramDatabaseFile="..\..\out\debug9-x64\build\appwxtest\x64\wxtest.pdb"
+				SubSystem="1"
 				AdditionalOptions=" "
-				AdditionalDependencies="delayimp.lib zlib.lib"
+				AdditionalDependencies="zlib.lib wxbase28u-vc9_d.lib wxmsw28u_core-vc9_d.lib wxmsw28u_gl-vc9_d.lib wxmsw28u_xrc-vc9_d.lib wxmsw28u_html-vc9_d.lib wxbase28u_xml-vc9_d.lib wxmsw28u_adv-vc9_d.lib opengl32.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1500,11 +1556,11 @@
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug9-x64\build\plgrendstep_stencil\plgrendstep_stencil.tlb"/>
+				TypeLibraryName="..\..\out\debug9-x64\build\appwxtest\appwxtest.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="md ..\..\out\debug9-x64\bin 2&gt; nul&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; ..\..\out\debug9-x64\bin\&#x0D;&#x0A;"
@@ -1515,9 +1571,13 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=9"
-				AdditionalIncludeDirectories=".;..\..\plugins\engine\renderloop\shadow\stencil;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=9"
+				AdditionalIncludeDirectories=".;..\..\apps\tests\wxtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
+			<Tool
+				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\mk\msvc\appwxtest-x64.manifest"
+				/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -1529,34 +1589,21 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil\stencil.cpp">
+				RelativePath="..\..\apps\tests\wxtest\wxtest.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil\stencil.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil\trimesh.h">
+				RelativePath="..\..\apps\tests\wxtest\wxtest.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="">
 			<File
-				RelativePath="..\..\mk\msvc\plgrendstep_stencil.rc">
-			</File>
-		</Filter>
-		<Filter
-			Name="Other Files"
-			Filter="">
-			<File
-				RelativePath="..\..\plugins\engine\renderloop\shadow\stencil\rendstep_stencil.csplugin">
+				RelativePath="..\..\mk\msvc\appwxtest.rc">
 			</File>
 		</Filter>
 	</Files>

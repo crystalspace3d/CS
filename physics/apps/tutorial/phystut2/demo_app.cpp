@@ -158,7 +158,7 @@ void PhysDemo::Reset()
   
   ghostObject = nullptr;
 
-  terrainFeeder = nullptr;
+  moddedTerrainFeeder = nullptr;
   terrainMod = nullptr;
 
   debugNameMap.DeleteAll();
@@ -192,11 +192,11 @@ bool PhysDemo::SetLevel(PhysDemoLevel level)
     break;
 
   case PhysDemoLevelPortals:
-    CreatePortalRoom();
+    LoadLevel("/data/portals", "world", "Portals");
     break;
 
   case PhysDemoLevelTerrain:
-    CreateTerrainRoom();
+    LoadTerrainLevel();
     break;
 
   default:

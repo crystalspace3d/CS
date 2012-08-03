@@ -433,17 +433,32 @@ struct iCollisionSector : public virtual iBase
   /// Find a collision object within a sector.
   virtual iCollisionObject* FindCollisionObject (const char* name) = 0;
 
+
+  //  Terrain
+
   /// Adds the given terrain to this sector
   virtual void AddCollisionTerrain(iCollisionTerrain* terrain) = 0;
 
+  /// Total amount if iCollisionTerrain objects in this sector
+  virtual size_t GetCollisionTerrainCount() const = 0;
+
+  /// Get the index'th iCollisionTerrain object
+  virtual iCollisionTerrain* GetCollisionTerrain(size_t index) const = 0;
+
   /// Retreive the CollisionTerrain that wraps the given TerrainSystem
   virtual iCollisionTerrain* GetCollisionTerrain(iTerrainSystem* terrain) = 0;
+
+
+  // Portals
 
   /// Add a portal into the sector. Collision objects crossing a portal will be switched from iCollisionSector's.
   virtual void AddPortal (iPortal* portal, const csOrthoTransform& meshTrans) = 0;
 
   /// Remove the given portal from this sector.
   virtual void RemovePortal (iPortal* portal) = 0;
+
+
+  // Other stuff
 
   /**
    * Set the engine iSector related to this collision sector. The iMovable that are 

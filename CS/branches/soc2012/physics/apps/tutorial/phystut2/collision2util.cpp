@@ -5,6 +5,7 @@
 #include "iengine/sector.h"
 #include "iengine/movable.h"
 #include "iengine/mesh.h"
+#include "iengine/portal.h"
 #include "iengine/portalcontainer.h"
 #include "iengine/scenenode.h"
 
@@ -52,9 +53,10 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
   iTerrainSystem* terrainSys = objModel->GetTerrainColldet ();
   if (terrainSys)
   {
-    // create new terrain, if the sector did not add it yet
+    // Check whether the sector did not add this terrain yet
     if (!colSect->GetCollisionTerrain(terrainSys))
     {
+      // Create and add a collision Terrain
       csRef<iCollisionTerrain> colTerrain = colSys->CreateCollisionTerrain(terrainSys);
       colSect->AddCollisionTerrain(colTerrain);
     }
@@ -67,9 +69,13 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
     for (size_t i = 0; i < portalCont->GetPortalCount(); ++i)
     {
       iPortal* portal = portalCont->GetPortal(i);
-      //colSect->AddPortal (portal, csOrthoTransform());
 
-      // This is very odd: Multiple portals with a single transform?
+      // Ignore all portals that don't do warping
+      // TODO: Flag portals as see-through only (for example in-game monitors that display a video camera stream)
+    if (!portal->GetFlags().Check(CS_PORTAL_WARP)) continue;
+
+      // This is very odd: Multiple portals with the same mesh transform?
+      // TODO: Mesh transform can/should be retreived from the iPortal object - Don't need to pass it as an argument
       colSect->AddPortal (portal, mesh->GetMovable ()->GetFullTransform ());
     }
   }
@@ -94,8 +100,6 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
           collObj = nextFactory->CreateCollisionObject();
 
           // TODO: Movables need to be able to define an offset transform relative to the collision object
-          // TODO: Inconsistent ownership model:
-          //      Movables are children of CollisionObject, but CollisionObjects are created from children of the mesh's factory
 
 
           // TODO: Can only add mesh to a single CO right now (quite limiting)
@@ -112,6 +116,7 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
     csRef<iColliderConcaveMesh> collider = colSys->CreateColliderConcaveMesh(mesh);
     csRef<iCollisionObjectFactory> collObjFact = colSys->CreateCollisionObjectFactory(collider);
     collObj = collObjFact->CreateCollisionObject();
+    mesh->QueryObject()->ObjAdd(collObj->QueryObject());
   }
 
   if (collObj)

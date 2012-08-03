@@ -248,21 +248,21 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
 }
 
-void PhysDemo::CreatePortalRoom()
+void PhysDemo::LoadLevel(const char* filedir, const char* filename, const char* levelname)
 {
-  printf ("Loading portal level...\n");
+  printf ("Loading level: %s...\n", levelname);
 
   // Load the level file
   csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry()));
 
   const char* dir = VFS->GetCwd();
-  if (!VFS->ChDir ("/data/portals"))
+  if (!VFS->ChDir (filedir))
   {
     ReportError("ERROR: Couldn't find portal level directory!");
     return;
   }
 
-  if (!loader->LoadMapFile ("world", false))
+  if (!loader->LoadMapFile (filename, false))
   {
     ReportError("ERROR: Couldn't load portal level!");
     return;
@@ -271,69 +271,41 @@ void PhysDemo::CreatePortalRoom()
   // create physical world from render world
   Collision2Helper::InitializeCollisionObjects(physicalSystem, engine);
 
-  // Setup default sector
+  // Set default sector (generally unnecessary)
   room = engine->GetSectors()->Get(0);
 
   VFS->ChDir(dir);    // reset CWD
 
-  printf ("Done - Portal level loaded.\n");
+  printf ("Done - level loaded: %s\n", levelname);
 }
 
-void PhysDemo::CreateTerrainRoom()
+void PhysDemo::LoadTerrainLevel()
 {
-  printf ("Loading terrain level...\n");
-  
-  // Add a skybox and some extra lights
-  //if (!DemoApplication::CreateRoom()) return;
-  
-  // Load the level file
-  csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry()));
+  LoadLevel("/lev/terraini", "worldmod", "Terrain");
+}
 
-  // TODO: Since texture loading might be running in the background, 
-  //      changing the CWD, can cause race conditions
-  const char* dir = VFS->GetCwd();
-  VFS->ChDir ("/lev/terraini");
 
-  if (!loader->LoadMapFile ("worldmod", false))
-  //if (!loader->LoadMapFile ("world"))
+iModifiableDataFeeder* PhysDemo::GetFirstTerrainModDataFeeder(CS::Collisions::iCollisionSector* sector)
+{
+  // iterate over all terrains in the sector
+  for (size_t i = 0; i < sector->GetCollisionTerrainCount(); ++i)
   {
-    ReportError("Error couldn't load terrain level!");
-    return;
+    iTerrainSystem* terrain = sector->GetCollisionTerrain(i)->GetTerrain();
+    csRef<iMeshObject> terrainObj = scfQueryInterface<iMeshObject>(terrain);
+    if (terrainObj)
+    {
+      // Get the factory
+      csRef<iTerrainFactory> factory = scfQueryInterface<iTerrainFactory>(terrainObj->GetFactory());
+      CS_ASSERT(factory);
+
+      // Get the data feeder and check if its modifiable
+      // NOTE: By default, data feeders are not modifiable
+      csRef<iModifiableDataFeeder> terrainFeeder = scfQueryInterface<iModifiableDataFeeder> (factory->GetFeeder());
+      if (terrainFeeder)
+      {
+        return terrainFeeder;
+      }
+    }
   }
-
-  // Setup sector
-  room = engine->GetSectors()->Get(0);
-
-  VFS->ChDir(dir);    // reset CWD
-
-  // Find the terrain mesh
-  csRef<iMeshWrapper> terrainWrapper = engine->FindMeshObject ("Terrain");
-  if (!terrainWrapper)
-  {
-    ReportError("Error cannot find the terrain mesh!");
-    return;
-  }
-  
-  csRef<iTerrainSystem> terrain = scfQueryInterface<iTerrainSystem> (terrainWrapper->GetMeshObject());
-  if (!terrain)
-  {
-    ReportError("Error cannot find the terrain interface!");
-    return;
-  }
-  
-  csRef<iTerrainFactory> factory = scfQueryInterface<iTerrainFactory>(terrainWrapper->GetFactory()->GetMeshObjectFactory());
-  CS_ASSERT(factory);
-
-  terrainFeeder = scfQueryInterface<iModifiableDataFeeder> (factory->GetFeeder());
-  if (!terrainFeeder)
-  {
-    ReportError("Warning: Terrain is not modifiable");
-  }
-
-  // Create a collision heightfield
-  csRef<iCollisionTerrain> colTerrain = physicalSystem->CreateCollisionTerrain (terrain);
-  
-  GetCurrentSector()->AddCollisionTerrain(colTerrain);
-  
-  printf ("Done - Terrain level loaded.\n");
+  return nullptr;
 }

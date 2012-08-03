@@ -65,6 +65,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     btObject = btBody = new btRigidBody (infos);
     btBody->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*>(this));
+    //btBody->setContactProcessingThreshold(1e18f);
 
     bool isStatic = mass == 0;
     SetState(isStatic ? STATE_STATIC : STATE_DYNAMIC);

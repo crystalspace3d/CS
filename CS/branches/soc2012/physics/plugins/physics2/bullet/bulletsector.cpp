@@ -277,6 +277,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     terrains.Push(btTerrain);
   }
+  
+  CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain(size_t index) const 
+  { 
+    return csRef<CS::Collisions::iCollisionTerrain>(scfQueryInterface<CS::Collisions::iCollisionTerrain>(terrains.Get(index)));
+  }
 
   CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain(iTerrainSystem* terrain) 
   {

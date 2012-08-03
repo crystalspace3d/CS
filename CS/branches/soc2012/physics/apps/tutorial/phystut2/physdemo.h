@@ -158,7 +158,9 @@ public:
   csRef<CS::Collisions::iGhostCollisionObject> ghostObject;
 
   // Terrain
-  csRef<iModifiableDataFeeder> terrainFeeder;
+  /// The feeder to which the current terrain mod is applied (if any)
+  csRef<iModifiableDataFeeder> moddedTerrainFeeder;
+  /// The currently applied terrain mode (if any)
   csRef<iTerrainModifier> terrainMod;
 
   csHash<int, csString> debugNameMap;
@@ -217,8 +219,8 @@ public:
   void CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos = csVector3(0), csScalar wallThickness = 5);
 
   void CreateBoxRoom(csScalar size = 100);
-  void CreatePortalRoom();
-  void CreateTerrainRoom();
+  void LoadLevel(const char* filedir, const char* filename, const char* levelname);
+  void LoadTerrainLevel();
 
   void CreateGhostCylinder();
   void ApplyGhostSlowEffect();
@@ -334,6 +336,7 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Mesh & Collider Utilities
+
   void CreateBoxMeshColliderPair(RenderMeshColliderPair& pair, const csVector3& extents);
     
 
@@ -406,6 +409,9 @@ public:
 
   /// Reset the current scene and setup the given level
   bool SetLevel(PhysDemoLevel level);
+
+  /// Get the iModifiableDataFeeder of the first terrain that has one in the given sector (if any)
+  iModifiableDataFeeder* GetFirstTerrainModDataFeeder(CS::Collisions::iCollisionSector* sector);
 
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

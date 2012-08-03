@@ -311,21 +311,32 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   {
   case ']':
     // Terrain stuff
-    if (terrainFeeder)
+    if (!terrainMod)
     {
-      if (!terrainMod)
+      // Get feeder
+      moddedTerrainFeeder = GetFirstTerrainModDataFeeder(GetCurrentSector());
+      if (moddedTerrainFeeder)
       {
+        // Apply new mod
         csVector3 pos(0);
 
         float len = 10;
         float height = 3000;
-        terrainMod = terrainFeeder->AddModifier(pos, len, height);
+
+        // TODO: The cells seem to have a different coordinate system, so "pos" is not in sector coordinates
+        terrainMod = moddedTerrainFeeder->AddModifier(pos, len, height);
       }
       else
       {
-        terrainFeeder->RemoveModifier(terrainMod);
-        terrainMod = nullptr;
+        // Cannot modify terrain
+        ReportWarning("There is no modifiable terrain in this sector!");
       }
+    }
+    else
+    {
+      // Remove existing mod
+      moddedTerrainFeeder->RemoveModifier(terrainMod);
+      terrainMod = nullptr;
     }
     return true;
 
@@ -342,7 +353,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
       AddParticles(origin, -1);
 
-      // add collider
+      // add physical object to demonstrate that particles are not penetrating it
       SpawnSphere(pos + csVector3(0, colliderRadius + EPSILON, 0), colliderRadius, false);
       return true;
     }

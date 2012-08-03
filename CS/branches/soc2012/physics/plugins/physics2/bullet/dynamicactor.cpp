@@ -81,8 +81,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       kinematicSteps = false;
     }
     
-    //btBody->setAngularFactor(btVector3(0, 1, 0));                      // don't turn about anything but the y-axis
+    // Do not allow any simulated rotation
     btBody->setAngularFactor(btVector3(0, 0, 0));
+    btBody->setDamping(0, 1);
   }
 
   csBulletMotionState* csBulletDynamicActor::CreateMotionState(const btTransform& trans)

@@ -158,6 +158,8 @@ public:
   virtual CS::Collisions::iCollisionObject* FindCollisionObject (const char* name);
 
   virtual void AddCollisionTerrain(CS::Collisions::iCollisionTerrain* terrain);
+  virtual size_t GetCollisionTerrainCount() const { return terrains.GetSize(); }
+  virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain(size_t index) const;
   virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain(iTerrainSystem* terrain);
 
   virtual void AddPortal(iPortal* portal, const csOrthoTransform& meshTrans);

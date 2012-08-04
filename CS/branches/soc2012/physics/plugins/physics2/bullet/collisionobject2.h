@@ -142,7 +142,8 @@ public:
   virtual void SetMayBeDeactivated(bool d) { btObject->setActivationState(d ? 0 : DISABLE_DEACTIVATION); }
 
   /// Clone this object
-  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() { return nullptr; }
+  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject()
+  { return csPtr<CS::Collisions::iCollisionObject> (nullptr); }
 };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

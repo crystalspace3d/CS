@@ -225,13 +225,13 @@ void csWaterMeshObject::SetupObject ()
 		
 		csRef<iTerrainSystem> terrain = scfQueryInterface<iTerrainSystem> (terrainWrapper->GetMeshObject ());
 		size_t cellIndexMax = terrain->GetCellCount();
-		csPrintf("This is cell count %d",cellIndexMax);
+		//csPrintf("This is cell count %d",cellIndexMax);
 		
 		float sqrtcellIndex = sqrt((float)cellIndexMax);
-		csPrintf("%f",sqrtcellIndex);
+		//csPrintf("%f",sqrtcellIndex);
 
 		csVector3 terrainPos = terrainMovable->GetPosition();
-		csPrintf("\nposition of terrain %f  %f\n",terrainPos.x, terrainPos.z);
+		//csPrintf("\nposition of terrain %f  %f\n",terrainPos.x, terrainPos.z);
 
 		for (size_t i = 0; i < cellIndexMax ; i++)
 		{
@@ -242,10 +242,10 @@ void csWaterMeshObject::SetupObject ()
 			csVector2 cellPos = terraincell->GetPosition();
 			csVector3 cellSize = terraincell->GetSize();
 
-			csPrintf("\n%s",terraincell->GetName());
+			//csPrintf("\n%s",terraincell->GetName());
 
 			//terraincell->SetLoadState(terraincell->Loaded);
-			csPrintf("\nposition of cell %f  %f %d",cellPos.x,cellPos.y,gridWidth);
+			//csPrintf("\nposition of cell %f  %f %d",cellPos.x,cellPos.y,gridWidth);
 
 			// Speedy Lookup
 			csLockedHeightData cellval = terraincell->GetHeightData();
@@ -262,7 +262,7 @@ void csWaterMeshObject::SetupObject ()
 					{
 						int Ty = gridHeight - y; 
 						foampointsTemp.Push(csVector3(cellPos.x + cellSize.x*x/(float)(gridWidth - 1),waterHeight, cellPos.y + cellSize.z*Ty/(float)(gridHeight - 1)));
-						csPrintf("\nCell points %d %d ",x,Ty);
+						//csPrintf("\nCell points %d %d ",x,Ty);
 					}
 				}
 			}			 
@@ -273,7 +273,7 @@ void csWaterMeshObject::SetupObject ()
 		int foamPointsgap = foampointsTemp.GetSize()/1000;   
 		foamPointsgap++;
 
-		csPrintf("\n %d %d ",foampointsTemp.GetSize(),foamPointsgap);
+		//csPrintf("\n %d %d ",foampointsTemp.GetSize(),foamPointsgap);
 
 		// Dropping raw foam points to 1000 
 		for (int i = 0 ; i < 1000; i++)
@@ -286,14 +286,8 @@ void csWaterMeshObject::SetupObject ()
 				pointasdf = csVector3(0,waterHeight+1000,0); // set all extra points to at a place where no decal is formed
 
 			foampoints.Push(pointasdf);
-			csPrintf("\nADD %d %f %f ",i,pointasdf.x,pointasdf.z);
+			//csPrintf("\nADD %d %f %f ",i,pointasdf.x,pointasdf.z);
 		}
-	
-		/*
-		foampoints.Push(csVector3(20,waterHeight,0));
-		foampoints.Push(csVector3(257,waterHeight,-25));
-		foampoints.Push(csVector3(0,waterHeight,20));
-		*/
 
 		// Get shader to store foam points 
 		csShaderVariable *foam_points = variableContext->GetVariableAdd(svStrings->Request("foam points"));
@@ -303,7 +297,7 @@ void csWaterMeshObject::SetupObject ()
 		// Put all points to shaders
 		while((int)foampoints.GetSize())
 		{
-			csPrintf("adding points");
+			//csPrintf("adding points");
 			csRef<csShaderVariable> foampoint;
 			foampoint.AttachNew(new csShaderVariable);
 			foampoint->SetValue(foampoints.Pop());

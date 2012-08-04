@@ -25,11 +25,11 @@ PhysDemo::PhysDemo()
   actorAirControl(.3f),
   moveSpeed(7.f),
   turnSpeed(2.f),
-  selectedItem(nullptr),
   //actorMode (ActorModeKinematic)
   actorMode (ActorModeDynamic)
   ,
   cameraMode(CameraMode1stPerson),
+  selectedItem(nullptr),
   defaultEnvironmentName("box")
   //defaultEnvironmentName("terrain")
   //defaultEnvironmentName("portals")
@@ -456,7 +456,7 @@ bool PhysDemo::IsDynamic(CS::Collisions::iCollisionObject* obj) const
 
 bool PhysDemo::IsActor(CS::Collisions::iCollisionObject* obj) const
 {
-  return obj->QueryActor();
+  return obj->QueryActor() != nullptr;
 }
 
 void PhysDemo::SetGravity(const csVector3& g)

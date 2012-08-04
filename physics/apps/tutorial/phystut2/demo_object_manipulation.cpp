@@ -166,7 +166,7 @@ void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
   }
 
   iPhysicalBody* physObj = obj->QueryPhysicalBody();
-  bool isDynamic = physObj->GetDensity();
+  bool isDynamic = physObj->GetDensity() != 0;
   if (isDynamic)
   {
     // Set mass to 0 (makes it static)
@@ -190,7 +190,7 @@ void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
     physObj->SetDensity(DefaultDensity);
   }
 
-  if (physObj->GetDensity() == isDynamic)
+  if ((physObj->GetDensity() != 0) == isDynamic)
   {
     ReportWarning("Cannot make object \"%s\" %s.\n", physObj->QueryObject()->GetName(), isDynamic ? "STATIC" : "DYNAMIC");
   }

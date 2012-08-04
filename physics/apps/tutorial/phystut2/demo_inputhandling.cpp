@@ -65,7 +65,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     // An number key has been pressed -> Use tool function
     if (selectedItem)
     {
-      int i = code - '1';
+      size_t i = size_t(code - '1');
       if (i < selectedItem->GetTemplate().GetSecondaryFunctions().GetSize())
       {
         ItemFunction* func = selectedItem->GetTemplate().GetSecondaryFunction(i);
@@ -80,7 +80,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code >= CSKEY_F1 && code <= CSKEY_F12)
   {
     // F-key has been pressed -> Select tool
-    int i = code - CSKEY_F1;
+    size_t i = size_t(code - CSKEY_F1);
     if (i < player.GetInventory().GetItems().GetSize())
     {
       // A different item has been selected: Select it and update HUD descriptions
@@ -115,6 +115,8 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     // Toggle camera mode
     switch (actorMode)
     {
+    case ActorModeNone:
+      actorMode = ActorModeDynamic;
     case ActorModeKinematic:
       actorMode = ActorModeDynamic;
       break;
@@ -374,7 +376,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
 bool PhysDemo::OnMouseDown (iEvent &event)
 {
-  int button = csMouseEventHelper::GetButton (&event);
+  size_t button = size_t(csMouseEventHelper::GetButton (&event));
   if (selectedItem && 
     selectedItem->GetTemplate().GetPrimaryFunctions().GetSize() && 
     button < selectedItem->GetTemplate().GetPrimaryFunctions().GetSize())

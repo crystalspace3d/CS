@@ -86,8 +86,8 @@ bool ProjectileLauncher::Use(Item* item)
   forward.Normalize();
   
   // Get starting point and velocity of projectile
-  const csVector3& from(trans.GetOrigin());
-  csVector3 velocity = GetProjectileTemplate().GetSpeed() * forward;
+  //const csVector3& from(trans.GetOrigin());
+  //csVector3 velocity = GetProjectileTemplate().GetSpeed() * forward;
   
   // TODO: Create projectile object & RigidBody
 

@@ -11,7 +11,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 //struct CS::Physics::iPhysicalBody;
 
 class csBulletCollisionObject: public scfVirtImplementationExt1<
-  csBulletCollisionObject, csObject, CS::Collisions::iCollisionObject>
+  csBulletCollisionObject, csObject,
+  CS::Collisions::iCollisionObject
+  //,CS::Collisions::iCollisionObjectFactory
+>
 {
   friend class csBulletSector;
   friend class csBulletSystem;
@@ -54,6 +57,8 @@ public:
   virtual CS::Collisions::iCollisionObject* QueryCollisionObject () { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return nullptr;}
   virtual CS::Collisions::iActor* QueryActor () {return nullptr;}
+
+  virtual CS::Collisions::iCollisionSystem* GetSystem() const { return system; }
 
   /// Returns the sector to which is this object has been added or nullptr, if not in world
   virtual CS::Collisions::iCollisionSector* GetSector () const { return sector; }
@@ -135,6 +140,9 @@ public:
   virtual bool GetMayBeDeactivated() const { return btObject->getActivationState() == DISABLE_DEACTIVATION; }
   /// Whether this object may be excluded from deactivation.
   virtual void SetMayBeDeactivated(bool d) { btObject->setActivationState(d ? 0 : DISABLE_DEACTIVATION); }
+
+  /// Clone this object
+  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject() { return nullptr; }
 };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

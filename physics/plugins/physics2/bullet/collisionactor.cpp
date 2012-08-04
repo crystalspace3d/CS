@@ -81,7 +81,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   void csBulletCollisionActor::Walk(csVector3 vel)
   {
     vel.Normalize();
-    controller->setVelocityForTimeInterval(CSToBullet(walkSpeed * vel, system->getInternalScale()), INT_MAX);
+    controller->setVelocityForTimeInterval(CSToBullet(walkSpeed * vel, system->getInternalScale()), csScalar(INT_MAX));
   }
 
   void csBulletCollisionActor::WalkHorizontal (csVector2 newVel2)
@@ -102,14 +102,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // previous vertical movement is unchanged
     csVector3 newVel = HV_VECTOR3(newVel2, vel[UpAxis]);
     
-    controller->setVelocityForTimeInterval(CSToBullet(newVel, system->getInternalScale()), INT_MAX);
+    controller->setVelocityForTimeInterval(CSToBullet(newVel, system->getInternalScale()), csScalar(INT_MAX));
   }
 
   void csBulletCollisionActor::StopMoving()
   {
     if (!IsFreeFalling())
     {
-      controller->setVelocityForTimeInterval(btVector3(0, 0, 0), INT_MAX);
+      controller->setVelocityForTimeInterval(btVector3(0, 0, 0), csScalar(INT_MAX));
     }
   }
 

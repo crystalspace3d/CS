@@ -126,7 +126,6 @@ void PhysDemo::CreateGhostCylinder()
   csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
   csRef<iGhostCollisionObjectFactory> factory = physicalSystem->CreateGhostCollisionObjectFactory(cylinder);
 
-  iCollisionSystem* colSys = physicalSystem;
   ghostObject = factory->CreateGhostCollisionObject();
   
   csYRotMatrix3 m (PI/2.0);
@@ -1280,7 +1279,6 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
     CreateBoxMeshColliderPair(stackBoxMeshPair, extents);
   }
   
-  iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("stone");
   for (int x = 0; x < numOrth; ++x)
   {
     for (int z = 0; z < numDir && n < stackNum; ++z)

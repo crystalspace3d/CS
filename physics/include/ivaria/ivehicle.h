@@ -288,16 +288,6 @@ namespace CS
 
       virtual ~VehicleBrakeInfo() {}
 
-      VehicleBrakeInfo(size_t* wheelIndices, csScalar maxForce = 1000) : scfImplementationType(this),
-        maxForce(maxForce)
-      {
-        while (*wheelIndices != -1)
-        {
-          affectedWheelIndices.Push(*wheelIndices);
-          ++wheelIndices;
-        }
-      }
-
       /// Max breaking force
       csScalar GetMaxForce() const { return maxForce; }
       /// Max breaking force

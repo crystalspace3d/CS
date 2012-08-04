@@ -66,7 +66,7 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
   iPortalContainer* portalCont = mesh->GetPortalContainer ();
   if (portalCont)
   {
-    for (size_t i = 0; i < portalCont->GetPortalCount(); ++i)
+    for (size_t i = 0; i < (size_t)portalCont->GetPortalCount(); ++i)
     {
       iPortal* portal = portalCont->GetPortal(i);
 
@@ -76,7 +76,7 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
 
       // This is very odd: Multiple portals with the same mesh transform?
       // TODO: Mesh transform can/should be retreived from the iPortal object - Don't need to pass it as an argument
-      colSect->AddPortal (portal, mesh->GetMovable ()->GetFullTransform ());
+      //colSect->AddPortal (portal, mesh->GetMovable ()->GetFullTransform ());
     }
   }
 

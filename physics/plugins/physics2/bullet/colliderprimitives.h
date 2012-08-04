@@ -208,8 +208,8 @@ class csBulletColliderConcaveMesh:
   csBulletCollider, CS::Collisions::iColliderConcaveMesh>
 {
   friend class csBulletColliderConcaveMeshScaled;
-  btTriangleMesh* triMesh;
   iMeshWrapper* mesh;
+  btTriangleMesh* triMesh;
 
 protected:
   virtual float ComputeShapeVolume() const;

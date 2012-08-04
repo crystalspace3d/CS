@@ -1024,11 +1024,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
       if (sector)
       {
-        if (mesh && sector->GetMeshes()->Find(mesh) == csArrayItemNotFound)
+        if (mesh && size_t(sector->GetMeshes()->Find(mesh)) == csArrayItemNotFound)
         {
           sector->GetMeshes ()->Add (mesh);
         }
-        if (light && sector->GetLights()->Find(light) == csArrayItemNotFound)
+        if (light && size_t(sector->GetLights()->Find(light)) == csArrayItemNotFound)
           sector->GetLights ()->Add (light);
       }
     }

@@ -16,7 +16,7 @@
 
 #include "iengine/campos.h"
 
-const static csScalar StaticElasticity(0.1);
+const static csScalar StaticElasticity(csScalar(0.1));
 
 const csString DefaultSectorName("defaultsector");
 
@@ -81,7 +81,7 @@ void PhysDemo::CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos,
   RenderMeshColliderPair zLimitingPair;
   CreateBoxMeshColliderPair(zLimitingPair, zExtents);
   
-  csVector3 halfRoomExtents = roomExtents / 2;
+  //csVector3 halfRoomExtents = roomExtents / 2;
   csVector3 distances = (roomExtents + csVector3(wallThickness)) / 2;
 
   SpawnRigidBody(xLimitingPair, pos + csVector3(distances[HorizontalAxis1], 0, 0), "wall", 0, 0)->SetElasticity(StaticElasticity);
@@ -115,7 +115,7 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   //csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
   csVector2 halfPortalExtents(1);
   
-  csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two
+  //csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two portals
   
   // Default behavior from DemoApplication for the creation of the scene
   if (!DemoApplication::CreateRoom()) return;
@@ -123,18 +123,18 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   // Create room
   CreateBoxRoom(roomExtents, roomPos, wallThickness);
 
-  // Create a collision portal
+  //// Create portals
 
-  // Positions of the portals
-  csVector3 portal1Pos = csVector3(
-    halfRoomExtents.x - portalEpsilon, 
-    -halfRoomExtents.y + halfPortalExtents.y, 
-    0.0f);
+  //// Positions of the portals
+  //csVector3 portal1Pos = csVector3(
+  //  halfRoomExtents.x - portalEpsilon, 
+  //  -halfRoomExtents.y + halfPortalExtents.y, 
+  //  0.0f);
 
-  csVector3 portal2Pos = csVector3(
-    0, 
-    -halfRoomExtents.y + portalEpsilon , 
-    0);
+  //csVector3 portal2Pos = csVector3(
+  //  0, 
+  //  -halfRoomExtents.y + portalEpsilon , 
+  //  0);
   
   // TODO: Fix programmatic portals
   // TODO: Add mechanism to more easily create a portal pair
@@ -262,7 +262,7 @@ bool PhysDemo::LoadLevel(const char* filedir, const char* filename, const char* 
     return false;
   }
 
-  if (!loader->LoadMapFile (filename, true))
+  if (!loader->LoadMapFile (filename, false))
   {
     ReportError("ERROR: Couldn't load file \"%s\" for level: %s", filename, levelname);
     return false;

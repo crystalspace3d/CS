@@ -51,7 +51,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     collObject.AttachNew (new csBulletGhostCollisionObject (system));
 
     collObject->CreateGhostCollisionObject (this);
-    collObject->RebuildObject ();
 
     //objects.Push (collObject);
     return csPtr<iGhostCollisionObject> (collObject);
@@ -68,7 +67,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csBulletCollisionActor* actor = new csBulletCollisionActor (system);
 
     actor->CreateCollisionActor(this);
-    actor->RebuildObject ();
 
     csRef<CS::Collisions::iCollisionActor> iactor = csPtr<CS::Collisions::iCollisionActor>(actor);
     return csPtr<iCollisionActor>(iactor);
@@ -185,7 +183,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       (*system->GetSoftBodyWorldInfo(), vertices, triangles, genmeshFactory->GetTriangleCount (),
       false);
 
-    // TODO: Make system stuff customizable, too
+    // TODO: Make this stuff customizable, too
     body->m_cfg.piterations = 10;
     body->m_cfg.collisions |=	btSoftBody::fCollision::SDF_RS;
     body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;

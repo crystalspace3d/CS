@@ -248,35 +248,42 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
 }
 
-bool PhysDemo::LoadLevel(const char* filedir, const char* filename, const char* levelname, bool convexDecomp)
+bool PhysDemo::LoadLevel(const csString& pathname, bool convexDecomp)
 {
-  printf ("Loading level: %s...\n", levelname);
+  CS_ASSERT(pathname.Length());
+
+  csString folder, filename;
+  GetFolderAndFile(pathname, folder, filename);
+
+  const csString& levelname = pathname;
+  printf ("Loading level: %s...\n", levelname.GetData());
 
   // Load the level file
   csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry()));
 
-  const char* dir = VFS->GetCwd();
-  if (!VFS->ChDir (filedir))
+  VFS->PushDir();
+  if (!VFS->ChDir (folder.GetData()))
   {
-    ReportError("ERROR: Couldn't find directory \"%s\" for level: %s", filedir, levelname);
+    ReportError("ERROR: Couldn't find directory \"%s\" for level: %s", folder.GetData(), levelname.GetData());
     return false;
   }
 
   if (!loader->LoadMapFile (filename, false))
   {
-    ReportError("ERROR: Couldn't load file \"%s\" for level: %s", filename, levelname);
+    ReportError("ERROR: Couldn't load file \"%s\" for level: %s", filename.GetData(), levelname.GetData());
     return false;
   }
+  VFS->PopDir();
   
   // create physical world from render world
   Collision2Helper::InitializeCollisionObjects(physicalSystem, engine, convexDecomp);
 
-  // Set default sector (generally unnecessary)
+  // Set default sector
   room = engine->GetSectors()->Get(0);
 
-  VFS->ChDir(dir);    // reset CWD
+  CS_ASSERT(room && "Invalid level - Has no sectors.");
 
-  printf ("Done - level loaded: %s\n", levelname);
+  printf ("Done - level loaded: %s\n", levelname.GetData());
   return true;
 }
 

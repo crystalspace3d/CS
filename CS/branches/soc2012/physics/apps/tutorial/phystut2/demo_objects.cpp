@@ -19,10 +19,6 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
-static const csScalar DefaultDensity(100);
-static const csScalar DefaultFriction(.5);
-static const csScalar DefaultElasticity(0.1f);
-
 csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const csString& name, const csOrthoTransform& trans,
   csScalar friction, csScalar density)
 { 
@@ -130,11 +126,8 @@ void PhysDemo::CreateGhostCylinder()
   
   csYRotMatrix3 m (PI/2.0);
   csOrthoTransform trans (m, csVector3 (0, -3, 5));
-  if (this->environment == PhysDemoLevelTerrain)
-  {
-    // ouch bad.
-    trans.SetOrigin (csVector3 (0, 1.0, 5));
-  }
+
+  // look into: Find fitting location in an arbitrary level
   ghostObject->SetTransform (trans);
   ghostObject->SetAttachedMovable (mesh->GetMovable());
 

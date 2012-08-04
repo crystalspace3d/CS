@@ -45,7 +45,6 @@ private:
 
 
   // Environments
-  int environment;
   csRef<iMeshWrapper> walls;
 
   // Configuration related

@@ -6,8 +6,12 @@
 
 #include "imesh/genmesh.h"
 #include "imesh/terrain2.h"
+
+#include "ivaria/engseq.h"
+
 #include "cstool/genmeshbuilder.h"
 #include "cstool/materialbuilder.h"
+
 #include "physdemo.h"
 
 using namespace CS::Collisions;
@@ -29,10 +33,7 @@ PhysDemo::PhysDemo()
   actorMode (ActorModeDynamic)
   ,
   cameraMode(CameraMode1stPerson),
-  selectedItem(nullptr),
-  defaultEnvironmentName("box")
-  //defaultEnvironmentName("terrain")
-  //defaultEnvironmentName("portals")
+  selectedItem(nullptr)
 {
 }
 
@@ -80,18 +81,6 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   if (!ragdollManager)
     return ReportError ("Failed to locate ragdoll manager!");
 
-  // Check which environment has to be loaded
-  csString levelName = clp->GetOption ("level");
-  environment = GetEnvironmentByName(levelName);
-  if (!environment)
-  {
-    csPrintf ("Given level (%s) is invalid - Falling back to default: \"%s\"\n",
-      CS::Quote::Single (levelName.GetData()),
-      defaultEnvironmentName.GetData());
-    //environment = PhysDemoLevelPortals;
-    environment = GetEnvironmentByName(defaultEnvironmentName);
-  }
-
   return true;
 }
 
@@ -117,12 +106,15 @@ bool PhysDemo::Application()
     player.GetInventory().AddItem(templ);
   }
 
-  // Scene setup
-  if (SetLevel(environment))
-  {
-    // Run the application
-    Run();
+  // Load specified scene
+  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
+  csString pathname = clp->GetOption ("mapfile");
+  bool convexdecompose = clp->GetBoolOption ("convexdecompose");
 
+  // Load or create scene
+  if (SetLevel(pathname, convexdecompose))
+  {
+    Run();
     return true;
   }
   return false;
@@ -130,13 +122,19 @@ bool PhysDemo::Application()
 
 void PhysDemo::Reset()
 {
-  // Remove all sectors from the physical system
+  // Remove all physical sectors
   physicalSystem->DeleteAll();
 
   // Remove everything in the engine that existed before
   engine->DeleteAll();
   engine->ResetWorldSpecificSettings();
   engine->GetCameraPositions()->RemoveAll();
+  csRef<iEngineSequenceManager> seqMgr = csQueryRegistry<iEngineSequenceManager> (object_reg);
+  if (seqMgr)
+  {
+    seqMgr->RemoveTriggers ();
+    seqMgr->RemoveSequences ();
+  }
 
   // reset all other variables
   mainCollider = nullptr;
@@ -166,52 +164,63 @@ void PhysDemo::Reset()
   walls = nullptr;
 }
 
-bool PhysDemo::SetLevel(PhysDemoLevel level, bool concaveDecomp)
+bool PhysDemo::SetLevel(PhysDemoLevel level, bool convexDecomp)
 {
-  environment = level;
+  csString path;
+  switch (level)
+  {
+  case PhysDemoLevelBox:
+    break;
 
+  case PhysDemoLevelPortals:
+    path = "/data/portals/world";
+    break;
+
+  case PhysDemoLevelTerrain:
+    path = "/lev/terraini/worldmod";
+    break;
+
+  case PhysDemoLevelCastle:
+    path = "/data/castle/world";
+    break;
+
+  default:
+    break;
+  }
+  return SetLevel(path, convexDecomp);
+}
+
+bool PhysDemo::SetLevel(const csString& mapPath, bool convexDecomp)
+{
   // Reset scene
   Reset();
 
   // Initialize the actor
   UpdateActorMode(actorMode);
 
-  // Preload some meshes and materials
+  // Preload some materials
   if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif")) return ReportError ("Could not load texture: stone");
   if (!loader->LoadTexture ("objtexture", "/lib/std/blobby.jpg")) return ReportError ("Error loading texture: blobby");
   if (!loader->LoadTexture ("misty", "/lib/std/misty.jpg")) return ReportError ("Error loading texture: misty");
 
   // Create the environment
-  bool worked = false;
-  switch (environment)
+  bool loaded = false;
+  if (mapPath.Length() > 0)
   {
-  case PhysDemoLevelBox:
-    CreateBoxRoom();
-    worked = true;
-    break;
-
-  case PhysDemoLevelPortals:
-    worked = LoadLevel("/data/portals", "world", "Portals", concaveDecomp);
-    break;
-
-  case PhysDemoLevelTerrain:
-    worked = LoadLevel("/lev/terraini", "worldmod", "Terrain", concaveDecomp);
-    break;
-
-  case PhysDemoLevelCastle:
-    worked = LoadLevel("/data/castle", "world", "Castle", concaveDecomp);
-    break;
-
-  default:
-    break;
+    loaded = LoadLevel(mapPath, convexDecomp);
+    currentMap = mapPath;
+    if (!loaded)
+    {
+      ReportWarning("Falling back to default level: Box room");
+    }
   }
-
-  if (!worked)
+  
+  if (!loaded)
   {
     // fall back to default
-    ReportWarning("Falling back to default level: Box room");
     CreateBoxRoom();
+    currentMap = "";
   }
 
   // Finalize stuff in the engine after scene setup
@@ -268,16 +277,6 @@ void PhysDemo::SetupHUD()
 
   desc.Push ("K: toggle display of collisions");
   desc.Push ("G: toggle gravity");
-  /*  
-  #ifdef CS_HAVE_BULLET_SERIALIZER
-  if (phys_engine_id == BULLET_ID)
-  desc.Push ("CTRL-s: save the dynamic world");
-  #endif
-  */
-  /*
-  if (phys_engine_id == BULLET_ID)
-  desc.Push ("CTRL-n: next environment");
-  */
 
   desc.Push ("CTRL-i: start profiling");
   desc.Push ("CTRL-o: stop profiling");
@@ -405,7 +404,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(parent);*/
         csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(collider);
         factory->SetAirControlFactor(actorAirControl);
-        factory->SetJumpSpeed(moveSpeed);
+        factory->SetJumpSpeed(moveSpeed * csScalar(.3));
 
         kinematicActor = factory->CreateCollisionActor();
       }
@@ -470,9 +469,7 @@ void PhysDemo::SetGravity(const csVector3& g)
 
 void PhysDemo::ResetCurrentLevel()
 {
-  Reset();
-
-  SetLevel(environment);
+  SetLevel(currentMap);
 }
 
 bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const

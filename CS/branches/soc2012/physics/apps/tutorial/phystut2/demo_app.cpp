@@ -278,6 +278,9 @@ void PhysDemo::SetupHUD()
   desc.Push ("K: toggle display of collisions");
   desc.Push ("G: toggle gravity");
 
+  desc.Push ("]: Toggle heightmap modifier");
+  desc.Push ("[: Add collision-aware particles");
+
   desc.Push ("CTRL-i: start profiling");
   desc.Push ("CTRL-o: stop profiling");
   desc.Push ("CTRL-p: dump profile");

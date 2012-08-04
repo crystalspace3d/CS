@@ -322,8 +322,8 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         // Apply new mod
         csVector3 pos(0);
 
-        float len = 10;
-        float height = 3000;
+        float len = 100;
+        float height = 100;
 
         // TODO: The cells seem to have a different coordinate system, so "pos" is not in sector coordinates
         terrainMod = moddedTerrainFeeder->AddModifier(pos, len, height);
@@ -346,11 +346,11 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   case '[':
     {
       // spawn particles at the actor's feet
-      float dist = 2 * ActorDimensions.y;
-      float colliderRadius = dist/6;
+      float height = ActorDimensions.y;
+      float colliderRadius = height/6;
 
-      csVector3 pos = GetPointInFrontOfFeetXZ(dist);
-      csVector3 origin = pos + csVector3 (0, dist, 0);
+      csVector3 pos = GetPointInFrontOfFeetXZ(2 * height);
+      csVector3 origin = pos + csVector3 (0, height, 0);
       //csVector3 origin = cam->GetTransform().GetOrigin() + csVector3 (0, ActorDimensions.y, 2);
 
       AddParticles(origin, -1);

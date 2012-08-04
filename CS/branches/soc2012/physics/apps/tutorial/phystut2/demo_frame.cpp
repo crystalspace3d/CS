@@ -26,11 +26,9 @@ void PhysDemo::PrintHelp()
   commandLineHelper.AddCommandLineOption
     ("soft", "Enable the soft bodies", csVariant (true));
   commandLineHelper.AddCommandLineOption
-    ("level", csString().Format ("Define the level to be loaded, can be %s, %s, %s",
-    CS::Quote::Single ("portals"),
-    CS::Quote::Single ("box"),
-    CS::Quote::Single ("terrain")),
-    csVariant ("terrain"));
+    ("mapfile", csString().Format ("The path to the map file to be loaded"), csVariant(""));
+  commandLineHelper.AddCommandLineOption
+    ("convexdecompose", csString().Format ("Whether to perform convex decomposition on all render meshes"), csVariant(false));
 
   // Printing help
   commandLineHelper.PrintApplicationHelp

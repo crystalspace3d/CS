@@ -20,9 +20,6 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
-static const csScalar DefaultFriction(.5);
-static const csScalar DefaultElasticity(0.1f);
-
 
 /// The available brakes
 static VehicleBrakeInfo FrontBrake, RearBrake, HandBrake;
@@ -148,9 +145,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
   // setup wheels
   csRef<iVehicleWheelFactory> wheelFact = physicalSystem->CreateVehicleWheelFactory();
   wheelFact->SetRollInfluence(csScalar(0));
-  // wheelFact->SetMeshFactory(wheelMesh->GetMovable());
-  //wheelFact->SetFrictionCoefficient(11);    // Use default settings
-  //wheelFact->SetFrictionCoefficient(.5);
+  wheelFact->SetFrictionCoefficient(DefaultFriction);
   
   for (int axle = 0; axle < AxleCount; ++axle)
   {

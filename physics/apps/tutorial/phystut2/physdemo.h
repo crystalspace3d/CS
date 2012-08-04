@@ -17,6 +17,13 @@
 
 struct iCameraPosition;
 
+// Some global variables
+
+
+static const csScalar DefaultDensity(500);
+static const csScalar DefaultFriction(.5);
+static const csScalar DefaultElasticity(0.1f);
+
 
 // Actor/Camera modes
 enum ActorMode
@@ -64,6 +71,23 @@ static const int KeyHandbrake = CSKEY_SPACE;
 
 class PhysDemo;
 
+/// Retreives folder and file information from a full (unix-style) path
+inline void GetFolderAndFile(const csString& path, csString& folder, csString& filename)
+{
+  size_t index = path.FindLast ('/');
+  if (index != (size_t) -1)
+  {
+    folder = path.Slice (0, index);
+    filename = path.Slice (index + 1);
+  }
+  else
+  {
+    folder = "";
+    filename = path;
+    filename.Trim();
+  }
+}
+
 /**
  * Re-usable pair of a collider with a render mesh. 
  * Can be used to create new RigidBody objects.
@@ -78,23 +102,6 @@ public:
   csPtr<CS::Physics::iRigidBody> SpawnRigidBody(const csString& name, const csOrthoTransform& trans, csScalar friction = 1, csScalar density = 30);
 };
 
-inline PhysDemoLevel GetEnvironmentByName(csString levelName)
-{
-  if (levelName == "box")
-      return PhysDemoLevelBox;
-
-  else if (levelName == "portals")
-      return PhysDemoLevelPortals;
-
-  else if (levelName == "terrain")
-      return PhysDemoLevelTerrain;
-
-  else if (levelName == "castle")
-      return PhysDemoLevelCastle;
-  
-  return PhysDemoLevelNone;
-}
- 
 //static const csVector3 ActorDimensions(0.8);
 //static const csVector3 ActorDimensions(0.1f, 0.6f, 0.1f);
 static const csVector3 ActorDimensions(0.3f, 1.8f, 0.3f);
@@ -172,10 +179,8 @@ public:
   // Vehicles
   csRef<CS::Physics::iVehicle> actorVehicle;
 
-
   // Static environment
-  csString defaultEnvironmentName;
-  PhysDemoLevel environment;
+  csString currentMap;
   csRef<iMeshWrapper> walls;
 
 private:
@@ -226,7 +231,7 @@ public:
   void CreateBoxRoom(csScalar size = 100);
   
   /// Load a scene from file
-  bool LoadLevel(const char* filedir, const char* filename, const char* levelname, bool convexDecomp = false);
+  bool LoadLevel(const csString& filepath, bool convexDecomp = false);
 
   void CreateGhostCylinder();
   void ApplyGhostSlowEffect();
@@ -426,6 +431,8 @@ public:
 
   /// Reset the current scene and setup the given level
   bool SetLevel(PhysDemoLevel level, bool convexDecomp = false);
+  /// Reset the current scene and setup the given level
+  bool SetLevel(const csString& pathname, bool convexDecomp = false);
 
   /// Get the iModifiableDataFeeder of the first terrain that has one in the given sector (if any)
   iModifiableDataFeeder* GetFirstTerrainModDataFeeder(CS::Collisions::iCollisionSector* sector);

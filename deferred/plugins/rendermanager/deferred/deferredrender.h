@@ -30,38 +30,19 @@
 
 CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 {
-  /**
-   * Deferred renderer for multiple contexts.
-   *
-   * Example:
-   * \code
-   * // ... contexts setup etc. ...
-   *
-   * {
-   *   DeferredTreeRenderer<RenderTree> 
-   *     render (graphics3D, shaderManager, stringSet, 
-   *             lightRenderPersistent, deferredLayer, 
-   *             zonlyLayer, drawLightVolumes);
-   *
-   *   ForEachContextReverse (renderTree, render);
-   * }
-   *
-   * // ... apply post processing ...
-   * \endcode
-   */
+  // @@@TODO: add new comment explaining how to use this renderer
   template<typename RenderTree, typename ShadowHandler>
   class DeferredTreeRenderer
   {
   public:
-
     typedef typename RenderTree::ContextNode ContextNodeType;
     typedef CS::RenderManager::SimpleContextRender<RenderTree> RenderType;
     typedef DeferredLightRenderer<ShadowHandler> LightRenderType;
 
-    DeferredTreeRenderer(iGraphics3D *g3d, 
-                         iShaderManager *shaderMgr,
-                         iStringSet *stringSet,
-                         typename LightRenderType::PersistentData &lightRenderPersistent,
+    DeferredTreeRenderer(iGraphics3D* g3d, 
+                         iShaderManager* shaderMgr,
+                         iStringSet* stringSet,
+                         typename LightRenderType::PersistentData& lightRenderPersistent,
 			 GBuffer& gbuffer,
                          size_t deferredLayer,
 			 size_t lightingLayer,
@@ -86,7 +67,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
     ~DeferredTreeRenderer() 
     {
-      if(context) RenderContextStack ();
+      if(context)
+	RenderContextStack();
     }
 
     /**
@@ -94,10 +76,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
      */
     void operator()(ContextNodeType* newContext)
     {
-      if (IsNew (newContext))
+      if(IsNew(newContext))
       {
         // New context, render out the old ones
-        if(context) RenderContextStack ();
+        if(context)
+	  RenderContextStack();
 
 	// set comparison variables accordingly
         context = newContext;
@@ -115,7 +98,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	}
       }
       
-      contextStack.Push (newContext);
+      contextStack.Push(newContext);
     }
 
   protected:
@@ -125,8 +108,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
      */
     bool IsNew(ContextNodeType* newContext)
     {
-      if(!context) return true;
-      else return !HasSameTargets(newContext) || !HasSameRenderView(newContext);
+      if(!context || rview != newContext->renderView)
+	return true;
+      else
+	return !HasSameTargets(newContext);
     }
 
     /**
@@ -147,15 +132,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       return newContext->doDeferred == context->doDeferred;
     }
 
-    /**
-     * Returns true if the given context has the same render view as the 
-     * last context.
-     */
-    bool HasSameRenderView(ContextNodeType* newContext)
-    {
-      return newContext->renderView == rview;
-    }
-
+    // sets up render targets for the final draw
     void SetupTargets()
     {
       // check whether we have any targets to attach
@@ -165,34 +142,35 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	bool persist = !(context->drawFlags & CSDRAW_CLEARSCREEN);
 
 	// do the attachment
-	for (int a = 0; a < rtaNumAttachments; a++)
-	  graphics3D->SetRenderTarget (context->renderTargets[a].texHandle, persist,
-	      context->renderTargets[a].subtexture, csRenderTargetAttachment (a));
+	for(int a = 0; a < rtaNumAttachments; a++)
+	  graphics3D->SetRenderTarget(context->renderTargets[a].texHandle, persist,
+	      context->renderTargets[a].subtexture, csRenderTargetAttachment(a));
 
 	// validate the targets
-	CS_ASSERT(graphics3D->ValidateRenderTargets ());
+	CS_ASSERT(graphics3D->ValidateRenderTargets());
       }
     }
 
     void RenderContextStack()
     {
-      // obtain some variables we'll need
-      const size_t ctxCount = contextStack.GetSize ();
-      iCamera *cam = rview->GetCamera ();
+      // get number of contexts in this stack - we'll use this while rendering them
+      const size_t ctxCount = contextStack.GetSize();
 
-      // seriously, we need those
+      // obtain our camera
+      iCamera* cam = rview->GetCamera();
       CS_ASSERT(cam);
 
       // shared setup for all passes - projection only
-      CS::Math::Matrix4 projMatrix = context->perspectiveFixup * cam->GetProjectionMatrix();
+      CS::Math::Matrix4 projMatrix(context->perspectiveFixup * cam->GetProjectionMatrix());
 
+      // check up to how many layers we have to draw
       size_t layerCount = 0;
       {
 	/* Different contexts may have different numbers of layers,
 	 * so determine the upper layer number */
-	for (size_t i = 0; i < ctxCount; ++i)
+	for(size_t i = 0; i < ctxCount; ++i)
 	{
-	  layerCount = csMax (layerCount,
+	  layerCount = csMax(layerCount,
 	    contextStack[i]->svArrays.GetNumLayers());
 	}
       }
@@ -201,22 +179,27 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       if(!context->doDeferred)
       {
 	// setup projection matrix
-	graphics3D->SetProjectionMatrix (projMatrix);
+	graphics3D->SetProjectionMatrix(projMatrix);
 
 	// attach targets
 	SetupTargets();
 
 	// setup clipper
-	graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+	graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
 
         int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
 	drawFlags |= CSDRAW_CLEARZBUFFER;
 
 	// start the draw
-        CS::RenderManager::BeginFinishDrawScope bd (graphics3D, drawFlags);
+        CS::RenderManager::BeginFinishDrawScope bd(graphics3D, drawFlags);
 
 	// we don't have a z-buffer, yet, use pass 1 modes
-	graphics3D->SetZMode (CS_ZBUF_MESH);
+	graphics3D->SetZMode(CS_ZBUF_MESH);
+
+	// @@@NOTE: should we do the viscull render here?
+	//          it's only used for shadow map creation
+	//          and cullers cannot handle multiple views
+        //          for the same sector, anyway
 
 	// render out all layers
 	for(size_t i = 0; i < layerCount; ++i)
@@ -225,9 +208,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	}
 
 	// clear clipper
-	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
+	graphics3D->SetClipper(nullptr, CS_CLIPPER_TOPLEVEL);
 
-	contextStack.Empty ();
+	contextStack.Empty();
 
 	return;
       }
@@ -237,16 +220,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 				  rview, gbuffer, lightRenderPersistent);
 
       // shared setup for deferred passes
-      graphics3D->SetProjectionMatrix (context->gbufferFixup * projMatrix);
+      graphics3D->SetProjectionMatrix(context->gbufferFixup * projMatrix);
 
       // set tex scale to default
       lightRenderPersistent.scale->SetValue(csVector4(0.5,0.5,0.5,0.5));
 
       // gbuffer fill step
+      gbuffer.Attach();
       {
-	// attach the gbuffer
-	gbuffer.Attach ();
-
 	// setup clipper
 	if(context->useClipper)
 	  graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
@@ -260,7 +241,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         CS::RenderManager::BeginFinishDrawScope bd(graphics3D, drawFlags);
 
 	// we want to fill the depth buffer, use pass 1 modes
-        graphics3D->SetZMode (CS_ZBUF_MESH);
+        graphics3D->SetZMode(CS_ZBUF_MESH);
 
         // z only pass - maybe we shouldn't allow disabling it.
 	if(zonlyLayer != (size_t)-1)
@@ -276,14 +257,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	RenderLayer<true>(deferredLayer, ctxCount);
 
 	// clear clipper
-	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
+	graphics3D->SetClipper(nullptr, CS_CLIPPER_TOPLEVEL);
       }
 
       // light accumulation step
+      gbuffer.AttachAccumulation();
       {
-	// attach accumulation buffers
-	gbuffer.AttachAccumulation();
-
 	// setup clipper
 	if(context->useClipper)
 	  graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
@@ -294,10 +273,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	drawFlags |= CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;
 
 	// start the draw
-	CS::RenderManager::BeginFinishDrawScope bd (graphics3D, drawFlags);
+	CS::RenderManager::BeginFinishDrawScope bd(graphics3D, drawFlags);
 
 	// use pass 1 zmodes for re-populating the zbuffer
-	graphics3D->SetZMode (CS_ZBUF_MESH);
+	graphics3D->SetZMode(CS_ZBUF_MESH);
 
 	// we use the inaccurate version from our gbuffer here - it's sufficient
         // @@@NOTE: appearently using an explicit depth output prevents hardware
@@ -306,47 +285,52 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	lightRender.OutputDepth();
 
 	// we're done with all depth writes - use pass 2 modes
-	graphics3D->SetZMode (CS_ZBUF_MESH2);
+	graphics3D->SetZMode(CS_ZBUF_MESH2);
 
 	// accumulate lighting data
 	RenderLights(deferredLayer, ctxCount, lightRender);
 
 	// clear clipper
-	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
+	graphics3D->SetClipper(nullptr, CS_CLIPPER_TOPLEVEL);
       }
 
       // setup projection matrix for final pass
-      graphics3D->SetProjectionMatrix (projMatrix);
+      graphics3D->SetProjectionMatrix(projMatrix);
 
-      // attach output render targets if any.
+      // attach output render targets if any
       SetupTargets();
       {
 	// setup clipper
-	graphics3D->SetClipper (rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+	graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
 
         int drawFlags = CSDRAW_3DGRAPHICS | context->drawFlags;
 	drawFlags |= CSDRAW_CLEARZBUFFER;
 
 	// start the draw
-        CS::RenderManager::BeginFinishDrawScope bd (graphics3D, drawFlags);
+        CS::RenderManager::BeginFinishDrawScope bd(graphics3D, drawFlags);
 
 	// we want to re-populate the depth buffer, use pass 1 modes.
-	graphics3D->SetZMode (CS_ZBUF_MESH);
+	graphics3D->SetZMode(CS_ZBUF_MESH);
 
 	// Visibility Culling
 	{
 	  // visculling only needs to be rendered once per sector.
 	  csSet<iSector*> sectors;
-	  for (size_t c = 0; c < contextStack.GetSize (); ++c)
+	  for(size_t c = 0; c < contextStack.GetSize(); ++c)
 	  {
 	    ContextNodeType* ctx = contextStack[c];
 
-	    if (!sectors.Contains(ctx->sector))
+	    // check whether this sector was already handled
+	    if(!sectors.Contains(ctx->sector))
 	    {
+	      // ensure it won't be handled again
 	      sectors.AddNoTest(ctx->sector);
 
-              graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
-	      ctx->sector->GetVisibilityCuller ()->RenderViscull (rview, ctx->shadervars);
+	      // set camera transform
+              graphics3D->SetWorldToCamera(ctx->cameraTransform.GetInverse());
+
+	      // render for visibility culling if required by culler
+	      ctx->sector->GetVisibilityCuller()->RenderViscull(rview, ctx->shadervars);
 	    }
 	  }
 	}
@@ -382,17 +366,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	// deferred rendering - debug step if wanted
 	if(drawLightVolumes)
 	{
-          LightVolumeRenderer<LightRenderType> lightVolumeRender (lightRender, true, 0.2f);
+          LightVolumeRenderer<LightRenderType> lightVolumeRender(lightRender, true, 0.2f);
 
 	  // output light volumes
 	  RenderLights(deferredLayer, ctxCount, lightVolumeRender);
 	}
 
 	// clear clipper
-	graphics3D->SetClipper (nullptr, CS_CLIPPER_TOPLEVEL);
+	graphics3D->SetClipper(nullptr, CS_CLIPPER_TOPLEVEL);
       }
 
-      contextStack.Empty ();
+      // clear context stack
+      contextStack.Empty();
     }
 
     template<bool deferredOnly>
@@ -440,7 +425,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         if(layer >= layerCount)
 	  continue;
 
-        graphics3D->SetWorldToCamera (ctx->cameraTransform.GetInverse ());
+	// set camera transform
+        graphics3D->SetWorldToCamera(ctx->cameraTransform.GetInverse ());
 
 	// render all objects given a render
 	fn(*ctx, render);
@@ -453,9 +439,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     RenderType meshRender;
 
     // data from parent
-    iGraphics3D *graphics3D;
-    iShaderManager *shaderMgr;
-    iStringSet *stringSet;
+    iGraphics3D* graphics3D;
+    iShaderManager* shaderMgr;
+    iStringSet* stringSet;
 
     // render objects from parent
     typename LightRenderType::PersistentData& lightRenderPersistent;

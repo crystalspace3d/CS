@@ -108,7 +108,7 @@ void PhysDemo::MoveActor()
   // intended movement direction
   if (player.GetActor())
   {
-    iCollisionObject* actorObj = player.GetObject();
+    //iCollisionObject* actorObj = player.GetObject();
     /*csVector3 aabbMin, aabbMax;
     actorObj->GetAABB(aabbMin, aabbMax);*/
 
@@ -250,8 +250,7 @@ void PhysDemo::RotateActor()
       csVector2 camDir2 = HORIZONTAL_COMPONENT(camDir3);
       actorDir2.Normalize();
       actorDir2 *= camDir2.Norm();
-      camDir3[HorizontalAxis1] = actorDir2.x;
-      camDir3[HorizontalAxis2] = actorDir2.y;
+      camDir3 = HV_VECTOR3(actorDir2, currentPitchCos);
 
       // Update camera pitch
       if (pitch)

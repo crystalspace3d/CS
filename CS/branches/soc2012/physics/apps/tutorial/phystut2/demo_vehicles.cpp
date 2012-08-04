@@ -34,8 +34,8 @@ static VehicleSteeringDevice SteeringWheel;
 // ##############################################################################################################################
 // Default vehicle parameters:
 
-static const csScalar SteeringIncrement(.04);
-static const csScalar SteeringMax(.3);
+static const csScalar SteeringIncrement(csScalar(.04));
+static const csScalar SteeringMax(csScalar(.3));
 
 static const csScalar EngineForce(10000);
 
@@ -55,13 +55,13 @@ const static int AxleCount(2);
 const static int WheelsPerAxle(2);
 
 /// Length of suspension as factor of the chassis height
-const static csScalar SuspensionLengthFactor(1.2);
+const static csScalar SuspensionLengthFactor(csScalar(1.2));
 
 /// Wheel radius
-const static csScalar WheelRadius(.5);
+const static csScalar WheelRadius(csScalar(.5));
 
 /// Wheel width
-const static csScalar WheelWidth(.6);
+const static csScalar WheelWidth(csScalar(.6));
 
 
 // The Chassis:
@@ -70,7 +70,7 @@ const static csScalar WheelWidth(.6);
 const static csVector3 ChassisSizeTop(3, 2, 3);
 
 /// and one bottom box
-const static csVector3 ChassisSizeBottom(3, .9, 5);
+const static csVector3 ChassisSizeBottom(csScalar(3), csScalar(.9), csScalar(5));
 
 
 // The grid of tires:

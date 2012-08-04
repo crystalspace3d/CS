@@ -315,6 +315,11 @@ CS::Collisions::iCollisionSector* csBulletSystem::GetCollisionSector (const iSec
   return nullptr;
 }
 
+//#include "HACD/hacdCircularList.h"
+//#include "HACD/hacdVector.h"
+//#include "HACD/hacdICHull.h"
+//#include "HACD/hacdGraph.h"
+//#include "HACD/hacdHACD.h"
 void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollider* root, iMeshWrapper* mesh, bool simplify)
 {
   class MyConvexDecomposition : public ConvexDecomposition::ConvexDecompInterface

@@ -143,7 +143,7 @@ void PhysDemo::UpdateCameraManager()
 {
   camMgr->Clear();
 
-  for (size_t i = 0; i < engine->GetCameraPositions()->GetCount(); ++i)
+  for (size_t i = 0; i < size_t(engine->GetCameraPositions()->GetCount()); ++i)
   {
     iCameraPosition* pos = engine->GetCameraPositions()->Get(i);
 

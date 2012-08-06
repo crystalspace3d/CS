@@ -510,8 +510,8 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
   // Render all contexts.
   {
     DeferredTreeRenderer<RenderTreeType, ShadowType>
-    render(graphics3D, shaderManager, stringSet, lightRenderPersistent,
-	   gbuffer, deferredLayer, lightingLayer, zonlyLayer, drawLightVolumes);
+    render(graphics3D, shaderManager, lightRenderPersistent, gbuffer,
+	   deferredLayer, lightingLayer, zonlyLayer, drawLightVolumes);
 
     ForEachContextReverse (renderTree, render);
   }

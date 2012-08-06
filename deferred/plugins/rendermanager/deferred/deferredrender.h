@@ -41,7 +41,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
     DeferredTreeRenderer(iGraphics3D* g3d, 
                          iShaderManager* shaderMgr,
-                         iStringSet* stringSet,
                          typename LightRenderType::PersistentData& lightRenderPersistent,
 			 GBuffer& gbuffer,
                          size_t deferredLayer,
@@ -52,7 +51,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     meshRender(g3d, shaderMgr),
     graphics3D(g3d),
     shaderMgr(shaderMgr),
-    stringSet(stringSet),
     lightRenderPersistent(lightRenderPersistent),
     gbuffer(gbuffer),
     deferredLayer(deferredLayer),
@@ -216,8 +214,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       }
 
       // create the light render here as we'll use it a lot
-      LightRenderType lightRender(graphics3D, shaderMgr, stringSet,
-				  rview, gbuffer, lightRenderPersistent);
+      LightRenderType lightRender(graphics3D, shaderMgr, rview,
+				  gbuffer, lightRenderPersistent);
 
       // shared setup for deferred passes
       graphics3D->SetProjectionMatrix(context->gbufferFixup * projMatrix);
@@ -366,7 +364,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	// deferred rendering - debug step if wanted
 	if(drawLightVolumes)
 	{
-          LightVolumeRenderer<LightRenderType> lightVolumeRender(lightRender, true, 0.2f);
+          LightVolumeRenderer<LightRenderType> lightVolumeRender(lightRender, true, 0.5f);
 
 	  // output light volumes
 	  RenderLights(deferredLayer, ctxCount, lightVolumeRender);
@@ -441,7 +439,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     // data from parent
     iGraphics3D* graphics3D;
     iShaderManager* shaderMgr;
-    iStringSet* stringSet;
 
     // render objects from parent
     typename LightRenderType::PersistentData& lightRenderPersistent;

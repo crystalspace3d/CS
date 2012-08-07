@@ -48,113 +48,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
   }
 
   /**
-   * Creates a transform that will transform a sphere centered at the origin 
-   * with a radius of 1 to match the position and size of the given point light.
-   */
-  inline csReversibleTransform CreatePointLightTransform(iLight* light)
-  {
-    float range = light->GetCutoffDistance();
-
-    csMatrix3 scale(range, 0.0f,  0.0f,
-		    0.0f,  range, 0.0f,
-		    0.0f,  0.0f,  range);
-
-    return csReversibleTransform(scale.GetInverse(), csVector3(0));
-  }
-
-  /**
-   * Creates a transform that will transform a cone cone with a height and 
-   * radius of 1, aligned with the positive y-axis, and its base centered at 
-   * the origin.
-   */
-  inline csReversibleTransform CreateSpotLightTransform(iLight* light)
-  {
-    float range = light->GetCutoffDistance();
-
-    float inner, outer;
-    light->GetSpotLightFalloff(inner, outer);
-
-    /* To compute the radius of the light cone we note the following diagram:
-     *
-     *         /|         Where r is the radius of the cone base,
-     *        /t|               h is the height of the cone (h = range),
-     *     a /  | h             t is half the outer falloff angle (outer = cos(t)),
-     *      /___|               a is the length of the hypotenuse.
-     *        r
-     *
-     *  From this diagram we know that cos(t) = h/a and, from pythagoras theorem, 
-     *  a^2 = h^2 + r^2.
-     *  
-     *  From these equations we can solve for r:
-     *    1. a^2 = h^2 + r^2 => r = sqrt(a^2 - h^2)
-     *    2. cos(t) = h/a => a = h/cos(t)
-     *
-     *  Combining 1. and 2. we get:
-     *    r = sqrt((h/cos(t))^2 - h^2)
-     *      = sqrt(h^2*(1 - cos(t)^2) / cos(t)^2) 
-     *      = h/cos(t) * sqrt(1 - cos(t)^2)
-     */
-    float r = (range / outer) * sqrt(1 - outer * outer);
-
-    // Transforms the cone into light space.
-    csMatrix3 m (r, 0,      0,
-                 0, 0,     -r,
-                 0, -range, 0);
-    csVector3 v (0, 0,  range);
-
-    return csReversibleTransform(m.GetInverse(), v);
-  }
-
-  /**
-   * Creates a transform that will transform a 1x1x1 cube centered at the origin
-   * to match the given directional light.
-   */
-  inline csReversibleTransform CreateDirectionalLightTransform(iLight* light)
-  {
-    float z = light->GetCutoffDistance();
-    float r = light->GetDirectionalCutoffRadius();
-
-    csMatrix3 S(r, 0, 0,
-                0, z, 0,
-                0, 0, r);
-
-    return csReversibleTransform(S.GetInverse(), csVector3(0));
-  }
-
-  /**
    * Creates a transform that will transform a 1x1x1 cube centered at the origin
    * to match the given bounding box (assumed to be in world space).
    */
   inline csReversibleTransform CreateLightTransform(iLight* light)
   {
-      csReversibleTransform T;
-      switch (light->GetType())
-      {
-      case CS_LIGHT_POINTLIGHT:
-        T = CreatePointLightTransform(light);
-        break;
-      case CS_LIGHT_DIRECTIONAL:
-        T = CreateDirectionalLightTransform(light);
-        break;
-      case CS_LIGHT_SPOTLIGHT:
-        T = CreateSpotLightTransform(light);
-        break;
-      default:
-        CS_ASSERT(false);
-      };
+    // get maximum of local light bbox - it has exactly the scales we need
+    const csVector3& scales = light->GetLocalBBox().Max();
 
-      return T * light->GetMovable()->GetFullTransform();
-  }
+    // create scaling matrix
+    csMatrix3 scale(
+      scales.x, 0, 0,
+      0, scales.y, 0,
+      0, 0, scales.z);
 
-  /**
-   * Returns true if the given point is inside the volume of the given point light.
-   */
-  inline bool IsPointInsidePointLight(const csVector3& p, iLight* light)
-  {
-    const float r = light->GetCutoffDistance();
-    const csVector3 c = light->GetMovable()->GetFullPosition();
+    // create light2object transform
+    csReversibleTransform trans(scale, csVector3(0));
 
-    return (p - c).SquaredNorm() <= (r * r);
+    // assemble final object2world transform
+    return trans.GetInverse() * light->GetMovable()->GetFullTransform();
   }
 
   /**
@@ -184,37 +96,40 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
   }
 
   /**
-   * Returns true if the given point is inside the volume of the given directional light.
-   */
-  inline bool IsPointInsideDirectionalLight(const csVector3& p, iLight* light)
-  {
-    static const csBox3 box(-1,-1,-1,1,1,1);
-
-    // Transform the point to object space and test.
-    csReversibleTransform obj2world(CreateDirectionalLightTransform(light));
-    csVector3 objPos(obj2world * p);
-
-    return box.In(objPos);
-  }
-
-  /**
    * Returns true if the given point is inside the volume of the given light.
    */
-  inline bool IsPointInsideLight(const csVector3& p, iLight* light)
+  inline bool IsPointInsideLight(const csVector3& p, iLight* light, const csReversibleTransform& trans)
   {
-      switch(light->GetType())
-      {
-      case CS_LIGHT_POINTLIGHT:
-        return IsPointInsidePointLight(p, light);
-      case CS_LIGHT_SPOTLIGHT:
-        return IsPointInsideSpotLight(p, light);
-      case CS_LIGHT_DIRECTIONAL:
-        return IsPointInsideDirectionalLight(p, light);
-      default:
-        CS_ASSERT(false);
-      };
+    // get light space position
+    csVector3 pos(trans * p);
 
-      return false;
+    static const csBox3 unitBox(-1,-1,0,1,1,1);
+
+    // different checks for different light types
+    switch(light->GetType())
+    {
+    case CS_LIGHT_POINTLIGHT:
+      return csSquaredDist::PointPoint(csVector3(0), pos) <= 1;
+    case CS_LIGHT_DIRECTIONAL:
+      return unitBox.In(pos);
+    case CS_LIGHT_SPOTLIGHT:
+      {
+	// cutoff check
+	if(pos.z < 0.0f || pos.z > 1.0f)
+	  return false;
+
+	// get outer falloff angle
+	float inner, outer;
+	light->GetSpotLightFalloff(inner, outer);
+
+	// angle check
+	return pos.z*pos.z/pos.SquaredNorm() <= outer;
+      }
+    default:
+      CS_ASSERT(false);
+    };
+
+    return false;
   }
 
   // @@@TODO: add new comment explaining how it works
@@ -318,7 +233,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       // builds a rendermesh from a trimesh given via dirty access arrays
       csRenderMesh* CreateRenderMesh(csDirtyAccessArray<csVector3>& vertices,
-				     csDirtyAccessArray<csVector2>& texels,
 				     csDirtyAccessArray<csVector3>& normals,
 				     csDirtyAccessArray<csTriangle>& triangles)
       {
@@ -327,20 +241,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	// create buffer holder
 	mesh->buffers.AttachNew(new csRenderBufferHolder);
-
-	// copy texel buffer if present
-	if(!texels.IsEmpty())
-	{
-	  // create buffer
-	  csRef<iRenderBuffer> buffer = csRenderBuffer::CreateRenderBuffer(
-	    texels.GetSize(), CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 2);
-
-	  // populate it
-	  buffer->CopyInto(texels.GetArray(), texels.GetSize());
-
-	  // attach it
-	  mesh->buffers->SetRenderBuffer(CS_BUFFER_TEXCOORD0, buffer);
-	}
 
 	// copy position buffer
 	{
@@ -410,50 +310,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	  mesh->indexend = (uint)numIndex;
 	}
 
-	// calculate tangents and bitangents
-	{
-	  // allocate memory for tangent and bitangent data
-	  csVector3* tangentData = (csVector3*)cs_malloc(
-	    sizeof(csVector3) * vertices.GetSize() * 2);
-	  csVector3* bitangentData = tangentData + vertices.GetSize();
-
-	  // calculate tangents and bitangents
-	  csNormalMappingTools::CalculateTangents(
-	    triangles.GetSize(), triangles.GetArray(),
-	    vertices.GetSize(), vertices.GetArray(), 
-	    normals.GetArray(), texels.GetArray(), 
-	    tangentData, bitangentData);
-
-	  // create and attach tangent buffer
-	  {
-	    // create buffer
-	    csRef<iRenderBuffer> buffer = csRenderBuffer::CreateRenderBuffer(
-	      vertices.GetSize(), CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 3);
-
-	    // populate it
-	    buffer->CopyInto(tangentData, vertices.GetSize());
-
-	    // attach it
-	    mesh->buffers->SetRenderBuffer(CS_BUFFER_TANGENT, buffer);
-	  }
-
-	  // create and attach bitangent buffer
-	  {
-	    // create buffer
-	    csRef<iRenderBuffer> buffer = csRenderBuffer::CreateRenderBuffer(
-	      vertices.GetSize(), CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 3);
-
-	    // populate it
-	    buffer->CopyInto(bitangentData, vertices.GetSize());
-
-	    // attach it
-	    mesh->buffers->SetRenderBuffer(CS_BUFFER_BINORMAL, buffer);
-	  }
-
-	  // free tangent data
-	  cs_free (tangentData);
-	}
-
 	// set clipping options
 	mesh->clip_plane = CS_CLIP_NOT;
 	mesh->clip_portal = CS_CLIP_NOT;
@@ -517,29 +373,55 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	csDirtyAccessArray<csTriangle> triangles;
 
         // build box
-	CS::Geometry::Primitives::GenerateBox(csBox3(-1,-1,-1,1,1,1), vertices, texels, normals, triangles);
-	boxMesh.Reset(CreateRenderMesh(vertices, texels, normals, triangles));
+	CS::Geometry::Primitives::GenerateBox(csBox3(-1,-1,0,1,1,1), vertices, texels, normals, triangles);
+
+	// create box mesh
+	boxMesh.Reset(CreateRenderMesh(vertices, normals, triangles));
 	boxMesh->db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.box";
 
         // build sphere
         csEllipsoid ellipsoid(csVector3(0.0f, 0.0f, 0.0f), csVector3(1.0f, 1.0f, 1.0f));
 	int sphereDetail = cfg->GetInt("RenderManager.Deferred.SphereDetail", 16);
 	CS::Geometry::Primitives::GenerateSphere(ellipsoid, sphereDetail, vertices, texels, normals, triangles);
-	sphereMesh.Reset(CreateRenderMesh(vertices, texels, normals, triangles));
+
+	// create sphere mesh
+	sphereMesh.Reset(CreateRenderMesh(vertices, normals, triangles));
 	sphereMesh->db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.sphere";
 
         // build cone
         int coneDetail = cfg->GetInt("RenderManager.Deferred.ConeDetail", 16);
-        CS::Geometry::Cone conePrim(1.0f, 1.0f, coneDetail);
 	CS::Geometry::Primitives::GenerateCone(1.0f, 1.0f, coneDetail, vertices, texels, normals, triangles);
-	coneMesh.Reset(CreateRenderMesh(vertices, texels, normals, triangles));
+
+	// hard transform cone to have have base at z=1 and top at z=0
+	// (GenerateCone has base at y=0 and top at y=1)
+	{
+	  csMatrix3 t2o(
+	    1,  0,  0,
+	    0,  0, -1,
+	    0, -1,  0);
+	  csVector3 v_t2o(0,0,1);
+	  csOrthoTransform trans(t2o, v_t2o);
+
+	  for(size_t i = 0; i < vertices.GetSize(); ++i)
+	  {
+	    vertices[i] /= trans;
+	    normals[i] = trans.This2OtherRelative(normals[i]);
+	  }
+	}
+
+	// create cone mesh
+	coneMesh.Reset(CreateRenderMesh(vertices, normals, triangles));
 	coneMesh->db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.cone";
 
         // build quad
 	CS::Geometry::Primitives::GenerateQuad(csVector3(-1,-1,0), csVector3(-1,1,0), csVector3(1,1,0), csVector3(1,-1,0),
 					       vertices, texels, normals, triangles);
-	quadMesh.Reset(CreateRenderMesh(vertices, texels, normals, triangles));
+
+	// create quad mesh
+	quadMesh.Reset(CreateRenderMesh(vertices, normals, triangles));
 	quadMesh->db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.quad";
+
+	// set rendermodes for quad mesh as they're constant
 	quadMesh->mixmode = CS_FX_COPY;
 	quadMesh->alphaType = csAlphaMode::alphaNone;
 	quadMesh->do_mirror = false;
@@ -743,13 +625,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       csShaderVariable* shadowSpreadSV = persistentData.shadowSpread;
       svStack[shadowSpreadSV->GetName()] = shadowSpreadSV;
 
-      // get transform and check whether we're inside the light
+      // get camera
       iCamera* cam = rview->GetCamera();
-      csVector3 camPos(csVector3(0.0f, 0.0f, 1.0f) / cam->GetTransform());
-      
-      bool insideLight = IsPointInsideLight(camPos, light);
+
+      // get transform
       obj->object2world = CreateLightTransform(light);
+
+      // set mirroring
       obj->do_mirror = cam->IsMirrored();
+
+      csVector3 camPos(csVector3(0.0f, 0.0f, 1.0f) / cam->GetTransform());
+      bool insideLight = IsPointInsideLight(camPos, light, obj->object2world);
 
       if(!insideLight)
       {

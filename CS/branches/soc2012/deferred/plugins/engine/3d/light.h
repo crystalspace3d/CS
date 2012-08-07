@@ -316,24 +316,12 @@ public:
   * The directional light can be viewed as a cylinder with radius
   * equal to DirectionalCutoffRadius and length CutoffDistance
   */
-  void SetDirectionalCutoffRadius (float radius)
-  {
-    directionalCutoffRadius = radius;
-    userDirectionalCutoffRadius = true;
-    lightnr++;
-  }
+  void SetDirectionalCutoffRadius (float radius);
 
   /**
   * Set spot light falloff angles. Set in cosine of the angle. 
   */
-  void SetSpotLightFalloff (float inner, float outer)
-  {
-    spotlightFalloffInner = inner;
-    spotlightFalloffOuter = outer;
-    lightnr++;
-    GetPropertySV (csLightShaderVarCache::lightInnerFalloff)->SetValue (inner);
-    GetPropertySV (csLightShaderVarCache::lightOuterFalloff)->SetValue (outer);
-  }
+  void SetSpotLightFalloff (float inner, float outer);
 
   /**
   * Get spot light falloff angles. Get in cosine of the angle.

@@ -1471,6 +1471,7 @@ namespace RenderManager
       LightingVariablesHelper svHelper(persist.lightVarsPersist);
 
       // get our light data for that light
+      CS_ASSERT_MSG("thou shall not create lights during context setup", persist.lightHash.Contains(light));
       LightData& lightData = *persist.lightHash.GetElementPointer(light);
 
       // get our frustum
@@ -1546,7 +1547,12 @@ namespace RenderManager
 
       // get our light data for that light
       typename PersistentData::LightHash& lightHash = persist.lightHash;
-      CS_ASSERT(lightHash.Contains(light));
+
+      // particles create lights mid-frame - don't draw those
+      // until we have data
+      if(!lightHash.Contains(light))
+	return 0;
+
       LightData& lightData = *lightHash.GetElementPointer(light);
 
       // keep track into which index we'll push this map

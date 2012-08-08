@@ -59,7 +59,8 @@ vert2frag main (app2vert IN,
 			 uniform float4x4 o2w,
 			 uniform float4 reflectXform,
 			 uniform float4 refractXform,
-			 uniform float3 foamPoints[1000])
+			 uniform float3 foamPoints[1000],
+			 uniform sampler2D foamDist)
 {
     vert2frag OUT;
 
@@ -96,7 +97,16 @@ vert2frag main (app2vert IN,
 	OUT.Normal = normalize(reflrefrTC.xyz - frTC.xyz);
 	
 	float4 Inposition = mul(o2w, IN.Position); 
-	float distanceFoam = distance(foamPoints[0], Inposition);
+	float4 distanceFoamcolor = float4(0.0,0.0,0.0,0.0);
+	
+	float2 lookupvar = Inposition.xz;
+	
+	if(Inposition.x < 512.0 && Inposition.z < 512.0)
+	{
+		float4 distanceFoamcolor = tex2D(foamDist, lookupvar);
+	}
+	
+	/*float distanceFoam = distance(foamPoints[0], Inposition);
 	
 	for (int i = 1 ; i < 1000 ; i++)
 	{
@@ -105,9 +115,9 @@ vert2frag main (app2vert IN,
 		{
 			distanceFoam = distanceFoamT;
 		}
-	}
+	}*/
 	
-	OUT.dist = distanceFoam;
+	OUT.dist = distanceFoamcolor.x;
 	
 	float3 reflScale = float3 (reflectXform.xy, 0.5);
 	float3 reflXlate = float3 (reflectXform.zw, -0.5) * reflrefrTC.w;

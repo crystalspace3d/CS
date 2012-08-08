@@ -94,6 +94,30 @@
       <variablemap variable="light transform world inverse" destination="worldToLight" />
     </block>
 
+    <!-- shader variable normal inputs -->
+    <input name="texelSize" type="float4" default="complex" private="yes">
+      <block location="cg:variablemap">
+        <variablemap variable="light shadow map pixel size" destination="fragmentIn.texelSize" />
+      </block>
+      <block location="glsl:variablemap">
+        <variablemap variable="light shadow map pixel size" destination="in_texelSize" />
+      </block>
+
+      <block location="cg:fragmentIn">
+        <uniform type="float4" name="texelSize" />
+      </block>
+      <block location="glsl:inputs">
+        <uniform type="float4" name="in_texelSize" />
+      </block>
+  
+      <block location="cg:fragmentMain">
+        texelSize = fragmentIn.texelSize;
+      </block>
+      <block location="glsl:fragmentMain">
+        texelSize = in_texelSize;
+      </block>
+    </input>
+
     <!-- inputs from other snippets -->
     <input name="positionV" type="position4_camera" />
     <input name="positionW" type="position4_world" />
@@ -155,8 +179,35 @@
       }
       else
       {
+        // get offset for four-sample lookup (see http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html)
+        float2 offset = float2(frac(texCoord.xy * 0.5) &gt; 0.25)); // mod
+        offset.y += offset.x; // y ^= x
+
+        if(offset.y > 1.1)
+        {
+          offset.y = 0.0;
+        }
+
         // finally get attenuation from shadow map
-        attenuation = tex2D(shadowMap[slice], texCoord).x;
+        attenuation = tex2D(shadowMap[slice], float3(texCoord.xy + texelSize.xy * (offset + float2( 0.5, 0.5)), texCoord.z)).x
+                    + tex2D(shadowMap[slice], float3(texCoord.xy + texelSize.xy * (offset + float2(-1.5, 0.5)), texCoord.z)).x
+                    + tex2D(shadowMap[slice], float3(texCoord.xy + texelSize.xy * (offset + float2(-1.5,-1.5)), texCoord.z)).x
+                    + tex2D(shadowMap[slice], float3(texCoord.xy + texelSize.xy * (offset + float2( 0.5,-1.5)), texCoord.z)).x;
+        attenuation *= 0.25;
+
+<!--
+        // filtering using 16-sample lookup (see http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html)
+        attenuation = 0.0;
+        float2 offset;
+        for(offset.y = -1.5; offset.y &lt;= 1.5; offset.y += 1.0)
+        {
+          for(offset.x = -1.5; offset.x &lt;= 1.5; offset.x += 1.0)
+          {
+            attenuation += tex2D(shadowMap[slice], float3(texCoord.xy + texelSize.xy * offset, texCoord.z)).x;
+          }
+        }
+        attenuation *= 0.0625; // 1/16
+-->
       }
       attenuation_attr_perfragment = true;
     </block>
@@ -213,8 +264,35 @@
     <?Generate L 0 7?>
       else if(slice == $L$)
       {
+        // get offset for four-sample lookup (see http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html)
+        vec2 offset = vec2(greaterThan(fract(texCoord.xy * 0.5), vec2(0.25))); // mod
+        offset.y += offset.x; // y ^= x
+
+        if(offset.y > 1.1)
+        {
+          offset.y = 0.0;
+        }
+
         // finally get attenuation from shadow map
-        attenuation = shadow2D(shadowMap_$L$, texCoord).x;
+        attenuation = shadow2D(shadowMap_$L$, vec3(texCoord.xy + texelSize.xy * (offset + vec2( 0.5, 0.5)), texCoord.z)).x
+                    + shadow2D(shadowMap_$L$, vec3(texCoord.xy + texelSize.xy * (offset + vec2(-1.5, 0.5)), texCoord.z)).x
+                    + shadow2D(shadowMap_$L$, vec3(texCoord.xy + texelSize.xy * (offset + vec2(-1.5,-1.5)), texCoord.z)).x
+                    + shadow2D(shadowMap_$L$, vec3(texCoord.xy + texelSize.xy * (offset + vec2( 0.5,-1.5)), texCoord.z)).x;
+        attenuation *= 0.25;
+
+<!--
+        // filtering using 16-sample lookup (see http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html)
+        attenuation = 0.0;
+        vec2 offset;
+        for(offset.y = -1.5; offset.y &lt;= 1.5; offset.y += 1.0)
+        {
+          for(offset.x = -1.5; offset.x &lt;= 1.5; offset.x += 1.0)
+          {
+            attenuation += shadow2D(shadowMap_$L$, vec3(texCoord.xy + texelSize.xy * offset, texCoord.z)).x;
+          }
+        }
+        attenuation *= 0.0625; // 1/16
+-->
       }
     <?Endgenerate?>
       else

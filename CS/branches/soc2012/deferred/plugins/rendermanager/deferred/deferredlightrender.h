@@ -432,8 +432,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	shaderManager.Invalidate();
       }
 
-      PersistentData() : boxMesh(nullptr), sphereMesh(nullptr),
-			 coneMesh(nullptr), quadMesh(nullptr)
+      PersistentData() : sphereMesh(nullptr), coneMesh(nullptr),
+			 boxMesh(nullptr), quadMesh(nullptr)
       {
       }
     };

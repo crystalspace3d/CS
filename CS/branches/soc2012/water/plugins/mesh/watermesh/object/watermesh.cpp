@@ -32,6 +32,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csgfx/shadervarcontext.h"
 #include "csgfx/shadervar.h"
 #include "csgfx/imagecubemapmaker.h"
+#include "csgfx/imagememory.h"
 #include "cstool/rviewclipper.h"
 #include "iengine/camera.h"
 #include "iengine/material.h"
@@ -226,9 +227,6 @@ void csWaterMeshObject::SetupObject ()
 		csRef<iTerrainSystem> terrain = scfQueryInterface<iTerrainSystem> (terrainWrapper->GetMeshObject ());
 		size_t cellIndexMax = terrain->GetCellCount();
 		//csPrintf("This is cell count %d",cellIndexMax);
-		
-		float sqrtcellIndex = sqrt((float)cellIndexMax);
-		//csPrintf("%f",sqrtcellIndex);
 
 		csVector3 terrainPos = terrainMovable->GetPosition();
 		//csPrintf("\nposition of terrain %f  %f\n",terrainPos.x, terrainPos.z);
@@ -241,11 +239,6 @@ void csWaterMeshObject::SetupObject ()
 
 			csVector2 cellPos = terraincell->GetPosition();
 			csVector3 cellSize = terraincell->GetSize();
-
-			//csPrintf("\n%s",terraincell->GetName());
-
-			//terraincell->SetLoadState(terraincell->Loaded);
-			//csPrintf("\nposition of cell %f  %f %d",cellPos.x,cellPos.y,gridWidth);
 
 			// Speedy Lookup
 			csLockedHeightData cellval = terraincell->GetHeightData();
@@ -269,6 +262,36 @@ void csWaterMeshObject::SetupObject ()
 		} 
 
         csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
+		csDirtyAccessArray<csRGBpixel> colorarray;
+
+		for (int i = 0 ; i < 512 ; i++)
+		{
+			for ( int j = 0 ; j < 512 ; j++)
+			{
+				float distanceFoam = csSquaredDist::PointPoint(csVector3(i,waterHeight,j), foampointsTemp.Get(0) ) ;
+
+				for (int k = 1 ; k < foampointsTemp.GetSize() ; k++)
+				{
+					float distanceFoamT = csSquaredDist::PointPoint(csVector3(i,waterHeight,j), foampointsTemp.Get(k) ) ;
+					if(distanceFoamT < distanceFoam)
+					{
+						distanceFoam = distanceFoamT;
+					}
+				}
+
+				if (distanceFoam < 10.0)
+				{
+					distanceFoam=10-distanceFoam;
+					distanceFoam/=10.0;
+				}
+				else
+				{
+					distanceFoam = 0;
+				}
+				colorarray.Push(csRGBpixel((int)distanceFoam,0,0));
+				//csPrintf("\n %d %d THe distance %f ",i,j, distanceFoam);
+			}
+		}
 
 		int foamPointsgap = foampointsTemp.GetSize()/1000;   
 		foamPointsgap++;
@@ -278,15 +301,17 @@ void csWaterMeshObject::SetupObject ()
 		// Dropping raw foam points to 1000 
 		for (int i = 0 ; i < 1000; i++)
 		{
-			csVector3 pointasdf;
+			csVector3 TempPoint;
 
 			if (foampointsTemp.GetSize() > i*foamPointsgap )
-				pointasdf = foampointsTemp.Get( i*foamPointsgap );   // Get with gaps
+				TempPoint = foampointsTemp.Get( i*foamPointsgap );   // Get with gaps
 			else
-				pointasdf = csVector3(0,waterHeight+1000,0); // set all extra points to at a place where no decal is formed
+				TempPoint = csVector3(0,waterHeight+1000,0); // set all extra points to at a place where no decal is formed
 
-			foampoints.Push(pointasdf);
-			//csPrintf("\nADD %d %f %f ",i,pointasdf.x,pointasdf.z);
+			foampoints.Push(TempPoint);
+
+		/*	colorarray.Push(csRGBpixel(TempPoint.x,TempPoint.y,TempPoint.z));*/
+			//csPrintf("\nADD %d %f %f ",i,TempPoint.x,TempPoint.z);
 		}
 
 		// Get shader to store foam points 
@@ -303,6 +328,17 @@ void csWaterMeshObject::SetupObject ()
 			foampoint->SetValue(foampoints.Pop());
 			foam_points->AddVariableToArray(foampoint);
 		}
+
+		csRef<iImage> image;
+		image.AttachNew (new csImageMemory (512,512, CS_IMGFMT_TRUECOLOR));
+
+		csRef<iTextureHandle> foamTextMap;
+		foamTextMap = g3d->GetTextureManager ()->RegisterTexture(image, CS_TEXTURE_2D | CS_TEXTURE_3D | CS_TEXTURE_CLAMP);
+		foamTextMap->Blit(0,0,512,512,(unsigned char*)colorarray.GetArray(),iTextureHandle::RGBA8888);
+
+		csShaderVariable *foam_dist = variableContext->GetVariableAdd(svStrings->Request("foam dist"));
+		foam_dist->SetType(csShaderVariable::TEXTURE);
+		foam_dist->SetValue(foamTextMap);
 	}
 
 	// Plane of Reflection 

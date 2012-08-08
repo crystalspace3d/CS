@@ -25,12 +25,7 @@
 #include "ieditor/editor.h"
 #include "ivaria/reporter.h"
 
-
-#include <time.h>
-
-//#include <sys/time.h>
-//#include <unistd.h>
-#include <io.h>
+#include <wx/datetime.h>
 
 #include <wx/log.h>
 #include <wx/textctrl.h>
@@ -97,14 +92,14 @@ private:
 
   struct ReportEntry
   {
-    struct tm timeinfo;
+    wxDateTime timeinfo;
     int severity;
     csString msgId;
     csString description;
 
-    ReportEntry (struct tm* timeinfo, int severity,
+    ReportEntry (const wxDateTime& timeinfo, int severity,
 		 const char* msgId, const char* description)
-    : timeinfo (*timeinfo), severity (severity), msgId (msgId),
+    : timeinfo (timeinfo), severity (severity), msgId (msgId),
       description (description)
       {
 	this->msgId.Trim ();
@@ -126,8 +121,8 @@ private:
   csArray<wxTextCtrl*> textCtrls;
 
   csStringArray errorMessages;
-  csString errorText;
-  const char* FormatReport (ReportEntry& report);
+  wxString errorText;
+  const wxString& FormatReport (ReportEntry& report);
 };
 
 }

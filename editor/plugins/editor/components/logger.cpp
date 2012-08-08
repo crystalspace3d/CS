@@ -88,7 +88,7 @@ wxTextCtrl* Logger::CreateTextCtrl (wxWindow* parent)
 
   for (size_t i = 0; i < reports.GetSize (); i++)
   {
-    wxString text = wxString::FromUTF8 (FormatReport (reports[i]));
+    const wxString& text = FormatReport (reports[i]);
     textCtrl->AppendText (text);
   }
 
@@ -99,11 +99,7 @@ THREADED_CALLABLE_IMPL4 (Logger, Report, iReporter*, int severity,
   const char* msgId, const char* description)
 {
   // Read the timestamp of the report
-  time_t rawtime;
-  struct tm* timeinfo;
-
-  time (&rawtime);
-  timeinfo = localtime (&rawtime);
+  wxDateTime timeinfo = wxDateTime::Now ();
 
   // Forward the report to the wx login system
   switch (severity)
@@ -132,24 +128,29 @@ THREADED_CALLABLE_IMPL4 (Logger, Report, iReporter*, int severity,
     reports.DeleteIndex (0);
 
   // Add this report to all text logger instances
-  wxString text = wxString::FromUTF8 (FormatReport (report));
+  const wxString& text = FormatReport (report);
   for (size_t i = 0; i < textCtrls.GetSize (); i++)
     textCtrls[i]->AppendText (text);
 
   return true;
 }
 
-const char* Logger::FormatReport (ReportEntry& report)
+const wxString& Logger::FormatReport (ReportEntry& report)
 {
-  char buffer [20];
-  strftime (buffer, 20, "%X", &report.timeinfo);
+  errorText = report.timeinfo.FormatTime ();
 
+  csString text;
   if (report.msgId == "status")
-    errorText.Format ("%s - [Status] %s\n", buffer, report.description.GetData ());
+    text.Format (" - [Status] %s\n",
+		 report.description.GetData ());
 
-  else errorText.Format ("%s - [%s] %s - %s\n", buffer, errorMessages[report.severity],
-			 report.msgId.GetData (), report.description.GetData ());
-  return errorText.GetData ();
+  else text.Format (" - [%s] %s - %s\n",
+		    errorMessages[report.severity],
+		    report.msgId.GetData (),
+		    report.description.GetData ());
+  errorText += wxString::FromUTF8 (text.GetData ());
+
+  return errorText;
 }
 
 Logger::LogTextCtrl::LogTextCtrl (wxWindow* parent, Logger* logger)

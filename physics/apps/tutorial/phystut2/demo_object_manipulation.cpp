@@ -12,6 +12,8 @@
 #include "cstool/materialbuilder.h"
 #include "csutil/floatrand.h"
 
+#include "collision2util.h"
+
 
 #include "iengine/campos.h"
 
@@ -26,7 +28,8 @@ using namespace CS::Geometry;
 
 bool PhysDemo::PickCursorObject(CS::Collisions::HitBeamResult& result)
 { 
-  // Find the rigid body that was clicked on
+  // Find the object under the cursor:
+
   // Compute the end beam points
   csRef<iCamera> camera = view->GetCamera();
   csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
@@ -163,6 +166,7 @@ void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
 
   iPhysicalBody* physObj = obj->QueryPhysicalBody();
   bool isDynamic = physObj->GetDensity() != 0;
+  csRef<CS::Collisions::iCollider> oldCollider = obj->GetCollider();
   if (isDynamic)
   {
     // Set mass to 0 (makes it static)
@@ -171,13 +175,16 @@ void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
   else
   {
     // Give it mass (makes it dynamic)
-    if (physObj->GetCollider()->GetColliderType() == COLLIDER_CONCAVE_MESH && obj->GetAttachedMovable())
+    if (physObj->GetCollider()->GetColliderType() == COLLIDER_CONCAVE_MESH && obj->GetAttachedMovable() && convexDecomposer)
     {
       // First decompose it
       csPrintf("Performing convex decomposition on object: \"%s\"...\n", obj->QueryObject()->GetName());
 
-      csRef<iColliderCompound> collider = physicalSystem->CreateColliderCompound();
-      physicalSystem->DecomposeConcaveMesh(&*collider, obj->GetAttachedMovable()->GetSceneNode ()->QueryMesh ());
+      csRef<iColliderCompound> collider = Collision2Helper::PerformConvexDecomposition(
+        physicalSystem,
+        convexDecomposer,
+        physicalSystem->FindColdetTriangleMesh(obj->GetAttachedMovable()->GetSceneNode ()->QueryMesh ())
+        );
       obj->SetCollider(collider);
 
       csPrintf("Done - Performed convex decomposition on object: \"%s\".\n", obj->QueryObject()->GetName());
@@ -188,6 +195,7 @@ void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
 
   if ((physObj->GetDensity() != 0) == isDynamic)
   {
+    obj->SetCollider(oldCollider);
     ReportWarning("Cannot make object \"%s\" %s.\n", physObj->QueryObject()->GetName(), isDynamic ? "STATIC" : "DYNAMIC");
   }
 }

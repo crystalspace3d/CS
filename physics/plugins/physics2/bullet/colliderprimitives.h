@@ -50,12 +50,6 @@ class csBulletSector;
 class csBulletSystem;
 class csBulletCollider;
 
-csRef<iTriangleMesh> FindColdetTriangleMesh (iMeshWrapper* mesh, 
-                                             csStringID baseID, csStringID colldetID);
-
-btTriangleMesh* GenerateTriMeshData (iMeshWrapper* mesh, csStringID baseID, 
-                                     csStringID colldetID, float interScale);
-
 class csBulletColliderCompound : 
   public scfVirtImplementationExt1<csBulletColliderCompound,
   csBulletCollider, CS::Collisions::iColliderCompound>

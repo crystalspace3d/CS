@@ -116,7 +116,10 @@ struct iCollider : public virtual iBase
   virtual void RemoveCollider (size_t index) = 0;
 
   /// Get the collider with the given index.
-  virtual iCollider* GetCollider (size_t index) = 0;                                        
+  virtual iCollider* GetCollider (size_t index) = 0; 
+
+  /// Get the collider and it's relative transformation at the given index.
+  virtual void GetCollider (size_t index, iCollider*& collider, csOrthoTransform& trans) = 0;
 
   /// Get the count of colliders in this collider (including self).
   virtual size_t GetColliderCount () = 0;

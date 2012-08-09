@@ -38,9 +38,6 @@ class csBulletSector;
 class csBulletSystem;
 class csBulletCollider;
 
-csRef<iTriangleMesh> FindColdetTriangleMesh (iMeshWrapper* mesh, 
-                                             csStringID baseID, csStringID colldetID);
-
 
 /**
  * A collection of colliders that belong to another collider
@@ -121,6 +118,7 @@ public:
   virtual void RemoveCollider (size_t index);
 
   virtual CS::Collisions::iCollider* GetCollider (size_t index) ;
+  virtual void GetCollider (size_t index, iCollider*& collider, csOrthoTransform& trans);
   virtual size_t GetColliderCount () {return 1 + children ? children->colliders.GetSize () : 0;}
   
   btCollisionShape* GetOrCreateBulletShape();

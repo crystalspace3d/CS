@@ -46,10 +46,14 @@ class btDefaultCollisionConfiguration;
 class btSequentialImpulseConstraintSolver;
 class btBroadphaseInterface;
 struct btSoftBodyWorldInfo;
+class btTriangleMesh;
 //class btGhostObject;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+  
+#define WORLD_AABB_DIMENSIONS 10000.0f
+
 class csBulletSector;
 class csBulletSystem;
 class csBulletDebugDraw;
@@ -61,6 +65,7 @@ class csBulletCollisionObject;
 class csBulletCollisionActor;
 class csBulletCollider;
 class csBulletJoint;
+
 
 class CollisionGroupVector : public csArray<CS::Collisions::CollisionGroup>
 {
@@ -119,8 +124,8 @@ public:
   // iCollisionSystem
   virtual void SetInternalScale (float scale);
   virtual csPtr<CS::Collisions::iColliderCompound> CreateColliderCompound ( );
-  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (
-    iMeshWrapper* mesh, bool simplify = false);
+  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify = false);
+  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* triMesh, iMeshWrapper* mesh = nullptr, bool simplify = false);
   virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);
   virtual csPtr<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
       (CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale);
@@ -143,8 +148,6 @@ public:
     return csRef<CS::Collisions::iCollisionSector>(scfQueryInterface<CS::Collisions::iCollisionSector>(collSectors.Get(index)));
   }
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
-
-  virtual void DecomposeConcaveMesh (CS::Collisions::iCollider* object, iMeshWrapper* mesh, bool simplify = false); 
 
   //iPhysicalSystem
   virtual csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector () 
@@ -217,6 +220,10 @@ public:
     const char* name2, bool collide);
   virtual bool GetGroupCollision (const char* name1,
     const char* name2);
+  
+  virtual void SeparateDisconnectedSubMeshes(CS::Collisions::iColliderCompound* mesh, CS::Collisions::iColliderCompoundResult* results);
+
+  virtual iTriangleMesh* FindColdetTriangleMesh (iMeshWrapper* mesh);
 
   void DeleteAll();
 
@@ -225,7 +232,10 @@ public:
   float getInverseInternalScale() {return inverseInternalScale;}
   float getInternalScale() {return internalScale;}
   void ReportWarning (const char* msg, ...);
+  
+  btTriangleMesh* CreateBulletTriMesh (iTriangleMesh* triMesh);
 };
+
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)
 

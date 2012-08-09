@@ -337,8 +337,6 @@ void PhysDemo::UpdateHUD()
   hudManager->GetStateDescriptions()->Empty();
   csString txt;
 
-  hudManager->GetStateDescriptions()->Push (csString ("Physics engine: ") + phys_engine_name);
-
   if (actorVehicle || player.GetObject()->QueryPhysicalBody())
   {
     csScalar speed;

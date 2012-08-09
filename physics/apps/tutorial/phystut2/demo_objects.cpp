@@ -11,9 +11,11 @@
 #include "cstool/genmeshbuilder.h"
 #include "cstool/materialbuilder.h"
 #include "csutil/floatrand.h"
+
 #include "physdemo.h"
 
-#include "ivaria/colliders.h"
+#include "collision2util.h"
+
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
@@ -518,8 +520,9 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
 
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (meshFact, "mesh"));
 
-  csRef<CS::Collisions::iColliderCompound> rootCollider = physicalSystem->CreateColliderCompound();
-  physicalSystem->DecomposeConcaveMesh (&*rootCollider, mesh, true);
+  // perform convex decomposition
+  csRef<iColliderCompound> rootCollider = Collision2Helper::PerformConvexDecomposition(
+    physicalSystem, convexDecomposer, physicalSystem->FindColdetTriangleMesh(mesh));
 
   // Create a body
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(rootCollider, "compound");

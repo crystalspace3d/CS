@@ -28,6 +28,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "iutil/objreg.h"
 #include "ivaria/view.h"
 #include "ivaria/collisions.h"
+
 #include "igeom/trimesh.h"
 #include "iengine/portal.h"
 #include "iengine/portalcontainer.h"
@@ -40,7 +41,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "BulletSoftBody/btSoftRigidDynamicsWorld.h"
 #include "BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h"
 #include "BulletSoftBody/btSoftBodyHelpers.h"
-#include "convexdecompose/ConvexBuilder.h"
 
 #include "csutil/custom_new_enable.h"
 
@@ -55,7 +55,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "portal.h"
 
 const float COLLISION_THRESHOLD = 0.01f;
-#define AABB_DIMENSIONS 10000.0f
 
 
 using namespace CS::Collisions;
@@ -97,12 +96,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     const int maxProxies = 32766;
 
-    btVector3 worldAabbMin (-AABB_DIMENSIONS, -AABB_DIMENSIONS, -AABB_DIMENSIONS);
-    btVector3 worldAabbMax (AABB_DIMENSIONS, AABB_DIMENSIONS, AABB_DIMENSIONS);
+    btVector3 worldAabbMin (-WORLD_AABB_DIMENSIONS, -WORLD_AABB_DIMENSIONS, -WORLD_AABB_DIMENSIONS);
+    btVector3 worldAabbMax (WORLD_AABB_DIMENSIONS, WORLD_AABB_DIMENSIONS, WORLD_AABB_DIMENSIONS);
     broadphase = new btAxisSweep3 (worldAabbMin, worldAabbMax, maxProxies);
 
-    bulletWorld = new btDiscreteDynamicsWorld (dispatcher,
-      broadphase, solver, configuration);
+    bulletWorld = new btDiscreteDynamicsWorld (dispatcher, broadphase, solver, configuration);
 
     broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
@@ -134,6 +132,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     {
       joints[i]->RemoveBulletJoint();
     }
+
+    // remove terrains
+    for (size_t i = 0; i < terrains.GetSize(); ++i)
+    {
+      terrains[i]->RemoveRigidBodies();
+    }
+    terrains.DeleteAll();
 
     joints.DeleteAll ();
     softBodies.DeleteAll ();

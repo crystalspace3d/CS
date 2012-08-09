@@ -24,7 +24,6 @@
 #include "BulletSoftBody/btSoftRigidDynamicsWorld.h"
 #include "BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h"
 #include "BulletSoftBody/btSoftBodyHelpers.h"
-#include "convexdecompose/ConvexBuilder.h"
 
 #include "csutil/custom_new_enable.h"
 

@@ -8,6 +8,7 @@
 #include "ivaria/collisions.h"
 #include "ivaria/physics.h"
 #include "ivaria/ivehicle.h"
+#include "ivaria/convexdecompose.h"
 
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
@@ -110,6 +111,7 @@ class PhysDemo : public CS::Utility::DemoApplication
 {
 public:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
+  csRef<iConvexDecomposer> convexDecomposer;
 
   csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
 
@@ -123,7 +125,6 @@ public:
 
   // Configuration related
   bool autodisable;
-  csString phys_engine_name;
   int phys_engine_id;
   bool do_bullet_debug;
   bool do_soft_debug;

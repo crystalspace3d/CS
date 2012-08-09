@@ -24,8 +24,8 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "csutil/custom_new_disable.h"
 
-#include "btBulletDynamicsCommon.h"
-#include "btBulletCollisionCommon.h"
+#include "bullet/btBulletDynamicsCommon.h"
+#include "bullet/btBulletCollisionCommon.h"
 
 #include "csutil/custom_new_enable.h"
 
@@ -54,13 +54,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 
   void ConvexDecomposer::Decompose(iTriangleMesh* triMesh, iConvexDecomposedMeshResult* results)
   {
-    unsigned int depth = 5;
-    float cpercent     = 5;
-    float ppercent     = 15;
-    unsigned int maxv  = 16;
-    float skinWidth    = 0.0;
-
-
     //-----------------------------------------------
     // HACD
     //-----------------------------------------------
@@ -70,11 +63,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
     std::vector< HACD::Vec3<long> > hacdTris;
 
     {
-      csVector3* vertices = triMesh->GetVertices();
-      csTriangle* triangles = triMesh->GetTriangles();
-
       // Copy Vertices
-      csVector3* nextVert = vertices;
+      csVector3* nextVert = triMesh->GetVertices();
       for(size_t i=0; i < triMesh->GetVertexCount(); ++i, ++nextVert ) 
       {
         HACD::Vec3<HACD::Real> vertex(nextVert->x, nextVert->y, nextVert->z);
@@ -82,7 +72,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
       }
 
       // Copy triangles
-      csTriangle* nextTri = triangles;
+      csTriangle* nextTri = triMesh->GetTriangles();
       for(size_t i=0; i < triMesh->GetTriangleCount(); ++i, ++nextTri)
       {
         HACD::Vec3<long> triangle(nextTri->a, nextTri->b, nextTri->c);

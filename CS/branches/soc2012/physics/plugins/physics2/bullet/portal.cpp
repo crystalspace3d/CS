@@ -19,10 +19,13 @@
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
+
+// TODO: Add new sector to sector mesh's sector list
+
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
 
-  csBulletCollisionPortal::csBulletCollisionPortal
+  CollisionPortal::CollisionPortal
     (iPortal* portal, const csOrthoTransform& meshTrans, csBulletSector* sourceSector)
     : portal (portal), sourceSector (sourceSector)
   {
@@ -47,6 +50,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     portalPos /= portal->GetVertexIndicesCount();
 
     // Compute the warp transform of the portal
+    // TODO: This is not quite correct
     warpTrans = portal->GetWarp ().GetInverse ();
     warpTrans = meshTrans.GetInverse () * warpTrans * meshTrans;
     csVector3 normal = portal->GetObjectPlane ().GetNormal ();
@@ -75,7 +79,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     sourceSector->bulletWorld->addCollisionObject (ghostPortal, sourceSector->sys->collGroups[CollisionGroupTypePortal].value, sourceSector->sys->collGroups[CollisionGroupTypePortal].mask);
   }
 
-  csBulletCollisionPortal::~csBulletCollisionPortal ()
+  CollisionPortal::~CollisionPortal ()
   {
     if (ghostPortal) 
     {
@@ -84,13 +88,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  bool csBulletCollisionPortal::CanTraverse(csBulletCollisionObject* obj)
+  bool CollisionPortal::CanTraverse(csBulletCollisionObject* obj)
   {
     // Only actors and dynamic objects can traverse portals
     return obj->QueryActor() || (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL && obj->QueryPhysicalBody()->IsDynamic());
   }
 
-  void csBulletCollisionPortal::UpdateCollisions (csBulletSector* sector)
+  void CollisionPortal::UpdateCollisionsPreStep (csBulletSector* sector)
   {
     if (!targetSector)
     {
@@ -112,11 +116,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       iCollisionObject* iObj = static_cast<iCollisionObject*> (btObj->getUserPointer ());
       csBulletCollisionObject* obj = dynamic_cast<csBulletCollisionObject*> (iObj);
       
-
+      
     }
   }
 
-  //void csBulletCollisionPortal::UpdateCollisions (csBulletSector* sector)
+  //void CollisionPortal::UpdateCollisions (csBulletSector* sector)
   //{
   //  if (!targetSector)
   //  {
@@ -438,7 +442,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //  }
   //}
 
-  void csBulletCollisionPortal::SetInformationToCopy (csBulletCollisionObject* obj, 
+  void CollisionPortal::SetInformationToCopy (csBulletCollisionObject* obj, 
     csBulletCollisionObject* cpy, 
     const csOrthoTransform& warpTrans)
   {
@@ -478,7 +482,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  void csBulletCollisionPortal::GetInformationFromCopy (csBulletCollisionObject* obj, 
+  void CollisionPortal::GetInformationFromCopy (csBulletCollisionObject* obj, 
     csBulletCollisionObject* cpy, 
     float duration)
   {

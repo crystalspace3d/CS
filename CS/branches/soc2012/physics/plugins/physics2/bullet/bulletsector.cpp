@@ -307,7 +307,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   void csBulletSector::AddPortal (iPortal* portal, const csOrthoTransform& meshTrans)
   {
-    csBulletCollisionPortal* newPortal = new csBulletCollisionPortal (portal, meshTrans, this);
+    CollisionPortal* newPortal = new CollisionPortal (portal, meshTrans, this);
     portals.Push (newPortal);
   }
 
@@ -733,21 +733,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       body->UpdateAnchorPositions ();
     }
 
-    // Update the state of collision collide with portals.
-    UpdatecsBulletCollisionPortals ();
+    // Update traversing objects before simulation
+    UpdateCollisionPortalsPreStep ();
 
     // Step the simulation
     bulletWorld->stepSimulation (duration, (int)worldMaxSteps, worldTimeStep);
-
-    // Send the collision response of copies to source object.
-    for (size_t i = 0; i < collisionObjects.GetSize (); i++)
-    {
-      if (collisionObjects[i]->objectOrigin)
-        GetInformationFromCopy (collisionObjects[i]->objectOrigin, collisionObjects[i]);
-    }
+    
+    // Update traversing objects after simulation
+    UpdateCollisionPortalsPostStep ();
 
     // Check for collisions
-    CheckCollisions();
+    //CheckCollisions();
 
     for (size_t i = 0; i < updatables.GetSize (); i++)
     {
@@ -1085,11 +1081,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  void csBulletSector::UpdatecsBulletCollisionPortals ()
+  void csBulletSector::UpdateCollisionPortalsPreStep ()
   {
     for (size_t i = 0; i < portals.GetSize (); i++)
     {
-      portals[i]->UpdateCollisions (this);
+      portals[i]->UpdateCollisionsPreStep (this);
+    }
+  }
+
+  void csBulletSector::UpdateCollisionPortalsPostStep ()
+  {
+    for (size_t i = 0; i < portals.GetSize (); i++)
+    {
+      portals[i]->UpdateCollisionsPostStep (this);
     }
   }
 

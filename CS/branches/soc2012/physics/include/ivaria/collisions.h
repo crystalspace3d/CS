@@ -273,6 +273,10 @@ struct iCollisionObject : public virtual iBase
   virtual bool GetMayBeDeactivated() const = 0;
   /// Whether this object may be excluded from deactivation.
   virtual void SetMayBeDeactivated(bool d) = 0;
+
+  /// Creates a new object that has all the properties of this one, except for transformation and movable and camera
+  virtual csPtr<iCollisionObject> CloneObject() = 0;
+
 };
 
 /**

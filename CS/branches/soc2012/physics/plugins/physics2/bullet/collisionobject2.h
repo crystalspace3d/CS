@@ -24,7 +24,7 @@ class csBulletCollisionObject: public scfVirtImplementationExt1<
   friend class csBulletCollisionTerrain;
   friend class csBulletCollisionActor;
   friend class csBulletGhostCollisionObject;
-  friend class csBulletCollisionPortal;
+  friend class CollisionPortal;
 
 protected:
   csRef<csBulletCollider> collider;
@@ -142,8 +142,10 @@ public:
   virtual void SetMayBeDeactivated(bool d) { btObject->setActivationState(d ? 0 : DISABLE_DEACTIVATION); }
 
   /// Clone this object
-  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject()
-  { return csPtr<CS::Collisions::iCollisionObject> (nullptr); }
+  virtual csPtr<CS::Collisions::iCollisionObject> CloneObject() 
+  { 
+    return csPtr<CS::Collisions::iCollisionObject>(nullptr); 
+  }
 };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

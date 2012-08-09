@@ -1,5 +1,11 @@
 SubDir TOP plugins physics2 convexdecompose ;
 
-Description convexdecompose : "Convex decomposition" ;
-Plugin convexdecompose : [ Wildcard *.cpp *.h ] ;
-LinkWith convexdecompose : crystalspace ;
+if $(BULLET.AVAILABLE) = "yes"
+{
+  Description convexdecompose : "Convex decomposition" ;
+  Plugin convexdecompose :
+    [ Wildcard *.cpp *.h ]
+    [ Wildcard hacd : *.cpp *.h ] ;
+  LinkWith convexdecompose : crystalspace ;
+  ExternalLibs convexdecompose : BULLET ;
+}

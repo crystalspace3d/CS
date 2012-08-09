@@ -39,7 +39,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(VFS)
 
 class VfsNode;
 class csVFS;
-
+/*
 /// A replacement for standard-C FILE type in the virtual file space
 class csFile : public scfImplementation1<csFile, iFile>
 {
@@ -91,7 +91,7 @@ public:
 protected:
   friend class csVFS;
 };
-
+*/
 struct HeapRefCounted :
   public CS::Memory::CustomAllocatedDerived<CS::Memory::Heap>,
   public CS::Utility::AtomicRefCount
@@ -131,12 +131,10 @@ private:
   /// Mutex to make VFS thread-safe.
   mutable CS::Threading::ReadWriteMutex mutex;
 
-  // A vector of VFS nodes
-  class VfsVector : public csPDelArray<VfsNode>
-  {
-  public:
-    static int Compare (VfsNode* const&, VfsNode* const&);
-  } NodeList;
+  // A table of VFS nodes
+  csHash<VfsNode *, const char *> nodeTable;
+  // Pointer to root node
+  VfsNode * const root;
   
   struct VfsTls
   {
@@ -294,7 +292,7 @@ public:
 
 private:
   /// Same as ExpandPath() but with less overhead
-  char *_ExpandPath (const char *Path, bool IsDir = false);
+  char *ExpandPathFast (const char *Path, bool IsDir = false);
 
   /// Read and set the VFS config file
   bool ReadConfig ();
@@ -302,13 +300,45 @@ private:
   /// Add a virtual link: real path can contain $(...) macros
   virtual bool AddLink (const char *VirtualPath, const char *RealPath);
 
-  /// Find the VFS node corresponding to given virtual path
-  VfsNode *GetNode (const char *Path, char *NodePrefix,
-    size_t NodePrefixSize);
+  /// Instantiate a single file system, which could be used for mounting
+  csPtr<iFileSystem> CreateFileSystem (const char *realPath);
+
+  /**
+   * Retrieve the best-matching node for given VFS path.
+   * \param vfsPath VFS path of the node to request
+   * \param suffix (out, optional) address of the pointer to store the address
+   *    of suffix portion of path
+   * \return pointer to node best representing given VFS path
+   * \remarks This function is not thread safe. It is caller's responsibility
+   *    to protect the function call by using read locks.
+   */
+  VfsNode *GetNode (const char *path, const char **suffix = nullptr);
+
+  /**
+   * Retrieve the list of nodes with mounted filesystems.
+   * \param nodeList reference to csArray instance to receive list of nodes
+   * \return number of nodes added to the list
+   */
+  size_t GetMountedNodes (csArray<VfsNode *> &nodeList);
+
+  /// Get value of a VFS/environment variable
+  const char *GetValue (const char *varName);
+
+  /// Copy a string from src to dst and expand all VFS/environment variables
+  csString ExpandVars (char const *src);
+
+  /**
+   * Retrieve a node for given VFS path, creating a path of nodes if necessary.
+   * \param vfsPath VFS path of the node to request
+   * \return pointer to node representing given VFS path
+   * \remarks This function is not thread safe. It is caller's responsibility
+   *    to protect the function call by using write locks.
+   */
+  VfsNode *CreateNodePath (const char *vfsPath);
 
   /// Common routine for many functions
-  bool PreparePath (const char *Path, bool IsDir, VfsNode *&Node,
-    char *Suffix, size_t SuffixSize);
+  //bool PreparePath (const char *Path, bool IsDir, VfsNode *&Node,
+  //  const char **Suffix);
 
   /**
    * Check if a virtual path represents an actual physical mount point.  Note
@@ -319,13 +349,18 @@ private:
    * VFS.Mount.lib/textures = textures.zip
    * VFS.Mount.lib/materials = materials.zip
    *
-   * The virtual directory "/lib" is a valid path, yet it has no VfsNode
-   * representation because there is nothing actually mounted at "/lib", thus
-   * false will be returned. On the other hand, the virtual directories
-   * "/lib/textures" and "/lib/materials" are both valid and represented by
-   * physical mount points, so true will be returned.
+   * The virtual directory "/lib" is a valid path, yet there is nothing
+   * actually mounted at "/lib", thus false will be returned.
+   * On the other hand, the virtual directories "/lib/textures" and
+   * "/lib/materials" are both valid and represented by physical mount
+   * points, so true will be returned.
    */
-  bool CheckIfMounted(char const* virtual_path);
+  //bool CheckIfMounted (char const* virtual_path);
+
+  /**
+   * Check if a virtual path represents an 
+   */
+  bool IsValidDir (const char *vfsPath);
 
   /**
    * Helper for ChDirAuto(). Checks if dir is mounted and invokes ChDir() if it

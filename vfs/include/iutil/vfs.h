@@ -428,6 +428,15 @@ struct iFileSystem : public virtual iBase
   virtual bool Delete (const char *filename) = 0;
 
   /**
+   * Query directory listing of given path.
+   * \param path Path to directory
+   * \return iStringArray containing list of files and directories in the given
+   *       directory if succeeded. Returns an invalid smart pointer when failed;
+   *       check with csRef<>::IsValid().
+   */
+  virtual csPtr<iStringArray> List (const char *path) = 0;
+
+  /**
    * Get real path of which this filesystem is based on.
    * \return csString containing real path of filesystem root
    */
@@ -440,12 +449,21 @@ struct iFileSystem : public virtual iBase
   virtual int GetStatus () = 0;
 };
 
+/**
+ * Instantiates iFileSystem for an archive file.
+ */
 struct iArchiveHandler : public virtual iBase
 {
   SCF_INTERFACE(iArchiveHandler, 0, 0, 0);
 
-  virtual csPtr<iFileSystem> GetFileSystem (const char *Path,
-                                            iFile *ArchiveFile) = 0;
+  /**
+   * Checks whether this archive handler supports a given file, and returns
+   * iFileSystem instance if supported.
+   * \param archive  iFile instance of archive file
+   * \param filename (optional) filename to override
+   */
+  virtual csPtr<iFileSystem> GetFileSystem (iFile *archive,
+                                            const char *filename = 0) = 0;
 
   
 };

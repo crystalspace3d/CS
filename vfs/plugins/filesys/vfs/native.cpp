@@ -43,6 +43,7 @@
 #include "csutil/vfsplat.h"
 #include "csutil/databuf.h"
 #include "csutil/filepermission.h"
+#include "csutil/scfstringarray.h"
 
 // VC++ defines _S_IFDIR instead of S_IFDIR
 // Define _S_IFDIR for other platform
@@ -135,14 +136,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(VFS)
 // OS Native iFileSystem
 class NativeFS : public scfImplementation1<NativeFS, iFileSystem>
 {
-  // Real-world mountpoint of this instance
+  // Unexpanded, real-world mountpoint of this instance
   char *mountRoot;
+  // Real-world mountpoint of this instance
+  char *mountRootExpanded;
   // Last error status
   int lastError;
   // Allocator heap for this filesystem
   //csRef<HeapRefCounted> heap;
 
-  // Construct a NativeFS instance with 'RealPath' as mount root.
+  // Construct a NativeFS instance with 'realPath' as mount root.
   NativeFS (const char *realPath);
   // Convert relative virtual path to real path
   csString ToRealPath (const char *virtualPath);
@@ -177,6 +180,8 @@ public:
   virtual bool Exists (const char *filename);
   // Delete a given file
   virtual bool Delete (const char *filename);
+  // Retrieve directory listing
+  virtual csPtr<iStringArray> List (const char *path);
   // Get mount root
   virtual csString GetRootRealPath ();
   // Query and reset last error status
@@ -209,6 +214,8 @@ class NativeFile : public scfImplementation1<NativeFile, iFile>
               const char *virtualPath,
               const char *realPath,
               int mode);
+  // Create missing directory tree
+  void CreateDirTree (const char *realPath);
   // Set last error to specified value
   bool SetLastError (int errorCode);
   // Update last error code from system call
@@ -348,10 +355,11 @@ NativeFile::NativeFile (NativeFS *parent,
 
     if (!handle)
     {
-      // somehow failed to open; try creating directory and try again
+      // somehow failed to open. unless we're trying to read:
       if (fileMode != VFS_FILE_READ)
       {
-        // TODO: create missing directory tree
+        // try creating directories and try again
+        CreateDirTree (realPath);
         retry = true;
       }
     }
@@ -400,8 +408,47 @@ NativeFile::NativeFile (NativeFS *parent,
 NativeFile::~NativeFile ()
 {
   // Free memory and resources
-  cs_free(virtualPath);
-  cs_free(realPath);
+  cs_free (virtualPath);
+  cs_free (realPath);
+}
+
+/* Create directory tree necessary to create the given file.
+ - takes realPath (real path to file, formatted and expanded)
+ */
+void NativeFile::CreateDirTree (const char *realPath)
+{
+  // since we assume realPath to be already processed,
+  // just get the job done.
+  // 1. copy the real path so we can process it
+  size_t len = strlen (realPath) + 1; // minimum length of buffer
+  CS_ALLOC_STACK_ARRAY (char, path, len);
+  memcpy (path, realPath, len);
+  
+  // 2. find the first directory component past root
+  char *cur = path;
+  size_t offset = 0;
+
+  while (offset < len)
+  {
+    if ((*cur == CS_PATH_SEPARATOR)
+#ifdef CS_PLATFORM_WIN32
+     && (offset > 2 && *(cur-1) != ':') // skip drive root
+#endif
+      )
+    {
+      // we're at CS_PATH_SEPARATOR
+
+      // backup old char
+      char old = *cur;
+      // terminate the path
+      *cur = '\0';
+      int error = CS::Platform::CreateDirectory (realPath);
+      // restore the char
+      *cur = old;
+    }
+    ++cur;
+    ++offset;
+  }
 }
 
 /* Set last error to specified value
@@ -885,9 +932,14 @@ csPtr<iFile> NativeFile::View::GetPartialView (uint64_t offset,
 NativeFS::NativeFS (const char *realPath) : scfImplementationType (this)
 {
   // Store mount root (real path) of this instance
-  size_t mountRootLen = strlen(realPath) + 1; // +1 for null-terminator
-  mountRoot = (char *)cs_malloc(mountRootLen);
-  memcpy(mountRoot, realPath, mountRootLen);
+  size_t mountRootLen = strlen (realPath) + 1; // +1 for null-terminator
+  mountRoot = (char *)cs_malloc (mountRootLen);
+  memcpy (mountRoot, realPath, mountRootLen);
+  // platform-expand mount root
+  mountRootExpanded = (char *)cs_malloc (CS_MAXPATHLEN + 1);
+  // FIXME: we just assume the length; this is due to bad API design...
+  csExpandPlatformFilename (mountRoot, mountRootExpanded);
+
   // Set last error to VFS_STATUS_OK
   lastError = VFS_STATUS_OK;
 }
@@ -896,7 +948,8 @@ NativeFS::NativeFS (const char *realPath) : scfImplementationType (this)
 NativeFS::~NativeFS ()
 {
   // clean up resources
-  cs_free(mountRoot);
+  cs_free (mountRoot);
+  cs_free (mountRootExpanded);
 }
 
 /* Convert virtual path to real path
@@ -910,7 +963,7 @@ csString NativeFS::ToRealPath (const char *virtualPath)
   static const char search[] = { VFS_PATH_SEPARATOR, 0 };
   static const char replace[] = { CS_PATH_SEPARATOR, 0 };
 
-  csString path (mountRoot);
+  csString path (mountRootExpanded);
   csString suffix (virtualPath);
   // replace virtual path separators to platform specific ones
   suffix.ReplaceAll (search, replace);
@@ -1164,6 +1217,52 @@ bool NativeFS::Delete (const char *filename)
   }
 
   return true;
+}
+
+// retrieve directory listing
+csPtr<iStringArray> NativeFS::List (const char *path)
+{
+  csString rPath (ToRealPath (path));
+  size_t len = rPath.Length ();
+  csString entry;
+  iStringArray *list = new scfStringArray;
+
+  DIR *dh;
+  struct dirent *de;
+  if ((len > 1)
+#if defined (CS_PLATFORM_DOS) || defined (CS_PLATFORM_WIN32)
+   && ((len > 2) || (rPath [1] != ':'))
+   && (!((len == 3) && (rPath [1] == ':') && (rPath [2] == '\\')))
+   // keep trailing backslash for drive letters
+#endif
+   && ((rPath [len - 1] == '/') || (rPath [len - 1] == CS_PATH_SEPARATOR)))
+    rPath [len - 1] = 0;  // remove trailing CS_PATH_SEPARATOR
+
+  // try opening directory
+  if ((dh = opendir (rPath)) != 0)
+  {
+    while ((de = readdir (dh)) != 0)
+    {
+      // skip special folders '.' and '..'
+      if ((strcmp (de->d_name, ".") == 0)
+       || (strcmp (de->d_name, "..") == 0))
+        continue;
+
+      entry.Clear ();
+      entry << de->d_name;
+
+      if (isdir (rPath, de))
+        entry << VFS_PATH_SEPARATOR; // add slash for directory
+
+      // insert into list
+      list->Push (entry);
+    } /* endwhile */
+    // close directory handle
+    closedir (dh);
+  }
+
+  // return result
+  return csPtr<iStringArray> (list);
 }
 
 // Query real path of filesystem root

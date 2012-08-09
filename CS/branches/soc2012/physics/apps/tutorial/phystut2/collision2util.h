@@ -16,19 +16,41 @@
 
 #include "ivaria/physics.h"
 
+struct iConvexDecomposer;
+struct iTriangleMesh;
+
+/// Callback-style result set that works around allocation issues and yields all partial colliders that make up a concave mesh
+struct iConvexDecomposedColliderResult
+{
+  /// Yields the next convex-decomposed collider
+  virtual void YieldCollider(CS::Collisions::iCollider* collider);
+};
+
 class Collision2Helper
 {
 public:
   /// Creates and adds all collision objects of all meshes in the given engine to the collision system
   static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iEngine* engine, bool convexDecomposition = false, iCollection* collection = nullptr);
+    iEngine* engine, 
+    iConvexDecomposer* decomposer = nullptr, 
+    iCollection* collection = nullptr);
   
   /// Creates and adds all collision objects of all meshes in the given sector to the collision system
   static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iSector* sector, bool convexDecomposition = false, iCollection* collection = nullptr);
+    iSector* sector, 
+    iConvexDecomposer* decomposer = nullptr, 
+    iCollection* collection = nullptr);
 
   /// Recursively creates and adds all collision objects of the mesh and it's children to the collision system
-  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys, iSector* sector, iMeshWrapper* mesh, bool convexDecomposition = false);
+  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys, iSector* sector, 
+    iMeshWrapper* mesh, 
+    iConvexDecomposer* decomposer = nullptr);
+
+  /// Perform convex decomposition on the given trimesh and compound the result meshes into a single collider
+  static csPtr<CS::Collisions::iColliderCompound> PerformConvexDecomposition(
+  CS::Collisions::iCollisionSystem* colSys,
+  iConvexDecomposer* decomposer,
+  iTriangleMesh* concaveMesh);
 };
 
 

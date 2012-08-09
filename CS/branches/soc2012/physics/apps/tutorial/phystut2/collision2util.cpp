@@ -9,14 +9,20 @@
 #include "iengine/portalcontainer.h"
 #include "iengine/scenenode.h"
 
+#include "igeom/trimesh.h"
+
 #include "imesh/objmodel.h"
 #include "imesh/terrain2.h"
+
+#include "ivaria/convexdecompose.h"
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
 void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iEngine* engine, bool decompose, iCollection* collection)
+    iEngine* engine, 
+    iConvexDecomposer* decomposer,
+    iCollection* collection)
 {
   // Initialize all mesh objects for collision detection.
   int i;
@@ -25,12 +31,13 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
   {
     iMeshWrapper* mesh = meshes->Get (i);
     if ((collection && !collection->IsParentOf(mesh->QueryObject ())) || !mesh->GetMovable()) continue;
-    InitializeCollisionObjects (colsys, mesh->GetMovable()->GetSectors()->Get(0), mesh, decompose);
+    InitializeCollisionObjects (colsys, mesh->GetMovable()->GetSectors()->Get(0), mesh, decomposer);
   }
 }
 
 void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iSector* sector, bool decompose, iCollection* collection)
+    iSector* sector, 
+    iConvexDecomposer* decomposer, iCollection* collection)
 {
   // Initialize all mesh objects for collision detection.
   int i;
@@ -39,11 +46,15 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
   {
     iMeshWrapper* mesh = meshes->Get (i);
     if (collection && !collection->IsParentOf(mesh->QueryObject ())) continue;
-    InitializeCollisionObjects (colsys, sector, mesh, decompose);
+    InitializeCollisionObjects (colsys, sector, mesh, decomposer);
   }
 }
 
-void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colSys, iSector* sector, iMeshWrapper* mesh, bool decompose)
+void Collision2Helper::InitializeCollisionObjects (
+  CS::Collisions::iCollisionSystem* colSys, 
+  iSector* sector,
+  iMeshWrapper* mesh, 
+  iConvexDecomposer* decomposer)
 {
   // Get iCollisionSector from iSector
   iCollisionSector* colSect = colSys->GetOrCreateCollisionSector (sector);
@@ -112,27 +123,31 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
 
   if (!terrainSys && !portalCont && !collObj)
   {
-    // did not find a specific physical factory and its not a heightfield 
-    // -> Create a static CO from the mesh, using default values for friction, etc (if available)
-    //csRef<iColliderConvexMesh> collider = colSys->CreateColliderConvexMesh(mesh);
-    
-    csRef<CS::Collisions::iCollider> collider;
-    if (decompose)
-    {
-      collider = csRef<CS::Collisions::iColliderCompound>(colSys->CreateColliderCompound());
-      colSys->DecomposeConcaveMesh (collider, mesh, false);
-    }
-    else
-    {
-      collider = csRef<CS::Collisions::iColliderConcaveMesh>(colSys->CreateColliderConcaveMesh(mesh));
-    }
+    // did not find a specific physical factory and its not a placeholder
+    // -> Create a static CO from the mesh, using default values for physical values (if available)
 
-    // Colliders cannot be created for meshes that have no triangle data
-    if (collider)
+    csRef<iTriangleMesh> triMesh = colSys->FindColdetTriangleMesh(mesh);
+    if (triMesh)
     {
-      csRef<iCollisionObjectFactory> collObjFact = colSys->CreateCollisionObjectFactory(collider);
-      collObj = collObjFact->CreateCollisionObject();
-      mesh->QueryObject()->ObjAdd(collObj->QueryObject());
+      //csRef<iColliderConvexMesh> collider = colSys->CreateColliderConvexMesh(mesh);
+
+      csRef<CS::Collisions::iCollider> collider;
+      if (decomposer)
+      {
+        collider = csRef<CS::Collisions::iColliderCompound>(PerformConvexDecomposition(colSys, decomposer, triMesh));
+      }
+      else
+      {
+        collider = csRef<CS::Collisions::iColliderConcaveMesh>(colSys->CreateColliderConcaveMesh(mesh));
+      }
+
+      // Colliders cannot be created for meshes that have no triangle data
+      if (collider)
+      {
+        csRef<iCollisionObjectFactory> collObjFact = colSys->CreateCollisionObjectFactory(collider);
+        collObj = collObjFact->CreateCollisionObject();
+        mesh->QueryObject()->ObjAdd(collObj->QueryObject());
+      }
     }
   }
 
@@ -166,4 +181,38 @@ void Collision2Helper::InitializeCollisionObjects (CS::Collisions::iCollisionSys
       InitializeCollisionObjects (colSys, sector, child);
     }
   }
+}
+
+csPtr<iColliderCompound> Collision2Helper::PerformConvexDecomposition(
+  iCollisionSystem* colSys, 
+  iConvexDecomposer* decomposer,
+  iTriangleMesh* concaveMesh)
+{
+  struct ConvexDecomposedMeshResult : iConvexDecomposedMeshResult
+  {
+    iCollisionSystem* colSys;
+    csRef<iColliderCompound> collider;
+
+    ConvexDecomposedMeshResult(iCollisionSystem* colSys) :
+
+    colSys(colSys)
+    {
+      collider = colSys->CreateColliderCompound();
+    }
+
+    virtual void YieldMesh(iTriangleMesh* convexMeshPart)
+    {
+      csRef<iColliderConvexMesh> partialCollider = colSys->CreateColliderConvexMesh(convexMeshPart);
+      collider->AddCollider(partialCollider);
+    }
+  };
+
+  // Create result "accumulator"
+  ConvexDecomposedMeshResult nestedResults(colSys);
+
+  // Actual Decomposition
+  decomposer->Decompose(concaveMesh, &nestedResults);
+  
+  // Return the new collider to the caller
+  return csPtr<iColliderCompound>(nestedResults.collider);
 }

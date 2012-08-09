@@ -24,6 +24,7 @@
 #include "csgeom/tri.h"
 #include "imesh/genmesh.h"
 #include "imesh/object.h"
+#include "imesh/objmodel.h"
 #include "csutil/sysfunc.h"
 #include "iutil/objreg.h"
 #include "ivaria/view.h"
@@ -40,7 +41,6 @@
 #include "BulletSoftBody/btSoftRigidDynamicsWorld.h"
 #include "BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h"
 #include "BulletSoftBody/btSoftBodyHelpers.h"
-#include "convexdecompose/ConvexBuilder.h"
 
 #include "csutil/custom_new_enable.h"
 
@@ -146,14 +146,18 @@ csPtr<CS::Collisions::iColliderCompound> csBulletSystem::CreateColliderCompound 
 
 csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify)
 {
-  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh, baseID, colldetID);
+  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh);
   if (!triMesh)
     return csPtr<CS::Collisions::iColliderConvexMesh> (nullptr);
 
-  btTriangleMesh* btTriMesh = GenerateTriMeshData (mesh, baseID, colldetID, getInternalScale ());
-  if (! btTriMesh)
-    return csPtr<CS::Collisions::iColliderConvexMesh> (nullptr);
+  return CreateColliderConvexMesh(triMesh, mesh, simplify);
+}
 
+csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (
+  iTriangleMesh* triMesh, iMeshWrapper* mesh, bool simplify)
+{
+  btTriangleMesh* btTriMesh = CreateBulletTriMesh (triMesh);
+  
   csRef<csBulletColliderConvexMesh> collider = csPtr<csBulletColliderConvexMesh>(
     new csBulletColliderConvexMesh (mesh, triMesh, btTriMesh, this, simplify));
 
@@ -163,11 +167,12 @@ csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexM
 
 csPtr<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcaveMesh (iMeshWrapper* mesh)
 {
-  btTriangleMesh* triMesh = GenerateTriMeshData (mesh, baseID, colldetID, getInternalScale ());
-  if (!triMesh) return csPtr<CS::Collisions::iColliderConcaveMesh> (nullptr);   // not a triangular mesh
+  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh);
+  if (!triMesh) return csPtr<CS::Collisions::iColliderConcaveMesh> (nullptr);
 
+  btTriangleMesh* btTriMesh = CreateBulletTriMesh (triMesh);
 
-  csRef<csBulletColliderConcaveMesh> collider = csPtr<csBulletColliderConcaveMesh>(new csBulletColliderConcaveMesh (mesh, triMesh,this));
+  csRef<csBulletColliderConcaveMesh> collider = csPtr<csBulletColliderConcaveMesh>(new csBulletColliderConcaveMesh (mesh, btTriMesh,this));
 
   //colliders.Push (collider);
   return csPtr<iColliderConcaveMesh>(collider);
@@ -314,144 +319,6 @@ CS::Collisions::iCollisionSector* csBulletSystem::GetCollisionSector (const iSec
   }
   return nullptr;
 }
-
-//#include "HACD/hacdCircularList.h"
-//#include "HACD/hacdVector.h"
-//#include "HACD/hacdICHull.h"
-//#include "HACD/hacdGraph.h"
-//#include "HACD/hacdHACD.h"
-void csBulletSystem::DecomposeConcaveMesh (CS::Collisions::iCollider* root, iMeshWrapper* mesh, bool simplify)
-{
-  class MyConvexDecomposition : public ConvexDecomposition::ConvexDecompInterface
-  {
-    int mHullCount;
-    int mBaseCount;
-    float scale;
-    btVector3 centroid;
-    bool simp;
-  public:
-    btAlignedObjectArray<btConvexHullShape*> m_convexShapes;
-    btAlignedObjectArray<btVector3> m_convexCentroids;
-    btAlignedObjectArray<float> m_convexVolume;
-
-    MyConvexDecomposition (float scale, bool simplify)
-      : mHullCount (0), mBaseCount (0), scale (scale), simp (simplify)
-    {
-    }
-
-    virtual void ConvexDecompResult(ConvexDecomposition::ConvexResult &result)
-    {
-      btVector3 localScaling(scale, scale, scale);
-
-      //calc centroid, to shift vertices around center of mass
-      centroid.setValue(0,0,0);
-
-      btAlignedObjectArray<btVector3> vertices;
-      //const unsigned int *src = result.mHullIndices;
-      for (unsigned int i=0; i<result.mHullVcount; i++)
-      {
-        btVector3 vertex(result.mHullVertices[i*3],result.mHullVertices[i*3+1],result.mHullVertices[i*3+2]);
-        vertex *= localScaling;
-        centroid += vertex;
-
-      }
-
-      centroid *= 1.f/(float(result.mHullVcount) );
-
-      if (simp)
-        for (unsigned int i=0; i<result.mHullVcount; i++)
-        {
-          btVector3 vertex(result.mHullVertices[i*3],result.mHullVertices[i*3+1],result.mHullVertices[i*3+2]);
-          vertex *= localScaling;
-          vertex -= centroid;
-          vertices.push_back(vertex);
-        }
-      else
-      {
-        const unsigned int *src = result.mHullIndices;
-        for (unsigned int i=0; i<result.mHullTcount; i++)
-        {
-          unsigned int index0 = *src++;
-          unsigned int index1 = *src++;
-          unsigned int index2 = *src++;
-
-          btVector3 vertex0(result.mHullVertices[index0*3], result.mHullVertices[index0*3+1],result.mHullVertices[index0*3+2]);
-          btVector3 vertex1(result.mHullVertices[index1*3], result.mHullVertices[index1*3+1],result.mHullVertices[index1*3+2]);
-          btVector3 vertex2(result.mHullVertices[index2*3], result.mHullVertices[index2*3+1],result.mHullVertices[index2*3+2]);
-          vertex0 *= localScaling;
-          vertex1 *= localScaling;
-          vertex2 *= localScaling;
-
-          vertex0 -= centroid;
-          vertex1 -= centroid;
-          vertex2 -= centroid;
-
-          //TODO this will add duplicate vertices to convex shape. But the debug draw result is right now.
-          vertices.push_back(vertex0);
-          vertices.push_back(vertex1);
-          vertices.push_back(vertex2);
-
-          index0+=mBaseCount;
-          index1+=mBaseCount;
-          index2+=mBaseCount;
-        }
-      }
-
-      btConvexHullShape* convexShape = new btConvexHullShape(&(vertices[0].getX()),vertices.size());
-      convexShape->setMargin(0.01f);
-      m_convexShapes.push_back(convexShape);
-      m_convexCentroids.push_back(centroid);
-      m_convexVolume.push_back(result.mHullVolume);
-      mBaseCount+=result.mHullVcount; // advance the 'base index' counter.
-    }
-  };
-
-  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh, baseID, colldetID);
-  if (! triMesh)
-    return;
-
-  unsigned int depth = 5;
-  float cpercent     = 5;
-  float ppercent     = 15;
-  unsigned int maxv  = 16;
-  float skinWidth    = 0.0;
-
-  csTriangle *c_triangle = triMesh->GetTriangles ();
-  csVector3 *c_vertex = triMesh->GetVertices ();
-
-  ConvexDecomposition::DecompDesc desc;
-  desc.mVcount       = uint (triMesh->GetVertexCount ());
-  desc.mVertices     = (float*)c_vertex;
-  desc.mTcount       = uint (triMesh->GetTriangleCount ());
-  desc.mIndices      = (unsigned int *)c_triangle;
-  desc.mDepth        = depth;
-  desc.mCpercent     = cpercent;
-  desc.mPpercent     = ppercent;
-  desc.mMaxVertices  = maxv;
-  desc.mSkinWidth    = skinWidth;
-
-  MyConvexDecomposition	convexDecomposition(internalScale, simplify);
-  desc.mCallback = &convexDecomposition;
-
-  ConvexBuilder cb(desc.mCallback);
-  cb.process(desc);
-
-  btTransform trans;
-  trans.setIdentity();
-  csOrthoTransform relaTransform;
-  for (int i=0;i<convexDecomposition.m_convexShapes.size();i++)
-  {
-
-    btVector3 centroid = convexDecomposition.m_convexCentroids[i];
-    trans.setOrigin(centroid);
-    btConvexHullShape* convexShape = convexDecomposition.m_convexShapes[i];
-    csRef<csBulletCollider> collider = csPtr<csBulletCollider>(new csBulletColliderConvexMesh (convexShape, convexDecomposition.m_convexVolume[i], this));
-    //colliders.Push (collider);
-    relaTransform = BulletToCS (trans, inverseInternalScale);
-    root->AddCollider (collider, relaTransform);
-  }
-}
-
 
 // ###############################################################################################################
 // Physical Objects
@@ -684,6 +551,105 @@ bool csBulletSystem::GetGroupCollision (const char* name1,
     return false;
 }
 
+bool dummyWorldInit = false;
+void csBulletSystem::SeparateDisconnectedSubMeshes(iColliderCompound* compoundCollider, iColliderCompoundResult* results)
+{
+  // Make sure we have a valid dispatcher
+  static btDefaultCollisionConfiguration* configuration;
+  static btCollisionDispatcher* dispatcher;
+  static btAxisSweep3* broadphase;
+  static btCollisionWorld* bulletWorld;
+  if (!dummyWorldInit)
+  {
+    // init dummy world
+    dummyWorldInit = true;
+    configuration = new btDefaultCollisionConfiguration ();
+    dispatcher = new btCollisionDispatcher (configuration);
+
+    btVector3 worldAabbMin (-WORLD_AABB_DIMENSIONS, -WORLD_AABB_DIMENSIONS, -WORLD_AABB_DIMENSIONS);
+    btVector3 worldAabbMax (WORLD_AABB_DIMENSIONS, WORLD_AABB_DIMENSIONS, WORLD_AABB_DIMENSIONS);
+
+    const int maxProxies = 32766;   // TODO: Tune this down for the dummy world?
+    broadphase = new btAxisSweep3 (worldAabbMin, worldAabbMax, maxProxies);
+
+    bulletWorld = new btCollisionWorld (dispatcher, broadphase, configuration);
+  }
+
+  // Add all partial colliders as objects to the collision world
+  CS_ALLOC_STACK_ARRAY(btCollisionObject, objs, compoundCollider->GetColliderCount());
+  for (size_t i = 0; i < compoundCollider->GetColliderCount(); ++i)
+  {
+    btCollisionObject& obj = objs[i];
+
+    CS::Collisions::iCollider* ipartialCollider;
+    csOrthoTransform transform;
+    compoundCollider->GetCollider(i, ipartialCollider, transform);
+
+    csBulletCollider* partialCollider = dynamic_cast<csBulletCollider*>(ipartialCollider);
+    obj.setCollisionShape(partialCollider->GetOrCreateBulletShape());
+    obj.setWorldTransform(CSToBullet(transform, getInternalScale()));
+    bulletWorld->addCollisionObject(&obj);
+  }
+  
+  // Test all partial colliders against each other
+  bulletWorld->performDiscreteCollisionDetection();
+  
+  // TODO: Build islands
+  //btPersistentManifold** manifold = dispatcher->getInternalManifoldPointer();
+  //int maxNumManifolds = dispatcher->getNumManifolds();
+  //for (i=0;i<maxNumManifolds ;i++)
+  //{
+  //  btPersistentManifold* manifold = dispatcher->getManifoldByIndexInternal(i);
+
+  //  btCollisionObject* colObj0 = static_cast<btCollisionObject*>(manifold->getBody0());
+  //  btCollisionObject* colObj1 = static_cast<btCollisionObject*>(manifold->getBody1());
+
+  //  ///@todo: check sleeping conditions!
+  //  if (((colObj0) && colObj0->getActivationState() != ISLAND_SLEEPING) ||
+  //    ((colObj1) && colObj1->getActivationState() != ISLAND_SLEEPING))
+  //  {
+
+  //    //kinematic objects don't merge islands, but wake up all connected objects
+  //    if (colObj0->isKinematicObject() && colObj0->getActivationState() != ISLAND_SLEEPING)
+  //    {
+  //      if (colObj0->hasContactResponse())
+  //        colObj1->activate();
+  //    }
+  //    if (colObj1->isKinematicObject() && colObj1->getActivationState() != ISLAND_SLEEPING)
+  //    {
+  //      if (colObj1->hasContactResponse())
+  //        colObj0->activate();
+  //    }
+  //    if(m_splitIslands)
+  //    { 
+  //      //filtering for response
+  //      if (dispatcher->needsResponse(colObj0,colObj1))
+  //        m_islandmanifold.push_back(manifold);
+  //    }
+  //  }
+  //}
+}
+
+iTriangleMesh* csBulletSystem::FindColdetTriangleMesh (iMeshWrapper* mesh)
+{
+  iObjectModel* objModel = mesh->GetMeshObject ()->GetObjectModel ();
+  csRef<iTriangleMesh> triMesh;
+  if  (objModel->GetTriangleData (colldetID))
+    triMesh = objModel->GetTriangleData (colldetID);
+  else
+    triMesh = objModel->GetTriangleData (baseID);
+
+  if (!triMesh || triMesh->GetVertexCount () == 0
+      || triMesh->GetTriangleCount () == 0)
+  {
+    /*csFPrintf (stderr, "iCollider: No collision polygons, triangles or vertices on mesh factory %s\n",
+      CS::Quote::Single (mesh->QueryObject ()->GetName ()));*/
+
+    return csRef<iTriangleMesh> (nullptr);
+  }
+  return triMesh;
+}
+
 
 // Factory
 
@@ -752,5 +718,35 @@ void csBulletSystem::DeleteAll()
 {
   collSectors.DeleteAll ();
 }
+
+btTriangleMesh* csBulletSystem::CreateBulletTriMesh (iTriangleMesh* triMesh)
+{
+  btTriangleMesh* btMesh = new btTriangleMesh ();
+  
+  size_t triangleCount = triMesh->GetTriangleCount ();
+  //size_t vertexCount = triMesh->GetVertexCount ();
+
+  size_t i;
+  csTriangle *c_triangle = triMesh->GetTriangles ();
+  csVector3 *c_vertex = triMesh->GetVertices ();
+  for (i =0;i<triangleCount;i++)
+  {
+    int index0 = c_triangle[i].a;
+    int index1 = c_triangle[i].b;
+    int index2 = c_triangle[i].c;
+
+    btVector3 vertex0 (c_vertex[index0].x, c_vertex[index0].y, c_vertex[index0].z);
+    btVector3 vertex1 (c_vertex[index1].x, c_vertex[index1].y, c_vertex[index1].z);
+    btVector3 vertex2 (c_vertex[index2].x, c_vertex[index2].y, c_vertex[index2].z);
+
+    vertex0 *= getInternalScale ();
+    vertex1 *= getInternalScale ();
+    vertex2 *= getInternalScale ();
+
+    btMesh->addTriangle (vertex0,vertex1,vertex2);
+  }
+  return btMesh;
+}
+
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

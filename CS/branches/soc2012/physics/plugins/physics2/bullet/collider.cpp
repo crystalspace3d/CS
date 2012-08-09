@@ -302,5 +302,32 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       return children->colliders[index];
     }
   }
+  
+
+  void csBulletCollider::GetCollider (size_t index, iCollider*& collider, csOrthoTransform& trans)
+  {
+    if (shape)
+    {
+      if (index == 0) 
+      {
+        collider = this;
+        trans = csOrthoTransform();   // set to identity
+      }
+      else
+      {
+        if (!children || index > children->colliders.GetSize()) return;
+
+        collider = children->colliders[index-1];
+        trans = children->transforms[index-1];
+      }
+    }
+    else
+    {
+      if (!children || index >= children->colliders.GetSize()) return;
+
+      collider = children->colliders[index];
+      trans = children->transforms[index];
+    }
+  }
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

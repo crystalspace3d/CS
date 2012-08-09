@@ -48,65 +48,7 @@ using namespace CS::Collisions;
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
 
-csRef<iTriangleMesh> FindColdetTriangleMesh (iMeshWrapper* mesh,
-                                             csStringID baseID, csStringID colldetID)
-{
-  iObjectModel* objModel = mesh->GetMeshObject ()->GetObjectModel ();
-  csRef<iTriangleMesh> triMesh;
-  bool use_trimesh = objModel->IsTriangleDataSet (baseID);
-  if (use_trimesh)
-  {
-    if  (objModel->GetTriangleData (colldetID))
-       triMesh = objModel->GetTriangleData (colldetID);
-    else
-      triMesh = objModel->GetTriangleData (baseID);
-  }
-
-  if (!triMesh || triMesh->GetVertexCount () == 0
-      || triMesh->GetTriangleCount () == 0)
-  {
-    /*csFPrintf (stderr, "iCollider: No collision polygons, triangles or vertices on mesh factory %s\n",
-      CS::Quote::Single (mesh->QueryObject ()->GetName ()));*/
-
-    return csRef<iTriangleMesh> (nullptr);
-  }
-  return triMesh;
-}
-
 #include "csutil/custom_new_disable.h"
-
-btTriangleMesh* GenerateTriMeshData (iMeshWrapper* mesh, csStringID baseID, 
-                                     csStringID colldetID, float interScale)
-{
-  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh, baseID, colldetID);
-  if (!triMesh)
-    return nullptr;
-  btTriangleMesh* btMesh = new btTriangleMesh ();
-  
-  size_t triangleCount = triMesh->GetTriangleCount ();
-  //size_t vertexCount = triMesh->GetVertexCount ();
-
-  size_t i;
-  csTriangle *c_triangle = triMesh->GetTriangles ();
-  csVector3 *c_vertex = triMesh->GetVertices ();
-  for (i =0;i<triangleCount;i++)
-  {
-    int index0 = c_triangle[i].a;
-    int index1 = c_triangle[i].b;
-    int index2 = c_triangle[i].c;
-
-    btVector3 vertex0 (c_vertex[index0].x, c_vertex[index0].y, c_vertex[index0].z);
-    btVector3 vertex1 (c_vertex[index1].x, c_vertex[index1].y, c_vertex[index1].z);
-    btVector3 vertex2 (c_vertex[index2].x, c_vertex[index2].y, c_vertex[index2].z);
-
-    vertex0 *= interScale;
-    vertex1 *= interScale;
-    vertex2 *= interScale;
-
-    btMesh->addTriangle (vertex0,vertex1,vertex2);
-  }
-  return btMesh;
-}
 
 
 // #######################################################################################################
@@ -360,13 +302,12 @@ csBulletColliderConvexMesh::~csBulletColliderConvexMesh ()
 float csBulletColliderConvexMesh::ComputeShapeVolume() const 
 {
   // TODO: If no mesh is supplied, cannot compute new volume
-  if (!mesh) return volume;
+  if (!mesh) 
+    return volume;
 
-  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh, 
-    collSystem->baseID, collSystem->colldetID);
-
+  csRef<iTriangleMesh> triMesh = collSystem->FindColdetTriangleMesh (mesh);
   if (!triMesh)
-    return 0;
+    return volume;
 
   size_t triangleCount = triMesh->GetTriangleCount ();
 
@@ -426,9 +367,7 @@ float csBulletColliderConcaveMesh::ComputeShapeVolume() const
 
   //return aabbExtents.x() * aabbExtents.y() * aabbExtents.z();
   
-  csRef<iTriangleMesh> itriMesh = FindColdetTriangleMesh (mesh, 
-    collSystem->baseID, collSystem->colldetID);
-
+  csRef<iTriangleMesh> itriMesh = collSystem->FindColdetTriangleMesh (mesh);
   if (!itriMesh)
     return 0;
 

@@ -15,27 +15,37 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#include "cssysdef.h"
+#ifndef __CS_CONVEXDECOMPOSE_H__
+#define __CS_CONVEXDECOMPOSE_H__
 
-#include "convexdecompose.h"
+#include "csutil/scf.h"
+#include "csutil/scf_implementation.h"
+#include "iutil/comp.h"
+#include "iutil/objreg.h"
+
+#include "ivaria/convexdecompose.h"
+
+struct iTriangleMesh;
 
 CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 {
 
-  SCF_IMPLEMENT_FACTORY (ConvexDecomposer);
+class ConvexDecomposer :
+public scfImplementation2<ConvexDecomposer, iComponent, iConvexDecomposer>
+{
+private:
+  iObjectRegistry* object_reg;
 
-  ConvexDecomposer::ConvexDecomposer (iBase* parent)
-    : scfImplementationType (this, parent)
-  {}
+public:
+  ConvexDecomposer (iBase* parent);
+  virtual ~ConvexDecomposer ();
 
-  ConvexDecomposer::~ConvexDecomposer ()
-  {}
+  bool Initialize (iObjectRegistry* object_reg);
 
-  bool ConvexDecomposer::Initialize (iObjectRegistry* object_reg)
-  {
-    this->object_reg= object_reg;
-    return true;
-  }
+  virtual void Decompose(iTriangleMesh* triMesh, iConvexDecomposedMeshResult* results);
+};
 
 }
 CS_PLUGIN_NAMESPACE_END (ConvexDecompose)
+
+#endif // __CS_CONVEXDECOMPOSE_H__

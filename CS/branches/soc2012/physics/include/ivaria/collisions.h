@@ -41,6 +41,7 @@ struct iMovable;
 struct iPortal;
 struct iCamera;
 struct iView;
+struct iTriangleMesh;
 
 namespace CS
 {
@@ -134,6 +135,15 @@ struct iCollisionCallback: public virtual iBase
    */
   virtual void OnCollision (iCollisionObject *thisbody, iCollisionObject *otherbody, 
       const csArray<CollisionData>& collisions) = 0; 
+};
+
+/**
+ * Used by iCollisionSystem to yield disconnected mesh parts
+ */
+struct iColliderCompoundResult
+{
+  /// Yields the next disconnected collider
+  virtual void YieldMesh(iColliderCompound* mesh) = 0;
 };
 
 /**
@@ -524,8 +534,9 @@ struct iCollisionSystem : public virtual iBase
   virtual csPtr<iColliderCompound> CreateColliderCompound () = 0;
 
   /// Create a convex mesh collider.
-  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (
-    iMeshWrapper* mesh, bool simplify = false) = 0;
+  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify = false) = 0;
+  /// Create a convex mesh collider.
+  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* triMesh, iMeshWrapper* mesh = nullptr, bool simplify = false) = 0;
 
   /// Create a static concave mesh collider.
   virtual csPtr<iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh) = 0;
@@ -573,15 +584,7 @@ struct iCollisionSystem : public virtual iBase
   virtual iCollisionSector* GetCollisionSector (size_t index) = 0; 
   
   /// Get a collision sector by iSector
-  virtual iCollisionSector* GetCollisionSector (const iSector* sceneSector) = 0; 
-
-  /**
-   * Decompose a concave mesh in convex parts. Each convex part will be added to
-   * the collision object as a separate iColliderConvexMesh. By this way you can
-   * get a dynamic concave mesh collider.
-   */
-  virtual void DecomposeConcaveMesh (iCollider* object, 
-    iMeshWrapper* mesh, bool simplify = false) = 0;
+  virtual iCollisionSector* GetCollisionSector (const iSector* sceneSector) = 0;
 
   /// Create a collision group.
   virtual CollisionGroup& CreateCollisionGroup (const char* name) = 0;
@@ -596,6 +599,16 @@ struct iCollisionSystem : public virtual iBase
   /// Get true if the two groups collide with each other.
   virtual bool GetGroupCollision (const char* name1, const char* name2) = 0;
 
+  
+
+  /**
+   * Takes the given collider and cuts it into several colliders that are disconnected from each other.
+   * Can be used on iColliderCompound objects that are consisting of disconnected parts, e.g. the results of a Convex Decomposition operation.
+   */
+  virtual void SeparateDisconnectedSubMeshes(iColliderCompound* compoundCollider, iColliderCompoundResult* results) = 0;
+
+  /// Tries to find and return the underlying collision iTriangleMesh that has any of this system's ids
+  virtual iTriangleMesh* FindColdetTriangleMesh (iMeshWrapper* mesh) = 0;
 
 
   // Factory

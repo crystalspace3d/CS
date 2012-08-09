@@ -276,7 +276,7 @@ bool PhysDemo::LoadLevel(const csString& pathname, bool convexDecomp)
   VFS->PopDir();
   
   // create physical world from render world
-  Collision2Helper::InitializeCollisionObjects(physicalSystem, engine, convexDecomp);
+  Collision2Helper::InitializeCollisionObjects(physicalSystem, engine, convexDecomp ? convexDecomposer : nullptr);
 
   // Set default sector
   room = engine->GetSectors()->Get(0);

@@ -51,16 +51,22 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   if (!RegisterQueue (GetObjectRegistry(), csevAllEvents (GetObjectRegistry())))
     return ReportError ("Failed to set up event handler!");
 
-  // Checking for choosen dynamic system
-  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
-  phys_engine_name = clp->GetOption ("phys_engine");
-
-  phys_engine_name = "Bullet";
   csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry());
+  
+  // Load Physics plugin
   physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet2");
+  if (!physicalSystem) return ReportError ("Could not load the bullet2 plugin!");
 
-  if (!physicalSystem)
-    return ReportError ("Could not load the bullet2 plugin!");
+  // Load Convex Decomposition plugin
+  convexDecomposer = csLoadPlugin<iConvexDecomposer> (plugmgr, "crystalspace.hacd");
+  if (!convexDecomposer) 
+  {
+    // It is not vital to the operation of this demo
+    ReportWarning("Could not load the HACD plugin!");
+  }
+  
+  // Get commandline parser
+  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
 
   // Check whether the soft bodies are enabled or not
   isSoftBodyWorld = clp->GetBoolOption ("soft", true);
@@ -122,20 +128,6 @@ bool PhysDemo::Application()
 
 void PhysDemo::Reset()
 {
-  // Remove all physical sectors
-  physicalSystem->DeleteAll();
-
-  // Remove everything in the engine that existed before
-  engine->DeleteAll();
-  engine->ResetWorldSpecificSettings();
-  engine->GetCameraPositions()->RemoveAll();
-  csRef<iEngineSequenceManager> seqMgr = csQueryRegistry<iEngineSequenceManager> (object_reg);
-  if (seqMgr)
-  {
-    seqMgr->RemoveTriggers ();
-    seqMgr->RemoveSequences ();
-  }
-
   // reset all other variables
   mainCollider = nullptr;
 
@@ -162,6 +154,20 @@ void PhysDemo::Reset()
   actorVehicle = nullptr;
 
   walls = nullptr;
+
+  // Remove all physical sectors
+  physicalSystem->DeleteAll();
+
+  // Remove everything in the engine that existed before
+  engine->DeleteAll();
+  engine->ResetWorldSpecificSettings();
+  engine->GetCameraPositions()->RemoveAll();
+  csRef<iEngineSequenceManager> seqMgr = csQueryRegistry<iEngineSequenceManager> (object_reg);
+  if (seqMgr)
+  {
+    seqMgr->RemoveTriggers ();
+    seqMgr->RemoveSequences ();
+  }
 }
 
 bool PhysDemo::SetLevel(PhysDemoLevel level, bool convexDecomp)

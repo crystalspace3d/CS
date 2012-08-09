@@ -22,8 +22,12 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "igeom/trimesh.h"
 #include "csgeom/trimesh.h"
 
-#include "bullet/btBulletDynamicsCommon.h"
-#include "bullet/btBulletCollisionCommon.h"
+#include "csutil/custom_new_disable.h"
+
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
+
+#include "csutil/custom_new_enable.h"
 
 #include "HACD/hacdCircularList.h"
 #include "HACD/hacdVector.h"

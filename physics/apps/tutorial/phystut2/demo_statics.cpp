@@ -110,11 +110,6 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   csVector3 roomPos(0);
   csScalar wallThickness = 5;
   
-  // Portal parameters
-  csScalar portalEpsilon = csScalar(0.01);
-  //csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
-  csVector2 halfPortalExtents(1);
-  
   //csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two portals
   
   // Default behavior from DemoApplication for the creation of the scene
@@ -122,6 +117,11 @@ void PhysDemo::CreateBoxRoom(csScalar size)
 
   // Create room
   CreateBoxRoom(roomExtents, roomPos, wallThickness);
+  
+  //// Portal parameters
+  //csScalar portalEpsilon = csScalar(0.01);
+  ////csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
+  //csVector2 halfPortalExtents(1);
 
   //// Create portals
 
@@ -276,7 +276,7 @@ bool PhysDemo::LoadLevel(const csString& pathname, bool convexDecomp)
   VFS->PopDir();
   
   // create physical world from render world
-  Collision2Helper::InitializeCollisionObjects(physicalSystem, engine, convexDecomp ? convexDecomposer : nullptr);
+  Collision2Helper::InitializeCollisionObjects(physicalSystem, engine, convexDecomp ? &*convexDecomposer : nullptr);
 
   // Set default sector
   room = engine->GetSectors()->Get(0);

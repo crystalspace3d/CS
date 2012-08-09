@@ -36,7 +36,7 @@ class csBulletSoftBody : public scfImplementationExt1<
   friend class csBulletRigidBody;
   friend class csBulletJoint;
   friend class csBulletSector;
-  friend class csBulletCollisionPortal;
+  friend class CollisionPortal;
   
   friend class BulletSoftRopeFactory;
   friend class BulletSoftClothFactory;
@@ -94,10 +94,6 @@ public:
 
   virtual bool Collide (iCollisionObject* otherObject) {return csBulletCollisionObject::Collide (otherObject);}
   virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end);
-
-  virtual size_t GetContactObjectsCount () {return contactObjects.GetSize ();}
-  virtual CS::Collisions::iCollisionObject* GetContactObject (size_t index) {
-    return csBulletCollisionObject::GetContactObject (index);}
 
   btSoftBody* GetBulletSoftPointer () {return btBody;}
   virtual bool RemoveBulletObject ();

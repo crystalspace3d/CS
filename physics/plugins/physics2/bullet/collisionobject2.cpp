@@ -139,7 +139,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         result = ghost->getNumOverlappingObjects ();
       else 
         return 0;
-    }
+    } 
 
     if (objectCopy)
       result += objectCopy->GetContactObjectsCount ();

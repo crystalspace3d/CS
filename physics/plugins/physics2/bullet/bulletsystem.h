@@ -91,7 +91,7 @@ class csBulletSystem : public scfImplementationExt2<
   friend class csBulletColliderConvexMesh;
   friend class csBulletColliderConcaveMesh;
   friend class csBulletSector;
-  friend class csBulletCollisionPortal;
+  friend class CollisionPortal;
   friend class csBulletRigidBody;
 
 

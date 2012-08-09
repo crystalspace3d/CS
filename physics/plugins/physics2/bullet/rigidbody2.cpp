@@ -597,6 +597,18 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   csVector3 csBulletRigidBody::GetAngularFactor() const { return BulletToCS(btBody->getAngularFactor(), system->getInverseInternalScale()); }
   void csBulletRigidBody::SetAngularFactor(const csVector3& f) { btBody->setAngularFactor(CSToBullet(f, system->getInternalScale())); }
 
+
+  csPtr<iCollisionObject> csBulletRigidBody::CloneObject()
+  {
+    // btBody->getFlags() &BT_DISABLE_WORLD_GRAVITY
+    // return 
+    return nullptr;
+  }
+
+
+  // ##########################################################################################
+  // csBulletDefaultKinematicCallback implementation
+
   csBulletDefaultKinematicCallback::csBulletDefaultKinematicCallback ()
     : scfImplementationType (this)
   {

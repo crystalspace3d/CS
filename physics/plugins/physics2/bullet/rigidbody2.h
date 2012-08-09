@@ -40,7 +40,7 @@ friend class csBulletKinematicMotionState;
 friend class csBulletSoftBody;
 friend class csBulletJoint;
 friend class csBulletSector;
-friend class csBulletCollisionPortal;
+friend class CollisionPortal;
   
 using csPhysicalBody::GetFriction;
 using csPhysicalBody::SetFriction;
@@ -78,10 +78,6 @@ public:
   virtual bool Collide (iCollisionObject* otherObject) {return csBulletCollisionObject::Collide (otherObject);}
   virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end)
   { return csBulletCollisionObject::HitBeam (start, end);}
-
-  virtual size_t GetContactObjectsCount () {return contactObjects.GetSize ();}
-  virtual CS::Collisions::iCollisionObject* GetContactObject (size_t index) {
-    return csBulletCollisionObject::GetContactObject (index);}
 
   btRigidBody* GetBulletRigidPointer () {return btBody;}
   virtual bool RemoveBulletObject ();
@@ -158,6 +154,8 @@ public:
   virtual csVector3 GetAngularFactor() const;
   virtual void SetAngularFactor(const csVector3& f);
 
+  /// Clone this rigidbody
+  virtual csPtr<CS::Collisions::iCollisionObject> CloneObject();
 
   // Some convinience methods
   bool DoesGravityApply() const;

@@ -59,7 +59,7 @@ class csBulletCollisionObject;
 class csBulletCollisionTerrain;
 class csBulletCollider;
 class csBulletJoint;
-class csBulletCollisionPortal;
+class CollisionPortal;
 
 struct BulletActionWrapper : public virtual CS::Physics::iUpdatable
 {
@@ -85,7 +85,7 @@ class csBulletSector : public scfVirtImplementationExt2<
   friend class csBulletMotionState;
   friend class csBulletSystem;
   friend class csBulletGhostCollisionObject;
-  friend class csBulletCollisionPortal;
+  friend class CollisionPortal;
 
   csWeakRef<csBulletSystem> sys;
 
@@ -113,7 +113,7 @@ class csBulletSector : public scfVirtImplementationExt2<
   size_t worldMaxSteps;
 
   csRefArray<csBulletJoint> joints;
-  csArray<csBulletCollisionPortal*> portals;
+  csArray<CollisionPortal*> portals;
   csRefArrayObject<csBulletCollisionObject> collisionObjects;
   csRefArrayObject<csBulletRigidBody> rigidBodies;
   csRefArrayObject<csBulletSoftBody> softBodies;
@@ -125,7 +125,8 @@ class csBulletSector : public scfVirtImplementationExt2<
   csRefArray<CS::Physics::iUpdatable> updatables;
 
   void CheckCollisions();
-  void UpdatecsBulletCollisionPortals ();
+  void UpdateCollisionPortalsPreStep ();
+  void UpdateCollisionPortalsPostStep ();
   void SetInformationToCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy,
     const csOrthoTransform& warpTrans);
   void GetInformationFromCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy);

@@ -21,6 +21,7 @@
 #define __CS_IUTIL_VFS_H__
 
 // current dev environment is 64-bit
+// @@@TODO: move this to configure phase
 #define CS_SIZE_T_64BIT
 
 /**\file
@@ -343,16 +344,18 @@ struct iFileSystem : public virtual iBase
 
   /**
    * Opens a file within current file system. 
-   * \param Path Virtual path relative to current mount point.
-   * \param PathPrefix Absolute virtual path where current iFileSystem is
+   * \param path Virtual path relative to current mount point.
+   * \param pathPrefix Absolute virtual path where current iFileSystem is
    *   mounted.
-   * \param Mode File mode to open.
+   * \param mode File mode to open.
+   * \param useCaching if true and filesystem supports caching, caching will be
+   *   enabled.
    * \return Pointer to iFile instance of corresponding file.
    */
-  virtual csPtr<iFile> Open (const char *Path,
-                             const char *PathPrefix,
-                             int Mode,
-                             bool UseCaching) = 0;
+  virtual csPtr<iFile> Open (const char *path,
+                             const char *pathPrefix,
+                             int mode,
+                             bool useCaching) = 0;
 
   /**
    * Moves a file within current file system. 
@@ -362,7 +365,7 @@ struct iFileSystem : public virtual iBase
    * \return true if operation succeeded; false otherwise. Use GetStatus() for
    *   error information.
    */
-  virtual bool Move (const char *OldPath, const char *NewPath) = 0;
+  virtual bool Move (const char *oldPath, const char *newPath) = 0;
 
   /**
    * Get permission of specified file within current file system.
@@ -503,21 +506,21 @@ struct iVFS : public virtual iBase
 
 
   /// Set current working directory
-  virtual bool ChDir (const char *Path) = 0;
+  virtual bool ChDir (const char *path) = 0;
 
   /// Get current working directory
   virtual const char *GetCwd () = 0;
 
   /**
    * Push current directory and optionally change to a different directory.
-   * \param Path Path which should become the new working directory after the
+   * \param path Path which should become the new working directory after the
    *   current directory is remembered.  May be null.
-   * \remarks If Path is not the null pointer, then current working directory
+   * \remarks If path is not the null pointer, then current working directory
    *   is remembered and Path is set as the new working directory.  If Path is
    *   the null pointer, then the current working directory is remembered, but
    *   not changed.
    */
-  virtual void PushDir (char const* Path = 0) = 0;
+  virtual void PushDir (char const* path = 0) = 0;
   /**
    * Pop current directory.  Set the current working directory to the one most
    * recently pushed.
@@ -530,21 +533,21 @@ struct iVFS : public virtual iBase
   /**
    * Expand given virtual path, interpret all "." and ".."'s relative to
    * 'current virtual directory'.
-   * \param Path The path to expand.
-   * \param IsDir If true, the expanded path will be terminated with '/'.
+   * \param path The path to expand.
+   * \param isDir If true, the expanded path will be terminated with '/'.
    * \return A new iDataBuffer object.
    */
   virtual csPtr<iDataBuffer> ExpandPath (
-    const char *Path, bool IsDir = false) = 0;
+    const char *path, bool isDir = false) = 0;
 
   /// Check whether a file exists
-  virtual bool Exists (const char *Path) = 0;
+  virtual bool Exists (const char *path) = 0;
 
   /**
    * Find absolute paths of all files in a virtual directory and return an
    * array with their names.
    */
-  virtual csPtr<iStringArray> FindFiles (const char *Path) = 0;
+  virtual csPtr<iStringArray> FindFiles (const char *path) = 0;
 
   /**
    * Open a file on the VFS filesystem.
@@ -688,7 +691,13 @@ struct iVFS : public virtual iBase
   virtual bool ChDirAuto (const char* path, const csStringArray* paths = 0,
   	const char* vfspath = 0, const char* filename = 0) = 0;
 
-  virtual bool MoveFile (const char *OldPath, const char *NewPath) = 0;
+  /**
+   * Move file from oldPath to newPath
+   * \param oldPath virtual path of the file to move
+   * \param newPath new virtual path of file
+   * \remarks This feature is currently unsupported.
+   */
+  virtual bool MoveFile (const char *oldPath, const char *newPath) = 0;
 
   /**
    * Query file date/time.

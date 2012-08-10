@@ -38,60 +38,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(VFS)
 {
 
 class VfsNode;
-class csVFS;
-/*
-/// A replacement for standard-C FILE type in the virtual file space
-class csFile : public scfImplementation1<csFile, iFile>
-{
-protected:
-  // Index into parent node RPath
-  size_t Index;
-  // File node
-  VfsNode *Node;
-  // Filename in VFS
-  char *Name;
-  // File size (initialized in constructor)
-  uint64_t Size;
-  // Last error code
-  int Error;
-  // Verbosity flags.
-  unsigned int verbosity;
 
-  // The constructor for csFile
-  csFile (int Mode, VfsNode *ParentNode, size_t RIndex,
-	  const char *NameSuffix, unsigned int verbosity);
-  // Is verbosity enabled for a mode or set of modes?
-  bool IsVerbose(unsigned int mask) const { return (verbosity & mask) != 0; }
-
-public:
-  /// Instead of fclose() do "delete file" or file->DecRef ()
-  virtual ~csFile ();
-
-  /// Query file name (in VFS)
-  virtual const char *GetName () { return Name; }
-  /// Query file size
-  virtual uint64_t GetSize () { return Size; }
-  /// Check (and clear) file last error status
-  virtual int GetStatus ();
-
-  /// Replacement for standard fread()
-  virtual size_t Read (char *Data, size_t DataSize) = 0;
-  /// Replacement for standard fwrite()
-  virtual size_t Write (const char *Data, size_t DataSize) = 0;
-  /// Flush stream.
-  virtual void Flush () = 0;
-  /// Replacement for standard feof()
-  virtual bool AtEOF () = 0;
-  /// Query current file pointer
-  virtual uint64_t GetPos () = 0;
-  /// Get entire file data at once, if possible, or 0
-  virtual csPtr<iDataBuffer> GetAllData (bool nullterm = false) = 0;
-  /// Set new file pointer
-  virtual bool SetPos (off64_t newpos, int ref = 0) = 0;
-protected:
-  friend class csVFS;
-};
-*/
 struct HeapRefCounted :
   public CS::Memory::CustomAllocatedDerived<CS::Memory::Heap>,
   public CS::Utility::AtomicRefCount
@@ -183,17 +130,17 @@ public:
   virtual ~csVFS ();
 
   /// Is verbosity enabled for a mode or set of modes?
-  bool IsVerbose(unsigned int mask) const { return (verbosity & mask) != 0; }
+  bool IsVerbose (unsigned int mask) const { return (verbosity & mask) != 0; }
   /// Get verbosity flags.
-  unsigned int GetVerbosity() const { return verbosity; }
+  unsigned int GetVerbosity () const { return verbosity; }
 
   /// Set current working directory
-  virtual bool ChDir (const char *Path);
+  virtual bool ChDir (const char *path);
   /// Get current working directory
   virtual const char *GetCwd ();
 
   /// Push current directory
-  virtual void PushDir (char const* Path = 0);
+  virtual void PushDir (char const* path = 0);
   /// Pop current directory
   virtual bool PopDir ();
 
@@ -202,16 +149,15 @@ public:
    * 'current virtual directory'. Return a new iString object.
    * If IsDir is true, expanded path ends in an '/', otherwise no.
    */
-  virtual csPtr<iDataBuffer> ExpandPath (
-  	const char *Path, bool IsDir = false);
+  virtual csPtr<iDataBuffer> ExpandPath (const char *path, bool isDir = false);
 
   /// Check whenever a file exists
-  virtual bool Exists (const char *Path);
+  virtual bool Exists (const char *path);
 
   /// Find all files in a virtual directory and return an array of their names
-  virtual csPtr<iStringArray> FindFiles (const char *Path);
+  virtual csPtr<iStringArray> FindFiles (const char *path);
   /// Replacement for standard fopen()
-  virtual csPtr<iFile> Open (const char *FileName, int Mode);
+  virtual csPtr<iFile> Open (const char *filename, int mode);
   /**
    * Get an entire file at once. You should delete[] returned data
    * after usage. This is more effective than opening files and reading
@@ -219,30 +165,30 @@ public:
    * terminated (so that it can be conveniently used with string functions)
    * but the extra null-terminator is not counted as part of the returned size.
    */
-  virtual csPtr<iDataBuffer> ReadFile (const char *FileName, bool nullterm);
+  virtual csPtr<iDataBuffer> ReadFile (const char *filename, bool nullterm);
   /// Write an entire file in one pass.
-  virtual bool WriteFile (const char *FileName, const char *Data, size_t Size);
+  virtual bool WriteFile (const char *filename, const char *data, size_t size);
 
   /// Delete a file on VFS
-  virtual bool DeleteFile (const char *FileName);
+  virtual bool DeleteFile (const char *filename);
 
   /// Close all opened archives, free temporary storage etc.
   virtual bool Sync ();
 
   /// Create or add a symbolic link
-  virtual bool SymbolicLink(const char *Target, const char *Link = 0, 
+  virtual bool SymbolicLink (const char *target, const char *link = 0, 
     int priority = 0);
 
   /// Mount an VFS path on a "real-world-filesystem" path
-  virtual bool Mount (const char *VirtualPath, const char *RealPath);
+  virtual bool Mount (const char *virtualPath, const char *realPath);
   /// Unmount an VFS path; if RealPath is 0, entire VirtualPath is unmounted
-  virtual bool Unmount (const char *VirtualPath, const char *RealPath);
+  virtual bool Unmount (const char *virtualPath, const char *realPath);
   
   /// Mount the root directory or directories 
-  virtual csRef<iStringArray> MountRoot (const char *VirtualPath);
+  virtual csRef<iStringArray> MountRoot (const char *virtualPath);
 
   /// Save current configuration back into configuration file
-  virtual bool SaveMounts (const char *FileName);
+  virtual bool SaveMounts (const char *filename);
   /// Load a configuration file
   virtual bool LoadMountsFromFile (iConfigFile* file);
 
@@ -254,27 +200,27 @@ public:
   virtual bool Initialize (iObjectRegistry *object_reg);
 
   /// Move one file to new VFS path
-  virtual bool MoveFile (const char *OldPath, const char *NewPath);
+  virtual bool MoveFile (const char *oldPath, const char *newPath);
 
   /// Query file local date/time
-  virtual bool GetFileTime (const char *FileName, csFileTime &oTime);
+  virtual bool GetFileTime (const char *filename, csFileTime &oTime);
   /// Set file local date/time
-  virtual bool SetFileTime (const char *FileName, const csFileTime &iTime);
+  virtual bool SetFileTime (const char *filename, const csFileTime &iTime);
  
   /// Query file permissions
-  virtual bool GetFilePermission (const char *FileName,
+  virtual bool GetFilePermission (const char *filename,
                                   csFilePermission &oPerm);
   /// Set file permissions
-  virtual bool SetFilePermission (const char *FileName,
+  virtual bool SetFilePermission (const char *filename,
                                   const csFilePermission &iPerm);
 
 // this function is enabled only when size_t is not 64-bit
 #ifndef CS_SIZE_T_64BIT
   /// Query file size (without opening it)
-  virtual bool GetFileSize (const char *FileName, size_t &oSize);
+  virtual bool GetFileSize (const char *filename, size_t &oSize);
 #endif
   /// Query file size (without opening it)
-  virtual bool GetFileSize (const char *FileName, uint64_t &oSize);
+  virtual bool GetFileSize (const char *filename, uint64_t &oSize);
 
   /**
    * Query real-world path from given VFS path.
@@ -282,23 +228,23 @@ public:
    * not in archive files. You should expect this function to return
    * 0 in this case.
    */
-  virtual csPtr<iDataBuffer> GetRealPath (const char *FileName);
+  virtual csPtr<iDataBuffer> GetRealPath (const char *filename);
 
   /// Get all current virtual mount paths
   virtual csRef<iStringArray> GetMounts ();
 
   /// Get the real paths associated with a mount
-  virtual csRef<iStringArray> GetRealMountPaths (const char *VirtualPath);
+  virtual csRef<iStringArray> GetRealMountPaths (const char *virtualPath);
 
 private:
   /// Same as ExpandPath() but with less overhead
-  char *ExpandPathFast (const char *Path, bool IsDir = false);
+  char *ExpandPathFast (const char *path, bool isDir = false);
 
   /// Read and set the VFS config file
   bool ReadConfig ();
 
   /// Add a virtual link: real path can contain $(...) macros
-  virtual bool AddLink (const char *VirtualPath, const char *RealPath);
+  virtual bool AddLink (const char *virtualPath, const char *realPath);
 
   /// Instantiate a single file system, which could be used for mounting
   csPtr<iFileSystem> CreateFileSystem (const char *realPath);
@@ -335,27 +281,6 @@ private:
    *    to protect the function call by using write locks.
    */
   VfsNode *CreateNodePath (const char *vfsPath);
-
-  /// Common routine for many functions
-  //bool PreparePath (const char *Path, bool IsDir, VfsNode *&Node,
-  //  const char **Suffix);
-
-  /**
-   * Check if a virtual path represents an actual physical mount point.  Note
-   * that there are cases where the virtual path itself may be valid yet not in
-   * fact point at a physical mount point (i.e. not be represented by a
-   * VfsNode).  This can occur, for example, in cases such as the following:
-   *
-   * VFS.Mount.lib/textures = textures.zip
-   * VFS.Mount.lib/materials = materials.zip
-   *
-   * The virtual directory "/lib" is a valid path, yet there is nothing
-   * actually mounted at "/lib", thus false will be returned.
-   * On the other hand, the virtual directories "/lib/textures" and
-   * "/lib/materials" are both valid and represented by physical mount
-   * points, so true will be returned.
-   */
-  //bool CheckIfMounted (char const* virtual_path);
 
   /**
    * Check if a virtual path represents an 

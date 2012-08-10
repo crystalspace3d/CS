@@ -279,10 +279,11 @@ void csWaterMeshObject::SetupObject ()
 					}
 				}
 
-				if (distanceFoam < 10.0)
+				if (distanceFoam < 100.0)
 				{
-					distanceFoam=10-distanceFoam;
-					distanceFoam/=10.0;
+					distanceFoam=100-distanceFoam;
+					distanceFoam/=100.0;
+					distanceFoam*=255;
 				}
 				else
 				{
@@ -333,7 +334,7 @@ void csWaterMeshObject::SetupObject ()
 		image.AttachNew (new csImageMemory (512,512, CS_IMGFMT_TRUECOLOR));
 
 		csRef<iTextureHandle> foamTextMap;
-		foamTextMap = g3d->GetTextureManager ()->RegisterTexture(image, CS_TEXTURE_2D | CS_TEXTURE_3D | CS_TEXTURE_CLAMP);
+		foamTextMap = g3d->GetTextureManager()->RegisterTexture(image, CS_TEXTURE_2D );
 		foamTextMap->Blit(0,0,512,512,(unsigned char*)colorarray.GetArray(),iTextureHandle::RGBA8888);
 
 		csShaderVariable *foam_dist = variableContext->GetVariableAdd(svStrings->Request("foam dist"));

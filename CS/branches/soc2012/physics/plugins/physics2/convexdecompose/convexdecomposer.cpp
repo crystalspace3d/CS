@@ -24,16 +24,16 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "csutil/custom_new_disable.h"
 
-#include "bullet/btBulletDynamicsCommon.h"
-#include "bullet/btBulletCollisionCommon.h"
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
 
 #include "csutil/custom_new_enable.h"
 
-#include "HACD/hacdCircularList.h"
-#include "HACD/hacdVector.h"
-#include "HACD/hacdICHull.h"
-#include "HACD/hacdGraph.h"
-#include "HACD/hacdHACD.h"
+#include "hacd/hacdCircularList.h"
+#include "hacd/hacdVector.h"
+#include "hacd/hacdICHull.h"
+#include "hacd/hacdGraph.h"
+#include "hacd/hacdHACD.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 {

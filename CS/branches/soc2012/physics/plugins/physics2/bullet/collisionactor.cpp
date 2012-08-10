@@ -42,7 +42,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     SetAirControlFactor(props->GetAirControlFactor());
   }
 
-  csBulletCollisionActor::csBulletCollisionActor(csBulletSystem* sys) : scfVirtImplementationExt1(this, sys),
+  csBulletCollisionActor::csBulletCollisionActor(csBulletSystem* sys) : scfImplementationType (this, sys),
     controller(nullptr), airControlFactor(0)
   {
   }

@@ -602,7 +602,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     // btBody->getFlags() &BT_DISABLE_WORLD_GRAVITY
     // return 
-    return nullptr;
+    return csPtr<iCollisionObject> (nullptr);
   }
 
 

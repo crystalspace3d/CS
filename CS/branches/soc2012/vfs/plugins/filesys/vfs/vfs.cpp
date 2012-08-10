@@ -70,6 +70,11 @@ namespace
   const char VFS_PATH_SEPARATOR_STRING [] = { VFS_PATH_SEPARATOR, '\0' };
   // VFS root path
   const char *VFS_ROOT_PATH = VFS_PATH_SEPARATOR_STRING;
+  // whitespace characters (subject to trimming) in VFS
+  const char *CS_VFSSPACE = " \t";
+
+  // threshold in # of filesystems to use hashtable in mount/unmount process
+  const size_t USE_HASHTABLE_THRESHOLD = 32;
 
   // Split a list of multiple paths delimited by VFS_PATH_DIVIDER.
   // pathList must be already expanded with ExpandVars().
@@ -97,9 +102,6 @@ namespace
 CS_PLUGIN_NAMESPACE_BEGIN(VFS)
 {
 
-// Characters ignored in VFS paths (except in middle)
-#define CS_VFSSPACE    " \t"
-
 typedef csStringFast<CS_MAXPATHLEN> PathString;
 
 //***********************************************************
@@ -121,9 +123,11 @@ public:
   char *vfsPath;
   // Configuration section key
   char *configKey;
+
+  // number of static mounts
+  size_t staticMounts;
   // The array of filesystems bound to this virtual path node
   csRefArray<iFileSystem> fileSystems;
-
   // The array of real paths that haven't been platform expanded
   // (e.g. Cygwin paths before they get expanded to Win32 paths)
   csStringArray realPaths;
@@ -178,6 +182,9 @@ private:
   //         rank   (0-based rank of file; denotes rank'th file)
   // returns smart pointer of belonging iFileSystem
   csRef<iFileSystem> FindFile (const char *suffix, size_t rank = 0);
+  // Remount filesystem at given index.
+  // index must be in range [staticMounts, fileSystems.GetSize ())
+  void RemountFileSystem (size_t index);
 
   // Mutex on this node.
   CS::Threading::ReadWriteMutex mutex;
@@ -186,7 +193,8 @@ private:
 // ------------------------------------------------------------- VfsNode --- //
 
 VfsNode::VfsNode (const char *iPath, const char *iConfigKey,
-		  csVFS* vfs, unsigned int verbosity) : vfs (vfs)
+		  csVFS* vfs, unsigned int verbosity)
+ : staticMounts (0), vfs (vfs)
 {
   vfsPath = CS::StrDup (iPath);
   configKey = CS::StrDup (iConfigKey);
@@ -197,6 +205,23 @@ VfsNode::~VfsNode ()
 {
   cs_free (configKey);
   cs_free (vfsPath);
+}
+
+// Re-mounts filesystem at given index, giving it highest priority.
+// use this function only while the thread is write protected
+void VfsNode::RemountFileSystem (size_t index)
+{
+  // basic assertions
+  CS_ASSERT (index < fileSystems.GetSize ());
+  CS_ASSERT (realPaths.GetSize () == fileSystems.GetSize ());
+  CS_ASSERT (index < staticMounts);
+
+  // store new entries from index
+  fileSystems.Push (fileSystems.Get (index));
+  realPaths.Push (realPaths.Get (index));
+  // remove old entry
+  fileSystems.DeleteIndex (index);
+  realPaths.DeleteIndex (index);
 }
 
 bool VfsNode::MountFileSystem (const char *realPath, iFileSystem *fs)
@@ -213,11 +238,33 @@ bool VfsNode::MountFileSystem (const char *realPath, iFileSystem *fs)
   if (!realPath)
     return false;
 
-  // acquire write lock
-  CS::Threading::ScopedWriteLock lock (mutex);
+  // acquire upgradeable lock
+  CS::Threading::ScopedUpgradeableLock lock (mutex);
 
+  // assertions: both arrays must be in sync
+  CS_ASSERT (fileSystems.GetSize () >= staticMounts);
+  CS_ASSERT (fileSystems.GetSize () == realPaths.GetSize ());
+
+  // check for existing entry
+  for (size_t i = staticMounts; i < fileSystems.GetSize (); ++i)
+  {
+    if (strcmp (realPaths.Get (i), realPath) == 0)
+    {
+      // acquire write lock
+      mutex.UpgradeUnlockAndWriteLock ();
+      // duplicate entry found; reuse that filesystem
+      // (new fs instance will be automatically discarded)
+      RemountFileSystem (i);
+      mutex.WriteUnlock ();
+      return true;
+    }
+  }
+
+  // acquire write lock, then insert
+  mutex.UpgradeUnlockAndWriteLock ();
   realPaths.Push (realPath);
   fileSystems.Push (fs);
+  mutex.WriteUnlock ();
 
   return true;
 }
@@ -230,29 +277,103 @@ bool VfsNode::MountFileSystem (const char **realPath,
   // acquire write lock
   CS::Threading::ScopedWriteLock lock (mutex);
 
-  if (!realPath)
+  CS_ASSERT (fileSystems.GetSize () >= staticMounts);
+  CS_ASSERT (fileSystems.GetSize () == realPaths.GetSize ());
+
+  bool result = false;
+
+  // if there are less than USE_HASHTABLE_THRESHOLD entries, do it by loop
+  // otherwise, use hashtable
+  if (fileSystems.GetSize () - staticMounts < USE_HASHTABLE_THRESHOLD)
   {
-    // this shouldn't happen, but we can use fallback methods for now.
     for (size_t i = 0; i < fsList.GetSize (); ++i)
     {
+      // get filesystem
       iFileSystem *fs = fsList.Get (i);
-      realPaths.Push (fs->GetRootRealPath ());
-      fileSystems.Push (fs);
+      // get reliable path
+      csString rPath;
+      // if realPath points to valid string, use it and increment the pointer
+      if (realPath && *realPath)
+      {
+        // make sure string is not empty
+        if (**realPath)
+          rPath = *realPath;
+        // increment it
+        ++realPath;
+      }
+      else
+        rPath = fs->GetRootRealPath ();
+
+      // flag to use for skipping
+      bool skip = false;
+      // check for existing entries first
+      for (size_t index = staticMounts; index < fileSystems.GetSize (); ++index)
+      {
+        if (strcmp (realPaths.Get (index), rPath) == 0)
+        {
+          // duplicate found; remount that filesystem
+          RemountFileSystem (index);
+          // done with this entry; set the flag
+          skip = true;
+        }
+      }
+
+      // if done with this entry; proceed to next one
+      if (!skip)
+      {
+        // otherwise, insert
+        realPaths.Push (rPath);
+        fileSystems.Push (fsList.Get (i));
+      }
+      result = true;
     }
-    return true;
   }
-
-  for (size_t i = 0; i < fsList.GetSize (); ++i)
+  else
   {
-    iFileSystem *fs = fsList.Get (i);
-    if (*realPath && **realPath)
-      realPaths.Push (*realPath++); // dereference string, then move next
-    else
-      realPaths.Push (fs->GetRootRealPath ()); // fallback method
-    fileSystems.Push (fs);
-  }
+    // use hashtable for faster lookup
+    // 1. setup hashtable
+    csHash<size_t, const char *> entries;
+    for (size_t i = staticMounts; i < fileSystems.GetSize (); ++i)
+      entries.Put (realPaths.Get (i), i);
+    // 2. perform lookup
+    for (size_t i = 0; i < fsList.GetSize (); ++i)
+    {
+      // get filesystem
+      iFileSystem *fs = fsList.Get (i);
+      // get reliable path
+      csString rPath;
+      // if realPath points to valid string, use it and increment the pointer
+      if (realPath && *realPath)
+      {
+        // make sure string is not empty
+        if (**realPath)
+          rPath = *realPath;
+        // increment it
+        ++realPath;
+      }
+      else
+        rPath = fs->GetRootRealPath ();
+      // try finding the entry
+      size_t pos = entries.Get (rPath, (size_t)-1);
+      // was the entry found?
+      if (pos != (size_t)-1)
+      {
+        // existing entry found. remount
+        RemountFileSystem (pos);
+        // remove from lookup table
+        entries.DeleteAll (rPath);
+      }
+      else
+      {
+        // otherwise, insert as supplied
+        realPaths.Push (rPath);
+        fileSystems.Push (fs);
+      }
+      result = true;
+    } // !for
+  } // !else
 
-  return true;
+  return result;
 }
 
 bool VfsNode::UnmountFileSystem (const char *realPath)
@@ -273,7 +394,7 @@ bool VfsNode::UnmountFileSystem (const char *realPath)
   {
     CS::Threading::ScopedUpgradeableLock lock (mutex);
     // iterate over existing filesystem paths
-    for (size_t i = 0; i < realPaths.GetSize (); ++i)
+    for (size_t i = staticMounts; i < realPaths.GetSize (); ++i)
     {
       const char *fsPath = realPaths.Get (i);
       // TODO: fix potential issues
@@ -296,8 +417,6 @@ bool VfsNode::UnmountFileSystem (const char *realPath)
 
 bool VfsNode::UnmountFileSystem (const char **realPath)
 {
-  // TODO: decide which method to use, and implement this if necessary
-/*
   // Remove all entries if realPath is NULL
   if (!realPath)
   {
@@ -309,30 +428,75 @@ bool VfsNode::UnmountFileSystem (const char **realPath)
     return true;
   }
 
-  // realPath must be already expanded..
+  // if not null, realPath must be already expanded..
+  // acquire upgradable lock
+  CS::Threading::ScopedUpgradeableLock lock (mutex);
 
+  CS_ASSERT (fileSystems.GetSize () >= staticMounts);
+  CS_ASSERT (fileSystems.GetSize () == realPaths.GetSize ());
+
+  bool result = false;
+
+  // if there are less than USE_HASHTABLE_THRESHOLD entries, do it by loop
+  // otherwise, use hashtable
+  if (fileSystems.GetSize () - staticMounts < USE_HASHTABLE_THRESHOLD)
   {
-    CS::Threading::ScopedUpgradeableLock lock (mutex);
-    // iterate over existing filesystem paths
-    for (size_t i = 0; i < realPaths.GetSize (); ++i)
+    // loop until we reach end of the list (null pointer)
+    while (*realPath)
     {
-      const char *fsPath = realPaths.Get (i);
-      // TODO: fix potential issues
-      if (strcmp (fsPath, realPath) == 0)
+      for (size_t i = staticMounts; i < fileSystems.GetSize (); ++i)
       {
-        // upgrade to write lock
-        mutex.UpgradeUnlockAndWriteLock ();
-        // unmount filesystem
-        fileSystems.DeleteIndex (i);
-        // unlock
-        mutex.WriteUnlock ();
-        return true;
+        // get path of existing entry for comparison
+        const char *fsPath = realPaths.Get (i);
+        // TODO: fix potential issues
+        if (strcmp (fsPath, *realPath) == 0)
+        {
+          // upgrade to write lock
+          mutex.UpgradeUnlockAndWriteLock ();
+          // unmount filesystem
+          fileSystems.DeleteIndex (i);
+          // unlock
+          mutex.WriteUnlockAndUpgradeLock ();
+          result = true;
+          break; // exit inner loop
+        }
       }
+      // proceed to next entry
+      ++realPath;
     }
   }
-*/
-  // requested filesystem entry is not found
-  return false;
+  else
+  {
+    // use hashtable for faster lookup
+    // 1. setup hashtable
+    csHash<size_t, const char *> entries;
+    for (size_t i = staticMounts; i < fileSystems.GetSize (); ++i)
+      entries.Put (realPaths.Get (i), i);
+    // 2. perform lookup
+    // acquire write lock
+    mutex.UpgradeUnlockAndWriteLock ();
+    // loop until we reach end of the list (null pointer)
+    while (*realPath)
+    {
+      size_t pos = entries.Get (*realPath, (size_t)-1);
+      if (pos != (size_t)-1)
+      {
+        // entry found. remove from the actual list
+        // no duplicates are allowed (except static ones)
+        // so everything should be fine
+        realPaths.DeleteIndex (pos);
+        fileSystems.DeleteIndex (pos);
+        // remove from lookup table
+        entries.DeleteAll (*realPath);
+        result = true;
+      }
+      ++realPath;
+    } // !while
+    mutex.WriteUnlock ();
+  } // !else
+
+  // requested filesystem entry was not found
+  return result;
 }
 
 // returns a list of real paths mounted on current node as a single string
@@ -615,6 +779,10 @@ csVFS::csVFS (iBase *iParent) :
   verbosity (VERBOSITY_NONE)
 {
   heap.AttachNew (new HeapRefCounted);
+  // insert root node manually
+  nodeTable.Put (VFS_ROOT_PATH, root);
+  // initialize compile-time static nodes other than root nodes
+  //InitStaticNodes ();
 }
 
 csVFS::~csVFS ()

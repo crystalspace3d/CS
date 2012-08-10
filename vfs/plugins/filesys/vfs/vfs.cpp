@@ -85,11 +85,11 @@ namespace
   // If 'add_end' is true there will also be a $/ at the end if there
   // is not already one there.
   // The result of this function must be deleted with cs_free().
-  char *TransformPath (const char* path, bool add_end);
+  char *TransformPath (const char *path, bool add_end);
 
-  char *alloc_normalized_path (char const* s);
-  bool load_vfs_config (csConfigFile& cfg, char const* dir,
-                        csStringSet& seen, bool verbose);
+  char *AllocNormalizedPath (const char *s);
+  bool LoadVfsConfig (csConfigFile& cfg, const char *dir,
+                      csStringSet& seen, bool verbose);
 } // end of anonymous namespace
 
 
@@ -150,21 +150,21 @@ public:
   // Find all files in a subpath
   void FindFiles (const char *suffix, const char *mask, iStringArray *FileList);
   // Find a file and return the appropiate csFile object
-  iFile *Open (int Mode, const char *Suffix);
+  iFile *Open (int mode, const char *suffix);
   // Delete a file
-  bool Delete (const char *Suffix);
+  bool Delete (const char *suffix);
   // Does file exists?
-  bool Exists (const char *Suffix);
+  bool Exists (const char *suffix);
   // Query date/time
-  bool GetFileTime (const char *Suffix, csFileTime &oTime);
+  bool GetFileTime (const char *suffix, csFileTime &oTime);
   // Set date/time
-  bool SetFileTime (const char *Suffix, const csFileTime &iTime);
+  bool SetFileTime (const char *suffix, const csFileTime &iTime);
   // Query permission
   bool GetFilePermission (const char *suffix, csFilePermission &oPerm);
   // Set permission
   bool SetFilePermission (const char *suffix, const csFilePermission &iPerm);
   // Get file size
-  bool GetFileSize (const char *Suffix, uint64_t &oSize);
+  bool GetFileSize (const char *suffix, uint64_t &oSize);
   // Query whether a given virtual path refers to a valid directory
   bool IsDir (const char *vfsPath);
   // Query whether current node has no children nor filesystems.
@@ -479,7 +479,7 @@ csRef<iFileSystem> VfsNode::FindFile (const char *suffix, size_t rank)
   return csRef<iFileSystem> ();
 }
 
-bool VfsNode::Delete (const char *Suffix)
+bool VfsNode::Delete (const char *suffix)
 {
   // make sure no one messes up with current node
   CS::Threading::ScopedReadLock lock (mutex);
@@ -488,14 +488,14 @@ bool VfsNode::Delete (const char *Suffix)
   {
     iFileSystem *fs = fileSystems.Get (i);
     // iFileSystem is responsible for concurrency issues
-    if (fs->Delete (Suffix))
+    if (fs->Delete (suffix))
       return true;
   }
 
   return false;
 }
 
-bool VfsNode::Exists (const char *Suffix)
+bool VfsNode::Exists (const char *suffix)
 {
   // make sure no one messes up with current node
   CS::Threading::ScopedReadLock lock (mutex);
@@ -503,16 +503,16 @@ bool VfsNode::Exists (const char *Suffix)
   for (size_t i = 0; i < fileSystems.GetSize (); ++i)
   {
     // if file is found in one of filesystems, return true
-    if (fileSystems.Get (i)->Exists (Suffix))
+    if (fileSystems.Get (i)->Exists (suffix))
       return true;
   }
   return false;
 }
 
-bool VfsNode::GetFileTime (const char *Suffix, csFileTime &oTime)
+bool VfsNode::GetFileTime (const char *suffix, csFileTime &oTime)
 {
   // find 1st iFileSystem containing file 'suffix'
-  csRef<iFileSystem> fs = FindFile (Suffix);
+  csRef<iFileSystem> fs = FindFile (suffix);
   if (!fs.IsValid ())
   {
     // file not found
@@ -520,16 +520,16 @@ bool VfsNode::GetFileTime (const char *Suffix, csFileTime &oTime)
   }
 
   // use iFileSystem method to retrieve file time
-  if (fs->GetTime (Suffix, oTime))
+  if (fs->GetTime (suffix, oTime))
     return true;
 
   return false;
 }
 
-bool VfsNode::SetFileTime (const char *Suffix, const csFileTime &iTime)
+bool VfsNode::SetFileTime (const char *suffix, const csFileTime &iTime)
 {
   // find 1st iFileSystem containing file 'suffix'
-  csRef<iFileSystem> fs = FindFile (Suffix);
+  csRef<iFileSystem> fs = FindFile (suffix);
   if (!fs.IsValid ())
   {
     // file not found
@@ -537,16 +537,16 @@ bool VfsNode::SetFileTime (const char *Suffix, const csFileTime &iTime)
   }
   
   // use iFileSystem method to set file time
-  if (fs->SetTime (Suffix, iTime))
+  if (fs->SetTime (suffix, iTime))
     return true;
 
   return false;
 }
 
-bool VfsNode::GetFileSize (const char *Suffix, uint64_t &oSize)
+bool VfsNode::GetFileSize (const char *suffix, uint64_t &oSize)
 {
   // find 1st iFileSystem containing file 'suffix'
-  csRef<iFileSystem> fs = FindFile (Suffix);
+  csRef<iFileSystem> fs = FindFile (suffix);
   if (!fs.IsValid ())
   {
     // file not found
@@ -554,7 +554,7 @@ bool VfsNode::GetFileSize (const char *Suffix, uint64_t &oSize)
   }
   
   // use iFileSystem method to get file size
-  if (fs->GetSize (Suffix, oSize))
+  if (fs->GetSize (suffix, oSize))
     return true;
 
   return false;
@@ -642,14 +642,14 @@ bool csVFS::Initialize (iObjectRegistry* r)
 {
   object_reg = r;
 #ifdef NEW_CONFIG_SCANNING
-  static const char* vfsSubdirs[] = {
+  static const char *vfsSubdirs[] = {
     "etc/" CS_PACKAGE_NAME,
     "etc", 
     "",
     0};
 
   csPathsList configPaths;
-  const char* crystalconfig = getenv("CRYSTAL_CONFIG");
+  const char *crystalconfig = getenv ("CRYSTAL_CONFIG");
   if (crystalconfig)
     configPaths.AddUniqueExpanded (crystalconfig);
   
@@ -666,10 +666,10 @@ bool csVFS::Initialize (iObjectRegistry* r)
   configPaths = csPathsUtilities::LocateFile (configPaths, "vfs.cfg", true);
   if (configPaths.GetSize () > 0)
   {
-    basedir = alloc_normalized_path (configPaths[0].path);
+    basedir = AllocNormalizedPath (configPaths[0].path);
   }
 #else
-  basedir = alloc_normalized_path(csGetConfigPath());
+  basedir = AllocNormalizedPath (csGetConfigPath ());
 #endif
 
   csRef<iVerbosityManager> vm (
@@ -677,38 +677,38 @@ bool csVFS::Initialize (iObjectRegistry* r)
   if (vm.IsValid()) 
   {
     verbosity = VERBOSITY_NONE;
-    if (vm->Enabled("vfs.debug", false)) verbosity |= VERBOSITY_DEBUG;
-    if (vm->Enabled("vfs.scan",  true )) verbosity |= VERBOSITY_SCAN;
-    if (vm->Enabled("vfs.mount", true )) verbosity |= VERBOSITY_MOUNT;
+    if (vm->Enabled ("vfs.debug", false)) verbosity |= VERBOSITY_DEBUG;
+    if (vm->Enabled ("vfs.scan",  true )) verbosity |= VERBOSITY_SCAN;
+    if (vm->Enabled ("vfs.mount", true )) verbosity |= VERBOSITY_MOUNT;
   }
 
   csRef<iCommandLineParser> cmdline =
     csQueryRegistry<iCommandLineParser> (object_reg);
   if (cmdline)
   {
-    resdir = alloc_normalized_path(cmdline->GetResourceDir());
-    appdir = alloc_normalized_path(cmdline->GetAppDir());
+    resdir = AllocNormalizedPath (cmdline->GetResourceDir ());
+    appdir = AllocNormalizedPath (cmdline->GetAppDir ());
   }
   
   // Order-sensitive: Mounts in first-loaded configuration file take precedence
   // over conflicting mounts in files loaded later.
   csStringSet seen;
-  bool const verbose_scan = IsVerbose(VERBOSITY_SCAN);
-  load_vfs_config(config, resdir,  seen, verbose_scan);
-  load_vfs_config(config, appdir,  seen, verbose_scan);
+  bool const verbose_scan = IsVerbose (VERBOSITY_SCAN);
+  LoadVfsConfig(config, resdir, seen, verbose_scan);
+  LoadVfsConfig(config, appdir, seen, verbose_scan);
 #ifdef NEW_CONFIG_SCANNING
-  bool result =	load_vfs_config(config, resdir,  seen, verbose_scan);
+  bool result =	LoadVfsConfig (config, resdir, seen, verbose_scan);
   if (result && (basedir == 0))
-    basedir = alloc_normalized_path (resdir);
-  result = load_vfs_config(config, appdir,  seen, verbose_scan);
+    basedir = AllocNormalizedPath (resdir);
+  result = LoadVfsConfig(config, appdir, seen, verbose_scan);
   if (result && (basedir == 0))
-    basedir = alloc_normalized_path (appdir);
+    basedir = AllocNormalizedPath (appdir);
   for (size_t i = 0; i < configPaths.GetSize (); i++)
   {
-    load_vfs_config(config, configPaths[i].path,  seen, verbose_scan);
+    LoadVfsConfig (config, configPaths[i].path,  seen, verbose_scan);
   }
 #else
-  load_vfs_config(config, basedir, seen, verbose_scan);
+  LoadVfsConfig (config, basedir, seen, verbose_scan);
 #endif
 
   return ReadConfig ();
@@ -722,12 +722,11 @@ bool csVFS::ReadConfig ()
     iterator->Next();
     AddLink (iterator->GetKey (true), iterator->GetStr ());
   }
-  //NodeList.Sort (NodeList.Compare);
   return true;
 }
 
 // Expand VFS variables
-csString csVFS::ExpandVars (char const *source)
+csString csVFS::ExpandVars (const char *source)
 {
   csString dst;
   char *src_start = CS::StrDup (source);
@@ -1151,7 +1150,7 @@ bool csVFS::PreparePath (const char *path, bool isDir, VfsNode *&node,
   return (node != 0);
 }
 
-bool csVFS::CheckIfMounted (char const *virtualPath)
+bool csVFS::CheckIfMounted (const char *virtualPath)
 {
   // this function used to behave differently than what had been said
   // by the comments
@@ -1228,12 +1227,12 @@ bool csVFS::ChDir (const char *path)
   return true;
 }
 
-const char* csVFS::GetCwd ()
+const char *csVFS::GetCwd ()
 {
   return tls->cwd;
 }
 
-void csVFS::PushDir (char const* Path)
+void csVFS::PushDir (const char *Path)
 {
   tls->dirstack.Push (tls->cwd);
 
@@ -1319,7 +1318,7 @@ csRef<iStringArray> csVFS::MountRoot (const char *Path)
     size_t n = roots->GetSize ();
     for (i = 0 ; i < n ; i++)
     {
-      char const* t = roots->Get(i);
+      const char *t = roots->Get(i);
       csString s(t);
       size_t const slen = s.Length ();
       char c = '\0';
@@ -1467,7 +1466,7 @@ csPtr<iDataBuffer> csVFS::ReadFile (const char *FileName, bool nullterm)
     return csPtr<iDataBuffer> (data);
   }
 
-  char *buff = (char*)cs_malloc (Size + 1);
+  char *buff = (char *)cs_malloc (Size + 1);
   if (!buff)
     return 0;
 
@@ -1760,8 +1759,8 @@ bool csVFS::TryChDirAuto (const char *dir, const char *filename)
   return ok && ChDir (dir);
 }
 
-bool csVFS::ChDirAuto (const char* path, const csStringArray* paths,
-	const char* vfspath, const char* filename)
+bool csVFS::ChDirAuto (const char *path, const csStringArray* paths,
+	const char *vfspath, const char* filename)
 {
   // If the VFS path is valid we can use that.
   if (TryChDirAuto (path, filename))
@@ -1783,7 +1782,7 @@ bool csVFS::ChDirAuto (const char* path, const csStringArray* paths,
 
   // First check if it is a zip file.
   //bool is_zip = IsZipFile (path);
-  char* npath = TransformPath (path, false);
+  char * npath = TransformPath (path, false);
 
   // See if we have to generate a unique VFS name.
   csString tryvfspath;
@@ -1957,7 +1956,7 @@ csPtr<iDataBuffer> csVFS::GetRealPath (const char *filename)
   {
     //CS_ASSERT(node->RPathV.GetSize () != 0);
     CS_ASSERT (node->fileSystems.GetSize () != 0);
-    char const* defpath = node->fileSystems.Get(0)->GetRootRealPath ();
+    const char *defpath = node->fileSystems.Get(0)->GetRootRealPath ();
     CS_ASSERT (defpath != 0);
     size_t const len = strlen (defpath);
     if (len > 0 && defpath[len - 1] != VFS_PATH_SEPARATOR)
@@ -2123,11 +2122,11 @@ csString &AppendVfsPath (csString &base, const char *suffix)
 // If 'add_end' is true there will also be a $/ at the end if there
 // is not already one there.
 // The result of this function must be deleted with cs_free().
-char* TransformPath (const char* path, bool add_end)
+char * TransformPath (const char* path, bool add_end)
 {
   // The length we allocate below is enough in all cases.
-  char* npath = (char*)cs_malloc (strlen (path)*2+2+1);
-  char* np = npath;
+  char * npath = (char*)cs_malloc (strlen (path)*2+2+1);
+  char * np = npath;
   bool lastispath = false;
   while (*path)
   {
@@ -2167,7 +2166,7 @@ char* TransformPath (const char* path, bool add_end)
   return npath;
 }
 
-char *alloc_normalized_path (char const* s)
+char *AllocNormalizedPath (const char *s)
 {
   if (s != 0)
   {
@@ -2177,8 +2176,8 @@ char *alloc_normalized_path (char const* s)
   return nullptr;
 }
 
-bool load_vfs_config (csConfigFile& cfg, char const* dir,
-                      csStringSet& seen, bool verbose)
+bool LoadVfsConfig (csConfigFile& cfg, const char *dir,
+                    csStringSet& seen, bool verbose)
 {
   bool ok = false;
   if (dir != 0)
@@ -2193,7 +2192,7 @@ bool load_vfs_config (csConfigFile& cfg, char const* dir,
       ok = cfg.Load(s, 0, merge, false);
       if (ok && verbose)
       {
-	char const* t = merge ? "merged" : "loaded";
+	const char *t = merge ? "merged" : "loaded";
 	csPrintf("VFS_NOTIFY: %s configuration file: %s\n", t, s.GetData());
       }
     }

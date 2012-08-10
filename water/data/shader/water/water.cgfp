@@ -11,7 +11,7 @@ struct vert2frag
 	float2 NormalTC		: TEXCOORD2; 
 	float3 Normal;
 	float4 Pos;
-	float dist;
+	float2 o2wPos;
 };
 
 // Water color
@@ -30,6 +30,7 @@ float4 main (vert2frag IN,
 			 uniform sampler2D TexNormal,
 			 uniform sampler2D TexReflect,
 			 uniform sampler2D TexRefract,
+			 uniform sampler2D foamDist,
 			 uniform float4x4 ModelViewIT : state.matrix.modelview.invtrans) : COLOR        
 {     
    
@@ -82,13 +83,19 @@ float4 main (vert2frag IN,
 	IN.dist = 10 - IN.dist;
 	IN.dist /= 10; */
 	
+	float2 Inposition = IN.o2wPos; 
+	float4 distanceFoamcolor = float4(0.0,0.0,0.0,0.0);
 	
-	foam = foam * 0.5 * IN.dist;
+	if(Inposition.x < 512.0 && Inposition.y < 512.0)
+	{
+		float4 distanceFoamcolor = tex2D(foamDist, Inposition);
+	}
+	
+	foam = foam * 0.5 * distanceFoamcolor.a;
 	//foam.x *= 40.0f;
 	
     color.xyz = light + reflColor.xyz + refrColor.xyz + foam;
 	//color.xyz = light + foam;
-	
 	//color = clamp((color + foam ) , 0 , 1 ) ;
 	//color = tex2D(TexNormal,IN.NormalTC);
 	//color = tex2D(TexFoam,IN.NormalTC);

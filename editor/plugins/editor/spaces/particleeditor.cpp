@@ -75,34 +75,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
   CSPartEditSpace* editorSpace;
 
-  //helper functions from vareditframe.cpp
-  enum wxbuildinfoformat {
-    short_f, long_f };
-
-    wxString wxbuildinfo (wxbuildinfoformat format)
-    {
-      wxString wxbuild (wxVERSION_STRING);
-
-      if (format == long_f )
-      {
-#if defined (__WXMSW__)
-        wxbuild << _T("-Windows");
-#elif defined (__WXMAC__)
-        wxbuild << _T("-Mac");
-#elif defined (__UNIX__)
-        wxbuild << _T("-Linux");
-#endif
-
-#if wxUSE_UNICODE
-        wxbuild << _T("-Unicode build");
-#else
-        wxbuild << _T("-ANSI build");
-#endif // wxUSE_UNICODE
-      }
-
-      return wxbuild;
-    }
-
   BEGIN_EVENT_TABLE(CSPartEditSpace::Space, wxPanel)
     EVT_SIZE(CSPartEditSpace::Space::OnSize)
     EVT_PG_CHANGED ( pageId, CSPartEditSpace::Space::OnPropertyGridChanging)
@@ -138,7 +110,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     //csEventID contextSelect = nameRegistry->GetID("crystalspace.editor.context");
     RegisterQueue (editor->GetContext()->GetEventQueue(), activateObject);
     
-	  cout << translator->GetMsg("Hello world!") << endl;
+    // Prepare translations 
+    translator = csQueryRegistry<iTranslator>(object_reg);
+    cout << translator->GetMsg("Hello world!") << endl;
 
     // Prepare the property grid
     pgMan = new wxPropertyGridManager (window, pageId,
@@ -154,6 +128,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     pgMan->SetPropertyAttributeAll (wxPG_BOOL_USE_CHECKBOX,true);
     
     printf ("\nInitialized property editing panel!\n");
+
+    // Populate with the current active object
+    Populate ();
+
     return true;
   }
 
@@ -189,40 +167,58 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
       strings->GetString( event.GetName() ),
       (unsigned int) event.GetName() );
 
-    if(event.Name == activateObject) {
+    if (event.Name == activateObject) {
       printf("You selected something!\n");
-      csRef<iContextObjectSelection> objectSelectionContext =
-	scfQueryInterface<iContextObjectSelection> (editor->GetContext ());
-      
-      iObject* result = objectSelectionContext->GetActiveObject ();
-      //*
-      csRef<iMeshFactoryWrapper> fac = scfQueryInterface<iMeshFactoryWrapper>(result);
-      if(fac.IsValid()) {
-        csRef<iParticleSystemFactory> partSys = scfQueryInterface<iParticleSystemFactory>(fac->GetMeshObjectFactory()); 
-        if(partSys.IsValid())
-          printf("It is a particle system factory!\n");
-
-        csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory()); 
-        if(modifiable.IsValid()) {
-          activeModifiable = modifiable;
-          Populate(&*modifiable);
-        } else {
-          activeModifiable = nullptr;
-          NoModifiable();
-        }
-      }
-      //*/
+      Populate ();
     }
 
     return false;
   }
 
-  void CSPartEditSpace::NoModifiable() {
+  void CSPartEditSpace::NoModifiable()
+  {
+    activeModifiable = nullptr;
     pgMan->Clear();
-    pgMan->SetDescription(wxT("Error"), wxT("That object cannot be modified in the editor"));
+    pgMan->SetDescription(wxT("Error"), wxT("No valid object to be edited"));
   }
 
-  void CSPartEditSpace::Populate(iModifiable* modifiable) {
+  void CSPartEditSpace::Populate ()
+  {
+    csRef<iContextObjectSelection> objectSelectionContext =
+      scfQueryInterface<iContextObjectSelection> (editor->GetContext ());
+      
+    // Search for the iModifiable interface of the particle factory
+    iObject* result = objectSelectionContext->GetActiveObject ();
+    if (!result)
+    {
+      NoModifiable();
+      return;
+    }
+
+    csRef<iMeshFactoryWrapper> fac = scfQueryInterface<iMeshFactoryWrapper>(result);
+    if (!fac)
+    {
+      NoModifiable();
+      return;
+    }
+
+    csRef<iParticleSystemFactory> partSys =
+      scfQueryInterface<iParticleSystemFactory>(fac->GetMeshObjectFactory()); 
+    if (!partSys)
+    {
+      NoModifiable();
+      return;
+    }
+
+    printf("It is a particle system factory!\n");
+
+    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory()); 
+    if (!modifiable)
+    {
+      NoModifiable();
+      return;
+    }
+    activeModifiable = modifiable;
 
     //*
     // All pages are cleared from the page manager

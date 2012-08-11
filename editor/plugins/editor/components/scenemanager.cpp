@@ -41,7 +41,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 SCF_IMPLEMENT_FACTORY (SceneManager)
 
 SceneManager::SceneManager (iBase* parent)
-  : scfImplementationType (this, parent)
+  : scfImplementationType (this, parent), internalChange (false)
 {
 
 }
@@ -94,6 +94,8 @@ bool SceneManager::Load (iDocumentNode* node)
 
 bool SceneManager::HandleEvent (iEvent &event)
 {
+  if (internalChange) return false;
+
   csRef<iContextCamera> cameraContext =
     scfQueryInterface<iContextCamera> (editor->GetContext ());
   iCamera* camera = cameraContext->GetCamera ();
@@ -255,6 +257,9 @@ void SceneManager::OnSetCollection (iCamera* camera)
     scfQueryInterface<iContextFileLoader> (editor->GetContext ());
   iCollection* collection = fileLoaderContext->GetCollection ();
 
+  csRef<iContextObjectSelection> objectSelectionContext =
+    scfQueryInterface<iContextObjectSelection> (editor->GetContext ());
+
   if (!collection)
   {
     camera->SetSector (nullptr);
@@ -323,10 +328,14 @@ void SceneManager::OnSetCollection (iCamera* camera)
     return;
   }
 
-  // If there is a mesh factory then create a dedicated sector for it
+  // If there is a mesh factory then create a dedicated sector for it and set it
+  // as the active object
   if (firstMeshFactory)
   {
     CreateViewmeshScene (firstMeshFactory, camera);
+    internalChange = true;
+    objectSelectionContext->SetActiveObject (firstMeshFactory->QueryObject ());
+    internalChange = false;
     return;
   }
 }

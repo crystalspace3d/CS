@@ -89,6 +89,8 @@ private:
   csEventID eventSetActiveObject;
   csEventID eventSetCamera;
   csEventID eventSetCollection;
+
+  bool internalChange;
 };
 
 }

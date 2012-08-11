@@ -121,7 +121,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
   private:
     /// Populates the property grid with the editable traits of the modifiable object
-    void Populate(iModifiable* modifiable);
+    void Populate ();
 
     /// Called to display a message that the current object cannot be edited
     void NoModifiable();

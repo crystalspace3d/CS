@@ -55,15 +55,32 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
     // Load translator and document system plugins
     translator = csLoadPlugin<iTranslator>(pluginManager, "crystalspace.translator.standard");
-    csRef<iDocumentSystem> documentSystem = csLoadPlugin<iDocumentSystem>(pluginManager, "crystalspace.documentsystem.xmlread");
-    // VFS already loaded by editor, just query it
+    if (!translator)
+    {
+      csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+        "crystalspace.editor.component.translation",
+        "Could not find the translator plugin");
+      return false;
+    }
+
+    csRef<iDocumentSystem> documentSystem =
+      csLoadPlugin<iDocumentSystem>(pluginManager, "crystalspace.documentsystem.xmlread");
+    if (!documentSystem)
+    {
+      csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+        "crystalspace.editor.component.translation",
+        "Could not find the translator XML plugin");
+      return false;
+    }
+
     csRef<iVFS> vfs = csQueryRegistry<iVFS>(object_reg);
 
     string langPath ("/data/editor/lang/");
     string langFile ("de_DE.xml");
 
     csRef<iDataBuffer> path(vfs->GetRealPath(langPath.data()));
-    if(!path.IsValid()) {
+    if (!path.IsValid())
+    {
       csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
         "crystalspace.editor.component.translation",
         csString().Format("Translation file path is not active: %s", langPath.data()));
@@ -81,7 +98,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     fullPath += langFile;
 
     csRef<iFile> file(vfs->Open(fullPath.data() , VFS_FILE_READ));
-    if(file.IsValid()) {
+    if(file.IsValid())
+    {
       csRef<iDataBuffer> data(file->GetAllData());
       csRef<iDocument> document(documentSystem->CreateDocument());
 
@@ -115,10 +133,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     return false;
   }
 
-  const char* EditorTranslation::GetMsg (const char* src) const
-  {
-    return translator->GetMsg(src);
-  }
 }
 CS_PLUGIN_NAMESPACE_END(CSEditor)
 

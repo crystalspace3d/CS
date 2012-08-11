@@ -28,7 +28,7 @@ using namespace CS::EditorApp;
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
   class EditorTranslation
-    : public scfImplementation2<EditorTranslation, iEditorComponent, iTranslator>
+    : public scfImplementation1<EditorTranslation, iEditorComponent>
   {
   public:
     EditorTranslation (iBase* parent);
@@ -39,9 +39,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     virtual void Update ();
     virtual void Save (iDocumentNode* node) const;
     virtual bool Load (iDocumentNode* node);
-
-    //-- iTranslator
-    virtual const char* GetMsg (const char* src) const;
 
   private:
     iObjectRegistry* object_reg;

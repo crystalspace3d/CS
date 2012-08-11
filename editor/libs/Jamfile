@@ -166,7 +166,8 @@ if $(WX.AVAILABLE) = "yes"
   ExternalLibs crystalspace_gui : WX ;
   CFlags crystalspace_gui :
     [ FDefines CS_CRYSTALSPACE_GUI_LIB ]
-    [ FDefines WXMAKINGDLL_PROPGRID ] ;
+    [ FDefines WXMAKINGDLL_PROPGRID ]
+    [ FDefines wxPG_USE_WXMODULE=0 ] ;
   MsvcDefine crystalspace_gui : CS_CRYSTALSPACE_GUI_LIB ;
   MsvcDefine crystalspace_gui :
     CS_COMPILER_NAME_AND_VERSION : "\"VC_$(MSVC_VERSION)\"" ;

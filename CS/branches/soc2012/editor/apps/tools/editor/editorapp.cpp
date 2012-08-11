@@ -147,6 +147,7 @@ bool EditorApplication::OnInit (void)
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.scenemanager")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.2dinfo")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.exit")) return false;
+  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.translation")) return false;
 
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.3dview")) return false;
   if (!spaceManager->RegisterSpace ("crystalspace.editor.space.scenetree")) return false;

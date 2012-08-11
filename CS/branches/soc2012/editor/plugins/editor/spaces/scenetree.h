@@ -41,8 +41,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
 class SceneTreeCtrl;
 
-class SceneTree : public scfImplementation1<SceneTree, iSpace>,
-  public wxPanel
+class SceneTree : public wxPanel, public scfImplementation1<SceneTree, iSpace>
 {
 public:
   SceneTree (iBase* parent);

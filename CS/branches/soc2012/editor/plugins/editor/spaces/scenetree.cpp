@@ -73,19 +73,11 @@ bool SceneTree::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   
   // Create this panel
   Create (parent, -1, wxDefaultPosition, wxSize(300, 500));
-  
+
   // Create the tree control
   treectrl = new SceneTreeCtrl (object_reg, editor, this, SceneTree_Ctrl,
 				wxDefaultPosition, wxSize(300, 500));
   
-  // treectrl->SetAutoLayout(true);
-  
-  /*
-  sizer = new wxBoxSizer(wxVERTICAL);
-  sizer->Add(treectrl, 1, wxEXPAND, 0);
-  parent->SetSizerAndFit(sizer);
-  */
-
   return true;
 }
 
@@ -101,7 +93,6 @@ void SceneTree::Update ()
 void SceneTree::OnSize (wxSizeEvent& event)
 {
   // Resize the tree control
-
   if (treectrl) {
     treectrl->SetSize (event.GetSize ());
   }

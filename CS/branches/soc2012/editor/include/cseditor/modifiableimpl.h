@@ -1,8 +1,9 @@
 #ifndef MODIFIABLE_IMPL_H
 #define MODIFIABLE_IMPL_H
 
-// Stuff needed for the test iModifiable dude
 #include "iutil/modifiable.h"
+
+CS_PLUGIN_NAMESPACE_BEGIN(CSEditor) 
 
 /**
  * Implementation of some of the most common iModifiableParameter usage. 
@@ -66,7 +67,9 @@ private:
 
 
 /**
- * Basic implementation of iModifiableDescription, suitable for most uses. Simply holds a csRefArray of iModifiableParameter and implements GetParameterCount, GetParameter and GetParameterByIndex.
+ * Basic implementation of iModifiableDescription, suitable for most uses. 
+ * Simply holds a csRefArray of iModifiableParameter and implements 
+ * GetParameterCount, GetParameter and GetParameterByIndex.
  */
 class csBasicModifiableDescription : public scfImplementation1<csBasicModifiableDescription, iModifiableDescription>
 {
@@ -98,5 +101,8 @@ public:
 private:
   csArray<iModifiableParameter*> parameters;
 };
+
+}
+CS_PLUGIN_NAMESPACE_END(CSEditor)
 
 #endif
